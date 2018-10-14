@@ -102,6 +102,8 @@ namespace Dream
     // Asset ====================================================================
     const string Constants::UUID = "uuid";
     const string Constants::NAME = "name";
+
+    // Types
     const string Constants::ASSET_TYPE = "type";
     const string Constants::ASSET_DIR = "assets";
     const string Constants::ASSET_TYPE_PATH = "path";
@@ -112,11 +114,19 @@ namespace Dream
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
     const string Constants::ASSET_TYPE_SHADER = "shader";
+
+    const string Constants::ASSET_TYPE_TEXTURE = "texture";
+    const string Constants::ASSET_TYPE_MATERIAL = "material";
+    const string Constants::ASSET_TYPE_PARTICLE_EMITTER = "particle_emitter";
+
+    // Formats
     const string Constants::ASSET_FORMAT = "format";
     const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
+    const string Constants::ASSET_FORMAT_MODEL_OBJ = "assimp.obj";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
     const string Constants::ASSET_FORMAT_AUDIO_OGG = "ogg";
+    const string Constants::ASSET_FORMAT_DREAM = "dream";
     const string Constants::ASSET_FORMAT_PATH_DREAM = "dream";
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
@@ -139,11 +149,16 @@ namespace Dream
     const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
     const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
     const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
+    const string Constants::ASSET_TYPE_TEXTURE_READABLE = "Texture";
+    const string Constants::ASSET_TYPE_MATERIAL_READABLE = "Material";
+    const string Constants::ASSET_TYPE_PARTICLE_EMITTER_READABLE = "Particle Emitter";
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
+    const string Constants::ASSET_FORMAT_MODEL_OBJ_READABLE = "Wavefront OBJ";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
     const string Constants::ASSET_FORMAT_AUDIO_WAV_READABLE = "Wav";
+    const string Constants::ASSET_FORMAT_DREAM_READABLE = "Dream";
     const string Constants::ASSET_FORMAT_PATH_DREAM_READABLE = "Dream Path";
     const string Constants::ASSET_FORMAT_FONT_TTF_READABLE = "TTF Font";
     const string Constants::ASSET_FORMAT_SHADER_GLSL_READABLE = "GLSL";
@@ -279,6 +294,23 @@ namespace Dream
     const string Constants::ASSET_ATTR_LIGHT_DIFFUSE = "diffuse";
     const string  Constants::ASSET_ATTR_LIGHT_AMBIENT = "ambient";
     const string Constants::ASSET_ATTR_LIGHT_SPECULAR = "specular";
+    // Material
+    const string Constants::ASSET_ATTR_MATERIAL_SHADER = "shader";
+    const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE = "diffuse_texture";
+    const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE = "specular_texture";
+    const string Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE = "normal_texture";
+    const string Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE = "depthmap_texture";
+    const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR = "diffuse_colour";
+    const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR = "specular_colour";
+    const string Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR = "ambient_colour";
+    const string Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR = "reflective_colour";
+    const string Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR = "emissive_colour";
+    const string Constants::ASSET_ATTR_MATERIAL_OPACITY = "opacity";
+    const string Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING = "bump_scaling";
+    const string Constants::ASSET_ATTR_MATERIAL_HARDNESS = "hardness";
+    const string Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY = "reflectivity";
+    const string Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH = "shininess_strength";
+    const string Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX = "refraction_index";
 
     // Model ================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST = "material_shader_list";
@@ -341,14 +373,17 @@ namespace Dream
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
-        {AssetType::PATH,           ASSET_TYPE_PATH},
-        {AssetType::AUDIO,          ASSET_TYPE_AUDIO},
-        {AssetType::FONT,           ASSET_TYPE_FONT},
-        {AssetType::LIGHT,          ASSET_TYPE_LIGHT},
-        {AssetType::MODEL,          ASSET_TYPE_MODEL},
-        {AssetType::PHYSICS_OBJECT, ASSET_TYPE_PHYSICS_OBJECT},
-        {AssetType::SCRIPT,         ASSET_TYPE_SCRIPT},
-        {AssetType::SHADER,         ASSET_TYPE_SHADER}
+        {AssetType::PATH,             ASSET_TYPE_PATH},
+        {AssetType::AUDIO,            ASSET_TYPE_AUDIO},
+        {AssetType::FONT,             ASSET_TYPE_FONT},
+        {AssetType::LIGHT,            ASSET_TYPE_LIGHT},
+        {AssetType::MATERIAL,         ASSET_TYPE_MATERIAL},
+        {AssetType::MODEL,            ASSET_TYPE_MODEL},
+        {AssetType::PARTICLE_EMITTER, ASSET_TYPE_PARTICLE_EMITTER},
+        {AssetType::PHYSICS_OBJECT,   ASSET_TYPE_PHYSICS_OBJECT},
+        {AssetType::SCRIPT,           ASSET_TYPE_SCRIPT},
+        {AssetType::SHADER,           ASSET_TYPE_SHADER},
+        {AssetType::TEXTURE,          ASSET_TYPE_TEXTURE}
     };
 
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =
@@ -381,9 +416,22 @@ namespace Dream
             }
         },
         {
+            AssetType::MATERIAL,
+            {
+                ASSET_FORMAT_DREAM
+            }
+        },
+        {
             AssetType::MODEL,
             {
-                ASSET_FORMAT_MODEL_ASSIMP
+                ASSET_FORMAT_MODEL_ASSIMP,
+                ASSET_FORMAT_MODEL_OBJ
+            }
+        },
+        {
+            AssetType::PARTICLE_EMITTER,
+            {
+                ASSET_FORMAT_DREAM
             }
         },
         {
@@ -415,6 +463,12 @@ namespace Dream
                 ASSET_FORMAT_SHADER_GLSL
             }
         },
+        {
+            AssetType::TEXTURE,
+            {
+                ASSET_FORMAT_DREAM
+            }
+        }
     };
 
     string
@@ -431,14 +485,20 @@ namespace Dream
                 return ASSET_TYPE_FONT;
             case LIGHT:
                 return ASSET_TYPE_LIGHT;
+            case MATERIAL:
+                return ASSET_TYPE_MATERIAL;
             case MODEL:
                 return ASSET_TYPE_MODEL;
+            case PARTICLE_EMITTER:
+                return ASSET_TYPE_PARTICLE_EMITTER;
             case PHYSICS_OBJECT:
                 return ASSET_TYPE_PHYSICS_OBJECT;
             case SCRIPT:
                 return ASSET_TYPE_SCRIPT;
             case SHADER:
                 return ASSET_TYPE_SHADER;
+            case TEXTURE:
+                return ASSET_TYPE_TEXTURE;
             case NONE:
                 return "";
         }
@@ -449,45 +509,71 @@ namespace Dream
     Constants::getAssetTypeEnumFromString
     (string type)
     {
-        if (type.compare(ASSET_TYPE_PATH) == 0 ||
-            type.compare(ASSET_TYPE_PATH_READABLE) == 0)
-        {
-            return PATH;
-        }
-        else if (type.compare(ASSET_TYPE_AUDIO) == 0 ||
-                 type.compare(ASSET_TYPE_AUDIO_READABLE) == 0)
+
+        if (type.compare(ASSET_TYPE_AUDIO) == 0 ||
+            type.compare(ASSET_TYPE_AUDIO_READABLE) == 0)
         {
             return AUDIO;
         }
+
         else if (type.compare(ASSET_TYPE_FONT) == 0 ||
                  type.compare(ASSET_TYPE_FONT_READABLE) == 0)
         {
             return FONT;
         }
+
         else if (type.compare(ASSET_TYPE_LIGHT) == 0 ||
                  type.compare(ASSET_TYPE_LIGHT_READABLE) == 0)
         {
             return LIGHT;
         }
+
+        else if (type.compare(ASSET_TYPE_MATERIAL) == 0 ||
+                 type.compare(ASSET_TYPE_MATERIAL_READABLE) == 0)
+        {
+            return MATERIAL;
+        }
+
         else if (type.compare(ASSET_TYPE_MODEL) == 0 ||
                  type.compare(ASSET_TYPE_MODEL_READABLE) == 0)
         {
             return MODEL;
         }
+
+        else if (type.compare(ASSET_TYPE_PARTICLE_EMITTER) == 0 ||
+                 type.compare(ASSET_TYPE_PARTICLE_EMITTER_READABLE) == 0)
+        {
+            return PARTICLE_EMITTER;
+        }
+
+        else if (type.compare(ASSET_TYPE_PATH) == 0 ||
+            type.compare(ASSET_TYPE_PATH_READABLE) == 0)
+        {
+            return PATH;
+        }
+
         else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0 ||
                  type.compare(ASSET_TYPE_PHYSICS_OBJECT_READABLE) == 0)
         {
             return PHYSICS_OBJECT;
         }
+
         else if (type.compare(ASSET_TYPE_SCRIPT) == 0 ||
                  type.compare(ASSET_TYPE_SCRIPT_READABLE) == 0)
         {
             return SCRIPT;
         }
+
         else if (type.compare(ASSET_TYPE_SHADER) == 0 ||
                  type.compare(ASSET_TYPE_SHADER_READABLE) == 0)
         {
             return SHADER;
+        }
+
+        else if (type.compare(ASSET_TYPE_TEXTURE) == 0 ||
+                 type.compare(ASSET_TYPE_TEXTURE_READABLE) == 0)
+        {
+            return TEXTURE;
         }
         return NONE;
     }
@@ -544,6 +630,10 @@ namespace Dream
         else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
         {
            return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
+        }
+        else if (format.compare(ASSET_FORMAT_MODEL_OBJ) == 0)
+        {
+           return ASSET_FORMAT_MODEL_OBJ_READABLE;
         }
         // Audio
         else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
@@ -646,6 +736,10 @@ namespace Dream
         else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP_READABLE) == 0)
         {
            return ASSET_FORMAT_MODEL_ASSIMP;
+        }
+        else if (format.compare(ASSET_FORMAT_MODEL_OBJ_READABLE) == 0)
+        {
+           return ASSET_FORMAT_MODEL_OBJ;
         }
         else if (format.compare(ASSET_FORMAT_AUDIO_OGG_READABLE) == 0)
         {

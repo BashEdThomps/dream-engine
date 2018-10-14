@@ -123,14 +123,18 @@ public slots:
 
     void onAction_Asset_AddToSelectedSceneObjectDefinition();
 
-    void onAction_Asset_NewDefinition_Path();
     void onAction_Asset_NewDefinition_Audio();
     void onAction_Asset_NewDefinition_Font();
     void onAction_Asset_NewDefinition_Light();
+    void onAction_Asset_NewDefinition_Material();
     void onAction_Asset_NewDefinition_Model();
+    void onAction_Asset_NewDefinition_ParticleEmitter();
+    void onAction_Asset_NewDefinition_Path();
     void onAction_Asset_NewDefinition_PhysicsObject();
     void onAction_Asset_NewDefinition_Script();
     void onAction_Asset_NewDefinition_Shader();
+    void onAction_Asset_NewDefinition_Texture();
+
     void onAction_Debug_DumpProjectDefinitionJson(bool toggled);
 
     void onAssetDefinitionProperty_AudioEvents(IAssetDefinition* adHandle);
@@ -138,6 +142,7 @@ public slots:
 
     void onAssetDefinitionProperty_FontFile(IAssetDefinition* adHandle);
 
+    void onAssetDefinitionProperty_MaterialEditor(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_ModelFile(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_ModelAdditionalFiles(IAssetDefinition* adHandle);
     void onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* adHandle);
@@ -154,6 +159,9 @@ public slots:
     void onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition*);
     void onAssetDefinitionProperty_PathList(IAssetDefinition*);
 
+    void onAssetDefinitionProperty_TextureFile(IAssetDefinition* adHandle);
+    void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition* adHandle);
+
     void onSceneObjectProperty_CaptureTranslation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureOrientation(SceneObjectDefinition*);
     void onSceneObjectProperty_CaptureScale(SceneObjectDefinition*);
@@ -161,7 +169,6 @@ public slots:
     void onSceneObjectProperty_RemoveAsset(SceneObjectDefinition*, IDefinition*);
     void onSceneObjectProperty_RemoveChild(SceneObjectDefinition*, IDefinition*);
 
-    void onAssetDefinitionProperty_PhysicsBvhTriangleMeshFile(IAssetDefinition* adHandle);
 
     void onSceneProperty_CaptureCameraTranslation(SceneDefinition*);
     void onSceneProperty_CaptureCameraLookAt(SceneDefinition*);
@@ -172,7 +179,6 @@ public slots:
     void onMainVolumeChanged(int);
     void onPathEditorClosed();
     void onPathVisibilityChanged(bool visible);
-
 
     void onActionScriptingTriggered(bool checked);
 

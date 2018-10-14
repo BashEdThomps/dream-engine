@@ -26,13 +26,18 @@
 #include "../Utilities/Uuid.h"
 
 #include "../Components/IAssetDefinition.h"
-#include "../Components/Path/PathDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
+
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
+#include "../Components/Graphics/Material/MaterialDefinition.h"
 #include "../Components/Graphics/Model/ModelDefinition.h"
-#include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
+#include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
+#include "../Components/Graphics/Texture/TextureDefinition.h"
+
+#include "../Components/Path/PathDefinition.h"
+#include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
 
 namespace Dream
@@ -179,22 +184,28 @@ namespace Dream
 
         switch (type)
         {
-            case PATH:
-                return new PathDefinition(this,assetDefinitionJs);
             case AUDIO:
                 return new AudioDefinition(this,assetDefinitionJs);
+            case FONT:
+                return new FontDefinition(this,assetDefinitionJs);
             case LIGHT:
                 return new LightDefinition(this,assetDefinitionJs);
+            case MATERIAL:
+                return new MaterialDefinition(this,assetDefinitionJs);
             case MODEL:
                 return new ModelDefinition(this,assetDefinitionJs);
+            case PATH:
+                return new PathDefinition(this,assetDefinitionJs);
+            case PARTICLE_EMITTER:
+                return new ParticleEmitterDefinition(this,assetDefinitionJs);
             case PHYSICS_OBJECT:
                 return new PhysicsObjectDefinition(this,assetDefinitionJs);
             case SCRIPT:
                 return new ScriptDefinition(this,assetDefinitionJs);
             case SHADER:
                 return new ShaderDefinition(this,assetDefinitionJs);
-            case FONT:
-                return new FontDefinition(this,assetDefinitionJs);
+            case TEXTURE:
+                return new TextureDefinition(this,assetDefinitionJs);
             case NONE:
                 log->error( "Unable to create Asset Definition. Unknown Type" );
                 break;
@@ -475,6 +486,22 @@ namespace Dream
             }
         }
         return shaders;
+    }
+
+    vector<TextureDefinition*>
+    ProjectDefinition::getTextureAssetDefinitionVector
+    ()
+    {
+        vector<TextureDefinition*> textures;
+        for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
+        {
+            IAssetDefinition* next = (*it);
+            if (next->getType() == Constants::ASSET_TYPE_TEXTURE)
+            {
+                textures.push_back(dynamic_cast<TextureDefinition*>(next));
+            }
+        }
+        return textures;
     }
 
     bool ProjectDefinition::getCaptureKeyboard()

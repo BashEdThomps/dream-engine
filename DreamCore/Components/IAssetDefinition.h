@@ -61,14 +61,17 @@ namespace Dream
 
         string getAssetTypeDirectory();
 
-        bool isTypePath();
         bool isTypeAudio();
+        bool isTypeFont();
+        bool isTypeLight();
+        bool isTypeMaterial();
         bool isTypeModel();
         bool isTypeScript();
         bool isTypeShader();
+        bool isTypePath();
+        bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
-        bool isTypeLight();
-        bool isTypeFont();
+        bool isTypeTexture();
 
         string getAssetPath();
 

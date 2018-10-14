@@ -20,10 +20,10 @@
 
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
+#include "../Light/LightInstance.h"
+#include "../Material/Material.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Utilities/FileReader.h"
-#include "../Model/Material/Material.h"
-#include "../Light/LightInstance.h"
 
 using namespace glm;
 
@@ -74,7 +74,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            log->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
             return false;
         }
 
@@ -82,6 +82,24 @@ namespace Dream
 
         return true;
     }
+
+    bool
+    ShaderInstance::setInstanceModelMatricies
+    (vector<mat4> value, string name)
+    {
+        auto log = getLog();
+        GLint location =  getUniformLocation("model[0]");
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            log->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            return false;
+        }
+        glUniformMatrix4fv(location,value.size(),GL_FALSE,(float*)&value[0]);
+
+        return true;
+    }
+
 
     bool
     ShaderInstance::setViewMatrix
@@ -92,7 +110,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->warn( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -110,7 +128,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->error( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->warn( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -128,7 +146,7 @@ namespace Dream
 
         if (uCamPos == UNIFORM_NOT_FOUND)
         {
-            log->error( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->warn( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
 
@@ -160,7 +178,7 @@ namespace Dream
         fragmentReader->readIntoString();
         mFragmentShaderSource = fragmentReader->getContentsAsString();
         delete fragmentReader;
-        log->debug(
+        log->trace(
                     "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
                     mDefinition->getNameAndUuidString(),
                     absVertexPath,
@@ -323,6 +341,10 @@ namespace Dream
             }
         }
 
+        auto diffuse = material->mColorDiffuse;
+        vec3 glmDiffuse(diffuse.r,diffuse.g,diffuse.b);
+        addUniform(FLOAT3, "material.diffuseColor", 1, &glmDiffuse);
+
         if (material->mSpecularTexture != nullptr)
         {
             id =  material->mSpecularTexture->id;
@@ -339,6 +361,10 @@ namespace Dream
                 CurrentTexture1 = id;
             }
         }
+
+        auto spec = material->mColorSpecular;
+        vec3 glmSpec(spec.r,spec.g,spec.b);
+        addUniform(FLOAT3, "material.specularColor", 1, &glmSpec);
 
         if (material->mNormalTexture != nullptr)
         {
@@ -499,7 +525,7 @@ namespace Dream
         }
         else
         {
-            log->error("Could not find Point Light Location Uniform");
+            log->warn("Could not find Point Light Location Uniform");
         }
 
         if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
@@ -509,7 +535,7 @@ namespace Dream
         }
         else
         {
-            log->error("Could not find Spot Light Location Uniform");
+            log->warn("Could not find Spot Light Location Uniform");
         }
 
         if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
@@ -519,7 +545,7 @@ namespace Dream
         }
         else
         {
-            log->error("Could not find Directional Light Location Uniform");
+            log->warn("Could not find Directional Light Location Uniform");
         }
 
         // Sync user uniforms
@@ -632,11 +658,14 @@ namespace Dream
     ShaderInstance::bindInstances
     (vector<SceneObjectRuntime*> instances)
     {
+        // TODO - Possibly glob these matricies and push as one uniform
+        vector<mat4> matricies;
         for (size_t i=0; i<instances.size(); i++)
         {
             auto instance = instances.at(i);
-            setModelMatrix(instance->getTransform()->asMat4(), "model["+std::to_string(i)+"]");
+            matricies.push_back(instance->getTransform()->asMat4());
         }
+        setInstanceModelMatricies(matricies);
     }
 
     void

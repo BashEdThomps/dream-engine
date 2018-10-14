@@ -99,8 +99,8 @@ ProjectDirectoryModel::inflateFromDirectory
         return false;
     }
 
-    mPhysicsObjetDirectory = QDir(getPhysicsObjectDirectoryAbsolutePath());
-    mPhysicsObjetDirectory.makeAbsolute();
+    mPhysicsObjectDirectory = QDir(getPhysicsObjectDirectoryAbsolutePath());
+    mPhysicsObjectDirectory.makeAbsolute();
     if (!physicsObjectDirectoryExists())
     {
         return false;
@@ -116,6 +116,13 @@ ProjectDirectoryModel::inflateFromDirectory
     mShaderDirectory = QDir(getShaderDirectoryAbsolutePath());
     mShaderDirectory.makeAbsolute();
     if (!shaderDirectoryExists())
+    {
+        return false;
+    }
+
+    mTextureDirectory = QDir(getTextureDirectoryAbsolutePath());
+    mTextureDirectory.makeAbsolute();
+    if (!textureDirectoryExists())
     {
         return false;
     }
@@ -219,10 +226,22 @@ ProjectDirectoryModel::createNewProjectTree
         }
     }
 
+    if (!textureDirectoryExists())
+    {
+        if (!createTextureDirectory())
+        {
+            log->debug("Unable to create directory {}",getTextureDirectoryAbsolutePath().toStdString());
+            return false;
+        }
+    }
+
+
     return true;
 }
 
-bool ProjectDirectoryModel::writeProjectFile()
+bool
+ProjectDirectoryModel::writeProjectFile
+()
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     if (!mProjectDefinitionHandle)
@@ -316,7 +335,7 @@ ProjectDirectoryModel::createAudioDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mAudioDirectory = QDir(getAudioDirectoryAbsolutePath());
         }
 
     }
@@ -335,7 +354,7 @@ ProjectDirectoryModel::createFontDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mFontDirectory = QDir(getFontDirectoryAbsolutePath());
         }
 
     }
@@ -354,7 +373,7 @@ ProjectDirectoryModel::createModelDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mModelDirectory = QDir(getModelDirectoryAbsolutePath());
         }
 
     }
@@ -373,7 +392,7 @@ ProjectDirectoryModel::createPhysicsObjectDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mPhysicsObjectDirectory = QDir(getPhysicsObjectDirectoryAbsolutePath());
         }
 
     }
@@ -392,7 +411,7 @@ ProjectDirectoryModel::createScriptDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mScriptDirectory = QDir(getScriptDirectoryAbsolutePath());
         }
 
     }
@@ -411,7 +430,26 @@ ProjectDirectoryModel::createShaderDirectory
 
         if (result)
         {
-            mPathDirectory = QDir(getPathDirectoryAbsolutePath());
+            mShaderDirectory = QDir(getShaderDirectoryAbsolutePath());
+        }
+
+    }
+    return result;
+}
+
+
+bool
+ProjectDirectoryModel::createTextureDirectory
+()
+{
+    bool result = false;
+    if (assetsDirectoryExists())
+    {
+        result = mAssetsDirectory.mkdir(QString::fromStdString(Constants::ASSET_TYPE_TEXTURE));
+
+        if (result)
+        {
+            mTextureDirectory = QDir(getTextureDirectoryAbsolutePath());
         }
 
     }
@@ -550,6 +588,17 @@ ProjectDirectoryModel::getShaderDirectoryAbsolutePath
 }
 
 QString
+ProjectDirectoryModel::getTextureDirectoryAbsolutePath
+()
+{
+    if (assetsDirectoryExists())
+    {
+        return mAssetsDirectory.filePath(QString::fromStdString(Constants::ASSET_TYPE_TEXTURE));
+    }
+    return QString();
+}
+
+QString
 ProjectDirectoryModel::getProjectFileAbsolutePath
 ()
 {
@@ -572,7 +621,9 @@ ProjectDirectoryModel::assetMainFileExists
     return QFile(assetFileTargetPath).exists();
 }
 
-bool ProjectDirectoryModel::deleteMainAssetFile(IAssetDefinition* adHandle, QString format)
+bool
+ProjectDirectoryModel::deleteMainAssetFile
+(IAssetDefinition* adHandle, QString format)
 {
     QString assetFileTargetPath = createAssetTargetPath(adHandle,format);
     return QFile(assetFileTargetPath).remove();
@@ -666,6 +717,17 @@ ProjectDirectoryModel::shaderDirectoryExists
     return false;
 }
 
+bool
+ProjectDirectoryModel::textureDirectoryExists
+()
+{
+    if (assetsDirectoryExists())
+    {
+        return mAssetsDirectory.exists(QString::fromStdString(Constants::ASSET_TYPE_TEXTURE));
+    }
+    return false;
+}
+
 QString
 ProjectDirectoryModel::getProjectName
 ()
@@ -692,6 +754,23 @@ ProjectDirectoryModel::getAssetDataPath
                 QString::fromStdString(adHandle->getUuid())
                 );
 
+    return assetDataPath;
+}
+
+QString
+ProjectDirectoryModel::getAssetDataFilePath
+(IAssetDefinition*  adHandle)
+{
+    QString assetDataPath;
+
+    // Get type directory
+    assetDataPath = mAssetsDirectory.filePath(QString::fromStdString(adHandle->getAssetTypeDirectory()));
+    // Get uuid directory
+    QDir typeDir(assetDataPath);
+    assetDataPath = typeDir.filePath(QString::fromStdString(adHandle->getUuid()));
+    // Get file path
+    QDir assetDir(assetDataPath);
+    assetDataPath = assetDir.filePath(QString::fromStdString(adHandle->getFormat()));
     return assetDataPath;
 }
 
@@ -725,7 +804,9 @@ ProjectDirectoryModel::writeAssetData
     return retval;
 }
 
-QByteArray ProjectDirectoryModel::readScriptData(ScriptDefinition* scriptDef)
+QByteArray
+ProjectDirectoryModel::readScriptData
+(ScriptDefinition* scriptDef)
 {
     auto log = spdlog::get("ProjectDirectoryModel");
     log->debug( "readScriptData for {}", scriptDef->getNameAndUuidString());
@@ -740,7 +821,9 @@ QByteArray ProjectDirectoryModel::readScriptData(ScriptDefinition* scriptDef)
     return data;
 }
 
-ShaderFileTuple ProjectDirectoryModel::readShaderData(ShaderDefinition* shaderDef)
+ShaderFileTuple
+ProjectDirectoryModel::readShaderData
+(ShaderDefinition* shaderDef)
 {
     ShaderFileTuple shaderData;
     auto log = spdlog::get("ProjectDirectoryModel");

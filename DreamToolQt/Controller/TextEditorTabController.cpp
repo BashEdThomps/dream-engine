@@ -1,4 +1,4 @@
-#include "EditorTabController.h"
+#include "TextEditorTabController.h"
 
 #include "View/SyntaxHighlighters/GLSLHighlighter.h"
 #include "View/SyntaxHighlighters/LuaHighlighter.h"

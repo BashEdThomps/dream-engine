@@ -197,7 +197,7 @@ namespace Dream
                     childDefinition,
                     randomUuid
                 );
-                sod->loadChildSceneObjectDefinitions();
+                sod->loadChildSceneObjectDefinitions(randomUuid);
                 mChildDefinitions.push_back(sod);
             }
         }
@@ -282,6 +282,7 @@ namespace Dream
             defJson,
             true
         );
+        soDefinition->loadChildSceneObjectDefinitions(true);
         addChildSceneObjectDefinition(soDefinition);
 
         return soDefinition;

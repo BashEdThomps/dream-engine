@@ -59,6 +59,7 @@ public:
     bool createPhysicsObjectDirectory();
     bool createScriptDirectory();
     bool createShaderDirectory();
+    bool createTextureDirectory();
     bool writeProjectFile();
     bool inflateFromDirectory(QString absolutePath);
     bool createNewProjectTree(QString absolutePath);
@@ -72,6 +73,7 @@ public:
     bool physicsObjectDirectoryExists();
     bool scriptDirectoryExists();
     bool shaderDirectoryExists();
+    bool textureDirectoryExists();
 
     bool projectFileExists();
     bool isValidProject();
@@ -85,6 +87,8 @@ public:
     QString getPhysicsObjectDirectoryAbsolutePath();
     QString getScriptDirectoryAbsolutePath();
     QString getShaderDirectoryAbsolutePath();
+    QString getTextureDirectoryAbsolutePath();
+
     QString getProjectFileAbsolutePath();
     QString getProjectDirectoryName();
 
@@ -99,6 +103,7 @@ public:
 
     QString createAssetTargetPath(IAssetDefinition* adHandle, QString format = "");
     QString getAssetDataPath(IAssetDefinition* adHandle);
+    QString getAssetDataFilePath(IAssetDefinition* adHandle);
 
     void touchFile(QString filePath);
     bool writeAssetData(QString data, IAssetDefinition* definition,QString fileName = "", bool overwrite = true);
@@ -115,9 +120,10 @@ private: // Variables
     QDir mAudioDirectory;
     QDir mFontDirectory;
     QDir mModelDirectory;
-    QDir mPhysicsObjetDirectory;
+    QDir mPhysicsObjectDirectory;
     QDir mScriptDirectory;
     QDir mShaderDirectory;
+    QDir mTextureDirectory;
     QString getProjectName();
 
 };

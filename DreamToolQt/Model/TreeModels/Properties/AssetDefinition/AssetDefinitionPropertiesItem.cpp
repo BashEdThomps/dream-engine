@@ -74,6 +74,7 @@ AssetDefinitionPropertiesItem::setData
     switch(getProperty())
     {
 
+
         case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->setSplineType(value.toString().toStdString());
             break;
@@ -217,6 +218,8 @@ AssetDefinitionPropertiesItem::setData
             break;
 
             // Not used
+        case ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR:
+        case ASSET_DEFINITION_PROPERTY_TEXTURE_FILE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
@@ -251,35 +254,24 @@ AssetDefinitionPropertiesItem::data
 
     switch(getProperty())
     {
+        // Path
         case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
             return QVariant(QString::fromStdString(dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->getSplineType()));
-
         case ASSET_DEFINITION_PROPERTY_PATH_STEP:
             return QVariant(dynamic_cast<PathDefinition*>(mAssetDefinitionHandle)->getStepScalar());
-
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
-            break;
-
+        // Physics Object
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getConstant());
-
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHeight());
-
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getRadius());
-
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalX());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalY());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getNormalZ());
-
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
-            return QVariant();
-
-            // Physics Object
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getHalfExtentsX());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
@@ -294,65 +286,51 @@ AssetDefinitionPropertiesItem::data
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getKinematic());
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getControllableCharacter());
-
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getRestitution());
-
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
             return QVariant(dynamic_cast<PhysicsObjectDefinition*>(mAssetDefinitionHandle)->getFriction());
-
-
-            // Audio
+        // Audio
         case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
             return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getLoop());
         case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
             return QVariant(dynamic_cast<AudioDefinition*>(mAssetDefinitionHandle)->getSpectrumAnalyser());
-
-            // Light
+        // Light
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientRed());
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientGreen());
         case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getAmbientBlue());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseRed());
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseGreen());
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDiffuseBlue());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularRed());
         case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularGreen());
         case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getSpecularBlue());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getConstant());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getLinear());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getQuadratic());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getCutOff());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getOuterCutOff());
-
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionX());
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionY());
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
             return QVariant(dynamic_cast<LightDefinition*>(mAssetDefinitionHandle)->getDirectionZ());
-
-            // Common
+        // Common
         case ASSET_DEFINITION_PROPERTY_UUID:
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getUuid()));
         case ASSET_DEFINITION_PROPERTY_NAME:
@@ -361,13 +339,12 @@ AssetDefinitionPropertiesItem::data
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getType()));
         case ASSET_DEFINITION_PROPERTY_FORMAT:
             return QVariant(QString::fromStdString(mAssetDefinitionHandle->getFormat()));
-
-            // Not Used
+        // Not Used
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
         case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
         case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
-
-
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
         case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
         case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
@@ -383,6 +360,8 @@ AssetDefinitionPropertiesItem::data
         case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
         case ASSET_DEFINITION_PROPERTY_NONE:
         case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
+        case ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR:
+        case ASSET_DEFINITION_PROPERTY_TEXTURE_FILE:
             return QVariant();
     }
     return QVariant();

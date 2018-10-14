@@ -49,7 +49,7 @@ public:
     QMimeData* mimeData(const QModelIndexList& indexes) const override;
 
     void setupModelData();
-    void forceDataChanged();
+    void forceDataChanged(const QModelIndex& index);
 
      static QString SO_MIME_TYPE;
 

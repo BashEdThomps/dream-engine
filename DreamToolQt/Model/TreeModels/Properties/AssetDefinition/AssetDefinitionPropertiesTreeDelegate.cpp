@@ -137,12 +137,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Audio File...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_AudioFile(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_AudioFile(bool))
+    );
     return editor;
 }
 
@@ -172,12 +172,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Font File...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_FontFile(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_FontFile(bool))
+    );
     return editor;
 }
 
@@ -189,12 +189,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Edit Map...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_ModelMaterialShaderMap(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelMaterialShaderMap(bool))
+    );
     return editor;
 }
 
@@ -206,12 +206,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Model File...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_ModelFile(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelFile(bool))
+    );
     return editor;
 }
 
@@ -222,7 +222,8 @@ const
 {
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Edit List...");
-    connect(
+    connect
+    (
         editor,
         SIGNAL(clicked(bool)),
         this,
@@ -253,6 +254,40 @@ const
 }
 
 QWidget*
+AssetDefinitionPropertiesTreeDelegate::createMaterialEditorButton
+(AssetDefinitionPropertiesItem* assetDef, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Material Editor");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_MaterialEditor(bool))
+    );
+    return editor;
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createTextureFileButton
+(AssetDefinitionPropertiesItem* assetDef, QWidget* parent)
+const
+{
+    QToolButton *editor = new QToolButton(parent);
+    editor->setText("Texture File...");
+    connect
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_TextureFile(bool))
+    );
+    return editor;
+}
+
+QWidget*
 AssetDefinitionPropertiesTreeDelegate::createPhysicsBvhTriangleMeshFileButton
 (AssetDefinitionPropertiesItem*, QWidget* parent)
 const
@@ -260,12 +295,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Mesh File...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_PhysicsBvhTriangleMeshFile(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_PhysicsBvhTriangleMeshFile(bool))
+    );
     return editor;
 }
 
@@ -277,12 +312,12 @@ const
     QToolButton *editor = new QToolButton(parent);
     editor->setText("Additional Files...");
     connect
-            (
-                editor,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_ModelAdditionalFiles(bool))
-                );
+    (
+        editor,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_ModelAdditionalFiles(bool))
+    );
     return editor;
 }
 
@@ -294,12 +329,12 @@ const
     QToolButton *button = new QToolButton(parent);
     button->setText("Edit Shader");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_EditShader(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_EditShader(bool))
+    );
     return button;
 }
 
@@ -311,12 +346,12 @@ const
     QToolButton *button = new QToolButton(parent);
     button->setText("Edit Script");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_EditScript(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_EditScript(bool))
+    );
     return button;
 
 }
@@ -329,142 +364,16 @@ const
     QToolButton *button = new QToolButton(parent);
     button->setText("Remove Files");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_RemoveFiles(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_RemoveFiles(bool))
+    );
     return button;
 
 }
 
-QWidget*
-AssetDefinitionPropertiesTreeDelegate::createEditor
-(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
-const
-{
-    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
-    QDoubleSpinBox *spinBox = nullptr;
-
-    switch(adItem->getProperty())
-    {
-        // QCheckBox
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
-            return new QCheckBox(parent);
-
-            // QDoubleSpinBox all range
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
-            spinBox = new QDoubleSpinBox(parent);
-            spinBox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
-            return spinBox;
-
-            // QDoubleSpinBox - 0 to max
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
-            spinBox = new QDoubleSpinBox(parent);
-            spinBox->setRange(0.0, numeric_limits<double>::max());
-            return spinBox;
-
-            //QDoubleSpinBox 0.0 - 1.0
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
-            spinBox = new QDoubleSpinBox(parent);
-            spinBox->setRange(0.0,1.0);
-            spinBox->setDecimals(3);
-            return spinBox;
-
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
-            return createPhysicsBvhTriangleMeshFileButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-            return createRemoveFilesButton(adItem, parent);
-
-        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
-            return createPathTypeComboBox(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_TYPE:
-            return createTypeComboBox(adItem, parent);
-
-        case ASSET_DEFINITION_PROPERTY_FORMAT:
-            return createFormatComboBox(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-            return createAudioFileButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
-            return createAudioEventsButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-            return createFontFileButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-            return createModelFileButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-            return createModelAdditionalFilesButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
-            return createModelMaterialShaderButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-            return createOpenScriptInEditorButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
-            return createOpenShaderInEditorButton(adItem,parent);
-
-        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
-            return createPathListButton(adItem,parent);
-
-            // Not Used
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
-        case ASSET_DEFINITION_PROPERTY_UUID:
-        case ASSET_DEFINITION_PROPERTY_NAME:
-        case ASSET_DEFINITION_PROPERTY_NONE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
-            return new QLineEdit(parent);
-
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
-            return createLightAmbientPaletteButton(parent);
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
-            return createLightDiffusePaletteButton(parent);
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
-            return createLightSpecularPaletteButton(parent);
-    }
-    return new QLineEdit(parent);
-}
 
 QWidget*
 AssetDefinitionPropertiesTreeDelegate::createLightDiffusePaletteButton
@@ -474,12 +383,12 @@ const
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_LightChooseDiffuse(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_LightChooseDiffuse(bool))
+    );
     return button;
 }
 
@@ -491,12 +400,12 @@ const
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_LightChooseAmbient(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_LightChooseAmbient(bool))
+    );
     return button;
 }
 
@@ -509,12 +418,12 @@ const
     QToolButton* button = new QToolButton(parent);
     button->setText("Choose Colour...");
     connect
-            (
-                button,
-                SIGNAL(clicked(bool)),
-                this,
-                SLOT(onButton_LightChooseSpecular(bool))
-                );
+    (
+        button,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(onButton_LightChooseSpecular(bool))
+    );
     return button;
 }
 
@@ -542,189 +451,19 @@ AssetDefinitionPropertiesTreeDelegate::onButton_LightChooseSpecular
 }
 
 void
+AssetDefinitionPropertiesTreeDelegate::onButton_TextureFile
+(bool clicked)
+{
+    Q_UNUSED(clicked)
+    emit notifyButton_TextureFile();
+}
+
+void
 AssetDefinitionPropertiesTreeDelegate::onButton_ModelMaterialShaderMap
 (bool clicked)
 {
     Q_UNUSED(clicked)
     emit notifyButton_ModelMaterialShaderMap();
-}
-
-void
-AssetDefinitionPropertiesTreeDelegate::setEditorData
-(QWidget *editor, const QModelIndex &index)
-const
-{
-    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
-    QVariant value = index.model()->data(index, Qt::DisplayRole);
-
-    switch(adItem->getProperty())
-    {
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
-            static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
-            break;
-
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
-        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
-
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
-            static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
-            break;
-
-        case ASSET_DEFINITION_PROPERTY_UUID:
-        case ASSET_DEFINITION_PROPERTY_NAME:
-            static_cast<QLineEdit*>(editor)->setText(value.toString());
-            break;
-
-        case ASSET_DEFINITION_PROPERTY_TYPE:
-        case ASSET_DEFINITION_PROPERTY_FORMAT:
-        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
-            static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
-            break;
-
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
-        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
-        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
-        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
-        case ASSET_DEFINITION_PROPERTY_NONE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
-            break;
-    }
-}
-
-void
-AssetDefinitionPropertiesTreeDelegate::setModelData
-(QWidget *editor, QAbstractItemModel *model,const  QModelIndex &index)
-const
-{
-    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
-    switch(adItem->getProperty())
-    {
-        // QCheckBox
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
-            model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
-            break;
-
-            // QDoubleSpinBox
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
-
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
-
-        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
-            model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
-            break;
-
-            // QLineEdit
-        case ASSET_DEFINITION_PROPERTY_UUID:
-        case ASSET_DEFINITION_PROPERTY_NAME:
-            model->setData(index,static_cast<QLineEdit*>(editor)->text());
-            break;
-
-            // QComboBox
-        case ASSET_DEFINITION_PROPERTY_TYPE:
-        case ASSET_DEFINITION_PROPERTY_FORMAT:
-        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
-            model->setData(index,static_cast<QComboBox*>(editor)->currentText());
-            break;
-
-            // Not Used
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
-        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
-        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
-        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
-        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
-        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
-        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
-        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
-        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
-        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
-        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
-        case ASSET_DEFINITION_PROPERTY_NONE:
-            break;
-    }
 }
 
 void
@@ -770,6 +509,15 @@ AssetDefinitionPropertiesTreeDelegate::onButton_FontFile
     auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
     log->debug("FontFile was clicked");
     emit notifyButton_FontFile();
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::onButton_MaterialEditor
+(bool clicked)
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesTreeDelegate");
+    log->debug("MaterialEditor was clicked");
+    emit notifyButton_MaterialEditor();
 }
 
 void
@@ -825,3 +573,313 @@ AssetDefinitionPropertiesTreeDelegate::onButton_EditScript
     log->debug("EditScript was clicked");
     emit notifyButton_EditScript();
 }
+
+void
+AssetDefinitionPropertiesTreeDelegate::setEditorData
+(QWidget *editor, const QModelIndex &index)
+const
+{
+    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    QVariant value = index.model()->data(index, Qt::DisplayRole);
+
+    switch(adItem->getProperty())
+    {
+        // QCheckbox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
+            static_cast<QCheckBox*>(editor)->setChecked(value.toBool());
+            break;
+
+        // QDoubleSpinbox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+            static_cast<QDoubleSpinBox*>(editor)->setValue(value.toDouble());
+            break;
+
+        // QLineEdit
+        case ASSET_DEFINITION_PROPERTY_UUID:
+        case ASSET_DEFINITION_PROPERTY_NAME:
+            static_cast<QLineEdit*>(editor)->setText(value.toString());
+            break;
+
+        // QComboBox
+        case ASSET_DEFINITION_PROPERTY_TYPE:
+        case ASSET_DEFINITION_PROPERTY_FORMAT:
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            static_cast<QComboBox*>(editor)->setCurrentText(value.toString());
+            break;
+
+        // Not used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
+        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
+        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
+        case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
+        case ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR:
+        case ASSET_DEFINITION_PROPERTY_TEXTURE_FILE:
+            break;
+    }
+}
+
+void
+AssetDefinitionPropertiesTreeDelegate::setModelData
+(QWidget *editor, QAbstractItemModel *model,const  QModelIndex &index)
+const
+{
+    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    switch(adItem->getProperty())
+    {
+        // QCheckBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
+            model->setData(index,static_cast<QCheckBox*>(editor)->isChecked());
+            break;
+
+        // QDoubleSpinBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+            model->setData(index,static_cast<QDoubleSpinBox*>(editor)->value());
+            break;
+
+        // QLineEdit
+        case ASSET_DEFINITION_PROPERTY_UUID:
+        case ASSET_DEFINITION_PROPERTY_NAME:
+            model->setData(index,static_cast<QLineEdit*>(editor)->text());
+            break;
+
+        // QComboBox
+        case ASSET_DEFINITION_PROPERTY_TYPE:
+        case ASSET_DEFINITION_PROPERTY_FORMAT:
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            model->setData(index,static_cast<QComboBox*>(editor)->currentText());
+            break;
+
+        // Not Used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
+        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
+        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
+        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
+        case ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR:
+        case ASSET_DEFINITION_PROPERTY_TEXTURE_FILE:
+        case ASSET_DEFINITION_PROPERTY_NONE:
+            break;
+    }
+}
+
+QWidget*
+AssetDefinitionPropertiesTreeDelegate::createEditor
+(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex &index)
+const
+{
+    AssetDefinitionPropertiesItem* adItem = static_cast<AssetDefinitionPropertiesItem*>(index.internalPointer());
+    QDoubleSpinBox *spinBox = nullptr;
+
+    switch(adItem->getProperty())
+    {
+        // QCheckBox
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_KINEMATIC:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONTROLLABLE:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_LOOP:
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FFT:
+            return new QCheckBox(parent);
+
+        // QDoubleSpinBox all range
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_X:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MARGIN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RESTITUTION:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_FRICTION:
+            spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(numeric_limits<double>::lowest(), numeric_limits<double>::max());
+            spinBox->setDecimals(4);
+            return spinBox;
+
+        // QDoubleSpinBox - 0 to max
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HEIGHT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_MASS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_RADIUS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Z:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_Y:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS_X:
+        case ASSET_DEFINITION_PROPERTY_PATH_STEP:
+            spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(0.0, numeric_limits<double>::max());
+            spinBox->setDecimals(4);
+            return spinBox;
+
+        // QDoubleSpinBox 0.0 - 1.0
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_RED:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_GREEN:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR_BLUE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_X:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Y:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION_Z:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_LINEAR:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CONSTANT:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_QUADRATIC:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_CUTOFF:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_OUTER_CUTOFF:
+            spinBox = new QDoubleSpinBox(parent);
+            spinBox->setRange(0.0,1.0);
+            spinBox->setDecimals(4);
+            return spinBox;
+
+        // QLineEdit
+        case ASSET_DEFINITION_PROPERTY_UUID:
+        case ASSET_DEFINITION_PROPERTY_NAME:
+            return new QLineEdit(parent);
+
+        // Buttons
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_BVH_TRIANGLE_MESH_FILE:
+            return createPhysicsBvhTriangleMeshFileButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_REMOVE_FILES:
+            return createRemoveFilesButton(adItem, parent);
+        case ASSET_DEFINITION_PROPERTY_PATH_TYPE:
+            return createPathTypeComboBox(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_TYPE:
+            return createTypeComboBox(adItem, parent);
+        case ASSET_DEFINITION_PROPERTY_FORMAT:
+            return createFormatComboBox(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_AUDIO_FILE:
+            return createAudioFileButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS:
+            return createAudioEventsButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_FONT_FILE:
+            return createFontFileButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_MODEL_FILE:
+            return createModelFileButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_MODEL_ADDITIONAL_FILES:
+            return createModelAdditionalFilesButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE:
+            return createModelMaterialShaderButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_SCRIPT_FILE:
+            return createOpenScriptInEditorButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_SHADER_FILES:
+            return createOpenShaderInEditorButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_PATH_LIST:
+            return createPathListButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR:
+            return createMaterialEditorButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_TEXTURE_FILE:
+            return createTextureFileButton(adItem,parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_AMBIENT:
+            return createLightAmbientPaletteButton(parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIFFUSE:
+            return createLightDiffusePaletteButton(parent);
+        case ASSET_DEFINITION_PROPERTY_LIGHT_SPECULAR:
+            return createLightSpecularPaletteButton(parent);
+
+        // Not Used
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_HALF_EXTENTS:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_NORMAL:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILDREN:
+        case ASSET_DEFINITION_PROPERTY_PHYSICS_OBJECT_COMPOUND_CHILD:
+        case ASSET_DEFINITION_PROPERTY_NONE:
+        case ASSET_DEFINITION_PROPERTY_LIGHT_DIRECTION:
+            break;
+    }
+    return new QWidget(parent);
+}
+
+
+

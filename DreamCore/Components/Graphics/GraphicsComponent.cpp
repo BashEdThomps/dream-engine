@@ -34,7 +34,7 @@
 
 #include "Model/ModelInstance.h"
 #include "Model/ModelMesh.h"
-#include "Model/Material/MaterialCache.h"
+#include "Material/MaterialCache.h"
 
 #include "Shader/ShaderInstance.h"
 #include "Shader/ShaderCache.h"
@@ -262,6 +262,7 @@ namespace Dream
                         }
 
                         // Models
+                        /*
                         if (object->hasModelInstance())
                         {
                             if (object->hasShaderInstance())
@@ -273,6 +274,7 @@ namespace Dream
                                 log->error("Object {} has model, but no shader assigned." , object->getUuid());
                             }
                         }
+                        */
 
                         // Lights
                         if (object->hasLightInstance())

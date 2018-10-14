@@ -75,7 +75,6 @@ SOURCES += \
     Model/TreeModels/TreeModelToolButton.cpp \
     View/SyntaxHighlighters/GLSLHighlighter.cpp \
     View/SyntaxHighlighters/LuaHighlighter.cpp \
-    Controller/EditorTabController.cpp \
     Controller/MainWindowController.cpp \
     View/CodeEditorWidget.cpp \
     Model/MaterialShaderTableModel.cpp \
@@ -92,7 +91,11 @@ SOURCES += \
     Controller/PCMPlayer.cpp \
     Model/AudioMarkersTableModel.cpp \
     Controller/WavFile.cpp \
-    View/ADSRWidget.cpp
+    View/ADSRWidget.cpp \
+    Controller/MaterialEditorFormController.cpp \
+    Controller/TextEditorTabController.cpp \
+    Model/MaterialParametersTableModel.cpp \
+    View/MaterialPreviewGL.cpp
 
 HEADERS  += \
     \
@@ -141,7 +144,6 @@ HEADERS  += \
     Model/TreeModels/TreeModelToolButton.h \
     View/SyntaxHighlighters/GLSLHighlighter.h \
     View/SyntaxHighlighters/LuaHighlighter.h \
-    Controller/EditorTabController.h \
     Controller/MainWindowController.h \
     View/CodeEditorWidget.h \
     Model/MaterialShaderTableModel.h \
@@ -159,14 +161,19 @@ HEADERS  += \
     Controller/PCMPlayer.h \
     Model/AudioMarkersTableModel.h \
     Controller/WavFile.h \
-    View/ADSRWidget.h
+    View/ADSRWidget.h \
+    Controller/MaterialEditorFormController.h \
+    Controller/TextEditorTabController.h \
+    Model/MaterialParametersTableModel.h \
+    View/MaterialPreviewGL.h
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
     View/MaterialShaderTableForm.ui \
     View/PathEditorTableForm.ui \
-    View/EditorTabForm.ui \
-    View/AudioToolsForm.ui
+    View/AudioToolsForm.ui \
+    View/MaterialEditorForm.ui \
+    View/TextEditorTabForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc \

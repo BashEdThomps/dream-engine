@@ -39,28 +39,45 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const  QModelIndex &index) const  override;
 
 public slots:
-    void onButton_PathList(bool clicked);
+
+    void onButton_RemoveFiles(bool clicked);
+
     void onButton_AudioFile(bool clicked);
     void onButton_AudioEvents(bool clicked);
+
     void onButton_FontFile(bool clicked);
+
+    void onButton_MaterialEditor(bool clicked);
+
     void onButton_ModelFile(bool clicked);
     void onButton_ModelAdditionalFiles(bool clicked);
-    void onButton_RemoveFiles(bool clicked);
+
     void onButton_EditShader(bool clicked);
+
     void onButton_EditScript(bool clicked);
+
+    void onButton_PathList(bool clicked);
+
     void onButton_PhysicsBvhTriangleMeshFile(bool clicked);
+
     void onButton_FontColourDialog(bool clicked) ;
+
     void onButton_ModelMaterialShaderMap(bool clicked);
 
     void onButton_LightChooseAmbient(bool clicked);
     void onButton_LightChooseDiffuse(bool clicked);
     void onButton_LightChooseSpecular(bool clicked);
 
+    void onButton_TextureFile(bool clicked);
+
 signals:
     void notifyButton_PathList();
     void notifyButton_AudioFile();
     void notifyButton_AudioEvents();
     void notifyButton_FontFile();
+
+    void notifyButton_MaterialEditor();
+
     void notifyButton_ModelFile();
     void notifyButton_ModelAdditionalFiles();
     void notifyButton_RemoveFiles();
@@ -71,10 +88,11 @@ signals:
     void notifyButton_PhysicsBvhTriangleMeshFile();
     void notifyButton_ModelMaterialShaderMap();
 
-
     void notifyButton_LightChooseAmbient();
     void notifyButton_LightChooseDiffuse();
     void notifyButton_LightChooseSpecular();
+
+    void notifyButton_TextureFile();
 
 protected:
     AssetDefinitionPropertiesModel *mModelHandle;
@@ -97,5 +115,6 @@ protected:
     QWidget* createLightSpecularPaletteButton(QWidget* parent) const;
     QWidget* createPathListButton(AssetDefinitionPropertiesItem*, QWidget* parent) const;
     QWidget* createPathTypeComboBox(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
-
+    QWidget* createMaterialEditorButton(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
+    QWidget* createTextureFileButton(AssetDefinitionPropertiesItem* assetDef, QWidget* parent) const;
 };

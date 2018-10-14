@@ -33,6 +33,7 @@
 #include "../Model/ProjectDirectoryModel.h"
 #include "PathEditorFormController.h"
 #include "AudioToolsFormController.h"
+#include "MaterialEditorFormController.h"
 
 using std::pair;
 using std::begin;
@@ -1307,12 +1308,44 @@ MainWindowController::openShaderEditor
 }
 
 void
+MainWindowController::openMaterialEditor
+(MaterialDefinition* adHandle, vector<ShaderDefinition*> shaders, vector<TextureDefinition*> textures)
+{
+    auto log = spdlog::get("MainWindowController");
+    log->debug("Opening Material editor tab for  {}",adHandle->getNameAndUuidString());
+    int index = isEditorTabOpen(adHandle);
+
+    if (index > -1)
+    {
+        log->debug("All ready open in tab {}",index);
+        mUi->rightTabWidget->setCurrentIndex(index);
+        return;
+    }
+
+    auto form = make_shared<MaterialEditorFormController>(adHandle,mProjectDirectoryModelHandle, mUi->rightTabWidget);
+    form->populateShaderComboBox(shaders);
+    form->populateTexturesMenu(textures);
+    form->readDefinitionIntoUi();
+    index = mUi->rightTabWidget->addTab
+    (
+        form.get(),
+        QString::fromStdString(adHandle->getName())
+    );
+
+    log->debug("Created new tab at {}",index);
+
+    mEditorTabForms.push_back(form);
+    mUi->rightTabWidget->setCurrentIndex(index);
+
+}
+
+void
 MainWindowController::openAudioEventEditor
 (AudioDefinition* adHandle)
 {
     auto log = spdlog::get("MainWindowController");
     log->debug("Opening audio editor tab for  {}",adHandle->getNameAndUuidString());
-    int index = isAudioEditorTabOpen(adHandle);
+    int index = isEditorTabOpen(adHandle);
 
     if (index > -1)
     {
@@ -1332,25 +1365,6 @@ MainWindowController::openAudioEventEditor
 
     mEditorTabForms.push_back(form);
     mUi->rightTabWidget->setCurrentIndex(index);
-}
-
-int
-MainWindowController::isAudioEditorTabOpen
-(AudioDefinition* adHandle)
-{
-    auto log = spdlog::get("MainWindowController");
-
-    log->debug("There are {} editor tabs open",mEditorTabForms.size());
-
-    for (shared_ptr<AbstractEditorWidget> tab : mEditorTabForms)
-    {
-       if (tab->getDefinitionHandle() == adHandle)
-       {
-           return mUi->rightTabWidget->indexOf(tab.get())+1;
-       }
-    }
-    log->debug("Didn't find the a tab for this editor");
-    return -1;
 }
 
 void

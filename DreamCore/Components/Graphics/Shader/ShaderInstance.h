@@ -94,6 +94,7 @@ namespace Dream
 
         // MVP
         bool setModelMatrix(mat4,string name = "model");
+        bool setInstanceModelMatricies(vector<mat4> value, string name="model");
         bool setViewMatrix(mat4,string name = "view");
         bool setProjectionMatrix(mat4,string name = "projection");
 

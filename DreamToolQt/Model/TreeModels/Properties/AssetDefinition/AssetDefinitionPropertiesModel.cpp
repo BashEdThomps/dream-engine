@@ -78,13 +78,8 @@ AssetDefinitionPropertiesModel::createProperties
     createTypeProperty();
     createFormatProperty();
 
-    if (mAssetDefinitionHandle->isTypePath())
-    {
-        createPathSplineFormatProperty();
-        createPathStepProperty();
-        createPathListProperty();
-    }
-    else if (mAssetDefinitionHandle->isTypeAudio())
+
+    if (mAssetDefinitionHandle->isTypeAudio())
     {
         createAudioLoopProperty();
         createAudioFFTProperty();
@@ -92,11 +87,13 @@ AssetDefinitionPropertiesModel::createProperties
         createAudioFileProperty();
         createRemoveFilesProperty();
     }
+
     else if (mAssetDefinitionHandle->isTypeFont())
     {
         createFontFileProperty();
         createRemoveFilesProperty();
     }
+
     else if (mAssetDefinitionHandle->isTypeLight())
     {
         auto lightDef = dynamic_cast<LightDefinition*>(mAssetDefinitionHandle);
@@ -129,6 +126,12 @@ AssetDefinitionPropertiesModel::createProperties
                 break;
         }
     }
+
+    else if (mAssetDefinitionHandle->isTypeMaterial())
+    {
+        createMaterialEditorProperty();
+    }
+
     else if (mAssetDefinitionHandle->isTypeModel())
     {
         createModelFileProperty();
@@ -136,6 +139,19 @@ AssetDefinitionPropertiesModel::createProperties
         createModelMaterialShaderProperty();
         createRemoveFilesProperty();
     }
+
+    else if (mAssetDefinitionHandle->isTypeParticleEmitter())
+    {
+
+    }
+
+    else if (mAssetDefinitionHandle->isTypePath())
+    {
+        createPathSplineFormatProperty();
+        createPathStepProperty();
+        createPathListProperty();
+    }
+
     else if (mAssetDefinitionHandle->isTypePhysicsObject())
     {
         createPhysicsMassProperty();
@@ -168,14 +184,22 @@ AssetDefinitionPropertiesModel::createProperties
             createPhysicsHeightProperty();
         }
     }
+
     else if (mAssetDefinitionHandle->isTypeScript())
     {
         createScriptFileProperty();
         createRemoveFilesProperty();
     }
+
     else if (mAssetDefinitionHandle->isTypeShader())
     {
         createShaderEditProperties();
+        createRemoveFilesProperty();
+    }
+
+    else if (mAssetDefinitionHandle->isTypeTexture())
+    {
+        createTextureFileProperty();
         createRemoveFilesProperty();
     }
 }
@@ -309,6 +333,21 @@ AssetDefinitionPropertiesModel::createAudioEventsProperty
             "Event Editor",
             mAssetDefinitionHandle,
             ASSET_DEFINITION_PROPERTY_AUDIO_EVENTS
+        )
+    );
+}
+
+void
+AssetDefinitionPropertiesModel::createMaterialEditorProperty
+()
+{
+    mRootItem->appendChild
+    (
+        new AssetDefinitionPropertiesItem
+        (
+            "Material Editor",
+            mAssetDefinitionHandle,
+            ASSET_DEFINITION_PROPERTY_MATERIAL_EDITOR
         )
     );
 }
@@ -624,6 +663,23 @@ AssetDefinitionPropertiesModel::createModelFileProperty
     );
     mRootItem->appendChild(mfProperty);
 }
+
+void
+AssetDefinitionPropertiesModel::createTextureFileProperty
+()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("AssetDefintionPropertiesModel: Creating Texture File Delegate");
+
+    AssetDefinitionPropertiesItem *mfProperty = new AssetDefinitionPropertiesItem
+    (
+        "Texture File" ,
+        mAssetDefinitionHandle,
+        ASSET_DEFINITION_PROPERTY_TEXTURE_FILE
+    );
+    mRootItem->appendChild(mfProperty);
+}
+
 
 void
 AssetDefinitionPropertiesModel::createModelAdditionalFilesProperty
@@ -983,8 +1039,16 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SLOT(onButton_FontFile())
     );
 
-    // Model
+    // Material
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_MaterialEditor()),
+        this,
+        SLOT(onButton_MaterialEditor())
+    );
 
+    // Model
     connect
     (
         delegate,
@@ -1079,6 +1143,14 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         this,
         SLOT(onButton_PathList())
     );
+    // Texture
+    connect
+    (
+        delegate,
+        SIGNAL(notifyButton_TextureFile()),
+        this,
+        SLOT(onButton_TextureFile())
+    );
 }
 
 void
@@ -1142,10 +1214,19 @@ void AssetDefinitionPropertiesModel::onButton_PathList()
     emit notifyButton_PathList(mAssetDefinitionHandle);
 }
 
+void AssetDefinitionPropertiesModel::onButton_TextureFile()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Texture File Button Clicked");
+    emit notifyButton_TextureFile(mAssetDefinitionHandle);
+}
+
 void
 AssetDefinitionPropertiesModel::onButton_AudioEvents
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Audio File Button Clicked");
     emit notifyButton_AudioEvents(mAssetDefinitionHandle);
 }
 
@@ -1153,6 +1234,8 @@ void
 AssetDefinitionPropertiesModel::onButton_AudioFile
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Texture File Button Clicked");
     emit notifyButton_AudioFile(mAssetDefinitionHandle);
 }
 
@@ -1160,28 +1243,45 @@ void
 AssetDefinitionPropertiesModel::onButton_FontFile
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Font File Button Clicked");
     emit notifyButton_FontFile(mAssetDefinitionHandle);
+}
+
+void AssetDefinitionPropertiesModel::onButton_MaterialEditor()
+{
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Material Editor Button Clicked");
+    emit notifyButton_MaterialEditor(mAssetDefinitionHandle);
 }
 
 void
 AssetDefinitionPropertiesModel::onButton_PhysicsBvhTriangleMeshFile
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Physics File Button Clicked");
     emit notifyButton_PhysicsBvhTriangleMeshFile(mAssetDefinitionHandle);
 }
 
 void AssetDefinitionPropertiesModel::onButton_LightChooseAmbient()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Light Ambient Button Clicked");
     emit notifyButton_LightChooseAmbient(mAssetDefinitionHandle);
 }
 
 void AssetDefinitionPropertiesModel::onButton_LightChooseDiffuse()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Light diffuse Button Clicked");
     emit notifyButton_LightChooseDiffuse(mAssetDefinitionHandle);
 }
 
 void AssetDefinitionPropertiesModel::onButton_LightChooseSpecular()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Light specular Button Clicked");
     emit notifyButton_LightChooseSpecular(mAssetDefinitionHandle);
 }
 
@@ -1189,6 +1289,8 @@ void
 AssetDefinitionPropertiesModel::onButton_ModelFile
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Model File Button Clicked");
     emit notifyButton_ModelFile(mAssetDefinitionHandle);
 }
 
@@ -1196,5 +1298,7 @@ void
 AssetDefinitionPropertiesModel::onButton_ModelAdditionalFiles
 ()
 {
+    auto log = spdlog::get("AssetDefinitionPropertiesModel");
+    log->debug("Model Additional File Button Clicked");
     emit notifyButton_ModelAdditionalFiles(mAssetDefinitionHandle);
 }

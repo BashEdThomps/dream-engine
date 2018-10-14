@@ -38,6 +38,9 @@ namespace Dream
         PHYSICS_OBJECT,
         SCRIPT,
         SHADER,
+        TEXTURE,
+        PARTICLE_EMITTER,
+        MATERIAL,
         NONE
     };
 
@@ -80,8 +83,10 @@ namespace Dream
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
-        const static string ASSET_TYPE;
         const static string ASSET_DIR;
+
+        // Types
+        const static string ASSET_TYPE;
         const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_AUDIO;
         const static string ASSET_TYPE_LIGHT;
@@ -90,21 +95,37 @@ namespace Dream
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
         const static string ASSET_TYPE_SHADER;
+        const static string ASSET_TYPE_TEXTURE;
+        const static string ASSET_TYPE_MATERIAL;
+        const static string ASSET_TYPE_PARTICLE_EMITTER;
+
+        // Formats
         const static string ASSET_FORMAT;
+        const static string ASSET_FORMAT_DREAM;
+
         const static string ASSET_FORMAT_SCRIPT_LUA;
         const static string ASSET_FORMAT_SCRIPT_JS;
+
         const static string ASSET_FORMAT_MODEL_ASSIMP;
+        const static string ASSET_FORMAT_MODEL_OBJ;
+
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
+
         const static string ASSET_FORMAT_PATH_DREAM;
+
         const static string ASSET_FORMAT_FONT_TTF;
+
         const static string ASSET_FORMAT_SHADER_GLSL;
+
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
 
+        // Readable Names
         const static string ASSET_TYPE_PATH_READABLE;
+        const static string ASSET_TYPE_DREAM_READABLE;
         const static string ASSET_TYPE_AUDIO_READABLE;
         const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
@@ -112,12 +133,19 @@ namespace Dream
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         const static string ASSET_TYPE_SCRIPT_READABLE;
         const static string ASSET_TYPE_SHADER_READABLE;
+        const static string ASSET_TYPE_TEXTURE_READABLE;
+        const static string ASSET_TYPE_MATERIAL_READABLE;
+        const static string ASSET_TYPE_PARTICLE_EMITTER_READABLE;
+
+
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
         const static string ASSET_FORMAT_SCRIPT_JS_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
+        const static string ASSET_FORMAT_MODEL_OBJ_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
         const static string ASSET_FORMAT_AUDIO_WAV_READABLE;
+        const static string ASSET_FORMAT_DREAM_READABLE;
         const static string ASSET_FORMAT_PATH_DREAM_READABLE;
         const static string ASSET_FORMAT_FONT_TTF_READABLE;
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
@@ -260,6 +288,25 @@ namespace Dream
         const static string ASSET_ATTR_LIGHT_QUADRATIC;
         const static string ASSET_ATTR_LIGHT_CUTOFF;
         const static string ASSET_ATTR_LIGHT_OUTER_CUTOFF;
+
+        // Material =============================================================
+        const static string ASSET_ATTR_MATERIAL_SHADER;
+        const static string ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE;
+        const static string ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE;
+        const static string ASSET_ATTR_MATERIAL_NORMAL_TEXTURE;
+        const static string ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE;
+        const static string ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR;
+        const static string ASSET_ATTR_MATERIAL_SPECULAR_COLOUR;
+        const static string ASSET_ATTR_MATERIAL_AMBIENT_COLOUR;
+        const static string ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR;
+        const static string ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR;
+
+        const static string ASSET_ATTR_MATERIAL_OPACITY;
+        const static string ASSET_ATTR_MATERIAL_BUMP_SCALING;
+        const static string ASSET_ATTR_MATERIAL_HARDNESS;
+        const static string ASSET_ATTR_MATERIAL_REFLECTIVITY;
+        const static string ASSET_ATTR_MATERIAL_SHININESS_STRENGTH;
+        const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
 
         // Model ================================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST;

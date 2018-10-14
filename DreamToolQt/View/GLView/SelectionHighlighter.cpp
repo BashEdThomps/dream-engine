@@ -275,26 +275,7 @@ SelectionHighlighter::draw
             }
             else
             {
-                mat4 modelMatrix(1.0f);
-                if (mSelectedObjectHandle->hasModelInstance())
-                {
-                   modelMatrix = mSelectedObjectHandle->getModelInstance()->getModelMatrix();
-                }
-                else
-                {
-                    // Get raw data
-                    Transform3D* transform = mSelectedObjectHandle->getTransform();
-                    vec3 translationValue = transform->getTranslation();
-                    quat rotValue = transform->getOrientation();
-                    vec3 scaleValue = transform->getScale();
-                    // Translate
-                    modelMatrix = translate(modelMatrix,translationValue);
-                    // Rotate
-                    mat4 rotMat = mat4_cast(rotValue);
-                    modelMatrix = modelMatrix * rotMat;
-                    // Scale
-                    modelMatrix = scale(modelMatrix, scaleValue);
-                }
+                mat4 modelMatrix = mSelectedObjectHandle->getTransform()->asMat4();
                 glUniformMatrix4fv(modelUniform, 1, GL_FALSE, value_ptr(modelMatrix));
             }
         }

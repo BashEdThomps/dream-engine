@@ -26,8 +26,8 @@
 #include <SOIL/SOIL.h>
 
 #include "ModelMesh.h"
-#include "Material/Texture.h"
-#include "Material/MaterialCache.h"
+#include "../Texture/Texture.h"
+#include "../Material/MaterialCache.h"
 
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
@@ -37,7 +37,7 @@
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "ModelDefinition.h"
 
-#include "Material/Material.h"
+#include "../Material/Material.h"
 #include <memory>
 
 using std::shared_ptr;
@@ -90,6 +90,7 @@ namespace Dream
         }
 
         const aiScene* scene = model->GetScene();
+        //scene->mRootNode->mTransformation = aiMatrix4x4();
 
         if(scene == nullptr)
         {

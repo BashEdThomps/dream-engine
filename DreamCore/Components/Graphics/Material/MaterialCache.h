@@ -25,9 +25,9 @@
 #include <SOIL/SOIL.h>
 #include <GL/glew.h>
 
-#include "Texture.h"
-#include "../../../../Common/Constants.h"
-#include "../../../../Common/DreamObject.h"
+#include "../Texture/Texture.h"
+#include "../../../Common/Constants.h"
+#include "../../../Common/DreamObject.h"
 #include "Material.h"
 #include <assimp/material.h>
 

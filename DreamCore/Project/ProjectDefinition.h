@@ -30,6 +30,7 @@ namespace Dream
     class SceneDefinition;
     class IAssetDefinition;
     class ShaderDefinition;
+    class TextureDefinition;
 
     class ProjectDefinition : public IDefinition
     {
@@ -76,6 +77,7 @@ namespace Dream
 
         map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
         vector<ShaderDefinition*> getShaderAssetDefinitionVector();
+        vector<TextureDefinition*> getTextureAssetDefinitionVector();
 
         bool getCaptureKeyboard();
         void setCaptureKeyboard(bool);

@@ -240,7 +240,6 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(audioTreeItem);
 
     AssetDefinitionTreeItem* fontTreeItem =
     new AssetDefinitionTreeItem
@@ -250,7 +249,6 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(fontTreeItem);
 
     AssetDefinitionTreeItem* lightTreeItem =
     new AssetDefinitionTreeItem
@@ -260,7 +258,15 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(lightTreeItem);
+
+    AssetDefinitionTreeItem* materialTreeItem =
+    new AssetDefinitionTreeItem
+    (
+        QString("Material"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
+        nullptr,
+        mRootItem.get()
+    );
 
     AssetDefinitionTreeItem* modelTreeItem =
     new AssetDefinitionTreeItem
@@ -270,7 +276,15 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(modelTreeItem);
+
+    AssetDefinitionTreeItem* particleEmitterTreeItem =
+    new AssetDefinitionTreeItem
+    (
+        QString("Particle Emitter"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
+        nullptr,
+        mRootItem.get()
+    );
 
     AssetDefinitionTreeItem* pathTreeItem =
     new AssetDefinitionTreeItem
@@ -280,7 +294,6 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(pathTreeItem);
 
     AssetDefinitionTreeItem* physicsObjectTreeItem =
     new AssetDefinitionTreeItem
@@ -290,7 +303,6 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(physicsObjectTreeItem);
 
     AssetDefinitionTreeItem* scriptTreeItem =
     new AssetDefinitionTreeItem
@@ -300,7 +312,6 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
-    mRootItem->appendChild(scriptTreeItem);
 
     AssetDefinitionTreeItem* shaderTreeItem =
     new AssetDefinitionTreeItem
@@ -310,24 +321,32 @@ AssetDefinitionTreeModel::setupModelData
         nullptr,
         mRootItem.get()
     );
+
+    AssetDefinitionTreeItem* textureTreeItem =
+    new AssetDefinitionTreeItem
+    (
+        QString("Texture"),
+        AssetDefinitionTreeItemType::ASSET_TREE_NODE,
+        nullptr,
+        mRootItem.get()
+    );
+
+    mRootItem->appendChild(audioTreeItem);
+    mRootItem->appendChild(fontTreeItem);
+    mRootItem->appendChild(lightTreeItem);
+    mRootItem->appendChild(materialTreeItem);
+    mRootItem->appendChild(modelTreeItem);
+    mRootItem->appendChild(particleEmitterTreeItem);
+    mRootItem->appendChild(pathTreeItem);
+    mRootItem->appendChild(physicsObjectTreeItem);
+    mRootItem->appendChild(scriptTreeItem);
     mRootItem->appendChild(shaderTreeItem);
+    mRootItem->appendChild(textureTreeItem);
 
     for (IAssetDefinition* definition : mProjectHandle->getAssetDefinitionsList())
     {
-        if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
-        {
-            pathTreeItem->appendChild
-            (
-                new AssetDefinitionTreeItem
-                (
-                    QString::fromStdString(definition->getName()),
-                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
-                    definition,
-                    pathTreeItem
-                 )
-            );
-        }
-        else if (definition->getType().compare(Constants::ASSET_TYPE_AUDIO) == 0)
+
+        if (definition->getType().compare(Constants::ASSET_TYPE_AUDIO) == 0)
         {
             audioTreeItem->appendChild
             (
@@ -340,6 +359,7 @@ AssetDefinitionTreeModel::setupModelData
                  )
             );
         }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_FONT) == 0)
         {
            fontTreeItem->appendChild
@@ -353,6 +373,7 @@ AssetDefinitionTreeModel::setupModelData
                )
            );
         }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_LIGHT) == 0)
         {
             lightTreeItem->appendChild
@@ -366,6 +387,21 @@ AssetDefinitionTreeModel::setupModelData
                  )
              );
         }
+
+        else if (definition->getType().compare(Constants::ASSET_TYPE_MATERIAL) == 0)
+        {
+            materialTreeItem->appendChild
+            (
+                new AssetDefinitionTreeItem
+                (
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
+                    definition,
+                    materialTreeItem
+                )
+            );
+        }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_MODEL) == 0)
         {
             modelTreeItem->appendChild
@@ -379,6 +415,35 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
+
+        else if (definition->getType().compare(Constants::ASSET_TYPE_PARTICLE_EMITTER) == 0)
+        {
+            particleEmitterTreeItem->appendChild
+            (
+                new AssetDefinitionTreeItem
+                (
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
+                    definition,
+                    particleEmitterTreeItem
+                 )
+            );
+        }
+
+        else if (definition->getType().compare(Constants::ASSET_TYPE_PATH) == 0)
+        {
+            pathTreeItem->appendChild
+            (
+                new AssetDefinitionTreeItem
+                (
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
+                    definition,
+                    pathTreeItem
+                 )
+            );
+        }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_PHYSICS_OBJECT) == 0)
         {
             physicsObjectTreeItem->appendChild
@@ -392,6 +457,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_SCRIPT) == 0)
         {
             scriptTreeItem->appendChild
@@ -405,6 +471,7 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
+
         else if (definition->getType().compare(Constants::ASSET_TYPE_SHADER) == 0)
         {
             shaderTreeItem->appendChild
@@ -418,6 +485,21 @@ AssetDefinitionTreeModel::setupModelData
                 )
             );
         }
+
+        else if (definition->getType().compare(Constants::ASSET_TYPE_TEXTURE) == 0)
+        {
+            textureTreeItem->appendChild
+            (
+                new AssetDefinitionTreeItem
+                (
+                    QString::fromStdString(definition->getName()),
+                    AssetDefinitionTreeItemType::ASSET_DEFINITION,
+                    definition,
+                    textureTreeItem
+                )
+            );
+        }
+
         else
         {
             log->error("Unable to add asset definition to tree with type {}",definition->getType());
@@ -433,7 +515,9 @@ void AssetDefinitionTreeModel::forceDataChanged()
 }
 
 
-bool AssetDefinitionTreeModel::setData(const QModelIndex& index,const  QVariant& value, int role)
+bool
+AssetDefinitionTreeModel::setData
+(const QModelIndex& index,const  QVariant& value, int role)
 {
     if (!index.isValid())
     {

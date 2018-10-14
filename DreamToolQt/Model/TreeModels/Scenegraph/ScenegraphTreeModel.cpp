@@ -48,7 +48,6 @@ ScenegraphTreeModel::~ScenegraphTreeModel
 ()
 {
     auto log = spdlog::get("ScenegraphTreeModel");
-
     log->debug("Destructing");
 }
 
@@ -270,10 +269,10 @@ ScenegraphTreeModel::setupModelData
     emit endResetModel();
 }
 
-void ScenegraphTreeModel::forceDataChanged()
+void ScenegraphTreeModel::forceDataChanged(const QModelIndex& index)
 {
    setupModelData();
-   emit dataChanged(QModelIndex(),QModelIndex());
+   emit dataChanged(index,index);
 }
 
 void
@@ -293,7 +292,6 @@ ScenegraphTreeModel::appendSceneObjects
         appendSceneObjects(sceneObject,sceneObjectItem);
         parentTreeNode->appendChild(sceneObjectItem);
     }
-
 }
 
 bool
@@ -387,8 +385,8 @@ bool ScenegraphTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction act
             }
         }
     }
-    forceDataChanged();
-    emit notifyExpandRequested();
+    forceDataChanged(parent);
+    //emit notifyExpandRequested();
     return true;
 }
 

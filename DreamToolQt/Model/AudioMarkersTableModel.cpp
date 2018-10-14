@@ -191,7 +191,6 @@ AudioMarkersTableModel::flags
         default:
             return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
     }
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
 void

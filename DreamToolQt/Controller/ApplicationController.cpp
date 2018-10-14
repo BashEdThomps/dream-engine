@@ -250,6 +250,15 @@ ApplicationController::setupUI_AssetDefinitionPropertiesTreeViewModel
                         SLOT(onAssetDefinitionProperty_FontFile(IAssetDefinition* ))
                         );
 
+            // Material Editor
+            connect
+            (
+                mPropertiesTreeModel.get(),
+                SIGNAL(notifyButton_MaterialEditor(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_MaterialEditor(IAssetDefinition*))
+            );
+
             // Model File
             connect
                     (
@@ -352,6 +361,7 @@ ApplicationController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 this,
                 SLOT(onAssetDefinitionProperty_LightChooseSpecular(IAssetDefinition* ))
             );
+
             // Path List
             connect
             (
@@ -359,6 +369,15 @@ ApplicationController::setupUI_AssetDefinitionPropertiesTreeViewModel
                 SIGNAL(notifyButton_PathList(IAssetDefinition* )),
                 this,
                 SLOT(onAssetDefinitionProperty_PathList(IAssetDefinition* ))
+            );
+
+            // Texture
+            connect
+            (
+                mPropertiesTreeModel.get(),
+                SIGNAL(notifyButton_TextureFile(IAssetDefinition*)),
+                this,
+                SLOT(onAssetDefinitionProperty_TextureFile(IAssetDefinition*))
             );
             break;
 
@@ -649,84 +668,111 @@ ApplicationController::connectAssetMenu
 {
     // Assets Menu -> Add To Selected SceneObject
     connect
-            (
-                mMainWindowHandle.getAction_Asset_AddToSelectedSceneObject(),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
-                );
-
-    // Asset Menu -> New Definition -> Path
-    connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PATH),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Path())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_AddToSelectedSceneObject(),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_AddToSelectedSceneObjectDefinition())
+    );
 
     // Asset Menu -> New Definition -> Audio
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::AUDIO),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Audio())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::AUDIO),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Audio())
+    );
 
     // Asset Menu -> New Definition -> Font
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::FONT),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Font())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::FONT),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Font())
+    );
 
     // Asset Menu -> New Definition -> Light
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::LIGHT),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Light())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::LIGHT),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Light())
+    );
+
+    // Asset Menu -> New Definition -> Material
+    connect
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::MATERIAL),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Material())
+    );
 
     // Asset Menu -> New Definition -> Model
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::MODEL),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Model())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::MODEL),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Model())
+    );
+
+    // Asset Menu -> New Definition -> ParticleEmitter
+    connect
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PARTICLE_EMITTER),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_ParticleEmitter())
+    );
+
+    // Asset Menu -> New Definition -> Path
+    connect
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PATH),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Path())
+    );
 
     // Asset Menu -> New Definition -> Physics Object
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_PhysicsObject())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::PHYSICS_OBJECT),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_PhysicsObject())
+    );
 
     // Asset Menu -> New Definition -> Script
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SCRIPT),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Script())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SCRIPT),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Script())
+    );
 
     // Asset Menu -> New Definition -> Shader
     connect
-            (
-                mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SHADER),
-                SIGNAL(triggered()),
-                this,
-                SLOT(onAction_Asset_NewDefinition_Shader())
-                );
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::SHADER),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Shader())
+    );
+
+    // Asset Menu -> New Definition -> Texture
+    connect
+    (
+        mMainWindowHandle.getAction_Asset_NewDefinition(AssetType::TEXTURE),
+        SIGNAL(triggered()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Texture())
+    );
 }
 
 void
@@ -840,8 +886,8 @@ ApplicationController::connectUI_TreeViewModels
                 this, SLOT(onUI_AssetDefinitionTreeViewSelectionChanged(const QItemSelection&,const QItemSelection&))
                 );
 
-   // mMainWindowHandle.getScenegraphTreeView()->expandAll();
-   // mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
+   mMainWindowHandle.getScenegraphTreeView()->expandToDepth(1);
+   mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -935,7 +981,7 @@ ApplicationController::onUI_ScenegraphTreeViewSelectionChanged
     {
         ScenegraphTreeItem *selected = static_cast<ScenegraphTreeItem*>(indexes.at(0).internalPointer());
         setupUI_ScenegraphPropertiesTreeViewModel(selected);
-        //mMainWindowHandle.getPropertiesTreeView()->expandAll();
+        mMainWindowHandle.getPropertiesTreeView()->expandAll();
     }
 }
 
@@ -949,7 +995,7 @@ ApplicationController::onUI_AssetDefinitionTreeViewSelectionChanged
     {
         AssetDefinitionTreeItem *selected = static_cast<AssetDefinitionTreeItem*>(indexes.at(0).internalPointer());
         setupUI_AssetDefinitionPropertiesTreeViewModel(selected);
-        //mMainWindowHandle.getPropertiesTreeView()->expandAll();
+        mMainWindowHandle.getPropertiesTreeView()->expandAll();
     }
 }
 
@@ -1063,17 +1109,12 @@ ApplicationController::onAction_File_Close
     mSelectedAssetDefinitionHandle = nullptr;
     mSelectedSceneDefinitionHandle = nullptr;
     mSelectedSceneObjectDefinitionHandle = nullptr;
-
     mMainWindowHandle.getScenegraphTreeView()->setModel(nullptr);
     mScenegraphTreeModel.reset();
-
     mMainWindowHandle.getAssetDefinitionTreeView()->setModel(nullptr);
     mAssetDefinitionTreeModel.reset();
-
     mMainWindowHandle.getPropertiesTreeView()->setModel(nullptr);
-
     mDreamProjectModel->closeProject();
-
     setActionsEnabled_ValidProject(false);
 }
 
@@ -1140,7 +1181,6 @@ ApplicationController::onAction_Scene_NewSceneObject
     {
         mSelectedSceneObjectDefinitionHandle->createNewChildSceneObjectDefinition();
         onUI_ScenegraphUpdated();
-
     }
 }
 
@@ -1155,21 +1195,9 @@ ApplicationController::onAction_Asset_AddToSelectedSceneObjectDefinition
     if (mSelectedSceneObjectDefinitionHandle && mSelectedAssetDefinitionHandle)
     {
         mSelectedSceneObjectDefinitionHandle->addAssetDefinitionUuidToLoadQueue
-                (
-                    mSelectedAssetDefinitionHandle->getUuid()
-                    );
-    }
-}
-
-void
-ApplicationController::onAction_Asset_NewDefinition_Path
-()
-{
-    auto log = spdlog::get("ApplicationController");
-    log->debug( "Creating new Path Asset Definition");
-    if (mDreamProjectModel->createNewAssetDefinition(PATH))
-    {
-        onUI_AssetDefinitionsUpdated();
+        (
+            mSelectedAssetDefinitionHandle->getUuid()
+        );
     }
 }
 
@@ -1210,12 +1238,48 @@ ApplicationController::onAction_Asset_NewDefinition_Light
 }
 
 void
+ApplicationController::onAction_Asset_NewDefinition_Material
+()
+{
+    auto log = spdlog::get("ApplicationController");
+    log->debug( "Creating new Material Asset Definition");
+    if (mDreamProjectModel->createNewAssetDefinition(MATERIAL))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
+}
+
+void
 ApplicationController::onAction_Asset_NewDefinition_Model
 ()
 {
     auto log = spdlog::get("ApplicationController");
     log->debug( "Creating new Model Asset Definition");
     if (mDreamProjectModel->createNewAssetDefinition(MODEL))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
+}
+
+void
+ApplicationController::onAction_Asset_NewDefinition_ParticleEmitter
+()
+{
+    auto log = spdlog::get("ApplicationController");
+    log->debug( "Creating new ParticleEmitter Asset Definition");
+    if (mDreamProjectModel->createNewAssetDefinition(PARTICLE_EMITTER))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
+}
+
+void
+ApplicationController::onAction_Asset_NewDefinition_Path
+()
+{
+    auto log = spdlog::get("ApplicationController");
+    log->debug( "Creating new Path Asset Definition");
+    if (mDreamProjectModel->createNewAssetDefinition(PATH))
     {
         onUI_AssetDefinitionsUpdated();
     }
@@ -1258,6 +1322,18 @@ ApplicationController::onAction_Asset_NewDefinition_Shader
 }
 
 void
+ApplicationController::onAction_Asset_NewDefinition_Texture
+()
+{
+    auto log = spdlog::get("ApplicationController");
+    log->debug( "Creating new Texture Asset Definition");
+    if (mDreamProjectModel->createNewAssetDefinition(TEXTURE))
+    {
+        onUI_AssetDefinitionsUpdated();
+    }
+}
+
+void
 ApplicationController::onAssetDefinitionProperty_ModelFile
 (IAssetDefinition* adHandle)
 {
@@ -1281,11 +1357,11 @@ ApplicationController::onAssetDefinitionProperty_ModelFile
         {
             QString fileName = QFileInfo(sourceFile).fileName();
             auto result = QMessageBox::question
-                    (
-                        &mMainWindowHandle,
-                        "Overwrite Existing File?",
-                        "An asset file all ready exists. Do you want to replace it?"
-                        );
+            (
+                &mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
             if (result != QMessageBox::Yes)
             {
                 log->debug( "Copy of {} was cancelled", fileName.toStdString());
@@ -1294,13 +1370,30 @@ ApplicationController::onAssetDefinitionProperty_ModelFile
 
             if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
             {
-                log->debug( "Error, unable to delete main asset file for {}",
-                           adHandle->getNameAndUuidString());
+                log->debug( "Error, unable to delete main asset file for {}", adHandle->getNameAndUuidString());
                 return;
             }
         }
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        if (copyResult)
+        {
+            QString fileName = QFileInfo(sourceFile).baseName();
+            auto result = QMessageBox::question
+            (
+                &mMainWindowHandle,
+                "Use File Name for Asset?",
+                "Do you want to give this Asset the same name as it's source file?"
+            );
+
+            if (result == QMessageBox::Yes)
+            {
+                adHandle->setName(fileName.toStdString());
+            }
+        }
+
+
         dynamic_cast<ModelDefinition*>(adHandle)->clearMaterialShaderList();
 
         log->debug( "Copy {} ", (copyResult ? "Success":"Failed"));
@@ -1497,41 +1590,63 @@ ApplicationController::onCreateNewAssetDefinition
 (QString type)
 {
     auto log = spdlog::get("ApplicationController");
-    log->debug("Creating new asset definition {}",type.toStdString());
+    log->debug("Creating new asset definition: {}",type.toStdString());
     AssetType assetType = Constants::getAssetTypeEnumFromString(type.toStdString());
 
     switch(assetType)
     {
-       case PATH:
-            onAction_Asset_NewDefinition_Path();
-            break;
         case AUDIO:
             onAction_Asset_NewDefinition_Audio();
             break;
+
         case FONT:
             onAction_Asset_NewDefinition_Font();
             break;
+
         case LIGHT:
             onAction_Asset_NewDefinition_Light();
             break;
+
+        case MATERIAL:
+            onAction_Asset_NewDefinition_Material();
+            break;
+
         case MODEL:
             onAction_Asset_NewDefinition_Model();
             break;
+
+        case PARTICLE_EMITTER:
+            onAction_Asset_NewDefinition_ParticleEmitter();
+            break;
+
+        case PATH:
+            onAction_Asset_NewDefinition_Path();
+            break;
+
         case PHYSICS_OBJECT:
             onAction_Asset_NewDefinition_PhysicsObject();
             break;
+
         case SCRIPT:
             onAction_Asset_NewDefinition_Script();
             break;
+
         case SHADER:
             onAction_Asset_NewDefinition_Shader();
             break;
+
+        case TEXTURE:
+            onAction_Asset_NewDefinition_Texture();
+            break;
+
         case NONE:
             break;
     }
 }
 
-void ApplicationController::onMainVolumeChanged(int vol)
+void
+ApplicationController::onMainVolumeChanged
+(int vol)
 {
    auto log = spdlog::get("ApplicationController");
    mLastVolume = vol;
@@ -1555,7 +1670,9 @@ void ApplicationController::onMainVolumeChanged(int vol)
    }
 }
 
-void ApplicationController::onPathEditorClosed()
+void
+ApplicationController::onPathEditorClosed
+()
 {
     auto log = spdlog::get("ApplicationController");
     log->critical("Path editor was closed");
@@ -1563,7 +1680,9 @@ void ApplicationController::onPathEditorClosed()
     mMainWindowHandle.setPathEditorFormControllerHandle(nullptr);
 }
 
-void ApplicationController::onPathVisibilityChanged(bool visible)
+void
+ApplicationController::onPathVisibilityChanged
+(bool visible)
 {
     mPathPointViewer->setPathVisible(visible);
 }
@@ -1626,7 +1745,7 @@ ApplicationController::onUI_ScenegraphUpdated
     auto log = spdlog::get("ApplicationController");
     log->debug( "updating scenegraph tree model");
     mScenegraphTreeModel->setupModelData();
-    //mMainWindowHandle.getScenegraphTreeView()->expandAll();
+    mMainWindowHandle.getScenegraphTreeView()->expandAll();
 }
 
 void
@@ -1636,7 +1755,7 @@ ApplicationController::onUI_AssetDefinitionsUpdated
     auto log = spdlog::get("ApplicationController");
     log->debug( "updating scenegraph tree model");
     mAssetDefinitionTreeModel->setupModelData();
-    //mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
+    mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1724,8 +1843,8 @@ void
 ApplicationController::forceScenegraphTreeDataChanged
 ()
 {
-    mScenegraphTreeModel->forceDataChanged();
-    //mMainWindowHandle.getScenegraphTreeView()->expandAll();
+    mScenegraphTreeModel->forceDataChanged(QModelIndex());
+    mMainWindowHandle.getScenegraphTreeView()->expandAll();
 }
 
 void
@@ -1733,7 +1852,7 @@ ApplicationController::forceAssetDefinitionTreeDataChanged
 ()
 {
     mAssetDefinitionTreeModel->forceDataChanged();
-    //mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
+    mMainWindowHandle.getAssetDefinitionTreeView()->expandAll();
 }
 
 void
@@ -1861,7 +1980,6 @@ ApplicationController::onAction_Debug_DumpProjectDefinitionJson
             ->getProject()
             ->getProjectDefinition()
             ->getJson().dump(1) << endl;
-    ;
 }
 
 void
@@ -1921,10 +2039,27 @@ ApplicationController::onAssetDefinitionProperty_AudioFile
 
         bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
 
+        if (copyResult)
+        {
+            QString fileName = QFileInfo(sourceFile).baseName();
+            auto result = QMessageBox::question
+            (
+                &mMainWindowHandle,
+                "Use File Name for Asset?",
+                "Do you want to give this Asset the same name as it's source file?"
+            );
+
+            if (result == QMessageBox::Yes)
+            {
+                adHandle->setName(fileName.toStdString());
+            }
+        }
+
+
         log->debug( "Copy ",
                    (copyResult ? "Success":"Failed"));
 
-        showImportResultDialog(copyResult, adHandle, sourceFile.fileName());
+        //showImportResultDialog(copyResult, adHandle, sourceFile.fileName());
 
     }
 
@@ -2013,6 +2148,25 @@ ApplicationController::onAssetDefinitionProperty_FontFile
                    (copyResult ? "Success":"Failed")
                    );
     }
+}
+
+void
+ApplicationController::onAssetDefinitionProperty_MaterialEditor
+(IAssetDefinition* adHandle)
+{
+    auto log = spdlog::get("ApplicationController");
+    log->debug("Edit Material");
+    if (mSelectedProjectDefinitionHandle == nullptr)
+    {
+        log->debug("SelectedProjectDefinition Handle is nullptr, setting from directory model");
+        mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinition();
+    }
+    mMainWindowHandle.openMaterialEditor
+    (
+        dynamic_cast<MaterialDefinition*>(adHandle),
+        mSelectedProjectDefinitionHandle->getShaderAssetDefinitionVector(),
+        mSelectedProjectDefinitionHandle->getTextureAssetDefinitionVector()
+    );
 }
 
 void
@@ -2193,7 +2347,8 @@ ApplicationController::onAssetDefinitionProperty_LightChooseDiffuse
         static_cast<double>(colour.b)
     );
 
-    auto chosenColour = QColorDialog::getColor (
+    auto chosenColour = QColorDialog::getColor
+    (
         currentColour,
         &mMainWindowHandle,
         "Diffuse Colour"
@@ -2264,6 +2419,84 @@ ApplicationController::onAssetDefinitionProperty_PathList
     auto title = new QLabel(QString("Path Editor (%1)").arg(QString::fromStdString(adHandle->getName())));
     title->setMinimumHeight(24);
     dw->setTitleBarWidget(title);
+}
+
+void
+ApplicationController::onAssetDefinitionProperty_TextureFile
+(IAssetDefinition* adHandle)
+{
+    auto log = spdlog::get("ApplicationController");
+    QFileDialog openDialog;
+    openDialog.setFileMode(QFileDialog::ExistingFile);
+    openDialog.setDirectory(mLastDirectory);
+
+    QStringList filters;
+    filters << "*.png" << "*.bmp" << "*.tga";
+    openDialog.setNameFilters(filters);
+
+
+    if(openDialog.exec())
+    {
+        QString sourceFilePath = openDialog.selectedFiles().first();
+        QFile sourceFile(sourceFilePath);
+        mLastDirectory.setPath(sourceFilePath);
+
+        log->debug( "Using Texture file {}", sourceFilePath.toStdString());
+
+        bool fileExists = mProjectDirectoryModel.assetMainFileExists(adHandle);
+
+        if (fileExists)
+        {
+            QString fileName = QFileInfo(sourceFile).fileName();
+            auto result = QMessageBox::question
+            (
+                &mMainWindowHandle,
+                "Overwrite Existing File?",
+                "An asset file all ready exists. Do you want to replace it?"
+            );
+
+            if (result != QMessageBox::Yes)
+            {
+                log->debug( "Copy of {} was cancelled" , fileName.toStdString());
+                return;
+            }
+
+            if (!mProjectDirectoryModel.deleteMainAssetFile(adHandle))
+            {
+                log->debug
+                (
+                    "Error, unable to delete main asset file for {}",
+                    adHandle->getNameAndUuidString()
+                );
+                return;
+            }
+        }
+
+        bool copyResult = mProjectDirectoryModel.copyMainAssetFile(adHandle,sourceFile);
+
+        if (copyResult)
+        {
+            QString fileName = QFileInfo(sourceFile).baseName();
+            auto result = QMessageBox::question
+            (
+                &mMainWindowHandle,
+                "Use File Name for Asset?",
+                "Do you want to give this Asset the same name as it's source file?"
+            );
+
+            if (result == QMessageBox::Yes)
+            {
+                adHandle->setName(fileName.toStdString());
+            }
+        }
+
+
+        log->debug
+        (
+            "Copy {} ",
+            (copyResult ? "Success":"Failed")
+        );
+    }
 }
 
 void

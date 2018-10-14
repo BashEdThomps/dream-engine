@@ -37,7 +37,7 @@
 #include "../Model/TreeModels/AssetDefinition/AssetDefinitionTreeItem.h"
 #include "../Model/TreeModels/Scenegraph/ScenegraphTreeItem.h"
 #include "AbstractEditorWidget.h"
-#include "EditorTabController.h"
+#include "TextEditorTabController.h"
 #include "UIActions.h"
 
 using std::unique_ptr;
@@ -102,6 +102,7 @@ public:
     void setupMenu_Asset_NewDefinition();
     void openScriptEditor(ScriptDefinition* scriptDefinitionHandle);
     void openShaderEditor(ShaderDefinition* shaderDefinitionHandle);
+    void openMaterialEditor(MaterialDefinition*, vector<ShaderDefinition*>, vector<TextureDefinition*>);
 
     void openAudioEventEditor(AudioDefinition* adHandle);
     void setTemplatesModelHandle(TemplatesModel* templatesModelHandle);
@@ -135,7 +136,6 @@ public slots:
 protected:
     void setupUiFeatures();
     int  isEditorTabOpen(IAssetDefinition* definition);
-    int isAudioEditorTabOpen(AudioDefinition* adHandle);
     void setupEditorTabCloseButtonSignal();
     shared_ptr<QMenu> createAssetDefinitionTreeContextMenu(AssetDefinitionTreeItem*);
     shared_ptr<QMenu> createScenegraphTreeContextMenu(ScenegraphTreeItem*);

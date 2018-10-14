@@ -41,7 +41,7 @@
 #include "../Components/Scripting/Lua/LuaComponent.h"
 
 #include "../Components/Graphics/Model/ModelCache.h"
-#include "../Components/Graphics/Model/Material/MaterialCache.h"
+#include "../Components/Graphics/Material/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
 
 using std::endl;

@@ -66,6 +66,7 @@ private:
     void createLightCutOffProperty();
     void createLightOuterCutOffProperty();
 
+    void createMaterialEditorProperty();
     void createModelFileProperty();
     void createModelAdditionalFilesProperty();
     void createModelMaterialShaderProperty();
@@ -86,6 +87,7 @@ private:
     void createShaderEditFilesProperty();
 
     void createScriptFileProperty();
+    void createTextureFileProperty();
 
     void createPathListProperty();
     void createPathStepProperty();
@@ -96,6 +98,7 @@ public slots:
     void onButton_AudioFile();
     void onButton_AudioEvents();
     void onButton_FontFile();
+    void onButton_MaterialEditor();
     void onButton_ModelFile();
     void onButton_ModelAdditionalFiles();
     void onButton_EditScript();
@@ -108,6 +111,7 @@ public slots:
     void onButton_LightChooseDiffuse();
     void onButton_ModelMaterialShaderMap();
     void onButton_PathList();
+    void onButton_TextureFile();
 signals:
     void notifyButton_RemoveFiles(IAssetDefinition*);
     void notifyButton_AudioFile(IAssetDefinition*);
@@ -126,4 +130,6 @@ signals:
     void notifyButton_LightChooseAmbient(IAssetDefinition*);
     void notifyButton_LightChooseSpecular(IAssetDefinition*);
     void notifyButton_LightChooseDiffuse(IAssetDefinition*);
+    void notifyButton_MaterialEditor(IAssetDefinition*);
+    void notifyButton_TextureFile(IAssetDefinition*);
 };

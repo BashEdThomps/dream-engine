@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EditorTabForm</class>
- <widget class="QWidget" name="EditorTabForm">
+ <class>TextEditorTabForm</class>
+ <widget class="QWidget" name="TextEditorTabForm">
   <property name="geometry">
    <rect>
     <x>0</x>
