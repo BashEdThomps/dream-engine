@@ -294,7 +294,7 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE;
         const static string ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE;
         const static string ASSET_ATTR_MATERIAL_NORMAL_TEXTURE;
-        const static string ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE;
+        const static string ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE;
         const static string ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR;
         const static string ASSET_ATTR_MATERIAL_SPECULAR_COLOUR;
         const static string ASSET_ATTR_MATERIAL_AMBIENT_COLOUR;
@@ -309,9 +309,9 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
 
         // Model ================================================================
-        const static string ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST;
-        const static string ASSET_ATTR_MODEL_MATERIAL;
-        const static string ASSET_ATTR_MODEL_SHADER;
+        const static string ASSET_ATTR_MODEL_MATERIAL_LIST;
+        const static string ASSET_ATTR_MODEL_MODEL_MATERIAL;
+        const static string ASSET_ATTR_MODEL_DREAM_MATERIAL;
 
         // Shader ===============================================================
         const static string SHADER_FRAGMENT;

@@ -1,18 +1,20 @@
 #pragma ocne
 
-#include <QOpenGLWidget>
 #include <vector>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <QOpenGLWidget>
+
+namespace Dream
+{
+    class Vertex;
+}
 
 using std::vector;
-
-struct MaterialPreviewVertex
-{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-    GLfloat tx_x;
-    GLfloat tx_y;
-};
+using glm::mat4;
+using glm::vec3;
+using glm::vec2;
+using Dream::Vertex;
 
 class MaterialPreviewGL : public QOpenGLWidget
 {
@@ -28,7 +30,11 @@ private:
     GLuint mVBO;
     GLuint mIBO;
     GLuint mShaderProgram;
+    mat4 mViewMatrix;
+    mat4 mModelMatrix;
+    mat4 mProjectionMatrix;
+    vec3 mViewerPos;
     const static QColor ClearColour;
-    const static vector<MaterialPreviewVertex> CubeVertices;
+    const static vector<Vertex> CubeVertices;
     const static vector<GLuint> CubeIndices;
 };

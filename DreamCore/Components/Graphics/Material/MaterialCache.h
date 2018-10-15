@@ -22,13 +22,10 @@
 #include <vector>
 #include <map>
 
-#include <SOIL/SOIL.h>
-#include <GL/glew.h>
 
-#include "../Texture/Texture.h"
-#include "../../../Common/Constants.h"
-#include "../../../Common/DreamObject.h"
-#include "Material.h"
+#include "../../ICache.h"
+#include "../Texture/TextureInstance.h"
+#include "MaterialInstance.h"
 #include <assimp/material.h>
 
 
@@ -36,22 +33,19 @@ using namespace std;
 
 namespace Dream
 {
-    class ModelMesh;
-    class MaterialCache : public DreamObject
-    {
-        vector<shared_ptr<Texture>> mTextureCache;
-        vector<shared_ptr<Material>> mMaterialCache;
-    public:
-        MaterialCache();
-        ~MaterialCache();
+    class ShaderCache;
+    class TextureCache;
 
-        vector<shared_ptr<Texture>>& getTextureCache();
-        vector<shared_ptr<Material>>& getMaterialCache();
-        shared_ptr<Texture> loadTextureFromFile(const char*, const char*, const aiTextureType);
-        shared_ptr<Material> newMaterial(aiMaterial* mat);
-        shared_ptr<Material> getMaterialByName(aiString name);
-        void addMaterialToCache(shared_ptr<Material> mat);
-        void flushRawTextureImageData();
+    class MaterialCache : public ICache
+    {
+        ShaderCache* mShaderCache;
+        TextureCache* mTextureCache;
+    public:
+        MaterialCache(ProjectRuntime*, ShaderCache*, TextureCache*);
+        ~MaterialCache() override;
+
+    protected:
+        IAssetInstance* loadInstance(IAssetDefinition* def) override;
     };
 
 } // End Dream

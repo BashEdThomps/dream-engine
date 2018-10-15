@@ -19,14 +19,12 @@
 #include "Controller/MainWindowController.h"
 #include "Controller/ApplicationController.h"
 #include <QApplication>
-#include <QSurfaceFormat>
 #include <spdlog/spdlog.h>
 
-#include <DreamCore.h>
+#include <QSurfaceFormat>
 #include <QTextStream>
 #include <iostream>
 
-using Dream::Constants;
 using std::cerr;
 using std::endl;
 

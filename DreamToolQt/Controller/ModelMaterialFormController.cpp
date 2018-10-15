@@ -1,4 +1,4 @@
-#include "MaterialShaderFormController.h"
+#include "ModelMaterialFormController.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <DreamCore.h>
@@ -6,7 +6,7 @@
 #include <assimp/postprocess.h>
 #include <QMessageBox>
 
-MaterialShaderFormController::MaterialShaderFormController
+ModelMaterialFormController::ModelMaterialFormController
 (QWidget *parent)
     : QWidget(parent),
       mModelDefinitionHandle(nullptr)
@@ -19,41 +19,43 @@ MaterialShaderFormController::MaterialShaderFormController
     }
     log->debug("Constructing");
     mUi.setupUi(this);
-    setWindowTitle("Material to Shader Mappings");
-    mTableDelegate = unique_ptr<MaterialShaderTableDelegate>(new MaterialShaderTableDelegate(mUi.tableView));
+    setWindowTitle("Material Mapping");
+    mTableDelegate = unique_ptr<ModelMaterialTableDelegate>(new ModelMaterialTableDelegate(mUi.tableView));
     mUi.tableView->setItemDelegate(mTableDelegate.get());
     setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
-MaterialShaderFormController::~MaterialShaderFormController
+ModelMaterialFormController::~ModelMaterialFormController
 ()
 {
     auto log = spdlog::get("MaterialShaderTableController");
     log->debug("Destructing");
 }
 
-void MaterialShaderFormController::setProjectPath(QString projectPath)
+void
+ModelMaterialFormController::setProjectPath
+(QString projectPath)
 {
     mProjectPath = projectPath;
 }
 
 void
-MaterialShaderFormController::setShaderHandlesVector
-(vector<ShaderDefinition*> shaders)
+ModelMaterialFormController::setMaterialHandlesVector
+(vector<MaterialDefinition*> shaders)
 {
-    mTableModel.setShaderDefinitions(shaders);
-    mTableDelegate->setShaderDefinitions(shaders);
+    mTableModel.setMaterialDefinitions(shaders);
+    mTableDelegate->setMaterialDefinitions(shaders);
 }
 
 void
-MaterialShaderFormController::setModelDefinition
+ModelMaterialFormController::setModelDefinition
 (ModelDefinition* def)
 {
     mModelDefinitionHandle = def;
     populate();
 }
 
-void MaterialShaderFormController::readMaterials()
+void ModelMaterialFormController::readMaterials()
 {
 
     auto log = spdlog::get("MaterialShaderTableController");
@@ -73,7 +75,7 @@ void MaterialShaderFormController::readMaterials()
     if (model == nullptr)
     {
         log->error("Model from assimp is null");
-        mModelDefinitionHandle->clearMaterialShaderList();
+        mModelDefinitionHandle->clearModelMaterialList();
         QMessageBox::warning(this, "No Model Available","Cannot populate materials, model data not found.");
         return;
     }
@@ -91,7 +93,7 @@ void MaterialShaderFormController::readMaterials()
 }
 
 void
-MaterialShaderFormController::populate
+ModelMaterialFormController::populate
 ()
 {
    auto log = spdlog::get("MaterialShaderTableController");
@@ -111,7 +113,7 @@ MaterialShaderFormController::populate
 }
 
 int
-MaterialShaderFormController::processAssimpNode
+ModelMaterialFormController::processAssimpNode
 (aiNode* node, const aiScene* scene)
 {
     auto log = spdlog::get("MaterialShaderTableController");
@@ -128,7 +130,7 @@ MaterialShaderFormController::processAssimpNode
         aiGetMaterialString(material,AI_MATKEY_NAME,&name);
         string materialStr = string(name.C_Str());
         log->debug("Adding material {}",materialStr);
-        if (mModelDefinitionHandle->addMaterialShader(materialStr,""))
+        if (mModelDefinitionHandle->addModelMaterial(materialStr,""))
         {
             materialCount++;
         }
@@ -146,7 +148,7 @@ MaterialShaderFormController::processAssimpNode
 }
 
 shared_ptr<Importer>
-MaterialShaderFormController::loadImporter
+ModelMaterialFormController::loadImporter
 (string path)
 {
     auto log = spdlog::get("MaterialShaderTableController");

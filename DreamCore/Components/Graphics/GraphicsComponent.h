@@ -23,7 +23,6 @@
 #include <map>
 #include <vector>
 
-#include <GL/glew.h>
 #include <glm/matrix.hpp>
 #include "../IComponent.h"
 
@@ -45,7 +44,7 @@ namespace Dream
     class SceneObjectRuntime;
     class Texture;
     class ModelMesh;
-    class Material;
+    class MaterialInstance;
     class ShaderCache;
 
     class GraphicsComponent : public IComponent

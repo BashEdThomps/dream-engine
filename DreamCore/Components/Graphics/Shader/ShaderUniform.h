@@ -16,8 +16,15 @@
 
 #pragma once
 
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 #include "../../../Common/DreamObject.h"
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 using namespace glm;

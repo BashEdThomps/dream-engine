@@ -24,8 +24,6 @@
 
 #include "../SceneRuntime.h"
 
-#include "../../Common/Constants.h"
-
 #include "../../Components/Event.h"
 #include "../../Components/Path/PathInstance.h"
 #include "../../Components/Audio/AudioInstance.h"
@@ -335,7 +333,7 @@ namespace Dream
         return mAudioInstance;
     }
 
-    const shared_ptr<ModelInstance>&
+    ModelInstance*
     SceneObjectRuntime::getModelInstance
     ()
     {
@@ -349,7 +347,7 @@ namespace Dream
         return mScriptInstance;
     }
 
-    const shared_ptr<ShaderInstance>&
+    ShaderInstance*
     SceneObjectRuntime::getShaderInstance
     ()
     {
@@ -787,7 +785,7 @@ namespace Dream
         auto cache = mSceneRuntimeHandle->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
-            mModelInstance = cache->getModelFromCache(mProjectPath, definition,this);
+            mModelInstance = dynamic_cast<ModelInstance*>(cache->getInstance(definition));
             if (mModelInstance != nullptr)
             {
                 mModelInstance->addInstance(this);
@@ -828,9 +826,10 @@ namespace Dream
         //removeShaderInstance();
         log->debug( "Creating Shader asset instance." );
 
-        auto shaderCache = mSceneRuntimeHandle->getProjectRuntime()->getShaderCache();
-        mShaderInstance = shaderCache->getShaderFromCache(mProjectPath, definition, this);
-        return mShaderInstance != nullptr;
+        //auto shaderCache = mSceneRuntimeHandle->getProjectRuntime()->getShaderCache();
+        //mShaderInstance = shaderCache->getShaderFromCache(mProjectPath, definition, this);
+        return true;
+        //return mShaderInstance != nullptr;
     }
 
     bool

@@ -7,28 +7,28 @@
 
 namespace Dream
 {
-    class ShaderDefinition;
+    class MaterialDefinition;
 }
 
-using Dream::ShaderDefinition;
+using Dream::MaterialDefinition;
 using std::shared_ptr;
 using std::vector;
 using std::string;
 
-class MaterialShaderTableDelegate : public QItemDelegate
+class ModelMaterialTableDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    MaterialShaderTableDelegate(QObject* parent  = nullptr);
-    ~MaterialShaderTableDelegate() override;
+    ModelMaterialTableDelegate(QObject* parent  = nullptr);
+    ~ModelMaterialTableDelegate() override;
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const  override;
-    void setShaderDefinitions(vector<ShaderDefinition*>& shaderDefinitions);
+    void setMaterialDefinitions(vector<MaterialDefinition*>& shaderDefinitions);
     void setMaterialList(vector<string> materialList);
     void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
     void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 
 protected:
-    vector<ShaderDefinition*> mShaderDefinitions;
+    vector<MaterialDefinition*> mShaderDefinitions;
     vector<string> mMaterialList;
 };
 

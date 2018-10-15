@@ -26,11 +26,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "../../Common/Constants.h"
-
-using std::cout;
-using std::cerr;
-
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState

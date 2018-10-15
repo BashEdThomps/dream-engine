@@ -107,23 +107,23 @@ namespace Dream
     }
 
     string
-    MaterialDefinition::getDepthmapTexture
+    MaterialDefinition::getDisplacementTexture
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE].is_null())
+        if(mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_null())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = "";
         }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE];
+        return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
 
     }
 
     void
-    MaterialDefinition::setDepthmapTexture
+    MaterialDefinition::setDisplacementTexture
     (string val)
     {
 
-        mJson[Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE]  = val;
+        mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
     }
 
     // Colour

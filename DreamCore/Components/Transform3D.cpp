@@ -18,8 +18,6 @@
 
 #include "Transform3D.h"
 
-#include "../Common/Constants.h"
-
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>

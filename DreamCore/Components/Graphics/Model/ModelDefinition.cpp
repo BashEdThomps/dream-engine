@@ -40,6 +40,11 @@ namespace Dream
         log->trace("Constructing");
     }
 
+    ModelDefinition::~ModelDefinition()
+    {
+
+    }
+
     bool
     ModelDefinition::isFormatAssimp
     ()
@@ -48,50 +53,50 @@ namespace Dream
     }
 
     bool // Indicates whether a new insertion was made
-    ModelDefinition::addMaterialShader
+    ModelDefinition::addModelMaterial
     (string material, string shader)
     {
-        if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].is_null())
+        if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
-             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST] = json::array();
+             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
         }
 
-        for (json matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST])
+        for (json matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
         {
-            if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MATERIAL] == material)
+            if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
             {
-                matShad[Constants::ASSET_ATTR_MODEL_SHADER] = shader;
+                matShad[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
                 return false;
             }
         }
 
         auto shaderJson = json::object();
-        shaderJson[Constants::ASSET_ATTR_MODEL_MATERIAL] = material;
-        shaderJson[Constants::ASSET_ATTR_MODEL_SHADER] = shader;
-        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].push_back(shaderJson);
+        shaderJson[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = material;
+        shaderJson[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].push_back(shaderJson);
         return true;
     }
 
     json*
-    ModelDefinition::getMaterialShaders
+    ModelDefinition::getModelMaterials
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].is_null())
+        if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST] = json::array();
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
         }
-        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
     }
 
     void
-    ModelDefinition::removeMaterialShader
+    ModelDefinition::removeModelMaterial
     (string material)
     {
         auto log = spdlog::get("ModelDefinition");
-        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {
-            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MATERIAL];
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
             if (materialName.is_string())
             {
                 string materialNameStr = materialName;
@@ -106,26 +111,26 @@ namespace Dream
     }
 
     void
-    ModelDefinition::clearMaterialShaderList
+    ModelDefinition::clearModelMaterialList
     ()
     {
-        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST].clear();
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
     }
 
     string
-    ModelDefinition::getShaderForMaterial
+    ModelDefinition::getDreamMaterialForModelMaterial
     (string mat)
     {
-        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST];
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {
-            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MATERIAL];
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
             if (materialName.is_string())
             {
                 string materialNameStr = materialName;
                 if (mat.compare(materialNameStr) == 0)
                 {
-                    return nextShader[Constants::ASSET_ATTR_MODEL_SHADER];
+                    return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 }
             }
         }

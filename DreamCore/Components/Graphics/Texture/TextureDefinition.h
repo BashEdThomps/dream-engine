@@ -25,6 +25,7 @@ namespace Dream
     {
     public:
         TextureDefinition(ProjectDefinition* pd, json js);
+        ~TextureDefinition() override;
     };
 }
 

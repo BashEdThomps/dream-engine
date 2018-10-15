@@ -21,8 +21,8 @@
 #include <vector>
 #include <assimp/Importer.hpp>
 
-#include "../../../Common/DreamObject.h"
 #include "ModelMesh.h"
+#include "../../ICache.h"
 
 using std::string;
 using std::vector;
@@ -34,16 +34,14 @@ namespace Dream
     class ModelDefinition;
     class SceneObjectRuntime;
 
-    class ModelCache : public DreamObject
+    class ModelCache : public ICache
     {
-    private:
-        vector<shared_ptr<ModelInstance>> mCache;
     public:
-        ModelCache(ShaderCache*, MaterialCache*);
-        ~ModelCache();
-        shared_ptr<ModelInstance> getModelFromCache(string, ModelDefinition*,SceneObjectRuntime*);
+        ModelCache(ProjectRuntime*, ShaderCache*, MaterialCache*);
+        ~ModelCache() override;
     protected:
         ShaderCache* mShaderCacheHandle;
         MaterialCache* mMaterialCacheHandle;
+        IAssetInstance* loadInstance(IAssetDefinition* def) override;
     };
 }

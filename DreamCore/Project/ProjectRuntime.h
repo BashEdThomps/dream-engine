@@ -46,6 +46,7 @@ namespace Dream
     class SceneRuntime;
     class SceneDefinition;
     class MaterialCache;
+    class TextureCache;
     class ScriptCache;
     class ModelCache;
     class ShaderCache;
@@ -78,6 +79,7 @@ namespace Dream
         IWindowComponent* mWindowComponent;
 
         // Caches
+        TextureCache* mTextureCache;
         MaterialCache* mMaterialCache;
         ModelCache* mModelCache;
         ShaderCache* mShaderCache;
@@ -131,8 +133,9 @@ namespace Dream
         bool useDefinition() override;
 
         ShaderCache* getShaderCache();
-        MaterialCache* getTextureCache();
+        MaterialCache* getMaterialCache();
         ModelCache* getModelCache();
+        TextureCache* getTextureCache();
 
         bool getScriptingEnabled() const;
         void setScriptingEnabled(bool);
@@ -142,6 +145,7 @@ namespace Dream
 
         SceneObjectRuntime* getSceneObjectRuntimeByUuid(string uuid);
 
+        string getProjectPath();
     private: // Member Functions
         bool initPathComponent();
         bool initAudioComponent();

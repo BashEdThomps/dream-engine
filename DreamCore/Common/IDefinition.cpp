@@ -17,7 +17,6 @@
  */
 
 #include "IDefinition.h"
-#include "Constants.h"
 
 namespace Dream
 {

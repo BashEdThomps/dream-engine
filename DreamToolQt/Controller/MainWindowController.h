@@ -22,8 +22,6 @@
 #include <vector>
 #include <map>
 
-#include <GL/glew.h>
-
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMessageBox>

@@ -19,7 +19,6 @@
 #pragma once
 
 #include "../Common/IDefinition.h"
-#include "../Common/Constants.h"
 
 using std::string;
 using std::vector;
@@ -31,6 +30,7 @@ namespace Dream
     class IAssetDefinition;
     class ShaderDefinition;
     class TextureDefinition;
+    class MaterialDefinition;
 
     class ProjectDefinition : public IDefinition
     {
@@ -78,6 +78,7 @@ namespace Dream
         map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
         vector<ShaderDefinition*> getShaderAssetDefinitionVector();
         vector<TextureDefinition*> getTextureAssetDefinitionVector();
+        vector<MaterialDefinition*> getMaterialAssetDefinitionVector();
 
         bool getCaptureKeyboard();
         void setCaptureKeyboard(bool);

@@ -1,4 +1,4 @@
-#include "MaterialShaderTableModel.h"
+#include "ModelMaterialTableModel.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include "DreamCore.h"
@@ -6,32 +6,32 @@
 using Dream::ModelDefinition;
 using Dream::Constants;
 
-MaterialShaderTableModel::MaterialShaderTableModel
+ModelMaterialTableModel::ModelMaterialTableModel
 (QObject* parent)
     : QAbstractTableModel(parent),
       mModelDefinitionHandle(nullptr)
 {
-    auto log=spdlog::get("MaterialShaderTableModel");
+    auto log=spdlog::get("ModelMaterialTableModel");
     if (log==nullptr)
     {
-        log=spdlog::stdout_color_mt("MaterialShaderTableModel");
+        log=spdlog::stdout_color_mt("ModelMaterialTableModel");
     }
     log->debug("Constructing");
 }
 
-MaterialShaderTableModel::~MaterialShaderTableModel()
+ModelMaterialTableModel::~ModelMaterialTableModel()
 {
-    auto log = spdlog::get("MaterialShaderTableModel");
+    auto log = spdlog::get("ModelMaterialTableModel");
     log->debug("Destructing");
 }
 
 int
-MaterialShaderTableModel::rowCount
+ModelMaterialTableModel::rowCount
 (const QModelIndex& parent)
 const
 {
     Q_UNUSED(parent)
-    auto log = spdlog::get("MaterialShaderTableModel");
+    auto log = spdlog::get("ModelMaterialTableModel");
     log->debug("rowCount");
 
 
@@ -40,14 +40,14 @@ const
         return 0;
     }
 
-    int rows = mModelDefinitionHandle->getMaterialShaders()->size();
+    int rows = mModelDefinitionHandle->getModelMaterials()->size();
     log->debug("{} rows",rows);
     return rows;
 
 }
 
 int
-MaterialShaderTableModel::columnCount
+ModelMaterialTableModel::columnCount
 (const  QModelIndex& parent)
 const
 {
@@ -56,11 +56,11 @@ const
 }
 
 QVariant
-MaterialShaderTableModel::data
+ModelMaterialTableModel::data
 (const  QModelIndex& index, int role)
 const
 {
-    auto log = spdlog::get("MaterialShaderTableModel");
+    auto log = spdlog::get("ModelMaterialTableModel");
 
     if (mModelDefinitionHandle == nullptr)
     {
@@ -71,12 +71,12 @@ const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= mModelDefinitionHandle->getMaterialShaders()->size() || index.row() < 0)
+    if (index.row() >= mModelDefinitionHandle->getModelMaterials()->size() || index.row() < 0)
         return QVariant();
 
     if (role == Qt::DisplayRole)
     {
-        json pair = mModelDefinitionHandle->getMaterialShaders()->at(index.row());
+        json pair = mModelDefinitionHandle->getModelMaterials()->at(index.row());
         if (pair.is_null())
         {
             log->error("Row {} is null pair",index.row());
@@ -88,23 +88,23 @@ const
         switch (index.column())
         {
             case 0:
-                valStr = pair[Constants::ASSET_ATTR_MODEL_MATERIAL];;
+                valStr = pair[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];;
                 log->debug("Getting col 0 (material) {}",valStr);
                 return QString::fromStdString(valStr);
             case 1:
-                valStr = pair[Constants::ASSET_ATTR_MODEL_SHADER];
+                valStr = pair[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 log->debug("Getting col 0 (shader) {}", valStr);
-                return getShaderNameFromUuid(valStr);
+                return getMaterialNameFromUuid(valStr);
         }
     }
     return QVariant();
 }
 
 void
-MaterialShaderTableModel::setModelDefinition
+ModelMaterialTableModel::setModelDefinition
 (ModelDefinition* def)
 {
-    auto log = spdlog::get("MaterialShaderTableModel");
+    auto log = spdlog::get("ModelMaterialTableModel");
     log->debug("setModelDefinition");
 
     beginResetModel();
@@ -113,7 +113,7 @@ MaterialShaderTableModel::setModelDefinition
 }
 
 QVariant
-MaterialShaderTableModel::headerData
+ModelMaterialTableModel::headerData
 (int section, Qt::Orientation orientation, int role)
 const
 {
@@ -134,27 +134,27 @@ const
 }
 
 bool
-MaterialShaderTableModel::setData
+ModelMaterialTableModel::setData
 (const QModelIndex& index,const  QVariant& value, int role)
 {
     Q_UNUSED(role)
-    auto log = spdlog::get("MaterialShaderTableModel");
+    auto log = spdlog::get("ModelMaterialTableModel");
     log->debug("SetData");
 
     if (mModelDefinitionHandle != nullptr)
     {
         string valStr = value.toString().toStdString();
-        json* list = mModelDefinitionHandle->getMaterialShaders();
+        json* list = mModelDefinitionHandle->getModelMaterials();
 
         switch(index.column())
         {
             case 0:
                 log->debug("setting row {} col 0 material to {}",index.row(),valStr);
-                list->at(index.row())[Constants::ASSET_ATTR_MODEL_MATERIAL] = valStr;
+                list->at(index.row())[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = valStr;
                 break;
             case 1:
                 log->debug("setting row {} col 1 shader to {}",index.row(),valStr);
-                list->at(index.row())[Constants::ASSET_ATTR_MODEL_SHADER] = valStr;
+                list->at(index.row())[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = valStr;
                 break;
         }
         emit dataChanged(index,index);
@@ -163,7 +163,7 @@ MaterialShaderTableModel::setData
 }
 
 Qt::ItemFlags
-MaterialShaderTableModel::flags
+ModelMaterialTableModel::flags
 (const QModelIndex &index)
 const
 {
@@ -179,18 +179,18 @@ const
 }
 
 void
-MaterialShaderTableModel::setShaderDefinitions
-(vector<ShaderDefinition*>& shaderDefinitions)
+ModelMaterialTableModel::setMaterialDefinitions
+(vector<MaterialDefinition*>& shaderDefinitions)
 {
-    mShaderDefinitions = shaderDefinitions;
+    mMaterialDefinitions = shaderDefinitions;
 }
 
 QString
-MaterialShaderTableModel::getShaderNameFromUuid
+ModelMaterialTableModel::getMaterialNameFromUuid
 (string uuid)
 const
 {
-  for (auto sDef : mShaderDefinitions)
+  for (auto sDef : mMaterialDefinitions)
   {
       if (sDef->getUuid().compare(uuid) == 0)
       {

@@ -120,7 +120,7 @@ MaterialEditorFormController::readDefinitionIntoUi
     setDiffuseFrameTexture(QString::fromStdString(matDef->getDiffuseTexture()));
     setSpecularFrameTexture(QString::fromStdString(matDef->getSpecularTexture()));
     setNormalFrameTexture(QString::fromStdString(matDef->getNormalTexture()));
-    setDisplacementFrameTexture(QString::fromStdString(matDef->getDepthmapTexture()));
+    setDisplacementFrameTexture(QString::fromStdString(matDef->getDisplacementTexture()));
 
     connectSignals();
 }
@@ -270,7 +270,7 @@ MaterialEditorFormController::onDisplacementTextureAction
     auto uuid = action->data().toString();
     qDebug() << "Displacement Texture" << uuid;
     auto matDef = dynamic_cast<MaterialDefinition*>(mDefinitionHandle);
-    matDef->setDepthmapTexture(uuid.toStdString());
+    matDef->setDisplacementTexture(uuid.toStdString());
     setDisplacementFrameTexture(uuid);
 }
 

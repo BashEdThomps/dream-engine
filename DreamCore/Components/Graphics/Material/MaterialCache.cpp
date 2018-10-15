@@ -15,15 +15,26 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "MaterialCache.h"
+#include "MaterialDefinition.h"
+#include "../Texture/TextureDefinition.h"
+#include "../Texture/TextureCache.h"
+#include "../Shader/ShaderInstance.h"
+#include "../Shader/ShaderCache.h"
+#include "../.././../Project/ProjectRuntime.h"
 
 namespace Dream
 {
     MaterialCache::MaterialCache
-    () : DreamObject ("MaterialCache")
+    (ProjectRuntime* parent, ShaderCache* shaderCache, TextureCache* textureCache)
+        : ICache(parent),
+          mShaderCache(shaderCache),
+          mTextureCache(textureCache)
     {
         auto log = getLog();
         log->trace( "Constructing" );
+        setLogClassName("MaterialCache");
     }
 
     MaterialCache::~MaterialCache
@@ -31,180 +42,33 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing" );
-
-        flushRawTextureImageData();
-
-        for (auto texture : mTextureCache)
-        {
-            glDeleteTextures(1,&texture->id);
-            checkGLError();
-            //delete texture;
-        }
-        mTextureCache.clear();
-
-        /*
-        for (auto mat : mMaterialCache)
-        {
-            delete mat;
-        }
-        */
-        mMaterialCache.clear();
-        return;
     }
 
-    vector<shared_ptr<Texture>>&
-    MaterialCache::getTextureCache
-    ()
+    IAssetInstance*
+    MaterialCache::loadInstance
+    (IAssetDefinition* def)
     {
-        return mTextureCache;
+        auto matDef = dynamic_cast<MaterialDefinition*>(def);
+        auto material = new MaterialInstance(matDef,nullptr);
+
+        material->load(mProjectRuntime->getProjectPath());
+
+        auto diffuse = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
+        auto specular = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
+        auto normal = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getNormalTexture()));
+        auto displacement = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
+        auto shader = dynamic_cast<ShaderInstance*>(mShaderCache->getInstance(matDef->getShader()));
+
+        material->setDiffuseTexture(diffuse);
+        material->setSpecularTexture(specular);
+        material->setNormalTexture(normal);
+        material->setDisplacementTexture(displacement);
+        material->setShader(shader);
+        shader->addMaterial(material);
+        mInstances.push_back(material);
+        return material;
     }
 
-    vector<shared_ptr<Material>>&
-    MaterialCache::getMaterialCache
-    ()
-    {
-        return mMaterialCache;
-    }
 
-    shared_ptr<Material>
-    MaterialCache::getMaterialByName
-    (aiString name)
-    {
-        auto log = getLog();
-        for (auto material : mMaterialCache)
-        {
-            if (material->mName == name)
-            {
-                log->debug("Found existing material {}", name.C_Str());
-                return material;
-            }
-        }
-        return nullptr;
-    }
-
-    void MaterialCache::addMaterialToCache(shared_ptr<Material> mat)
-    {
-        auto log = getLog();
-        log->debug("Adding material to cache {}", mat->mName.C_Str());
-        mMaterialCache.push_back(mat);
-    }
-
-    shared_ptr<Texture>
-    MaterialCache::loadTextureFromFile
-    (const char* file_c, const char* directory_c, const aiTextureType type)
-    {
-        auto log = getLog();
-        log->debug( "Loading from: {}/{}", directory_c , file_c );
-        //Generate texture ID and load texture data
-        string filename = string(file_c);
-        string directory = string(directory_c);
-        filename = directory + '/' + filename;
-
-        for (auto nextTexture : mTextureCache)
-        {
-            if (nextTexture->path == filename && nextTexture->type == type)
-            {
-                log->debug("Found cached texture by filename");
-                return nextTexture;
-            }
-        }
-
-        int width = 0;
-        int height = 0;
-        int channels = 0;
-
-        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
-
-        // Check image data against existing textures
-
-        for (auto nextTexture : mTextureCache)
-        {
-            if (nextTexture->width == width &&
-                nextTexture->height == height &&
-                nextTexture->channels == channels)
-            {
-                log->debug("Found Similar Texture, comparing data");
-                if (nextTexture->image != nullptr)
-                {
-                    int compare = memcmp(nextTexture->image, image, static_cast<size_t>(width*height*channels));
-                    if (compare == 0)
-                    {
-                        log->debug("Found cached texture with data match for {}",filename);
-                        SOIL_free_image_data(image);
-                        return nextTexture;
-                    }
-                }
-            }
-        }
-        log->debug("Didn't find cached texture matching {}",filename);
-
-        log->debug("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
-        // Assign texture to ID
-        GLuint textureID;
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        log->debug("Bound to texture id {}",textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        // Set Parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        checkGLError();
-
-        auto texture = make_shared<Texture>();
-        texture->path = filename;
-        texture->id = textureID;
-        texture->type = type;
-        texture->width = width;
-        texture->height = height;
-        texture->channels = channels;
-        texture->image = image;
-        mTextureCache.push_back(texture);
-        return texture;
-    }
-
-    shared_ptr<Material>
-    MaterialCache::newMaterial
-    (aiMaterial* material)
-    {
-        auto aMaterial = make_shared<Material>();
-        aiGetMaterialString(material,  AI_MATKEY_NAME,               &aMaterial->mName);
-        aiGetMaterialInteger(material, AI_MATKEY_TWOSIDED,           &aMaterial->mTwoSided);
-        aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL,      &aMaterial->mShadingModel);
-        aiGetMaterialInteger(material, AI_MATKEY_ENABLE_WIREFRAME,   &aMaterial->mEnableWireframe);
-        aiGetMaterialInteger(material, AI_MATKEY_BLEND_FUNC,         &aMaterial->mBlendFunc);
-        aiGetMaterialFloat(material,   AI_MATKEY_OPACITY,            &aMaterial->mOpacity);
-        aiGetMaterialFloat(material,   AI_MATKEY_BUMPSCALING,        &aMaterial->mBumpScaling);
-        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS,          &aMaterial->mHardness);
-        aiGetMaterialFloat(material,   AI_MATKEY_REFLECTIVITY,       &aMaterial->mReflectivity);
-        aiGetMaterialFloat(material,   AI_MATKEY_SHININESS_STRENGTH, &aMaterial->mShininessStrength);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_DIFFUSE,      &aMaterial->mColorDiffuse);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_AMBIENT,      &aMaterial->mColorAmbient);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_SPECULAR,     &aMaterial->mColorSpecular);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_EMISSIVE,     &aMaterial->mColorEmissive);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_TRANSPARENT,  &aMaterial->mColorTransparent);
-        aiGetMaterialColor(material,   AI_MATKEY_COLOR_REFLECTIVE,   &aMaterial->mColorReflective);
-        addMaterialToCache(aMaterial);
-        return aMaterial;
-    }
-
-    void MaterialCache::flushRawTextureImageData()
-    {
-       for (auto t : mTextureCache)
-       {
-           if (t->image != nullptr)
-           {
-               SOIL_free_image_data(t->image);
-               t->image = nullptr;
-           }
-       }
-    }
 
 } // End of Dream

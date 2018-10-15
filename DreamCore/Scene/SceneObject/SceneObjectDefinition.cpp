@@ -20,7 +20,6 @@
 #include <regex>
 
 #include "../../Components/IAssetDefinition.h"
-#include "../../Common/Constants.h"
 #include "../../Components/Transform3D.h"
 #include "../../Utilities/Uuid.h"
 

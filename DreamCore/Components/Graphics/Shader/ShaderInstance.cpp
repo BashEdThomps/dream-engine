@@ -21,7 +21,7 @@
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
 #include "../Light/LightInstance.h"
-#include "../Material/Material.h"
+#include "../Material/MaterialInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Utilities/FileReader.h"
 
@@ -32,9 +32,8 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (ShaderDefinition* definition,
-     SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform),
+    (ShaderDefinition* definition)
+        : IAssetInstance(definition,nullptr),
           mPointLightCount(0),
           mPointLightCountLocation(UNIFORM_NOT_FOUND),
           mSpotLightCount(0),
@@ -96,7 +95,6 @@ namespace Dream
             return false;
         }
         glUniformMatrix4fv(location,value.size(),GL_FALSE,(float*)&value[0]);
-
         return true;
     }
 
@@ -113,9 +111,7 @@ namespace Dream
             log->warn( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
-
         glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
-
         return true;
     }
 
@@ -131,9 +127,7 @@ namespace Dream
             log->warn( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
-
         glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
-
         return true;
     }
 
@@ -149,9 +143,7 @@ namespace Dream
             log->warn( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
-
         glUniform3fv(uCamPos,1,value_ptr(value));
-
         return true;
     }
 
@@ -315,7 +307,7 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
-    void ShaderInstance::bindMaterial(const shared_ptr<Material>& material)
+    void ShaderInstance::bindMaterial(MaterialInstance* material)
     {
         checkGLError();
         auto log = getLog();
@@ -325,9 +317,10 @@ namespace Dream
             return;
         }
 
-        if (material->mDiffuseTexture != nullptr)
+        auto diffuse = material->getDiffuseTexture();
+        if (diffuse != nullptr)
         {
-            id = material->mDiffuseTexture->id;
+            id = diffuse->getGLID();
             if (CurrentTexture0 != id)
             {
                 log->info("Found Diffuse Texture, binding {}",id);
@@ -341,13 +334,14 @@ namespace Dream
             }
         }
 
-        auto diffuse = material->mColorDiffuse;
-        vec3 glmDiffuse(diffuse.r,diffuse.g,diffuse.b);
+        auto diffuseColour = material->getColorDiffuse();
+        vec3 glmDiffuse(diffuseColour.r,diffuseColour.g,diffuseColour.b);
         addUniform(FLOAT3, "material.diffuseColor", 1, &glmDiffuse);
 
-        if (material->mSpecularTexture != nullptr)
+        auto specular = material->getSpecularTexture();
+        if (specular != nullptr)
         {
-            id =  material->mSpecularTexture->id;
+            id =  specular->getGLID();
             if (CurrentTexture1 != id)
             {
                 log->info("Found Specular Texture, binding {}",id);
@@ -357,18 +351,20 @@ namespace Dream
                 checkGLError();
                 GLuint specularIndex = 1;
                 addUniform(INT1, "material.specular", 1, &specularIndex);
-                addUniform(FLOAT1, "material.shininess", 1, &material->mShininessStrength);
+                float ss = material->getShininessStrength();
+                addUniform(FLOAT1, "material.shininess", 1, &ss);
                 CurrentTexture1 = id;
             }
         }
 
-        auto spec = material->mColorSpecular;
+        auto spec = material->getColorSpecular();
         vec3 glmSpec(spec.r,spec.g,spec.b);
         addUniform(FLOAT3, "material.specularColor", 1, &glmSpec);
 
-        if (material->mNormalTexture != nullptr)
+        auto normal = material->getNormalTexture();
+        if (normal != nullptr)
         {
-            id =  material->mNormalTexture->id;
+            id =  normal->getGLID();
             if (CurrentTexture2 != id)
             {
                 log->info("Found Normal Texture, binding {}",id);
@@ -377,14 +373,15 @@ namespace Dream
                 glBindTexture(GL_TEXTURE_2D, id);
                 checkGLError();
                 GLuint normalIndex = 2;
-                addUniform(INT1, "material.normalMap", 1, &normalIndex);
+                addUniform(INT1, "material.normal", 1, &normalIndex);
                 CurrentTexture2 = id;
             }
         }
 
-        if (material->mDisplacementTexture != nullptr)
+        auto displacement = material->getDisplacementTexture();
+        if (displacement != nullptr)
         {
-            id =  material->mDisplacementTexture->id;
+            id = displacement->getGLID();
             if (CurrentTexture3 != id)
             {
                 log->info("Found Normal Texture, binding {}",id);
@@ -393,7 +390,7 @@ namespace Dream
                 glBindTexture(GL_TEXTURE_2D, id);
                 checkGLError();
                 GLuint normalIndex = 3;
-                addUniform(INT1, "material.depthMap", 1, &normalIndex);
+                addUniform(INT1, "material.displacement", 1, &normalIndex);
                 CurrentTexture3 = id;
             }
         }
@@ -408,7 +405,6 @@ namespace Dream
         PointLight pointData;
 
         /*
-
         DirLight;
             vec3 direction;
             vec3 ambient;
@@ -670,7 +666,7 @@ namespace Dream
 
     void
     ShaderInstance::addMaterial
-    (const shared_ptr<Material> material)
+    (MaterialInstance* material)
     {
         auto log = getLog();
         // not in map
@@ -678,7 +674,7 @@ namespace Dream
         {
             log->debug(
                 "Adding Material {} to shader {}",
-                material->mName.C_Str(),
+                material->getName(),
                 getNameAndUuidString()
             );
             mMaterials.push_back(material);
@@ -688,7 +684,7 @@ namespace Dream
             log->debug
             (
                 "Material {} already registered to shader {}",
-                material->mName.C_Str(),
+                material->getName(),
                 getNameAndUuidString()
             );
         }
@@ -702,7 +698,7 @@ namespace Dream
        log->debug("Materials for {}",getNameAndUuidString());
        for (auto material : mMaterials)
        {
-           log->debug("\t{}",material->mName.C_Str());
+           log->debug("\t{}",material->getName());
            material->logMeshes();
        }
     }
@@ -714,7 +710,7 @@ namespace Dream
        for (auto material : mMaterials)
        {
            bindMaterial(material);
-           material->draw(this);
+           material->draw();
        }
     }
 

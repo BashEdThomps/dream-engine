@@ -20,14 +20,12 @@
 #include <assimp/postprocess.h>
 
 #include "PhysicsMotionState.h"
-
-#include "../../Common/Constants.h"
+#include "PhysicsComponent.h"
+#include "PhysicsObjectDefinition.h"
 
 #include "../../Project/ProjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "PhysicsComponent.h"
 
-#include "PhysicsObjectDefinition.h"
 
 namespace Dream
 {

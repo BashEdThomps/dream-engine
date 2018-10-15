@@ -17,6 +17,13 @@
 
 #pragma once
 
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 #include <vector>
 #include <string>
 #include <map>
@@ -31,7 +38,6 @@
 #include <assimp/material.h>
 
 #include <glm/matrix.hpp>
-#include <GL/glew.h>
 
 #include "../../IAssetInstance.h"
 #include "../BoundingBox.h"
@@ -54,7 +60,7 @@ namespace Dream
     class ModelMesh;
     class Vertex;
     class Texture;
-    class Material;
+    class MaterialInstance;
 
     class ModelInstance : public IAssetInstance
     {
@@ -62,19 +68,19 @@ namespace Dream
         ModelInstance(
             ShaderCache*,
             MaterialCache*,
-            IAssetDefinition*,
-            SceneObjectRuntime*
+            IAssetDefinition*
         );
 
         ~ModelInstance() override;
         bool load(string) override;
-        void draw(
+        /*void draw(
             const shared_ptr<ShaderInstance>&,
             vec3 transorm,
             vec3 camPos,
             float maxDistance,
             bool alwaysDraw = false
         );
+        */
         void loadExtraAttributes(json) override;
         BoundingBox getBoundingBox();
         void setModelMatrix(mat4);
@@ -87,7 +93,6 @@ namespace Dream
         // Variables
         MaterialCache* mMaterialCache;
         ShaderCache* mShaderCache;
-        map<string,ShaderInstance*> mMaterialShaderMap;
 
         vector<shared_ptr<ModelMesh>> mMeshes;
         string mDirectory;
@@ -97,8 +102,6 @@ namespace Dream
         // Methods
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
-        void loadShaders();
-        shared_ptr<Texture> loadMaterialTexture(aiMaterial*, aiTextureType);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
 
@@ -106,7 +109,7 @@ namespace Dream
         shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<Material> material);
+        //void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<MaterialInstance> material);
     }; // End of AssimpModelInstance
 
 } // End of Dream

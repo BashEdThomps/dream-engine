@@ -15,8 +15,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define GLM_FORCE_RADIANS
 #include "GraphicsComponent.h"
+
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
+#define GLM_FORCE_RADIANS
 
 #include <functional>
 
@@ -42,8 +51,6 @@
 #include "../Transform3D.h"
 
 #include "../Window/IWindowComponent.h"
-
-#include "../../Common/Constants.h"
 
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectDefinition.h"
@@ -93,16 +100,16 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Initialising");
-        log->debug("Initialising GLEW");
 
-        glewExperimental = GL_TRUE;
-        GLenum glewInitResult = glewInit();
+        //log->debug("Initialising GLEW");
+        //glewExperimental = GL_TRUE;
+        //GLenum glewInitResult = glewInit();
 
-        if (glewInitResult != GLEW_OK)
-        {
-            log->error("GLEW failed to initialise");
-            return false;
-        }
+        //if (glewInitResult != GLEW_OK)
+        //{
+        //    log->error("GLEW failed to initialise");
+        //    return false;
+        //}
 
         checkGLError();
 
@@ -115,7 +122,9 @@ namespace Dream
         onWindowDimensionsChanged();
         checkGLError();
 
+#ifndef __APPLE__
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+#endif
         checkGLError();
 
         log->debug("Initialisation Done.");
@@ -431,6 +440,7 @@ namespace Dream
     GraphicsComponent::drawModel
     (SceneObjectRuntime* sceneObject)
     {
+        /*
         auto log = getLog();
         checkGLError();
 
@@ -459,7 +469,6 @@ namespace Dream
         // calculate the model matrix
         mat4 modelMatrix = sceneObject->getTransform()->asMat4();
         vec3 objTranslation = sceneObject->getTranslation();
-        /*
         mat4 modelMatrix = mat4(1.0f);
         // Get raw data
         quat objOrientation = sceneObject->getTransform()->getOrientation();
@@ -472,7 +481,6 @@ namespace Dream
         // Scale
         modelMatrix = scale(modelMatrix, objScale);
         model->setModelMatrix(modelMatrix);
-        */
 
         // Pass model matrix to shader
         shader->setModelMatrix(modelMatrix);
@@ -482,6 +490,8 @@ namespace Dream
         bool always = sceneObject->getSceneObjectDefinition()->getAlwaysDraw();
         model->draw(shader, objTranslation, mCamera->getTranslation(), mMeshCullDistance, always);
         checkGLError();
+
+        */
     }
 
     void

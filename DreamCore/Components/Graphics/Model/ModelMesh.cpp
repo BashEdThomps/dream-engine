@@ -15,6 +15,15 @@
 
 
 #include "ModelMesh.h"
+
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 #include "ModelInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
@@ -38,12 +47,11 @@ namespace Dream
     }
 
     ModelMesh::ModelMesh
-    (
-        ModelInstance* parent,
+    (ModelInstance* parent,
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        shared_ptr<Material> material
+        MaterialInstance* material
     ) : DreamObject("ModelMesh"),
         mParent(parent),
         mMaterial(material),
@@ -103,28 +111,6 @@ namespace Dream
     () const
     {
         return mIndices;
-    }
-
-    void
-    ModelMesh::draw
-    (const shared_ptr<ShaderInstance>& shader)
-    {
-        auto log = getLog();
-
-        // Bind Material
-        shader->bindMaterial(mMaterial);
-
-        // Sync Uniforms
-        shader->syncUniforms();
-        checkGLError();
-
-        // Bind VAO
-        shader->bindVertexArray(mVAO);
-
-        // Draw mesh
-        glDrawElements(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr);
-
-        log->debug("Completed a mesh draw");
     }
 
     void
@@ -210,7 +196,7 @@ namespace Dream
        }
     }
 
-    const shared_ptr<Material>&
+    MaterialInstance*
     ModelMesh::getMaterial
     ()
     {

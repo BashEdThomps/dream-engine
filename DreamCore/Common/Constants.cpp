@@ -18,11 +18,16 @@
 
 #include "Constants.h"
 
-#include <GL/glew.h>
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
 
 
 using namespace std;
-
 
 namespace Dream
 {
@@ -60,7 +65,7 @@ namespace Dream
                         logger->error("\tGL_OUT_OF_MEMORY");
                         break;
                 }
-                logger->error("\tName: {}" , glewGetErrorString(errorCode) );
+                //logger->error("\tName: {}" , glewGetErrorString(errorCode) );
                 logger->error("\tCode: {}" , errorCode );
                 wasError = true;
             }
@@ -299,7 +304,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE = "diffuse_texture";
     const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE = "specular_texture";
     const string Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE = "normal_texture";
-    const string Constants::ASSET_ATTR_MATERIAL_DEPTHMAP_TEXTURE = "depthmap_texture";
+    const string Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE = "displacement_texture";
     const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR = "diffuse_colour";
     const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR = "specular_colour";
     const string Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR = "ambient_colour";
@@ -313,9 +318,9 @@ namespace Dream
     const string Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX = "refraction_index";
 
     // Model ================================================================
-    const string Constants::ASSET_ATTR_MODEL_MATERIAL_SHADER_LIST = "material_shader_list";
-    const string Constants::ASSET_ATTR_MODEL_MATERIAL = "material";
-    const string Constants::ASSET_ATTR_MODEL_SHADER = "shader";
+    const string Constants::ASSET_ATTR_MODEL_MATERIAL_LIST = "material_list";
+    const string Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL = "model_material";
+    const string Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL = "dream_material";
 
     // Lua ======================================================================
     const string Constants::LUA_INIT_FUNCTION   = "onInit";

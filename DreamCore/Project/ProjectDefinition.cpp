@@ -21,7 +21,6 @@
 
 #include "Project.h"
 
-#include "../Common/Constants.h"
 #include "../Scene/SceneDefinition.h"
 #include "../Utilities/Uuid.h"
 
@@ -502,6 +501,22 @@ namespace Dream
             }
         }
         return textures;
+    }
+
+    vector<MaterialDefinition*>
+    ProjectDefinition::getMaterialAssetDefinitionVector
+    ()
+    {
+        vector<MaterialDefinition*> materials;
+        for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
+        {
+            IAssetDefinition* next = (*it);
+            if (next->getType() == Constants::ASSET_TYPE_MATERIAL)
+            {
+                materials.push_back(dynamic_cast<MaterialDefinition*>(next));
+            }
+        }
+        return materials;
     }
 
     bool ProjectDefinition::getCaptureKeyboard()

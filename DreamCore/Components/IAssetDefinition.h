@@ -30,7 +30,6 @@
 #endif
 
 #include "../Common/IDefinition.h"
-#include "../Common/Constants.h"
 #include "Transform3D.h"
 
 using std::string;

@@ -1,4 +1,5 @@
 #include "MaterialPreviewGL.h"
+#include <DreamCore.h>
 
 MaterialPreviewGL::MaterialPreviewGL(QWidget* parent)
     : QOpenGLWidget (parent),

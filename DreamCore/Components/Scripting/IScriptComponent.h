@@ -22,10 +22,10 @@
 #include <iostream>
 #include <memory>
 
-#include "ScriptCache.h"
-#include "../../Common/Constants.h"
-#include "../IComponent.h"
 #include <gainput/gainput.h>
+
+#include "ScriptCache.h"
+#include "../IComponent.h"
 
 using std::unique_ptr;
 using std::string;

@@ -43,6 +43,7 @@
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/Graphics/Texture/TextureCache.h"
 
 using std::endl;
 
@@ -70,6 +71,7 @@ namespace Dream
           mPathComponent(nullptr),
           mScriptComponent(nullptr),
           mWindowComponent(windowComponent),
+          mTextureCache(nullptr),
           mMaterialCache(nullptr),
           mModelCache(nullptr),
           mShaderCache(nullptr),
@@ -339,9 +341,10 @@ namespace Dream
     ()
     {
         getLog()->trace("initialising caches");
-        mMaterialCache = new MaterialCache();
-        mShaderCache  = new ShaderCache();
-        mModelCache   = new ModelCache(mShaderCache, mMaterialCache);
+        mTextureCache = new TextureCache(this);
+        mShaderCache  = new ShaderCache(this);
+        mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
+        mModelCache   = new ModelCache(this,mShaderCache, mMaterialCache);
         mScriptCache  = new ScriptCache();
         return true;
     }
@@ -364,6 +367,12 @@ namespace Dream
         {
             delete mMaterialCache;
             mMaterialCache = nullptr;
+        }
+
+        if (mTextureCache != nullptr)
+        {
+            delete mTextureCache;
+            mTextureCache = nullptr;
         }
 
         if (mScriptCache != nullptr)
@@ -638,7 +647,7 @@ namespace Dream
             return nullptr;
         }
 
-        mMaterialCache->flushRawTextureImageData();
+        mTextureCache->flushRawTextureImageData();
 
         if (mGraphicsComponent != nullptr)
         {
@@ -678,7 +687,7 @@ namespace Dream
     }
 
     MaterialCache*
-    ProjectRuntime::getTextureCache
+    ProjectRuntime::getMaterialCache
     ()
     {
         return mMaterialCache;
@@ -689,6 +698,13 @@ namespace Dream
     ()
     {
         return mModelCache;
+    }
+
+    TextureCache*
+    ProjectRuntime::getTextureCache
+    ()
+    {
+       return mTextureCache;
     }
 
     void
@@ -737,5 +753,12 @@ namespace Dream
         }
 
         return mActiveSceneRuntime->getSceneObjectRuntimeByUuid(uuid);
+    }
+
+    string
+    ProjectRuntime::getProjectPath
+    ()
+    {
+        return mProject->getProjectPath();
     }
 }

@@ -705,7 +705,7 @@ AssetDefinitionPropertiesModel::createModelMaterialShaderProperty
     log->debug("Create Model Material/Shader Delegate");
     AssetDefinitionPropertiesItem *property = new AssetDefinitionPropertiesItem
     (
-        "Shader Map",
+        "Material Map",
         mAssetDefinitionHandle,
         ASSET_DEFINITION_PROPERTY_MODEL_MATERIAL_SHADER_TABLE
     );
@@ -1076,7 +1076,7 @@ AssetDefinitionPropertiesModel::createDelegateConnections
         SLOT(onButton_RemoveFiles())
     );
 
-    // Material Shader Map
+    // Material Map
     connect
     (
         delegate,
@@ -1203,7 +1203,7 @@ AssetDefinitionPropertiesModel::onButton_ModelMaterialShaderMap
 ()
 {
     auto log = spdlog::get("AssetDefinitionPropertiesModel");
-    log->debug("Material Shader Map Clicked");
+    log->debug("Material Map Clicked");
     emit notifyButton_ModelMaterialShaderMap(mAssetDefinitionHandle);
 }
 

@@ -17,7 +17,6 @@
 
 #include "LuaScriptInstance.h"
 #include "../ScriptDefinition.h"
-#include "../../../Common/Constants.h"
 
 namespace Dream
 {

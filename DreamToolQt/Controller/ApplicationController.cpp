@@ -285,7 +285,7 @@ ApplicationController::setupUI_AssetDefinitionPropertiesTreeViewModel
                         this,
                         SLOT(onAssetDefinitionProperty_RemoveFiles(IAssetDefinition* ))
                         );
-            // Model Material/Shader Map
+            // Model Material Map
             connect
             (
                 mPropertiesTreeModel.get(),
@@ -1393,8 +1393,7 @@ ApplicationController::onAssetDefinitionProperty_ModelFile
             }
         }
 
-
-        dynamic_cast<ModelDefinition*>(adHandle)->clearMaterialShaderList();
+        dynamic_cast<ModelDefinition*>(adHandle)->clearModelMaterialList();
 
         log->debug( "Copy {} ", (copyResult ? "Success":"Failed"));
     }
@@ -2193,19 +2192,21 @@ void ApplicationController::onAssetDefinitionProperty_ModelMaterialShaderMap
 (IAssetDefinition* adHandle)
 {
     auto log = spdlog::get("ApplicationController");
-    log->debug("Opening Material/Shader Map Widget");
-    mMaterialShaderTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
-    mMaterialShaderTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
+    log->debug("Opening Material Map Widget");
+    mModelMaterialTableController.setProjectPath(mProjectDirectoryModel.getProjectDirectoryAbsolutePath());
+    mModelMaterialTableController.setModelDefinition(dynamic_cast<ModelDefinition*>(adHandle));
     if (mSelectedProjectDefinitionHandle == nullptr)
     {
         log->debug("SelectedProjectDefinition Handle is nullptr, setting from directory model");
         mSelectedProjectDefinitionHandle = mProjectDirectoryModel.getProjectDefinition();
     }
-    mMaterialShaderTableController.setShaderHandlesVector(mSelectedProjectDefinitionHandle->getShaderAssetDefinitionVector());
-    auto dw = mMainWindowHandle.addRightDockWidget(&mMaterialShaderTableController);
-    auto title = new QLabel(QString("Material Shader Map (%1)").arg(QString::fromStdString(adHandle->getName())));
+    mModelMaterialTableController.setMaterialHandlesVector(mSelectedProjectDefinitionHandle->getMaterialAssetDefinitionVector());
+    auto dw = mMainWindowHandle.addRightDockWidget(&mModelMaterialTableController);
+    auto labelText = QString("Material Map (%1)").arg(QString::fromStdString(adHandle->getName()));
+    auto title = new QLabel(labelText);
     title->setMinimumHeight(24);
     dw->setTitleBarWidget(title);
+    dw->setWindowTitle(labelText);
 }
 
 void

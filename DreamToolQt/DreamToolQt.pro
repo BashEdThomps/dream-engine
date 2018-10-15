@@ -77,9 +77,6 @@ SOURCES += \
     View/SyntaxHighlighters/LuaHighlighter.cpp \
     Controller/MainWindowController.cpp \
     View/CodeEditorWidget.cpp \
-    Model/MaterialShaderTableModel.cpp \
-    Model/MaterialShaderTableDelegate.cpp \
-    Controller/MaterialShaderFormController.cpp \
     View/GLView/PathPointViewer.cpp \
     Model/PathEditorTableModel.cpp \
     Controller/PathEditorFormController.cpp \
@@ -95,7 +92,10 @@ SOURCES += \
     Controller/MaterialEditorFormController.cpp \
     Controller/TextEditorTabController.cpp \
     Model/MaterialParametersTableModel.cpp \
-    View/MaterialPreviewGL.cpp
+    View/MaterialPreviewGL.cpp \
+    Controller/ModelMaterialFormController.cpp \
+    Model/ModelMaterialTableDelegate.cpp \
+    Model/ModelMaterialTableModel.cpp
 
 HEADERS  += \
     \
@@ -146,9 +146,6 @@ HEADERS  += \
     View/SyntaxHighlighters/LuaHighlighter.h \
     Controller/MainWindowController.h \
     View/CodeEditorWidget.h \
-    Model/MaterialShaderTableModel.h \
-    Model/MaterialShaderTableDelegate.h \
-    Controller/MaterialShaderFormController.h \
     View/GLView/PathPointViewer.h \
     Controller/PathEditorFormController.h \
     Model/PathEditorTableModel.h \
@@ -165,15 +162,18 @@ HEADERS  += \
     Controller/MaterialEditorFormController.h \
     Controller/TextEditorTabController.h \
     Model/MaterialParametersTableModel.h \
-    View/MaterialPreviewGL.h
+    View/MaterialPreviewGL.h \
+    Controller/ModelMaterialFormController.h \
+    Model/ModelMaterialTableModel.h \
+    Model/ModelMaterialTableDelegate.h
 
 FORMS += View/MainWindow.ui \
     View/PreferencesWidget.ui \
-    View/MaterialShaderTableForm.ui \
     View/PathEditorTableForm.ui \
     View/AudioToolsForm.ui \
     View/MaterialEditorForm.ui \
-    View/TextEditorTabForm.ui
+    View/TextEditorTabForm.ui \
+    View/ModelMaterialTableForm.ui
 
 RESOURCES += \
     Resources/Resources.qrc \
@@ -205,7 +205,6 @@ LIBS += \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
     -lfreetype \
-    -lGLEW \
     -lassimp \
     -ltinyspline \
     -ltinysplinecpp \

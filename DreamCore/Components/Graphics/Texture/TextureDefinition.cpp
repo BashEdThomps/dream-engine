@@ -22,8 +22,14 @@ namespace Dream
 {
     TextureDefinition::TextureDefinition
     (ProjectDefinition* pd, json js)
-        :IAssetDefinition(pd,js)
+        : IAssetDefinition(pd,js)
     {
+    }
+
+    TextureDefinition::~TextureDefinition
+    ()
+    {
+
     }
 }
 

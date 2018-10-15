@@ -28,13 +28,10 @@ extern "C"
 #include <map>
 #include <iostream>
 #include <memory>
-
-#include "../ScriptCache.h"
-#include "../../../Common/Constants.h"
-#include "../IScriptComponent.h"
 #include <gainput/gainput.h>
-
 #include "LuaScriptInstance.h"
+#include "../ScriptCache.h"
+#include "../IScriptComponent.h"
 
 using std::unique_ptr;
 using std::string;

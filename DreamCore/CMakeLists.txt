@@ -9,7 +9,6 @@ set(OggVorbis_FIND_QUIETLY FALSE)
 
 find_package(assimp REQUIRED)
 find_package(BULLET REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
@@ -34,10 +33,10 @@ message("\t L @ " ${FREETYPE_LIBRARIES}              )
 message("\t I @ " ${FREETYPE_INCLUDE_DIR_ft2build}   )
 
 include_directories(
+    ${OPENGL_INCLUDE_DIR}
     ${OPENAL_INCLUDE_DIR}
     ${VORBIS_INCLUDE_DIR}
     ${ALUT_INCLUDE_DIR}
-    ${GLEW_INCLUDE_DIRS}
     ${assimp_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
@@ -69,7 +68,6 @@ target_link_libraries(
     ${NANOVG_LIB}
     ${ALUT_LIBRARY}
     ${assimp_LIBRARIES}
-    ${GLEW_LIBRARIES}
     ${BULLET_LIBRARY}
     ${FREETYPE_LIBRARIES}
     ${FFTW3_LIBRARIES}

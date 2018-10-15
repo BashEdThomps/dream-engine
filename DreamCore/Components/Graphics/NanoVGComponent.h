@@ -17,7 +17,6 @@
 #pragma once
 
 #include "../IComponent.h"
-#include <GL/glew.h>
 
 #include <nanovg/nanovg.h>
 

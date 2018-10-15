@@ -39,7 +39,7 @@
 
 #include "MainWindowController.h"
 #include "PathEditorFormController.h"
-#include "MaterialShaderFormController.h"
+#include "ModelMaterialFormController.h"
 #include "../View/GLView/Grid.h"
 #include "../View/GLView/SelectionHighlighter.h"
 #include "../View/GLView/RelationshipTree.h"
@@ -248,7 +248,7 @@ private: // Variables
     unique_ptr<MacOSOpenModel> mMacOsOpenModel;
 
     QDir mLastDirectory;
-    MaterialShaderFormController mMaterialShaderTableController;
+    ModelMaterialFormController mModelMaterialTableController;
     PathEditorFormController mPathEditorFormController;
     int mLastVolume;
 };

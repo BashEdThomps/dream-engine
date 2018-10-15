@@ -48,8 +48,8 @@ namespace Dream
         string getNormalTexture();
         void setNormalTexture(string);
 
-        string getDepthmapTexture();
-        void setDepthmapTexture(string);
+        string getDisplacementTexture();
+        void setDisplacementTexture(string);
 
         // Colour
         RGB getDiffuseColour();

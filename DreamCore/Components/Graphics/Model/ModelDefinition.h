@@ -24,12 +24,13 @@ namespace Dream
     {
     public:
         ModelDefinition(ProjectDefinition* pd, json js);
+        ~ModelDefinition() override;
         bool isFormatAssimp();
 
-        bool addMaterialShader(string material, string shader);
-        json* getMaterialShaders();
-        void removeMaterialShader(string material);
-        void clearMaterialShaderList();
-        string getShaderForMaterial(string mat);
+        bool addModelMaterial(string material, string shader);
+        json* getModelMaterials();
+        void removeModelMaterial(string material);
+        void clearModelMaterialList();
+        string getDreamMaterialForModelMaterial(string mat);
     };
 }

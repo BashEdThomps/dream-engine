@@ -26,18 +26,17 @@
 #include <SOIL/SOIL.h>
 
 #include "ModelMesh.h"
-#include "../Texture/Texture.h"
+#include "../Texture/TextureInstance.h"
 #include "../Material/MaterialCache.h"
 
 #include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Shader/ShaderCache.h"
 #include "../Shader/ShaderDefinition.h"
-#include "../../../Common/Constants.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "ModelDefinition.h"
 
-#include "../Material/Material.h"
+#include "../Material/MaterialInstance.h"
 #include <memory>
 
 using std::shared_ptr;
@@ -51,9 +50,8 @@ namespace Dream
     (
         ShaderCache* shaderCache,
         MaterialCache* texCache,
-        IAssetDefinition* definition,
-        SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform),
+        IAssetDefinition* definition)
+        : IAssetInstance(definition,nullptr),
           mMaterialCache(texCache),
           mShaderCache(shaderCache)
     {
@@ -104,6 +102,7 @@ namespace Dream
         return mLoaded;
     }
 
+    /*
     void
     ModelInstance::draw
     (
@@ -126,6 +125,7 @@ namespace Dream
             mesh->draw(shader);
         }
     }
+    */
 
     void
     ModelInstance::processNode
@@ -235,10 +235,14 @@ namespace Dream
         return indices;
     }
 
+        /*
     void
     ModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene, shared_ptr<Material> aMaterial)
+    (aiMesh* mesh,const aiScene* scene, shared_ptr<MaterialInstance> aMaterial)
     {
+        // TODO
+        // Load textures from material definition instaed of model
+
         auto log = getLog();
         // Process material
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -275,6 +279,7 @@ namespace Dream
             aMaterial->mDisplacementTexture = loadMaterialTexture(material, aiTextureType_DISPLACEMENT);
         }
     }
+        */
 
     shared_ptr<ModelMesh>
     ModelInstance::processMesh
@@ -292,53 +297,11 @@ namespace Dream
 
         if(mMaterialCache != nullptr)
         {
-            shared_ptr<Material> aMaterial = mMaterialCache->getMaterialByName(name);
-
-            if (aMaterial == nullptr)
-            {
-                log->debug("Creating Material {}", name.C_Str());
-                aMaterial = mMaterialCache->newMaterial(material);
-                processTextureData(mesh,scene, aMaterial);
-
-                // Get the shader for the material
-                auto modelDef = dynamic_cast<ModelDefinition*>(mDefinition);
-                auto shaderUuid = modelDef->getShaderForMaterial(aMaterial->mName.C_Str());
-
-                log->debug("Getting shader for uuid {}",shaderUuid);
-                auto shaderDef = mSceneObjectRuntime->getAssetDefinitionByUuid(shaderUuid);
-
-                if (shaderDef == nullptr)
-                {
-                    log->error("Could not find shader definition for {}",shaderUuid);
-                    return nullptr;
-                }
-
-                auto shader = mShaderCache->getShaderFromCache
-                (
-                    mSceneObjectRuntime->getProjectPath(),
-                    dynamic_cast<ShaderDefinition*>(shaderDef),
-                    mSceneObjectRuntime
-
-                );
-
-                // Assign the material the specified shader
-                if (shader != nullptr)
-                {
-                    shader->addMaterial(aMaterial);
-                }
-                else
-                {
-                    log->critical("Could not register mesh, Shader was not found in caceh");
-                    return nullptr;
-                }
-            }
-            else
-            {
-                log->debug("Found existing material");
-            }
-
-            log->debug( "Using Material {}" , aMaterial->mName.C_Str());
-
+            auto materialName = string(name.C_Str());
+            auto modelDef = dynamic_cast<ModelDefinition*>(mDefinition);
+            auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
+            auto material = dynamic_cast<MaterialInstance*>(mMaterialCache->getInstance(materialUuid));
+            log->debug( "Using Material {}" , material->getName());
             BoundingBox box;
             box.updateFromMesh(mesh);
             auto aMesh = make_shared<ModelMesh>
@@ -347,35 +310,18 @@ namespace Dream
                 string(mesh->mName.C_Str()),
                 vertices,
                 indices,
-                aMaterial
+                material
             );
-
             aMesh->setBoundingBox(box);
-
-            // Assign mesh to material
-            aMaterial->addMesh(aMesh);
-            aMaterial->debug();
-
-
+            material->addMesh(aMesh);
+            material->debug();
             return aMesh;
         }
         else
         {
             log->critical("Material Cache is nullptr");
         }
-        return nullptr;
-    }
 
-    shared_ptr<Texture>
-    ModelInstance::loadMaterialTexture
-    (aiMaterial* mat, aiTextureType type)
-    {
-        aiString str;
-        mat->GetTexture(type, 0, &str);
-        if (mMaterialCache)
-        {
-            return mMaterialCache->loadTextureFromFile(str.C_Str(), mDirectory.c_str(), type);
-        }
         return nullptr;
     }
 

@@ -1,11 +1,11 @@
-#include "MaterialShaderTableDelegate.h"
+#include "ModelMaterialTableDelegate.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <QLineEdit>
 #include <QComboBox>
 #include <DreamCore.h>
 
-MaterialShaderTableDelegate::MaterialShaderTableDelegate
+ModelMaterialTableDelegate::ModelMaterialTableDelegate
 (QObject* parent)
     : QItemDelegate (parent)
 {
@@ -17,14 +17,14 @@ MaterialShaderTableDelegate::MaterialShaderTableDelegate
     log->debug("Constructing");
 }
 
-MaterialShaderTableDelegate::~MaterialShaderTableDelegate()
+ModelMaterialTableDelegate::~ModelMaterialTableDelegate()
 {
     auto log = spdlog::get("MaterialShaderTableDelegate");
     log->debug("Destructing");
 }
 
 QWidget*
-MaterialShaderTableDelegate::createEditor
+ModelMaterialTableDelegate::createEditor
 (QWidget* parent, const QStyleOptionViewItem& option, const  QModelIndex& index)
 const
 {
@@ -60,14 +60,14 @@ const
 }
 
 void
-MaterialShaderTableDelegate::setShaderDefinitions
-( vector<ShaderDefinition*>& shaderDefinitions)
+ModelMaterialTableDelegate::setMaterialDefinitions
+(vector<MaterialDefinition*>& shaderDefinitions)
 {
     mShaderDefinitions = shaderDefinitions;
 }
 
 void
-MaterialShaderTableDelegate::setMaterialList
+ModelMaterialTableDelegate::setMaterialList
 (vector<string> materialList)
 {
    mMaterialList = materialList;
@@ -75,7 +75,7 @@ MaterialShaderTableDelegate::setMaterialList
 
 
 void
-MaterialShaderTableDelegate::setModelData
+ModelMaterialTableDelegate::setModelData
 (QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
     QLineEdit* lineEdit = nullptr;
@@ -96,7 +96,7 @@ MaterialShaderTableDelegate::setModelData
 
 
 void
-MaterialShaderTableDelegate::setEditorData
+ModelMaterialTableDelegate::setEditorData
 (QWidget* editor, const QModelIndex& index)
 const
 {

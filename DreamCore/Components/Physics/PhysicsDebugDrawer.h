@@ -20,8 +20,6 @@
 #include <sstream>
 #include <vector>
 
-#include <GL/glew.h>
-
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 
@@ -29,7 +27,6 @@
 #include <LinearMath/btIDebugDraw.h>
 
 #include "../Graphics/Shader/ShaderInstance.h"
-#include "../../Common/Constants.h"
 
 using namespace std;
 

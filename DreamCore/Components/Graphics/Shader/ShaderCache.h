@@ -20,37 +20,27 @@
 
 #include <iostream>
 #include <map>
-#include <GL/glew.h>
-
-#include "../../../Common/Constants.h"
-#include "../../../Common/DreamObject.h"
-#include "ShaderInstance.h"
+#include <glm/mat4x4.hpp>
+#include "../../ICache.h"
 
 using namespace std;
+using glm::vec3;
+using glm::mat4;
 
 namespace Dream
 {
-    class ShaderCache : DreamObject
+    class LightInstance;
+
+    class ShaderCache : public ICache
     {
-
-    private:
-        map<string,shared_ptr<ShaderInstance>> mCache;
-        shared_ptr<ShaderInstance> getShaderByUuid(string);
-
     public:
-        ShaderCache();
-        ~ShaderCache();
-
-
-        shared_ptr<ShaderInstance> getShaderFromCache
-        (
-            string projectPath,
-            ShaderDefinition* definition,
-            SceneObjectRuntime* runt
-        );
-
+        ShaderCache(ProjectRuntime* rt);
+        ~ShaderCache() override;
         void logShaders();
-
         void draw(mat4 viewMatrix, mat4 projectionMatrix, vec3 viewPos, vector<LightInstance*> lightQueue);
+
+        // ICache interface
+    protected:
+        IAssetInstance* loadInstance(IAssetDefinition* def) override;
     };
 }

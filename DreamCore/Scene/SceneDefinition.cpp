@@ -16,14 +16,9 @@
  * this file belongs to.
  */
 #include "SceneDefinition.h"
-
-#include "../Common/Constants.h"
-#include "../Components/Transform3D.h"
-
-#include "../Project/ProjectDefinition.h"
-
 #include "SceneObject/SceneObjectDefinition.h"
-
+#include "../Components/Transform3D.h"
+#include "../Project/ProjectDefinition.h"
 #include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
 

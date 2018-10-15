@@ -23,21 +23,34 @@ using std::endl;
 
 namespace Dream
 {
-    DreamObject::DreamObject(string classname) :_CLASSNAME_(classname) {}
-    DreamObject::~DreamObject(){}
+    DreamObject::DreamObject
+    (string classname)
+        : _CLASSNAME_(classname)
+    {}
 
-    void DreamObject::setLogClassName(string name)
+    DreamObject::~DreamObject
+    ()
+    {}
+
+    void
+    DreamObject::setLogClassName
+    (string name)
     {
        _CLASSNAME_ = name;
 
     }
 
-    string DreamObject::getClassName()
+    string
+    DreamObject::getClassName
+    ()
     {
         return _CLASSNAME_;
     }
 
-    std::shared_ptr<spdlog::logger> DreamObject::getLog() const
+    std::shared_ptr<spdlog::logger>
+    DreamObject::getLog
+    ()
+    const
     {
         try
         {

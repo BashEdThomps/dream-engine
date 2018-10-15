@@ -17,6 +17,14 @@
 #include "NanoVGComponent.h"
 #include "../Window/IWindowComponent.h"
 
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 #define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg/nanovg_gl.h>
 

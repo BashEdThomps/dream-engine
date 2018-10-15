@@ -17,15 +17,16 @@
  */
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
+#include "ShaderInstance.h"
+#include "../../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
-
-
     ShaderCache::ShaderCache
-    ()
-        :DreamObject ("ShaderCache")
+    (ProjectRuntime* rt)
+        : ICache(rt)
     {
+        setLogClassName("ShaderCache");
         auto log = getLog();
         log->trace( "Constructing" );
     }
@@ -35,54 +36,23 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing" );
-        mCache.clear();
     }
 
-    shared_ptr<ShaderInstance>
-    ShaderCache::getShaderByUuid
-    (string uuid)
+    IAssetInstance*
+    ShaderCache::loadInstance
+    (IAssetDefinition* def)
     {
         auto log = getLog();
-        for(auto it : mCache)
-        {
-            if (it.first.compare(uuid) == 0)
-            {
-                log->debug( "Found Shader " , uuid );
-                return it.second;
-            }
-        }
-        return nullptr;
-    }
+        auto shaderInstance = new ShaderInstance(dynamic_cast<ShaderDefinition*>(def));
 
-    shared_ptr<ShaderInstance>
-    ShaderCache::getShaderFromCache
-    (string projectPath, ShaderDefinition* definition, SceneObjectRuntime* runt)
-    {
-        auto log = getLog();
-        auto uuid = definition->getUuid();
-        auto shaderInstance = getShaderByUuid(uuid);
-        if (shaderInstance != nullptr)
+        if(shaderInstance->load(mProjectRuntime->getProjectPath()))
         {
-            log->debug("Found shader {} in cache", uuid);
-            return shaderInstance;
-        }
-        log->debug("Loading new shader {}, path: {}",uuid,projectPath);
-        shaderInstance = make_shared<ShaderInstance>(definition,runt);
-        if(shaderInstance->load(projectPath))
-        {
-            mCache.insert
-            (
-                pair<string,shared_ptr<ShaderInstance>>
-                (
-                    uuid,
-                    shaderInstance
-                )
-            );
+            mInstances.push_back(shaderInstance);
             return shaderInstance;
         }
         else
         {
-            log->error("Error while loading shader {}", uuid);
+            log->error("Error while loading shader {}", def->getUuid());
         }
         return nullptr;
     }
@@ -93,10 +63,11 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Contents of shader cache");
-        for (auto shaderPair : mCache)
+        for (auto instance : mInstances)
         {
-            log->debug("{}",shaderPair.second->getNameAndUuidString());
-            shaderPair.second->logMaterials();
+            auto shader = dynamic_cast<ShaderInstance*>(instance);
+            log->debug("{}",shader->getNameAndUuidString());
+            shader->logMaterials();
         }
     }
 
@@ -109,9 +80,9 @@ namespace Dream
         vector<LightInstance*> lightQueue
     )
     {
-        for (auto shaderPair : mCache)
+        for (auto instance : mInstances)
         {
-            auto shader = shaderPair.second;
+            auto shader = dynamic_cast<ShaderInstance*>(instance);
             shader->use();
             shader->setViewMatrix(viewMatrix);
             shader->setProjectionMatrix(projectionMatrix);
@@ -121,3 +92,5 @@ namespace Dream
         }
     }
 } // End of Dream
+
+

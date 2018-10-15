@@ -1,13 +1,10 @@
 #pragma once
 
-#include <DreamCore.h>
 #include "GLView/Grid.h"
 #include "GLView/SelectionHighlighter.h"
 #include "GLView/RelationshipTree.h"
 #include "GLView/PathPointViewer.h"
 #include "WindowInputState.h"
-
-
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
@@ -15,8 +12,6 @@
 
 using namespace Dream;
 using std::shared_ptr;
-
-
 
 class QOpenGLWindowComponent : public QOpenGLWidget, public IWindowComponent
 {

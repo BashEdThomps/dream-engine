@@ -19,17 +19,15 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <assimp/types.h>
 
-#include "../Texture/Texture.h"
+#include "../Texture/TextureInstance.h"
 
-#include "../Material/Material.h"
+#include "../Material/MaterialInstance.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
 #include "../BoundingBox.h"
-#include "../../../Common/Constants.h"
 #include "../../../Common/DreamObject.h"
 
 
@@ -41,7 +39,7 @@ namespace Dream
     {
     private:
         ModelInstance* mParent;
-        shared_ptr<Material> mMaterial;
+        MaterialInstance* mMaterial;
         string  mName;
 
         GLuint mVAO;
@@ -60,17 +58,16 @@ namespace Dream
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            shared_ptr<Material> material
+            MaterialInstance* material
         );
 
         ~ModelMesh();
-        void draw(const shared_ptr<ShaderInstance>&);
         void init();
         void logInstances();
         void addInstance(SceneObjectRuntime* runt);
         void removeInstance(SceneObjectRuntime* runt);
 
-        const shared_ptr<Material>& getMaterial();
+        MaterialInstance* getMaterial();
 
         string getName() const;
         void setName(const string& name);

@@ -18,7 +18,6 @@
 
 #include "PathInstance.h"
 
-#include "../../Common/Constants.h"
 #include "../../Utilities/String.h"
 #include <tinyspline.h>
 #include <glm/glm.hpp>

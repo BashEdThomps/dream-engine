@@ -18,21 +18,28 @@
 
 #pragma once
 
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 #include <vector>
 #include <map>
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 
-#include "../../../Common/Constants.h"
 #include "../../../Common/DreamObject.h"
 #include "../../IAssetInstance.h"
 #include "ShaderUniform.h"
 
+using std::vector;
 using std::string;
 using nlohmann::json;
 using glm::mat4;
@@ -42,7 +49,7 @@ namespace Dream
 {
     class ShaderCache;
     class ShaderDefinition;
-    class Material;
+    class MaterialInstance;
     class LightInstance;
 
     class ShaderInstance : public IAssetInstance
@@ -67,13 +74,10 @@ namespace Dream
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         bool mNeedsRebind;
-        vector<const shared_ptr<Material>> mMaterials;
+        vector<MaterialInstance*> mMaterials;
 
     public:
-        ShaderInstance(
-           ShaderDefinition* def,
-           SceneObjectRuntime* rt
-        );
+        ShaderInstance(ShaderDefinition*);
         ~ShaderInstance() override;
 
         static GLuint CurrentTexture0;
@@ -111,11 +115,11 @@ namespace Dream
 
         void syncUniforms();
 
-        void bindMaterial(const shared_ptr<Material>& material);
+        void bindMaterial(MaterialInstance* material);
         void bindLightQueue(vector<LightInstance*> lightQueue);
         void bindInstances(vector<SceneObjectRuntime*> instances);
 
-        void addMaterial(const shared_ptr<Material> material);
+        void addMaterial(MaterialInstance* material);
 
         void logMaterials();
 

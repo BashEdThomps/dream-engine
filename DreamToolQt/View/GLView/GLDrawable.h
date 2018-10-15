@@ -18,11 +18,19 @@
 #pragma once
 
 #include <QObject>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
+
 
 using namespace std;
 using namespace glm;

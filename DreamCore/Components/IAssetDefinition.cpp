@@ -18,7 +18,6 @@
 #include <string>
 #include  <sstream>
 #include "IAssetDefinition.h"
-#include "../Common/Constants.h"
 
 using std::cout;
 using std::endl;

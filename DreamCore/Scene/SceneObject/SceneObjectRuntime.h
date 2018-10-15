@@ -28,7 +28,6 @@
 
 using std::vector;
 using std::function;
-using std::shared_ptr;
 
 using nlohmann::json;
 using glm::vec3;
@@ -100,9 +99,9 @@ namespace Dream
 
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
-        const shared_ptr<ModelInstance>& getModelInstance();
+        ModelInstance* getModelInstance();
         ScriptInstance* getScriptInstance();
-        const shared_ptr<ShaderInstance>& getShaderInstance();
+        ShaderInstance* getShaderInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
 
@@ -182,8 +181,8 @@ namespace Dream
         PhysicsObjectInstance* mPhysicsObjectInstance;
         Transform3D* mTransform;
 
-        shared_ptr<ModelInstance> mModelInstance;
-        shared_ptr<ShaderInstance> mShaderInstance;
+        ModelInstance* mModelInstance;
+        ShaderInstance* mShaderInstance;
 
         vector<Event> mEventQueue;
         vector<string> mAssetDefinitionUuidLoadQueue;

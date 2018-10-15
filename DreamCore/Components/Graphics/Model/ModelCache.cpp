@@ -20,18 +20,19 @@
 #include <iostream>
 #include "ModelInstance.h"
 #include "ModelDefinition.h"
-#include "../../../Common/Constants.h"
+#include "../../../Project/ProjectRuntime.h"
 
 using std::pair;
 
 namespace Dream
 {
     ModelCache::ModelCache
-    (ShaderCache* shaderCache, MaterialCache* matCache)
-        :DreamObject ("AssimpCache"),
+    (ProjectRuntime* rt, ShaderCache* shaderCache, MaterialCache* matCache)
+        :ICache(rt),
           mShaderCacheHandle(shaderCache),
           mMaterialCacheHandle(matCache)
     {
+        setLogClassName("ModelCache");
         auto log = getLog();
         log->debug("Contructing" );
     }
@@ -41,27 +42,20 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Destructing" );
-        mCache.clear();
     }
 
-    shared_ptr<ModelInstance>
-    ModelCache::getModelFromCache
-    (string projectPath, ModelDefinition* def, SceneObjectRuntime* rt)
+    IAssetInstance*
+    ModelCache::loadInstance
+    (IAssetDefinition* def)
     {
         auto log = getLog();
-        for (auto& ami : mCache)
-        {
-            if (ami->getUuid().compare(def->getUuid()) == 0)
-            {
-                log->debug("Found cached model for {}", def->getUuid());
-                return ami;
-            }
-        }
-
         log->debug("Loading {} from disk",  def->getUuid());
-        auto model = make_shared<ModelInstance>(mShaderCacheHandle, mMaterialCacheHandle,def,rt);
-        model->load(projectPath);
-        mCache.push_back(model);
+        auto model = new ModelInstance(mShaderCacheHandle, mMaterialCacheHandle,def);
+        model->load(mProjectRuntime->getProjectPath());
+        mInstances.push_back(model);
         return model;
     }
+
+
+
 }

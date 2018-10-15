@@ -19,7 +19,6 @@
 
 #include <iostream>
 
-#include "../Common/Constants.h"
 #include "../Common/DreamObject.h"
 
 using namespace std;
