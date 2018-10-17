@@ -773,6 +773,14 @@ ApplicationController::connectAssetMenu
         this,
         SLOT(onAction_Asset_NewDefinition_Texture())
     );
+
+    connect
+    (
+        &mMainWindowHandle,
+        SIGNAL(notifyNewTextureCreated()),
+        this,
+        SLOT(onAction_Asset_NewDefinition_Texture())
+    );
 }
 
 void

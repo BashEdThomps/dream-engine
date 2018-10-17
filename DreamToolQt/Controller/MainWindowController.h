@@ -119,6 +119,7 @@ signals:
 
     void notifyActionScriptingTriggered(bool checked);
     void notifyRightTabWidgetClosed();
+    void notifyNewTextureCreated();
 
 public slots:
     void onInvalidProjectDirectory(QString directory);
@@ -130,6 +131,7 @@ public slots:
     void keyPressEvent(QKeyEvent*) override;
     void keyReleaseEvent(QKeyEvent*) override;
     void onRightTabWidgetClosed(QCloseEvent*);
+    void onNewTextureCreated();
 
 protected:
     void setupUiFeatures();

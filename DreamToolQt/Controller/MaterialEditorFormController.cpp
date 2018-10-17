@@ -280,6 +280,7 @@ MaterialEditorFormController::onNewTextureAction
 {
     auto action = dynamic_cast<QAction*>(sender());
     qDebug() << "New Texture";
+    emit notifyNewTextureCreated();
 }
 
 // Frame Colours ----------------------------------------------------------------

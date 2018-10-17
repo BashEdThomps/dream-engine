@@ -125,9 +125,9 @@ const
         switch (section)
         {
             case 0:
-                return QString("Material");
+                return QString("Model Material");
             case 1:
-                return QString("Shader");
+                return QString("Dream Material");
         }
     }
     return QVariant();

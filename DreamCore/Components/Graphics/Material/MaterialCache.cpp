@@ -48,16 +48,22 @@ namespace Dream
     MaterialCache::loadInstance
     (IAssetDefinition* def)
     {
+        auto log = getLog();
         auto matDef = dynamic_cast<MaterialDefinition*>(def);
+        auto shader = dynamic_cast<ShaderInstance*>(mShaderCache->getInstance(matDef->getShader()));
+
+        if (shader == nullptr)
+        {
+            log->error("Cannot create material {} with null shader", matDef->getNameAndUuidString());
+            return nullptr;
+        }
+
         auto material = new MaterialInstance(matDef,nullptr);
-
-        material->load(mProjectRuntime->getProjectPath());
-
         auto diffuse = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
         auto specular = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
         auto normal = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getNormalTexture()));
         auto displacement = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
-        auto shader = dynamic_cast<ShaderInstance*>(mShaderCache->getInstance(matDef->getShader()));
+        material->load(mProjectRuntime->getProjectPath());
 
         material->setDiffuseTexture(diffuse);
         material->setSpecularTexture(specular);

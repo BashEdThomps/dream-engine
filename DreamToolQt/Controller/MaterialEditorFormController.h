@@ -30,6 +30,9 @@ public:
     void populateShaderComboBox(vector<ShaderDefinition*> shaders);
     void readDefinitionIntoUi();
 
+signals:
+    void notifyNewTextureCreated();
+
 protected:
     void connectSignals();
     QColor colourDialog(QColor current);

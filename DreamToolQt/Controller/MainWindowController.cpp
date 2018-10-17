@@ -910,7 +910,7 @@ MainWindowController::addRightDockWidget
 {
     mRightDockWidget.setWidget(widget);
     addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, &mRightDockWidget);
-    connect(&mRightDockWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(onRightDockWidgetClosed(QCloseEvent*)));
+    //connect(&mRightDockWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(onRightDockWidgetClosed(QCloseEvent*)));
     mRightDockWidget.show();
     return &mRightDockWidget;
 }
@@ -996,6 +996,13 @@ MainWindowController::onRightTabWidgetClosed
     log->critical("Right tab widget closed");
     emit notifyRightTabWidgetClosed();
     mPathEditorFormControllerHandle = nullptr;
+}
+
+void MainWindowController::onNewTextureCreated()
+{
+    auto log = spdlog::get("MainWindowController");
+    log->debug("Echoing newTextureCreated()");
+    emit notifyNewTextureCreated();
 }
 
 bool
@@ -1323,6 +1330,7 @@ MainWindowController::openMaterialEditor
     }
 
     auto form = make_shared<MaterialEditorFormController>(adHandle,mProjectDirectoryModelHandle, mUi->rightTabWidget);
+    connect(form.get(),SIGNAL(notifyNewTextureCreated()),this,SLOT(onNewTextureCreated()));
     form->populateShaderComboBox(shaders);
     form->populateTexturesMenu(textures);
     form->readDefinitionIntoUi();

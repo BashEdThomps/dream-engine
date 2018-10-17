@@ -16,8 +16,8 @@
 
 #include "MaterialInstance.h"
 #include "../Shader/ShaderInstance.h"
-#include "MaterialDefinition.h"
 #include "../Model/ModelMesh.h"
+#include "MaterialDefinition.h"
 
 namespace Dream
 {
@@ -42,7 +42,7 @@ namespace Dream
 
     void
     MaterialInstance::addMesh
-    (const shared_ptr<ModelMesh> mesh)
+    (ModelMesh* mesh)
     {
        mUsedBy.push_back(mesh);
     }
@@ -143,6 +143,21 @@ namespace Dream
     MaterialInstance::load
     (string)
     {
+        auto matDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+        // Parameters
+        mOpacity = matDef->getOpacity();
+        mBumpScaling = matDef->getBumpScaling();
+        mHardness = matDef->getHardness();
+        mReflectivity = matDef->getReflectivity();
+        mShininessStrength = matDef->getShininessStrength();
+        mRefracti = matDef->getRefractionIndex();
+
+        // Colours
+        mColorDiffuse = rgbToAiColor4D(matDef->getDiffuseColour());
+        mColorSpecular = rgbToAiColor4D(matDef->getSpecularColour());
+        mColorAmbient = rgbToAiColor4D(matDef->getAmbientColour());
+        mColorEmissive = rgbToAiColor4D(matDef->getEmissiveColour());
+        mColorReflective = rgbToAiColor4D(matDef->getReflectiveColour());
         return true;
     }
 
@@ -171,7 +186,7 @@ namespace Dream
         return mColorDiffuse;
     }
 
-    void MaterialInstance::setColorDiffuse(const aiColor4D& colorDiffuse)
+    void MaterialInstance::setColorDiffuse(aiColor4D colorDiffuse)
     {
         mColorDiffuse = colorDiffuse;
     }
@@ -181,7 +196,7 @@ namespace Dream
         return mColorAmbient;
     }
 
-    void MaterialInstance::setColorAmbient(const aiColor4D& colorAmbient)
+    void MaterialInstance::setColorAmbient(aiColor4D colorAmbient)
     {
         mColorAmbient = colorAmbient;
     }
@@ -191,7 +206,7 @@ namespace Dream
         return mColorSpecular;
     }
 
-    void MaterialInstance::setColorSpecular(const aiColor4D& colorSpecular)
+    void MaterialInstance::setColorSpecular(aiColor4D colorSpecular)
     {
         mColorSpecular = colorSpecular;
     }
@@ -201,7 +216,7 @@ namespace Dream
         return mColorEmissive;
     }
 
-    void MaterialInstance::setColorEmissive(const aiColor4D& colorEmissive)
+    void MaterialInstance::setColorEmissive(aiColor4D colorEmissive)
     {
         mColorEmissive = colorEmissive;
     }
@@ -211,7 +226,7 @@ namespace Dream
         return mColorReflective;
     }
 
-    void MaterialInstance::setColorReflective(const aiColor4D& colorReflective)
+    void MaterialInstance::setColorReflective(aiColor4D colorReflective)
     {
         mColorReflective = colorReflective;
     }
@@ -221,9 +236,16 @@ namespace Dream
         return mShininessStrength;
     }
 
-    void MaterialInstance::setShininessStrength(const ai_real& shininessStrength)
+    void MaterialInstance::setShininessStrength(ai_real shininessStrength)
     {
         mShininessStrength = shininessStrength;
+    }
+
+    aiColor4D
+    MaterialInstance::rgbToAiColor4D
+    (RGB color)
+    {
+        return aiColor4D(color.r,color.g,color.b,0.0f);
     }
 
     TextureInstance*

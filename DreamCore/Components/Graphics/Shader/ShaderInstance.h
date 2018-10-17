@@ -61,13 +61,13 @@ namespace Dream
         const static char* UNIFORM_SPOT_LIGHT_COUNT;
         const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
 
-        int mPointLightCount;
+        unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
 
-        int mSpotLightCount;
+        unsigned int mSpotLightCount;
         GLint mSpotLightCountLocation;
 
-        int mDirectionalLightCount;
+        unsigned int mDirectionalLightCount;
         GLint mDirectionalLightCountLocation;
 
         GLuint mShaderProgram;

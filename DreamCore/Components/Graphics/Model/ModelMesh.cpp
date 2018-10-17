@@ -39,6 +39,8 @@ namespace Dream
     ModelMesh::drawInstances
     (ShaderInstance* shader)
     {
+        auto log = getLog();
+        log->debug("Drawing {} instances of mesh {}", mInstances.size(), getName());
         shader->bindVertexArray(mVAO);
         shader->bindInstances(mInstances);
         shader->syncUniforms();

@@ -73,14 +73,6 @@ namespace Dream
 
         ~ModelInstance() override;
         bool load(string) override;
-        /*void draw(
-            const shared_ptr<ShaderInstance>&,
-            vec3 transorm,
-            vec3 camPos,
-            float maxDistance,
-            bool alwaysDraw = false
-        );
-        */
         void loadExtraAttributes(json) override;
         BoundingBox getBoundingBox();
         void setModelMatrix(mat4);
@@ -94,7 +86,7 @@ namespace Dream
         MaterialCache* mMaterialCache;
         ShaderCache* mShaderCache;
 
-        vector<shared_ptr<ModelMesh>> mMeshes;
+        vector<ModelMesh*> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -106,10 +98,9 @@ namespace Dream
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
 
         void processNode(aiNode*, const aiScene*);
-        shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
+        ModelMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        //void processTextureData(aiMesh* mesh, const aiScene* scene, shared_ptr<MaterialInstance> material);
     }; // End of AssimpModelInstance
 
 } // End of Dream

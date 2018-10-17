@@ -22,10 +22,12 @@
 #include "../../IAssetInstance.h"
 #include "../Texture/TextureInstance.h"
 
+
 using namespace std;
 
 namespace Dream
 {
+    struct RGB;
     class ModelMesh;
     class ShaderInstance;
     class MaterialDefinition;
@@ -36,7 +38,7 @@ namespace Dream
         MaterialInstance(MaterialDefinition* def, SceneObjectRuntime* rt);
         ~MaterialInstance() override;
 
-        void addMesh(const shared_ptr<ModelMesh> mesh);
+        void addMesh(ModelMesh* mesh);
         void clearMeshes();
 
         bool operator==(MaterialInstance& other);
@@ -63,22 +65,22 @@ namespace Dream
         void setShader(ShaderInstance* shader);
 
         aiColor4D getColorDiffuse() const;
-        void setColorDiffuse(const aiColor4D& colorDiffuse);
+        void setColorDiffuse(aiColor4D colorDiffuse);
 
         aiColor4D getColorAmbient() const;
-        void setColorAmbient(const aiColor4D& colorAmbient);
+        void setColorAmbient(aiColor4D colorAmbient);
 
         aiColor4D getColorSpecular() const;
-        void setColorSpecular(const aiColor4D& colorSpecular);
+        void setColorSpecular(aiColor4D colorSpecular);
 
         aiColor4D getColorEmissive() const;
-        void setColorEmissive(const aiColor4D& colorEmissive);
+        void setColorEmissive(aiColor4D colorEmissive);
 
         aiColor4D getColorReflective() const;
-        void setColorReflective(const aiColor4D& colorReflective);
+        void setColorReflective(aiColor4D colorReflective);
 
         ai_real getShininessStrength() const;
-        void setShininessStrength(const ai_real& shininessStrength);
+        void setShininessStrength(ai_real shininessStrength);
 
     protected:
         ai_real mOpacity = 0.0f;
@@ -100,6 +102,8 @@ namespace Dream
         TextureInstance* mDisplacementTexture;
         ShaderInstance*  mShader;
 
-        vector<const shared_ptr<ModelMesh>> mUsedBy;
+        vector<ModelMesh*> mUsedBy;
+
+        aiColor4D rgbToAiColor4D(RGB color);
     };
 }

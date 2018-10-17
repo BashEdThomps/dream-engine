@@ -314,6 +314,7 @@ namespace Dream
         GLuint id;
         if (material == nullptr)
         {
+            log->error("Attempted to bind a null material, weird");
             return;
         }
 
@@ -351,8 +352,7 @@ namespace Dream
                 checkGLError();
                 GLuint specularIndex = 1;
                 addUniform(INT1, "material.specular", 1, &specularIndex);
-                float ss = material->getShininessStrength();
-                addUniform(FLOAT1, "material.shininess", 1, &ss);
+
                 CurrentTexture1 = id;
             }
         }
@@ -360,6 +360,8 @@ namespace Dream
         auto spec = material->getColorSpecular();
         vec3 glmSpec(spec.r,spec.g,spec.b);
         addUniform(FLOAT3, "material.specularColor", 1, &glmSpec);
+        float ss = material->getShininessStrength();
+        addUniform(FLOAT1, "material.shininess", 1, &ss);
 
         auto normal = material->getNormalTexture();
         if (normal != nullptr)
@@ -403,36 +405,6 @@ namespace Dream
         DirLight dirData;
         SpotLight spotData;
         PointLight pointData;
-
-        /*
-        DirLight;
-            vec3 direction;
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
-
-         PointLight;
-            vec3 position;
-            float constant;
-            float linear;
-            float quadratic;
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
-
-        SpotLight;
-            vec3 position;
-            vec3 direction;
-            float cutOff;
-            float outerCutOff;
-            float constant;
-            float linear;
-            float quadratic;
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
-        */
-
 
         switch (light->getType())
         {

@@ -67,6 +67,10 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object");
+        for (auto mesh : mMeshes)
+        {
+            delete mesh;
+        }
         mMeshes.clear();
         return;
     }
@@ -101,31 +105,6 @@ namespace Dream
         mLoaded = true;
         return mLoaded;
     }
-
-    /*
-    void
-    ModelInstance::draw
-    (
-        const shared_ptr<ShaderInstance>& shader,
-        vec3 transform,
-        vec3 camPos,
-        float maxDistance,
-        bool alwaysDraw
-    ) {
-        auto log = getLog();
-        for(auto mesh : mMeshes)
-        {
-            vec3 center = transform + mesh->getBoundingBox().getCenter();
-            float distance = glm::distance(center,camPos);
-            if (!alwaysDraw && distance > maxDistance)
-            {
-                log->debug("Mesh exceeds max distance, skipping");
-                continue;
-            }
-            mesh->draw(shader);
-        }
-    }
-    */
 
     void
     ModelInstance::processNode
@@ -235,53 +214,7 @@ namespace Dream
         return indices;
     }
 
-        /*
-    void
-    ModelInstance::processTextureData
-    (aiMesh* mesh,const aiScene* scene, shared_ptr<MaterialInstance> aMaterial)
-    {
-        // TODO
-        // Load textures from material definition instaed of model
-
-        auto log = getLog();
-        // Process material
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        aiString name;
-        aiGetMaterialString(material,AI_MATKEY_NAME,&name);
-
-        log->debug("Loading Textures {} for {}",name.C_Str(), getNameAndUuidString());
-
-        // Diffuse Textures
-        if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-        {
-            log->debug("Loading Diffuse Texture {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mDiffuseTexture = loadMaterialTexture(material, aiTextureType_DIFFUSE);
-        }
-
-        // Specular Textures
-        if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
-        {
-            log->debug("Loading Specular {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mSpecularTexture = loadMaterialTexture(material, aiTextureType_SPECULAR);
-        }
-
-        // Normal Textures
-        if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
-        {
-            log->debug("Loading Normal {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mNormalTexture = loadMaterialTexture(material, aiTextureType_NORMALS);
-        }
-
-        // Displacement Texture
-        if (material->GetTextureCount(aiTextureType_DISPLACEMENT) > 0)
-        {
-            log->debug("Loading Displacement {} for {}",name.C_Str(), getNameAndUuidString());
-            aMaterial->mDisplacementTexture = loadMaterialTexture(material, aiTextureType_DISPLACEMENT);
-        }
-    }
-        */
-
-    shared_ptr<ModelMesh>
+    ModelMesh*
     ModelInstance::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
@@ -301,10 +234,19 @@ namespace Dream
             auto modelDef = dynamic_cast<ModelDefinition*>(mDefinition);
             auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
             auto material = dynamic_cast<MaterialInstance*>(mMaterialCache->getInstance(materialUuid));
+            if (material == nullptr)
+            {
+                log->error(
+                    "No material for mesh {} in model {}. Cannot create mesh with null material.",
+                    mesh->mName.C_Str(),
+                    getNameAndUuidString()
+                );
+                return nullptr;
+            }
             log->debug( "Using Material {}" , material->getName());
             BoundingBox box;
             box.updateFromMesh(mesh);
-            auto aMesh = make_shared<ModelMesh>
+            auto aMesh = new ModelMesh
             (
                 this,
                 string(mesh->mName.C_Str()),
