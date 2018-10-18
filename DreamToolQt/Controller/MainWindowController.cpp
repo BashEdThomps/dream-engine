@@ -19,6 +19,8 @@
 #include "ui_MainWindow.h"
 
 #include <QWindow>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QSpacerItem>
 #include <QLabel>
 #include <QMenu>
@@ -469,12 +471,38 @@ MainWindowController::onAssetDefinitionMenuDeleteTriggered
 
     if (assetDefinitionHandle != nullptr)
     {
-        log->debug(
-            "Deleting Asset Definition scene object from {}",
-            assetDefinitionHandle->getNameAndUuidString()
+        QMessageBox confirmDelete(this);
+        confirmDelete.setWindowTitle("Are you sure");
+        confirmDelete.setIcon(QMessageBox::Question);
+        confirmDelete.addButton("Cancel",QMessageBox::ButtonRole::RejectRole);
+        auto accept = confirmDelete.addButton("Delete",QMessageBox::ButtonRole::AcceptRole);
+        confirmDelete.setText
+        (
+            QString("Are you sure you want to delete %1?")
+            .arg(QString::fromStdString(assetDefinitionHandle->getName()))
         );
-        mProjectDefinitionHandle->removeAssetDefinition(assetDefinitionHandle);
-        emit notifyAssetDefinitionTreeDataChanged();
+        confirmDelete.setInformativeText("This will remove it's data from the project and cannot be undone.");
+        confirmDelete.exec();
+
+        if (confirmDelete.clickedButton() == accept)
+        {
+            log->debug(
+                "Deleting Asset Definition scene object from {}",
+                assetDefinitionHandle->getNameAndUuidString()
+            );
+
+            if (mProjectDirectoryModelHandle != nullptr)
+            {
+                mProjectDirectoryModelHandle->deleteAssetDataDirectory(assetDefinitionHandle);
+            }
+            else
+            {
+                log->error("Unable to delete asset directory. Project Dir Model is nullptr");
+            }
+
+            mProjectDefinitionHandle->removeAssetDefinition(assetDefinitionHandle);
+            emit notifyAssetDefinitionTreeDataChanged();
+        }
     }
     else
     {
@@ -1383,4 +1411,35 @@ MainWindowController::setupEditorTabCloseButtonSignal
         mUi->rightTabWidget,SIGNAL(tabCloseRequested(int)),
         this, SLOT(onEditorTabCloseRequested(int))
     );
+}
+
+void
+MainWindowController::closeAllEditors
+()
+{
+    for (auto editor : mEditorTabForms)
+    {
+        auto index = mUi->tabWidget->indexOf(editor.get());
+        mUi->tabWidget->removeTab(index);
+    }
+    mEditorTabForms.clear();
+}
+
+void
+MainWindowController::closeRightWidget
+()
+{
+    mRightDockWidget.close();
+}
+
+void
+MainWindowController::closeProject
+()
+{
+    mWindowComponentHandle->clearRuntime();
+    getScenegraphTreeView()->setModel(nullptr);
+    getAssetDefinitionTreeView()->setModel(nullptr);
+    getPropertiesTreeView()->setModel(nullptr);
+    closeAllEditors();
+    closeRightWidget();
 }

@@ -107,6 +107,7 @@ public:
 
     void setPathEditorFormControllerHandle(PathEditorFormController* pathEditorFormControllerHandle);
 
+    void closeProject();
 signals:
     void notifyActionNew(QString);
     void notifyActionOpen(QString);
@@ -144,6 +145,8 @@ protected:
     bool shouldPassKey(int key);
     void setupGL(QWidget *parent);
 
+    void closeAllEditors();
+    void closeRightWidget();
 protected slots:
     void onMainVolumeChanged(int);
     void onEditorTabCloseRequested(int index);

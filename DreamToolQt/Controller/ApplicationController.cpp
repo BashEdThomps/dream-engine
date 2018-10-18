@@ -1113,15 +1113,13 @@ void
 ApplicationController::onAction_File_Close
 ()
 {
+    mMainWindowHandle.closeProject();
     mSelectedProjectDefinitionHandle = nullptr;
     mSelectedAssetDefinitionHandle = nullptr;
     mSelectedSceneDefinitionHandle = nullptr;
     mSelectedSceneObjectDefinitionHandle = nullptr;
-    mMainWindowHandle.getScenegraphTreeView()->setModel(nullptr);
     mScenegraphTreeModel.reset();
-    mMainWindowHandle.getAssetDefinitionTreeView()->setModel(nullptr);
     mAssetDefinitionTreeModel.reset();
-    mMainWindowHandle.getPropertiesTreeView()->setModel(nullptr);
     mDreamProjectModel->closeProject();
     setActionsEnabled_ValidProject(false);
 }
