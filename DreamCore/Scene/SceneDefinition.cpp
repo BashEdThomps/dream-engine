@@ -586,4 +586,23 @@ namespace Dream
        }
        return  mJson[Constants::SCENE_CAMERA_YAW];
     }
+
+    string
+    SceneDefinition::getLightingShader
+    ()
+    {
+       if (mJson[Constants::SCENE_LIGHTING_SHADER].is_null())
+       {
+           mJson[Constants::SCENE_LIGHTING_SHADER] = "";
+       }
+       return  mJson[Constants::SCENE_LIGHTING_SHADER];
+
+    }
+
+    void
+    SceneDefinition::setLightingShader
+    (string shader)
+    {
+       mJson[Constants::SCENE_LIGHTING_SHADER] = shader;
+    }
 }

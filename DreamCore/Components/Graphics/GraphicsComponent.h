@@ -17,7 +17,13 @@
 
 #pragma once
 
-
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
 
 #include <string>
 #include <map>
@@ -35,6 +41,7 @@ typedef struct NVGcontext NVGcontext;
 
 namespace Dream
 {
+    class ShaderCache;
     class IWindowComponent;
     class Camera;
     class ModelInstance;
@@ -46,6 +53,7 @@ namespace Dream
     class ModelMesh;
     class MaterialInstance;
     class ShaderCache;
+    class ShaderInstance;
 
     class GraphicsComponent : public IComponent
     {
@@ -60,35 +68,38 @@ namespace Dream
         float mMaximumDraw;
         float mMeshCullDistance;
 
-        vector<SceneObjectRuntime*> mModelQueue;
         vector<LightInstance*> mLightQueue;
 
         IWindowComponent* mWindowComponent;
         ShaderCache* mShaderCacheHandle;
+
+        GLuint mGeometryPassFB;
+        GLuint mGeometryPassAlbedoBuffer;
+        GLuint mGeometryPassPositionBuffer;
+        GLuint mGeometryPassNormalBuffer;
+        GLuint mGeometryPassDepthBuffer;
+
+        GLuint mScreenQuadVAO;
+        GLuint mScreenQuadVBO;
+        ShaderInstance* mLightingShader;
+
     public:
-        GraphicsComponent(Camera*,IWindowComponent*);
+        GraphicsComponent(Camera*, IWindowComponent*);
         ~GraphicsComponent() override;
-
-        void addToLightQueue(LightInstance*);
-        void clearLightQueue();
-
-        void clearModelQueue();
-        void addToModelQueue(SceneObjectRuntime*);
-        void drawModelQueue();
-        void preModelRender();
-        void postModelRender();
-
-        void clearFontQueue();
-        void addToFontQueue(SceneObjectRuntime*);
-        void drawFontQueue();
-        void preFontRender();
-        void postFontRender();
-
-        void addToInstanceMap(SceneObjectRuntime*);
 
         bool init(void) override;
         void updateComponent() override;
-        void drawModel(SceneObjectRuntime*);
+
+        void addToLightQueue(LightInstance*);
+        void clearLightQueue();
+        void updateLightQueue();
+        void setupScreenQuad();
+        void renderLightingPass();
+
+
+        void setupGeometryBuffers();
+        void renderGeometryPass();
+
         void setWindowShouldClose(bool);
         Camera* getCamera();
         mat4 getViewMatrix();
@@ -97,12 +108,13 @@ namespace Dream
         void handleResize();
         float getMeshCullDistance() const;
         void setMeshCullDistance(float meshCullDistance);
-        void debugOptimisedModelQueue();
         void setMinimumDraw(float minimumDraw);
         void setMaximumDraw(float maximumDraw);
         bool getUpdateInstanceMapFlag() const;
         void setUpdateInstanceMapFlag(bool updateInstanceMapFlag);
         void setShaderCache(ShaderCache* cache);
+        ShaderInstance* getLightingShader() const;
+        void setLightingShader(ShaderInstance* lightingShader);
 
     }; // End of GraphicsComponent
 } // End of Dream

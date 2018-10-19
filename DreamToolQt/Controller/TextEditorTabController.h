@@ -61,7 +61,7 @@ protected:
     void setupCloseButtonSignal();
 
 public slots:
-    void onTextChanged();
+    void onTextChanged(bool);
     void onSaveButtonClicked(bool);
     void onComboTemplateChanged(const QString&);
 

@@ -118,5 +118,7 @@ namespace Dream
         float getCameraPitch();
         float getCameraYaw();
 
+        string getLightingShader();
+        void setLightingShader(string shader);
     };
 }

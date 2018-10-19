@@ -40,7 +40,8 @@ namespace Dream
           mSpotLightCountLocation(UNIFORM_NOT_FOUND),
           mDirectionalLightCount(0),
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
-          mNeedsRebind(true)
+          mNeedsRebind(true),
+          mMaterialLocation(UNIFORM_NOT_FOUND)
     {
 
         setLogClassName("ShaderInstance");
@@ -62,6 +63,13 @@ namespace Dream
     ()
     {
         return mShaderProgram;
+    }
+
+    int
+    ShaderInstance::countMaterials
+    ()
+    {
+       return mMaterials.size();
     }
 
     bool
@@ -128,6 +136,7 @@ namespace Dream
             return false;
         }
         glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
+        checkGLError();
         return true;
     }
 
@@ -144,6 +153,7 @@ namespace Dream
             return false;
         }
         glUniform3fv(uCamPos,1,value_ptr(value));
+        checkGLError();
         return true;
     }
 
@@ -307,9 +317,10 @@ namespace Dream
         mUniformVector.push_back(newUniform);
     }
 
-    void ShaderInstance::bindMaterial(MaterialInstance* material)
+    void
+    ShaderInstance::bindMaterial
+    (MaterialInstance* material)
     {
-        checkGLError();
         auto log = getLog();
         GLuint id;
         if (material == nullptr)
@@ -396,6 +407,7 @@ namespace Dream
                 CurrentTexture3 = id;
             }
         }
+        checkGLError();
     }
 
     void ShaderInstance::bindLight(LightInstance* light)
@@ -482,6 +494,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Synchronising uniforms for {}",getNameAndUuidString());
+        checkGLError();
         GLuint prog = getShaderProgram();
 
         // Sync lighting uniforms
@@ -491,9 +504,9 @@ namespace Dream
             glUniform1i(mPointLightCountLocation,mPointLightCount);
             checkGLError();
         }
-        else
+        else if (mPointLightCount > 0)
         {
-            log->warn("Could not find Point Light Location Uniform");
+            log->warn("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
@@ -501,9 +514,9 @@ namespace Dream
             glUniform1i(mSpotLightCountLocation,mSpotLightCount);
             checkGLError();
         }
-        else
+        else if (mSpotLightCount > 0)
         {
-            log->warn("Could not find Spot Light Location Uniform");
+            log->warn("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
@@ -511,9 +524,9 @@ namespace Dream
             glUniform1i(mDirectionalLightCountLocation,mDirectionalLightCount);
             checkGLError();
         }
-        else
+        else if (mDirectionalLightCount > 0)
         {
-            log->warn("Could not find Directional Light Location Uniform");
+            log->warn("Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         // Sync user uniforms
@@ -532,14 +545,15 @@ namespace Dream
                 continue;
             }
 
-            log->trace(
-                        "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
-                        getUuid(),
-                        prog,
-                        uniform->getName(),
-                        uniform->getLocation(),
-                        uniform->getCount()
-                        );
+            log->trace
+            (
+                "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
+                getUuid(),
+                prog,
+                uniform->getName(),
+                uniform->getLocation(),
+                uniform->getCount()
+            );
 
             auto location = uniform->getLocation();
             if (location == UNIFORM_NOT_FOUND)

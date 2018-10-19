@@ -17,14 +17,6 @@
 
 #include "GraphicsComponent.h"
 
-#define GL_SILENCE_DEPRECATION
-#ifdef __APPLE__
-    #include <OpenGL/gl3.h>
-#else
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#endif
-
 #define GLM_FORCE_RADIANS
 
 #include <functional>
@@ -67,18 +59,23 @@ using glm::scale;
 
 namespace Dream
 {
+
+
     GraphicsComponent::GraphicsComponent
-    (
-            Camera* camera,
-            IWindowComponent* windowComponent
-            )
+    (Camera* camera, IWindowComponent* windowComponent)
         : IComponent(),
           mCamera(camera),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
           mWindowComponent(windowComponent),
-          mShaderCacheHandle(nullptr)
+          mShaderCacheHandle(nullptr),
+          mGeometryPassFB(0),
+          mGeometryPassPositionBuffer(0),
+          mGeometryPassNormalBuffer(0),
+          mGeometryPassAlbedoBuffer(0),
+          mScreenQuadVAO(0),
+          mScreenQuadVBO(0)
     {
         setLogClassName("GraphicsComponent");
         auto log = getLog();
@@ -90,9 +87,10 @@ namespace Dream
     {
         auto log = getLog();
         log->trace("Destroying Object");
-        clearModelQueue();
         clearLightQueue();
     }
+
+    // Init/Setup ===============================================================
 
     bool
     GraphicsComponent::init
@@ -100,18 +98,6 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Initialising");
-
-        //log->debug("Initialising GLEW");
-        //glewExperimental = GL_TRUE;
-        //GLenum glewInitResult = glewInit();
-
-        //if (glewInitResult != GLEW_OK)
-        //{
-        //    log->error("GLEW failed to initialise");
-        //    return false;
-        //}
-
-        checkGLError();
 
         log->debug(
             "OpenGL Version {}, Shader Version {}",
@@ -124,8 +110,15 @@ namespace Dream
 
 #ifndef __APPLE__
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-#endif
         checkGLError();
+#endif
+        setupGeometryBuffers();
+        setupScreenQuad();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glDisable(GL_BLEND);
 
         log->debug("Initialisation Done.");
         return true;
@@ -180,6 +173,254 @@ namespace Dream
         );
     }
 
+    void
+    GraphicsComponent::updateComponent
+    ()
+    {
+        beginUpdate();
+        auto log = getLog();
+        log->debug("GraphicsComponrnt: updateComponent() Called" );
+
+        // View transform
+        mViewMatrix = mCamera->getViewMatrix();
+
+        if (!mWindowComponent->shouldClose())
+        {
+            updateLightQueue();
+        }
+        endUpdate();
+    }
+
+    void
+    GraphicsComponent::handleResize
+    ()
+    {
+        if (mWindowComponent->sizeHasChanged())
+        {
+            onWindowDimensionsChanged();
+        }
+    }
+
+
+    // Geometry Pass ============================================================
+
+    void
+    GraphicsComponent::renderGeometryPass
+    ()
+    {
+        auto log = getLog();
+        log->debug("Running Geometry Render Pass");
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Setup
+        glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Clear the colorbuffer
+        if (mActiveSceneRuntime != nullptr)
+        {
+            auto clearColour = mActiveSceneRuntime->getClearColour();
+            glClearColor
+            (
+                clearColour[Constants::RED_INDEX],
+                clearColour[Constants::GREEN_INDEX],
+                clearColour[Constants::BLUE_INDEX],
+                1.0f//clearColour[Constants::ALPHA_INDEX]
+            );
+        }
+        else
+        {
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+            return;
+        }
+
+        if (mShaderCacheHandle != nullptr)
+        {
+            mShaderCacheHandle->draw
+            (
+                mViewMatrix,
+                mProjectionMatrix,
+                mCamera->getTranslation()
+            );
+        }
+    }
+
+    // Lighting Pass ============================================================
+
+    void
+    GraphicsComponent::setupGeometryBuffers
+    ()
+    {
+        auto log = getLog();
+        auto width = mWindowComponent->getWidth();
+        auto height = mWindowComponent->getHeight();
+
+        log->debug("Setting up Geometry Buffers with dimensions {}x{}",width,height);
+
+        glGenFramebuffers(1,&mGeometryPassFB);
+        glBindFramebuffer(GL_FRAMEBUFFER, mGeometryPassFB);
+        checkGLError();
+
+        // - position color buffer
+        glGenTextures(1, &mGeometryPassPositionBuffer);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGeometryPassPositionBuffer, 0);
+        checkGLError();
+
+        // - normal color buffer
+        glGenTextures(1, &mGeometryPassNormalBuffer);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mGeometryPassNormalBuffer, 0);
+        checkGLError();
+
+        // - color + specular color buffer
+        glGenTextures(1, &mGeometryPassAlbedoBuffer);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, mGeometryPassAlbedoBuffer, 0);
+        checkGLError();
+
+        // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+        unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+        glDrawBuffers(3, attachments);
+        checkGLError();
+
+        // then also add render buffer object as depth buffer and check for completeness.
+        glGenRenderbuffers(1, &mGeometryPassDepthBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, mGeometryPassDepthBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mGeometryPassDepthBuffer);
+        checkGLError();
+
+        // finally check if framebuffer is complete
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            log->error("Deferred Rendering Framebuffer not complete!");
+        }
+        else
+        {
+            log->debug("Deferred Rending Buffer is complete!");
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        checkGLError();
+    }
+
+    void
+    GraphicsComponent::setupScreenQuad
+    ()
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+
+        // setup plane VAO
+        glGenVertexArrays(1, &mScreenQuadVAO);
+        glGenBuffers(1, &mScreenQuadVBO);
+        glBindVertexArray(mScreenQuadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mScreenQuadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindVertexArray(0);
+    }
+
+    void
+    GraphicsComponent::renderLightingPass
+    ()
+    {
+        // Clear Buffer
+        glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+        glClearColor(0.0f,0.0f,0.0f,1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        mLightingShader->use();
+
+        // Setup source textures
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
+        ShaderInstance::CurrentTexture0 = mGeometryPassPositionBuffer;
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
+        ShaderInstance::CurrentTexture1 = mGeometryPassNormalBuffer;
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
+        ShaderInstance::CurrentTexture2 = mGeometryPassAlbedoBuffer;
+
+        GLuint pos, norm, alb;
+        pos  = 0;
+        norm = 1;
+        alb  = 2;
+        mLightingShader->addUniform(INT1,"gPosition"  ,1, &pos);
+        mLightingShader->addUniform(INT1,"gNormal"    ,1, &norm);
+        mLightingShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
+
+        mLightingShader->setViewerPosition(mCamera->getTranslation());
+        mLightingShader->bindLightQueue(mLightQueue);
+        mLightingShader->syncUniforms();
+
+        mLightingShader->bindVertexArray(mScreenQuadVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+    void
+    GraphicsComponent::updateLightQueue
+    ()
+    {
+        auto log = getLog();
+        log->debug("Updating Light Queue");
+        // Clear existing Queues
+        clearLightQueue();
+
+        mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+            (
+                function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* object)
+                    {
+
+                    if (object->getHidden())
+                    {
+                        return nullptr;
+                    }
+
+                    // Lights
+                    if (object->hasLightInstance())
+                    {
+                        LightInstance* light = object->getLightInstance();
+                        log->debug("Adding light instance to queue {}",light->getNameAndUuidString());
+                        addToLightQueue(light);
+                    }
+
+                    return nullptr;
+                }
+            )
+        );
+    }
+
+
+
+
+    // Accessors ================================================================
+
     float
     GraphicsComponent::getMeshCullDistance
     ()
@@ -195,233 +436,6 @@ namespace Dream
         mMeshCullDistance = meshCullDistance;
     }
 
-    void
-    GraphicsComponent::preModelRender
-    ()
-    {
-        auto log = getLog();
-        log->debug("Pre Render" );
-        checkGLError();
-
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // Clear the colorbuffer
-        if (mActiveSceneRuntime != nullptr)
-        {
-            auto clearColour = mActiveSceneRuntime->getClearColour();
-            glClearColor
-            (
-                clearColour[Constants::RED_INDEX],
-                clearColour[Constants::GREEN_INDEX],
-                clearColour[Constants::BLUE_INDEX],
-                clearColour[Constants::ALPHA_INDEX]
-            );
-        }
-        else
-        {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-        }
-
-        checkGLError();
-    }
-
-    void
-    GraphicsComponent::postModelRender
-    ()
-    {
-        auto log = getLog();
-        log->debug("Post Render" );
-        checkGLError();
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        checkGLError();
-    }
-
-    void
-    GraphicsComponent::updateComponent
-    ()
-    {
-        beginUpdate();
-        auto log = getLog();
-        log->debug("GraphicsComponrnt: updateComponent() Called" );
-
-        // View transform
-        mViewMatrix = mCamera->getViewMatrix();
-
-        if (!mWindowComponent->shouldClose())
-        {
-            // Clear existing Queues
-            clearModelQueue();
-            clearLightQueue();
-
-            mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
-                (
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    (
-                        [&](SceneObjectRuntime* object)
-                        {
-
-                        if (object->getHidden())
-                        {
-                            return nullptr;
-                        }
-
-                        // Models
-                        /*
-                        if (object->hasModelInstance())
-                        {
-                            if (object->hasShaderInstance())
-                            {
-                                addToModelQueue(object);
-                            }
-                            else
-                            {
-                                log->error("Object {} has model, but no shader assigned." , object->getUuid());
-                            }
-                        }
-                        */
-
-                        // Lights
-                        if (object->hasLightInstance())
-                        {
-                            LightInstance* light = object->getLightInstance();
-                            log->debug("Adding light instance to queue {}",light->getNameAndUuidString());
-                            addToLightQueue(light);
-                        }
-
-                        return nullptr;
-                    }
-                )
-            );
-        }
-        endUpdate();
-    }
-
-    void
-    GraphicsComponent::clearModelQueue
-    ()
-    {
-        auto log = getLog();
-        log->debug("Clear 3D Queue" );
-        mModelQueue.clear();
-    }
-
-
-    /* INTERMISSION =========================================================
-     *
-     * We hope you're enjoying tonights show.
-     *
-     * Let's think about rendering pipeline optimisation...
-     *
-     * I want to order my rendering quque in such a way that it minimises shader
-     * changes. Using one shader per ModelInstance is OK but I'm moving to a
-     * 1-shader-per-material approach to allow ModelInstances to be rendered
-     * with multiple shaders, depending on their material.
-     *
-     * Each ModelIinstance has a table of Materials present within the model and the
-     * ShaderInstance that said material want's to be rendered with.
-     *
-     * Using this data I can find all of the meshes in the scene that want to
-     * use any given shader. Then I can build a data structure that holds the
-     * relationship of ShaderInstance to vector<Mesh>. These meshes can be
-     * ordered by distance to implement draw distance limiting.
-     *
-     * e.g
-     *
-     * // Meshes in Frustum OrderedBy Distance Ascending
-     *
-     * vector<Mesh> mMeshes;
-     *
-     * for (Mesh m : mMeshes)
-     * {
-     *     if (mesh.radiusFromCamera() > RenderDistanceMax) break;
-     *
-     *     addToVBO(mMesh)
-     * }
-     *
-     * setupShader(currentShader)
-     * render(currentShader,VBO);
-     *  setTextures()    \
-     *  setUniforms()     \ etc...
-     *  setVariables()   /
-     *
-     * For each ShaderInstance I can setup the shader and render the vector of
-     * meshes (Possibly globbed into a single VBO) in order from furthest to
-     * or vice cersa. without switching shaders.
-     *
-     * The goal is to have each shader used only once per frame.
-     *
-     * The initial map can be built at load-time rather than once per frame,
-     * then meshes ordered by distance once per frame as this is dynamic, but
-     * mesh's material/shader will never change.
-     *
-     * =======================================================================
-     */
-
-
-    void
-    GraphicsComponent::addToModelQueue
-    (SceneObjectRuntime* object)
-    {
-        auto log = getLog();
-        log->debug("Adding {} to 3D Queue",object->getNameAndUuidString());
-        mModelQueue.push_back(object);
-    }
-
-
-    void
-    GraphicsComponent::debugOptimisedModelQueue
-    ()
-    {
-        auto log = getLog();
-        log->critical("Optimised Model Queue");
-    }
-
-    void
-    GraphicsComponent::handleResize
-    ()
-    {
-        if (mWindowComponent->sizeHasChanged())
-        {
-            onWindowDimensionsChanged();
-        }
-    }
-
-    void
-    GraphicsComponent::drawModelQueue
-    ()
-    {
-        auto log = getLog();
-        preModelRender();
-        log->debug("Draw 3D Queue" );
-
-        /*
-        for (SceneObjectRuntime* it : mModelQueue)
-        {
-            drawModel(it);
-            checkGLError();
-        }
-        */
-
-        if (mShaderCacheHandle != nullptr)
-        {
-            mShaderCacheHandle->draw
-            (
-                mViewMatrix,
-                mProjectionMatrix,
-                mCamera->getTranslation(),
-                mLightQueue
-            );
-
-        }
-
-        postModelRender();
-    }
-
     mat4
     GraphicsComponent::getViewMatrix
     ()
@@ -434,64 +448,6 @@ namespace Dream
     ()
     {
         return mProjectionMatrix;
-    }
-
-    void
-    GraphicsComponent::drawModel
-    (SceneObjectRuntime* sceneObject)
-    {
-        /*
-        auto log = getLog();
-        checkGLError();
-
-        log->debug("Drawing Model " , sceneObject->getNameAndUuidString() );
-
-        // Get Assets
-        const shared_ptr<ModelInstance>& model = sceneObject->getModelInstance();
-        const shared_ptr<ShaderInstance>& shader = sceneObject->getShaderInstance();
-        shader->use();
-
-        // Set Point Light Values
-        log->debug("The scene has {} lights", mLightQueue.size());
-        shader->bindLightQueue(mLightQueue);
-
-        vec3 cameraTranslation = mCamera->getTranslation();
-        shader->addUniform(FLOAT3,"viewPos",1,&cameraTranslation);
-        checkGLError();
-
-        // Pass view/projection transform to shader
-        shader->setProjectionMatrix(mProjectionMatrix);
-        checkGLError();
-
-        shader->setViewMatrix(mViewMatrix);
-        checkGLError();
-
-        // calculate the model matrix
-        mat4 modelMatrix = sceneObject->getTransform()->asMat4();
-        vec3 objTranslation = sceneObject->getTranslation();
-        mat4 modelMatrix = mat4(1.0f);
-        // Get raw data
-        quat objOrientation = sceneObject->getTransform()->getOrientation();
-        vec3 objScale       = sceneObject->getScale();
-        // Translate
-        modelMatrix = translate(modelMatrix,objTranslation);
-        // Rotate
-        mat4 rotMat = mat4_cast(objOrientation);
-        modelMatrix = modelMatrix * rotMat;
-        // Scale
-        modelMatrix = scale(modelMatrix, objScale);
-        model->setModelMatrix(modelMatrix);
-
-        // Pass model matrix to shader
-        shader->setModelMatrix(modelMatrix);
-        checkGLError();
-
-        // Draw using shader
-        bool always = sceneObject->getSceneObjectDefinition()->getAlwaysDraw();
-        model->draw(shader, objTranslation, mCamera->getTranslation(), mMeshCullDistance, always);
-        checkGLError();
-
-        */
     }
 
     void
@@ -534,6 +490,21 @@ namespace Dream
     (ShaderCache* cache)
     {
         mShaderCacheHandle = cache;
+    }
+
+    ShaderInstance*
+    GraphicsComponent::getLightingShader
+    ()
+    const
+    {
+        return mLightingShader;
+    }
+
+    void
+    GraphicsComponent::setLightingShader
+    (ShaderInstance* lightingShader)
+    {
+        mLightingShader = lightingShader;
     }
 
 } // End of Dream

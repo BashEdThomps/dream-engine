@@ -21,9 +21,10 @@
 #include <memory>
 #include "../../IAssetInstance.h"
 #include "../Texture/TextureInstance.h"
-
+#include <glm/vec3.hpp>
 
 using namespace std;
+using namespace glm;
 
 namespace Dream
 {

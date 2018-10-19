@@ -68,6 +68,7 @@ const
             return createCameraLookAtCaptureButton(parent);
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
+        case SCENE_PROPERTY_LIGHTING_SHADER:
             return new QLineEdit(parent);
 
         case SCENE_PROPERTY_CAMERA_TRANSLATION_X:
@@ -134,6 +135,7 @@ const
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
+        case SCENE_PROPERTY_LIGHTING_SHADER:
             static_cast<QLineEdit*>(editor)->setText(value.toString());
             break;
 
@@ -191,6 +193,7 @@ const
             break;
         case SCENE_PROPERTY_NAME:
         case SCENE_PROPERTY_NOTES:
+        case SCENE_PROPERTY_LIGHTING_SHADER:
             model->setData(index, static_cast<QLineEdit*>(editor)->text());
             break;
 

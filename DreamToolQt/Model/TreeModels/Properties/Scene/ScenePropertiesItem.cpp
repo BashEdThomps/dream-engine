@@ -125,6 +125,8 @@ ScenePropertiesItem::data
                 return QVariant(mSceneDefinitionHandle->getGravity()[Constants::Z_INDEX]);
             case SCENE_PROPERTY_PHYSICS_DEBUG:
                 return QVariant(mSceneDefinitionHandle->getPhysicsDebug());
+            case SCENE_PROPERTY_LIGHTING_SHADER:
+                return QString::fromStdString(mSceneDefinitionHandle->getLightingShader());
             case SCENE_PROPERTY_NONE:
                 return QVariant();
         }
@@ -232,6 +234,9 @@ ScenePropertiesItem::setData
                 break;
             case SCENE_PROPERTY_PHYSICS_DEBUG:
                 mSceneDefinitionHandle->setPhysicsDebug(value.toBool());
+                break;
+            case SCENE_PROPERTY_LIGHTING_SHADER:
+                mSceneDefinitionHandle->setLightingShader(value.toString().toStdString());
                 break;
             case SCENE_PROPERTY_NONE:
                 break;

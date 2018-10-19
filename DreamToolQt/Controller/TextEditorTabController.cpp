@@ -9,6 +9,7 @@
 
 #include <QMessageBox>
 #include <QStandardItemModel>
+#include <QPlainTextEdit>
 
 using std::make_shared;
 using Dream::Constants;
@@ -34,6 +35,7 @@ TextEditorTabController::TextEditorTabController
 
         log = spdlog::stdout_color_mt("EditorTabController");
     }
+
     log->debug("Constructing");
     mForm.setupUi(this);
     mTextEdit = mForm.textEdit;
@@ -48,7 +50,7 @@ TextEditorTabController::TextEditorTabController
     mSaveButton = mForm.saveButton;
     setupSaveSignals();
     createTemplatesComboBox(mForm.templateComboBox);
-    connect(mTextEdit,SIGNAL(textChanged()),this,SLOT(onTextChanged()));
+    connect(mTextEdit,SIGNAL(modificationChanged(bool)),this,SLOT(onTextChanged(bool)));
 }
 
 TextEditorTabController::~TextEditorTabController
@@ -100,17 +102,21 @@ TextEditorTabController::hasTextChanged
 
 void
 TextEditorTabController::onTextChanged
-()
+(bool changed)
 {
-   mTextHasChanged = true;
+   mTextHasChanged = changed;
 }
 
-void TextEditorTabController::clearTextChanged()
+void
+TextEditorTabController::clearTextChanged
+()
 {
     mTextHasChanged = false;
 }
 
-void TextEditorTabController::setupSaveSignals()
+void
+TextEditorTabController::setupSaveSignals
+()
 {
     connect(mSaveButton,SIGNAL(clicked(bool)),this,SLOT(onSaveButtonClicked(bool)));
 }
@@ -238,6 +244,7 @@ TextEditorTabController::onSaveButtonClicked
                 QString("Saved %1")
                     .arg(QString::fromStdString(mDefinitionHandle->getNameAndUuidString()))
             );
+            dynamic_cast<QPlainTextEdit*>(mTextEdit)->document()->setModified(false);
         }
         else
         {

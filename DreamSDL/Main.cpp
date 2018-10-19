@@ -107,7 +107,7 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    spdlog::set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::warn);
 
     // Run the project
     unsigned int frames = 0;
@@ -116,8 +116,6 @@ int main(int argc, const char** argv)
     while(sr->getState() != SceneState::SCENE_STATE_STOPPED)
     {
         pr->updateLogic();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
         pr->updateGraphics();
         pr->collectGarbage();
 

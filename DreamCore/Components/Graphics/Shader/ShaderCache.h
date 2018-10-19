@@ -37,7 +37,7 @@ namespace Dream
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
         void logShaders();
-        void draw(mat4 viewMatrix, mat4 projectionMatrix, vec3 viewPos, vector<LightInstance*> lightQueue);
+        void draw(mat4 viewMatrix, mat4 projectionMatrix, vec3 viewPos);
 
         // ICache interface
     protected:

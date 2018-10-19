@@ -531,7 +531,8 @@ namespace Dream
         log->debug("UpdateGraphics Called @ {}" , mTime->nowLL());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
-        mGraphicsComponent->drawModelQueue();
+        mGraphicsComponent->renderGeometryPass();
+        mGraphicsComponent->renderLightingPass();
 
         mScriptComponent->updateNanoVG();
         ShaderInstance::InvalidateState();

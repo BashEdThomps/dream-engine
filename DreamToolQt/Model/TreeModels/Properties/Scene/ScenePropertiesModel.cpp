@@ -362,6 +362,7 @@ ScenePropertiesModel::createRenderingProperties
                 SCENE_PROPERTY_CLEAR_BLUE
             )
         );
+
     }
 
     log->debug("createRenderingProperties (AmbientLight)");
@@ -412,6 +413,16 @@ ScenePropertiesModel::createRenderingProperties
             )
         );
     }
+
+    renderingProperty->appendChild
+    (
+        new ScenePropertiesItem
+        (
+            "Lighting Shader",
+            mSceneDefinitionHandle,
+            SCENE_PROPERTY_LIGHTING_SHADER
+        )
+    );
 }
 
 void

@@ -4,7 +4,7 @@ project (Dream)
 
 set(DREAM_BUILD_CORE    ON)
 set(DREAM_BUILD_SDL     ON)
-set(DREAM_BUILD_GLFW    OFF)
+set(DREAM_BUILD_GLFW    ON)
 
 set(
   CMAKE_MODULE_PATH

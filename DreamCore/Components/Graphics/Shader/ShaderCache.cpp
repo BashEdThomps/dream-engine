@@ -76,18 +76,18 @@ namespace Dream
     (
         mat4 viewMatrix,
         mat4 projectionMatrix,
-        vec3 viewPos,
-        vector<LightInstance*> lightQueue
+        vec3 viewPos
     )
     {
         for (auto instance : mInstances)
         {
             auto shader = dynamic_cast<ShaderInstance*>(instance);
+            if (shader->countMaterials() == 0) continue;
+
             shader->use();
             shader->setViewMatrix(viewMatrix);
             shader->setProjectionMatrix(projectionMatrix);
-            shader->setViewerPosition(viewPos);
-            shader->bindLightQueue(lightQueue);
+            //shader->setViewerPosition(viewPos);
             shader->draw();
         }
     }

@@ -1198,7 +1198,7 @@ MainWindowController::onEditorTabCloseRequested
             (
                 this,
                 "Save before closing?",
-                "File contents has changed. Do you want to save before closing?"
+                "File contents has changed.\n\nDo you want to save before closing?"
             );
 
             if (response == QMessageBox::Yes)

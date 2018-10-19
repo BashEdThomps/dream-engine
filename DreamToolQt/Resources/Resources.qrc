@@ -42,5 +42,9 @@
         <file>templates/shader/NonTextured Phong Instanced/glsl.vert</file>
         <file>templates/shader/Textured Phong Instanced/glsl.frag</file>
         <file>templates/shader/Textured Phong Instanced/glsl.vert</file>
+        <file>templates/shader/Deferred Draw/glsl.frag</file>
+        <file>templates/shader/Deferred Draw/glsl.vert</file>
+        <file>templates/shader/Deferred Phong Lighting/glsl.frag</file>
+        <file>templates/shader/Deferred Phong Lighting/glsl.vert</file>
     </qresource>
 </RCC>

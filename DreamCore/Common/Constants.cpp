@@ -189,6 +189,7 @@ namespace Dream
     const string Constants::SCENE_CAMERA_LOOK_AT = "camera_look_at";
     const string Constants::SCENE_CAMERA_PITCH = "camera_pitch";
     const string Constants::SCENE_CAMERA_YAW = "camera_yaw";
+    const string Constants::SCENE_LIGHTING_SHADER = "lighting_shader";
 
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";

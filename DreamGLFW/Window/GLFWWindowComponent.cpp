@@ -72,17 +72,21 @@ namespace DreamGLFW
         /* Initialize the library */
         if (!glfwInit())
         {
+            log->error("FAILED @ Initialising GLFW");
             return false;
         }
 
         /* Create a windowed mode window and its OpenGL context */
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         mWindow = glfwCreateWindow(1280, 720, "DreamGLFW", nullptr,nullptr);
 
-        if (!mWindow)
+        if (mWindow == nullptr)
         {
+
+            log->error("FAILED @ Make Window");
             glfwTerminate();
             return false;
         }

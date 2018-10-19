@@ -31,7 +31,7 @@ using std::endl;
 int main(int argc, char *argv[])
 {
     spdlog::set_level(spdlog::level::off);
-    spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
+    spdlog::set_pattern("%H:%M:%S|%t|%n|%l|%v");
 
     QApplication a(argc, argv);
 

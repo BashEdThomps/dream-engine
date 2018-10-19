@@ -72,10 +72,11 @@ namespace Dream
 
         GLuint mShaderProgram;
 
-        vector<shared_ptr<ShaderUniform>> mUniformVector;
         bool mNeedsRebind;
-        vector<MaterialInstance*> mMaterials;
+        GLint mMaterialLocation;
 
+        vector<shared_ptr<ShaderUniform>> mUniformVector;
+        vector<MaterialInstance*> mMaterials;
     public:
         ShaderInstance(ShaderDefinition*);
         ~ShaderInstance() override;
@@ -95,6 +96,7 @@ namespace Dream
         void use();
         void unbind();
         GLuint getShaderProgram();
+        int countMaterials();
 
         // MVP
         bool setModelMatrix(mat4,string name = "model");

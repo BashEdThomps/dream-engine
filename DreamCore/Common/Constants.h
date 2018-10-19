@@ -172,6 +172,8 @@ namespace Dream
         const static string SCENE_CAMERA_LOOK_AT;
         const static string SCENE_CAMERA_PITCH;
         const static string SCENE_CAMERA_YAW;
+        const static string SCENE_LIGHTING_SHADER;
+
 
         // SceneObject ==========================================================
         const static string SCENE_OBJECT_ROOT_NAME;

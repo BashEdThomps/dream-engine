@@ -38,6 +38,7 @@ namespace Dream
     class IAssetInstance;
     class IAssetDefinition;
     class SceneObjectRuntime;
+    class ShaderInstance;
 
     class SceneRuntime : public IRuntime
     {
@@ -50,6 +51,7 @@ namespace Dream
 
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
+        ShaderInstance* mLightingShader;
 
         vec3 mCameraTranslation;
         vec3 mCameraLookAt;
@@ -122,5 +124,7 @@ namespace Dream
         float getCameraYaw();
         void setCameraYaw(float);
 
+        ShaderInstance* getLightingShader() const;
+        void setLightingShader(ShaderInstance* lightingShader);
     };
 } // End of Dream

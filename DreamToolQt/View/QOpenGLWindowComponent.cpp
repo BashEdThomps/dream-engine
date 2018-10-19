@@ -24,7 +24,6 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
       mMaxFrameTimeValues(100)
-
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (log==nullptr)
@@ -134,12 +133,7 @@ QOpenGLWindowComponent::paintGL
             {
 
                 mProjectRuntimeHandle->updateLogic();
-
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glEnable(GL_DEPTH_TEST);
-
                 mProjectRuntimeHandle->updateGraphics();
-
                 mProjectRuntimeHandle->collectGarbage();
 
                 GraphicsComponent* gfxRuntime = mProjectRuntimeHandle->getGraphicsComponent();
@@ -152,7 +146,9 @@ QOpenGLWindowComponent::paintGL
                 glm::mat4 viewMatrix = gfxRuntime->getViewMatrix();
                 glm::mat4 projectionMatrix = gfxRuntime->getProjectionMatrix();
 
-                // glDisable(GL_DEPTH_TEST);
+                //glDisable(GL_DEPTH_TEST);
+
+                glBindFramebuffer(GL_FRAMEBUFFER,0);
 
                 log->trace("Drawing Grid");
                 if (mGridHandle)
@@ -236,7 +232,8 @@ QOpenGLWindowComponent::paintGL
 }
 
 void
-QOpenGLWindowComponent::drawStats()
+QOpenGLWindowComponent::drawStats
+()
 {
     if (mActiveSceneRuntime == nullptr) return;
 

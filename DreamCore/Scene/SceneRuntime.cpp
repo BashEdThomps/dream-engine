@@ -29,6 +29,7 @@
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Graphics/Camera.h"
 
 #include "../Components/Physics/PhysicsComponent.h"
@@ -43,12 +44,12 @@ namespace Dream
     (
         SceneDefinition* sd,
         ProjectRuntime* project
-    ) :   IRuntime(sd, sd->getName(),sd->getUuid()),
-          mGravity({0,0,0}),
-          mClearColour({0,0,0,0}),
-          mAmbientColour({0,0,0}),
-          mProjectRuntime(project),
-          mRootSceneObjectRuntime(nullptr)
+    ) : IRuntime(sd, sd->getName(),sd->getUuid()),
+        mGravity({0,0,0}),
+        mClearColour({0,0,0,0}),
+        mAmbientColour({0,0,0}),
+        mProjectRuntime(project),
+        mRootSceneObjectRuntime(nullptr)
     {
 
         setLogClassName("SceneRuntime");
@@ -60,7 +61,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        log->trace( "Destructing " );
+        log->trace("Destructing");
 
         if (mRootSceneObjectRuntime != nullptr)
         {
@@ -130,17 +131,17 @@ namespace Dream
     (string uuid)
     {
         return mRootSceneObjectRuntime->applyToAll
-        (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            ([&](SceneObjectRuntime* currentRuntime)
-            {
-                if (currentRuntime->hasUuid(uuid))
-                {
-                    return currentRuntime;
-                }
-            return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-        ));
+                (
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                    ([&](SceneObjectRuntime* currentRuntime)
+        {
+                        if (currentRuntime->hasUuid(uuid))
+                        {
+                            return currentRuntime;
+                        }
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                    ));
     }
 
     SceneObjectRuntime*
@@ -148,17 +149,17 @@ namespace Dream
     (string name)
     {
         return mRootSceneObjectRuntime->applyToAll
-        (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            ([&](SceneObjectRuntime* currentRuntime)
-            {
-                if (currentRuntime->hasName(name))
-                {
-                    return currentRuntime;
-                }
-            return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-        ));
+                (
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                    ([&](SceneObjectRuntime* currentRuntime)
+        {
+                        if (currentRuntime->hasName(name))
+                        {
+                            return currentRuntime;
+                        }
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                    ));
     }
 
     int
@@ -167,13 +168,13 @@ namespace Dream
     {
         int count = 0;
         mRootSceneObjectRuntime->applyToAll(
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            ([&](SceneObjectRuntime*)
-            {
-                count++;
-                return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-        ));
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                    ([&](SceneObjectRuntime*)
+        {
+                        count++;
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                    ));
         return count;
     }
 
@@ -189,14 +190,14 @@ namespace Dream
         }
 
         mRootSceneObjectRuntime->applyToAll(
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            ([&](SceneObjectRuntime*)
-            {
-                log->debug("showScenegraph not implemented");
-                //obj->showStatus();
-                return nullptr;
-            }
-        ));
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                    ([&](SceneObjectRuntime*)
+        {
+                        log->debug("showScenegraph not implemented");
+                        //obj->showStatus();
+                        return nullptr;
+                    }
+                    ));
     }
 
     void
@@ -220,13 +221,13 @@ namespace Dream
         auto log = getLog();
         log->debug( "Collecting Garbage {}" , getNameAndUuidString() );
         mRootSceneObjectRuntime->applyToAll(
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            ([&](SceneObjectRuntime* runt)
-            {
-                runt->collectGarbage();
-                return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-        ));
+                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                    ([&](SceneObjectRuntime* runt)
+        {
+                        runt->collectGarbage();
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                    ));
     }
 
     ProjectRuntime*
@@ -270,7 +271,7 @@ namespace Dream
         setCameraYaw(sceneDefinition->getCameraYaw());
         setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
 
-        // Propogate to project where required
+        // Propogate to project components where required
         auto gfx = mProjectRuntime->getGraphicsComponent();
         if (gfx == nullptr)
         {
@@ -289,6 +290,8 @@ namespace Dream
         physics->setGravity(getGravity());
         physics->setDebug(getPhysicsDebug());
 
+        // Setup Camera
+
         auto camera = mProjectRuntime->getCamera();
 
         if (camera == nullptr)
@@ -301,6 +304,20 @@ namespace Dream
         camera->setYaw(getCameraYaw());
         camera->updateCameraVectors();
         camera->setMovementSpeed(getCameraMovementSpeed());
+
+        // Load Lighting Shader
+        auto shaderCache = mProjectRuntime->getShaderCache();
+        auto shaderUuid = sceneDefinition->getLightingShader();
+        mLightingShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
+        if (mLightingShader == nullptr)
+        {
+            log->error(
+                        "Unable to load lighting shader {} for Scene {}",
+                        shaderUuid,
+                        getNameAndUuidString()
+                        );
+        }
+        gfx->setLightingShader(mLightingShader);
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
@@ -348,7 +365,7 @@ namespace Dream
 
     glm::vec3 SceneRuntime::getCameraLookAt()
     {
-       return mCameraLookAt;
+        return mCameraLookAt;
     }
 
     void SceneRuntime::setCameraLookAt(glm::vec3 lookAt)
@@ -363,17 +380,17 @@ namespace Dream
 
     void SceneRuntime::setCameraPitch(float pitch)
     {
-       mCameraPitch = pitch;
+        mCameraPitch = pitch;
     }
 
     float SceneRuntime::getCameraYaw()
     {
-       return mCameraYaw;
+        return mCameraYaw;
     }
 
     void SceneRuntime::setCameraYaw(float yaw)
     {
-       mCameraYaw = yaw;
+        mCameraYaw = yaw;
     }
 
     vec3
@@ -388,6 +405,20 @@ namespace Dream
     (vec3 cameraTransform)
     {
         mCameraTranslation = cameraTransform;
+    }
+
+    ShaderInstance*
+    SceneRuntime::getLightingShader
+    () const
+    {
+        return mLightingShader;
+    }
+
+    void
+    SceneRuntime::setLightingShader
+    (ShaderInstance* lightingShader)
+    {
+        mLightingShader = lightingShader;
     }
 
 } // End of Dream

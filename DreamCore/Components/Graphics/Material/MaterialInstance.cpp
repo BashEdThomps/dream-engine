@@ -151,7 +151,6 @@ namespace Dream
         mReflectivity = matDef->getReflectivity();
         mShininessStrength = matDef->getShininessStrength();
         mRefracti = matDef->getRefractionIndex();
-
         // Colours
         mColorDiffuse = rgbToAiColor4D(matDef->getDiffuseColour());
         mColorSpecular = rgbToAiColor4D(matDef->getSpecularColour());
