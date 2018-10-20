@@ -107,7 +107,7 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    spdlog::set_level(spdlog::level::warn);
+    spdlog::set_level(spdlog::level::off);
 
     // Run the project
     unsigned int frames = 0;

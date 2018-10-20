@@ -8,16 +8,18 @@ struct Material {
     sampler2D diffuse;
     sampler2D specular;
     sampler2D normal;
+    sampler2D displacement;
     float shininess;
     vec3 diffuseColor;
     vec3 specularColor;
 };
 
-Material material;
+uniform Material material;
 
 in vec2 TexCoords;
 in vec3 FragPos;
 in vec3 Normal;
+in mat3 TBN;
 
 void main()
 {
