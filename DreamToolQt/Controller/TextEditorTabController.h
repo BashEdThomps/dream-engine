@@ -5,7 +5,7 @@
 #include <QSyntaxHighlighter>
 
 #include <QTextEdit>
-#include "ui_EditorTabForm.h"
+#include "ui_TextEditorTabForm.h"
 
 namespace Dream
 {
@@ -76,7 +76,7 @@ private:
 
     // Widgets
     shared_ptr<QSyntaxHighlighter> mHighlighter;
-    Ui::EditorTabForm mForm;
+    Ui::TextEditorTabForm mForm;
     QToolButton* mSaveButton;
     CodeEditorWidget* mTextEdit;
 };

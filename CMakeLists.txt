@@ -28,19 +28,19 @@ set(CMAKE_COLOR_MAKEFILE   ON)
 # Remove 'lib' prefix for shared libraries on Windows
 if (WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
-endif ()
-
-if(UNIX)
-    message("Building for a *nix OS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=4096 --std=c++17")
 endif()
 
 if (APPLE)
     message(status "Building for MacOS X")
-    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++17")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-    #set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
+    set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
     set(CMAKE_MACOSX_RPATH 1)
+endif()
+
+if(UNIX)
+    message("Building for a *nix OS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=4096 --std=c++14")
 endif()
 
 # DreamCore Library
