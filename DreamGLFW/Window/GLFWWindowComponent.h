@@ -38,6 +38,7 @@ namespace DreamGLFW
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
+        void bindDefaultFrameBuffer() override;
 
     private:
         bool initGLFW();

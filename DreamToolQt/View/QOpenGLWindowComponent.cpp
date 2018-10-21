@@ -23,7 +23,8 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mMaxFrameTimeValues(100)
+      mMaxFrameTimeValues(100),
+      mFBO(0)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (log==nullptr)
@@ -64,8 +65,8 @@ void
 QOpenGLWindowComponent::resizeGL
 ( int w, int h )
 {
-    setWidth(w);
-    setHeight(h);
+    setWidth(w*2);
+    setHeight(h*2);
     mSizeHasChanged = true;
 }
 
@@ -83,7 +84,7 @@ QOpenGLWindowComponent::showIdleScreen
 
     QPainter painter(this);
 
-    QPointF center(mWidth/2.0,mHeight/2.0);
+    QPointF center(mWidth/4.0,mHeight/4.0);
     QPointF textPos;
 
     QFont font("Arial", 36);
@@ -106,6 +107,8 @@ void
 QOpenGLWindowComponent::paintGL
 ()
 {
+
+
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (mPaintInProgress)
     {
@@ -131,7 +134,10 @@ QOpenGLWindowComponent::paintGL
 
             if (sRuntime->getState() != SCENE_STATE_STOPPED)
             {
-
+                if (mFBO == 0)
+                {
+                    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mFBO);
+                }
                 mProjectRuntimeHandle->updateLogic();
                 mProjectRuntimeHandle->updateGraphics();
                 mProjectRuntimeHandle->collectGarbage();
@@ -146,9 +152,7 @@ QOpenGLWindowComponent::paintGL
                 glm::mat4 viewMatrix = gfxRuntime->getViewMatrix();
                 glm::mat4 projectionMatrix = gfxRuntime->getProjectionMatrix();
 
-                //glDisable(GL_DEPTH_TEST);
-
-                glBindFramebuffer(GL_FRAMEBUFFER,0);
+                glDisable(GL_DEPTH_TEST);
 
                 log->trace("Drawing Grid");
                 if (mGridHandle)
@@ -376,7 +380,23 @@ void QOpenGLWindowComponent::clearRuntime()
     mRelationshipTreeHandle->clearRuntime();
     mPathPointViewerHandle->clearRuntime();
     mPaintInProgress = false;
+    makeCurrent();
     paintGL();
+    doneCurrent();
+}
+
+void
+QOpenGLWindowComponent::bindDefaultFrameBuffer
+()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+}
+
+void
+QOpenGLWindowComponent::resetFBO
+()
+{
+   mFBO = 0;
 }
 
 double QOpenGLWindowComponent::averageFrameTime()

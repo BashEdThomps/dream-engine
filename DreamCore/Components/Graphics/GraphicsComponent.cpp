@@ -72,8 +72,8 @@ namespace Dream
           mShaderCacheHandle(nullptr),
           mGeometryPassFB(0),
           mGeometryPassPositionBuffer(0),
-          mGeometryPassNormalBuffer(0),
           mGeometryPassAlbedoBuffer(0),
+          mGeometryPassNormalBuffer(0),
           mScreenQuadVAO(0),
           mScreenQuadVBO(0)
     {
@@ -116,9 +116,9 @@ namespace Dream
         setupScreenQuad();
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glDisable(GL_BLEND);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
+        //glDisable(GL_BLEND);
 
         log->debug("Initialisation Done.");
         return true;
@@ -141,16 +141,6 @@ namespace Dream
         );
 
         glViewport(0, 0, windowWidth, windowHeight);
-
-        checkGLError();
-
-        // Ortho projection for 2D
-        mOrthoProjection = ortho
-        (
-            0.0f, static_cast<float>(windowWidth), // Left, Right
-            static_cast<float>(windowHeight), 0.0f // Botto, Top
-        );
-
         checkGLError();
 
         // Perspective Projection Matrix
@@ -211,8 +201,6 @@ namespace Dream
         auto log = getLog();
         log->debug("Running Geometry Render Pass");
 
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // Setup
         glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -220,8 +208,8 @@ namespace Dream
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
 
         // Clear the colorbuffer
         if (mActiveSceneRuntime != nullptr)
@@ -316,7 +304,7 @@ namespace Dream
         {
             log->debug("Deferred Rending Buffer is complete!");
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        mWindowComponent->bindDefaultFrameBuffer();
         checkGLError();
     }
 
@@ -350,12 +338,12 @@ namespace Dream
     ()
     {
         // Clear Buffer
-        glBindFramebuffer(GL_FRAMEBUFFER,0);
+        mWindowComponent->bindDefaultFrameBuffer();
         glClearColor(0.0f,0.0f,0.0f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glDisable(GL_DEPTH);
-        glDisable(GL_BLEND);
+        //glDisable(GL_DEPTH);
+        //glDisable(GL_BLEND);
 
         mLightingShader->use();
 

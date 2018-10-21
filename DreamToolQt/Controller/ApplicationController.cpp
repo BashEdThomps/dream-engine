@@ -966,6 +966,7 @@ ApplicationController::onAction_Scene_Stop
 {
     auto windowComp = mMainWindowHandle.getWindowComponent();
     windowComp->clearRuntime();
+    windowComp->resetFBO();
     mDreamProjectModel->stopActiveSceneRuntime();
 }
 

@@ -52,6 +52,7 @@ namespace Dream
       bool sizeHasChanged();
       double getMouseX();
       double getMouseY();
+      virtual void bindDefaultFrameBuffer() = 0;
 
     protected:
       int mWidth;

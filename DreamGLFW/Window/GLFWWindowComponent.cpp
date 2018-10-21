@@ -62,6 +62,13 @@ namespace DreamGLFW
         return true;
     }
 
+    void
+    GLFWWindowComponent::bindDefaultFrameBuffer
+    ()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER,0);
+    }
+
     bool
     GLFWWindowComponent::initGLFW
     ()

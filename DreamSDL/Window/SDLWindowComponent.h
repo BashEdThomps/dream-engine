@@ -31,7 +31,7 @@ namespace DreamSDL
     {
     public:
         SDLWindowComponent();
-        ~SDLWindowComponent();
+        ~SDLWindowComponent() override;
 
         SDL_Window* getWindow();
         vector<SDL_Event> getSDL_Events();
@@ -40,6 +40,7 @@ namespace DreamSDL
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
+        void bindDefaultFrameBuffer() override;
 
     private:
         bool initSDL();

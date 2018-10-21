@@ -42,6 +42,9 @@ public:
     void setControlScene(bool controlScene);
     void clearRuntime();
 
+    void bindDefaultFrameBuffer() override;
+    void resetFBO();
+
 protected:
     void initializeGL() override;
     void resizeGL( int w, int h ) override;
@@ -62,6 +65,7 @@ private:
     bool mGridEnabled;
     bool mRelationshipTreeEnabled;
     bool mSelectionHighlighterEnabled;
+    GLint mFBO;
 
     WindowInputState mInputState;
     vector<double> mFrameTimes;

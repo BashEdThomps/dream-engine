@@ -59,7 +59,6 @@ namespace Dream
     {
     private:
         mat4 mProjectionMatrix;
-        mat4 mOrthoProjection;
         mat4 mViewMatrix;
 
         Camera* mCamera;
@@ -74,8 +73,8 @@ namespace Dream
         ShaderCache* mShaderCacheHandle;
 
         GLuint mGeometryPassFB;
-        GLuint mGeometryPassAlbedoBuffer;
         GLuint mGeometryPassPositionBuffer;
+        GLuint mGeometryPassAlbedoBuffer;
         GLuint mGeometryPassNormalBuffer;
         GLuint mGeometryPassDepthBuffer;
 

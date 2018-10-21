@@ -67,6 +67,13 @@ namespace DreamSDL
         return true;
     }
 
+    void
+    SDLWindowComponent::bindDefaultFrameBuffer
+    ()
+    {
+       glBindFramebuffer(GL_FRAMEBUFFER,0);
+    }
+
     bool
     SDLWindowComponent::initSDL
     ()
