@@ -22,7 +22,7 @@
 #include <map>
 
 #include "../Common/DreamObject.h"
-#include <json/json.hpp>
+#include <json.hpp>
 
 using std::string;
 using std::map;

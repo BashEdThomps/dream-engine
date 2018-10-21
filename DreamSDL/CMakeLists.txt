@@ -7,7 +7,6 @@ find_package(BULLET     REQUIRED)
 find_package(SDL2       REQUIRED)
 find_package(OPENGL     REQUIRED)
 find_package(GLM        REQUIRED)
-find_package(GLEW       REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(FREETYPE   REQUIRED)
@@ -17,7 +16,6 @@ include_directories(
     ${SOIL_INCLUDE_DIRS}
     ${DreamCore_INCLUDE_DIRS}
     ${OPENGL_INCLUDE_DIR}
-    ${GLEW_INCLUDE_DIRS}
     ${assimp_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
@@ -38,7 +36,6 @@ target_link_libraries(
     -lpthread
     -ldl
     ${SOIL_LIB}
-    ${GLEW_LIBRARIES}
     ${assimp_LIBRARIES}
     ${BULLET_LIBRARY}
     ${SDL2_LIBRARY}

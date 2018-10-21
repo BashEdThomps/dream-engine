@@ -11,7 +11,7 @@ QT += core gui opengl multimedia
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 # Set your required SDK version here
-QMAKE_MAC_SDK = macosx10.14
+#QMAKE_MAC_SDK = macosx10.14
 
 TARGET = DreamToolQt
 TEMPLATE = app
@@ -184,8 +184,7 @@ ICON = Resources/icons/Ag.icns
 macx: LIBS += \
     -framework OpenGL \
     -framework OpenAL \
-    -L/opt/octronic/builds/Dream/DreamCore \
-    -L/opt/octronic/builds/Dream/SOIL \
+    -L/opt/octronic/build/Dream/DreamCore \
     -L/usr/local/lib \
     -L/opt/local/lib \
     -L/usr/lib \
@@ -197,8 +196,7 @@ macx: LIBS += \
     -logg
 
 LIBS += \
-    -L/opt/octronic/builds/Dream/DreamCore \
-    -L/opt/octronic/builds/Dream/SOIL \
+    -L/opt/octronic/build/Dream/DreamCore \
     -L/usr/lib/x86_64-linux-gnu \
     -L/usr/local/lib \
     -L/usr/lib \

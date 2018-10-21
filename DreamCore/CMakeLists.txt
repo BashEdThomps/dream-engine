@@ -57,6 +57,7 @@ target_link_libraries(
     DreamCore
     -lpthread
     -ldl
+    "-framework CoreFoundation"
     ${SOIL_LIB}
     ${TINY_SPLINE_LIB}
     ${TINY_SPLINE_CPP_LIB}
