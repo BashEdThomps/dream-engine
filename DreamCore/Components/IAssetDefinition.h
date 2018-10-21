@@ -23,11 +23,7 @@
 
 #pragma once
 
-#ifdef __APPLE__
-    #include <nlohmann/json.hpp>
-#else
 #include <json.hpp>
-#endif
 
 #include "../Common/IDefinition.h"
 #include "Transform3D.h"

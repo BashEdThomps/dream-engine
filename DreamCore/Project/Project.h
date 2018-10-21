@@ -21,11 +21,7 @@
 #include <memory>
 #include <vector>
 
-#ifdef __APPLE__
-    #include <nlohmann/json.hpp>
-#else
-    #include <json.hpp>
-#endif
+#include <json.hpp>
 
 #include "../Common/DreamObject.h"
 

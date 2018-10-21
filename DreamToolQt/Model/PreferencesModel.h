@@ -18,11 +18,7 @@
 #pragma once
 
 #include <QObject>
-#ifdef __APPLE__
-    #include <nlohmann/json.hpp>
-#else
-    #include <json.hpp>
-#endif
+#include <json.hpp>
 #include <string>
 
 using nlohmann::json;
@@ -53,7 +49,7 @@ private: // Member Functions
     QString getPreferencesDirectoryPath();
 
 private: // Variables
-    json mJson;
+     json mJson;
      static string PREFERENCES_FILE_NAME;
      static string PREFERENCES_DIRECTORY_NAME;
      static string JSON_DEFAULT_PROJECT_DIRECTORY;

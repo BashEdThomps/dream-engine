@@ -15,13 +15,6 @@
 
 #pragma once
 
-#ifdef __APPLE__
-#include <nlohmann/json.hpp>
-#else
-#include <json.hpp>
-#endif
-
-
 #include <memory>
 #include <vector>
 

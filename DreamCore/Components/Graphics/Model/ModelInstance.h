@@ -28,12 +28,6 @@
 #include <string>
 #include <map>
 
-#ifdef __APPLE__
-#include <nlohmann/json.hpp>
-#else
-#include <json.hpp>
-#endif
-
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
 
