@@ -60,6 +60,7 @@ namespace Dream
         const static char* UNIFORM_POINT_LIGHT_COUNT;
         const static char* UNIFORM_SPOT_LIGHT_COUNT;
         const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
+        const static size_t MAX_INSTANCES;
 
         unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
@@ -77,6 +78,8 @@ namespace Dream
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         vector<MaterialInstance*> mMaterials;
+        vector<mat4> mInstanceMatricies;
+        map<string,GLint> mUinformCache;
     public:
         ShaderInstance(ShaderDefinition*);
         ~ShaderInstance() override;
@@ -100,7 +103,7 @@ namespace Dream
 
         // MVP
         bool setModelMatrix(mat4,string name = "model");
-        bool setInstanceModelMatricies(vector<mat4> value, string name="model");
+        //bool setInstanceModelMatricies(vector<mat4> value, string name="model");
         bool setViewMatrix(mat4,string name = "view");
         bool setProjectionMatrix(mat4,string name = "projection");
 

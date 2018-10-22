@@ -87,7 +87,7 @@ namespace Dream
             shader->use();
             shader->setViewMatrix(viewMatrix);
             shader->setProjectionMatrix(projectionMatrix);
-            //shader->setViewerPosition(viewPos);
+            shader->setViewerPosition(viewPos);
             shader->draw();
         }
     }

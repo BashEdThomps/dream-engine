@@ -48,6 +48,7 @@ namespace Dream
         auto log = getLog();
         log->trace( "Constructing Object" );
         mShaderProgram = 0;
+        mInstanceMatricies.reserve(MAX_INSTANCES);
     }
 
     ShaderInstance::~ShaderInstance
@@ -69,7 +70,7 @@ namespace Dream
     ShaderInstance::countMaterials
     ()
     {
-       return mMaterials.size();
+       return static_cast<int>(mMaterials.size());
     }
 
     bool
@@ -90,6 +91,7 @@ namespace Dream
         return true;
     }
 
+    /*
     bool
     ShaderInstance::setInstanceModelMatricies
     (vector<mat4> value, string name)
@@ -105,6 +107,7 @@ namespace Dream
         glUniformMatrix4fv(location,value.size(),GL_FALSE,(float*)&value[0]);
         return true;
     }
+    */
 
 
     bool
@@ -296,7 +299,14 @@ namespace Dream
     ShaderInstance::getUniformLocation
     (string name)
     {
-        return glGetUniformLocation(mShaderProgram,name.c_str());
+        auto iter = mUinformCache.find(name);
+        if (iter == mUinformCache.end())
+        {
+            GLint loc = glGetUniformLocation(mShaderProgram,name.c_str());
+            mUinformCache.insert(pair<string,GLint>(name,loc));
+            return loc;
+        }
+        return (*iter).second;
     }
 
     void ShaderInstance::addUniform(UniformType type, string name, int count, void* data)
@@ -640,14 +650,32 @@ namespace Dream
     ShaderInstance::bindInstances
     (vector<SceneObjectRuntime*> instances)
     {
-        // TODO - Possibly glob these matricies and push as one uniform
-        vector<mat4> matricies;
+        auto log = getLog();
+        /*
+        // glob these matricies and push as one uniform
+        mInstanceMatricies.clear();
         for (size_t i=0; i<instances.size(); i++)
         {
+            if (i>MAX_INSTANCES)
+            {
+                log->warn("Maximum number of instances reached");
+                break;
+            }
             auto instance = instances.at(i);
-            matricies.push_back(instance->getTransform()->asMat4());
+            mInstanceMatricies.push_back(instance->getTransform()->asMat4());
         }
-        setInstanceModelMatricies(matricies);
+        setInstanceModelMatricies(mInstanceMatricies);
+        */
+        for (size_t i=0; i<instances.size(); i++)
+        {
+            if (i>=MAX_INSTANCES)
+            {
+                log->warn("Maximum number of instances reached");
+                break;
+            }
+            auto instance = instances.at(i);
+            setModelMatrix(instance->getTransform()->asMat4(), "model["+std::to_string(i)+"]");
+        }
     }
 
     void
@@ -704,6 +732,7 @@ namespace Dream
     const char* ShaderInstance::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
     const char* ShaderInstance::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
     const unsigned int ShaderInstance::MAX_LIGHTS = 10;
+    const size_t ShaderInstance::MAX_INSTANCES = 100;
 
     GLuint ShaderInstance::CurrentTexture0 = 0;
     GLuint ShaderInstance::CurrentTexture1 = 0;

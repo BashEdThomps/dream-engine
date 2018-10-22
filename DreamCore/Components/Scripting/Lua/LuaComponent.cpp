@@ -472,7 +472,7 @@ namespace Dream
            std::string what = err.what();
            log->critical
            (
-                "{}\nCould not execute onInit in lua script:\n{}",
+                "{}\nCould not execute onNanoVG in lua script:\n{}",
                 sceneObject->getNameAndUuidString(),
                 what
             );

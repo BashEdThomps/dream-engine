@@ -533,7 +533,7 @@ namespace Dream
             parent->getRotationX(), parent->getRotationY(), parent->getRotationZ()
         );
        // Tx to parent
-       mat4 mtx = glm::translate(mat4(1), parent->getTranslation());
+       mat4 mtx = glm::translate(mat4(1.0f), parent->getTranslation());
        // match parent rotation
        mat4 rot = mat4_cast(parent->getOrientation());
        mtx = mtx*rot;
@@ -549,7 +549,7 @@ namespace Dream
 
     glm::mat4 Transform3D::asMat4() const
     {
-       mat4 trans = glm::translate(mat4(1), mTranslation);
+       mat4 trans = glm::translate(mat4(1.0f), mTranslation);
        mat4 rot = mat4_cast(mOrientation);
        trans = trans*rot;
        return glm::scale(trans,mScale);
