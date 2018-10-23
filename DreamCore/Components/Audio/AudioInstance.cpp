@@ -19,7 +19,6 @@
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
-#include "SpectrumAnalyser.h"
 
 namespace Dream
 {
@@ -32,7 +31,6 @@ namespace Dream
         : IAssetInstance(definition, transform),
           mAudioComponent(component),
           mStartTime(-1),
-          mSpectrumAnalyser(nullptr),
           mLastSampleOffset(0),
           mChannels(-1)
     {
@@ -162,25 +160,6 @@ namespace Dream
     {
     }
 
-    void AudioInstance::loadSpectrumAnalyser()
-    {
-        auto log = getLog();
-        auto def = dynamic_cast<AudioDefinition*>(mDefinition);
-        if (def->getSpectrumAnalyser())
-        {
-            mSpectrumAnalyser.reset(new SpectrumAnalyser(this));
-            mSpectrumAnalyser->setSampleRate(mFrequency);
-            mSpectrumAnalyser->setSourceStereo(mFormat == AL_FORMAT_STEREO16);
-            // Currently Arbitrary, from example
-            mSpectrumAnalyser->setParameters(mFrequency/9,1024);
-            log->trace("Creating Spectrum Analyser for {} with sample rate {}",getNameAndUuidString(),mFrequency);
-            if (mAudioComponent != nullptr)
-            {
-                mAudioComponent->pushToUpdateQueue(this);
-            }
-        }
-    }
-
     void
     AudioInstance::setSourcePosision
     (glm::vec3 pos)
@@ -193,19 +172,6 @@ namespace Dream
     (float volume)
     {
         alSourcef(mSource, AL_GAIN,volume);
-    }
-
-    void
-    AudioInstance::updateFFT
-    ()
-    {
-        if (mSpectrumAnalyser != nullptr)
-        {
-            auto currentSample = mAudioComponent->getSampleOffset(mSource);
-            // TODO - be less of a clown about this
-            mSpectrumAnalyser->onData(&mAudioDataBuffer[mLastSampleOffset],currentSample-mLastSampleOffset);
-            mLastSampleOffset = currentSample;
-        }
     }
 
     void

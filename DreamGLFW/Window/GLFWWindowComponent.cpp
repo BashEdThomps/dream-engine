@@ -22,8 +22,17 @@ using Dream::Constants;
 using Dream::SceneRuntime;
 using Dream::SceneState;
 
+static bool WindowSizeChanged = false;
+
 namespace DreamGLFW
 {
+    void
+    FramebufferSizeCallback
+    (GLFWwindow* windows98, int w, int h)
+    {
+        WindowSizeChanged = true;
+    }
+
     GLFWWindowComponent::GLFWWindowComponent
     () : IWindowComponent()
     {
@@ -88,7 +97,8 @@ namespace DreamGLFW
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        mWindow = glfwCreateWindow(1280, 720, "DreamGLFW", nullptr,nullptr);
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+        mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), nullptr,nullptr);
 
         if (mWindow == nullptr)
         {
@@ -99,8 +109,8 @@ namespace DreamGLFW
         }
 
         // Resize callback
-        //glfwSetFramebufferSizeCallback(mWindow,[](){});
-
+        glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
+        glfwSwapInterval(0);
         return true;
     }
 
@@ -133,11 +143,18 @@ namespace DreamGLFW
            mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
         }
 
+        if (WindowSizeChanged)
+        {
+            getCurrentDimensions();
+            WindowSizeChanged = false;
+        }
+
     }
 
     void GLFWWindowComponent::getCurrentDimensions()
     {
-        auto log = spdlog::get("GLFWWindowComponent");
+        glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
+        cout << "Framebuffer Size Changed: " << mWidth << "," << mHeight << endl;
         mSizeHasChanged = true;
     }
 
@@ -152,3 +169,4 @@ namespace DreamGLFW
     }
 
 } // End of Dream
+

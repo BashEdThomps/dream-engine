@@ -23,7 +23,7 @@
 #include <assimp/postprocess.h>
 
 #include "glm/glm.hpp"
-#include <SOIL/SOIL.h>
+#include "../../../deps/soil/SOIL.h"
 
 #include "ModelMesh.h"
 #include "../Texture/TextureInstance.h"

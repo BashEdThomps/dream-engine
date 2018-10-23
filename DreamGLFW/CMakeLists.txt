@@ -9,11 +9,8 @@ find_package(OPENGL     REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
-find_package(FREETYPE   REQUIRED)
-find_package(SOIL       REQUIRED)
 
 include_directories(
-    ${SOIL_INCLUDE_DIRS}
     ${DreamCore_INCLUDE_DIRS}
     ${OPENGL_INCLUDE_DIR}
     ${assimp_INCLUDE_DIRS}
@@ -21,8 +18,6 @@ include_directories(
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
-    ${FREETYPE_INCLUDE_DIR_ft2build}
-    ${SOIL_INCLUDE_DIR}
 )
 
 add_executable (
@@ -35,10 +30,8 @@ target_link_libraries(
     DreamCore
     -lpthread
     -ldl
-    ${SOIL_LIB}
     ${assimp_LIBRARIES}
     ${BULLET_LIBRARY}
     ${GLFW_LIBRARY}
     ${LUA_LIBRARIES}
-    ${FREETYPE_LIBRARIES}
 )

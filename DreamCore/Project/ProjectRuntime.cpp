@@ -196,6 +196,11 @@ namespace Dream
             log->critical("Window component is null");
             return false;
         }
+        auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+
+        mWindowComponent->setWidth(projDef->getWindowWidth());
+        mWindowComponent->setHeight(projDef->getWindowHeight());
+        mWindowComponent->setName(projDef->getName());
 
         if (!mWindowComponent->init())
         {
@@ -326,7 +331,7 @@ namespace Dream
 
         if (mInputComponent != nullptr)
         {
-            mScriptComponent->setInputMap(mInputComponent->getInputMap());
+            //mScriptComponent->setInputMap(mInputComponent->getInputMap());
             log->debug("Passed InputMap to ScriptComponent");
         }
         else

@@ -1,7 +1,7 @@
 #include "TextureCache.h"
 #include "TextureDefinition.h"
 #include "TextureInstance.h"
-#include <SOIL/SOIL.h>
+#include "../../../deps/soil/SOIL.h"
 
 namespace Dream
 {

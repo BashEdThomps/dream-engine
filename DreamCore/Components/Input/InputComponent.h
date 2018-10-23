@@ -17,10 +17,7 @@
 #pragma once
 
 #include "../IComponent.h"
-#include <gainput/gainput.h>
-#include <gainput/GainputInputMap.h>
 
-using namespace gainput;
 using std::vector;
 
 namespace Dream
@@ -58,11 +55,6 @@ namespace Dream
         KB_RETURN
     };
 
-    enum MouseInputSource
-    {
-
-    };
-
     class InputComponent : public IComponent
     {
     public:
@@ -71,8 +63,6 @@ namespace Dream
 
         bool init() override;
         void updateComponent() override;
-
-        InputMap* getInputMap() const;
 
         void debugKeyboard() const;
         void debugMouse() const;
@@ -87,9 +77,6 @@ namespace Dream
         bool mUseKeyboard;
         bool mUseMouse;
         bool mUseJoystick;
-        InputMap* mInputMap;
-        InputManager mInputManager;
-        vector<DeviceId> mDevices;
     };
 
 }

@@ -3,8 +3,8 @@ cmake_minimum_required (VERSION 2.8.0)
 project (Dream)
 
 set(DREAM_BUILD_CORE    ON)
-set(DREAM_BUILD_SDL     ON)
 set(DREAM_BUILD_GLFW    ON)
+set(DREAM_BUILD_SDL     OFF)
 
 set(
   CMAKE_MODULE_PATH

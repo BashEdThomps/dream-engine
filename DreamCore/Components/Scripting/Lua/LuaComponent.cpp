@@ -44,7 +44,7 @@
 
 #define SOL_CHECK_ARGUMENTS 1
 //#define SOL_SAFE_FUNCTION 1
-#include "../../../include/sol.hpp"
+#include "../../../deps/sol2/sol.hpp"
 
 using std::ostringstream;
 using std::exception;
@@ -847,6 +847,7 @@ namespace Dream
     LuaComponent::exposeGainput
     ()
     {
+        /*
         debugRegisteringClass("Gainput");
         sol::state_view stateView(mState);
         stateView.new_usertype<gainput::InputMap>("InputMap",
@@ -888,6 +889,7 @@ namespace Dream
             "KB_SPACE",  InputSource::KB_SPACE,
             "KB_RETURN", InputSource::KB_RETURN
         );
+        */
     }
 
     void

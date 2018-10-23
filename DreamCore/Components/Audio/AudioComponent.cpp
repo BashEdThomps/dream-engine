@@ -425,7 +425,6 @@ namespace Dream
     {
        for (AudioInstance* ai : mUpdateQueue)
        {
-          ai->updateFFT();
           ai->updateMarkers();
        }
     }

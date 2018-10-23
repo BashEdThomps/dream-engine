@@ -34,7 +34,6 @@
 
 using std::vector;
 using std::deque;
-#include "SpectrumAnalyser.h"
 
 namespace Dream
 {
@@ -53,7 +52,6 @@ namespace Dream
         AudioStatus mStatus;
         AudioComponent* mAudioComponent;
         long long mStartTime;
-        unique_ptr<SpectrumAnalyser> mSpectrumAnalyser;
         int mLastSampleOffset;
         int mChannels;
         deque<Event> mMarkerEvents;
@@ -87,7 +85,6 @@ namespace Dream
         long long getStartTime() const;
         void setStartTime(long long startTime);
         void setVolume(float volume);
-        void updateFFT();
         int getChannels() const;
         void updateMarkers();
     };

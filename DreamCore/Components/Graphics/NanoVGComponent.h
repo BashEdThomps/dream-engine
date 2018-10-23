@@ -18,7 +18,7 @@
 
 #include "../IComponent.h"
 
-#include <nanovg/nanovg.h>
+#include "../../deps/nanovg/nanovg.h"
 
 
 typedef struct NVGcontext NVGcontext;

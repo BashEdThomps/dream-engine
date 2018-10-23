@@ -26,7 +26,7 @@
 #endif
 
 #define NANOVG_GL3_IMPLEMENTATION
-#include <nanovg/nanovg_gl.h>
+#include "../../deps/nanovg/nanovg_gl.h"
 
 namespace Dream
 {

@@ -28,7 +28,8 @@ void showUsage(const char** argv)
 int main(int argc, const char** argv)
 {
     spdlog::set_level(spdlog::level::trace);
-    spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
+    //spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
+    spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
 
     auto log = spdlog::stdout_color_mt("Main");
 
@@ -91,14 +92,28 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    spdlog::set_level(spdlog::level::warn);
+    spdlog::set_level(spdlog::level::off);
 
-    // Run the project
+     // Run the project
+    unsigned int frames = 0;
+    double time = glfwGetTime();
+    double one_sec = 1.0;
     while(sr->getState() != SceneState::SCENE_STATE_STOPPED)
     {
         pr->updateLogic();
         pr->updateGraphics();
         pr->collectGarbage();
+
+        if (glfwGetTime() > time + one_sec)
+        {
+            cout << "FPS: " <<  frames << endl;
+            frames = 0;
+            time = glfwGetTime();
+        }
+        else
+        {
+            frames++;
+        }
     }
 
     spdlog::set_level(spdlog::level::trace);
