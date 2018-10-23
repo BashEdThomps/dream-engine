@@ -19,12 +19,11 @@
 #pragma once
 
 #include "../../ICache.h"
-#include "../Texture/TextureInstance.h"
-#include "MaterialInstance.h"
-//#include <assimp/material.h>
 
 
 using namespace std;
+=======
+>>>>>>> windows_port
 
 namespace Dream
 {

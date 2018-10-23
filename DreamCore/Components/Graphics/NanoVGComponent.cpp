@@ -17,12 +17,16 @@
 #include "NanoVGComponent.h"
 #include "../Window/IWindowComponent.h"
 
-#define GL_SILENCE_DEPRECATION
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #ifdef __APPLE__
-    #include <OpenGL/gl3.h>
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl3.h>
 #else
-    #include <GL/gl.h>
-    #include <GL/glu.h>
+#include <GL/glew.h>
+#include <GL/glu.h>
 #endif
 
 #define NANOVG_GL3_IMPLEMENTATION
@@ -96,7 +100,7 @@ namespace Dream
         nvgGlobalCompositeBlendFuncSeparate(mContext,srcRGB,dstRGB,srcAlpha,dstAlpha);
     }
 
-    NVGcolor NanoVGComponent::RGB(unsigned char r, unsigned char g, unsigned char b)
+    NVGcolor NanoVGComponent::_RGB(unsigned char r, unsigned char g, unsigned char b)
     {
         return nvgRGB(r,g,b);
     }

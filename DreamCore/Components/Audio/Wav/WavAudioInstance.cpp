@@ -64,8 +64,8 @@ namespace Dream
             //Read the data
             //uint16_t bytesPerSample = mWavHeader.BitsPerSample / 8;      // Number of bytes per sample
             //uint64_t numSamples = mWavHeader.ChunkSize / bytesPerSample; //How many samples are in the wav file?
-            int8_t* buffer = new int8_t[Constants::AUDIO_BUFFER_SIZE];
-            while ((bytesRead = fread(buffer, sizeof buffer[0], Constants::AUDIO_BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0)
+            int8_t* buffer = new int8_t[AUDIO_BUFFER_SIZE];
+            while ((bytesRead = fread(buffer, sizeof buffer[0], AUDIO_BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0)
             {
                 mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
             }

@@ -924,7 +924,7 @@ namespace Dream
             "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation,
             "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc,
             "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate,
-            "RGB",&NanoVGComponent::RGB,
+            "RGB",&NanoVGComponent::_RGB,
             "RGBf",&NanoVGComponent::RGBf,
             "RGBA",&NanoVGComponent::RGBA,
             "RGBAf",&NanoVGComponent::RGBAf,

@@ -1,8 +1,5 @@
 # - try to find the OpenAL ALUT library
 #
-# Users may optionally supply:
-#  ALUT_ROOT_DIR - a prefix to start searching.
-#
 # Cache Variables: (probably not for direct use in your scripts)
 #  ALUT_INCLUDE_DIR
 #  ALUT_LIBRARY
@@ -29,24 +26,6 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-set(ALUT_ROOT_DIR
-	"${ALUT_ROOT_DIR}"
-	CACHE
-	PATH
-	"Path to search for ALUT library")
-
-# Share search paths with OpenAL
-if(NOT "$ENV{OPENALDIR}" STREQUAL "")
-	if(NOT ALUT_ROOT_DIR)
-		set(ALUT_ROOT_DIR "$ENV{OPENALDIR}")
-	endif()
-else()
-	if(ALUT_ROOT_DIR)
-		set(ENV{OPENALDIR} "${ALUT_ROOT_DIR}")
-	endif()
-endif()
-
-
 
 ###
 # Configure ALUT
@@ -54,8 +33,6 @@ endif()
 find_path(ALUT_INCLUDE_DIR
 	NAMES
 	alut.h
-	HINTS
-	"${ALUT_ROOT_DIR}"
 	PATH_SUFFIXES
 	AL
 	alut
@@ -69,13 +46,11 @@ find_path(ALUT_INCLUDE_DIR
 	/usr/local
 	/opt/local
 	/sw)
-mark_as_advanced(ALUT_INCLUDE_DIR)
+#mark_as_advanced(ALUT_INCLUDE_DIR)
 
 find_library(ALUT_LIBRARY
 	NAMES
 	alut
-	HINTS
-	"${ALUT_ROOT_DIR}"
 	PATH_SUFFIXES
 	lib
 	lib64
@@ -83,7 +58,7 @@ find_library(ALUT_LIBRARY
 	/usr/local
 	/opt/local
 	/sw)
-mark_as_advanced(ALUT_LIBRARY)
+#mark_as_advanced(ALUT_LIBRARY)
 
 ###
 # Prereq: OpenAL
@@ -132,5 +107,4 @@ if(ALUT_FOUND)
 		get_filename_component(_parent "${ALUT_INCLUDE_DIR}/.." ABSOLUTE)
 		list(APPEND ALUT_INCLUDE_DIRS "${_parent}")
 	endif()
-	mark_as_advanced(ALUT_ROOT_DIR)
 endif()

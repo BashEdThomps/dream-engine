@@ -22,6 +22,7 @@
 #include "ShaderDefinition.h"
 #include "../Light/LightInstance.h"
 #include "../Material/MaterialInstance.h"
+#include "../Texture/TextureInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Utilities/FileReader.h"
 

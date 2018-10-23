@@ -20,7 +20,7 @@
 #include "../../Common/DreamObject.h"
 
 using namespace glm;
-class aiMesh;
+struct aiMesh;
 
 namespace Dream
 {

@@ -16,11 +16,21 @@
 
 #pragma once
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl3.h>
+#else
+#include <GL/glew.h>
+#include <GL/glu.h>
+#endif
+
 #include <iostream>
 #include <sstream>
 #include <vector>
-//#include <assimp/types.h>
-
 
 #include "../BoundingBox.h"
 #include "../Material/MaterialInstance.h"
@@ -34,6 +44,10 @@
 namespace Dream
 {
     class ModelInstance;
+	class MaterialInstance;
+	class TextureInstance;
+	class ShaderInstance;
+	class SceneObjectRuntime;
 
     class ModelMesh : public DreamObject
     {

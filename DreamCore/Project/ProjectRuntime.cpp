@@ -43,6 +43,7 @@
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Graphics/Texture/TextureCache.h"
 
 using std::endl;

@@ -70,7 +70,7 @@ public:
     // Colors in NanoVG are stored as unsigned ints in ABGR format.
 
     // Returns a color value from red, green, blue values. Alpha will be set to 255 (1.0f).
-    NVGcolor RGB(unsigned char r, unsigned char g, unsigned char b);
+    NVGcolor _RGB(unsigned char r, unsigned char g, unsigned char b);
 
     // Returns a color value from red, green, blue values. Alpha will be set to 1.0f.
     NVGcolor RGBf(float r, float g, float b);

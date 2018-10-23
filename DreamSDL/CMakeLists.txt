@@ -9,7 +9,6 @@ find_package(OPENGL     REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(assimp     REQUIRED)
 find_package(Lua        REQUIRED)
-find_package(FREETYPE   REQUIRED)
 find_package(SOIL       REQUIRED)
 
 include_directories(
@@ -21,7 +20,6 @@ include_directories(
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIR}
-    ${FREETYPE_INCLUDE_DIR_ft2build}
     ${SOIL_INCLUDE_DIR}
 )
 
@@ -40,5 +38,4 @@ target_link_libraries(
     ${BULLET_LIBRARY}
     ${SDL2_LIBRARY}
     ${LUA_LIBRARIES}
-    ${FREETYPE_LIBRARIES}
 )

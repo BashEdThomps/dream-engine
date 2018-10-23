@@ -15,11 +15,47 @@ find_package(Lua REQUIRED)
 find_package(GLM REQUIRED)
 
 
-message("Using Lua: "                )
-message("\t L @ " ${LUA_LIBRARIES}   )
-message("\t I @ " ${LUA_INCLUDE_DIR} )
-message("\t V: "  ${LUA_VERSION_STRING})
+if (WIN32)
+    find_package(GLEW REQUIRED)
+    include_directories(
+            ${OPENGL_INCLUDE_DIR}
+            ${OPENAL_INCLUDE_DIR}
+            ${VORBIS_INCLUDE_DIR}
+            ${ALUT_INCLUDE_DIR}
+            ${assimp_INCLUDE_DIRS}
+            ${GLM_INCLUDE_DIR}
+            ${BULLET_INCLUDE_DIR}
+            ${LUA_INCLUDE_DIR}
+            ${SOIL_INCLUDE_DIRS}
+            ${NANOVG_INCLUDE_DIRS}
+            ${SPDLOG_INCLUDE_DIR}
+            ${GAINPUT_INCLUDE_DIR}
+            ${TINY_SPLINE_INCLUDE_DIR}
+            ${SOIL_INCLUDE_DIR}
+            ${FFTW3_INCLUDE_DIRS}
+            ${GLEW_INCLUDE_DIR}
+        )
+else()
+    include_directories(
+            ${OPENGL_INCLUDE_DIR}
+            ${OPENAL_INCLUDE_DIR}
+            ${VORBIS_INCLUDE_DIR}
+            ${ALUT_INCLUDE_DIR}
+            ${assimp_INCLUDE_DIRS}
+            ${GLM_INCLUDE_DIR}
+            ${BULLET_INCLUDE_DIR}
+            ${LUA_INCLUDE_DIR}
+            ${SOIL_INCLUDE_DIRS}
+            ${NANOVG_INCLUDE_DIRS}
+            ${SPDLOG_INCLUDE_DIR}
+            ${GAINPUT_INCLUDE_DIR}
+            ${TINY_SPLINE_INCLUDE_DIR}
+            ${SOIL_INCLUDE_DIR}
+            ${FFTW3_INCLUDE_DIRS}
+        )
+endif()
 
+<<<<<<< HEAD
 include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${OPENAL_INCLUDE_DIR}
@@ -29,6 +65,9 @@ include_directories(
     ${LUA_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
 )
+=======
+
+>>>>>>> windows_port
 
 add_library(
     DreamCore
@@ -36,6 +75,7 @@ add_library(
     ${SRC_FILES}
 )
 
+<<<<<<< HEAD
 target_link_libraries(
     DreamCore
     -lpthread
@@ -50,6 +90,49 @@ target_link_libraries(
     ${BULLET_LIBRARY}
     ${GLM_LIBRARY}
 )
+=======
+IF (WIN32)
+        target_link_libraries(
+            DreamCore
+            ${GLEW_LIBRARY_RELEASE}
+            ${SOIL_LIB}
+            ${TINY_SPLINE_LIB}
+            ${TINY_SPLINE_CPP_LIB}
+            ${GAINPUT_LIB}
+            ${LUA_LIBRARIES}
+            ${OPENAL_LIBRARY}
+            ${OPENGL_LIBRARIES}
+            ${OGGVORBIS_LIBRARIES}
+            ${NANOVG_LIB}
+            ${ALUT_LIBRARY}
+            ${assimp_LIBRARIES}
+            ${BULLET_LIBRARY}
+            ${FFTW3_LIBRARIES}
+        )
+ELSE()
+        target_link_libraries(
+            DreamCore
+            -lpthread
+            -ldl
+            "-framework CoreFoundation"
+            -lGLEW
+            ${SOIL_LIB}
+            ${TINY_SPLINE_LIB}
+            ${TINY_SPLINE_CPP_LIB}
+            ${GAINPUT_LIB}
+            ${LUA_LIBRARIES}
+            ${OPENAL_LIBRARY}
+            ${OPENGL_LIBRARIES}
+            ${OGGVORBIS_LIBRARIES}
+            ${NANOVG_LIB}
+            ${ALUT_LIBRARY}
+            ${assimp_LIBRARIES}
+            ${BULLET_LIBRARY}
+            ${FFTW3_LIBRARIES}
+        )
+ENDIF()
+
+>>>>>>> windows_port
 
 set(
     ${PROJECT_NAME}_DEFINITIONS

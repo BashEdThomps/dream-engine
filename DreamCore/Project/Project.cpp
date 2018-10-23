@@ -18,10 +18,14 @@
 #include "Project.h"
 
 #include <algorithm>
-#include <dirent.h>
 #include <thread>
-#include <unistd.h>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <dirent.h>
+#include <unistd.h>
+#endif
 #include "ProjectRuntime.h"
 #include "ProjectDefinition.h"
 
@@ -106,9 +110,11 @@ namespace Dream
     (string directory)
     {
         auto log = getLog();
+        vector<string> directoryContents;
+
+#ifndef WIN32
         DIR *dir;
         struct dirent *ent;
-        vector<string> directoryContents;
         if ((dir = opendir(directory.c_str())) != nullptr)
         {
             while ((ent = readdir (dir)) != nullptr)
@@ -122,6 +128,19 @@ namespace Dream
             log->error( "Unable to open directory {}", directory );
             return false;
         }
+#else
+		WIN32_FIND_DATA data;
+		HANDLE hFind = FindFirstFile(directory.c_str(), &data);      // DIRECTORY
+
+		if (hFind != INVALID_HANDLE_VALUE) 
+		{
+			do 
+			{
+				directoryContents.push_back(data.cFileName);
+			} while (FindNextFile(hFind, &data));
+			FindClose(hFind);
+		}
+#endif
 
         string projectFileName;
         bool hasAssetDirectory = false;
@@ -149,9 +168,7 @@ namespace Dream
             return false;
         }
 
-        {
-            log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
-        }
+        log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
 

@@ -16,6 +16,7 @@
 
 #include "MaterialInstance.h"
 #include "../Shader/ShaderInstance.h"
+#include "../Texture/TextureInstance.h"
 #include "../Model/ModelMesh.h"
 #include "MaterialDefinition.h"
 
