@@ -19,7 +19,7 @@
 #include "PathInstance.h"
 
 #include "../../Utilities/String.h"
-#include <tinyspline.h>
+#include "../../deps/tinyspline/tinyspline.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>

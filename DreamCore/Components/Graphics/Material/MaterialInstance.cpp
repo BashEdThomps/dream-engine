@@ -152,11 +152,11 @@ namespace Dream
         mShininessStrength = matDef->getShininessStrength();
         mRefracti = matDef->getRefractionIndex();
         // Colours
-        mColorDiffuse = rgbToAiColor4D(matDef->getDiffuseColour());
-        mColorSpecular = rgbToAiColor4D(matDef->getSpecularColour());
-        mColorAmbient = rgbToAiColor4D(matDef->getAmbientColour());
-        mColorEmissive = rgbToAiColor4D(matDef->getEmissiveColour());
-        mColorReflective = rgbToAiColor4D(matDef->getReflectiveColour());
+        mColorDiffuse = rgbToVec3(matDef->getDiffuseColour());
+        mColorSpecular = rgbToVec3(matDef->getSpecularColour());
+        mColorAmbient = rgbToVec3(matDef->getAmbientColour());
+        mColorEmissive = rgbToVec3(matDef->getEmissiveColour());
+        mColorReflective = rgbToVec3(matDef->getReflectiveColour());
         return true;
     }
 
@@ -180,71 +180,71 @@ namespace Dream
         mShader = shader;
     }
 
-    aiColor4D MaterialInstance::getColorDiffuse() const
+    vec3 MaterialInstance::getColorDiffuse() const
     {
         return mColorDiffuse;
     }
 
-    void MaterialInstance::setColorDiffuse(aiColor4D colorDiffuse)
+    void MaterialInstance::setColorDiffuse(vec3 colorDiffuse)
     {
         mColorDiffuse = colorDiffuse;
     }
 
-    aiColor4D MaterialInstance::getColorAmbient() const
+    vec3 MaterialInstance::getColorAmbient() const
     {
         return mColorAmbient;
     }
 
-    void MaterialInstance::setColorAmbient(aiColor4D colorAmbient)
+    void MaterialInstance::setColorAmbient(vec3 colorAmbient)
     {
         mColorAmbient = colorAmbient;
     }
 
-    aiColor4D MaterialInstance::getColorSpecular() const
+    vec3 MaterialInstance::getColorSpecular() const
     {
         return mColorSpecular;
     }
 
-    void MaterialInstance::setColorSpecular(aiColor4D colorSpecular)
+    void MaterialInstance::setColorSpecular(vec3 colorSpecular)
     {
         mColorSpecular = colorSpecular;
     }
 
-    aiColor4D MaterialInstance::getColorEmissive() const
+    vec3 MaterialInstance::getColorEmissive() const
     {
         return mColorEmissive;
     }
 
-    void MaterialInstance::setColorEmissive(aiColor4D colorEmissive)
+    void MaterialInstance::setColorEmissive(vec3 colorEmissive)
     {
         mColorEmissive = colorEmissive;
     }
 
-    aiColor4D MaterialInstance::getColorReflective() const
+    vec3 MaterialInstance::getColorReflective() const
     {
         return mColorReflective;
     }
 
-    void MaterialInstance::setColorReflective(aiColor4D colorReflective)
+    void MaterialInstance::setColorReflective(vec3 colorReflective)
     {
         mColorReflective = colorReflective;
     }
 
-    ai_real MaterialInstance::getShininessStrength() const
+    float MaterialInstance::getShininessStrength() const
     {
         return mShininessStrength;
     }
 
-    void MaterialInstance::setShininessStrength(ai_real shininessStrength)
+    void MaterialInstance::setShininessStrength(float shininessStrength)
     {
         mShininessStrength = shininessStrength;
     }
 
-    aiColor4D
-    MaterialInstance::rgbToAiColor4D
+    vec3
+    MaterialInstance::rgbToVec3
     (RGB color)
     {
-        return aiColor4D(color.r,color.g,color.b,0.0f);
+        return vec3(color.r,color.g,color.b);
     }
 
     TextureInstance*

@@ -16,8 +16,8 @@
 
 #include "PhysicsObjectInstance.h"
 
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
 
 #include "PhysicsMotionState.h"
 #include "PhysicsComponent.h"
@@ -30,6 +30,7 @@
 namespace Dream
 {
 
+    /*
     map<string,const aiScene*> PhysicsObjectInstance::AssimpModelCache = map<string,const aiScene*>();
     ::Assimp::Importer PhysicsObjectInstance::mImporter;
 
@@ -70,6 +71,7 @@ namespace Dream
         AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
         return scene;
     }
+    */
 
     bool PhysicsObjectInstance::isInPhysicsWorld()
     {
@@ -87,12 +89,12 @@ namespace Dream
         PhysicsComponent* comp,
         SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
-          mPhysicsComponentHandle(comp),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
          mRigidBody(nullptr),
          mRigidBodyConstructionInfo(nullptr),
-         mInPhysicsWorld(false)
+         mInPhysicsWorld(false),
+          mPhysicsComponentHandle(comp)
     {
         setLogClassName("PhysicsObjectInstance");
         auto log = getLog();
@@ -261,12 +263,14 @@ namespace Dream
         else if (format.compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
             // Load Collision Data
+            /*
             string path = projectPath+pod->getAssetPath();
             log->debug( "Loading collision geometry from {}", path );
-            const aiScene* scene = getModelFromCache(path);
+            //const aiScene* scene = getModelFromCache(path);
             btTriangleMesh *triMesh = new btTriangleMesh();
             processAssimpNode(scene->mRootNode, scene, triMesh);
             collisionShape = new btBvhTriangleMeshShape(triMesh,true,true);
+            */
         }
         else if (format.compare(Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
         {
@@ -307,6 +311,7 @@ namespace Dream
         return collisionShape;
     }
 
+    /*
     void
     PhysicsObjectInstance::processAssimpNode
     (aiNode* node, const aiScene* scene, btTriangleMesh* triMesh)
@@ -366,6 +371,7 @@ namespace Dream
             }
         }
     }
+    */
 
     btRigidBody*
     PhysicsObjectInstance::getRigidBody

@@ -19,7 +19,7 @@
 #pragma once
 
 #include "../IAssetDefinition.h"
-#include <tinysplinecpp.h>
+#include "../../deps/tinyspline/tinysplinecpp.h"
 
 namespace Dream
 {

@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "spdlog/details/log_msg.h"
-#include "spdlog/details/pattern_formatter.h"
-#include "spdlog/formatter.h"
+#include "../details/log_msg.h"
+#include "../details/pattern_formatter.h"
+#include "../formatter.h"
 
 namespace spdlog {
 namespace sinks {

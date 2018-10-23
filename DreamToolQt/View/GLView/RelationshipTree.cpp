@@ -17,7 +17,6 @@
  */
 
 #include "RelationshipTree.h"
-#include <spdlog/spdlog.h>
 
 RelationshipTree::RelationshipTree
 (QObject* parentHandle)

@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <map>
 #include <glm/mat4x4.hpp>
 #include "../../ICache.h"
 

@@ -6,14 +6,13 @@ file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp")
 file(GLOB_RECURSE INC_FILES "*.h" "*.hpp")
 
 
-find_package(assimp REQUIRED)
 find_package(BULLET REQUIRED)
-find_package(GLM REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(OggVorbis REQUIRED)
 find_package(ALUT REQUIRED)
 find_package(Lua REQUIRED)
+find_package(GLM REQUIRED)
 
 
 message("Using Lua: "                )
@@ -26,10 +25,9 @@ include_directories(
     ${OPENAL_INCLUDE_DIR}
     ${VORBIS_INCLUDE_DIR}
     ${ALUT_INCLUDE_DIR}
-    ${assimp_INCLUDE_DIRS}
-    ${GLM_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
+    ${GLM_INCLUDE_DIR}
 )
 
 add_library(
@@ -49,8 +47,8 @@ target_link_libraries(
     ${OPENGL_LIBRARIES}
     ${OGGVORBIS_LIBRARIES}
     ${ALUT_LIBRARY}
-    ${assimp_LIBRARIES}
     ${BULLET_LIBRARY}
+    ${GLM_LIBRARY}
 )
 
 set(

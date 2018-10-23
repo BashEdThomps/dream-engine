@@ -28,21 +28,18 @@
 #include <string>
 #include <map>
 
-#include <assimp/Importer.hpp>
-#include <assimp/material.h>
-
+#include "../BoundingBox.h"
+#include "../../IAssetInstance.h"
 #include <glm/matrix.hpp>
 
-#include "../../IAssetInstance.h"
-#include "../BoundingBox.h"
 
-struct aiScene;
-struct aiMaterial;
-struct aiNode;
+//struct aiScene;
+//struct aiMaterial;
+//struct aiNode;
 
 using nlohmann::json;
 using glm::mat4;
-using Assimp::Importer;
+//using Assimp::Importer;
 
 
 namespace Dream
@@ -87,12 +84,12 @@ namespace Dream
 
         // Methods
         void loadModel(string);
-        shared_ptr<Importer> loadImporter(string path);
+        //shared_ptr<Importer> loadImporter(string path);
 
         void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
 
-        void processNode(aiNode*, const aiScene*);
-        ModelMesh* processMesh(aiMesh*, const aiScene*);
+        //void processNode(aiNode*, const aiScene*);
+        //ModelMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
     }; // End of AssimpModelInstance

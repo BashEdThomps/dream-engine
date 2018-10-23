@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <json.hpp>
+#include "../deps/json/json.hpp"
 
 
 #include <string>

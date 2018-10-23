@@ -377,7 +377,7 @@ namespace Dream
         sol::state_view solStateView(mState);
         sol::function onInputFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INPUT_FUNCTION];
 
-        auto result = onInputFunction(sceneObject,mInputMap);
+        auto result = onInputFunction(sceneObject);
 
         if (!result.valid())
         {
@@ -1089,13 +1089,6 @@ namespace Dream
         sol::state_view stateView(mState);
         stateView.new_usertype<IDefinition>("IDefinition");
 
-    }
-
-    void
-    LuaComponent::setInputMap
-    (gainput::InputMap* map)
-    {
-        mInputMap = map;
     }
 
     // API Exposure Methods ======================================================

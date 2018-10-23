@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "spdlog/tweakme.h"
+#include "tweakme.h"
 
 #include <atomic>
 #include <chrono>
@@ -22,7 +22,7 @@
 #include <locale>
 #endif
 
-#include "spdlog/details/null_mutex.h"
+#include "details/null_mutex.h"
 
 // visual studio upto 2013 does not support noexcept nor constexpr
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
@@ -41,7 +41,7 @@
 #define SPDLOG_DEPRECATED
 #endif
 
-#include "spdlog/fmt/fmt.h"
+#include "fmt/fmt.h"
 
 namespace spdlog {
 

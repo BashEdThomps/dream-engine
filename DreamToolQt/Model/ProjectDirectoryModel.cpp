@@ -21,7 +21,6 @@
 #include <QDirIterator>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include "spdlog/spdlog.h"
 
 using Dream::ShaderDefinition;
 using Dream::IAssetDefinition;

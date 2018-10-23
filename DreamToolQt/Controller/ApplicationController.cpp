@@ -37,8 +37,6 @@
 #include "../Model/TreeModels/Properties/Scene/ScenePropertiesModel.h"
 
 #include <iostream>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 using std::cout;
 

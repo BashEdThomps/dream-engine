@@ -64,3 +64,6 @@
 
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/Uuid.h"
+
+#include "../deps/spdlog/spdlog.h"
+#include "../deps/spdlog/sinks/stdout_color_sinks.h"

@@ -5,7 +5,6 @@
 #include "Model/ProjectDirectoryModel.h"
 #include "Model/TemplatesModel.h"
 #include "DreamCore.h"
-#include <spdlog/spdlog.h>
 
 #include <QMessageBox>
 #include <QStandardItemModel>

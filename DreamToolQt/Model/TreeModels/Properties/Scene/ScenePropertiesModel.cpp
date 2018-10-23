@@ -18,7 +18,6 @@
 
 #include "ScenePropertiesModel.h"
 
-#include <spdlog/spdlog.h>
 #include <DreamCore.h>
 
 #include "ScenePropertiesItem.h"

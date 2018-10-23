@@ -17,10 +17,6 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
-#include <assimp/Importer.hpp>
-
 #include "ModelMesh.h"
 #include "../../ICache.h"
 

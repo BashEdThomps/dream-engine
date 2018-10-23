@@ -5,7 +5,6 @@
 #include <QMouseEvent>
 #include <QPointF>
 #include <QPainter>
-#include <spdlog/spdlog.h>
 #include <DreamCore.h>
 #include <QChar>
 

@@ -17,8 +17,6 @@
 #include "BoundingBox.h"
 
 #include <limits>
-#include <assimp/types.h>
-#include <assimp/mesh.h>
 
 using std::numeric_limits;
 
@@ -60,6 +58,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Updating bounding box");
+        /*
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
@@ -112,5 +111,6 @@ namespace Dream
                         );
 
         maxDimension = maxBound;
+        */
     }
 }

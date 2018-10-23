@@ -19,7 +19,6 @@
 
 #include <QTimer>
 #include <QDebug>
-#include <spdlog/spdlog.h>
 
 DreamProjectModel::DreamProjectModel
 (QObject *parent,QOpenGLWindowComponent* windowComponent)

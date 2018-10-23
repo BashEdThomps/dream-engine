@@ -17,6 +17,8 @@
 
 #include "String.h"
 
+#include <sstream>
+
 namespace Dream
 {
 

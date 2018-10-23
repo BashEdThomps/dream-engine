@@ -120,7 +120,7 @@ namespace Dream
             mCollisionConfiguration = nullptr;
         }
 
-        PhysicsObjectInstance::clearAssimpModelCache();
+        //PhysicsObjectInstance::clearAssimpModelCache();
     }
 
     void

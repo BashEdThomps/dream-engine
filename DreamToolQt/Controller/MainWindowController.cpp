@@ -30,8 +30,6 @@
 #include <memory>
 
 #include "View/QOpenGLWindowComponent.h"
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include "../Model/ProjectDirectoryModel.h"
 #include "PathEditorFormController.h"
 #include "AudioToolsFormController.h"

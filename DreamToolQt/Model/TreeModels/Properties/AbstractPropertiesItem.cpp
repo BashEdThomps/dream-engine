@@ -17,8 +17,8 @@
  */
 
 #include "AbstractPropertiesItem.h"
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <DreamCore.h>
 
 AbstractPropertiesItem::AbstractPropertiesItem
 (QString title, QItemDelegate* delegate, AbstractPropertiesItem *parent)

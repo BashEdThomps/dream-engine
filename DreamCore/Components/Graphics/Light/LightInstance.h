@@ -17,7 +17,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
 #include "../../IAssetInstance.h"
 #include "LightDefinition.h"
 

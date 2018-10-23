@@ -17,12 +17,9 @@
  */
 
 #include "ModelCache.h"
-#include <iostream>
 #include "ModelInstance.h"
 #include "ModelDefinition.h"
 #include "../../../Project/ProjectRuntime.h"
-
-using std::pair;
 
 namespace Dream
 {
@@ -55,7 +52,4 @@ namespace Dream
         mInstances.push_back(model);
         return model;
     }
-
-
-
 }

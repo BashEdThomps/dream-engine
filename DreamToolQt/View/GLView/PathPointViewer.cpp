@@ -18,8 +18,6 @@
 
 #include "PathPointViewer.h"
 #include "DreamCore.h"
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 using Dream::ModelInstance;
 using Dream::Constants;

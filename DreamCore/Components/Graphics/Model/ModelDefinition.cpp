@@ -16,13 +16,7 @@
  * this file belongs to.
  */
 #include "ModelDefinition.h"
-#include <spdlog/spdlog.h>
-#include <map>
 
-using std::find;
-using std::begin;
-using std::end;
-using std::pair;
 using nlohmann::json;
 
 namespace Dream

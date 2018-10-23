@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "spdlog/common.h"
-#include "spdlog/details/registry.h"
-#include "spdlog/logger.h"
-#include "spdlog/version.h"
+#include "common.h"
+#include "details/registry.h"
+#include "logger.h"
+#include "version.h"
 
 #include <chrono>
 #include <functional>

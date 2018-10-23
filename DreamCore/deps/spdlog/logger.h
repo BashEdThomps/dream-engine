@@ -18,9 +18,9 @@
 // formatted data,
 // and support customize format per each sink.
 
-#include "spdlog/common.h"
-#include "spdlog/formatter.h"
-#include "spdlog/sinks/sink.h"
+#include "common.h"
+#include "formatter.h"
+#include "sinks/sink.h"
 
 #include <locale>
 #include <memory>

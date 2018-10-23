@@ -18,7 +18,6 @@
 #include "GLDrawable.h"
 #include <DreamCore.h>
 #include <QDebug>
-#include "spdlog/spdlog.h"
 
 using namespace std;
 using namespace glm;

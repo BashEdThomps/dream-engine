@@ -17,7 +17,6 @@
  */
 #include "Grid.h"
 #include <DreamCore.h>
-#include <spdlog/spdlog.h>
 
 using namespace glm;
 using namespace std;

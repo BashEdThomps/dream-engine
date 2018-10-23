@@ -15,15 +15,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef STRINGUTILS_H
-#define STRINGUTILS_H
+#pragma once
 
-#include <iostream>
+#include <string>
 #include <vector>
-#include <sstream>
 #include <glm/glm.hpp>
 
 using namespace std;
+using namespace glm;
 
 namespace Dream
 {
@@ -35,9 +34,7 @@ namespace Dream
         static string indent(int);
         static string boolToYesNo(bool);
         static string floatVectorToString(vector<float>);
-        static string vec3ToString(glm::vec3);
+        static string vec3ToString(vec3);
     }; // End of String
 
 } // End of Dream
-
-#endif // End of STRINGUTILS_H

@@ -29,9 +29,9 @@
     #include <AL/alc.h>
 #endif
 
-#include <glm/vec3.hpp>
 #include "AudioStatus.h"
 #include "../IComponent.h"
+#include <glm/vec3.hpp>
 
 using std::vector;
 

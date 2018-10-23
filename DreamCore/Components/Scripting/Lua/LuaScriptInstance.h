@@ -19,7 +19,6 @@
 
 #include "../ScriptInstance.h"
 #include "../../Event.h"
-#include <gainput/gainput.h>
 #include <vector>
 #include <string>
 

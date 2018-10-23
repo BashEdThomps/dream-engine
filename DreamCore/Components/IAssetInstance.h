@@ -17,14 +17,9 @@
 
 #pragma once
 
-#include <string>
-
-#pragma once
-
-#include <json.hpp>
-
 #include "../Common/DreamObject.h"
-#include <memory>
+#include "../deps/json/json.hpp"
+
 
 using std::string;
 using nlohmann::json;

@@ -38,11 +38,11 @@ public:
 
 private:
     void populate();
-    int processAssimpNode(aiNode* node, const aiScene* scene);
+    //int processAssimpNode(aiNode* node, const aiScene* scene);
 
 protected:
     unique_ptr<ModelMaterialTableDelegate> mTableDelegate;
-    shared_ptr<Importer> loadImporter(string path);
+    //shared_ptr<Importer> loadImporter(string path);
     ModelDefinition* mModelDefinitionHandle;
     QString mProjectPath;
     ModelMaterialTableModel mTableModel;

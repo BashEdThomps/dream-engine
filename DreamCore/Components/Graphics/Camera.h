@@ -23,8 +23,8 @@
 #include <numeric>
 #include <cmath>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "../../Common/DreamObject.h"
 #include "../Transform3D.h"

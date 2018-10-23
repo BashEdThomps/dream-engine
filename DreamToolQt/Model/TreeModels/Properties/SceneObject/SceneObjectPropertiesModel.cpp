@@ -19,7 +19,6 @@
 #include "SceneObjectPropertiesModel.h"
 
 #include <DreamCore.h>
-#include <spdlog/spdlog.h>
 
 #include "SceneObjectPropertiesItem.h"
 #include "SceneObjectPropertiesTreeDelegate.h"

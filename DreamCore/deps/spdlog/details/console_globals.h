@@ -4,7 +4,7 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 //
 
-#include "spdlog/details/null_mutex.h"
+#include "null_mutex.h"
 #include <cstdio>
 #include <mutex>
 

@@ -20,7 +20,6 @@
 #include "ScenePropertiesModel.h"
 #include "ScenePropertiesItem.h"
 
-#include <spdlog/spdlog.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QDoubleSpinBox>

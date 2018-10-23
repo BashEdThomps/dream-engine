@@ -22,8 +22,6 @@
 #include <iostream>
 #include <memory>
 
-#include <gainput/gainput.h>
-
 #include "ScriptCache.h"
 #include "../IComponent.h"
 
@@ -62,13 +60,11 @@ namespace Dream
 
         virtual void removeFromScriptMap(SceneObjectRuntime*) = 0;
         virtual void addToScriptMap(SceneObjectRuntime*,ScriptInstance*) = 0;
-        virtual void setInputMap(gainput::InputMap* map) = 0;
 
     protected:// Variables
         ScriptCache* mScriptCache;
         ProjectRuntime* mProjectRuntime;
         map<SceneObjectRuntime*, ScriptInstance*> mScriptMap;
-        gainput::InputMap* mInputMap;
 
         // API Exposure Methods ======================================================
         virtual void debugRegisteringClass(string className) = 0;

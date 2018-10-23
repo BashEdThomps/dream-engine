@@ -28,7 +28,6 @@ extern "C"
 #include <map>
 #include <iostream>
 #include <memory>
-#include <gainput/gainput.h>
 #include "LuaScriptInstance.h"
 #include "../ScriptCache.h"
 #include "../IScriptComponent.h"
@@ -70,7 +69,6 @@ namespace Dream
         bool createScript(SceneObjectRuntime*, ScriptInstance*) override;
         void exposeAPI() override;
         void debugRegisteringClass(string) override;
-        void setInputMap(gainput::InputMap*) override;
 
         bool executeScriptInit  (SceneObjectRuntime*) override;
         bool executeScriptUpdate(SceneObjectRuntime*) override;

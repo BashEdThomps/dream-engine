@@ -20,7 +20,6 @@
 
 #include <QDir>
 #include <DreamCore.h>
-#include <spdlog/spdlog.h>
 
 
 using Dream::Constants;

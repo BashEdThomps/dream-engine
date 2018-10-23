@@ -21,7 +21,6 @@
 #include "AssetDefinitionPropertiesModel.h"
 
 #include <DreamCore.h>
-#include <spdlog/spdlog.h>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QCheckBox>

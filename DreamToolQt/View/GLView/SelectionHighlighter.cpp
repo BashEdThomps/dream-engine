@@ -17,7 +17,6 @@
  */
 
 #include "SelectionHighlighter.h"
-#include <spdlog/spdlog.h>
 
 using Dream::ModelInstance;
 

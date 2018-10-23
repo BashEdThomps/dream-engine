@@ -61,8 +61,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 using std::vector;
-using std::flush;
-using std::make_shared;
 using glm::vec3;
 
 namespace Dream

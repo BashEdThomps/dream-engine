@@ -19,7 +19,6 @@
 #include "Controller/MainWindowController.h"
 #include "Controller/ApplicationController.h"
 #include <QApplication>
-#include <spdlog/spdlog.h>
 
 #include <QSurfaceFormat>
 #include <QTextStream>

@@ -27,8 +27,8 @@
 #endif
 
 #include <iostream>
-#include <assimp/types.h>
-#include <assimp/material.h>
+//#include <assimp/types.h>
+//#include <assimp/material.h>
 #include "../../IAssetInstance.h"
 
 using namespace std;

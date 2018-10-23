@@ -1,7 +1,5 @@
 #include "PCMPlayer.h"
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <QDebug>
 #include <thread>
 

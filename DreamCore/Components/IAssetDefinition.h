@@ -16,21 +16,10 @@
 */
 #pragma once
 
-#include <string>
-#include <map>
-#include <string>
-#include <vector>
-
-#pragma once
-
-#include <json.hpp>
-
 #include "../Common/IDefinition.h"
 #include "Transform3D.h"
 
-using std::string;
 using std::vector;
-using nlohmann::json;
 
 namespace Dream
 {

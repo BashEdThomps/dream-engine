@@ -19,16 +19,16 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <glm/glm.hpp>
-#include <assimp/types.h>
+//#include <assimp/types.h>
 
-#include "../Texture/TextureInstance.h"
 
+#include "../BoundingBox.h"
 #include "../Material/MaterialInstance.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
-#include "../BoundingBox.h"
+#include "../Texture/TextureInstance.h"
 #include "../../../Common/DreamObject.h"
+#include <glm/glm.hpp>
 
 
 namespace Dream

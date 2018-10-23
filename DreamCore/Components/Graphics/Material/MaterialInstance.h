@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <assimp/types.h>
+//#include <assimp/types.h>
 #include <vector>
 #include <memory>
 #include "../../IAssetInstance.h"
@@ -65,37 +65,37 @@ namespace Dream
         ShaderInstance* getShader() const;
         void setShader(ShaderInstance* shader);
 
-        aiColor4D getColorDiffuse() const;
-        void setColorDiffuse(aiColor4D colorDiffuse);
+        vec3 getColorDiffuse() const;
+        void setColorDiffuse(vec3 colorDiffuse);
 
-        aiColor4D getColorAmbient() const;
-        void setColorAmbient(aiColor4D colorAmbient);
+        vec3 getColorAmbient() const;
+        void setColorAmbient(vec3 colorAmbient);
 
-        aiColor4D getColorSpecular() const;
-        void setColorSpecular(aiColor4D colorSpecular);
+        vec3 getColorSpecular() const;
+        void setColorSpecular(vec3 colorSpecular);
 
-        aiColor4D getColorEmissive() const;
-        void setColorEmissive(aiColor4D colorEmissive);
+        vec3 getColorEmissive() const;
+        void setColorEmissive(vec3 colorEmissive);
 
-        aiColor4D getColorReflective() const;
-        void setColorReflective(aiColor4D colorReflective);
+        vec3 getColorReflective() const;
+        void setColorReflective(vec3 colorReflective);
 
-        ai_real getShininessStrength() const;
-        void setShininessStrength(ai_real shininessStrength);
+        float getShininessStrength() const;
+        void setShininessStrength(float shininessStrength);
 
     protected:
-        ai_real mOpacity = 0.0f;
-        ai_real mBumpScaling = 0.0f;
-        ai_real mHardness = 0.0f;
-        ai_real mReflectivity = 0.0f;
-        ai_real mShininessStrength = 0.0f;
-        ai_real mRefracti = 0.0f;
+        float mOpacity = 0.0f;
+        float mBumpScaling = 0.0f;
+        float mHardness = 0.0f;
+        float mReflectivity = 0.0f;
+        float mShininessStrength = 0.0f;
+        float mRefracti = 0.0f;
 
-        aiColor4D mColorDiffuse;
-        aiColor4D mColorAmbient;
-        aiColor4D mColorSpecular;
-        aiColor4D mColorEmissive;
-        aiColor4D mColorReflective;
+        vec3 mColorDiffuse;
+        vec3 mColorAmbient;
+        vec3 mColorSpecular;
+        vec3 mColorEmissive;
+        vec3 mColorReflective;
 
         TextureInstance* mDiffuseTexture;
         TextureInstance* mSpecularTexture;
@@ -105,6 +105,6 @@ namespace Dream
 
         vector<ModelMesh*> mUsedBy;
 
-        aiColor4D rgbToAiColor4D(RGB color);
+        vec3 rgbToVec3(RGB color);
     };
 }

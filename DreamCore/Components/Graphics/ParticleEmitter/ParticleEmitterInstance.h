@@ -16,9 +16,8 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "../../IAssetInstance.h"
+#include <glm/glm.hpp>
 
 using glm::vec3;
 

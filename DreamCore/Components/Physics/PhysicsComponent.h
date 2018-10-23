@@ -18,10 +18,10 @@
 #pragma once
 
 #include <vector>
-#include <memory>
+
+#include <LinearMath/btVector3.h>
 
 #include "../IComponent.h"
-#include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 
 using glm::mat4;

@@ -17,8 +17,6 @@
 #pragma once
 
 #include <string>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include "Constants.h"
 
 using std::string;

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "spdlog/details/fmt_helper.h"
+#include "fmt_helper.h"
 
 #include <memory>
 #include <string>

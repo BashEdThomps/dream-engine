@@ -18,12 +18,10 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
+
 #include <glm/vec3.hpp>
-
 #include "../../Common/IRuntime.h"
-
 #include "../../Components/Transform3D.h"
 
 using std::vector;

@@ -22,7 +22,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <assimp/Importer.hpp>
 #include <btBulletDynamicsCommon.h>
 
 using std::string;
@@ -31,9 +30,6 @@ using std::vector;
 using glm::vec3;
 
 using nlohmann::json;
-
-struct aiMesh;
-struct aiNode;
 
 namespace Dream
 {
@@ -44,13 +40,13 @@ namespace Dream
     class PhysicsObjectInstance : public IAssetInstance
     {
     public:
-        static void clearAssimpModelCache();
+       // static void clearAssimpModelCache();
 
     private:
 
-        static map<string,const aiScene*> AssimpModelCache;
-        static ::Assimp::Importer mImporter;
-        static const aiScene* getModelFromCache(string);
+        //static map<string,const aiScene*> AssimpModelCache;
+        //static ::Assimp::Importer mImporter;
+        //static const aiScene* getModelFromCache(string);
         btCollisionShape *mCollisionShape;
         btMotionState *mMotionState;
         btRigidBody *mRigidBody;
@@ -91,8 +87,8 @@ namespace Dream
     protected:
         void loadExtraAttributes(json) override;
         void loadExtraAttributes(json, IAssetDefinition*, bool);
-        void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
-        void processAssimpMesh(aiMesh*, btTriangleMesh*);
+        //void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
+        //void processAssimpMesh(aiMesh*, btTriangleMesh*);
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
 
     }; // End of PhysicsObjectInstance

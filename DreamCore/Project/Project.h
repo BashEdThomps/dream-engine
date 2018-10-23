@@ -18,12 +18,10 @@
 #pragma once
 
 #include <string>
-#include <memory>
 #include <vector>
 
-#include <json.hpp>
-
 #include "../Common/DreamObject.h"
+#include "../deps/json/json.hpp"
 
 using std::string;
 using std::shared_ptr;

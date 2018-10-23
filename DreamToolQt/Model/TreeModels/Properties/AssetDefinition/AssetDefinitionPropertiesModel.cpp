@@ -25,8 +25,6 @@
 #include <DreamCore.h>
 #include <QDebug>
 
-#include <spdlog/spdlog.h>
-
 using Dream::Constants;
 using Dream::LightDefinition;
 using Dream::LightType;

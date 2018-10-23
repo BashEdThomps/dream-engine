@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "spdlog/spdlog.h"
+#include "../spdlog.h"
 #ifdef _WIN32
-#include "spdlog/sinks/wincolor_sink.h"
+#include "wincolor_sink.h"
 #else
-#include "spdlog/sinks/ansicolor_sink.h"
+#include "ansicolor_sink.h"
 #endif
 
 namespace spdlog {

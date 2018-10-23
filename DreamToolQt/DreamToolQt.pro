@@ -191,8 +191,6 @@ macx: LIBS += \
     -lDreamCore \
     -llua.5.3 \
     -lBulletCollision -lLinearMath -lBulletDynamics \
-    -lSOIL \
-    -lFreeType \
     -logg
 
 LIBS += \
@@ -202,10 +200,6 @@ LIBS += \
     -L/usr/lib \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
-    -lfreetype \
-    -lassimp \
-    -ltinyspline \
-    -ltinysplinecpp \
     -logg
 
 INCLUDEPATH += \
@@ -215,8 +209,6 @@ INCLUDEPATH += \
     /usr/include/lua5.3 \
     /usr/local/include/lua5.3 \
     /usr/local/include/bullet \
-    /usr/include/freetype2 \
-    /usr/local/include/freetype2 \
     /opt/local/include
 
 DEPENDPATH += \

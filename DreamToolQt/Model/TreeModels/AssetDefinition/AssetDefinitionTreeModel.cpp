@@ -18,7 +18,6 @@
 
 #include "AssetDefinitionTreeModel.h"
 #include <QStringList>
-#include <spdlog/spdlog.h>
 #include <QIcon>
 
 using Dream::Constants;

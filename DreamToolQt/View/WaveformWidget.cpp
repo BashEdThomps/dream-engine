@@ -4,8 +4,6 @@
 #include <QPainter>
 #include <cmath>
 #include <iostream>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <limits>
 #include <QDebug>
 

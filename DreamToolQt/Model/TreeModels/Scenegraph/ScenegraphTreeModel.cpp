@@ -19,7 +19,6 @@
 #include "ScenegraphTreeModel.h"
 #include <QStringList>
 #include <QMimeData>
-#include <spdlog/spdlog.h>
 #include <memory>
 
 using Dream::SceneDefinition;

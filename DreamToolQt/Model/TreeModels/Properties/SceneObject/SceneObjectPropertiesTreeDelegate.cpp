@@ -18,7 +18,6 @@
 #include "SceneObjectPropertiesTreeDelegate.h"
 
 #include <DreamCore.h>
-#include <spdlog/spdlog.h>
 #include <QItemDelegate>
 #include <QLineEdit>
 #include <QDoubleSpinBox>

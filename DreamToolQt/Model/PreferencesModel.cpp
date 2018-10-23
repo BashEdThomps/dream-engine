@@ -19,9 +19,7 @@
 
 #include <QStandardPaths>
 #include <QDir>
-
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <DreamCore.h>
 
  string PreferencesModel::PREFERENCES_DIRECTORY_NAME = "DreamTool";
  string PreferencesModel::PREFERENCES_FILE_NAME = "preferences.json";

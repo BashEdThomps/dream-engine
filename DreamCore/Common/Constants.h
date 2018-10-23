@@ -21,8 +21,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "../deps/spdlog/spdlog.h"
+#include "../deps/spdlog/sinks/stdout_color_sinks.h"
 
 using namespace std;
 
