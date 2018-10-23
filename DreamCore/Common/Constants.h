@@ -328,9 +328,9 @@ namespace Dream
         const static string LUA_INPUT_FUNCTION;
         const static string LUA_EVENT_FUNCTION;
 
-        // Audio ================================================================
-        const static size_t AUDIO_BUFFER_SIZE;
-        const static string ASSET_ATTR_SPECTRUM_ANALYSER;
+        // Audio =================================================================
+		#define AUDIO_BUFFER_SIZE 32768
+		const static string ASSET_ATTR_SPECTRUM_ANALYSER;
         const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
         const static string ASSET_ATTR_AUDIO_EM_INDEX;
         const static string ASSET_ATTR_AUDIO_EM_S_INDEX;

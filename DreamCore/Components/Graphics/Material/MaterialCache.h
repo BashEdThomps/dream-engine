@@ -18,18 +18,7 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <map>
-
-
 #include "../../ICache.h"
-#include "../Texture/TextureInstance.h"
-#include "MaterialInstance.h"
-#include <assimp/material.h>
-
-
-using namespace std;
 
 namespace Dream
 {

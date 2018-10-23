@@ -549,7 +549,7 @@ namespace Dream
 
     glm::mat4 Transform3D::asMat4() const
     {
-       mat4 trans = glm::translate(mat4(1), mTranslation);
+       mat4 trans = glm::translate(mat4(1.0f), mTranslation);
        mat4 rot = mat4_cast(mOrientation);
        trans = trans*rot;
        return glm::scale(trans,mScale);

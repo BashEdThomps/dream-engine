@@ -18,7 +18,9 @@
 
 #include "MaterialCache.h"
 #include "MaterialDefinition.h"
+#include "MaterialInstance.h"
 #include "../Texture/TextureDefinition.h"
+#include "../Texture/TextureInstance.h"
 #include "../Texture/TextureCache.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Shader/ShaderCache.h"

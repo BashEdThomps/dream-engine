@@ -17,22 +17,14 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
-#include <assimp/Importer.hpp>
-
-#include "ModelMesh.h"
 #include "../../ICache.h"
-
-using std::string;
-using std::vector;
 
 namespace Dream
 {
     class ShaderCache;
     class MaterialCache;
     class ModelDefinition;
-    class SceneObjectRuntime;
+    class ProjectRuntime;
 
     class ModelCache : public ICache
     {

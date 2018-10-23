@@ -54,7 +54,7 @@ namespace Dream
         long bytes;
 
         // Local fixed size array
-        char buffer[Constants::AUDIO_BUFFER_SIZE];
+        char buffer[AUDIO_BUFFER_SIZE];
         FILE *file = fopen(absPath.c_str(), "rb");
         if (file == nullptr)
         {
@@ -95,7 +95,7 @@ namespace Dream
         do
         {
             // Read up to a buffer's worth of decoded sound data
-            bytes = ov_read(&oggFile, buffer, Constants::AUDIO_BUFFER_SIZE, endian, 2, 1, &bitStream);
+            bytes = ov_read(&oggFile, buffer, AUDIO_BUFFER_SIZE, endian, 2, 1, &bitStream);
 
             if (bytes < 0)
             {

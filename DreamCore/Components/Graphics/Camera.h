@@ -18,6 +18,10 @@
 
 #define GLM_FORCE_RADIANS
 
+#ifdef WIN32
+	#define _USE_MATH_DEFINES // for C++  
+#endif
+
 #include <iostream>
 #include <vector>
 #include <numeric>

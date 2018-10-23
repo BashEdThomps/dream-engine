@@ -22,7 +22,7 @@
 # and no SDL2_LIBRARY, it means CMake did not find your SDL2 library
 # (SDL2.dll, libsdl2.so, SDL2.framework, etc).
 # Set SDL2_LIBRARY_TEMP to point to your SDL2 library, and configure again.
-# Similarly, if you see an empty SDL2MAIN_LIBRARY, you should set this value
+# Similarly, if you see an empty SDL2_MAIN_LIBRARY, you should set this value
 # as appropriate. These values are used to generate the final SDL2_LIBRARY
 # variable, but when these values are unset, SDL2_LIBRARY does not get created.
 #
@@ -161,7 +161,7 @@ IF(NOT SDL2_BUILDING_LIBRARY)
     # necessarily need it.
     # Lookup the 64 bit libs on x64
     IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      FIND_LIBRARY(SDL2MAIN_LIBRARY
+      FIND_LIBRARY(SDL2_MAIN_LIBRARY
         NAMES SDL2main
         HINTS
         ${SDL2}
@@ -177,7 +177,7 @@ IF(NOT SDL2_BUILDING_LIBRARY)
         )
       # On 32bit build find the 32bit libs
     ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      FIND_LIBRARY(SDL2MAIN_LIBRARY
+      FIND_LIBRARY(SDL2_MAIN_LIBRARY
         NAMES SDL2main
         HINTS
         ${SDL2}
@@ -214,9 +214,9 @@ SET(SDL2_FOUND "NO")
   IF(SDL2_LIBRARY_TEMP)
     # For SDL2main
     IF(NOT SDL2_BUILDING_LIBRARY)
-      IF(SDL2MAIN_LIBRARY)
-        SET(SDL2_LIBRARY_TEMP ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY_TEMP})
-      ENDIF(SDL2MAIN_LIBRARY)
+      IF(SDL2_MAIN_LIBRARY)
+        SET(SDL2_LIBRARY_TEMP ${SDL2_MAIN_LIBRARY} ${SDL2_LIBRARY_TEMP})
+      ENDIF(SDL2_MAIN_LIBRARY)
     ENDIF(NOT SDL2_BUILDING_LIBRARY)
 
     # For OS X, SDL2 uses Cocoa as a backend so it must link to Cocoa.

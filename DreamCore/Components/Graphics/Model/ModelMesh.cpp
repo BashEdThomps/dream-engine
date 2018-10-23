@@ -16,15 +16,10 @@
 
 #include "ModelMesh.h"
 
-#define GL_SILENCE_DEPRECATION
-#ifdef __APPLE__
-    #include <OpenGL/gl3.h>
-#else
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#endif
+
 
 #include "ModelInstance.h"
+#include "../Shader/ShaderInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream

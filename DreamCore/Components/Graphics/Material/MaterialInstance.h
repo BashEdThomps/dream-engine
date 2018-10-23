@@ -20,7 +20,6 @@
 #include <vector>
 #include <memory>
 #include "../../IAssetInstance.h"
-#include "../Texture/TextureInstance.h"
 #include <glm/vec3.hpp>
 
 using namespace std;
@@ -32,6 +31,7 @@ namespace Dream
     class ModelMesh;
     class ShaderInstance;
     class MaterialDefinition;
+	class TextureInstance;
 
     class MaterialInstance : public IAssetInstance
     {

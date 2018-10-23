@@ -16,9 +16,13 @@
 
 #include "Environment.h"
 
-#include <unistd.h>
 #include <sys/types.h>
+#ifdef WIN32
+
+#else
+#include <unistd.h>
 #include <pwd.h>
+#endif
 
 using namespace std;
 
@@ -26,12 +30,16 @@ namespace Dream
 {
     string Environment::getHomeDirectory()
     {
+#ifdef WIN32
+		return "";
+#else
         char *homedir;
         if ((homedir = getenv("HOME")) == nullptr)
         {
             homedir = getpwuid(getuid())->pw_dir;
         }
         return string(homedir);
+#endif
     }
 
 } // End of Dream

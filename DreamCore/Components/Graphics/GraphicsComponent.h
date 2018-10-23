@@ -17,11 +17,15 @@
 
 #pragma once
 
-#define GL_SILENCE_DEPRECATION
+#ifdef WIN32
+	#include <windows.h>
+#endif
+
 #ifdef __APPLE__
+	#define GL_SILENCE_DEPRECATION
     #include <OpenGL/gl3.h>
 #else
-    #include <GL/gl.h>
+    #include <GL/glew.h>
     #include <GL/glu.h>
 #endif
 

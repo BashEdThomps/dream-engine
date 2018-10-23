@@ -40,6 +40,8 @@ unset(_lua_include_subdirs)
 unset(_lua_library_names)
 unset(_lua_append_versions)
 
+find_path(LUA_INCLUDE_DIR lua/lua.h)
+
 # this is a function only to have all the variables inside go away automatically
 function(_lua_set_version_vars)
     set(LUA_VERSIONS5 5.3.4 5.3 5.2 5.1 5.0)
@@ -197,4 +199,9 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Lua
                                   REQUIRED_VARS LUA_LIBRARIES LUA_INCLUDE_DIR
                                   VERSION_VAR LUA_VERSION_STRING)
 
-mark_as_advanced(LUA_INCLUDE_DIR LUA_LIBRARY LUA_MATH_LIBRARY)
+#mark_as_advanced(LUA_INCLUDE_DIR LUA_LIBRARY LUA_MATH_LIBRARY)
+
+message("Using Lua: "                )
+message("\t L @ " ${LUA_LIBRARIES}   )
+message("\t I @ " ${LUA_INCLUDE_DIR} )
+message("\t V: "  ${LUA_VERSION_STRING})

@@ -58,9 +58,11 @@ namespace Dream
                     case GL_INVALID_OPERATION:
                         logger->error("\tGL_INVALID_OPERATION");
                         break;
+#ifndef WIN32
                     case GL_INVALID_FRAMEBUFFER_OPERATION:
                         logger->error("\tGL_INVALID_FRAMEBUFFER_OPERATION");
                         break;
+#endif
                     case GL_OUT_OF_MEMORY:
                         logger->error("\tGL_OUT_OF_MEMORY");
                         break;
@@ -343,7 +345,6 @@ namespace Dream
           Constants::SHADER_VERTEX;
 
     // Audio ====================================================================
-    const size_t Constants::AUDIO_BUFFER_SIZE = 32768;
     const string Constants::ASSET_ATTR_SPECTRUM_ANALYSER = "spectrum_analyser";
     const string Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS = "event_markers";
     const string Constants::ASSET_ATTR_AUDIO_EM_INDEX = "index";
