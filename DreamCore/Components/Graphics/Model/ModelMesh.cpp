@@ -16,8 +16,6 @@
 
 #include "ModelMesh.h"
 
-
-
 #include "ModelInstance.h"
 #include "../Shader/ShaderInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"

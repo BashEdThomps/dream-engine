@@ -19,8 +19,8 @@
 
 #include <limits>
 
-//#include <assimp/scene.h>
-//#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include <glm/glm.hpp>
 #include "../../../deps/soil/SOIL.h"
@@ -40,7 +40,7 @@
 #include <memory>
 
 using std::numeric_limits;
-//using ::Assimp::Importer;
+using ::Assimp::Importer;
 
 namespace Dream
 {
@@ -77,7 +77,6 @@ namespace Dream
     ModelInstance::load
     (string projectPath)
     {
-        /*
         auto log = getLog();
         string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
@@ -103,11 +102,9 @@ namespace Dream
         processNode(scene->mRootNode, scene);
         mLoaded = true;
         return mLoaded;
-        */
         return true;
     }
 
-    /*
     void
     ModelInstance::processNode
     (aiNode* node, const aiScene* scene)
@@ -269,7 +266,6 @@ namespace Dream
 
         return nullptr;
     }
-    */
 
     void
     ModelInstance::loadExtraAttributes
@@ -317,7 +313,6 @@ namespace Dream
         }
     }
 
-    /*
     shared_ptr<Importer>
     ModelInstance::loadImporter
     (string path)
@@ -338,6 +333,4 @@ namespace Dream
 
         return importer;
     }
-    */
-
 } // End of Dream

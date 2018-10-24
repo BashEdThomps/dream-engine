@@ -20,11 +20,6 @@
 
 #include "../../ICache.h"
 
-
-using namespace std;
-=======
->>>>>>> windows_port
-
 namespace Dream
 {
     class ShaderCache;
