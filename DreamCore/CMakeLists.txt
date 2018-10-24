@@ -13,10 +13,10 @@ find_package(Lua REQUIRED)
 find_package(OggVorbis REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 
 if (WIN32)
-    find_package(GLEW REQUIRED)
     include_directories(
             ${ALUT_INCLUDE_DIR}
             ${ASSIMP_INCLUDE_DIRS}
@@ -33,6 +33,7 @@ else()
             ${ALUT_INCLUDE_DIR}
             ${ASSIMP_INCLUDE_DIRS}
             ${BULLET_INCLUDE_DIR}
+            ${GLEW_INCLUDE_DIR}
             ${GLM_INCLUDE_DIR}
             ${LUA_INCLUDE_DIR}
             ${OPENAL_INCLUDE_DIR}
@@ -68,6 +69,7 @@ ELSE()
             ${ALUT_LIBRARY}
             ${ASSIMP_LIBRARIES}
             ${BULLET_LIBRARY}
+            ${GLEW_LIBRARY_RELEASE}
             ${LUA_LIBRARIES}
             ${OGGVORBIS_LIBRARIES}
             ${OPENAL_LIBRARY}

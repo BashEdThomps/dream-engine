@@ -547,7 +547,7 @@ namespace Dream
             mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
         );
         mPhysicsComponent->drawDebug();
-        mWindowComponent->swapBuffers();
+        //mWindowComponent->swapBuffers();
     }
 
     int

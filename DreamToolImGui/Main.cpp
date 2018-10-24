@@ -3,7 +3,7 @@
 #include <memory>
 #include "Window/GLFWWindowComponent.h"
 #include <DreamCore.h>
-
+#include "Tools/ProjectBrowser.h"
 #define MINIMUM_ARGUMENTS 3
 
 using std::shared_ptr;
@@ -16,6 +16,7 @@ using Dream::ArgumentParser;
 using Dream::ProjectRuntime;
 using Dream::ProjectDefinition;
 using DreamGLFW::GLFWWindowComponent;
+using DreamTool::ProjectBrowser;
 
 void showUsage(const char** argv)
 {
@@ -28,7 +29,6 @@ void showUsage(const char** argv)
 int main(int argc, const char** argv)
 {
     spdlog::set_level(spdlog::level::trace);
-    //spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
 
     auto log = spdlog::stdout_color_mt("Main");
@@ -92,8 +92,10 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    spdlog::set_level(spdlog::level::err);
+    ProjectBrowser browser(&project);
+    windowComponent.addWidget(&browser);
 
+    spdlog::set_level(spdlog::level::err);
      // Run the project
     unsigned int frames = 0;
     double time = glfwGetTime();
@@ -103,7 +105,9 @@ int main(int argc, const char** argv)
         pr->updateLogic();
         pr->updateGraphics();
         pr->collectGarbage();
-
+        Dream::ShaderInstance::InvalidateState();
+        windowComponent.drawImGui();
+        windowComponent.swapBuffers();
         if (glfwGetTime() > time + one_sec)
         {
             cout << "FPS: " <<  frames << endl;

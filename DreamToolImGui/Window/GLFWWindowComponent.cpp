@@ -17,10 +17,12 @@
  */
 
 #include "GLFWWindowComponent.h"
+#include "../Tools/DTWidget.h"
 
 using Dream::Constants;
 using Dream::SceneRuntime;
 using Dream::SceneState;
+
 
 static bool WindowSizeChanged = false;
 
@@ -50,6 +52,7 @@ namespace DreamGLFW
     {
         auto log = spdlog::get("GLFWWindowComponent");
         log->info("Destructing" );
+        cleanUpImGui();
         glfwTerminate();
         mWindow = nullptr;
     }
@@ -59,6 +62,11 @@ namespace DreamGLFW
     ()
     {
         if (!initGLFW())
+        {
+            return false;
+        }
+
+        if (!initImGui())
         {
             return false;
         }
@@ -93,18 +101,18 @@ namespace DreamGLFW
         }
 
         /* Create a windowed mode window and its OpenGL context */
-#ifdef WIN32 
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#ifdef WIN32
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #endif
         mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), nullptr,nullptr);
 
@@ -123,6 +131,29 @@ namespace DreamGLFW
     }
 
     bool
+    GLFWWindowComponent::initImGui
+    ()
+    {
+        auto log = getLog();
+        log->debug("Initialising ImGui");
+        char* glsl_version = "#version 330";
+        // Setup Dear ImGui binding
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+
+        // Setup style
+        ImGui::StyleColorsDark();
+
+        return true;
+    }
+
+    bool
     GLFWWindowComponent::initGL
     ()
     {
@@ -130,7 +161,6 @@ namespace DreamGLFW
         log->debug("Initialising GLFW::OpenGL");
         /* Make the window's context current */
         glfwMakeContextCurrent(mWindow);
-
         return true;
     }
 
@@ -146,9 +176,11 @@ namespace DreamGLFW
             return;
         }
 
+        glfwPollEvents();
+
         if(glfwWindowShouldClose(mWindow))
         {
-           mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
+            mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
         }
 
         if (WindowSizeChanged)
@@ -172,9 +204,75 @@ namespace DreamGLFW
         {
             glfwSwapBuffers(mWindow);
         }
-
-        glfwPollEvents();
     }
 
+    void
+    GLFWWindowComponent::drawImGui
+    ()
+    {
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // Rendering
+        for (DTWidget* widget : mWidgets)
+        {
+            widget->draw();
+        }
+
+        // End Rendering
+        ImGui::Render();
+        glfwMakeContextCurrent(mWindow);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwMakeContextCurrent(mWindow);
+    }
+
+    void
+    GLFWWindowComponent::cleanUpImGui
+    ()
+    {
+        // Cleanup
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    void
+    GLFWWindowComponent::addWidget
+    (DTWidget* widget)
+    {
+        auto log = getLog();
+        auto end = mWidgets.end();
+        auto itr = find(mWidgets.begin(), end, widget);
+
+        if (itr == end)
+        {
+            log->debug("Adding Widget {}", widget->getClassName());
+            mWidgets.push_back(widget);
+        }
+        else
+        {
+            log->error("Widget {} is all ready registered",widget->getClassName());
+        }
+    }
+
+    void
+    GLFWWindowComponent::removeWidget
+    (DTWidget* widget)
+    {
+        auto log = getLog();
+        auto end = mWidgets.end();
+        auto itr = find(mWidgets.begin(), end, widget);
+        if (itr != end)
+        {
+            log->debug("Removig instance of {} from widgets", widget->getClassName());
+            mWidgets.erase(itr);
+        }
+        else
+        {
+            log->error("This instane of {} was not in the widgets list",widget->getClassName());
+        }
+    }
 } // End of Dream
 

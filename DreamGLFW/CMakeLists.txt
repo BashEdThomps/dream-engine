@@ -5,6 +5,7 @@ file(GLOB_RECURSE SRC "*.h" "*.cpp")
 
 find_package(ASSIMP     REQUIRED)
 find_package(BULLET     REQUIRED)
+find_package(GLEW       REQUIRED)
 find_package(GLFW       REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(Lua        REQUIRED)
@@ -14,6 +15,7 @@ include_directories(
     ${DreamCore_INCLUDE_DIRS}
     ${ASSIMP_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
@@ -31,7 +33,8 @@ if (WIN32)
 		DreamCore
                 ${ASSIMP_LIBRARIES}
                 ${BULLET_LIBRARY}
-		${GLFW_LIBRARY}
+                ${GLEW_LIBRARY}
+                ${GLFW_LIBRARY}
 		${LUA_LIBRARIES}
 	)
 else()
@@ -42,6 +45,7 @@ else()
 	    -ldl
             ${ASSIMP_LIBRARIES}
             ${BULLET_LIBRARY}
+            ${GLEW_LIBRARY}
 	    ${GLFW_LIBRARY}
 	    ${LUA_LIBRARIES}
 	)

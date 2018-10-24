@@ -18,16 +18,33 @@
 
 #pragma once
 
-#include <DreamCore.h>
-#include <GLFW/glfw3.h>
 #include <memory>
+#include <vector>
+
+#define IMGUI_IMPL_OPENGL_LOADER_GLEW
+
+#include "../deps/ImGui/imgui.h"
+#include "../deps/ImGui/imgui_impl_glfw.h"
+#include "../deps/ImGui/imgui_impl_opengl3.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <DreamCore.h>
 
 using std::unique_ptr;
+using std::vector;
 using Dream::IWindowComponent;
 using Dream::SceneRuntime;
 
+namespace DreamTool
+{
+    class DTWidget;
+}
+
+using DreamTool::DTWidget;
+
 namespace DreamGLFW
 {
+
     class GLFWWindowComponent : public IWindowComponent
     {
     public:
@@ -39,11 +56,18 @@ namespace DreamGLFW
         void swapBuffers() override;
         bool init() override;
         void bindDefaultFrameBuffer() override;
+              void drawImGui();
+
+            void addWidget(DTWidget* widget);
+            void removeWidget(DTWidget* widget);
 
     private:
         bool initGLFW();
         bool initGL();
+              bool initImGui();
+              void cleanUpImGui();
         GLFWwindow* mWindow;
+            vector<DTWidget*> mWidgets;
 
     }; // End of GLFWWindowComponent
 

@@ -1,12 +1,14 @@
-#include <DreamCore.h>
+#include "DTWidget.h"
 
 using Dream::DreamObject;
 
 namespace DreamTool
 {
-	class ProjectBrowser : public DreamObject
-	{
-		ProjectBrowser();
-		~ProjectBrowser() override;
-	};
+    class ProjectBrowser : public DTWidget
+    {
+    public:
+        ProjectBrowser(Project* proj);
+        ~ProjectBrowser() override;
+        void draw() override;
+    };
 }

@@ -17,6 +17,20 @@
 
 #include "GraphicsComponent.h"
 
+#ifdef WIN32
+    #include <windows.h>
+#endif
+
+#define GL_SILENCE_DEPRECATION
+
+    #include <GL/glew.h>
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/glu.h>
+#endif
+
+
 #define GLM_FORCE_RADIANS
 
 #include <functional>
@@ -51,6 +65,7 @@
 #include "../../Utilities/Math.h"
 #include "../Time.h"
 
+
 using glm::vec3;
 using glm::mat4;
 using glm::rotate;
@@ -70,14 +85,14 @@ namespace Dream
           mMeshCullDistance(2500.0f),
           mWindowComponent(windowComponent),
           mShaderCacheHandle(nullptr),
-		  mLightingShader(nullptr),
           mGeometryPassFB(0),
           mGeometryPassPositionBuffer(0),
           mGeometryPassAlbedoBuffer(0),
           mGeometryPassNormalBuffer(0),
-		  mGeometryPassDepthBuffer(0),
+          mGeometryPassDepthBuffer(0),
           mScreenQuadVAO(0),
-          mScreenQuadVBO(0)
+          mScreenQuadVBO(0),
+          mLightingShader(nullptr)
     {
         setLogClassName("GraphicsComponent");
         auto log = getLog();
@@ -90,7 +105,7 @@ namespace Dream
         auto log = getLog();
         log->trace("Destroying Object");
         clearLightQueue();
-		freeGeometryBuffers();
+        freeGeometryBuffers();
     }
 
     // Init/Setup ===============================================================
@@ -102,18 +117,16 @@ namespace Dream
         auto log = getLog();
         log->debug("Initialising");
 
-#ifdef WIN32
-		glewExperimental = GL_TRUE;
-		GLenum glewInitResult = glewInit();
+        glewExperimental = GL_TRUE;
+        GLenum glewInitResult = glewInit();
 
-		if (glewInitResult != GLEW_OK)
-		{
-			log->error("GLEW failed to initialise");
-			return false;
-		}
-#endif
+        if (glewInitResult != GLEW_OK)
+        {
+            log->error("GLEW failed to initialise");
+            return false;
+        }
 
-		checkGLError();
+        checkGLError();
 
         log->debug(
             "OpenGL Version {}, Shader Version {}",
@@ -124,16 +137,16 @@ namespace Dream
         onWindowDimensionsChanged();
         checkGLError();
 
-		if (!setupGeometryBuffers())
-		{
-			log->error("Unable to create geometry buffers");
-			return false;
-		}
+        if (!setupGeometryBuffers())
+        {
+            log->error("Unable to create geometry buffers");
+            return false;
+        }
 
-		if (!setupScreenQuad())
-		{
-			log->error("Unable to create screen quad");
-		}
+        if (!setupScreenQuad())
+        {
+            log->error("Unable to create screen quad");
+        }
 
         glEnable(GL_DEPTH_TEST);
         //glEnable(GL_CULL_FACE);
@@ -154,12 +167,12 @@ namespace Dream
         int windowWidth  = mWindowComponent->getWidth();
         int windowHeight = mWindowComponent->getHeight();
 
-		if (windowWidth == 0 || windowHeight == 0)
-		{
-			log->debug("It's a bit rude to use 0,0 viewport and divide by 0...");
-			windowWidth = 1;
-			windowHeight = 1;
-		}
+        if (windowWidth == 0 || windowHeight == 0)
+        {
+            log->debug("It's a bit rude to use 0,0 viewport and divide by 0...");
+            windowWidth = 1;
+            windowHeight = 1;
+        }
 
         glViewport(0, 0, windowWidth, windowHeight);
         checkGLError();
@@ -173,13 +186,13 @@ namespace Dream
         );
         checkGLError();
 
-		freeGeometryBuffers();
-		setupGeometryBuffers();
+        freeGeometryBuffers();
+        setupGeometryBuffers();
 
         log->debug
         (
             "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
-			windowWidth, windowHeight,
+            windowWidth, windowHeight,
             mMinimumDraw,
             mMaximumDraw
         );
@@ -264,40 +277,40 @@ namespace Dream
 
     // Lighting Pass ============================================================
 
-	void
-	GraphicsComponent::freeGeometryBuffers
-	()
-	{
-		mWindowComponent->bindDefaultFrameBuffer();
+    void
+    GraphicsComponent::freeGeometryBuffers
+    ()
+    {
+        //mWindowComponent->bindDefaultFrameBuffer();
 
-		if (mGeometryPassFB != 0)
-		{ 
-			glDeleteFramebuffers(1, &mGeometryPassFB);
-		}
+        if (mGeometryPassFB != 0)
+        {
+            glDeleteFramebuffers(1, &mGeometryPassFB);
+        }
 
         // - position color buffer
-		if (mGeometryPassPositionBuffer != 0)
-		{
-			glDeleteTextures(1, &mGeometryPassPositionBuffer);
-			checkGLError();
-		}
+        if (mGeometryPassPositionBuffer != 0)
+        {
+            glDeleteTextures(1, &mGeometryPassPositionBuffer);
+            checkGLError();
+        }
 
         // - normal color buffer
-		if (mGeometryPassNormalBuffer != 0)
-		{ 
-			glDeleteTextures(1, &mGeometryPassNormalBuffer);
-			checkGLError();
-		}
+        if (mGeometryPassNormalBuffer != 0)
+        {
+            glDeleteTextures(1, &mGeometryPassNormalBuffer);
+            checkGLError();
+        }
 
         // - color + specular color buffer
-		if (mGeometryPassAlbedoBuffer != 0)
-		{ 
-			glDeleteTextures(1, &mGeometryPassAlbedoBuffer);
-			checkGLError();
-		}
-	}
+        if (mGeometryPassAlbedoBuffer != 0)
+        {
+            glDeleteTextures(1, &mGeometryPassAlbedoBuffer);
+            checkGLError();
+        }
+    }
 
-	bool
+    bool
     GraphicsComponent::setupGeometryBuffers
     ()
     {
@@ -305,23 +318,23 @@ namespace Dream
         auto width = mWindowComponent->getWidth();
         auto height = mWindowComponent->getHeight();
 
-		if (width == 0 || height == 0)
-		{
-			log->debug("It's a bit rude to allocate empty buffers...");
-			width = 1;
-			height = 1;
-		}
+        if (width == 0 || height == 0)
+        {
+            log->debug("It's a bit rude to allocate empty buffers...");
+            width = 1;
+            height = 1;
+        }
 
         log->debug("Setting up Geometry Buffers with dimensions {}x{}",width,height);
 
         glGenFramebuffers(1,&mGeometryPassFB);
-		checkGLError();
+        checkGLError();
 
-		if (mGeometryPassFB == 0)
-		{
-			log->error("Unable to create Geometry Framebuffer");
-			return false;
-		}
+        if (mGeometryPassFB == 0)
+        {
+            log->error("Unable to create Geometry Framebuffer");
+            return false;
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, mGeometryPassFB);
         checkGLError();
 
@@ -368,7 +381,7 @@ namespace Dream
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
             log->error("Deferred Rendering Framebuffer not complete!");
-			return false;
+            return false;
         }
         else
         {
@@ -376,10 +389,10 @@ namespace Dream
         }
         mWindowComponent->bindDefaultFrameBuffer();
         checkGLError();
-		return true;
+        return true;
     }
 
-	bool
+    bool
     GraphicsComponent::setupScreenQuad
     ()
     {
@@ -402,7 +415,7 @@ namespace Dream
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         glBindVertexArray(0);
-		return true;
+        return true;
     }
 
     void
@@ -457,9 +470,9 @@ namespace Dream
         // Clear existing Queues
         clearLightQueue();
 
-		mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+        mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
         (
-			function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (
                 [&](SceneObjectRuntime* object)
                 {

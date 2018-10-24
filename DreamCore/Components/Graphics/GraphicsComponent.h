@@ -17,18 +17,6 @@
 
 #pragma once
 
-#ifdef WIN32
-	#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-	#define GL_SILENCE_DEPRECATION
-    #include <OpenGL/gl3.h>
-#else
-    #include <GL/glew.h>
-    #include <GL/glu.h>
-#endif
-
 #include <string>
 #include <map>
 #include <vector>
@@ -42,6 +30,7 @@ using std::vector;
 using glm::mat4;
 
 typedef struct NVGcontext NVGcontext;
+typedef unsigned int GLuint;
 
 namespace Dream
 {
@@ -101,7 +90,7 @@ namespace Dream
 
         bool setupGeometryBuffers();
 
-		void freeGeometryBuffers();
+        void freeGeometryBuffers();
         void renderGeometryPass();
 
         Camera* getCamera();
