@@ -16,6 +16,10 @@
 
 #pragma once
 
+#ifdef WIN32
+        #include <Windows.h>
+#endif
+
 #include "../Common/DreamObject.h"
 
 #include "../Components/IAssetDefinition.h"
@@ -68,3 +72,4 @@
 
 #include "../deps/spdlog/spdlog.h"
 #include "../deps/spdlog/sinks/stdout_color_sinks.h"
+#include "../deps/json/json.hpp"

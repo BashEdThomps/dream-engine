@@ -18,8 +18,8 @@
 #pragma once
 
 #include <QObject>
-#include <json.hpp>
 #include <string>
+#include <DreamCore.h>
 
 using nlohmann::json;
 using std::string;

@@ -96,14 +96,14 @@ namespace Dream
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
         void updateLightQueue();
-        void setupScreenQuad();
+        bool setupScreenQuad();
         void renderLightingPass();
 
+        bool setupGeometryBuffers();
 
-        void setupGeometryBuffers();
+		void freeGeometryBuffers();
         void renderGeometryPass();
 
-        void setWindowShouldClose(bool);
         Camera* getCamera();
         mat4 getViewMatrix();
         mat4 getProjectionMatrix();
@@ -113,8 +113,6 @@ namespace Dream
         void setMeshCullDistance(float meshCullDistance);
         void setMinimumDraw(float minimumDraw);
         void setMaximumDraw(float maximumDraw);
-        bool getUpdateInstanceMapFlag() const;
-        void setUpdateInstanceMapFlag(bool updateInstanceMapFlag);
         void setShaderCache(ShaderCache* cache);
         ShaderInstance* getLightingShader() const;
         void setLightingShader(ShaderInstance* lightingShader);

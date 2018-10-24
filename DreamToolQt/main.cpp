@@ -15,7 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
+#ifdef WIN32
+        #include <Windows.h>
+#endif
 #include "Controller/MainWindowController.h"
 #include "Controller/ApplicationController.h"
 #include <QApplication>

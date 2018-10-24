@@ -213,5 +213,12 @@ INCLUDEPATH += \
     /usr/local/include/bullet \
     /opt/local/include
 
+win32: INCLUDEPATH += \
+        "C:/Software/sysroot/include" \
+        "C:/Software/sysroot/include/bullet"
+
+win32: LIBS += \
+        "C:/Software/build/dream/DreamCore/Debug/DreamCore.lib"
+
 DEPENDPATH += \
     $$PWD/../DreamCore/include

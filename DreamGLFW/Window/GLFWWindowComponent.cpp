@@ -93,11 +93,19 @@ namespace DreamGLFW
         }
 
         /* Create a windowed mode window and its OpenGL context */
+#ifdef WIN32 
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#endif
         mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), nullptr,nullptr);
 
         if (mWindow == nullptr)
@@ -110,7 +118,7 @@ namespace DreamGLFW
 
         // Resize callback
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
-        glfwSwapInterval(0);
+        glfwSwapInterval(1);
         return true;
     }
 

@@ -171,7 +171,9 @@ namespace Dream
     AudioDefinition::countMarkers
     ()
     {
-        return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size();
+        return static_cast<int>(
+            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size()
+        );
     }
 
 }
