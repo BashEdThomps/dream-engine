@@ -193,8 +193,8 @@ WavFile::readAudioData
 
     seek(mHeaderLength);
     qint64 bytesRead = 0;
-    char* buffer = new char[Constants::AUDIO_BUFFER_SIZE];
-    while ((bytesRead = read(buffer, static_cast<qint64>(Constants::AUDIO_BUFFER_SIZE))) > 0)
+    char* buffer = new char[AUDIO_BUFFER_SIZE];
+    while ((bytesRead = read(buffer, static_cast<qint64>(AUDIO_BUFFER_SIZE))) > 0)
     {
         mAudioBuffer.insert(mAudioBuffer.end(), buffer, buffer + bytesRead);
     }

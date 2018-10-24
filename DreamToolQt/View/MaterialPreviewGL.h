@@ -1,4 +1,4 @@
-#pragma ocne
+#pragma once
 
 #include <vector>
 #include <glm/mat4x4.hpp>
@@ -7,7 +7,7 @@
 
 namespace Dream
 {
-    class Vertex;
+    struct Vertex;
 }
 
 using std::vector;
@@ -30,10 +30,10 @@ private:
     GLuint mVBO;
     GLuint mIBO;
     GLuint mShaderProgram;
-    mat4 mViewMatrix;
-    mat4 mModelMatrix;
-    mat4 mProjectionMatrix;
-    vec3 mViewerPos;
+    //mat4 mViewMatrix;
+    //mat4 mModelMatrix;
+    //mat4 mProjectionMatrix;
+    //vec3 mViewerPos;
     const static QColor ClearColour;
     const static vector<Vertex> CubeVertices;
     const static vector<GLuint> CubeIndices;

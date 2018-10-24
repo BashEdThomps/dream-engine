@@ -1,4 +1,4 @@
-#pragma onceo
+#pragma once
 
 #include <QItemDelegate>
 #include <vector>

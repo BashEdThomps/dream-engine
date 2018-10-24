@@ -216,7 +216,7 @@ DreamProjectModel::stopActiveSceneRuntime
 
 void
 DreamProjectModel::setDebug
-(bool enabled)
+(bool)
 {
 }
 

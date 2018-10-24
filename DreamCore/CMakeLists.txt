@@ -1,46 +1,46 @@
 cmake_minimum_required (VERSION 2.8.0)
 
-project(DreamCore CXX)
+project(DreamCore)
 
 file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp")
 file(GLOB_RECURSE INC_FILES "*.h" "*.hpp")
 
-find_package(assimp REQUIRED)
+find_package(ALUT REQUIRED)
+find_package(ASSIMP REQUIRED)
 find_package(BULLET REQUIRED)
+find_package(GLM REQUIRED)
+find_package(Lua REQUIRED)
+find_package(OggVorbis REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
-find_package(OggVorbis REQUIRED)
-find_package(ALUT REQUIRED)
-find_package(Lua REQUIRED)
-find_package(GLM REQUIRED)
 
 
 if (WIN32)
     find_package(GLEW REQUIRED)
     include_directories(
-            ${OPENGL_INCLUDE_DIR}
-            ${OPENAL_INCLUDE_DIR}
-            ${VORBIS_INCLUDE_DIR}
             ${ALUT_INCLUDE_DIR}
-            ${GLM_INCLUDE_DIR}
+            ${ASSIMP_INCLUDE_DIRS}
             ${BULLET_INCLUDE_DIR}
-            ${LUA_INCLUDE_DIR}
             ${GLEW_INCLUDE_DIR}
-			${assimp_INCLUDE_DIRS}
+            ${GLM_INCLUDE_DIR}
+            ${LUA_INCLUDE_DIR}
+            ${OPENAL_INCLUDE_DIR}
+            ${OPENGL_INCLUDE_DIR}
+            ${VORBIS_INCLUDE_DIR}
         )
 else()
     include_directories(
-            ${OPENGL_INCLUDE_DIR}
-            ${OPENAL_INCLUDE_DIR}
-            ${VORBIS_INCLUDE_DIR}
             ${ALUT_INCLUDE_DIR}
-            ${GLM_INCLUDE_DIR}
+            ${ASSIMP_INCLUDE_DIRS}
             ${BULLET_INCLUDE_DIR}
+            ${GLM_INCLUDE_DIR}
             ${LUA_INCLUDE_DIR}
-			${assimp_INCLUDE_DIRS}
+            ${OPENAL_INCLUDE_DIR}
+            ${OPENGL_INCLUDE_DIR}
+            ${VORBIS_INCLUDE_DIR}
         )
 endif()
-
+message(${SRC_FILES})
 add_library(
     DreamCore
     SHARED
@@ -50,14 +50,14 @@ add_library(
 IF (WIN32)
         target_link_libraries(
             DreamCore
+            ${ALUT_LIBRARY}
+            ${ASSIMP_LIBRARIES}
+            ${BULLET_LIBRARY}
             ${GLEW_LIBRARY_RELEASE}
             ${LUA_LIBRARIES}
+            ${OGGVORBIS_LIBRARIES}
             ${OPENAL_LIBRARY}
             ${OPENGL_LIBRARIES}
-            ${OGGVORBIS_LIBRARIES}
-            ${ALUT_LIBRARY}
-            ${BULLET_LIBRARY}
-			${assimp_LIBRARIES}
         )
 ELSE()
         target_link_libraries(
@@ -65,14 +65,13 @@ ELSE()
             -lpthread
             -ldl
             "-framework CoreFoundation"
-            -lGLEW
+            ${ALUT_LIBRARY}
+            ${ASSIMP_LIBRARIES}
+            ${BULLET_LIBRARY}
             ${LUA_LIBRARIES}
+            ${OGGVORBIS_LIBRARIES}
             ${OPENAL_LIBRARY}
             ${OPENGL_LIBRARIES}
-            ${OGGVORBIS_LIBRARIES}
-            ${ALUT_LIBRARY}
-            ${BULLET_LIBRARY}
-			${assimp_LIBRARIES}
         )
 ENDIF()
 

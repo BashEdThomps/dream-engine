@@ -30,8 +30,9 @@
 #endif
 
 #define NANOVG_GL3_IMPLEMENTATION
-#include "../../deps/nanovg/nanovg_gl.h"
-
+extern "C" {
+    #include "../../deps/nanovg/nanovg_gl.h"
+}
 namespace Dream
 {
 

@@ -191,6 +191,7 @@ macx: LIBS += \
     -lDreamCore \
     -llua.5.3 \
     -lBulletCollision -lLinearMath -lBulletDynamics \
+    -lassimp \
     -logg
 
 LIBS += \
@@ -200,6 +201,7 @@ LIBS += \
     -L/usr/lib \
     -lBulletCollision -lLinearMath -lBulletDynamics \
     -lDreamCore \
+    -lassimp \
     -logg
 
 INCLUDEPATH += \

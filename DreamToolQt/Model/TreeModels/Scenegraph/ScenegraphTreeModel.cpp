@@ -124,7 +124,7 @@ const
 
 QVariant
 ScenegraphTreeModel::headerData
-(int section, Qt::Orientation orientation, int role)
+(int, Qt::Orientation orientation, int role)
 const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -295,7 +295,7 @@ ScenegraphTreeModel::appendSceneObjects
 
 bool
 ScenegraphTreeModel::setData
-(const QModelIndex& index, const  QVariant& value, int role)
+(const QModelIndex& index, const  QVariant& value, int)
 {
     if (!index.isValid())
     {

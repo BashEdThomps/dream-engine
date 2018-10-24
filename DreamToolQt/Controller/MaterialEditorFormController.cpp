@@ -278,7 +278,7 @@ void
 MaterialEditorFormController::onNewTextureAction
 (bool)
 {
-    auto action = dynamic_cast<QAction*>(sender());
+    //auto action = dynamic_cast<QAction*>(sender());
     qDebug() << "New Texture";
     emit notifyNewTextureCreated();
 }

@@ -422,7 +422,7 @@ void ts_internal_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
     if (original == _copy_)
         return;
     size = ts_internal_bspline_sof_state(original);
-    _copy_->pImpl = (tsReal*)malloc(size);
+    _copy_->pImpl = malloc(size);
     if (!_copy_->pImpl)
         longjmp(buf, TS_MALLOC);
     memcpy(_copy_->pImpl, original->pImpl, size);

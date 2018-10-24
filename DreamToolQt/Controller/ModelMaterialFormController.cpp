@@ -1,6 +1,7 @@
 #include "ModelMaterialFormController.h"
 #include <DreamCore.h>
 #include <QMessageBox>
+#include <assimp/postprocess.h>
 
 ModelMaterialFormController::ModelMaterialFormController
 (QWidget *parent)
@@ -53,8 +54,6 @@ ModelMaterialFormController::setModelDefinition
 
 void ModelMaterialFormController::readMaterials()
 {
-    /*
-
     auto log = spdlog::get("MaterialShaderTableController");
     log->debug("Read Mateerials from Model Button Clicked");
 
@@ -87,7 +86,6 @@ void ModelMaterialFormController::readMaterials()
 
     processAssimpNode(scene->mRootNode, scene);
     mUi.tableView->update();
-    */
 }
 
 void
@@ -110,7 +108,6 @@ ModelMaterialFormController::populate
    }
 }
 
-/*
 int
 ModelMaterialFormController::processAssimpNode
 (aiNode* node, const aiScene* scene)
@@ -166,4 +163,3 @@ ModelMaterialFormController::loadImporter
 
     return importer;
 }
-*/

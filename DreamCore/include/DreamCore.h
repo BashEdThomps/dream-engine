@@ -31,6 +31,7 @@
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Graphics/Material/MaterialDefinition.h"
 #include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
+#include "../Components/Graphics/Vertex.h"
 
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"

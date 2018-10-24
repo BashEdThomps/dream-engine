@@ -22,8 +22,8 @@ QOpenGLWindowComponent::QOpenGLWindowComponent
       mGridEnabled(true),
       mRelationshipTreeEnabled(true),
       mSelectionHighlighterEnabled(true),
-      mMaxFrameTimeValues(100),
-      mFBO(0)
+      mFBO(0),
+      mMaxFrameTimeValues(100)
 {
     auto log = spdlog::get("QOpenGLWindowComponent");
     if (log==nullptr)
@@ -93,7 +93,7 @@ QOpenGLWindowComponent::showIdleScreen
     QString text = "No Scene Running";
     QFontMetrics fm(font);
     int stringWidth = fm.width(text);
-    int stringHeight = fm.height();
+    //int stringHeight = fm.height();
 
     textPos.setX(center.x()-(stringWidth/2.0));
     textPos.setY(center.y());

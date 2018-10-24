@@ -1,6 +1,7 @@
 #pragma once
-
+extern "C" {
 #include "tinyspline.h"
+}
 #include <vector>
 #include <string>
 

@@ -17,8 +17,9 @@
 #pragma once
 
 #include "../IComponent.h"
-
-#include "../../deps/nanovg/nanovg.h"
+extern "C" {
+    #include "../../deps/nanovg/nanovg.h"
+}
 
 
 typedef struct NVGcontext NVGcontext;

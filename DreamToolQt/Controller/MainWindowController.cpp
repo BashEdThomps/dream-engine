@@ -1329,7 +1329,7 @@ MainWindowController::openShaderEditor
                     .arg(QString::fromStdString(Constants::SHADER_VERTEX))
                     );
 
-        int fragIndex = mUi->rightTabWidget->addTab(
+        /*int fragIndex = */mUi->rightTabWidget->addTab(
                     fragmentForm.get(),
                     QString::fromStdString(shaderDefinitionHandle->getName())
                     .append(" (%1)")

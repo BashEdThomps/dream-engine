@@ -69,12 +69,13 @@ const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= mModelDefinitionHandle->getModelMaterials()->size() || index.row() < 0)
+    unsigned long rowInt = static_cast<unsigned long>(index.row());
+    if (rowInt >= mModelDefinitionHandle->getModelMaterials()->size())
         return QVariant();
 
     if (role == Qt::DisplayRole)
     {
-        json pair = mModelDefinitionHandle->getModelMaterials()->at(index.row());
+        json pair = mModelDefinitionHandle->getModelMaterials()->at(rowInt);
         if (pair.is_null())
         {
             log->error("Row {} is null pair",index.row());
