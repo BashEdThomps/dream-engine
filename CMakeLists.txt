@@ -2,9 +2,10 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream)
 
-set(DREAM_BUILD_CORE    ON)
-set(DREAM_BUILD_GLFW    ON)
-set(DREAM_BUILD_SDL     OFF)
+set(DREAM_BUILD_CORE ON)
+set(DREAM_BUILD_GLFW ON)
+set(DREAM_BUILD_SDL OFF)
+set(DREAM_BUILD_TOOL_IMGUI    ON)
 
 set(
   CMAKE_MODULE_PATH
@@ -61,4 +62,9 @@ endif()
 # DreamGLFW Executable
 if (DREAM_BUILD_GLFW)
     add_subdirectory (DreamGLFW)
+endif()
+
+# DreamToolImGUI Executable
+if (DREAM_BUILD_TOOL_IMGUI)
+	add_subdirectory (DreamToolImGui)
 endif()
