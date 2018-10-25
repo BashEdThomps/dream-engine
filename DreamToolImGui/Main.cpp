@@ -97,14 +97,16 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    ProjectBrowser projectBrowser(&project);
-    windowComponent.addWidget(&projectBrowser);
-
-    AssetBrowser assetBrowser(&project);
-    windowComponent.addWidget(&assetBrowser);
 
     PropertiesWindow propertiesWindow(&project);
     windowComponent.addWidget(&propertiesWindow);
+
+    ProjectBrowser projectBrowser(&project, &propertiesWindow);
+    windowComponent.addWidget(&projectBrowser);
+
+    AssetBrowser assetBrowser(&project, &propertiesWindow);
+    windowComponent.addWidget(&assetBrowser);
+
 
     spdlog::set_level(spdlog::level::err);
      // Run the project

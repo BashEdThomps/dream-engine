@@ -9,13 +9,15 @@ using Dream::SceneObjectDefinition;
 
 namespace DreamTool
 {
+    class PropertiesWindow;
     class ProjectBrowser : public DTWidget
     {
     public:
-        ProjectBrowser(Project* proj);
+        ProjectBrowser(Project* proj, PropertiesWindow*);
         ~ProjectBrowser() override;
         void draw() override;
     private:
         void addSceneObject(SceneObjectDefinition* def);
+        PropertiesWindow* mPropertiesWindowHandle;
     };
 }

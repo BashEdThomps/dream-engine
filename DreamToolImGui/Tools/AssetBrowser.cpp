@@ -7,8 +7,9 @@ using Dream::IAssetDefinition;
 
 namespace DreamTool
 {
-    AssetBrowser::AssetBrowser(Project* proj)
-        : DTWidget(proj)
+    AssetBrowser::AssetBrowser(Project* proj, PropertiesWindow* properties)
+        : DTWidget(proj),
+          mPropertiesWindowHandle(properties)
     {
         setLogClassName("AssetBrowser");
     }

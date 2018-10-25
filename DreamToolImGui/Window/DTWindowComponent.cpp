@@ -18,6 +18,7 @@
 
 #include "DTWindowComponent.h"
 #include "../Tools/DTWidget.h"
+#include "../deps/ImGui/imgui_internal.h"
 
 using Dream::Constants;
 using Dream::SceneRuntime;
@@ -214,7 +215,8 @@ namespace DreamTool
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
+        auto font = ImGui::GetCurrentContext()->Font;
+        font->Scale = 1.1f;
         // Rendering
         for (DTWidget* widget : mWidgets)
         {
