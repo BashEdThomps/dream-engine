@@ -1,6 +1,11 @@
 #include "DTWidget.h"
 
-using Dream::DreamObject;
+namespace Dream
+{
+    class SceneObjectDefinition;
+}
+
+using Dream::SceneObjectDefinition;
 
 namespace DreamTool
 {
@@ -10,5 +15,7 @@ namespace DreamTool
         ProjectBrowser(Project* proj);
         ~ProjectBrowser() override;
         void draw() override;
+    private:
+        void addSceneObject(SceneObjectDefinition* def);
     };
 }

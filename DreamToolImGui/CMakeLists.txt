@@ -26,23 +26,23 @@ add_executable (
 )
 
 if (WIN32)
-	target_link_libraries(
-		${PROJECT_NAME}
-		DreamCore
+    target_link_libraries(
+        ${PROJECT_NAME}
+        DreamCore
                 ${ASSIMP_LIBRARIES}
                 ${BULLET_LIBRARY}
-		${GLFW_LIBRARY}
-		${LUA_LIBRARIES}
-	)
+        ${GLFW_LIBRARY}
+        ${LUA_LIBRARIES}
+    )
 else()
-	target_link_libraries(
-	    ${PROJECT_NAME}
-	    DreamCore
-	    -lpthread
-	    -ldl
+    target_link_libraries(
+        ${PROJECT_NAME}
+        DreamCore
+        -lpthread
+        -ldl
             ${ASSIMP_LIBRARIES}
             ${BULLET_LIBRARY}
-	    ${GLFW_LIBRARY}
-	    ${LUA_LIBRARIES}
-	)
+        ${GLFW_LIBRARY}
+        ${LUA_LIBRARIES}
+    )
 endif()

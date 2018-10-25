@@ -1,9 +1,12 @@
 #include <iostream>
 #include <thread>
 #include <memory>
-#include "Window/GLFWWindowComponent.h"
+#include "Window/DTWindowComponent.h"
 #include <DreamCore.h>
 #include "Tools/ProjectBrowser.h"
+#include "Tools/AssetBrowser.h"
+#include "Tools/PropertiesWindow.h"
+
 #define MINIMUM_ARGUMENTS 3
 
 using std::shared_ptr;
@@ -15,8 +18,10 @@ using Dream::SceneDefinition;
 using Dream::ArgumentParser;
 using Dream::ProjectRuntime;
 using Dream::ProjectDefinition;
-using DreamGLFW::GLFWWindowComponent;
+using DreamTool::DTWindowComponent;
 using DreamTool::ProjectBrowser;
+using DreamTool::AssetBrowser;
+using DreamTool::PropertiesWindow;
 
 void showUsage(const char** argv)
 {
@@ -33,7 +38,7 @@ int main(int argc, const char** argv)
 
     auto log = spdlog::stdout_color_mt("Main");
 
-    GLFWWindowComponent windowComponent;
+    DTWindowComponent windowComponent;
     Project project(&windowComponent);
 
     log->trace("Starting...");
@@ -92,8 +97,14 @@ int main(int argc, const char** argv)
         return -1;
     }
 
-    ProjectBrowser browser(&project);
-    windowComponent.addWidget(&browser);
+    ProjectBrowser projectBrowser(&project);
+    windowComponent.addWidget(&projectBrowser);
+
+    AssetBrowser assetBrowser(&project);
+    windowComponent.addWidget(&assetBrowser);
+
+    PropertiesWindow propertiesWindow(&project);
+    windowComponent.addWidget(&propertiesWindow);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project

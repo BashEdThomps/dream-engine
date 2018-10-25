@@ -369,6 +369,23 @@ namespace Dream
         return definitionsList;
     }
 
+    vector<IAssetDefinition*>
+    ProjectDefinition::getAssetDefinitionsList
+    (AssetType type)
+    {
+        vector<IAssetDefinition*> definitionsList;
+        for (auto it = begin(mAssetDefinitions); it!= end(mAssetDefinitions); it++)
+        {
+            auto thisAssetType = Constants::getAssetTypeEnumFromString((*it)->getType());
+            if (thisAssetType == type)
+            {
+                definitionsList.push_back((*it));
+            }
+        }
+        return definitionsList;
+    }
+
+
     SceneDefinition*
     ProjectDefinition::createNewSceneDefinition
     ()

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <DreamCore.h>
+#include "../deps/ImGui/imgui.h"
 
 using Dream::DreamObject;
 using Dream::Project;

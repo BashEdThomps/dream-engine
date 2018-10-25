@@ -42,32 +42,32 @@ namespace DreamTool
 
 using DreamTool::DTWidget;
 
-namespace DreamGLFW
+namespace DreamTool
 {
 
-    class GLFWWindowComponent : public IWindowComponent
+    class DTWindowComponent : public IWindowComponent
     {
     public:
-        GLFWWindowComponent();
-        ~GLFWWindowComponent() override;
+        DTWindowComponent();
+        ~DTWindowComponent() override;
 
         void updateComponent() override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
         void bindDefaultFrameBuffer() override;
-              void drawImGui();
+        void drawImGui();
 
-            void addWidget(DTWidget* widget);
-            void removeWidget(DTWidget* widget);
+        void addWidget(DTWidget* widget);
+        void removeWidget(DTWidget* widget);
 
     private:
         bool initGLFW();
         bool initGL();
-              bool initImGui();
-              void cleanUpImGui();
+        bool initImGui();
+        void cleanUpImGui();
         GLFWwindow* mWindow;
-            vector<DTWidget*> mWidgets;
+        vector<DTWidget*> mWidgets;
 
     }; // End of GLFWWindowComponent
 

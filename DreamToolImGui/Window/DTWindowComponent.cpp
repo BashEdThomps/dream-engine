@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 
-#include "GLFWWindowComponent.h"
+#include "DTWindowComponent.h"
 #include "../Tools/DTWidget.h"
 
 using Dream::Constants;
@@ -26,7 +26,7 @@ using Dream::SceneState;
 
 static bool WindowSizeChanged = false;
 
-namespace DreamGLFW
+namespace DreamTool
 {
     void
     FramebufferSizeCallback
@@ -35,7 +35,7 @@ namespace DreamGLFW
         WindowSizeChanged = true;
     }
 
-    GLFWWindowComponent::GLFWWindowComponent
+    DTWindowComponent::DTWindowComponent
     () : IWindowComponent()
     {
         auto log = spdlog::get("GLFWWindowComponent");
@@ -47,7 +47,7 @@ namespace DreamGLFW
         mName = "Dream";
     }
 
-    GLFWWindowComponent::~GLFWWindowComponent
+    DTWindowComponent::~DTWindowComponent
     ()
     {
         auto log = spdlog::get("GLFWWindowComponent");
@@ -58,7 +58,7 @@ namespace DreamGLFW
     }
 
     bool
-    GLFWWindowComponent::init
+    DTWindowComponent::init
     ()
     {
         if (!initGLFW())
@@ -80,14 +80,14 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::bindDefaultFrameBuffer
+    DTWindowComponent::bindDefaultFrameBuffer
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
     }
 
     bool
-    GLFWWindowComponent::initGLFW
+    DTWindowComponent::initGLFW
     ()
     {
         auto log = spdlog::get("GLFWWindowComponent");
@@ -131,7 +131,7 @@ namespace DreamGLFW
     }
 
     bool
-    GLFWWindowComponent::initImGui
+    DTWindowComponent::initImGui
     ()
     {
         auto log = getLog();
@@ -140,7 +140,7 @@ namespace DreamGLFW
         // Setup Dear ImGui binding
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
 
@@ -148,13 +148,13 @@ namespace DreamGLFW
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         // Setup style
-        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsDark();
 
         return true;
     }
 
     bool
-    GLFWWindowComponent::initGL
+    DTWindowComponent::initGL
     ()
     {
         auto log = spdlog::get("GLFWWindowComponent");
@@ -165,7 +165,7 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::updateComponent
+    DTWindowComponent::updateComponent
     ()
     {
         auto log = spdlog::get("GLFWWindowComponent");
@@ -191,14 +191,14 @@ namespace DreamGLFW
 
     }
 
-    void GLFWWindowComponent::getCurrentDimensions()
+    void DTWindowComponent::getCurrentDimensions()
     {
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
         cout << "Framebuffer Size Changed: " << mWidth << "," << mHeight << endl;
         mSizeHasChanged = true;
     }
 
-    void GLFWWindowComponent::swapBuffers()
+    void DTWindowComponent::swapBuffers()
     {
         if (mWindow != nullptr)
         {
@@ -207,7 +207,7 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::drawImGui
+    DTWindowComponent::drawImGui
     ()
     {
         // Start the Dear ImGui frame
@@ -229,7 +229,7 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::cleanUpImGui
+    DTWindowComponent::cleanUpImGui
     ()
     {
         // Cleanup
@@ -239,7 +239,7 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::addWidget
+    DTWindowComponent::addWidget
     (DTWidget* widget)
     {
         auto log = getLog();
@@ -258,7 +258,7 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::removeWidget
+    DTWindowComponent::removeWidget
     (DTWidget* widget)
     {
         auto log = getLog();

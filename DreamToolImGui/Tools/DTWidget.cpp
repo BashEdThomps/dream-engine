@@ -7,21 +7,12 @@
 
 #include "DTWidget.h"
 
-
-
 namespace DreamTool
 {
     DTWidget::DTWidget
     (Project* project)
     : DreamObject("DTWidget"),
-      mProject(project)
-    {
+      mProject(project) {}
 
-    }
-
-    DTWidget::~DTWidget
-    ()
-    {
-
-    }
+    DTWidget::~DTWidget() {}
 }

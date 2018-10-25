@@ -71,6 +71,7 @@ namespace Dream
 
         void removeAssetDefinition(IAssetDefinition* assetDef);
         vector<IAssetDefinition*> getAssetDefinitionsList();
+        vector<IAssetDefinition*> getAssetDefinitionsList(AssetType type);
         SceneDefinition* createNewSceneDefinition();
         IAssetDefinition* createNewAssetDefinition(AssetType type);
         json getJson() override;

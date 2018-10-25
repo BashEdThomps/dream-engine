@@ -103,7 +103,7 @@ int main(int argc, const char** argv)
         pr->updateLogic();
         pr->updateGraphics();
         pr->collectGarbage();
-
+        windowComponent.swapBuffers();
         if (glfwGetTime() > time + one_sec)
         {
             cout << "FPS: " <<  frames << endl;

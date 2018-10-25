@@ -1,7 +1,11 @@
 #include "ProjectBrowser.h"
 
-#include <DreamCore.h>
-#include "../deps/ImGui/imgui.h"
+using Dream::SceneDefinition;
+using Dream::SceneObjectDefinition;
+using Dream::IAssetDefinition;
+using Dream::Constants;
+using Dream::IAssetDefinition;
+using Dream::AssetType;
 
 namespace DreamTool
 {
@@ -20,17 +24,42 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        char buf[512];
-        float f;
-        ImGui::Text(
-            "%s Project Browser",
-            mProject->getProjectDefinition()->getName().c_str()
-        );
-        if (ImGui::Button("Save"))
+        ImGuiIO& io = ImGui::GetIO();
+        ImGui::Begin("Project Browser");
+        auto projDef = mProject->getProjectDefinition();
+
+        if (ImGui::TreeNode(projDef->getName().c_str()))
         {
-            log->debug("Save button was clicked");
+            for (SceneDefinition* sDef : projDef->getSceneDefinitionsList())
+            {
+                if (ImGui::TreeNode(sDef->getName().c_str()))
+                {
+                    SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
+                    addSceneObject(rootSo);
+                    ImGui::TreePop();
+                } // Scene Name
+            }
+            ImGui::TreePop();
+        } // Project Name
+        ImGui::End();
+    }
+
+    void
+    ProjectBrowser::addSceneObject
+    (SceneObjectDefinition* def)
+    {
+        if (def != nullptr)
+        {
+            if (ImGui::TreeNode(def->getName().c_str()))
+            {
+                for (SceneObjectDefinition* child : def->getChildDefinitionsList())
+                {
+                    addSceneObject(child);
+                }
+                ImGui::TreePop();
+            } // Root SO
         }
-        ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+
     }
 }
+

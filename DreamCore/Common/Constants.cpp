@@ -380,13 +380,13 @@ namespace Dream
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
-        {AssetType::PATH,             ASSET_TYPE_PATH},
         {AssetType::AUDIO,            ASSET_TYPE_AUDIO},
         {AssetType::FONT,             ASSET_TYPE_FONT},
         {AssetType::LIGHT,            ASSET_TYPE_LIGHT},
         {AssetType::MATERIAL,         ASSET_TYPE_MATERIAL},
         {AssetType::MODEL,            ASSET_TYPE_MODEL},
         {AssetType::PARTICLE_EMITTER, ASSET_TYPE_PARTICLE_EMITTER},
+        {AssetType::PATH,             ASSET_TYPE_PATH},
         {AssetType::PHYSICS_OBJECT,   ASSET_TYPE_PHYSICS_OBJECT},
         {AssetType::SCRIPT,           ASSET_TYPE_SCRIPT},
         {AssetType::SHADER,           ASSET_TYPE_SHADER},
@@ -589,37 +589,60 @@ namespace Dream
     Constants::getAssetTypeReadableNameFromString
     (string type)
     {
-        if (type.compare(ASSET_TYPE_PATH) == 0)
-        {
-            return ASSET_TYPE_PATH_READABLE;
-        }
-        else if (type.compare(ASSET_TYPE_AUDIO) == 0)
+
+        if (type.compare(ASSET_TYPE_AUDIO) == 0)
         {
             return ASSET_TYPE_AUDIO_READABLE;
         }
+
         else if (type.compare(ASSET_TYPE_FONT) == 0)
         {
             return ASSET_TYPE_FONT_READABLE;
         }
+
         else if (type.compare(ASSET_TYPE_LIGHT) == 0)
         {
             return ASSET_TYPE_LIGHT_READABLE;
         }
+
+        else if (type.compare(ASSET_TYPE_MATERIAL) == 0)
+        {
+            return ASSET_TYPE_MATERIAL_READABLE;
+        }
+
         else if (type.compare(ASSET_TYPE_MODEL) == 0)
         {
             return ASSET_TYPE_MODEL_READABLE;
         }
+
+        else if (type.compare(ASSET_TYPE_PARTICLE_EMITTER) == 0)
+        {
+            return ASSET_TYPE_PARTICLE_EMITTER_READABLE;
+        }
+
+        else if (type.compare(ASSET_TYPE_PATH) == 0)
+        {
+            return ASSET_TYPE_PATH_READABLE;
+        }
+
         else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
         {
             return ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         }
+
         else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
         {
             return ASSET_TYPE_SCRIPT_READABLE;
         }
+
         else if (type.compare(ASSET_TYPE_SHADER) == 0)
         {
             return ASSET_TYPE_SHADER_READABLE;
+        }
+
+        else if (type.compare(ASSET_TYPE_TEXTURE) == 0)
+        {
+            return ASSET_TYPE_TEXTURE_READABLE;
         }
         return "";
     }
