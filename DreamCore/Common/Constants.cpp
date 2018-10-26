@@ -16,6 +16,8 @@
  * this file belongs to.
  */
 
+
+
 #include "Constants.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -395,12 +397,7 @@ namespace Dream
 
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =
     {
-        {
-            AssetType::PATH,
-            {
-                ASSET_FORMAT_PATH_DREAM
-            }
-        },
+
         {
             AssetType::AUDIO,
             {
@@ -439,6 +436,12 @@ namespace Dream
             AssetType::PARTICLE_EMITTER,
             {
                 ASSET_FORMAT_DREAM
+            }
+        },
+        {
+            AssetType::PATH,
+            {
+                ASSET_FORMAT_PATH_DREAM
             }
         },
         {

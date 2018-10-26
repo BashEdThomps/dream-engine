@@ -19,12 +19,25 @@ namespace DreamTool
         void setDefinition(IDefinition* def);
         void clear();
         void setPropertyType(PropertyType t);
+
+    private:
+        void drawNameAndIdProperties();
         void drawProjectProperties();
         void drawSceneProperties();
         void drawSceneObjectProperties();
         void drawAssetProperties();
-    private:
-        void drawNameAndIdProperties();
+        void drawAudioAssetProperties();
+        void drawFontAssetProperties();
+        void drawLightAssetProperties();
+        void drawMaterialAssetProperties();
+        void drawModelAssetProperties();
+        void drawPhysicsObjectAssetProperties();
+        void drawScriptProperties();
+        void drawShaderAssetProperties();
+        void drawPathAssetProperties();
+        void drawParticleEmitterAssetProperties();
+        void drawTextureAssetProperties();
+
     private:
         PropertyType mType;
         IDefinition* mDefinition;

@@ -6,6 +6,7 @@
 #include "Tools/ProjectBrowser.h"
 #include "Tools/AssetBrowser.h"
 #include "Tools/PropertiesWindow.h"
+#include "Tools/MenuBar.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -18,10 +19,12 @@ using Dream::SceneDefinition;
 using Dream::ArgumentParser;
 using Dream::ProjectRuntime;
 using Dream::ProjectDefinition;
+
 using DreamTool::DTWindowComponent;
 using DreamTool::ProjectBrowser;
 using DreamTool::AssetBrowser;
 using DreamTool::PropertiesWindow;
+using DreamTool::MenuBar;
 
 void showUsage(const char** argv)
 {
@@ -106,6 +109,9 @@ int main(int argc, const char** argv)
 
     AssetBrowser assetBrowser(&project, &propertiesWindow);
     windowComponent.addWidget(&assetBrowser);
+
+    MenuBar menuBar(&project);
+    windowComponent.addWidget(&menuBar);
 
 
     spdlog::set_level(spdlog::level::err);

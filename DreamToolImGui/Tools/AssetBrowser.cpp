@@ -1,4 +1,5 @@
 #include "AssetBrowser.h"
+#include "PropertiesWindow.h"
 
 using Dream::Project;
 using Dream::Constants;
@@ -24,6 +25,7 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
+        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         ImGui::Begin("Asset Browser");
         auto projDef = mProject->getProjectDefinition();
         for (auto assetPair : Constants::DREAM_ASSET_TYPES_MAP)
@@ -31,13 +33,20 @@ namespace DreamTool
            AssetType type = assetPair.first;
            string name = assetPair.second;
            name = Constants::getAssetTypeReadableNameFromString(name);
-           if (ImGui::TreeNode(name.c_str()))
+           if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,name.c_str(),0))
            {
                auto assets = projDef->getAssetDefinitionsList(type);
                for (auto asset : assets)
                {
-                   if (ImGui::TreeNode(asset->getName().c_str()))
+                   if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,asset->getName().c_str(),0))
                    {
+                       if (ImGui::IsItemClicked())
+                        {
+                            log->error("Asset Definition Clicked {}", asset->getName());
+                            mPropertiesWindowHandle->setPropertyType(PROP_TYPE_ASSET);
+                            mPropertiesWindowHandle->setDefinition(asset);
+                            mPropertiesWindowHandle->setRuntime(nullptr);
+                        }
                        ImGui::TreePop();
                    }
                }

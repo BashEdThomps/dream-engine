@@ -26,8 +26,8 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
+        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         ImGui::Begin("Project Browser");
-        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         auto projDef = mProject->getProjectDefinition();
         auto projRunt = mProject->getProjectRuntime();
 
