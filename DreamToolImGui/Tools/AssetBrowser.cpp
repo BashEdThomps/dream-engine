@@ -47,7 +47,7 @@ namespace DreamTool
            name = Constants::getAssetTypeReadableNameFromString(name);
            if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,name.c_str(),0))
            {
-               auto assets = projDef->getAssetDefinitionsList(type);
+               auto assets = projDef->getAssetDefinitionsVector(type);
                for (auto asset : assets)
                {
                    if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,asset->getName().c_str(),0))

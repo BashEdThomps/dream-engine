@@ -32,6 +32,7 @@
 #include "../../Components/Graphics/Model/ModelCache.h"
 #include "../../Components/Graphics/Shader/ShaderInstance.h"
 #include "../../Components/Graphics/Light/LightInstance.h"
+#include "../../Components/Graphics/ParticleEmitter/ParticleEmitterInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
 #include "../../Components/Physics/PhysicsComponent.h"
 #include "../../Components/IAssetDefinition.h"
@@ -43,6 +44,7 @@
 #include "../../Components/Graphics/Model/ModelDefinition.h"
 #include "../../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../../Components/Graphics/Shader/ShaderCache.h"
+#include "../../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 
 #include "../../Components/Path/PathDefinition.h"
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
@@ -74,6 +76,7 @@ namespace Dream
         mLightInstance(nullptr),
         mScriptInstance(nullptr),
         mPhysicsObjectInstance(nullptr),
+		mParticleEmitterInstance(nullptr),
         mTransform(nullptr),
         mModelInstance(nullptr),
         mShaderInstance(nullptr),
@@ -107,12 +110,12 @@ namespace Dream
         mChildRuntimes.clear();
 
         removeAudioInstance();
-        removePathInstance();
-        removeModelInstance();
-        //removeShaderInstance();
         removeLightInstance();
-        removeScriptInstance();
+        removeModelInstance();
+		removeParticleEmitterInstance();
+        removePathInstance();
         removePhysicsObjectInstance();
+        removeScriptInstance();
 
         if (mTransform != nullptr)
         {
@@ -154,19 +157,6 @@ namespace Dream
             mModelInstance->removeInstance(this);
         }
     }
-
-    /*
-    void
-    SceneObjectRuntime::removeShaderInstance
-    ()
-    {
-        if (mShaderInstance != nullptr)
-        {
-            delete mShaderInstance;
-            mShaderInstance = nullptr;
-        }
-    }
-    */
 
     void
     SceneObjectRuntime::removeLightInstance
@@ -223,6 +213,15 @@ namespace Dream
             mPhysicsObjectInstance = nullptr;
         }
     }
+
+	void SceneObjectRuntime::removeParticleEmitterInstance()
+	{
+		if (mParticleEmitterInstance != nullptr)
+		{
+			delete mParticleEmitterInstance;
+			mParticleEmitterInstance = nullptr;
+		}
+	}
 
     void
     SceneObjectRuntime::resetTransform
@@ -388,17 +387,17 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::addAssetDefinitionUuidToLoad
-    (string def)
+    SceneObjectRuntime::setAssetDefinitionsMap
+	(map<AssetType,string> assetMap)
     {
-        mAssetDefinitionUuidLoadQueue.push_back(def);
+		mAssetDefinitions = assetMap;
     }
 
-    vector<string>
-    SceneObjectRuntime::getAssetDefinitionUuidsToLoad
+    map<AssetType,string>
+    SceneObjectRuntime::getAssetDefinitionsMap
     ()
     {
-        return mAssetDefinitionUuidLoadQueue;
+		return mAssetDefinitions;
     }
 
     PhysicsObjectInstance*
@@ -578,12 +577,29 @@ namespace Dream
     SceneObjectRuntime::createAssetInstances
     ()
     {
-        for (string aDefUuid : mAssetDefinitionUuidLoadQueue)
+        for (auto assetPair : mAssetDefinitions)
         {
-            if (!createAssetInstanceFromAssetDefinitionByUuid(aDefUuid)) return false;
+			IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
+			switch (assetPair.first)
+			{
+				case AssetType::AUDIO:
+					return createAudioInstance(dynamic_cast<AudioDefinition*>(def));
+				case AssetType::LIGHT:
+					return createLightInstance(dynamic_cast<LightDefinition*>(def));
+				case AssetType::MODEL:
+					return createModelInstance(dynamic_cast<ModelDefinition*>(def));
+				case AssetType::PARTICLE_EMITTER:
+					return createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
+				case AssetType::PATH:
+					return createPathInstance(dynamic_cast<PathDefinition*>(def));
+				case AssetType::PHYSICS_OBJECT:
+					return createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
+				case AssetType::SCRIPT:
+					return createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
+				default:
+					return false;
+			}
         }
-        mAssetDefinitionUuidLoadQueue.clear();
-        return true;
     }
 
     bool
@@ -741,6 +757,12 @@ namespace Dream
         );
         return mPhysicsObjectInstance->load(mProjectPath);
     }
+
+	bool 
+		SceneObjectRuntime::createParticleEmitterInstance(ParticleEmitterDefinition *)
+	{
+		return false;
+	}
 
     bool
     SceneObjectRuntime::createPathInstance
@@ -974,21 +996,14 @@ namespace Dream
         log->debug( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
         setUuid(def->getUuid());
-        setFollowsCamera(def->followsCamera());
-        setAssetDefinitionLoadQueue(def->getAssetDefinitionLoadQueue());
-        setHasFocus(def->hasFocus());
+        setFollowsCamera(def->getFollowsCamera());
+        setAssetsDefinitionsMap(def->getAssetDefinitionsMap());
+        setHasFocus(def->getHasFocus());
         setHidden(def->getHidden());
         initialTransform();
         if (!createAssetInstances()) return false;
         if( !loadChildrenFromDefinition(def)) return false;
         return true;
-    }
-
-    void
-    SceneObjectRuntime::setAssetDefinitionLoadQueue
-    (vector<string> loadQueue)
-    {
-        mAssetDefinitionUuidLoadQueue = loadQueue;
     }
 
     bool

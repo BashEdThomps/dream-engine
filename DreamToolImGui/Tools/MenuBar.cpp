@@ -1,4 +1,6 @@
 #include "MenuBar.h"
+#include "ImGuiHelpers.h"
+using Dream::SceneDefinition;
 
 namespace DreamTool
 {
@@ -31,12 +33,32 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("Scene"))
             {
-                static int index = 0;
-                char* scenes[3] = {"Scene 1","Scene 2","Scene 3"};
-                ImGui::MenuItem("Start Scene");
-                ImGui::MenuItem("Stop Scene");
+				
+
+				if (ImGui::MenuItem("Start Scene"))
+				{
+
+				}
+				if (ImGui::MenuItem("Stop Scene"))
+				{
+
+				}
+
                 ImGui::Separator();
-                ImGui::Combo("##hidelabel",&index,scenes[0],3);
+
+				auto scenesVector = mProject->getProjectDefinition()->getSceneDefinitionsVector();
+				vector<string> sceneNames;
+				for (auto scene : scenesVector)
+				{
+					sceneNames.push_back(scene->getName());
+				}
+
+				auto currentScene = dynamic_cast<SceneDefinition*>(mProject->getProjectRuntime()->getActiveSceneRuntime()->getDefinition());
+                static int startupSceneIndex = mProject->getProjectDefinition()->getSceneDefinitionIndex(currentScene);
+				if (StringCombo("Active Scene", &startupSceneIndex, sceneNames, sceneNames.size()))
+				{
+					
+				}
                 ImGui::EndMenu();
             }
 

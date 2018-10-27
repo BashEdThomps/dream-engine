@@ -1,4 +1,5 @@
 #include "PropertiesWindow.h"
+#include "ImGuiHelpers.h"
 
 using Dream::IAssetDefinition;
 using Dream::Constants;
@@ -123,7 +124,7 @@ namespace DreamTool
             )
         );
         vector<string> scenes;
-        for(SceneDefinition* scene : projDef->getSceneDefinitionsList())
+        for(SceneDefinition* scene : projDef->getSceneDefinitionsVector())
         {
            scenes.push_back(scene->getName());
         }
@@ -287,146 +288,216 @@ namespace DreamTool
         }
 
         auto clearVec = sceneDef->getClearColour();
-        float clearColor[3] = {
-            clearVec[0],
-            clearVec[1],
-            clearVec[2]
-        };
-        if(ImGui::ColorEdit3("Clear Color",clearColor))
+        if(ImGui::ColorEdit3("Clear Color",&clearVec[0]))
         {
             if (sceneDef != nullptr)
             {
-                sceneDef->setClearColourR(clearColor[0]);
-                sceneDef->setClearColourG(clearColor[1]);
-                sceneDef->setClearColourB(clearColor[2]);
+                sceneDef->setClearColourR(clearVec[0]);
+                sceneDef->setClearColourG(clearVec[1]);
+                sceneDef->setClearColourB(clearVec[2]);
             }
             if (sceneRuntime)
             {
                 sceneRuntime->setClearColour({
-                    clearColor[0],
-                    clearColor[1],
-                    clearColor[2]
-                });
-            }
-        }
+                    clearVec[0],
+                    clearVec[1],
+                    clearVec[2]
+				});
+			}
+		}
 
-        auto ambientVec = sceneDef->getAmbientColour();
-        float ambientColor[3]  = {
-            ambientVec[0],
-            ambientVec[1],
-            ambientVec[2]
-        };
+		auto ambientVec = sceneDef->getAmbientColour();
+		if (ImGui::ColorEdit3("Ambient Color", &ambientVec[0]))
+		{
+if (sceneDef)
+{
+	sceneDef->setAmbientColourR(ambientVec[0]);
+	sceneDef->setAmbientColourG(ambientVec[1]);
+	sceneDef->setAmbientColourB(ambientVec[2]);
+}
+if (sceneRuntime)
+{
+	sceneRuntime->setAmbientColour({
+		ambientVec[0],
+		ambientVec[1],
+		ambientVec[2]
+		});
+}
+		}
 
-        if(ImGui::ColorEdit3("Ambient Color",ambientColor))
-        {
-            if (sceneDef)
-            {
-                sceneDef->setAmbientColourR(ambientColor[0]);
-                sceneDef->setAmbientColourG(ambientColor[1]);
-                sceneDef->setAmbientColourB(ambientColor[2]);
-            }
-            if (sceneRuntime)
-            {
-                sceneRuntime->setAmbientColour({
-                    ambientColor[0],
-                    ambientColor[1],
-                    ambientColor[2]
-                });
-            }
-        }
+		int lightingShaderIndex = sceneDef->getCurrentLightingShaderIndex();
+		auto shaderList = mProject->getProjectDefinition()->getAssetNamesVector(AssetType::SHADER);
 
-        int lightingShader = 0;
-        char* items[3] = {"Shader1","Shader2","Shader3"};
-        ImGui::Combo("Lighting Pass Shader",&lightingShader,items,3);
-        ImGui::Separator();
+		if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
+		{
+			auto selectedShader = mProject->getProjectDefinition()->getShaderDefinitionAtIndex(lightingShaderIndex);
+			auto uuid = selectedShader->getUuid();
+			auto name = selectedShader->getName();
+			sceneDef->setLightingShader(uuid);
+			log->error("Switched lighting shader to {} {}", name, uuid);
+		}
+		ImGui::Separator();
 
-        // Physics
-        bool physicsDebug = sceneDef->getPhysicsDebug();
-        float gravity[3];
-        ImGui::Text("Physics");
+		// Physics
+		bool physicsDebug = sceneDef->getPhysicsDebug();
+		ImGui::Text("Physics");
 
-        if(ImGui::Checkbox("Debug",&physicsDebug))
-        {
-          if (sceneDef)
-          {
-              sceneDef->setPhysicsDebug(physicsDebug);
-          }
-        }
+		if (ImGui::Checkbox("Debug", &physicsDebug))
+		{
+			if (sceneDef)
+			{
+				sceneDef->setPhysicsDebug(physicsDebug);
+			}
+		}
 
-        if(ImGui::DragFloat3("Gravity",gravity))
-        {
-            vector<float> gravityVec =
-            {
-                gravity[0],
-                gravity[1],
-                gravity[2]
-            };
-            if (sceneDef)
-            {
-                sceneDef->setGravity(gravityVec);
-            }
+		auto gravityVec = sceneDef->getGravity();
+		if (ImGui::DragFloat3("Gravity", &gravityVec[0]))
+		{
+			if (sceneDef)
+			{
+				sceneDef->setGravity(gravityVec);
+			}
+			if (sceneRuntime)
+			{
+				sceneRuntime->setGravity(gravityVec);
+			}
+		}
+		ImGui::Separator();
 
-            if (sceneRuntime)
-            {
-               sceneRuntime->setGravity(gravityVec);
-            }
-        }
-        ImGui::Separator();
+		// Notes
+		char notesBuffer[512] = { 0 };
+		strncpy(notesBuffer, sceneDef->getNotes().c_str(), sceneDef->getNotes().size());
 
-        // Notes
-        char notesBuffer[512] = {0};
-        strncpy(notesBuffer,sceneDef->getNotes().c_str(),sceneDef->getNotes().size());
+		if (ImGui::InputTextMultiline("Notes", notesBuffer, 512))
+		{
+			if (sceneDef)
+			{
+				sceneDef->setNotes(notesBuffer);
+			}
+		}
 
-        if (ImGui::InputTextMultiline("Notes",notesBuffer,512))
-        {
-            if(sceneDef)
-            {
-                sceneDef->setNotes(notesBuffer);
-            }
-        }
+	}
 
-    }
+	void
+		PropertiesWindow::drawSceneObjectProperties
+		()
+	{
+		auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
+		ImGui::Separator();
 
-    void
-    PropertiesWindow::drawSceneObjectProperties
-    ()
-    {
-        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
-        ImGui::Separator();
+		ImGui::Columns(2);
+		bool hasFocus = soDef->getHasFocus();
+		if (ImGui::Checkbox("Has Focus", &hasFocus))
+		{
+			soDef->setHasFocus(&hasFocus);
+		}
+		ImGui::NextColumn();
 
-        bool hasFocus = true;
-        bool followsCamera = false;
-        ImGui::Columns(2);
-        if(ImGui::Checkbox("Has Focus",&hasFocus))
-        {
+		bool followsCamera = soDef->getFollowsCamera();
+		if (ImGui::Checkbox("Follows Camera", &followsCamera))
+		{
+			soDef->setFollowsCamera(followsCamera);
+		}
+		ImGui::NextColumn();
 
-        }
-        ImGui::NextColumn();
-        ImGui::Checkbox("Follows Camera",&followsCamera);
-        ImGui::NextColumn();
-        ImGui::Checkbox("Always Draw",&followsCamera);
-        ImGui::NextColumn();
-        ImGui::Checkbox("Hidden",&followsCamera);
+		bool alwaysDraw = soDef->getAlwaysDraw();
+		if (ImGui::Checkbox("Always Draw", &alwaysDraw))
+		{
+			soDef->setAlwaysDraw(alwaysDraw);
+		}
+		ImGui::NextColumn();
+
+		bool hidden = soDef->getHidden();
+		if(ImGui::Checkbox("Hidden", &hidden))
+		{
+			soDef->setHidden(hidden);
+}
         ImGui::Columns(1);
 
         ImGui::Separator();
 
-        float tx[3], rx[3], scale[3];
-        ImGui::DragFloat3("Translation",tx);
-        ImGui::DragFloat3("Rotation",rx);
-        ImGui::DragFloat3("Scale",scale);
+		float tx[3] = {
+			soDef->getTransform()->getTranslationX(),
+			soDef->getTransform()->getTranslationY(),
+			soDef->getTransform()->getTranslationZ()
+		};
+		if (ImGui::DragFloat3("Translation", tx))
+		{
+			soDef->getTransform()->setTranslationX(tx[0]);
+			soDef->getTransform()->setTranslationY(tx[1]);
+			soDef->getTransform()->setTranslationZ(tx[2]);
+		}
+
+		float rx[3] = {
+			soDef->getTransform()->getRotationX(),
+			soDef->getTransform()->getRotationY(),
+			soDef->getTransform()->getRotationZ()
+		};
+        if (ImGui::DragFloat3("Rotation",rx))
+		{
+			soDef->getTransform()->setRotationX(rx[0]);
+			soDef->getTransform()->setRotationX(rx[1]);
+			soDef->getTransform()->setRotationX(rx[2]);
+		}
+
+		float scale[3] = {
+			soDef->getTransform()->getScaleX(),
+			soDef->getTransform()->getScaleY(),
+			soDef->getTransform()->getScaleZ()
+		};
+        if(ImGui::DragFloat3("Scale",scale))
+		{
+			soDef->getTransform()->setScaleX(scale[0]);
+			soDef->getTransform()->setScaleY(scale[0]);
+			soDef->getTransform()->setScaleZ(scale[0]);
+		}
+
         ImGui::Separator();
 
-        int selectedAsset = 1;
-        char* assets[3] {"Asset 1","Asset 2","Asset 3"};
-        ImGui::Text("Assets");
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Audio",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Light",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Model",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Particle Emitter",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Path",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Physics Object",&selectedAsset,assets,3);
-        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Script",&selectedAsset,assets,3);
+		ImGui::Text("Assets"); 
+		auto projDef = mProject->getProjectDefinition();
+
+        int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::AUDIO);
+		vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::AUDIO);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size());
+
+        int selectedLightAsset = 1;
+		vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::LIGHT);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size());
+
+        int selectedModelAsset = 1;
+		vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size());
+
+        int selectedParticleEmitterAsset = 1;
+		vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Particle Emitter",&selectedParticleEmitterAsset,peAssets,peAssets.size());
+
+        int selectedPathAsset = 1;
+		vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size());
+
+        int selectedPhysicsObjectAsset = 1;
+		vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size());
+
+        int selectedScriptAsset = 1;
+		vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::SCRIPT);
+        ImGui::Button("Edit"); 
+		ImGui::SameLine(); 
+		StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size());
     }
 
     void
@@ -630,30 +701,5 @@ namespace DreamTool
     ()
     {
         ImGui::Button("Texture File..."); ImGui::SameLine(); ImGui::Button("Remove File");
-    }
-
-    bool
-    PropertiesWindow::StringCombo
-    (
-        const char* label,
-        int* current_item,
-        const std::vector<std::string>& items,
-        int items_count,
-        int height_in_items)
-    {
-        return ImGui::Combo
-        (
-            label,
-            current_item,
-            [](void* data, int idx, const char** out_text)
-            {
-                auto _data = ((const std::vector<std::string>*)data);
-                *out_text = (*_data)[idx].c_str();
-                return true;
-            },
-            (void*)&items,
-            items_count,
-            height_in_items
-        );
     }
 }

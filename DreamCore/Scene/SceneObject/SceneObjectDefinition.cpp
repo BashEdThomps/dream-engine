@@ -86,7 +86,7 @@ namespace Dream
     }
 
     bool
-    SceneObjectDefinition::hasFocus
+    SceneObjectDefinition::getHasFocus
     ()
     {
         if (mJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
@@ -105,7 +105,7 @@ namespace Dream
     }
 
     bool
-    SceneObjectDefinition::followsCamera
+    SceneObjectDefinition::getFollowsCamera
     ()
     {
         if (mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA].is_null())
@@ -113,62 +113,6 @@ namespace Dream
             mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA] = false;
         }
         return mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA];
-    }
-
-    void
-    SceneObjectDefinition::addAssetDefinitionToLoadQueue
-    (IAssetDefinition* ad)
-    {
-        addAssetDefinitionUuidToLoadQueue(ad->getUuid());
-    }
-
-    void
-    SceneObjectDefinition::addAssetDefinitionUuidToLoadQueue
-    (string uuid)
-    {
-        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].push_back(uuid);
-    }
-
-    void
-    SceneObjectDefinition::removeAssetDefinitionUuidFromLoadQueue
-    (string uuid)
-    {
-        auto log = getLog();
-        log->debug("Attempting to remove instance of {} from {}",uuid,getNameAndUuidString());
-        auto iter = find
-                (
-                    begin(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
-                end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]),
-                uuid
-                );
-        if (iter != end(mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES]))
-        {
-            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].erase(iter);
-        }
-    }
-
-    void
-    SceneObjectDefinition::removeAssetDefinitionFromLoadQueue
-    (IAssetDefinition* ad)
-    {
-        removeAssetDefinitionUuidFromLoadQueue(ad->getUuid());
-    }
-
-    vector<string>
-    SceneObjectDefinition::getAssetDefinitionLoadQueue
-    ()
-    {
-        vector<string> toLoad;
-        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null())
-        {
-            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::array();
-        }
-
-        for (json uuid : mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES])
-        {
-            toLoad.push_back(uuid);
-        }
-        return toLoad;
     }
 
     void
@@ -350,6 +294,7 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_HIDDEN];
     }
 
+	
 
     SceneObjectDefinition*
     SceneObjectDefinition::getParentSceneObject
@@ -401,4 +346,62 @@ namespace Dream
         mParentSceneObject->addChildSceneObjectDefinition(newSOD);
         return newSOD;
     }
+
+	int 
+	SceneObjectDefinition::getSelectedAssetIndex
+	(AssetType type)
+	{
+		return 0;
+	}
+
+	void SceneObjectDefinition::setAssetDefinition(AssetType type, string uuid)
+	{
+		auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
+			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
+		{
+			setEmptyAssetsObject();
+		}
+		mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = uuid;
+	}
+
+	map<AssetType, string> 
+	SceneObjectDefinition::getAssetDefinitionsMap
+	()
+	{
+		map<AssetType, string> assetsMap;
+		for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+		{
+			AssetType type = typePair.first;
+			string uuid = getAssetDefinition(type);
+			if (uuid.size() > 0)
+			{
+				assetsMap.insert(pair<AssetType,string>(type, uuid));
+			}
+		}
+		return assetsMap;
+	}
+
+	string
+	SceneObjectDefinition::getAssetDefinition
+	(AssetType type)
+	{
+		auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
+			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
+		{
+			setEmptyAssetsObject();
+		}
+		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
+		{
+			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = "";
+		}
+		return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
+	}
+
+	void 
+	SceneObjectDefinition::setEmptyAssetsObject()
+	{
+		mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::object();
+	}
 }

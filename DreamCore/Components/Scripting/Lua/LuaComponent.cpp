@@ -669,7 +669,6 @@ namespace Dream
             "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
-            "addAssetDefinitionUuidToLoad",&SceneObjectRuntime::addAssetDefinitionUuidToLoad,
 
             "getTransform",&SceneObjectRuntime::getTransform,
             "setTransform",&SceneObjectRuntime::setTransform,

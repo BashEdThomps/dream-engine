@@ -120,5 +120,6 @@ namespace Dream
 
         string getLightingShader();
         void setLightingShader(string shader);
+		int getCurrentLightingShaderIndex();
     };
 }

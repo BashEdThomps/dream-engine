@@ -41,7 +41,7 @@ namespace DreamTool
                 mPropertiesWindowHandle->setRuntime(mProject->getProjectRuntime());
             }
 
-            for (SceneDefinition* sDef : projDef->getSceneDefinitionsList())
+            for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
             {
                 if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,sDef->getName().c_str(),0))
                 {

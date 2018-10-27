@@ -66,20 +66,20 @@ namespace Dream
         size_t countScenesDefinitions();
         SceneDefinition* getSceneDefinitionByUuid(string uuid);
         SceneDefinition* getSceneDefinitionByName(string uuid);
-        vector<SceneDefinition*> getSceneDefinitionsList();
+        vector<SceneDefinition*> getSceneDefinitionsVector();
         void removeSceneDefinition(SceneDefinition* sceneDef);
 
         void removeAssetDefinition(IAssetDefinition* assetDef);
-        vector<IAssetDefinition*> getAssetDefinitionsList();
-        vector<IAssetDefinition*> getAssetDefinitionsList(AssetType type);
+        vector<IAssetDefinition*> getAssetDefinitionsVector();
+        vector<IAssetDefinition*> getAssetDefinitionsVector(AssetType type);
         SceneDefinition* createNewSceneDefinition();
         IAssetDefinition* createNewAssetDefinition(AssetType type);
-        json getJson() override;
-
         map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
-        vector<ShaderDefinition*> getShaderAssetDefinitionVector();
-        vector<TextureDefinition*> getTextureAssetDefinitionVector();
-        vector<MaterialDefinition*> getMaterialAssetDefinitionVector();
+        vector<ShaderDefinition*> getShaderDefinitionsVector();
+        vector<TextureDefinition*> getTextureDefinitionVector();
+        vector<MaterialDefinition*> getMaterialDefinitionVector();
+
+        json getJson() override;
 
         bool getCaptureKeyboard();
         void setCaptureKeyboard(bool);
@@ -92,7 +92,13 @@ namespace Dream
 
         void deleteAssetDefinitions();
         void deleteSceneDefinitions();
+
         long getSceneDefinitionIndex(SceneDefinition*);
+		long getShaderDefinitionIndex(ShaderDefinition*);
+		long getShaderDefinitionIndex(string);
+		ShaderDefinition* getShaderDefinitionAtIndex(int);
+
+		vector<string> getAssetNamesVector(AssetType);
 
     private:
         void loadSceneDefinitions();

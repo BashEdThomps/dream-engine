@@ -605,4 +605,11 @@ namespace Dream
     {
        mJson[Constants::SCENE_LIGHTING_SHADER] = shader;
     }
+
+	int
+	SceneDefinition::getCurrentLightingShaderIndex
+	()
+	{
+		return mProjectDefinition->getShaderDefinitionIndex(getLightingShader());
+	}
 }

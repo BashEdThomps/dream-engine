@@ -52,18 +52,10 @@ namespace Dream
         ~SceneObjectDefinition() override;
 
         void setHasFocus(bool focus);
-        bool hasFocus();
+        bool getHasFocus();
 
         void setFollowsCamera(bool fc);
-        bool followsCamera();
-
-        void addAssetDefinitionToLoadQueue(IAssetDefinition* ad);
-        void addAssetDefinitionUuidToLoadQueue(string uuid);
-
-        void removeAssetDefinitionFromLoadQueue(IAssetDefinition* ad);
-        void removeAssetDefinitionUuidFromLoadQueue(string uuid);
-
-        vector<string> getAssetDefinitionLoadQueue();
+        bool getFollowsCamera();
 
         Transform3D* getTransform();
         void setTransform(Transform3D* tform);
@@ -91,8 +83,15 @@ namespace Dream
         void setHidden(bool d);
         bool getHidden();
 
+		int getSelectedAssetIndex(AssetType type);
+
+		string getAssetDefinition(AssetType type);
+		void setAssetDefinition(AssetType type, string uuid);
+		map<AssetType, string> getAssetDefinitionsMap();
+
     private:
         void deleteChildSceneObjectDefinitions();
+		void setEmptyAssetsObject();
     };
 
 }
