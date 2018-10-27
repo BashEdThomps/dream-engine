@@ -143,14 +143,8 @@ namespace DreamTool
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
-
         ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
-
-        // Setup style
-        //ImGui::StyleColorsDark();
-
         return true;
     }
 
@@ -160,7 +154,6 @@ namespace DreamTool
     {
         auto log = spdlog::get("GLFWWindowComponent");
         log->debug("Initialising GLFW::OpenGL");
-        /* Make the window's context current */
         glfwMakeContextCurrent(mWindow);
         return true;
     }
@@ -215,8 +208,6 @@ namespace DreamTool
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        auto font = ImGui::GetCurrentContext()->Font;
-        font->Scale = 1.2f;
         // Rendering
         for (DTWidget* widget : mWidgets)
         {

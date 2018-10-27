@@ -1,35 +1,43 @@
 #include "MenuBar.h"
 #include "ImGuiHelpers.h"
+#include "../deps/ImGui/imgui_internal.h"
+
 using Dream::SceneDefinition;
 
 namespace DreamTool
 {
-    MenuBar::MenuBar
-    (Project* def)
-        : DTWidget(def)
-    {
+	MenuBar::MenuBar
+	(Project* def)
+		: DTWidget(def)
+	{
 
-    }
+	}
 
-    MenuBar::~MenuBar
-    ()
-    {
+	MenuBar::~MenuBar
+	()
+	{
 
-    }
-    void
-    MenuBar::draw
-    ()
-    {
-        if (ImGui::BeginMainMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                ImGui::MenuItem("New");
-                ImGui::MenuItem("Open");
-                ImGui::MenuItem("Save");
-                ImGui::MenuItem("Quit");
-                ImGui::EndMenu();
-            }
+	}
+	void
+		MenuBar::draw
+		()
+	{
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				ImGui::MenuItem("New");
+				ImGui::MenuItem("Open");
+				ImGui::MenuItem("Save");
+				ImGui::MenuItem("Quit");
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("View"))
+			{
+				ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f);
+				ImGui::EndMenu();
+			}
 
             if (ImGui::BeginMenu("Scene"))
             {

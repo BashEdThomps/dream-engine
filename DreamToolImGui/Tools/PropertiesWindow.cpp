@@ -11,6 +11,8 @@ using Dream::SceneDefinition;
 using Dream::SceneRuntime;
 using Dream::SceneObjectDefinition;
 using Dream::SceneObjectRuntime;
+using Dream::MaterialDefinition;
+using Dream::RGB;
 
 namespace DreamTool
 {
@@ -64,13 +66,14 @@ namespace DreamTool
     {
         if (mDefinition != nullptr)
         {
-
+			ImGui::Columns(2);
             char idBuf[128] = {0};
             strncpy(&idBuf[0],mDefinition->getUuid().c_str(),mDefinition->getUuid().size());
             if(ImGui::InputText("ID", idBuf, IM_ARRAYSIZE(idBuf)))
             {
                 mDefinition->setUuid(idBuf);
             }
+			ImGui::NextColumn();
 
             char nameBuf[128] = {0};
             strncpy(&nameBuf[0],mDefinition->getName().c_str(),mDefinition->getName().size());
@@ -78,6 +81,7 @@ namespace DreamTool
             {
                mDefinition->setName(nameBuf);
             }
+			ImGui::Columns(1);
         }
     }
 
@@ -206,7 +210,7 @@ namespace DreamTool
         };
 
         ImGui::Text("Camera");
-        if(ImGui::DragFloat3("Translation",cameraTranslation))
+        if(ImGui::DragFloat3("Translation",cameraTranslation,0.1f))
         {
             if (sceneDef != nullptr)
             {
@@ -233,7 +237,7 @@ namespace DreamTool
             0.0f
         };
 
-        if(ImGui::DragFloat3("Pitch Yaw Roll",cameraRotation))
+        if(ImGui::DragFloat3("Pitch Yaw Roll",cameraRotation,0.1f))
         {
             if (sceneDef != nullptr)
             {
@@ -309,20 +313,20 @@ namespace DreamTool
         auto ambientVec = sceneDef->getAmbientColour();
         if (ImGui::ColorEdit3("Ambient Color", &ambientVec[0]))
         {
-if (sceneDef)
-{
-    sceneDef->setAmbientColourR(ambientVec[0]);
-    sceneDef->setAmbientColourG(ambientVec[1]);
-    sceneDef->setAmbientColourB(ambientVec[2]);
-}
-if (sceneRuntime)
-{
-    sceneRuntime->setAmbientColour({
-        ambientVec[0],
-        ambientVec[1],
-        ambientVec[2]
-        });
-}
+			if (sceneDef)
+			{
+				sceneDef->setAmbientColourR(ambientVec[0]);
+				sceneDef->setAmbientColourG(ambientVec[1]);
+				sceneDef->setAmbientColourB(ambientVec[2]);
+			}
+			if (sceneRuntime)
+			{
+				sceneRuntime->setAmbientColour({
+					ambientVec[0],
+					ambientVec[1],
+					ambientVec[2]
+					});
+			}
         }
 
         int lightingShaderIndex = sceneDef->getCurrentLightingShaderIndex();
@@ -351,7 +355,7 @@ if (sceneRuntime)
         }
 
         auto gravityVec = sceneDef->getGravity();
-        if (ImGui::DragFloat3("Gravity", &gravityVec[0]))
+        if (ImGui::DragFloat3("Gravity", &gravityVec[0],0.1f))
         {
             if (sceneDef)
             {
@@ -428,7 +432,7 @@ if (sceneRuntime)
             soDef->getTransform()->getTranslationY(),
             soDef->getTransform()->getTranslationZ()
         };
-        if (ImGui::DragFloat3("Translation", tx))
+        if (ImGui::DragFloat3("Translation", tx,0.1f))
         {
             if (soDef)
             {
@@ -449,7 +453,7 @@ if (sceneRuntime)
             soDef->getTransform()->getRotationY(),
             soDef->getTransform()->getRotationZ()
         };
-        if (ImGui::DragFloat3("Rotation",rx))
+        if (ImGui::DragFloat3("Rotation",rx,0.1f))
         {
             if(soDef)
             {
@@ -470,7 +474,7 @@ if (sceneRuntime)
             soDef->getTransform()->getScaleY(),
             soDef->getTransform()->getScaleZ()
         };
-        if(ImGui::DragFloat3("Scale",scale))
+        if(ImGui::DragFloat3("Scale",scale,0.1f))
         {
             if(soDef)
             {
@@ -629,54 +633,158 @@ if (sceneRuntime)
        {
                break;
            case LightType::LT_POINT:
-               ImGui::DragFloat3("Position",color);
-               ImGui::DragFloat3("Direction",color);
-               ImGui::DragFloat("Constant",&f);
-               ImGui::DragFloat("Linear",&f);
-               ImGui::DragFloat("Quadratic",&f);
+               ImGui::DragFloat3("Position",color,0.1f);
+               ImGui::DragFloat3("Direction",color,0.1f);
+               ImGui::DragFloat("Constant",&f,1.0f);
+               ImGui::DragFloat("Linear",&f,0.01f);
+               ImGui::DragFloat("Quadratic",&f),0.001f;
                break;
            case LightType::LT_DIRECTIONAL:
-               ImGui::DragFloat3("Direction",color);
-               break;
+ImGui::DragFloat3("Direction", color, 0.1f);
+break;
            case LightType::LT_SPOTLIGHT:
-               ImGui::DragFloat("Inner Cut Off",color);
-               ImGui::DragFloat("Outer Cut Off",color);
-               ImGui::DragFloat("Constant",&f);
-               ImGui::DragFloat("Linear",&f);
-               ImGui::DragFloat("Quadratic",&f);
+			   ImGui::DragFloat("Inner Cut Off", color);
+			   ImGui::DragFloat("Outer Cut Off", color);
+			   ImGui::DragFloat("Constant", &f);
+			   ImGui::DragFloat("Linear", &f);
+			   ImGui::DragFloat("Quadratic", &f);
 
-               break;
-           case LightType::LT_NONE:
-               break;
-       }
-       ImGui::Separator();
-       ImGui::ColorEdit3("Ambient",color);
-       ImGui::ColorEdit3("Diffuse",color);
-       ImGui::ColorEdit3("Specular",color);
-    }
+			   break;
+		   case LightType::LT_NONE:
+			   break;
+	   }
+	   ImGui::Separator();
+	   ImGui::ColorEdit3("Ambient", color);
+	   ImGui::ColorEdit3("Diffuse", color);
+	   ImGui::ColorEdit3("Specular", color);
+	}
 
-    void
-    PropertiesWindow::drawMaterialAssetProperties
-    ()
-    {
-        int index = 0;
-        char* shader[3] = {"Shader 1","Shader 2","Shader 3"};
-        ImGui::Combo("Shader",&index,shader,3);
-        ImGui::Separator();
+	void
+	PropertiesWindow::drawMaterialAssetProperties
+	()
+	{
+		auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+		int index = 0;
+		char* shader[3] = { "Shader 1","Shader 2","Shader 3" };
+		ImGui::Combo("Shader", &index, shader, 3);
+		ImGui::Separator();
 
-        float color[3];
-        ImGui::ColorEdit3("Diffuse",color);
-        ImGui::ColorEdit3("Specular",color);
-        ImGui::ColorEdit3("Ambient",color);
-        ImGui::ColorEdit3("Reflective",color);
-        ImGui::ColorEdit3("Emmisive",color);
+		float diffuseColor[3] =
+		{
+			materialDef->getDiffuseColour().r,
+			materialDef->getDiffuseColour().g,
+			materialDef->getDiffuseColour().b
+		};
+		if (ImGui::ColorEdit3("Diffuse", diffuseColor))
+		{
+			materialDef->setDiffuseColour(RGB{
+				diffuseColor[0],
+				diffuseColor[1],
+				diffuseColor[2]
+				});
+		}
+
+		float specularColor[3] = {
+			materialDef->getSpecularColour().r,
+			materialDef->getSpecularColour().g,
+			materialDef->getSpecularColour().b
+		};
+		if (ImGui::ColorEdit3("Specular", specularColor))
+		{
+			materialDef->setSpecularColour(
+				RGB
+				{
+					specularColor[0],
+					specularColor[1],
+					specularColor[2]
+				}
+			);
+		}
+
+		float ambientColor[3] = {
+			materialDef->getAmbientColour().r,
+			materialDef->getAmbientColour().g,
+			materialDef->getAmbientColour().b
+		};
+		if (ImGui::ColorEdit3("Ambient", ambientColor))
+		{
+			materialDef->setAmbientColour(
+				RGB{
+					ambientColor[0],
+					ambientColor[1],
+					ambientColor[2]
+				}
+			);
+		}
+
+		float reflectiveColor[3] = {
+			materialDef->getReflectiveColour().r,
+			materialDef->getReflectiveColour().g,
+			materialDef->getReflectiveColour().b
+		};
+		if (ImGui::ColorEdit3("Reflective", reflectiveColor))
+		{
+			materialDef->setReflectiveColour(
+				RGB
+				{
+					reflectiveColor[0],
+					reflectiveColor[1],
+					reflectiveColor[2]
+				}
+			);
+		}
+
+		float emissiveColor[3] = {
+			materialDef->getEmissiveColour().r,
+			materialDef->getEmissiveColour().g,
+			materialDef->getEmissiveColour().b
+		};
+		if(ImGui::ColorEdit3("Emissive", emissiveColor))
+		{
+			materialDef->setEmissiveColour(
+				RGB
+				{
+					emissiveColor[0],
+					emissiveColor[1],
+					emissiveColor[2]
+				}
+			);
+		}
+
         ImGui::Separator();
 
         char* tex[3] = {"Texture 1","Texture 2","Texture 3"};
+		ImVec2 imgSize(256, 256);
+
+		ImGui::Columns(2);
+
+		// Diffuse
+		ImGui::Image(0, imgSize);
+		ImGui::NextColumn();
         ImGui::Combo("Diffuse",&index,tex,3);
+		ImGui::NextColumn();
+		ImGui::Separator();
+		
+		// Specular
+		ImGui::Image(0, imgSize);
+		ImGui::NextColumn();
         ImGui::Combo("Specular",&index,tex,3);
+		ImGui::NextColumn();
+		ImGui::Separator();
+		
+		// Normal
+		ImGui::Image(0, imgSize);
+		ImGui::NextColumn();
         ImGui::Combo("Normal",&index,tex,3);
+		ImGui::NextColumn();
+		ImGui::Separator();
+		
+		// Displacement
+		ImGui::Image(0, imgSize);
+		ImGui::NextColumn();
         ImGui::Combo("Displacement",&index,tex,3);
+		ImGui::Columns(1);
+
     }
 
     void
@@ -774,5 +882,8 @@ if (sceneRuntime)
         ImGui::NextColumn();
         ImGui::Button("Remove File");
         ImGui::Columns(1);
+
+		ImVec2 imgSize(512, 512);
+		ImGui::Image(0, imgSize);
     }
 }
