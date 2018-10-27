@@ -503,6 +503,8 @@ namespace Dream
             mScriptComponent->updateComponent();
         }
 
+        mCamera->updateCameraVectors();
+
         mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
         mPathComponent->updateComponent();
 

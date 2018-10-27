@@ -216,7 +216,7 @@ namespace DreamTool
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         auto font = ImGui::GetCurrentContext()->Font;
-        font->Scale = 1.1f;
+        font->Scale = 1.2f;
         // Rendering
         for (DTWidget* widget : mWidgets)
         {

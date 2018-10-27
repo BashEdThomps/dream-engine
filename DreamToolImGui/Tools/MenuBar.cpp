@@ -18,7 +18,6 @@ namespace DreamTool
     MenuBar::draw
     ()
     {
-        static bool someBool = false;
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -43,17 +42,45 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("Debug"))
             {
-                ImGui::Checkbox("Physics Debug",&someBool);
-                ImGui::Checkbox("Lua Debug",&someBool);
+                ImGui::MenuItem("Lua Debug Window");
                 if(ImGui::BeginMenu("Logging"))
                 {
-                    ImGui::MenuItem("Off");
-                    ImGui::MenuItem("Critical");
-                    ImGui::MenuItem("Error");
-                    ImGui::MenuItem("Warning");
-                    ImGui::MenuItem("Info");
-                    ImGui::MenuItem("Debug");
-                    ImGui::MenuItem("Trace");
+                    static spdlog::level::level_enum mode = spdlog::level::off;
+                    if (ImGui::RadioButton("Off", mode == spdlog::level::off))
+                    {
+                        mode = spdlog::level::off;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Error", mode == spdlog::level::err))
+                    {
+                        mode = spdlog::level::err;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Critical", mode == spdlog::level::critical))
+                    {
+                        mode = spdlog::level::critical;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Warning", mode == spdlog::level::warn))
+                    {
+                        mode = spdlog::level::warn;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Info", mode == spdlog::level::info))
+                    {
+                        mode = spdlog::level::info;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Debug", mode == spdlog::level::debug))
+                    {
+                        mode = spdlog::level::debug;
+                        spdlog::set_level(mode);
+                    }
+                    if (ImGui::RadioButton("Trace", mode == spdlog::level::trace))
+                    {
+                        mode = spdlog::level::trace;
+                        spdlog::set_level(mode);
+                    }
                     ImGui::EndMenu();
                 }
                 ImGui::EndMenu();

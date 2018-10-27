@@ -39,6 +39,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
     class ShaderInstance;
+    class Camera;
 
     class SceneRuntime : public IRuntime
     {
@@ -53,11 +54,7 @@ namespace Dream
         SceneObjectRuntime* mRootSceneObjectRuntime;
         ShaderInstance* mLightingShader;
 
-        vec3 mCameraTranslation;
-        vec3 mCameraLookAt;
-        float mCameraPitch;
-        float mCameraYaw;
-        float mCameraMovementSpeed;
+        Camera* mCameraHandle;
         bool mPhysicsDebug;
 
     public:
@@ -126,5 +123,11 @@ namespace Dream
 
         ShaderInstance* getLightingShader() const;
         void setLightingShader(ShaderInstance* lightingShader);
+
+        void setMeshCullDistance(float);
+        float getMeshCullDistance();
+
+        void setMinDrawDistance(float);
+        void setMaxDrawDistance(float);
     };
 } // End of Dream

@@ -92,6 +92,7 @@ namespace Dream
 
         void deleteAssetDefinitions();
         void deleteSceneDefinitions();
+        long getSceneDefinitionIndex(SceneDefinition*);
 
     private:
         void loadSceneDefinitions();

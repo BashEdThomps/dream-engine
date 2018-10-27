@@ -131,17 +131,19 @@ namespace Dream
     (string uuid)
     {
         return mRootSceneObjectRuntime->applyToAll
-                (
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    ([&](SceneObjectRuntime* currentRuntime)
-        {
-                        if (currentRuntime->hasUuid(uuid))
-                        {
-                            return currentRuntime;
-                        }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* currentRuntime)
+                {
+                    if (currentRuntime->hasUuid(uuid))
+                    {
+                        return currentRuntime;
                     }
-                    ));
+                    return static_cast<SceneObjectRuntime*>(nullptr);
+                }
+            )
+        );
     }
 
     SceneObjectRuntime*
@@ -149,17 +151,19 @@ namespace Dream
     (string name)
     {
         return mRootSceneObjectRuntime->applyToAll
-                (
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    ([&](SceneObjectRuntime* currentRuntime)
-        {
-                        if (currentRuntime->hasName(name))
-                        {
-                            return currentRuntime;
-                        }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* currentRuntime)
+                {
+                    if (currentRuntime->hasName(name))
+                    {
+                        return currentRuntime;
                     }
-                    ));
+                    return static_cast<SceneObjectRuntime*>(nullptr);
+                }
+            )
+        );
     }
 
     int
@@ -167,14 +171,17 @@ namespace Dream
     ()
     {
         int count = 0;
-        mRootSceneObjectRuntime->applyToAll(
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    ([&](SceneObjectRuntime*)
-        {
-                        count++;
-                        return static_cast<SceneObjectRuntime*>(nullptr);
-                    }
-                    ));
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime*)
+                {
+                    count++;
+                    return static_cast<SceneObjectRuntime*>(nullptr);
+                }
+            )
+        );
         return count;
     }
 
@@ -189,15 +196,18 @@ namespace Dream
             return;
         }
 
-        mRootSceneObjectRuntime->applyToAll(
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    ([&](SceneObjectRuntime*)
-        {
-                        log->debug("showScenegraph not implemented");
-                        //obj->showStatus();
-                        return nullptr;
-                    }
-                    ));
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime*)
+                {
+                    log->debug("showScenegraph not implemented");
+                    //obj->showStatus();
+                    return nullptr;
+                }
+            )
+        );
     }
 
     void
@@ -220,14 +230,17 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Collecting Garbage {}" , getNameAndUuidString() );
-        mRootSceneObjectRuntime->applyToAll(
-                    function<SceneObjectRuntime*(SceneObjectRuntime*)>
-                    ([&](SceneObjectRuntime* runt)
-        {
-                        runt->collectGarbage();
-                        return static_cast<SceneObjectRuntime*>(nullptr);
-                    }
-                    ));
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* runt)
+                {
+                    runt->collectGarbage();
+                    return static_cast<SceneObjectRuntime*>(nullptr);
+                }
+            )
+        );
     }
 
     ProjectRuntime*
@@ -266,10 +279,8 @@ namespace Dream
         setClearColour(sceneDefinition->getClearColour());
         setGravity(sceneDefinition->getGravity());
         setPhysicsDebug(sceneDefinition->getPhysicsDebug());
-        setCameraTranslation(sceneDefinition->getCameraTranslation());
-        setCameraPitch(sceneDefinition->getCameraPitch());
-        setCameraYaw(sceneDefinition->getCameraYaw());
-        setCameraMovementSpeed(sceneDefinition->getCameraMovementSpeed());
+
+
 
         // Propogate to project components where required
         auto gfx = mProjectRuntime->getGraphicsComponent();
@@ -287,23 +298,23 @@ namespace Dream
             return false;
         }
 
-        physics->setGravity(getGravity());
-        physics->setDebug(getPhysicsDebug());
-
         // Setup Camera
+        mCameraHandle = mProjectRuntime->getCamera();
 
-        auto camera = mProjectRuntime->getCamera();
-
-        if (camera == nullptr)
+        if (mCameraHandle == nullptr)
         {
             log->error("Camera is null");
             return false;
         }
-        camera->setTranslation(getCameraTranslation());
-        camera->setPitch(getCameraPitch());
-        camera->setYaw(getCameraYaw());
-        camera->updateCameraVectors();
-        camera->setMovementSpeed(getCameraMovementSpeed());
+
+        mCameraHandle->setTranslation(sceneDefinition->getCameraTranslation());
+        mCameraHandle->setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
+        mCameraHandle->setPitch(sceneDefinition->getCameraPitch());
+        mCameraHandle->setYaw(sceneDefinition->getCameraYaw());
+        //mCameraHandle->updateCameraVectors();
+
+        physics->setGravity(getGravity());
+        physics->setDebug(getPhysicsDebug());
 
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
@@ -353,58 +364,58 @@ namespace Dream
     SceneRuntime::getCameraMovementSpeed
     ()
     {
-        return mCameraMovementSpeed;
+        return mCameraHandle->getMovementSpeed();
     }
 
     void
     SceneRuntime::setCameraMovementSpeed
     (float cameraMovementSpeed)
     {
-        mCameraMovementSpeed = cameraMovementSpeed;
+        mCameraHandle->setMovementSpeed(cameraMovementSpeed);
     }
 
     glm::vec3 SceneRuntime::getCameraLookAt()
     {
-        return mCameraLookAt;
+        return mCameraHandle->getLookAt();
     }
 
     void SceneRuntime::setCameraLookAt(glm::vec3 lookAt)
     {
-        mCameraLookAt = lookAt;
+        mCameraHandle->setLookAt(lookAt);
     }
 
     float SceneRuntime::getCameraPitch()
     {
-        return mCameraPitch;
+        return mCameraHandle->getPitch();
     }
 
     void SceneRuntime::setCameraPitch(float pitch)
     {
-        mCameraPitch = pitch;
+        mCameraHandle->setPitch(pitch);
     }
 
     float SceneRuntime::getCameraYaw()
     {
-        return mCameraYaw;
+        return mCameraHandle->getYaw();
     }
 
     void SceneRuntime::setCameraYaw(float yaw)
     {
-        mCameraYaw = yaw;
+        mCameraHandle->setYaw(yaw);
     }
 
     vec3
     SceneRuntime::getCameraTranslation
     ()
     {
-        return mCameraTranslation;
+        return mCameraHandle->getTranslation();
     }
 
     void
     SceneRuntime::setCameraTranslation
-    (vec3 cameraTransform)
+    (vec3 tx)
     {
-        mCameraTranslation = cameraTransform;
+        mCameraHandle->setTranslation(tx);
     }
 
     ShaderInstance*
@@ -419,6 +430,57 @@ namespace Dream
     (ShaderInstance* lightingShader)
     {
         mLightingShader = lightingShader;
+    }
+
+    void
+    SceneRuntime::setMeshCullDistance
+    (float mcd)
+    {
+       if (mProjectRuntime)
+       {
+           auto gfx = mProjectRuntime->getGraphicsComponent();
+           if (gfx)
+           {
+               gfx->setMeshCullDistance(mcd);
+           }
+       }
+    }
+
+    float
+    SceneRuntime::getMeshCullDistance
+    ()
+    {
+        if (mProjectRuntime)
+        {
+            auto gfx = mProjectRuntime->getGraphicsComponent();
+            if (gfx)
+            {
+               return gfx->getMeshCullDistance();
+            }
+        }
+        return 0.f;
+    }
+
+    void
+    SceneRuntime::setMinDrawDistance
+    (float f)
+    {
+       auto gfx = mProjectRuntime->getGraphicsComponent();
+       if (gfx)
+       {
+           gfx->setMinimumDraw(f);
+       }
+    }
+
+    void
+    SceneRuntime::setMaxDrawDistance
+    (float f)
+    {
+       auto gfx = mProjectRuntime->getGraphicsComponent();
+       if (gfx)
+       {
+           gfx->setMaximumDraw(f);
+       }
     }
 
 } // End of Dream

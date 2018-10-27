@@ -34,7 +34,7 @@ namespace Dream
         mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
         mZoom(Constants::CAMERA_ZOOM)
     {
-        updateCameraVectors();
+        //updateCameraVectors();
     }
 
     Camera::~Camera
@@ -264,7 +264,7 @@ namespace Dream
         mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
 
         // Update Front, Right and Up Vectors using the updated Eular angles
-        updateCameraVectors();
+        //updateCameraVectors();
     }
 
     void
@@ -292,7 +292,7 @@ namespace Dream
         mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
 
         // Update Front, Right and Up Vectors using the updated Eular angles
-        updateCameraVectors();
+        //updateCameraVectors();
     }
 
     void
@@ -326,13 +326,8 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        if (!mFreeMode)
-        {
-            mFront = normalize(mLookAt);
-            mRight = normalize(cross(mFront, mWorldUp));
-            mUp    = mWorldUp;
-        }
-        else
+        // mFreeMode == Don't enforce mLookAt
+        if (mFreeMode)
         {
             mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
             mFront.y = static_cast<float>(sin(mPitch));
@@ -340,6 +335,12 @@ namespace Dream
             mFront = normalize(mFront);
             mRight = normalize(cross(mFront, mWorldUp));
             mUp    = mWorldUp;//normalize(cross(mRight, mFront));
+        }
+        else
+        {
+            mFront = normalize(mLookAt);
+            mRight = normalize(cross(mFront, mWorldUp));
+            mUp    = mWorldUp;
         }
     }
 
@@ -399,17 +400,23 @@ namespace Dream
         mLookAt.z = z;
     }
 
-    void Camera::setLookAt(vec3 transform)
+    void
+    Camera::setLookAt
+    (vec3 transform)
     {
         mLookAt = transform;
     }
 
-    glm::vec3 Camera::getLookAt()
+    glm::vec3
+    Camera::getLookAt
+    ()
     {
        return mLookAt;
     }
 
-    void Camera::setFreeMode(bool freemode)
+    void
+    Camera::setFreeMode
+    (bool freemode)
     {
        mFreeMode = freemode;
     }

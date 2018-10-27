@@ -51,9 +51,14 @@ namespace DreamTool
                         mPropertiesWindowHandle->setPropertyType(PROP_TYPE_SCENE);
                         mPropertiesWindowHandle->setDefinition(sDef);
                         auto sRunt = projRunt->getActiveSceneRuntime();
+
                         if (sRunt->getUuid().compare(sDef->getUuid()) == 0)
                         {
                             mPropertiesWindowHandle->setRuntime(sRunt);
+                        }
+                        else
+                        {
+                            log->error("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
                         }
                     }
                     SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
@@ -65,8 +70,6 @@ namespace DreamTool
         } // Project Name
         ImGui::End();
     }
-
-
 
     void
     ProjectBrowser::addSceneObject

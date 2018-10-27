@@ -28,6 +28,18 @@ namespace DreamTool
         static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         ImGui::Begin("Asset Browser");
         auto projDef = mProject->getProjectDefinition();
+        /*
+        ImGui::Columns(Constants::DREAM_ASSET_TYPES_MAP.size());
+        for (auto assetPair : Constants::DREAM_ASSET_TYPES_MAP)
+        {
+             AssetType type = assetPair.first;
+             string name = assetPair.second;
+             name = Constants::getAssetTypeReadableNameFromString(name);
+             ImGui::Text(name.c_str());
+             ImGui::NextColumn();
+        }
+        */
+
         for (auto assetPair : Constants::DREAM_ASSET_TYPES_MAP)
         {
            AssetType type = assetPair.first;
@@ -51,6 +63,7 @@ namespace DreamTool
                    }
                }
                ImGui::TreePop();
+               //ImGui::NextColumn();
            }
         } // Asset Type Node
         ImGui::End();

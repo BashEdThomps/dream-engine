@@ -20,6 +20,14 @@ namespace DreamTool
         void clear();
         void setPropertyType(PropertyType t);
 
+        bool StringCombo
+        (
+            const char* label,
+            int* current_item,
+            const std::vector<std::string>& items,
+            int items_count,
+            int height_in_items = -1
+        );
     private:
         void drawNameAndIdProperties();
         void drawProjectProperties();

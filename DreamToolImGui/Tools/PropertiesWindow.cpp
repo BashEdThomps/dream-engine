@@ -5,6 +5,11 @@ using Dream::Constants;
 using Dream::AssetType;
 using Dream::LightDefinition;
 using Dream::LightType;
+using Dream::ProjectDefinition;
+using Dream::SceneDefinition;
+using Dream::SceneRuntime;
+using Dream::SceneObjectDefinition;
+using Dream::SceneObjectRuntime;
 
 namespace DreamTool
 {
@@ -19,7 +24,8 @@ namespace DreamTool
         setLogClassName("Properties Window");
     }
 
-    PropertiesWindow::~PropertiesWindow()
+    PropertiesWindow::~PropertiesWindow
+    ()
     {
 
     }
@@ -57,44 +63,20 @@ namespace DreamTool
     {
         if (mDefinition != nullptr)
         {
+
             char idBuf[128] = {0};
             strncpy(&idBuf[0],mDefinition->getUuid().c_str(),mDefinition->getUuid().size());
+            if(ImGui::InputText("ID", idBuf, IM_ARRAYSIZE(idBuf)))
+            {
+                mDefinition->setUuid(idBuf);
+            }
 
             char nameBuf[128] = {0};
             strncpy(&nameBuf[0],mDefinition->getName().c_str(),mDefinition->getName().size());
-            ImGui::InputText
-            (
-                "ID", idBuf, IM_ARRAYSIZE(idBuf),
-                ImGuiInputTextFlags_CallbackAlways,
-                [](ImGuiTextEditCallbackData* data)
-                {
-                    auto def = static_cast<IDefinition*>(data->UserData);
-                    auto str = string(data->Buf,data->BufTextLen);
-                    if (str.compare(def->getUuid()))
-                    {
-                        def->setUuid(str);
-                    }
-                    return 0;
-                },
-                mDefinition
-            );
-
-            ImGui::InputText
-            (
-                "Name", nameBuf, IM_ARRAYSIZE(nameBuf),
-                ImGuiInputTextFlags_CallbackAlways,
-                [](ImGuiTextEditCallbackData* data)
-                {
-                    auto def = static_cast<IDefinition*>(data->UserData);
-                    auto str = string(data->Buf,data->BufTextLen);
-                    if (str.compare(def->getName()))
-                    {
-                        def->setName(str);
-                    }
-                    return 0;
-                },
-                mDefinition
-            );
+            if(ImGui::InputText("Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
+            {
+               mDefinition->setName(nameBuf);
+            }
         }
     }
 
@@ -132,84 +114,276 @@ namespace DreamTool
     PropertiesWindow::drawProjectProperties
     ()
     {
+        auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         ImGui::Separator();
         // Startup Scene
-        int startupScene = 1;
-        char* scenes[3] = {"Scene 1","Scene 2","Scene 3"};
-        ImGui::Combo("Startup Scene",&startupScene, scenes, 3);
+        int startupScene = static_cast<int>(
+            projDef->getSceneDefinitionIndex(
+                projDef->getStartupSceneDefinition()
+            )
+        );
+        vector<string> scenes;
+        for(SceneDefinition* scene : projDef->getSceneDefinitionsList())
+        {
+           scenes.push_back(scene->getName());
+        }
+        if(StringCombo(
+           "Startup Scene",
+            &startupScene,
+            scenes,
+            static_cast<int>(scenes.size()
+        )))
+        {
+
+        }
         ImGui::Separator();
 
         // Capture mouse,keyboard,joystick
-        bool usingKeyboard, usingMouse, usingGamepad;
-        ImGui::Checkbox("Keyboard", &usingKeyboard);
-        ImGui::Checkbox("Mouse",    &usingMouse);
-        ImGui::Checkbox("Gamepad",  &usingGamepad);
+        bool usingKeyboard = projDef->getCaptureKeyboard();
+        bool usingMouse = projDef->getCaptureMouse();
+        bool usingGamepad = projDef->getCaptureJoystick();
+
+        if (ImGui::Checkbox("Keyboard",&usingKeyboard))
+        {
+            projDef->setCaptureKeyboard(usingKeyboard);
+        }
+        if(ImGui::Checkbox("Mouse", &usingMouse))
+        {
+            projDef->setCaptureMouse(usingMouse);
+        }
+        if(ImGui::Checkbox("Gamepad",  &usingGamepad))
+        {
+            projDef->setCaptureJoystick(usingGamepad);
+        }
         ImGui::Separator();
 
         // Window Dimensions
-        float windowSize[2];
-        ImGui::DragFloat2("Window Size",windowSize);
+        int windowSize[2] = {
+            projDef->getWindowWidth(),
+            projDef->getWindowHeight()
+        };
+        if (ImGui::DragInt2("Window Size",windowSize))
+        {
+            projDef->setWindowWidth(windowSize[0]);
+            projDef->setWindowHeight(windowSize[1]);
+        }
         ImGui::Separator();
 
         // Author
-        char authorBuffer[512] = {"Ashley Thompson"};
-        ImGui::InputText("Author",authorBuffer,512);
+        char authorBuffer[512] = {0};
+        strncpy(authorBuffer, projDef->getAuthor().c_str(), projDef->getAuthor().length());
+        if(ImGui::InputText("Author",authorBuffer,512))
+        {
+            projDef->setAuthor(authorBuffer);
+        }
 
         // Description
-        char descriptionBuffer[512] = {"Something really cool"};
-        ImGui::InputTextMultiline("Description",descriptionBuffer,512);
-
-        // Notes
-        char notesBuffer[512] = {
-            "Important Notes:\n"
-            "\t* Do This\n"
-            "\t* Do That\n"
-            "\t* Do The Other\n"
-        };
-        ImGui::InputTextMultiline("Notes",notesBuffer,512);
+        char descriptionBuffer[512] = {0};
+        strncpy(descriptionBuffer,projDef->getDescription().c_str(),projDef->getDescription().length());
+        if(ImGui::InputTextMultiline("Description",descriptionBuffer,512))
+        {
+            projDef->setDescription(descriptionBuffer);
+        }
     }
 
     void
     PropertiesWindow::drawSceneProperties
     ()
     {
+        auto log = getLog();
+        auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
+        auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
+
         ImGui::Separator();
 
         // Camera
-        float cameraTranslation[3];
-        float cameraRotation[3];
+        float cameraTranslation[3] =
+        {
+            sceneDef->getCameraTranslationX(),
+            sceneDef->getCameraTranslationY(),
+            sceneDef->getCameraTranslationZ()
+        };
+
         ImGui::Text("Camera");
-        ImGui::DragFloat3("Translation",cameraTranslation);
-        ImGui::DragFloat3("Rotation",cameraRotation);
+        if(ImGui::DragFloat3("Translation",cameraTranslation))
+        {
+            if (sceneDef != nullptr)
+            {
+                sceneDef->setCameraTranslationX(cameraTranslation[0]);
+                sceneDef->setCameraTranslationY(cameraTranslation[1]);
+                sceneDef->setCameraTranslationZ(cameraTranslation[2]);
+            }
+
+            if (sceneRuntime != nullptr)
+            {
+                sceneRuntime->setCameraTranslation
+                ({
+                    cameraTranslation[0],
+                    cameraTranslation[1],
+                    cameraTranslation[2]
+                });
+            }
+        }
+
+        float cameraRotation[3] =
+        {
+            sceneDef->getCameraPitch(),
+            sceneDef->getCameraYaw(),
+            0.0f
+        };
+
+        if(ImGui::DragFloat3("Pitch Yaw Roll",cameraRotation))
+        {
+            if (sceneDef != nullptr)
+            {
+                sceneDef->setCameraPitch(cameraRotation[0]);
+                sceneDef->setCameraYaw(cameraRotation[1]);
+
+            }
+
+            if (sceneRuntime != nullptr)
+            {
+                sceneRuntime->setCameraPitch(cameraTranslation[0]);
+                sceneRuntime->setCameraYaw(cameraTranslation[1]);
+            }
+
+        }
         ImGui::Separator();
 
         // Rendering
-        float meshCull;
-        float drawDistance[2];
-        float clearColor[3];
-        float ambientColor[3];
-        int lightingShader = 0;
-        char* items[3] = {"Shader1","Shader2","Shader3"};
+        float meshCull = sceneDef->getMeshCullDistance();
 
         ImGui::Text("Rendering");
-        ImGui::DragFloat("Mesh Cull",&meshCull);
-        ImGui::DragFloat2("Draw Distance",drawDistance);
-        ImGui::DragFloat3("Clear Color",clearColor);
-        ImGui::DragFloat3("Clear Color",ambientColor);
+        if (ImGui::DragFloat("Mesh Cull",&meshCull))
+        {
+            if (sceneDef != nullptr)
+            {
+                sceneDef->setMeshCullDistance(meshCull);
+            }
+            if (sceneRuntime != nullptr)
+            {
+                sceneRuntime->setMeshCullDistance(meshCull);
+            }
+        }
+
+        float drawDistance[2] = {
+            sceneDef->getMinDrawDistance(),
+            sceneDef->getMaxDrawDistance()
+        };
+
+        if (ImGui::DragFloat2("Draw Distance",drawDistance))
+        {
+            if (sceneDef != nullptr)
+            {
+                sceneDef->setMinDrawDistance(drawDistance[0]);
+                sceneDef->setMaxDrawDistance(drawDistance[1]);
+            }
+            if (sceneRuntime != nullptr)
+            {
+                sceneRuntime->setMinDrawDistance(drawDistance[0]);
+                sceneRuntime->setMaxDrawDistance(drawDistance[1]);
+
+            }
+        }
+
+        auto clearVec = sceneDef->getClearColour();
+        float clearColor[3] = {
+            clearVec[0],
+            clearVec[1],
+            clearVec[2]
+        };
+        if(ImGui::ColorEdit3("Clear Color",clearColor))
+        {
+            if (sceneDef != nullptr)
+            {
+                sceneDef->setClearColourR(clearColor[0]);
+                sceneDef->setClearColourG(clearColor[1]);
+                sceneDef->setClearColourB(clearColor[2]);
+            }
+            if (sceneRuntime)
+            {
+                sceneRuntime->setClearColour({
+                    clearColor[0],
+                    clearColor[1],
+                    clearColor[2]
+                });
+            }
+        }
+
+        auto ambientVec = sceneDef->getAmbientColour();
+        float ambientColor[3]  = {
+            ambientVec[0],
+            ambientVec[1],
+            ambientVec[2]
+        };
+
+        if(ImGui::ColorEdit3("Ambient Color",ambientColor))
+        {
+            if (sceneDef)
+            {
+                sceneDef->setAmbientColourR(ambientColor[0]);
+                sceneDef->setAmbientColourG(ambientColor[1]);
+                sceneDef->setAmbientColourB(ambientColor[2]);
+            }
+            if (sceneRuntime)
+            {
+                sceneRuntime->setAmbientColour({
+                    ambientColor[0],
+                    ambientColor[1],
+                    ambientColor[2]
+                });
+            }
+        }
+
+        int lightingShader = 0;
+        char* items[3] = {"Shader1","Shader2","Shader3"};
         ImGui::Combo("Lighting Pass Shader",&lightingShader,items,3);
         ImGui::Separator();
 
         // Physics
-        bool physicsDebug;
+        bool physicsDebug = sceneDef->getPhysicsDebug();
         float gravity[3];
         ImGui::Text("Physics");
-        ImGui::Checkbox("Debug",&physicsDebug);
-        ImGui::DragFloat3("Gravity",gravity);
+
+        if(ImGui::Checkbox("Debug",&physicsDebug))
+        {
+          if (sceneDef)
+          {
+              sceneDef->setPhysicsDebug(physicsDebug);
+          }
+        }
+
+        if(ImGui::DragFloat3("Gravity",gravity))
+        {
+            vector<float> gravityVec =
+            {
+                gravity[0],
+                gravity[1],
+                gravity[2]
+            };
+            if (sceneDef)
+            {
+                sceneDef->setGravity(gravityVec);
+            }
+
+            if (sceneRuntime)
+            {
+               sceneRuntime->setGravity(gravityVec);
+            }
+        }
         ImGui::Separator();
 
         // Notes
-        char notesBuffer[512] = {"Here are some notes"};
-        ImGui::InputTextMultiline("Notes",notesBuffer,512);
+        char notesBuffer[512] = {0};
+        strncpy(notesBuffer,sceneDef->getNotes().c_str(),sceneDef->getNotes().size());
+
+        if (ImGui::InputTextMultiline("Notes",notesBuffer,512))
+        {
+            if(sceneDef)
+            {
+                sceneDef->setNotes(notesBuffer);
+            }
+        }
 
     }
 
@@ -217,16 +391,24 @@ namespace DreamTool
     PropertiesWindow::drawSceneObjectProperties
     ()
     {
+        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         ImGui::Separator();
 
-        bool focus = true;
+        bool hasFocus = true;
         bool followsCamera = false;
-        ImGui::Checkbox("Has Focus",&focus);
-        ImGui::SameLine();
+        ImGui::Columns(2);
+        if(ImGui::Checkbox("Has Focus",&hasFocus))
+        {
+
+        }
+        ImGui::NextColumn();
         ImGui::Checkbox("Follows Camera",&followsCamera);
+        ImGui::NextColumn();
         ImGui::Checkbox("Always Draw",&followsCamera);
-        ImGui::SameLine();
+        ImGui::NextColumn();
         ImGui::Checkbox("Hidden",&followsCamera);
+        ImGui::Columns(1);
+
         ImGui::Separator();
 
         float tx[3], rx[3], scale[3];
@@ -238,13 +420,13 @@ namespace DreamTool
         int selectedAsset = 1;
         char* assets[3] {"Asset 1","Asset 2","Asset 3"};
         ImGui::Text("Assets");
-        ImGui::Combo("Audio",&selectedAsset,assets,3);
-        ImGui::Combo("Light",&selectedAsset,assets,3);
-        ImGui::Combo("Model",&selectedAsset,assets,3);
-        ImGui::Combo("Particle Emitter",&selectedAsset,assets,3);
-        ImGui::Combo("Path",&selectedAsset,assets,3);
-        ImGui::Combo("Physics Object",&selectedAsset,assets,3);
-        ImGui::Combo("Script",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Audio",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Light",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Model",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Particle Emitter",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Path",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Physics Object",&selectedAsset,assets,3);
+        ImGui::Button("Edit"); ImGui::SameLine(); ImGui::Combo("Script",&selectedAsset,assets,3);
     }
 
     void
@@ -312,7 +494,6 @@ namespace DreamTool
     void PropertiesWindow::drawLightAssetProperties
     ()
     {
-        ImGui::Separator();
        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
        float color[3];
        float f;
@@ -350,13 +531,50 @@ namespace DreamTool
     void
     PropertiesWindow::drawMaterialAssetProperties
     ()
-    {}
+    {
+        int index = 0;
+        char* shader[3] = {"Shader 1","Shader 2","Shader 3"};
+        ImGui::Combo("Shader",&index,shader,3);
+        ImGui::Separator();
+
+        float color[3];
+        ImGui::ColorEdit3("Diffuse",color);
+        ImGui::ColorEdit3("Specular",color);
+        ImGui::ColorEdit3("Ambient",color);
+        ImGui::ColorEdit3("Reflective",color);
+        ImGui::ColorEdit3("Emmisive",color);
+        ImGui::Separator();
+
+        char* tex[3] = {"Texture 1","Texture 2","Texture 3"};
+        ImGui::Combo("Diffuse",&index,tex,3);
+        ImGui::Combo("Specular",&index,tex,3);
+        ImGui::Combo("Normal",&index,tex,3);
+        ImGui::Combo("Displacement",&index,tex,3);
+    }
 
     void
     PropertiesWindow::drawModelAssetProperties
     ()
     {
         ImGui::Button("Model File..."); ImGui::SameLine(); ImGui::Button("Remove File");
+        ImGui::Separator();
+        ImGui::Text("Material Map");
+        ImGui::Separator();
+        ImGui::Columns(2);
+        ImGui::Text("Model");
+        ImGui::NextColumn();
+        ImGui::Text("Dream");
+        ImGui::NextColumn();
+
+        int index = 1;
+        char* materials[3] = {"Material 1", "Material 2", "Material 3" };
+        for (int i=0; i<5; i++)
+        {
+            ImGui::Text("Material %d",i);
+            ImGui::NextColumn();
+            ImGui::Combo("##hidelabel",&index, &materials[0],3);
+            ImGui::NextColumn();
+        }
     }
 
     void
@@ -393,7 +611,7 @@ namespace DreamTool
         ImGui::Separator();
         ImGui::InputTextMultiline("Fragment Shader",buf2,512);
         ImGui::Separator();
-        ImGui::Text("User Uniforms");
+        ImGui::Text("Uniforms");
 
     }
 
@@ -412,5 +630,30 @@ namespace DreamTool
     ()
     {
         ImGui::Button("Texture File..."); ImGui::SameLine(); ImGui::Button("Remove File");
+    }
+
+    bool
+    PropertiesWindow::StringCombo
+    (
+        const char* label,
+        int* current_item,
+        const std::vector<std::string>& items,
+        int items_count,
+        int height_in_items)
+    {
+        return ImGui::Combo
+        (
+            label,
+            current_item,
+            [](void* data, int idx, const char** out_text)
+            {
+                auto _data = ((const std::vector<std::string>*)data);
+                *out_text = (*_data)[idx].c_str();
+                return true;
+            },
+            (void*)&items,
+            items_count,
+            height_in_items
+        );
     }
 }

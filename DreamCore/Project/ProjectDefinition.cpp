@@ -595,4 +595,19 @@ namespace Dream
        }
        mSceneDefinitions.clear();
     }
+
+    long
+    ProjectDefinition::getSceneDefinitionIndex
+    (SceneDefinition* sDef)
+    {
+        vector<SceneDefinition*> defs = getSceneDefinitionsList();
+        auto it = std::find(defs.begin(), defs.end(), sDef);
+        if (it == defs.end())
+        {
+            return -1;
+        } else
+        {
+          return std::distance(defs.begin(), it);
+        }
+    }
 }
