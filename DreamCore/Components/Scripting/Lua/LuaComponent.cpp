@@ -677,14 +677,12 @@ namespace Dream
             "getPath",&SceneObjectRuntime::getPathInstance,
             "getAudio",&SceneObjectRuntime::getAudioInstance,
             "getModel",&SceneObjectRuntime::getModelInstance,
-            "getShader",&SceneObjectRuntime::getShaderInstance,
             "getLight",&SceneObjectRuntime::getLightInstance,
             "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance,
 
             "hasPath",&SceneObjectRuntime::hasPathInstance,
             "hasAudio",&SceneObjectRuntime::hasAudioInstance,
             "hasModel",&SceneObjectRuntime::hasModelInstance,
-            "hasShader",&SceneObjectRuntime::hasShaderInstance,
             "hasLight",&SceneObjectRuntime::hasLightInstance,
             "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
 

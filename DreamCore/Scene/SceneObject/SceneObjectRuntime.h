@@ -39,10 +39,9 @@ namespace Dream
     class PathInstance;
     class ModelInstance;
     class LightInstance;
-    class ShaderInstance;
     class PhysicsObjectInstance;
     class ScriptInstance;
-	class ParticleEmitterInstance;
+    class ParticleEmitterInstance;
     class SceneRuntime;
     class SceneObjectDefinition;
     class IAssetDefinition;
@@ -52,8 +51,7 @@ namespace Dream
     class ModelDefinition;
     class PhysicsObjectDefinition;
     class ScriptDefinition;
-    class ShaderDefinition;
-	class ParticleEmitterDefinition;
+    class ParticleEmitterDefinition;
 
     class SceneObjectRuntime : public IRuntime
     {
@@ -67,15 +65,12 @@ namespace Dream
         SceneObjectDefinition* getSceneObjectDefinition();
 
         bool createAssetInstances();
-        bool createAssetInstanceFromAssetDefinitionByUuid(string);
-        bool createAssetInstance(IAssetDefinition*);
         bool createPathInstance(PathDefinition*);
         bool createAudioInstance(AudioDefinition*);
         bool createModelInstance(ModelDefinition*);
         bool createScriptInstance(ScriptDefinition*);
-        bool createShaderInstance(ShaderDefinition*);
         bool createPhysicsObjectInstance(PhysicsObjectDefinition*);
-		bool createParticleEmitterInstance(ParticleEmitterDefinition*);
+        bool createParticleEmitterInstance(ParticleEmitterDefinition*);
         bool createLightInstance(LightDefinition*);
 
         quat getOrientation();
@@ -101,7 +96,6 @@ namespace Dream
         AudioInstance* getAudioInstance();
         ModelInstance* getModelInstance();
         ScriptInstance* getScriptInstance();
-        ShaderInstance* getShaderInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
 
@@ -109,7 +103,6 @@ namespace Dream
         bool hasAudioInstance();
         bool hasModelInstance();
         bool hasScriptInstance();
-        bool hasShaderInstance();
         bool hasPhysicsObjectInstance();
         bool hasLightInstance();
 
@@ -165,25 +158,27 @@ namespace Dream
         void removeScriptInstance();
         void removePhysicsObjectInstance();
 
-		void removeParticleEmitterInstance();
+        void removeParticleEmitterInstance();
 
-        bool replaceAssetUuid(string uuid);
+        bool replaceAssetUuid(AssetType type, string uuid);
         IAssetDefinition*getAssetDefinitionByUuid(string uuid);
         string getProjectPath();
         void setAssetDefinitionsMap(map<AssetType,string> loadQueue);
-		map<AssetType, string> getAssetDefinitionsMap();
+        map<AssetType, string> getAssetDefinitionsMap();
+        bool getAlwaysDraw() const;
+        void setAlwaysDraw(bool alwaysDraw);
+
     private:
 
         AudioInstance* mAudioInstance;
         LightInstance* mLightInstance;
-		ParticleEmitterInstance* mParticleEmitterInstance;
+        ParticleEmitterInstance* mParticleEmitterInstance;
         PathInstance* mPathInstance;
         PhysicsObjectInstance* mPhysicsObjectInstance;
         ScriptInstance* mScriptInstance;
         Transform3D* mTransform;
 
         ModelInstance* mModelInstance;
-        ShaderInstance* mShaderInstance;
 
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
@@ -191,13 +186,12 @@ namespace Dream
 
         SceneRuntime* mSceneRuntimeHandle;
         SceneObjectRuntime* mParentRuntimeHandle;
-        string mProjectPath;
 
         bool mLoaded;
         bool mHasFocus;
         bool mDeleted;
         bool mHidden;
-
+        bool mAlwaysDraw;
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
         bool mFollowsCamera;
 

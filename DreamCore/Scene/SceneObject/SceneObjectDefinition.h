@@ -83,15 +83,15 @@ namespace Dream
         void setHidden(bool d);
         bool getHidden();
 
-		int getSelectedAssetIndex(AssetType type);
+        int getSelectedAssetIndex(AssetType type);
 
-		string getAssetDefinition(AssetType type);
-		void setAssetDefinition(AssetType type, string uuid);
-		map<AssetType, string> getAssetDefinitionsMap();
+        string getAssetDefinition(AssetType type);
+        void setAssetDefinition(AssetType type, string uuid);
+        map<AssetType, string> getAssetDefinitionsMap();
 
     private:
         void deleteChildSceneObjectDefinitions();
-		void setEmptyAssetsObject();
+        void setEmptyAssetsObject();
     };
 
 }

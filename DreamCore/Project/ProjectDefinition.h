@@ -94,11 +94,11 @@ namespace Dream
         void deleteSceneDefinitions();
 
         long getSceneDefinitionIndex(SceneDefinition*);
-		long getShaderDefinitionIndex(ShaderDefinition*);
-		long getShaderDefinitionIndex(string);
-		ShaderDefinition* getShaderDefinitionAtIndex(int);
+        long getAssetDefinitionIndex(AssetType, IAssetDefinition*);
+        long getAssetDefinitionIndex(AssetType, string);
+        ShaderDefinition* getShaderDefinitionAtIndex(int);
 
-		vector<string> getAssetNamesVector(AssetType);
+        vector<string> getAssetNamesVector(AssetType);
 
     private:
         void loadSceneDefinitions();

@@ -30,7 +30,6 @@
 #include "../../Components/Audio/AudioComponent.h"
 #include "../../Components/Graphics/Model/ModelInstance.h"
 #include "../../Components/Graphics/Model/ModelCache.h"
-#include "../../Components/Graphics/Shader/ShaderInstance.h"
 #include "../../Components/Graphics/Light/LightInstance.h"
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
@@ -42,8 +41,6 @@
 #include "../../Components/Graphics/Font/FontDefinition.h"
 #include "../../Components/Graphics/Light/LightDefinition.h"
 #include "../../Components/Graphics/Model/ModelDefinition.h"
-#include "../../Components/Graphics/Shader/ShaderDefinition.h"
-#include "../../Components/Graphics/Shader/ShaderCache.h"
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 
 #include "../../Components/Path/PathDefinition.h"
@@ -72,20 +69,20 @@ namespace Dream
         SceneRuntime* sr
     ):  IRuntime(sd, sd->getName(), sd->getUuid()),
         mAudioInstance(nullptr),
-        mPathInstance(nullptr),
         mLightInstance(nullptr),
-        mScriptInstance(nullptr),
+        mParticleEmitterInstance(nullptr),
+        mPathInstance(nullptr),
         mPhysicsObjectInstance(nullptr),
-		mParticleEmitterInstance(nullptr),
+        mScriptInstance(nullptr),
         mTransform(nullptr),
         mModelInstance(nullptr),
-        mShaderInstance(nullptr),
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
         mLoaded(false),
         mHasFocus(false),
         mDeleted(false),
         mHidden(false),
+        mAlwaysDraw(false),
         mFollowsCamera(false)
     {
         setLogClassName("SceneObjectRuntime");
@@ -112,7 +109,7 @@ namespace Dream
         removeAudioInstance();
         removeLightInstance();
         removeModelInstance();
-		removeParticleEmitterInstance();
+        removeParticleEmitterInstance();
         removePathInstance();
         removePhysicsObjectInstance();
         removeScriptInstance();
@@ -214,14 +211,14 @@ namespace Dream
         }
     }
 
-	void SceneObjectRuntime::removeParticleEmitterInstance()
-	{
-		if (mParticleEmitterInstance != nullptr)
-		{
-			delete mParticleEmitterInstance;
-			mParticleEmitterInstance = nullptr;
-		}
-	}
+    void SceneObjectRuntime::removeParticleEmitterInstance()
+    {
+        if (mParticleEmitterInstance != nullptr)
+        {
+            delete mParticleEmitterInstance;
+            mParticleEmitterInstance = nullptr;
+        }
+    }
 
     void
     SceneObjectRuntime::resetTransform
@@ -344,13 +341,6 @@ namespace Dream
         return mScriptInstance;
     }
 
-    ShaderInstance*
-    SceneObjectRuntime::getShaderInstance
-    ()
-    {
-        return mShaderInstance;
-    }
-
     LightInstance*
     SceneObjectRuntime::getLightInstance
     ()
@@ -373,13 +363,6 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasShaderInstance
-    ()
-    {
-        return mShaderInstance != nullptr;
-    }
-
-    bool
     SceneObjectRuntime::hasScriptInstance
     ()
     {
@@ -388,16 +371,26 @@ namespace Dream
 
     void
     SceneObjectRuntime::setAssetDefinitionsMap
-	(map<AssetType,string> assetMap)
+    (map<AssetType,string> assetMap)
     {
-		mAssetDefinitions = assetMap;
+        mAssetDefinitions = assetMap;
     }
 
     map<AssetType,string>
     SceneObjectRuntime::getAssetDefinitionsMap
     ()
     {
-		return mAssetDefinitions;
+        return mAssetDefinitions;
+    }
+
+    bool SceneObjectRuntime::getAlwaysDraw() const
+    {
+        return mAlwaysDraw;
+    }
+
+    void SceneObjectRuntime::setAlwaysDraw(bool alwaysDraw)
+    {
+        mAlwaysDraw = alwaysDraw;
     }
 
     PhysicsObjectInstance*
@@ -577,52 +570,44 @@ namespace Dream
     SceneObjectRuntime::createAssetInstances
     ()
     {
+        auto log = getLog();
         for (auto assetPair : mAssetDefinitions)
         {
-			IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
-			switch (assetPair.first)
-			{
-				case AssetType::AUDIO:
-					return createAudioInstance(dynamic_cast<AudioDefinition*>(def));
-				case AssetType::LIGHT:
-					return createLightInstance(dynamic_cast<LightDefinition*>(def));
-				case AssetType::MODEL:
-					return createModelInstance(dynamic_cast<ModelDefinition*>(def));
-				case AssetType::PARTICLE_EMITTER:
-					return createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
-				case AssetType::PATH:
-					return createPathInstance(dynamic_cast<PathDefinition*>(def));
-				case AssetType::PHYSICS_OBJECT:
-					return createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
-				case AssetType::SCRIPT:
-					return createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
-				default:
-					return false;
-			}
+            IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
+            log->debug("Creating {}",def->getNameAndUuidString());
+            bool result = false;
+            switch (assetPair.first)
+            {
+                case AssetType::AUDIO:
+                    result = createAudioInstance(dynamic_cast<AudioDefinition*>(def));
+                    break;
+                case AssetType::LIGHT:
+                    result = createLightInstance(dynamic_cast<LightDefinition*>(def));
+                    break;
+                case AssetType::MODEL:
+                    result = createModelInstance(dynamic_cast<ModelDefinition*>(def));
+                    break;
+                case AssetType::PARTICLE_EMITTER:
+                    result = createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
+                    break;
+                case AssetType::PATH:
+                    result = createPathInstance(dynamic_cast<PathDefinition*>(def));
+                    break;
+                case AssetType::PHYSICS_OBJECT:
+                    result = createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
+                    break;
+                case AssetType::SCRIPT:
+                    result = createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
+                    break;
+                default:
+                    return false;
+            }
+            if (!result)
+            {
+                return false;
+            }
         }
-    }
-
-    bool
-    SceneObjectRuntime::createAssetInstanceFromAssetDefinitionByUuid
-    (string uuid)
-    {
-        auto log = getLog();
-        log->info("Creating asset instance from uuid {}", uuid);
-        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
-
-        if (project == nullptr)
-        {
-            log->error("Project is null");
-            return false;
-        }
-
-        auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
-        if (assetDefinition == nullptr)
-        {
-            log->error("Asset definition not found");
-            return false;
-        }
-        return createAssetInstance(assetDefinition);
+        return true;
     }
 
     IAssetDefinition*
@@ -663,7 +648,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::replaceAssetUuid
-    (string uuid)
+    (AssetType type, string uuid)
     {
         auto log = getLog();
         log->info("REPLACING asset instance from uuid {}", uuid);
@@ -673,74 +658,30 @@ namespace Dream
             log->error("Project is not found");
             return false;
         }
-        auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
-        if (assetDefinition == nullptr)
+        auto def = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        if (def == nullptr)
         {
             log->error("AssetDefinition not found");
         }
-        return createAssetInstance(assetDefinition);
-    }
-
-
-    bool
-    SceneObjectRuntime::createAssetInstance
-    (IAssetDefinition* definition)
-    {
-        auto log = getLog();
-        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
-
-        if (project == nullptr)
+        switch (type)
         {
-            log->error("Project is null");
-            return false;
+            case AssetType::AUDIO:
+                return createAudioInstance(dynamic_cast<AudioDefinition*>(def));
+            case AssetType::LIGHT:
+                return createLightInstance(dynamic_cast<LightDefinition*>(def));
+            case AssetType::MODEL:
+                return createModelInstance(dynamic_cast<ModelDefinition*>(def));
+            case AssetType::PARTICLE_EMITTER:
+                return createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
+            case AssetType::PATH:
+                return createPathInstance(dynamic_cast<PathDefinition*>(def));
+            case AssetType::PHYSICS_OBJECT:
+                return createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
+            case AssetType::SCRIPT:
+                return createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
+            default:
+                return false;
         }
-
-        mProjectPath = project->getProjectPath();
-
-        log->debug(
-            "Creating Asset Intance of: ({}) {} for {}",
-            definition->getType(),
-            definition->getName(),
-            getNameAndUuidString()
-        );
-
-        bool result = false;
-        if(definition->isTypePath())
-        {
-            result = createPathInstance(dynamic_cast<PathDefinition*>(definition));
-        }
-        else if (definition->isTypeAudio())
-        {
-            result = createAudioInstance(dynamic_cast<AudioDefinition*>(definition));
-        }
-        else if (definition->isTypeModel())
-        {
-            result = createModelInstance(dynamic_cast<ModelDefinition*>(definition));
-        }
-        else if (definition->isTypeScript())
-        {
-            result = createScriptInstance(dynamic_cast<ScriptDefinition*>(definition));
-        }
-        else if (definition->isTypeShader())
-        {
-            result = createShaderInstance(dynamic_cast<ShaderDefinition*>(definition));
-        }
-        else if (definition->isTypePhysicsObject())
-        {
-            result = createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(definition));
-        }
-        else if (definition->isTypeLight())
-        {
-            result = createLightInstance(dynamic_cast<LightDefinition*>(definition));
-        }
-        else
-        {
-            log->error( "Invalid Asset Instance Type {}",definition->getType() );
-            return false;
-        }
-
-        setLoadedFlag(true);
-        return result;
     }
 
     bool
@@ -755,14 +696,14 @@ namespace Dream
             mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
             this
         );
-        return mPhysicsObjectInstance->load(mProjectPath);
+        return mPhysicsObjectInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
-	bool 
-		SceneObjectRuntime::createParticleEmitterInstance(ParticleEmitterDefinition *)
-	{
-		return false;
-	}
+    bool
+        SceneObjectRuntime::createParticleEmitterInstance(ParticleEmitterDefinition *)
+    {
+        return false;
+    }
 
     bool
     SceneObjectRuntime::createPathInstance
@@ -772,7 +713,7 @@ namespace Dream
         log->debug( "Creating Path asset instance." );
         removePathInstance();
         mPathInstance = new PathInstance(definition,this);
-        return mPathInstance->load(mProjectPath);
+        return mPathInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
     bool
@@ -786,7 +727,7 @@ namespace Dream
             removeAudioInstance();
             log->debug( "Creating Audio asset instance." );
             mAudioInstance = audioComp->newAudioInstance(definition,this);
-            return mAudioInstance->load(mProjectPath);
+            return mAudioInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
         }
         else
         {
@@ -822,7 +763,7 @@ namespace Dream
         removeScriptInstance();
         log->debug("Creating Script asset instance.");
         mScriptInstance = new LuaScriptInstance(definition, this);
-        bool result = mScriptInstance->load(mProjectPath);
+        bool result = mScriptInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
         if (!result)
         {
             log->error("Error loading script");
@@ -839,20 +780,6 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::createShaderInstance
-    (ShaderDefinition* definition)
-    {
-        auto log = getLog();
-        //removeShaderInstance();
-        log->debug( "Creating Shader asset instance." );
-
-        //auto shaderCache = mSceneRuntimeHandle->getProjectRuntime()->getShaderCache();
-        //mShaderInstance = shaderCache->getShaderFromCache(mProjectPath, definition, this);
-        return true;
-        //return mShaderInstance != nullptr;
-    }
-
-    bool
     SceneObjectRuntime::createLightInstance
     (LightDefinition* definition)
     {
@@ -863,7 +790,7 @@ namespace Dream
             definition,
             this
         );
-        return mLightInstance->load(mProjectPath);
+        return mLightInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
     quat
@@ -997,12 +924,13 @@ namespace Dream
         setName(def->getName());
         setUuid(def->getUuid());
         setFollowsCamera(def->getFollowsCamera());
-        setAssetsDefinitionsMap(def->getAssetDefinitionsMap());
+        setAssetDefinitionsMap(def->getAssetDefinitionsMap());
         setHasFocus(def->getHasFocus());
         setHidden(def->getHidden());
         initialTransform();
         if (!createAssetInstances()) return false;
         if( !loadChildrenFromDefinition(def)) return false;
+        setLoadedFlag(true);
         return true;
     }
 

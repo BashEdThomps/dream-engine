@@ -16,12 +16,16 @@
  * this file belongs to.
  */
 #include "SceneObjectDefinition.h"
+
 #include "SceneObjectRuntime.h"
-#include <regex>
+#include "../SceneDefinition.h"
+#include "../../Project/ProjectDefinition.h"
 
 #include "../../Components/IAssetDefinition.h"
 #include "../../Components/Transform3D.h"
 #include "../../Utilities/Uuid.h"
+
+#include <regex>
 
 namespace Dream
 {
@@ -294,7 +298,7 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_HIDDEN];
     }
 
-	
+
 
     SceneObjectDefinition*
     SceneObjectDefinition::getParentSceneObject
@@ -347,61 +351,70 @@ namespace Dream
         return newSOD;
     }
 
-	int 
-	SceneObjectDefinition::getSelectedAssetIndex
-	(AssetType type)
-	{
-		return 0;
-	}
+    int
+    SceneObjectDefinition::getSelectedAssetIndex
+    (AssetType type)
+    {
+        auto asset = getAssetDefinition(type);
+        if (asset.empty())
+        {
+            return -1;
+        }
+        return mSceneDefinition->getProjectDefinition()->getAssetDefinitionIndex(type,asset);
+    }
 
-	void SceneObjectDefinition::setAssetDefinition(AssetType type, string uuid)
-	{
-		auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
-			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
-		{
-			setEmptyAssetsObject();
-		}
-		mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = uuid;
-	}
+    void SceneObjectDefinition::setAssetDefinition(AssetType type, string uuid)
+    {
+        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
+            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
+        {
+            setEmptyAssetsObject();
+        }
+        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = uuid;
+    }
 
-	map<AssetType, string> 
-	SceneObjectDefinition::getAssetDefinitionsMap
-	()
-	{
-		map<AssetType, string> assetsMap;
-		for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
-		{
-			AssetType type = typePair.first;
-			string uuid = getAssetDefinition(type);
-			if (uuid.size() > 0)
-			{
-				assetsMap.insert(pair<AssetType,string>(type, uuid));
-			}
-		}
-		return assetsMap;
-	}
+    map<AssetType, string>
+    SceneObjectDefinition::getAssetDefinitionsMap
+    ()
+    {
+        map<AssetType, string> assetsMap;
+        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        {
+            AssetType type = typePair.first;
+            string uuid = getAssetDefinition(type);
+            if (!uuid.empty())
+            {
+                assetsMap.insert(pair<AssetType,string>(type, uuid));
+            }
+        }
+        return assetsMap;
+    }
 
-	string
-	SceneObjectDefinition::getAssetDefinition
-	(AssetType type)
-	{
-		auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
-			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
-		{
-			setEmptyAssetsObject();
-		}
-		if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
-		{
-			mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = "";
-		}
-		return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
-	}
+    string
+    SceneObjectDefinition::getAssetDefinition
+    (AssetType type)
+    {
+        auto log = getLog();
+        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+        log->debug("Getting definition {} of in {}",typeStr, getNameAndUuidString());
+        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
+            mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
+        {
+            setEmptyAssetsObject();
+        }
+        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
+        {
+            log->debug("No Instance");
+            return "";
+        }
+        log->debug("Found Instance");
+        return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
+    }
 
-	void 
-	SceneObjectDefinition::setEmptyAssetsObject()
-	{
-		mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::object();
-	}
+    void
+    SceneObjectDefinition::setEmptyAssetsObject()
+    {
+        mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::object();
+    }
 }

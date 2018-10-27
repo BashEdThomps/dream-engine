@@ -606,10 +606,10 @@ namespace Dream
        mJson[Constants::SCENE_LIGHTING_SHADER] = shader;
     }
 
-	int
-	SceneDefinition::getCurrentLightingShaderIndex
-	()
-	{
-		return mProjectDefinition->getShaderDefinitionIndex(getLightingShader());
-	}
+    int
+    SceneDefinition::getCurrentLightingShaderIndex
+    ()
+    {
+        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getLightingShader());
+    }
 }
