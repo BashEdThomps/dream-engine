@@ -129,17 +129,17 @@ namespace Dream
             return false;
         }
 #else
-		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile(directory.c_str(), &data);      // DIRECTORY
+        WIN32_FIND_DATA data;
+        HANDLE hFind = FindFirstFile(directory.c_str(), &data);      // DIRECTORY
 
-		if (hFind != INVALID_HANDLE_VALUE) 
-		{
-			do 
-			{
-				directoryContents.push_back(data.cFileName);
-			} while (FindNextFile(hFind, &data));
-			FindClose(hFind);
-		}
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            do
+            {
+                directoryContents.push_back(data.cFileName);
+            } while (FindNextFile(hFind, &data));
+            FindClose(hFind);
+        }
 #endif
 
         string projectFileName;

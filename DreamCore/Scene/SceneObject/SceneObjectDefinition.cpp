@@ -68,6 +68,15 @@ namespace Dream
         deleteChildSceneObjectDefinitions();
     }
 
+    int SceneObjectDefinition::getChildCount()
+    {
+        if (mJson[Constants::SCENE_OBJECT_CHILDREN].is_null())
+        {
+            return 0;
+        }
+        return mJson[Constants::SCENE_OBJECT_CHILDREN].size();
+    }
+
     Transform3D*
     SceneObjectDefinition::getTransform
     ()

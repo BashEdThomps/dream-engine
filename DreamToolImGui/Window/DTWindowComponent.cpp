@@ -67,12 +67,12 @@ namespace DreamTool
             return false;
         }
 
-        if (!initImGui())
+        if (!initGL())
         {
             return false;
         }
 
-        if (!initGL())
+        if (!initImGui())
         {
             return false;
         }
@@ -146,6 +146,7 @@ namespace DreamTool
         ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
         setTheme();
+        setFont();
         return true;
     }
 
@@ -156,6 +157,23 @@ namespace DreamTool
         auto log = spdlog::get("GLFWWindowComponent");
         log->debug("Initialising GLFW::OpenGL");
         glfwMakeContextCurrent(mWindow);
+
+        glewExperimental = GL_TRUE;
+        GLenum glewInitResult = glewInit();
+
+        if (glewInitResult != GLEW_OK)
+        {
+            log->error("GLEW failed to initialise");
+            return false;
+        }
+
+        checkGLError();
+
+        log->debug(
+            "OpenGL Version {}, Shader Version {}",
+            glGetString(GL_VERSION),
+            glGetString(GL_SHADING_LANGUAGE_VERSION)
+        );
         return true;
     }
 
@@ -233,6 +251,13 @@ namespace DreamTool
 
     void DTWindowComponent::setTheme()
     {
+    }
+
+    void DTWindowComponent::setFont()
+    {
+
+        ImGuiIO& io = ImGui::GetIO();
+        ImFont* pFont = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 18.0f);
     }
 
     void

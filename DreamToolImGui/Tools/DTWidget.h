@@ -23,5 +23,6 @@ namespace DreamTool
         virtual void draw() = 0;
     protected:
         Project* mProject;
+        int mTreeID;
     };
 }

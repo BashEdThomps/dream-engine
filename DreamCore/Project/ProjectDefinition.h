@@ -94,6 +94,7 @@ namespace Dream
         void deleteSceneDefinitions();
 
         long getSceneDefinitionIndex(SceneDefinition*);
+        SceneDefinition* getSceneDefinitionAtIndex(int index);
         long getAssetDefinitionIndex(AssetType, IAssetDefinition*);
         long getAssetDefinitionIndex(AssetType, string);
         IAssetDefinition* getAssetDefinitionAtIndex(AssetType, int);

@@ -97,6 +97,8 @@ namespace Dream
         Camera* getCamera();
         Time* getTime();
 
+        static SceneRuntime* CurrentSceneRuntime;
+
         PathComponent* getPathComponent();
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();

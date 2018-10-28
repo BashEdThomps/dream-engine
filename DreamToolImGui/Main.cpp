@@ -43,65 +43,12 @@ int main(int argc, const char** argv)
 
     auto log = spdlog::stdout_color_mt("Main");
 
-    DTWindowComponent windowComponent;
-    Project project(&windowComponent);
-
     log->trace("Starting...");
 
-    if (argc < MINIMUM_ARGUMENTS)
-    {
-        log->error("Minimum Number of Arguments Were Not Found.");
-        showUsage(argv);
-        return 1;
-    }
+    DTWindowComponent windowComponent;
+    windowComponent.init();
 
-    ArgumentParser parser(argc,argv);
-
-    bool loaded = project.openFromArgumentParser(parser);
-
-    if (!loaded)
-    {
-        log->error("Failed to Load Project.");
-        return 1;
-    }
-
-    log->info("√ Definition Loading Complete... Creating Runtime");
-
-
-    ProjectRuntime* pr = project.createProjectRuntime();
-
-    if (pr == nullptr)
-    {
-        log->error("Unable to load project runtime");
-        return 1;
-    }
-
-    ProjectDefinition* pd = project.getProjectDefinition();
-
-    if (pd == nullptr)
-    {
-        log->error("Could not load project definition");
-        return 1;
-    }
-
-    SceneDefinition* startupSceneDefinition  = pd->getStartupSceneDefinition();
-
-    if (startupSceneDefinition == nullptr)
-    {
-        log->error("Error, could not find startup scene definition");
-        return 1;
-    }
-
-    log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
-
-    auto sr = pr->constructSceneRuntime(startupSceneDefinition);
-
-    if (sr == nullptr)
-    {
-        log->error("Unable to create scene runtime, gotta go...");
-        return -1;
-    }
-
+    Project project(&windowComponent);
 
     PropertiesWindow propertiesWindow(&project);
     windowComponent.addWidget(&propertiesWindow);
@@ -126,18 +73,19 @@ int main(int argc, const char** argv)
     bool mDone = false;
     while (!mDone)
     {
-        if (sr != nullptr)
+        if (ProjectRuntime::CurrentSceneRuntime != nullptr)
         {
-            if (sr->getState() == SceneState::SCENE_STATE_STOPPED)
+            auto projectRuntime = project.getProjectRuntime();
+            if (ProjectRuntime::CurrentSceneRuntime->getState() == SceneState::SCENE_STATE_STOPPED)
             {
-                pr->destructSceneRuntime(sr);
-                sr = nullptr;
+                projectRuntime->destructSceneRuntime(ProjectRuntime::CurrentSceneRuntime);
+                ProjectRuntime::CurrentSceneRuntime = nullptr;
             }
             else
             {
-                pr->updateLogic(sr);
-                pr->updateGraphics(sr);
-                pr->collectGarbage(sr);
+                projectRuntime->updateLogic(ProjectRuntime::CurrentSceneRuntime);
+                projectRuntime->updateGraphics(ProjectRuntime::CurrentSceneRuntime);
+                projectRuntime->collectGarbage(ProjectRuntime::CurrentSceneRuntime);
             }
         }
         else

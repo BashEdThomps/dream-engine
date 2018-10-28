@@ -1,5 +1,6 @@
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
+#include "../deps/ImGui/imguifilesystem.h"
 
 using Dream::SceneDefinition;
 using Dream::SceneRuntime;
@@ -27,12 +28,57 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+        mTreeID = 0;
+        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         ImGui::Begin("Project Browser");
+
+        // New/Open/Save
+
+        const bool newButtonClicked = ImGui::Button("New");
+        {
+            static ImGuiFs::Dialog newDlg;
+            newDlg.chooseFolderDialog(newButtonClicked);
+            if (strlen(newDlg.getChosenPath())>0)
+            {
+                ImGui::Text("Chosen file: \"%s\"",newDlg.getChosenPath());
+            }
+        }
+        ImGui::SameLine();
+
+        bool openButtonClicked = ImGui::Button("Open");
+        {
+            static ImGuiFs::Dialog openDlg;
+            const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked);
+            if (strlen(chosenPath) > 0)
+            {
+                auto projectDir = openDlg.getChosenPath();
+                log->error("Opening project {}",projectDir);
+                if(mProject->openFromDirectory(projectDir))
+                {
+                    mProject->createProjectRuntime();
+                }
+            }
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button("Save"))
+        {
+
+        }
+
+        ImGui::Separator();
+
+       // Project Tree
         auto projDef = mProject->getProjectDefinition();
         auto projRunt = mProject->getProjectRuntime();
 
-        if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,projDef->getName().c_str(),0))
+        if (projDef == nullptr)
+        {
+            ImGui::End();
+            return;
+        }
+
+        if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,projDef->getName().c_str(),0))
         {
             if (ImGui::IsItemClicked())
             {
@@ -47,7 +93,7 @@ namespace DreamTool
 
             for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
             {
-                if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,sDef->getName().c_str(),0))
+                if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,sDef->getName().c_str(),0))
                 {
                     if (ImGui::IsItemClicked())
                     {
@@ -90,7 +136,12 @@ namespace DreamTool
         {
             auto projDef = mProject->getProjectDefinition();
             auto projRunt = mProject->getProjectRuntime();
-            if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,def->getName().c_str(),0))
+
+            if (def->getChildCount() == 0)
+            {
+                node_flags |= ImGuiTreeNodeFlags_Leaf;
+            }
+            if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,def->getName().c_str(),0))
             {
                 if (ImGui::IsItemClicked())
                 {

@@ -117,22 +117,7 @@ namespace Dream
         auto log = getLog();
         log->debug("Initialising");
 
-        glewExperimental = GL_TRUE;
-        GLenum glewInitResult = glewInit();
 
-        if (glewInitResult != GLEW_OK)
-        {
-            log->error("GLEW failed to initialise");
-            return false;
-        }
-
-        checkGLError();
-
-        log->debug(
-            "OpenGL Version {}, Shader Version {}",
-            glGetString(GL_VERSION),
-            glGetString(GL_SHADING_LANGUAGE_VERSION)
-        );
 
         onWindowDimensionsChanged();
         checkGLError();

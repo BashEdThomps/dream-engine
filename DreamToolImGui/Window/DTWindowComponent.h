@@ -67,6 +67,7 @@ namespace DreamTool
         bool initImGui();
         void cleanUpImGui();
         void setTheme();
+        void setFont();
         GLFWwindow* mWindow;
         vector<DTWidget*> mWidgets;
 

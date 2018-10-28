@@ -611,6 +611,13 @@ namespace Dream
         }
     }
 
+    SceneDefinition*
+    ProjectDefinition::getSceneDefinitionAtIndex
+    (int index)
+    {
+        return getSceneDefinitionsVector().at(index);
+    }
+
     long
     ProjectDefinition::getAssetDefinitionIndex
     (AssetType type, IAssetDefinition* sDef)

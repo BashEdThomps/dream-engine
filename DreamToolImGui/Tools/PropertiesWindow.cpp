@@ -64,6 +64,21 @@ namespace DreamTool
     PropertiesWindow::pushPropertyTarget
     (PropertyType type, IDefinition* def, IRuntime* runt)
     {
+        // Remove old
+        auto itr = std::find_if(
+            mHistory.begin(),
+            mHistory.end(),
+            [&](PropertiesTarget& tgt)
+            {
+                return tgt.definition == def;
+            }
+        );
+
+        if (itr != mHistory.end())
+        {
+            mHistory.erase(itr);
+        }
+
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
         auto log = getLog();
         log->error("Pushed target {}",mHistory.size());
@@ -90,7 +105,7 @@ namespace DreamTool
     PropertiesWindow::drawNameAndIdProperties
     ()
     {
-        if(ImGui::Button("<< Back"))
+        if(ImGui::Button("<- Back"))
         {
             popPropertyTarget();
         }
@@ -465,6 +480,22 @@ namespace DreamTool
         ImGui::Columns(1);
 
         ImGui::Separator();
+        ImGui::Text("Transform");
+
+        ImGui::Columns(2);
+
+        bool transformAbsolute = soDef->getTransform()->getTransformType().compare(Constants::TRANSFORM_TYPE_ABSOLUTE) == 0;
+        if(ImGui::RadioButton("Absolute", transformAbsolute))
+        {
+            soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+        }
+        ImGui::NextColumn();
+        if(ImGui::RadioButton("Offset Parent", !transformAbsolute))
+        {
+            soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_OFFSET);
+        }
+
+        ImGui::Columns(1);
 
         float tx[3] = {
             soDef->getTransform()->getTranslationX(),
@@ -535,10 +566,15 @@ namespace DreamTool
         ImGui::Text("Assets");
         auto projDef = mProject->getProjectDefinition();
 
+        // Audio
         int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::AUDIO);
         vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::AUDIO);
-
-        if(ImGui::Button("Edit##Audio"))
+        if(ImGui::Button("-##Audio"))
+        {
+            soDef->setAssetDefinition(AssetType::AUDIO,"");
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(">##Audio"))
         {
             if (selectedAudioAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO,selectedAudioAsset);
@@ -557,10 +593,17 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::AUDIO, selectedAudioAsset);
         }
 
+        // Light
         int selectedLightAsset = soDef->getSelectedAssetIndex(AssetType::LIGHT);
         vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::LIGHT);
 
-        if(ImGui::Button("Edit##Light"))
+        if(ImGui::Button("-##Light"))
+        {
+            soDef->setAssetDefinition(AssetType::LIGHT,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##Light"))
         {
             if (selectedLightAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT,selectedLightAsset);
@@ -579,9 +622,18 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::LIGHT, selectedLightAsset);
         }
 
+        // Model
         int selectedModelAsset = soDef->getSelectedAssetIndex(AssetType::MODEL);
         vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
-        if(ImGui::Button("Edit##Model"))
+
+        if(ImGui::Button("-##Model"))
+        {
+
+            soDef->setAssetDefinition(AssetType::MODEL,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##Model"))
         {
             if (selectedModelAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::MODEL,selectedModelAsset);
@@ -601,9 +653,17 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::MODEL, selectedModelAsset);
         }
 
+        // Particle Emitter
         int selectedParticleEmitterAsset = soDef->getSelectedAssetIndex(AssetType::PARTICLE_EMITTER);
         vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
-        if(ImGui::Button("Edit##ParticleEmitter"))
+        if(ImGui::Button("-##ParticleEmitter"))
+        {
+
+            soDef->setAssetDefinition(AssetType::PARTICLE_EMITTER,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##ParticleEmitter"))
         {
             if (selectedParticleEmitterAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
@@ -621,9 +681,17 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
         }
 
+        // Path
         int selectedPathAsset = soDef->getSelectedAssetIndex(AssetType::PATH);
         vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
-        if(ImGui::Button("Edit##Path"))
+        if(ImGui::Button("-##Path"))
+        {
+
+            soDef->setAssetDefinition(AssetType::PATH,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##Path"))
         {
             if (selectedPathAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PATH,selectedPathAsset);
@@ -642,9 +710,17 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::PATH, selectedPathAsset);
         }
 
+        //Physics Object
         int selectedPhysicsObjectAsset = soDef->getSelectedAssetIndex(AssetType::PHYSICS_OBJECT);
         vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
-        if(ImGui::Button("Edit##PhysicsObject"))
+        if(ImGui::Button("-##PhysicsObject"))
+        {
+
+            soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##PhysicsObject"))
         {
             if (selectedPhysicsObjectAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
@@ -663,9 +739,16 @@ namespace DreamTool
             soDef->setSelectedAssetIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
         }
 
+        // Script
         int selectedScriptAsset = soDef->getSelectedAssetIndex(AssetType::SCRIPT);
         vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::SCRIPT);
-        if(ImGui::Button("Edit##Script"))
+        if(ImGui::Button("-##Script"))
+        {
+            soDef->setAssetDefinition(AssetType::SCRIPT,"");
+        }
+        ImGui::SameLine();
+
+        if(ImGui::Button(">##Script"))
         {
             if (selectedScriptAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,selectedScriptAsset);

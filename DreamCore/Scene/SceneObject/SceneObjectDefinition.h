@@ -51,6 +51,7 @@ namespace Dream
 
         ~SceneObjectDefinition() override;
 
+        int getChildCount();
         void setHasFocus(bool focus);
         bool getHasFocus();
 

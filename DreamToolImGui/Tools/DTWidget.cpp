@@ -12,7 +12,9 @@ namespace DreamTool
     DTWidget::DTWidget
     (Project* project)
     : DreamObject("DTWidget"),
-      mProject(project) {}
+      mProject(project),
+      mTreeID(0)
+    {}
 
     DTWidget::~DTWidget() {}
 }

@@ -196,11 +196,12 @@ namespace Dream
         mWindowComponent->setHeight(projDef->getWindowHeight());
         mWindowComponent->setName(projDef->getName());
 
-        if (!mWindowComponent->init())
+        /*if (!mWindowComponent->init())
         {
             log->error( "Unable to initialise WindowComponent" );
             return false;
         }
+        */
         return true;
     }
 
@@ -743,4 +744,6 @@ namespace Dream
     {
         return mProject->getProjectPath();
     }
+
+    SceneRuntime* ProjectRuntime::CurrentSceneRuntime = nullptr;
 }
