@@ -504,7 +504,7 @@ public:
 
     bool init() override;
 
-    void updateComponent() override;
+    void updateComponent(SceneRuntime*) override;
     void BeginFrame();
 protected:
         NVGcontext* mContext;

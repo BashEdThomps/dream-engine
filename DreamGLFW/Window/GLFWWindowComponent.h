@@ -34,7 +34,7 @@ namespace DreamGLFW
         GLFWWindowComponent();
         ~GLFWWindowComponent() override;
 
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;

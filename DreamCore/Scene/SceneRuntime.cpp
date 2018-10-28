@@ -45,7 +45,6 @@ namespace Dream
         SceneDefinition* sd,
         ProjectRuntime* project
     ) : IRuntime(sd, sd->getName(),sd->getUuid()),
-        mGravity({0,0,0}),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
         mProjectRuntime(project),
@@ -88,14 +87,21 @@ namespace Dream
     SceneRuntime::getGravity
     ()
     {
-        return mGravity;
+        if (mProjectRuntime)
+        {
+            return mProjectRuntime->getPhysicsComponent()->getGravity();
+        }
+        return vector<float>{0.0f,0.0f,0.0f};
     }
 
     void
     SceneRuntime::setGravity
     (vector<float> gravity)
     {
-        mGravity = gravity;
+        if (mProjectRuntime)
+        {
+            mProjectRuntime->getPhysicsComponent()->setGravity(gravity);
+        }
     }
 
     vector<float>
@@ -277,44 +283,28 @@ namespace Dream
         setUuid(sceneDefinition->getUuid());
         setAmbientColour(sceneDefinition->getAmbientColour());
         setClearColour(sceneDefinition->getClearColour());
-        setGravity(sceneDefinition->getGravity());
-        setPhysicsDebug(sceneDefinition->getPhysicsDebug());
 
-
-
-        // Propogate to project components where required
-        auto gfx = mProjectRuntime->getGraphicsComponent();
-        if (gfx == nullptr)
+        // Setup Camera
+        mCameraHandle = mProjectRuntime->getCamera();
+        if (mCameraHandle == nullptr)
         {
-            log->error("Graphics Component is null");
+            log->error("Camera is null");
             return false;
         }
-        gfx->setActiveSceneRuntime(this);
+        mCameraHandle->setTranslation(sceneDefinition->getCameraTranslation());
+        mCameraHandle->setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
+        mCameraHandle->setPitch(sceneDefinition->getCameraPitch());
+        mCameraHandle->setYaw(sceneDefinition->getCameraYaw());
 
+        // Setup Physics
         auto physics = mProjectRuntime->getPhysicsComponent();
         if (physics == nullptr)
         {
             log->error("Physics component is null");
             return false;
         }
-
-        // Setup Camera
-        mCameraHandle = mProjectRuntime->getCamera();
-
-        if (mCameraHandle == nullptr)
-        {
-            log->error("Camera is null");
-            return false;
-        }
-
-        mCameraHandle->setTranslation(sceneDefinition->getCameraTranslation());
-        mCameraHandle->setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
-        mCameraHandle->setPitch(sceneDefinition->getCameraPitch());
-        mCameraHandle->setYaw(sceneDefinition->getCameraYaw());
-        //mCameraHandle->updateCameraVectors();
-
-        physics->setGravity(getGravity());
-        physics->setDebug(getPhysicsDebug());
+        physics->setGravity(sceneDefinition->getGravity());
+        physics->setDebug(sceneDefinition->getPhysicsDebug());
 
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
@@ -327,6 +317,12 @@ namespace Dream
                         shaderUuid,
                         getNameAndUuidString()
                         );
+        }
+        auto gfx = mProjectRuntime->getGraphicsComponent();
+        if (gfx == nullptr)
+        {
+            log->error("Graphics Component is null");
+            return false;
         }
         gfx->setLightingShader(mLightingShader);
 
@@ -350,14 +346,21 @@ namespace Dream
     SceneRuntime::getPhysicsDebug
     ()
     {
-        return mPhysicsDebug;
+        if (mProjectRuntime)
+        {
+            return mProjectRuntime->getPhysicsComponent()->getDebug();
+        }
+        return false;
     }
 
     void
     SceneRuntime::setPhysicsDebug
     (bool physicsDebug)
     {
-        mPhysicsDebug = physicsDebug;
+        if (mProjectRuntime)
+        {
+            mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
+        }
     }
 
     float

@@ -200,7 +200,7 @@ namespace Dream
 
     void
     GraphicsComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
         beginUpdate();
         auto log = getLog();
@@ -211,7 +211,7 @@ namespace Dream
 
         if (!mWindowComponent->shouldClose())
         {
-            updateLightQueue();
+            updateLightQueue(sr);
         }
         endUpdate();
     }
@@ -231,7 +231,7 @@ namespace Dream
 
     void
     GraphicsComponent::renderGeometryPass
-    ()
+    (SceneRuntime* sr)
     {
         auto log = getLog();
         log->debug("Running Geometry Render Pass");
@@ -247,9 +247,9 @@ namespace Dream
         glCullFace(GL_BACK);
 
         // Clear the colorbuffer
-        if (mActiveSceneRuntime != nullptr)
+        if (sr != nullptr)
         {
-            auto clearColour = mActiveSceneRuntime->getClearColour();
+            auto clearColour = sr->getClearColour();
             glClearColor
             (
                 clearColour[Constants::RED_INDEX],
@@ -463,14 +463,14 @@ namespace Dream
 
     void
     GraphicsComponent::updateLightQueue
-    ()
+    (SceneRuntime* sr)
     {
         auto log = getLog();
         log->debug("Updating Light Queue");
         // Clear existing Queues
         clearLightQueue();
 
-        mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
+        sr->getRootSceneObjectRuntime()->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (

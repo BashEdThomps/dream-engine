@@ -53,27 +53,27 @@ namespace Dream
 
     void
     PathComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
-                beginUpdate();
-                if (mActiveSceneRuntime != nullptr)
-                {
-                    mActiveSceneRuntime->getRootSceneObjectRuntime()->applyToAll
-                    (
-                        function< SceneObjectRuntime* (SceneObjectRuntime*) >
-                        (
-                            [&](SceneObjectRuntime* currentSceneObject)
-                            {
-                                if (currentSceneObject->hasPathInstance())
-                                {
-                                    PathInstance* animInstance = currentSceneObject->getPathInstance();
-                                    // TODO: Fix dis
-                                }
-                                return nullptr;
-                            }
-                        )
-                    );
-                }
-                endUpdate();
+        beginUpdate();
+        if (sr != nullptr)
+        {
+            sr->getRootSceneObjectRuntime()->applyToAll
+            (
+                function< SceneObjectRuntime* (SceneObjectRuntime*) >
+                (
+                    [&](SceneObjectRuntime* currentSceneObject)
+                    {
+                        if (currentSceneObject->hasPathInstance())
+                        {
+                            PathInstance* animInstance = currentSceneObject->getPathInstance();
+                            // TODO: Fix dis
+                        }
+                        return nullptr;
+                    }
+                )
+            );
+        }
+        endUpdate();
     }
 } // End of Dream

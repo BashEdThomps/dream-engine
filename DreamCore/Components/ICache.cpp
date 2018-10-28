@@ -14,18 +14,25 @@ namespace Dream
     ICache::~ICache
     ()
     {
-        for (IAssetInstance* instance : mInstances)
-        {
-            delete instance;
-        }
-        mInstances.clear();
+       clear();
     }
 
     std::string
     ICache::getAbsolutePath
     (IAssetDefinition* def)
     {
-       return mProjectRuntime->getAssetAbsolutePath(def->getUuid());
+        return mProjectRuntime->getAssetAbsolutePath(def->getUuid());
+    }
+
+    void
+    ICache::clear
+    ()
+    {
+        for (IAssetInstance* instance : mInstances)
+        {
+            delete instance;
+        }
+        mInstances.clear();
     }
 
     IAssetDefinition*

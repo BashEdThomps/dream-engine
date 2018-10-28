@@ -219,7 +219,7 @@ namespace Dream
 
     void
     LuaComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
         beginUpdate();
         auto log = getLog();

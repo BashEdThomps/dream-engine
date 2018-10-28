@@ -58,7 +58,7 @@ namespace Dream
         AudioComponent();
         ~AudioComponent() override;
         bool init() override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
 
         void setSourcePosision(ALuint, glm::vec3);
         void setListenerPosition(glm::vec3);

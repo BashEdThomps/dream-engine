@@ -45,17 +45,13 @@ namespace Dream
     {
     private:
         SceneState mState;
-        vector<float> mGravity;
         vector<float> mClearColour;
         vector<float> mAmbientColour;
         ProjectRuntime* mProjectRuntime;
-
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
         ShaderInstance* mLightingShader;
-
         Camera* mCameraHandle;
-        bool mPhysicsDebug;
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent );

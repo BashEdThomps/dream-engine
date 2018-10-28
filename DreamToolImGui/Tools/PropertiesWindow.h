@@ -8,6 +8,13 @@ using Dream::IRuntime;
 
 namespace DreamTool
 {
+    struct PropertiesTarget
+    {
+        PropertyType type;
+        IDefinition* definition;
+        IRuntime* runtime;
+    };
+
     class PropertiesWindow : public DTWidget
     {
     public:
@@ -15,10 +22,9 @@ namespace DreamTool
         ~PropertiesWindow() override;
 
         void draw() override;
-        void setRuntime(IRuntime* runt);
-        void setDefinition(IDefinition* def);
-        void clear();
-        void setPropertyType(PropertyType t);
+        void pushPropertyTarget(PropertyType, IDefinition*, IRuntime*);
+        void popPropertyTarget();
+
     private:
         void drawNameAndIdProperties();
         void drawProjectProperties();
@@ -37,7 +43,12 @@ namespace DreamTool
         void drawParticleEmitterAssetProperties();
         void drawTextureAssetProperties();
 
+        void setRuntime(IRuntime* runt);
+        void setDefinition(IDefinition* def);
+        void setPropertyType(PropertyType t);
+        void clear();
     private:
+        vector<PropertiesTarget> mHistory;
         PropertyType mType;
         IDefinition* mDefinition;
         IRuntime* mRuntime;

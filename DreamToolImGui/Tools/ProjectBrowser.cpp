@@ -2,6 +2,7 @@
 #include "PropertiesWindow.h"
 
 using Dream::SceneDefinition;
+using Dream::SceneRuntime;
 using Dream::SceneObjectDefinition;
 using Dream::IAssetDefinition;
 using Dream::Constants;
@@ -36,9 +37,12 @@ namespace DreamTool
             if (ImGui::IsItemClicked())
             {
                 log->error("Project clicked {}", projDef->getName());
-                mPropertiesWindowHandle->setPropertyType(PROP_TYPE_PROJECT);
-                mPropertiesWindowHandle->setDefinition(projDef);
-                mPropertiesWindowHandle->setRuntime(mProject->getProjectRuntime());
+                mPropertiesWindowHandle->pushPropertyTarget
+                (
+                    PROP_TYPE_PROJECT,
+                    projDef,
+                    mProject->getProjectRuntime()
+                );
             }
 
             for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
@@ -48,18 +52,23 @@ namespace DreamTool
                     if (ImGui::IsItemClicked())
                     {
                         log->error("Scene Clicked {}", sDef->getName());
-                        mPropertiesWindowHandle->setPropertyType(PROP_TYPE_SCENE);
-                        mPropertiesWindowHandle->setDefinition(sDef);
-                        auto sRunt = projRunt->getActiveSceneRuntime();
 
-                        if (sRunt->getUuid().compare(sDef->getUuid()) == 0)
+                        SceneRuntime* sRunt = nullptr;// TODO projRunt->getActiveSceneRuntime();
+                        if (sRunt != nullptr)
                         {
-                            mPropertiesWindowHandle->setRuntime(sRunt);
+                            if (sRunt->getUuid().compare(sDef->getUuid()) != 0)
+                            {
+                                sRunt = nullptr;
+                                log->error("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
+                            }
                         }
-                        else
-                        {
-                            log->error("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
-                        }
+
+                        mPropertiesWindowHandle->pushPropertyTarget
+                        (
+                            PROP_TYPE_SCENE,
+                            sDef,
+                            sRunt
+                        );
                     }
                     SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
                     addSceneObject(rootSo);
@@ -81,15 +90,18 @@ namespace DreamTool
         {
             auto projDef = mProject->getProjectDefinition();
             auto projRunt = mProject->getProjectRuntime();
-
             if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,def->getName().c_str(),0))
             {
                 if (ImGui::IsItemClicked())
                 {
                     log->error("SceneObject Clicked {}",def->getName());
-                    mPropertiesWindowHandle->setPropertyType(PROP_TYPE_SCENE_OBJECT);
-                    mPropertiesWindowHandle->setDefinition(def);
-                    mPropertiesWindowHandle->setRuntime(projRunt ->getSceneObjectRuntimeByUuid(def->getUuid()));
+                    mPropertiesWindowHandle->pushPropertyTarget
+                    (
+                        PROP_TYPE_SCENE_OBJECT,
+                        def,
+                        nullptr
+                        //projRunt->getSceneObjectRuntimeByUuid(sRunt, def->getUuid())
+                    );
                 }
                 for (SceneObjectDefinition* child : def->getChildDefinitionsList())
                 {

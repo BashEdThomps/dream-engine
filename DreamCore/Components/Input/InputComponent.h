@@ -62,7 +62,7 @@ namespace Dream
         ~InputComponent() override;
 
         bool init() override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
 
         void debugKeyboard() const;
         void debugMouse() const;

@@ -61,7 +61,7 @@ namespace Dream
         return mContext != nullptr;
     }
 
-    void NanoVGComponent::updateComponent()
+    void NanoVGComponent::updateComponent(SceneRuntime*)
     {
 
     }

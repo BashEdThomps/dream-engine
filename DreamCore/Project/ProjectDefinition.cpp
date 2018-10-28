@@ -639,11 +639,11 @@ namespace Dream
         return -1;
     }
 
-    ShaderDefinition*
-    ProjectDefinition::getShaderDefinitionAtIndex
-    (int idx)
+    IAssetDefinition*
+    ProjectDefinition::getAssetDefinitionAtIndex
+    (AssetType type, int idx)
     {
-        return getShaderDefinitionsVector().at(idx);
+        return getAssetDefinitionsVector(type).at(idx);
     }
 
     vector<string>

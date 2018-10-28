@@ -51,7 +51,7 @@ namespace DreamTool
         DTWindowComponent();
         ~DTWindowComponent() override;
 
-        void updateComponent() override;
+        void updateComponent(SceneRuntime* sr) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
@@ -66,6 +66,7 @@ namespace DreamTool
         bool initGL();
         bool initImGui();
         void cleanUpImGui();
+        void setTheme();
         GLFWwindow* mWindow;
         vector<DTWidget*> mWidgets;
 

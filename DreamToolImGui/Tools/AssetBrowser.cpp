@@ -28,22 +28,12 @@ namespace DreamTool
         static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         ImGui::Begin("Asset Browser");
         auto projDef = mProject->getProjectDefinition();
-        /*
-        ImGui::Columns(Constants::DREAM_ASSET_TYPES_MAP.size());
-        for (auto assetPair : Constants::DREAM_ASSET_TYPES_MAP)
-        {
-             AssetType type = assetPair.first;
-             string name = assetPair.second;
-             name = Constants::getAssetTypeReadableNameFromString(name);
-             ImGui::Text(name.c_str());
-             ImGui::NextColumn();
-        }
-        */
 
         for (auto assetPair : Constants::DREAM_ASSET_TYPES_MAP)
         {
            AssetType type = assetPair.first;
            string name = assetPair.second;
+
            name = Constants::getAssetTypeReadableNameFromString(name);
            if (ImGui::TreeNodeEx((void*)(intptr_t)0,node_flags,name.c_str(),0))
            {
@@ -55,15 +45,16 @@ namespace DreamTool
                        if (ImGui::IsItemClicked())
                         {
                             log->error("Asset Definition Clicked {}", asset->getName());
-                            mPropertiesWindowHandle->setPropertyType(PROP_TYPE_ASSET);
-                            mPropertiesWindowHandle->setDefinition(asset);
-                            mPropertiesWindowHandle->setRuntime(nullptr);
+                            mPropertiesWindowHandle->pushPropertyTarget(
+                                PROP_TYPE_ASSET,
+                                asset,
+                                nullptr
+                            );
                         }
                        ImGui::TreePop();
                    }
                }
                ImGui::TreePop();
-               //ImGui::NextColumn();
            }
         } // Asset Type Node
         ImGui::End();

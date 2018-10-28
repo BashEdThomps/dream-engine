@@ -84,6 +84,7 @@ namespace Dream
         bool getHidden();
 
         int getSelectedAssetIndex(AssetType type);
+        void setSelectedAssetIndex(AssetType type, int index);
 
         string getAssetDefinition(AssetType type);
         void setAssetDefinition(AssetType type, string uuid);

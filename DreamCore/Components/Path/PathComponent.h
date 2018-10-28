@@ -29,7 +29,7 @@ namespace Dream
         ~PathComponent() override;
 
         bool init() override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
 
     }; // End of PathComponent
 

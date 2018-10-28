@@ -61,19 +61,43 @@ namespace DreamTool
     }
 
     void
+    PropertiesWindow::pushPropertyTarget
+    (PropertyType type, IDefinition* def, IRuntime* runt)
+    {
+        mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
+        auto log = getLog();
+        log->error("Pushed target {}",mHistory.size());
+        setPropertyType(type);
+        setDefinition(def);
+        setRuntime(runt);
+    }
+
+    void
+    PropertiesWindow::popPropertyTarget
+    ()
+    {
+        if (mHistory.empty()) return;
+        PropertiesTarget last = mHistory.back();
+        setPropertyType(last.type);
+        setDefinition(last.definition);
+        setRuntime(last.runtime);
+        auto log = getLog();
+        mHistory.pop_back();
+        log->error("Popped target {}",mHistory.size());
+    }
+
+    void
     PropertiesWindow::drawNameAndIdProperties
     ()
     {
+        if(ImGui::Button("<< Back"))
+        {
+            popPropertyTarget();
+        }
+
         if (mDefinition != nullptr)
         {
-			ImGui::Columns(2);
-            char idBuf[128] = {0};
-            strncpy(&idBuf[0],mDefinition->getUuid().c_str(),mDefinition->getUuid().size());
-            if(ImGui::InputText("ID", idBuf, IM_ARRAYSIZE(idBuf)))
-            {
-                mDefinition->setUuid(idBuf);
-            }
-			ImGui::NextColumn();
+            ImGui::Columns(2);
 
             char nameBuf[128] = {0};
             strncpy(&nameBuf[0],mDefinition->getName().c_str(),mDefinition->getName().size());
@@ -81,7 +105,17 @@ namespace DreamTool
             {
                mDefinition->setName(nameBuf);
             }
-			ImGui::Columns(1);
+
+            ImGui::NextColumn();
+
+            char idBuf[128] = {0};
+            strncpy(&idBuf[0],mDefinition->getUuid().c_str(),mDefinition->getUuid().size());
+            if(ImGui::InputText("ID", idBuf, IM_ARRAYSIZE(idBuf)))
+            {
+                mDefinition->setUuid(idBuf);
+            }
+
+            ImGui::Columns(1);
         }
     }
 
@@ -148,18 +182,22 @@ namespace DreamTool
         bool usingMouse = projDef->getCaptureMouse();
         bool usingGamepad = projDef->getCaptureJoystick();
 
+        ImGui::Columns(3);
         if (ImGui::Checkbox("Keyboard",&usingKeyboard))
         {
             projDef->setCaptureKeyboard(usingKeyboard);
         }
+        ImGui::NextColumn();
         if(ImGui::Checkbox("Mouse", &usingMouse))
         {
             projDef->setCaptureMouse(usingMouse);
         }
+        ImGui::NextColumn();
         if(ImGui::Checkbox("Gamepad",  &usingGamepad))
         {
             projDef->setCaptureJoystick(usingGamepad);
         }
+        ImGui::Columns(1);
         ImGui::Separator();
 
         // Window Dimensions
@@ -313,20 +351,20 @@ namespace DreamTool
         auto ambientVec = sceneDef->getAmbientColour();
         if (ImGui::ColorEdit3("Ambient Color", &ambientVec[0]))
         {
-			if (sceneDef)
-			{
-				sceneDef->setAmbientColourR(ambientVec[0]);
-				sceneDef->setAmbientColourG(ambientVec[1]);
-				sceneDef->setAmbientColourB(ambientVec[2]);
-			}
-			if (sceneRuntime)
-			{
-				sceneRuntime->setAmbientColour({
-					ambientVec[0],
-					ambientVec[1],
-					ambientVec[2]
-					});
-			}
+            if (sceneDef)
+            {
+                sceneDef->setAmbientColourR(ambientVec[0]);
+                sceneDef->setAmbientColourG(ambientVec[1]);
+                sceneDef->setAmbientColourB(ambientVec[2]);
+            }
+            if (sceneRuntime)
+            {
+                sceneRuntime->setAmbientColour({
+                    ambientVec[0],
+                    ambientVec[1],
+                    ambientVec[2]
+                    });
+            }
         }
 
         int lightingShaderIndex = sceneDef->getCurrentLightingShaderIndex();
@@ -334,7 +372,7 @@ namespace DreamTool
 
         if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
         {
-            auto selectedShader = mProject->getProjectDefinition()->getShaderDefinitionAtIndex(lightingShaderIndex);
+            auto selectedShader = mProject->getProjectDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, lightingShaderIndex);
             auto uuid = selectedShader->getUuid();
             auto name = selectedShader->getName();
             sceneDef->setLightingShader(uuid);
@@ -388,6 +426,7 @@ namespace DreamTool
     {
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+        auto log = getLog();
 
         ImGui::Separator();
 
@@ -498,65 +537,151 @@ namespace DreamTool
 
         int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::AUDIO);
         vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::AUDIO);
-        ImGui::Button("Edit");
+
+        if(ImGui::Button("Edit##Audio"))
+        {
+            if (selectedAudioAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO,selectedAudioAsset);
+            pushPropertyTarget(
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::AUDIO, selectedAudioAsset);
         }
 
         int selectedLightAsset = soDef->getSelectedAssetIndex(AssetType::LIGHT);
         vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::LIGHT);
-        ImGui::Button("Edit");
+
+        if(ImGui::Button("Edit##Light"))
+        {
+            if (selectedLightAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT,selectedLightAsset);
+            pushPropertyTarget(
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::LIGHT, selectedLightAsset);
         }
 
         int selectedModelAsset = soDef->getSelectedAssetIndex(AssetType::MODEL);
         vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
-        ImGui::Button("Edit");
+        if(ImGui::Button("Edit##Model"))
+        {
+            if (selectedModelAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::MODEL,selectedModelAsset);
+            pushPropertyTarget
+            (
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::MODEL, selectedModelAsset);
         }
 
         int selectedParticleEmitterAsset = soDef->getSelectedAssetIndex(AssetType::PARTICLE_EMITTER);
         vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
-        ImGui::Button("Edit");
+        if(ImGui::Button("Edit##ParticleEmitter"))
+        {
+            if (selectedParticleEmitterAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
+            pushPropertyTarget
+            (
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
         ImGui::SameLine();
         if(StringCombo("Particle Emitter",&selectedParticleEmitterAsset,peAssets,peAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
         }
 
         int selectedPathAsset = soDef->getSelectedAssetIndex(AssetType::PATH);
         vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
-        ImGui::Button("Edit");
+        if(ImGui::Button("Edit##Path"))
+        {
+            if (selectedPathAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PATH,selectedPathAsset);
+            pushPropertyTarget(
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::PATH, selectedPathAsset);
         }
 
         int selectedPhysicsObjectAsset = soDef->getSelectedAssetIndex(AssetType::PHYSICS_OBJECT);
         vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
-        ImGui::Button("Edit");
+        if(ImGui::Button("Edit##PhysicsObject"))
+        {
+            if (selectedPhysicsObjectAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+            pushPropertyTarget(
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
         }
 
         int selectedScriptAsset = soDef->getSelectedAssetIndex(AssetType::SCRIPT);
         vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::SCRIPT);
-        ImGui::Button("Edit");
+        if(ImGui::Button("Edit##Script"))
+        {
+            if (selectedScriptAsset < 0) return;
+            auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,selectedScriptAsset);
+            pushPropertyTarget(
+                PropertyType::PROP_TYPE_ASSET,
+                asset,
+                nullptr
+            );
+            return;
+        }
+
         ImGui::SameLine();
+
         if(StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size()))
         {
-
+            soDef->setSelectedAssetIndex(AssetType::SCRIPT, selectedScriptAsset);
         }
     }
 
@@ -637,153 +762,153 @@ namespace DreamTool
                ImGui::DragFloat3("Direction",color,0.1f);
                ImGui::DragFloat("Constant",&f,1.0f);
                ImGui::DragFloat("Linear",&f,0.01f);
-               ImGui::DragFloat("Quadratic",&f),0.001f;
+               ImGui::DragFloat("Quadratic",&f,0.001f);
                break;
            case LightType::LT_DIRECTIONAL:
-ImGui::DragFloat3("Direction", color, 0.1f);
-break;
+                ImGui::DragFloat3("Direction", color, 0.1f);
+                break;
            case LightType::LT_SPOTLIGHT:
-			   ImGui::DragFloat("Inner Cut Off", color);
-			   ImGui::DragFloat("Outer Cut Off", color);
-			   ImGui::DragFloat("Constant", &f);
-			   ImGui::DragFloat("Linear", &f);
-			   ImGui::DragFloat("Quadratic", &f);
+               ImGui::DragFloat("Inner Cut Off", color);
+               ImGui::DragFloat("Outer Cut Off", color);
+               ImGui::DragFloat("Constant", &f);
+               ImGui::DragFloat("Linear", &f);
+               ImGui::DragFloat("Quadratic", &f);
 
-			   break;
-		   case LightType::LT_NONE:
-			   break;
-	   }
-	   ImGui::Separator();
-	   ImGui::ColorEdit3("Ambient", color);
-	   ImGui::ColorEdit3("Diffuse", color);
-	   ImGui::ColorEdit3("Specular", color);
-	}
+               break;
+           case LightType::LT_NONE:
+               break;
+       }
+       ImGui::Separator();
+       ImGui::ColorEdit3("Ambient", color);
+       ImGui::ColorEdit3("Diffuse", color);
+       ImGui::ColorEdit3("Specular", color);
+    }
 
-	void
-	PropertiesWindow::drawMaterialAssetProperties
-	()
-	{
-		auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
-		int index = 0;
-		char* shader[3] = { "Shader 1","Shader 2","Shader 3" };
-		ImGui::Combo("Shader", &index, shader, 3);
-		ImGui::Separator();
+    void
+    PropertiesWindow::drawMaterialAssetProperties
+    ()
+    {
+        auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+        int index = 0;
+        char* shader[3] = { "Shader 1","Shader 2","Shader 3" };
+        ImGui::Combo("Shader", &index, shader, 3);
+        ImGui::Separator();
 
-		float diffuseColor[3] =
-		{
-			materialDef->getDiffuseColour().r,
-			materialDef->getDiffuseColour().g,
-			materialDef->getDiffuseColour().b
-		};
-		if (ImGui::ColorEdit3("Diffuse", diffuseColor))
-		{
-			materialDef->setDiffuseColour(RGB{
-				diffuseColor[0],
-				diffuseColor[1],
-				diffuseColor[2]
-				});
-		}
+        float diffuseColor[3] =
+        {
+            materialDef->getDiffuseColour().r,
+            materialDef->getDiffuseColour().g,
+            materialDef->getDiffuseColour().b
+        };
+        if (ImGui::ColorEdit3("Diffuse", diffuseColor))
+        {
+            materialDef->setDiffuseColour(RGB{
+                diffuseColor[0],
+                diffuseColor[1],
+                diffuseColor[2]
+                });
+        }
 
-		float specularColor[3] = {
-			materialDef->getSpecularColour().r,
-			materialDef->getSpecularColour().g,
-			materialDef->getSpecularColour().b
-		};
-		if (ImGui::ColorEdit3("Specular", specularColor))
-		{
-			materialDef->setSpecularColour(
-				RGB
-				{
-					specularColor[0],
-					specularColor[1],
-					specularColor[2]
-				}
-			);
-		}
+        float specularColor[3] = {
+            materialDef->getSpecularColour().r,
+            materialDef->getSpecularColour().g,
+            materialDef->getSpecularColour().b
+        };
+        if (ImGui::ColorEdit3("Specular", specularColor))
+        {
+            materialDef->setSpecularColour(
+                RGB
+                {
+                    specularColor[0],
+                    specularColor[1],
+                    specularColor[2]
+                }
+            );
+        }
 
-		float ambientColor[3] = {
-			materialDef->getAmbientColour().r,
-			materialDef->getAmbientColour().g,
-			materialDef->getAmbientColour().b
-		};
-		if (ImGui::ColorEdit3("Ambient", ambientColor))
-		{
-			materialDef->setAmbientColour(
-				RGB{
-					ambientColor[0],
-					ambientColor[1],
-					ambientColor[2]
-				}
-			);
-		}
+        float ambientColor[3] = {
+            materialDef->getAmbientColour().r,
+            materialDef->getAmbientColour().g,
+            materialDef->getAmbientColour().b
+        };
+        if (ImGui::ColorEdit3("Ambient", ambientColor))
+        {
+            materialDef->setAmbientColour(
+                RGB{
+                    ambientColor[0],
+                    ambientColor[1],
+                    ambientColor[2]
+                }
+            );
+        }
 
-		float reflectiveColor[3] = {
-			materialDef->getReflectiveColour().r,
-			materialDef->getReflectiveColour().g,
-			materialDef->getReflectiveColour().b
-		};
-		if (ImGui::ColorEdit3("Reflective", reflectiveColor))
-		{
-			materialDef->setReflectiveColour(
-				RGB
-				{
-					reflectiveColor[0],
-					reflectiveColor[1],
-					reflectiveColor[2]
-				}
-			);
-		}
+        float reflectiveColor[3] = {
+            materialDef->getReflectiveColour().r,
+            materialDef->getReflectiveColour().g,
+            materialDef->getReflectiveColour().b
+        };
+        if (ImGui::ColorEdit3("Reflective", reflectiveColor))
+        {
+            materialDef->setReflectiveColour(
+                RGB
+                {
+                    reflectiveColor[0],
+                    reflectiveColor[1],
+                    reflectiveColor[2]
+                }
+            );
+        }
 
-		float emissiveColor[3] = {
-			materialDef->getEmissiveColour().r,
-			materialDef->getEmissiveColour().g,
-			materialDef->getEmissiveColour().b
-		};
-		if(ImGui::ColorEdit3("Emissive", emissiveColor))
-		{
-			materialDef->setEmissiveColour(
-				RGB
-				{
-					emissiveColor[0],
-					emissiveColor[1],
-					emissiveColor[2]
-				}
-			);
-		}
+        float emissiveColor[3] = {
+            materialDef->getEmissiveColour().r,
+            materialDef->getEmissiveColour().g,
+            materialDef->getEmissiveColour().b
+        };
+        if(ImGui::ColorEdit3("Emissive", emissiveColor))
+        {
+            materialDef->setEmissiveColour(
+                RGB
+                {
+                    emissiveColor[0],
+                    emissiveColor[1],
+                    emissiveColor[2]
+                }
+            );
+        }
 
         ImGui::Separator();
 
         char* tex[3] = {"Texture 1","Texture 2","Texture 3"};
-		ImVec2 imgSize(256, 256);
+        ImVec2 imgSize(256, 256);
 
-		ImGui::Columns(2);
+        ImGui::Columns(2);
 
-		// Diffuse
-		ImGui::Image(0, imgSize);
-		ImGui::NextColumn();
+        // Diffuse
+        ImGui::Image(0, imgSize);
+        ImGui::NextColumn();
         ImGui::Combo("Diffuse",&index,tex,3);
-		ImGui::NextColumn();
-		ImGui::Separator();
-		
-		// Specular
-		ImGui::Image(0, imgSize);
-		ImGui::NextColumn();
+        ImGui::NextColumn();
+        ImGui::Separator();
+
+        // Specular
+        ImGui::Image(0, imgSize);
+        ImGui::NextColumn();
         ImGui::Combo("Specular",&index,tex,3);
-		ImGui::NextColumn();
-		ImGui::Separator();
-		
-		// Normal
-		ImGui::Image(0, imgSize);
-		ImGui::NextColumn();
+        ImGui::NextColumn();
+        ImGui::Separator();
+
+        // Normal
+        ImGui::Image(0, imgSize);
+        ImGui::NextColumn();
         ImGui::Combo("Normal",&index,tex,3);
-		ImGui::NextColumn();
-		ImGui::Separator();
-		
-		// Displacement
-		ImGui::Image(0, imgSize);
-		ImGui::NextColumn();
+        ImGui::NextColumn();
+        ImGui::Separator();
+
+        // Displacement
+        ImGui::Image(0, imgSize);
+        ImGui::NextColumn();
         ImGui::Combo("Displacement",&index,tex,3);
-		ImGui::Columns(1);
+        ImGui::Columns(1);
 
     }
 
@@ -883,7 +1008,7 @@ break;
         ImGui::Button("Remove File");
         ImGui::Columns(1);
 
-		ImVec2 imgSize(512, 512);
-		ImGui::Image(0, imgSize);
+        ImVec2 imgSize(512, 512);
+        ImGui::Image(0, imgSize);
     }
 }

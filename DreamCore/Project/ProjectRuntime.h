@@ -65,7 +65,6 @@ namespace Dream
 
         Time* mTime;
         Camera* mCamera;
-        SceneRuntime* mActiveSceneRuntime;
         Project* mProject;
 
         // Components
@@ -110,13 +109,12 @@ namespace Dream
 
         bool initComponents();
 
+        void collectGarbage(SceneRuntime* rt);
         void collectGarbage() override;
 
-        void updateAll();
-        bool updateLogic();
-        void updateGraphics();
-        void updateFlush();
-        bool allThreadsHaveUpdated();
+        void updateAll(SceneRuntime* rt);
+        bool updateLogic(SceneRuntime* rt);
+        void updateGraphics(SceneRuntime* rt);
 
         int getWindowWidth();
         void setWindowWidth(int);
@@ -124,11 +122,9 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        SceneRuntime* constructActiveSceneRuntime(SceneDefinition* sceneDefinition);
-
-        bool hasActiveSceneRuntime();
-        SceneRuntime* getActiveSceneRuntime();
-        void resetActiveSceneRuntime();
+        SceneRuntime* constructSceneRuntime(SceneDefinition* sceneDefinition);
+        void destructSceneRuntime(SceneRuntime* rt, bool clearCaches = true);
+        void clearAllCaches();
 
         bool useDefinition() override;
 
@@ -143,7 +139,7 @@ namespace Dream
         IAssetDefinition* getAssetDefinitionByUuid(string uuid);
         string getAssetAbsolutePath(string uuid);
 
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(string uuid);
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, string uuid);
 
         string getProjectPath();
     private: // Member Functions

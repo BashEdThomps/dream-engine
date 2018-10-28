@@ -108,11 +108,4 @@ namespace Dream
         return mUpdateEndTime;
     }
 
-    void
-    IComponent::setActiveSceneRuntime
-    (SceneRuntime* runtime)
-    {
-       mActiveSceneRuntime = runtime;
-    }
-
 } // End of Dream

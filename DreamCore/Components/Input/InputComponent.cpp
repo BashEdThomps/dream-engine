@@ -61,7 +61,7 @@ namespace Dream
         return true;
     }
 
-    void InputComponent::updateComponent()
+    void InputComponent::updateComponent(SceneRuntime*)
     {
         auto log = getLog();
         beginUpdate();

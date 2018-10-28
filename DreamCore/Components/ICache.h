@@ -20,7 +20,7 @@ namespace Dream
         IAssetInstance* getInstance(IAssetDefinition* definition);
         IAssetInstance* getInstance(string uuid);
         string getAbsolutePath(IAssetDefinition*);
-
+        void clear();
     protected:
         virtual IAssetInstance* loadInstance(IAssetDefinition* def) = 0;
         IAssetDefinition* getAssetDefinitionByUuid(string uuid);

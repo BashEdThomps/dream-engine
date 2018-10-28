@@ -136,6 +136,16 @@ namespace Dream
         }
     }
 
+    vector<float> PhysicsComponent::getGravity()
+    {
+        if (mDynamicsWorld != nullptr)
+        {
+            auto gv = mDynamicsWorld->getGravity();
+            return vector<float>{gv.x(),gv.y(),gv.z()};
+        }
+        return vector<float>{0.0f,0.0f,0.0f};
+    }
+
     bool PhysicsComponent::init
     ()
     {
@@ -164,13 +174,13 @@ namespace Dream
 
     void
     PhysicsComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
             beginUpdate();
             auto log = getLog();
             log->debug( "Update Called" );
 
-            populatePhysicsWorld(mActiveSceneRuntime);
+            populatePhysicsWorld(sr);
             btScalar stepValue = 0.0;
             if (mTime == nullptr )
             {
@@ -179,8 +189,8 @@ namespace Dream
             }
             stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
             mDynamicsWorld->stepSimulation(stepValue);
-            checkContactManifolds(mActiveSceneRuntime);
-            // Put debug info to queue, no GL calls made
+            checkContactManifolds(sr);
+            // Put debug info to queue, no draw calls made here sonny
             if (mDebug)
             {
                 mDynamicsWorld->debugDrawWorld();
@@ -283,6 +293,11 @@ namespace Dream
     (bool debug)
     {
         mDebug = debug;
+    }
+
+    bool PhysicsComponent::getDebug()
+    {
+       return mDebug;
     }
 
     void

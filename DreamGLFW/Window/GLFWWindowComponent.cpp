@@ -93,12 +93,12 @@ namespace DreamGLFW
         }
 
         /* Create a windowed mode window and its OpenGL context */
-#ifdef WIN32 
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#ifdef WIN32
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -136,11 +136,10 @@ namespace DreamGLFW
 
     void
     GLFWWindowComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
         auto log = spdlog::get("GLFWWindowComponent");
-        auto asr = mActiveSceneRuntime;
-        if (asr == nullptr)
+        if (sr == nullptr)
         {
             log->error("No active scene runtime");
             return;
@@ -148,7 +147,7 @@ namespace DreamGLFW
 
         if(glfwWindowShouldClose(mWindow))
         {
-           mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
+           sr->setState(Dream::SCENE_STATE_STOPPED);
         }
 
         if (WindowSizeChanged)

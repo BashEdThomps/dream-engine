@@ -7,6 +7,7 @@
 #include "Tools/AssetBrowser.h"
 #include "Tools/PropertiesWindow.h"
 #include "Tools/MenuBar.h"
+#include "Tools/LuaDebugWindow.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -25,6 +26,7 @@ using DreamTool::ProjectBrowser;
 using DreamTool::AssetBrowser;
 using DreamTool::PropertiesWindow;
 using DreamTool::MenuBar;
+using DreamTool::LuaDebugWindow;
 
 void showUsage(const char** argv)
 {
@@ -92,7 +94,7 @@ int main(int argc, const char** argv)
 
     log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
 
-    auto sr = pr->constructActiveSceneRuntime(startupSceneDefinition);
+    auto sr = pr->constructSceneRuntime(startupSceneDefinition);
 
     if (sr == nullptr)
     {
@@ -113,17 +115,36 @@ int main(int argc, const char** argv)
     MenuBar menuBar(&project);
     windowComponent.addWidget(&menuBar);
 
+    LuaDebugWindow luaDebugWindow(&project);
+    windowComponent.addWidget(&luaDebugWindow);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
     unsigned int frames = 0;
     double time = glfwGetTime();
     double one_sec = 1.0;
-    while(sr->getState() != SceneState::SCENE_STATE_STOPPED)
+    bool mDone = false;
+    while (!mDone)
     {
-        pr->updateLogic();
-        pr->updateGraphics();
-        pr->collectGarbage();
+        if (sr != nullptr)
+        {
+            if (sr->getState() == SceneState::SCENE_STATE_STOPPED)
+            {
+                pr->destructSceneRuntime(sr);
+                sr = nullptr;
+            }
+            else
+            {
+                pr->updateLogic(sr);
+                pr->updateGraphics(sr);
+                pr->collectGarbage(sr);
+            }
+        }
+        else
+        {
+            glfwPollEvents();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
         Dream::ShaderInstance::InvalidateState();
         windowComponent.drawImGui();
         windowComponent.swapBuffers();

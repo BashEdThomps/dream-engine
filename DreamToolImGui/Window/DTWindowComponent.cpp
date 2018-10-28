@@ -145,6 +145,7 @@ namespace DreamTool
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
         ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
+        setTheme();
         return true;
     }
 
@@ -160,11 +161,10 @@ namespace DreamTool
 
     void
     DTWindowComponent::updateComponent
-    ()
+    (SceneRuntime* sr)
     {
         auto log = spdlog::get("GLFWWindowComponent");
-        auto asr = mActiveSceneRuntime;
-        if (asr == nullptr)
+        if (sr == nullptr)
         {
             log->error("No active scene runtime");
             return;
@@ -174,7 +174,7 @@ namespace DreamTool
 
         if(glfwWindowShouldClose(mWindow))
         {
-            mActiveSceneRuntime->setState(Dream::SCENE_STATE_STOPPED);
+            sr->setState(Dream::SCENE_STATE_STOPPED);
         }
 
         if (WindowSizeChanged)
@@ -229,6 +229,10 @@ namespace DreamTool
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
+    }
+
+    void DTWindowComponent::setTheme()
+    {
     }
 
     void

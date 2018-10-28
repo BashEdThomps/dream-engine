@@ -61,9 +61,11 @@ namespace Dream
         ~PhysicsComponent() override;
         void populatePhysicsWorld(SceneRuntime* scene);
         void setGravity(vector<float>);
+        vector<float> getGravity();
         void setDebug(bool);
+        bool getDebug();
         bool init() override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime* sr) override;
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);

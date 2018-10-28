@@ -363,6 +363,15 @@ namespace Dream
         return mSceneDefinition->getProjectDefinition()->getAssetDefinitionIndex(type,asset);
     }
 
+    void
+    SceneObjectDefinition::setSelectedAssetIndex
+    (AssetType type, int index)
+    {
+        auto typesVector = mSceneDefinition->getProjectDefinition()->getAssetDefinitionsVector(type);
+        auto asset = typesVector.at(index);
+        setAssetDefinition(type,asset->getUuid());
+    }
+
     void SceneObjectDefinition::setAssetDefinition(AssetType type, string uuid)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);

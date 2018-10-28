@@ -80,18 +80,18 @@ namespace Dream
         ~GraphicsComponent() override;
 
         bool init(void) override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
 
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
-        void updateLightQueue();
+        void updateLightQueue(SceneRuntime*);
         bool setupScreenQuad();
         void renderLightingPass();
 
         bool setupGeometryBuffers();
 
         void freeGeometryBuffers();
-        void renderGeometryPass();
+        void renderGeometryPass(SceneRuntime*);
 
         Camera* getCamera();
         mat4 getViewMatrix();

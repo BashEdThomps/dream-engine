@@ -62,7 +62,6 @@ namespace Dream
           mDone(false),
           mTime(nullptr),
           mCamera(nullptr),
-          mActiveSceneRuntime(nullptr),
           mProject(project),
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
@@ -89,12 +88,6 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Destructing" );
-
-        if (mActiveSceneRuntime != nullptr)
-        {
-            delete mActiveSceneRuntime;
-            mActiveSceneRuntime = nullptr;
-        }
 
         deleteComponents();
 
@@ -285,13 +278,11 @@ namespace Dream
         auto log = getLog();
         mNanoVGComponent = new NanoVGComponent(mWindowComponent);
         mNanoVGComponent->setTime(mTime);
-
         if (!mNanoVGComponent->init())
         {
             log->error( "Unable to initialise Graphics Component." );
             return false;
         }
-
         return true;
     }
 
@@ -308,7 +299,6 @@ namespace Dream
             log->error( "Unable to initialise Path Component." );
             return false;
         }
-
         return true;
     }
 
@@ -486,7 +476,7 @@ namespace Dream
 
     bool
     ProjectRuntime::updateLogic
-    ()
+    (SceneRuntime* sr)
     {
         auto log = getLog();
 
@@ -494,62 +484,46 @@ namespace Dream
 
         mTime->updateFrameTime();
 
-        mInputComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mInputComponent->updateComponent();
+        mInputComponent->updateComponent(sr);
 
         if (mScriptingEnabled)
         {
-            mScriptComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-            mScriptComponent->updateComponent();
+            mScriptComponent->updateComponent(sr);
         }
 
         mCamera->updateCameraVectors();
-
-        mPathComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mPathComponent->updateComponent();
-
-        mAudioComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mAudioComponent->updateComponent();
-
-        mWindowComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mWindowComponent->updateComponent();
-
-        mPhysicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mPhysicsComponent->updateComponent();
-
-        mGraphicsComponent->setActiveSceneRuntime(mActiveSceneRuntime);
-        mGraphicsComponent->updateComponent();
-
+        mPathComponent->updateComponent(sr);
+        mAudioComponent->updateComponent(sr);
+        mWindowComponent->updateComponent(sr);
+        mPhysicsComponent->updateComponent(sr);
+        mGraphicsComponent->updateComponent(sr);
         return true;
     }
 
     void
     ProjectRuntime::updateGraphics
-    ()
+    (SceneRuntime* sr)
     {
         auto log = getLog();
         log->debug(
             "\n"
             "====================\n"
-            "Ready to draw @ {}\n"
+            "Update Graphics called @ {}\n"
             "====================",
             mTime->nowLL()
         );
-
-        log->debug("UpdateGraphics Called @ {}" , mTime->nowLL());
         // Draw 3D/PhysicsDebug/2D
         mGraphicsComponent->handleResize();
-        mGraphicsComponent->renderGeometryPass();
+        mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderLightingPass();
-
         mScriptComponent->updateNanoVG();
         ShaderInstance::InvalidateState();
-
-        mPhysicsComponent->setViewProjectionMatrix(
-            mGraphicsComponent->getViewMatrix(), mGraphicsComponent->getProjectionMatrix()
+        mPhysicsComponent->setViewProjectionMatrix
+        (
+            mGraphicsComponent->getViewMatrix(),
+            mGraphicsComponent->getProjectionMatrix()
         );
         mPhysicsComponent->drawDebug();
-        //mWindowComponent->swapBuffers();
     }
 
     int
@@ -596,63 +570,47 @@ namespace Dream
 
     void
     ProjectRuntime::collectGarbage
-    ()
+    (SceneRuntime* rt)
     {
         auto log = getLog();
         log->debug("CollectGarbage Called @ {}", mTime->nowLL());
-        mActiveSceneRuntime->collectGarbage();
+        rt->collectGarbage();
     }
 
-    bool
-    ProjectRuntime::hasActiveSceneRuntime
-    ()
-    {
-        return mActiveSceneRuntime != nullptr;
-    }
-
-    SceneRuntime*
-    ProjectRuntime::getActiveSceneRuntime
-    ()
-    {
-        return mActiveSceneRuntime;
-    }
+    void ProjectRuntime::collectGarbage(){}
 
     void
     ProjectRuntime::updateAll
-    ()
+    (SceneRuntime* rt)
     {
-        if (mActiveSceneRuntime != nullptr)
+        if (rt != nullptr)
         {
-            updateLogic();
-            updateGraphics();
-            collectGarbage();
+            updateLogic(rt);
+            updateGraphics(rt);
+            collectGarbage(rt);
         }
     }
 
     SceneRuntime*
-    ProjectRuntime::constructActiveSceneRuntime
+    ProjectRuntime::constructSceneRuntime
     (SceneDefinition* sceneDefinition)
     {
         auto log = getLog();
+        SceneRuntime* rt = nullptr;
         if (sceneDefinition == nullptr)
         {
             log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
             return nullptr;
         }
 
-
         // Load the new scene
         log->debug( "Loading SceneRuntime" );
 
-        mActiveSceneRuntime = new SceneRuntime(
-            sceneDefinition,
-            this
-        );
+        rt = new SceneRuntime(sceneDefinition,this);
 
-        if (!mActiveSceneRuntime->useDefinition())
+        if (!rt->useDefinition())
         {
-            delete mActiveSceneRuntime;
-            mActiveSceneRuntime = nullptr;
+            delete rt;
             return nullptr;
         }
 
@@ -669,7 +627,7 @@ namespace Dream
             log->error("Unable to set mesh cull distance, graphics component is still null");
         }
 
-        return mActiveSceneRuntime;
+        return rt;
     }
 
     Project*
@@ -717,10 +675,25 @@ namespace Dream
     }
 
     void
-    ProjectRuntime::resetActiveSceneRuntime
+    ProjectRuntime::destructSceneRuntime
+    (SceneRuntime* rt, bool clearCaches)
+    {
+        if (clearCaches)
+        {
+            clearAllCaches();
+        }
+        delete rt;
+    }
+
+    void
+    ProjectRuntime::clearAllCaches
     ()
     {
-        delete mActiveSceneRuntime;
+        if (mModelCache    != nullptr) mModelCache->clear();
+        if (mShaderCache   != nullptr) mShaderCache->clear();
+        if (mMaterialCache != nullptr) mMaterialCache->clear();
+        if (mTextureCache  != nullptr) mTextureCache->clear();
+        // TODO if (mScriptCache   != nullptr) mScriptCache->clear();
     }
 
     bool ProjectRuntime::getScriptingEnabled() const
@@ -754,14 +727,14 @@ namespace Dream
 
     SceneObjectRuntime*
     ProjectRuntime::getSceneObjectRuntimeByUuid
-    (string uuid)
+    (SceneRuntime* rt, string uuid)
     {
-        if (mActiveSceneRuntime == nullptr)
+        if (rt == nullptr)
         {
             return nullptr;
         }
 
-        return mActiveSceneRuntime->getSceneObjectRuntimeByUuid(uuid);
+        return rt->getSceneObjectRuntimeByUuid(uuid);
     }
 
     string

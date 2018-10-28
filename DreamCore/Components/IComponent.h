@@ -31,13 +31,12 @@ namespace Dream
         IComponent();
         virtual ~IComponent();
         virtual bool init() = 0;
-        virtual void updateComponent() = 0;
+        virtual void updateComponent(SceneRuntime*) = 0;
 
         long long getUpdateEndTime() const;
         long long getUpdateBeginTime() const;
         long long getUpdateTime() const;
         long long getYieldedTime() const;
-        void setActiveSceneRuntime(SceneRuntime* runtime);
         void setTime(Time*);
 
     protected:
@@ -52,7 +51,6 @@ namespace Dream
         bool mBusy;
 
         Time* mTime;
-        SceneRuntime* mActiveSceneRuntime;
 
     }; // End of IComponent
 

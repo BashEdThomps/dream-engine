@@ -282,11 +282,11 @@ namespace Dream
 
                 vec3 tx = transform->getTranslation();
                 vector<char>  bufferData = audioAsset->getAudioDataBuffer();
-				if (bufferData.empty())
-				{
-					log->error("Unable to load audio data into buffer");
-					return;
-				}
+                if (bufferData.empty())
+                {
+                    log->error("Unable to load audio data into buffer");
+                    return;
+                }
                 alBufferData(audioAsset->getBuffer(), audioAsset->getFormat(), &bufferData[0],
                         static_cast<ALsizei> (bufferData.size()), audioAsset->getFrequency());
                 alSourcei(
@@ -339,7 +339,7 @@ namespace Dream
 
     void
     AudioComponent::updateComponent
-    ()
+    (SceneRuntime*)
     {
         beginUpdate();
         updateInstances();

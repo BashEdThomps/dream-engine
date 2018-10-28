@@ -63,7 +63,7 @@ namespace Dream
        ~LuaComponent() override;
 
         bool init() override;
-        void updateComponent() override;
+        void updateComponent(SceneRuntime*) override;
         bool updateNanoVG() override;
         bool loadScript(SceneObjectRuntime*) override;
         bool createScript(SceneObjectRuntime*, ScriptInstance*) override;

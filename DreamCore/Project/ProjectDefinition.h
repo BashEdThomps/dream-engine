@@ -96,7 +96,7 @@ namespace Dream
         long getSceneDefinitionIndex(SceneDefinition*);
         long getAssetDefinitionIndex(AssetType, IAssetDefinition*);
         long getAssetDefinitionIndex(AssetType, string);
-        ShaderDefinition* getShaderDefinitionAtIndex(int);
+        IAssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);
 
