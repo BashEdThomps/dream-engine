@@ -3,11 +3,10 @@
 #include <memory>
 #include "Window/DTWindowComponent.h"
 #include <DreamCore.h>
-#include "Tools/ProjectBrowser.h"
-#include "Tools/AssetBrowser.h"
-#include "Tools/PropertiesWindow.h"
-#include "Tools/MenuBar.h"
-#include "Tools/LuaDebugWindow.h"
+#include "Widgets/ProjectBrowser.h"
+#include "Widgets/PropertiesWindow.h"
+#include "Widgets/MenuBar.h"
+#include "Widgets/LuaDebugWindow.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -20,10 +19,10 @@ using Dream::SceneDefinition;
 using Dream::ArgumentParser;
 using Dream::ProjectRuntime;
 using Dream::ProjectDefinition;
+using Dream::LuaComponent;
 
 using DreamTool::DTWindowComponent;
 using DreamTool::ProjectBrowser;
-using DreamTool::AssetBrowser;
 using DreamTool::PropertiesWindow;
 using DreamTool::MenuBar;
 using DreamTool::LuaDebugWindow;
@@ -49,21 +48,16 @@ int main(int argc, const char** argv)
     windowComponent.init();
 
     Project project(&windowComponent);
-
     PropertiesWindow propertiesWindow(&project);
-    windowComponent.addWidget(&propertiesWindow);
-
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
-    windowComponent.addWidget(&projectBrowser);
-
-    AssetBrowser assetBrowser(&project, &propertiesWindow);
-    windowComponent.addWidget(&assetBrowser);
-
-    MenuBar menuBar(&project);
-    windowComponent.addWidget(&menuBar);
-
     LuaDebugWindow luaDebugWindow(&project);
+    LuaComponent::AddPrintListener(&luaDebugWindow);
+    MenuBar menuBar(&project,&projectBrowser,&propertiesWindow, &luaDebugWindow);
+
+    windowComponent.addWidget(&propertiesWindow);
+    windowComponent.addWidget(&projectBrowser);
     windowComponent.addWidget(&luaDebugWindow);
+    windowComponent.addWidget(&menuBar);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
@@ -73,6 +67,11 @@ int main(int argc, const char** argv)
     bool mDone = false;
     while (!mDone)
     {
+        if (windowComponent.shouldClose())
+        {
+            mDone = true;
+        }
+
         if (ProjectRuntime::CurrentSceneRuntime != nullptr)
         {
             auto projectRuntime = project.getProjectRuntime();
@@ -98,7 +97,7 @@ int main(int argc, const char** argv)
         windowComponent.swapBuffers();
         if (glfwGetTime() > time + one_sec)
         {
-            cout << "FPS: " <<  frames << endl;
+            //cout << "FPS: " <<  frames << endl;
             frames = 0;
             time = glfwGetTime();
         }

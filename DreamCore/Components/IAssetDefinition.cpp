@@ -232,7 +232,6 @@ namespace Dream
     {
         stringstream pathStream;
         pathStream << Constants::DIR_PATH_SEP
-                   << Constants::ASSET_DIR << Constants::DIR_PATH_SEP
                    << getAssetTypeDirectory() << Constants::DIR_PATH_SEP
                    << getUuid() << Constants::DIR_PATH_SEP
                    << getFormat();

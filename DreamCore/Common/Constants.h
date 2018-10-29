@@ -83,7 +83,7 @@ namespace Dream
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
-        const static string ASSET_DIR;
+        //const static string ASSET_DIR;
 
         // Types
         const static string ASSET_TYPE;
@@ -329,8 +329,8 @@ namespace Dream
         const static string LUA_EVENT_FUNCTION;
 
         // Audio =================================================================
-		#define AUDIO_BUFFER_SIZE 32768
-		const static string ASSET_ATTR_SPECTRUM_ANALYSER;
+        #define AUDIO_BUFFER_SIZE 32768
+        const static string ASSET_ATTR_SPECTRUM_ANALYSER;
         const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
         const static string ASSET_ATTR_AUDIO_EM_INDEX;
         const static string ASSET_ATTR_AUDIO_EM_S_INDEX;
@@ -361,6 +361,7 @@ namespace Dream
 
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
+        static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;
         static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
         static vector<string> DREAM_ANIMATION_SPLINE_TYPES;
 

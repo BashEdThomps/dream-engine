@@ -31,7 +31,7 @@ using nlohmann::json;
 namespace Dream
 {
     class ArgumentParser;
-    class FileReader;
+    class File;
     class ProjectRuntime;
     class ProjectDefinition;
     class IAssetDefinition;
@@ -55,9 +55,10 @@ namespace Dream
         ProjectRuntime* getProjectRuntime();
         ProjectDefinition* getProjectDefinition();
 
-        bool openFromFileReader(string directory, FileReader &fileReader);
+        bool openFromFileReader(string directory, File &fileReader);
         bool openFromArgumentParser(ArgumentParser &parser);
         bool openFromDirectory(string directory);
+        void clear();
 
         ProjectRuntime* createProjectRuntime();
         static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);

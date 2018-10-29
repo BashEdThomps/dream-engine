@@ -20,12 +20,6 @@
 #include <algorithm>
 #include <thread>
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <dirent.h>
-#include <unistd.h>
-#endif
 #include "ProjectRuntime.h"
 #include "ProjectDefinition.h"
 
@@ -46,9 +40,10 @@
 
 
 #include "../Utilities/ArgumentParser.h"
-#include "../Utilities/FileReader.h"
+#include "../Utilities/File.h"
 #include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
+#include "../Utilities/Directory.h"
 
 namespace Dream
 {
@@ -68,26 +63,34 @@ namespace Dream
     {
         auto log = getLog();
         log->trace("Destructing");
+        clear();
+    }
 
+    void
+    Project::clear
+    ()
+    {
         if (mRuntime != nullptr)
         {
             delete mRuntime;
+            mRuntime = nullptr;
         }
 
         if (mDefinition != nullptr)
         {
             delete mDefinition;
+            mDefinition = nullptr;
         }
     }
 
     bool
     Project::openFromFileReader
-    (string projectPath, FileReader &reader)
+    (string projectPath, File &reader)
     {
         auto log = getLog();
         log->debug("Loading project from FileReader", reader.getPath());
 
-        string projectJsonStr = reader.getContentsAsString();
+        string projectJsonStr = reader.readString();
 
         if (projectJsonStr.empty())
         {
@@ -110,40 +113,11 @@ namespace Dream
     (string directory)
     {
         auto log = getLog();
+        Directory dir(directory);
         vector<string> directoryContents;
-
-#ifndef WIN32
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(directory.c_str())) != nullptr)
-        {
-            while ((ent = readdir (dir)) != nullptr)
-            {
-                directoryContents.push_back(string(ent->d_name));
-            }
-            closedir (dir);
-        }
-        else
-        {
-            log->error( "Unable to open directory {}", directory );
-            return false;
-        }
-#else
-        WIN32_FIND_DATA data;
-        HANDLE hFind = FindFirstFile(directory.c_str(), &data);      // DIRECTORY
-
-        if (hFind != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                directoryContents.push_back(data.cFileName);
-            } while (FindNextFile(hFind, &data));
-            FindClose(hFind);
-        }
-#endif
+        directoryContents = dir.list();
 
         string projectFileName;
-        bool hasAssetDirectory = false;
 
         for (string filename : directoryContents)
         {
@@ -151,18 +125,11 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
-                log->debug( "Project: openFromDirectory - Found project file ",
-                           projectFileName
-                           );
-            }
-            else if (filename.compare(Constants::ASSET_DIR) == 0)
-            {
-                log->debug( "Project: openFromDirectory - Found asset directory " );
-                hasAssetDirectory = true;
+                log->debug( "Project: openFromDirectory - Found project file ",projectFileName );
             }
         }
 
-        if (projectFileName.size() == 0 || !hasAssetDirectory)
+        if (projectFileName.size() == 0)
         {
             log->error( "Project: Error {} is not a valid project directory!", directory  );
             return false;
@@ -172,11 +139,9 @@ namespace Dream
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
 
-        FileReader projectFileReader(projectFilePath);
+        File projectFileReader(projectFilePath);
 
-        projectFileReader.readIntoString();
-        bool loadSuccess = openFromFileReader(directory, projectFileReader);
-        return loadSuccess;
+        return openFromFileReader(directory, projectFileReader);
     }
 
     ProjectRuntime*
@@ -247,8 +212,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Project: Loading from ArgumentParser" );
-        FileReader projectFileReader(parser.getProjectFilePath());
-        projectFileReader.readIntoString();
+        File projectFileReader(parser.getProjectFilePath());
         bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);
         return loadSuccess;
     }

@@ -32,6 +32,8 @@
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
+#include "../Components/Graphics/Texture/TextureCache.h"
+#include "../Components/Graphics/Texture/TextureInstance.h"
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Graphics/Material/MaterialDefinition.h"
 #include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
@@ -69,6 +71,8 @@
 
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/Uuid.h"
+#include "../Utilities/Directory.h"
+#include "../Utilities/File.h"
 
 #include "../deps/spdlog/spdlog.h"
 #include "../deps/spdlog/sinks/stdout_color_sinks.h"

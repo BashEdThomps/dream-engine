@@ -17,7 +17,7 @@
  */
 
 #include "DTWindowComponent.h"
-#include "../Tools/DTWidget.h"
+#include "../Widgets/DTWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
 
 using Dream::Constants;
@@ -85,6 +85,7 @@ namespace DreamTool
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
+        checkGLError();
     }
 
     bool
@@ -193,6 +194,8 @@ namespace DreamTool
         if(glfwWindowShouldClose(mWindow))
         {
             sr->setState(Dream::SCENE_STATE_STOPPED);
+            setShouldClose(true);
+            log->error("Window should close");
         }
 
         if (WindowSizeChanged)
@@ -205,8 +208,9 @@ namespace DreamTool
 
     void DTWindowComponent::getCurrentDimensions()
     {
+        auto log = getLog();
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        cout << "Framebuffer Size Changed: " << mWidth << "," << mHeight << endl;
+        log->error("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         mSizeHasChanged = true;
     }
 
@@ -229,7 +233,10 @@ namespace DreamTool
         // Rendering
         for (DTWidget* widget : mWidgets)
         {
-            widget->draw();
+            if (!widget->getHidden())
+            {
+                widget->draw();
+            }
         }
 
         // End Rendering
@@ -257,7 +264,7 @@ namespace DreamTool
     {
 
         ImGuiIO& io = ImGui::GetIO();
-        ImFont* pFont = io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 18.0f);
+        ImFont* pFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 16.0f);
     }
 
     void

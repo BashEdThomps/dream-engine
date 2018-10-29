@@ -114,7 +114,7 @@ namespace Dream
 
     // Types
     const string Constants::ASSET_TYPE = "type";
-    const string Constants::ASSET_DIR = "assets";
+    //const string Constants::ASSET_DIR = "assets";
     const string Constants::ASSET_TYPE_PATH = "path";
     const string Constants::ASSET_TYPE_AUDIO = "audio";
     const string Constants::ASSET_TYPE_LIGHT = "light";
@@ -393,6 +393,21 @@ namespace Dream
         {AssetType::SCRIPT,           ASSET_TYPE_SCRIPT},
         {AssetType::SHADER,           ASSET_TYPE_SHADER},
         {AssetType::TEXTURE,          ASSET_TYPE_TEXTURE}
+    };
+
+    vector<string> Constants::DREAM_ASSET_TYPES_READABLE_VECTOR =
+    {
+        ASSET_TYPE_AUDIO_READABLE,
+        ASSET_TYPE_FONT_READABLE,
+        ASSET_TYPE_LIGHT_READABLE,
+        ASSET_TYPE_MATERIAL_READABLE,
+        ASSET_TYPE_MODEL_READABLE,
+        ASSET_TYPE_PARTICLE_EMITTER_READABLE,
+        ASSET_TYPE_PATH_READABLE,
+        ASSET_TYPE_PHYSICS_OBJECT_READABLE,
+        ASSET_TYPE_SCRIPT_READABLE,
+        ASSET_TYPE_SHADER_READABLE,
+        ASSET_TYPE_TEXTURE_READABLE
     };
 
     map<AssetType,vector<string>> Constants::DREAM_ASSET_FORMATS_MAP =

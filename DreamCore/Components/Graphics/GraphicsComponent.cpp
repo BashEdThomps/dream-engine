@@ -266,12 +266,25 @@ namespace Dream
     GraphicsComponent::freeGeometryBuffers
     ()
     {
-        //mWindowComponent->bindDefaultFrameBuffer();
+        mWindowComponent->bindDefaultFrameBuffer();
 
         if (mGeometryPassFB != 0)
         {
             glDeleteFramebuffers(1, &mGeometryPassFB);
+            checkGLError();
         }
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,0);
+        ShaderInstance::CurrentTexture0 = 0;
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        ShaderInstance::CurrentTexture1 = 0;
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        ShaderInstance::CurrentTexture2 =0;
 
         // - position color buffer
         if (mGeometryPassPositionBuffer != 0)

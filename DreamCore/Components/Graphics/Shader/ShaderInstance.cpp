@@ -24,7 +24,7 @@
 #include "../Material/MaterialInstance.h"
 #include "../Texture/TextureInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../../Utilities/FileReader.h"
+#include "../../../Utilities/File.h"
 
 using namespace glm;
 
@@ -172,17 +172,15 @@ namespace Dream
         GLuint mVertexShader = 0;
         GLuint mFragmentShader = 0;
         // 1. Open Shader Files into Memory
-        FileReader *vertexReader, *fragmentReader;
+        File *vertexReader, *fragmentReader;
         string absVertexPath, absFragmentPath;
         absVertexPath   = projectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
         absFragmentPath = projectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
-        vertexReader = new FileReader(absVertexPath);
-        vertexReader->readIntoString();
-        mVertexShaderSource = vertexReader->getContentsAsString();
+        vertexReader = new File(absVertexPath);
+        mVertexShaderSource = vertexReader->readString();
         delete vertexReader;
-        fragmentReader = new FileReader(absFragmentPath);
-        fragmentReader->readIntoString();
-        mFragmentShaderSource = fragmentReader->getContentsAsString();
+        fragmentReader = new File(absFragmentPath);
+        mFragmentShaderSource = fragmentReader->readString();
         delete fragmentReader;
         log->trace(
                     "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",

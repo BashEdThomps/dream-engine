@@ -18,7 +18,7 @@
 
 #include "ScriptCache.h"
 
-#include "../../Utilities/FileReader.h"
+#include "../../Utilities/File.h"
 
 namespace Dream
 {
@@ -57,14 +57,14 @@ namespace Dream
     (string path)
     {
         auto log = getLog();
-        FileReader reader(path);
-        if(!reader.readIntoString())
+        File reader(path);
+        string content = reader.readString();
+        if(content.empty())
         {
             log->error("Error reading  script into cache from path '{}'", path);
            return "";
         }
         log->debug("Inserting script ", path);
-        string content = reader.getContentsAsString();
         mScriptCache.insert(pair<string,string>(path,content));
         return content;
     }
