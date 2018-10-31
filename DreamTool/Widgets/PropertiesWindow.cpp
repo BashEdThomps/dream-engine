@@ -184,7 +184,6 @@ namespace DreamTool
         // Startup Scene
         auto startup = projDef->getStartupSceneDefinition();
         int startupScene = projDef->getSceneDefinitionIndex(startup);
-        cout << "Startup scene index is " << startupScene << endl;
         vector<string> scenes;
         for(SceneDefinition* scene : projDef->getSceneDefinitionsVector())
         {
