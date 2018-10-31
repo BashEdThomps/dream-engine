@@ -2,6 +2,7 @@
 #include "TextureDefinition.h"
 #include "TextureInstance.h"
 #include "../../../deps/soil/SOIL.h"
+#include "../../../Utilities/File.h"
 
 namespace Dream
 {
@@ -24,6 +25,14 @@ namespace Dream
         auto textureDef = dynamic_cast<TextureDefinition*>(def);
         auto log = getLog();
         string filename = getAbsolutePath(def);
+
+        File txFile{filename};
+        if (!txFile.exists())
+        {
+            log->error("Texture file does not exist: {}",filename);
+            return nullptr;
+        }
+
         log->debug("Loading texture: {}",filename);
         for (auto instance : mInstances)
         {

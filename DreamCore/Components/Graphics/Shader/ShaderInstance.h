@@ -84,6 +84,13 @@ namespace Dream
         vector<MaterialInstance*> mMaterials;
         vector<mat4> mInstanceMatricies;
         map<string,GLint> mUinformCache;
+        GLuint mVertexShader;
+        GLuint mFragmentShader;
+        bool mRecompile;
+        string mProjectPath;
+        string mVertexSource;
+        string mFragmentSource;
+
     public:
         ShaderInstance(ShaderDefinition*);
         ~ShaderInstance() override;
@@ -134,6 +141,19 @@ namespace Dream
 
         void draw();
 
+        bool getRecompile() const;
+        void setRecompile(bool recompile);
+
+        string getVertexSource() const;
+        void setVertexSource(string vertexSource);
+
+        string getFragmentSource() const;
+        void setFragmentSource(string fragmentSource);
+
+    protected:
+        bool compileVertex();
+        bool compileFragment();
+        bool linkProgram();
     }; // End of ShaderInstance
 
 } // End of Dream

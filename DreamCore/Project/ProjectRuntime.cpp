@@ -481,7 +481,13 @@ namespace Dream
     {
         auto log = getLog();
 
-        log->debug("UpdateLogic Called @ {}",  mTime->nowLL());
+        log->debug(
+            "\n"
+            "====================\n"
+            "Update Logic called @ {}\n"
+            "====================",
+             mTime->nowLL()
+        );
 
         mTime->updateFrameTime();
 

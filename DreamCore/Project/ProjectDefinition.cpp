@@ -429,7 +429,7 @@ namespace Dream
         auto log = getLog();
         string startupScene = getStartupSceneUuid();
         log->debug("Finding startup scene {}", startupScene);
-        return getSceneDefinitionByName(startupScene);
+        return getSceneDefinitionByUuid(startupScene);
     }
 
     json

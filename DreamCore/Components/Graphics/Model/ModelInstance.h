@@ -77,16 +77,17 @@ namespace Dream
 
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
+        vector<string> getMaterialNames();
 
     private:
         // Variables
         MaterialCache* mMaterialCache;
         ShaderCache* mShaderCache;
-
         vector<ModelMesh*> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
+        vector<string> mMaterialNames;
 
         // Methods
         void loadModel(string);

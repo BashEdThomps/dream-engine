@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.0)
-project(DreamToolImGui)
+project(DreamTool)
 
 file(GLOB_RECURSE SRC "*.h" "*.cpp")
 

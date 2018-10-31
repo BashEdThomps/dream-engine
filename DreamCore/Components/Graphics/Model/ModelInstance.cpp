@@ -81,6 +81,8 @@ namespace Dream
         string path = projectPath + mDefinition->getAssetPath();
         log->info( "Loading Model - {}" , path);
 
+        mMaterialNames.clear();
+
         auto model = loadImporter(path);
 
         if (model == nullptr)
@@ -90,7 +92,6 @@ namespace Dream
         }
 
         const aiScene* scene = model->GetScene();
-        //scene->mRootNode->mTransformation = aiMatrix4x4();
 
         if(scene == nullptr)
         {
@@ -102,7 +103,6 @@ namespace Dream
         processNode(scene->mRootNode, scene);
         mLoaded = true;
         return mLoaded;
-        return true;
     }
 
     void
@@ -196,7 +196,6 @@ namespace Dream
 
     }
 
-
     vector<GLuint>
     ModelInstance::processIndexData
     (aiMesh* mesh)
@@ -227,6 +226,7 @@ namespace Dream
 
         aiString name;
         aiGetMaterialString(material, AI_MATKEY_NAME, &name);
+        mMaterialNames.push_back(string(name.C_Str()));
 
         if(mMaterialCache != nullptr)
         {
@@ -311,6 +311,13 @@ namespace Dream
         {
             mesh->removeInstance(inst);
         }
+    }
+
+    vector<string>
+    ModelInstance::getMaterialNames
+    ()
+    {
+       return mMaterialNames;
     }
 
     shared_ptr<Importer>

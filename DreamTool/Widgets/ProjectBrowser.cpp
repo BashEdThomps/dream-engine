@@ -50,7 +50,7 @@ namespace DreamTool
 
        // Project Tree
         auto projDef = mProject->getProjectDefinition();
-        auto projRunt = mProject->getProjectRuntime();
+        //auto projRunt = mProject->getProjectRuntime();
 
         ImGui::Text("Scenegraph");
 

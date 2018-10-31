@@ -18,6 +18,7 @@ namespace Dream
 
         bool exists();
         bool create();
+        bool deleteDirectory();
 
     private:
         string mPath;

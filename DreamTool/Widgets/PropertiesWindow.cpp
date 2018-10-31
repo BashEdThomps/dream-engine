@@ -1,22 +1,9 @@
 #include "PropertiesWindow.h"
 #include "ImGuiHelpers.h"
 #include "../deps/ImGui/imguifilesystem.h"
+#include "../Model/TemplatesDirectoryModel.h"
 
-using Dream::IAssetDefinition;
-using Dream::Constants;
-using Dream::AssetType;
-using Dream::LightDefinition;
-using Dream::LightType;
-using Dream::ProjectDefinition;
-using Dream::SceneDefinition;
-using Dream::SceneRuntime;
-using Dream::SceneObjectDefinition;
-using Dream::SceneObjectRuntime;
-using Dream::MaterialDefinition;
-using Dream::ProjectRuntime;
-using Dream::TextureDefinition;
-using Dream::TextureInstance;
-using Dream::RGB;
+using namespace Dream;
 
 namespace DreamTool
 {
@@ -26,7 +13,8 @@ namespace DreamTool
           mType(PROP_TYPE_NONE),
           mDefinition(nullptr),
           mRuntime(nullptr),
-          mImageSize(128,128)
+          mImageSize(256,256),
+          mBigEditorSize(0,600)
     {
         setLogClassName("Properties Window");
     }
@@ -194,24 +182,18 @@ namespace DreamTool
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         ImGui::Separator();
         // Startup Scene
-        int startupScene = static_cast<int>(
-            projDef->getSceneDefinitionIndex(
-                projDef->getStartupSceneDefinition()
-            )
-        );
+        auto startup = projDef->getStartupSceneDefinition();
+        int startupScene = projDef->getSceneDefinitionIndex(startup);
+        cout << "Startup scene index is " << startupScene << endl;
         vector<string> scenes;
         for(SceneDefinition* scene : projDef->getSceneDefinitionsVector())
         {
            scenes.push_back(scene->getName());
         }
-        if(StringCombo(
-           "Startup Scene",
-            &startupScene,
-            scenes,
-            static_cast<int>(scenes.size()
-        )))
+        if(StringCombo("Startup Scene",&startupScene,scenes,scenes.size()))
         {
-
+            startup = projDef->getSceneDefinitionAtIndex(startupScene);
+            projDef->setStartupSceneUuid(startup->getUuid());
         }
         ImGui::Separator();
 
@@ -851,20 +833,26 @@ namespace DreamTool
     {
         auto log = getLog();
         bool selectAudioFile = ImGui::Button("Audio File...");
+        auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
 
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFileDialog(selectAudioFile,nullptr,".ogg;.wav","Select Audio File");
         if (strlen(chosenPath) > 0)
         {
-            auto projectDir = openDlg.getChosenPath();
-            log->error("Opening Audio File {}",projectDir);
+            auto audioFilePath = openDlg.getChosenPath();
+            log->error("Opening Audio File {}",audioFilePath);
+            File audioFile(audioFilePath);
+            auto audioData = audioFile.readBinary();
+            ProjectDirectory projectDir(mProject);
+            projectDir.writeAssetData(audioDef,audioData);
         }
 
         ImGui::SameLine();
 
         if(ImGui::Button("Remove File"))
         {
-
+            ProjectDirectory projectDir(mProject);
+            projectDir.removeAssetDirectory(audioDef);
         }
     }
 
@@ -872,8 +860,29 @@ namespace DreamTool
     PropertiesWindow::drawFontAssetProperties
     ()
     {
+        auto log = getLog();
+        bool selectFile = ImGui::Button("Font File...");
+        auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
-        ImGui::Button("Font File..."); ImGui::SameLine(); ImGui::Button("Remove File");
+        static ImGuiFs::Dialog openDlg;
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".ttf","Select Font File");
+        if (strlen(chosenPath) > 0)
+        {
+            auto filePath = openDlg.getChosenPath();
+            log->error("Opening Font File {}",filePath);
+            File file(filePath);
+            auto data = file.readBinary();
+            ProjectDirectory projectDir(mProject);
+            projectDir.writeAssetData(def,data);
+        }
+
+        ImGui::SameLine();
+
+        if(ImGui::Button("Remove File"))
+        {
+            ProjectDirectory projectDir(mProject);
+            projectDir.removeAssetDirectory(def);
+        }
     }
 
     void PropertiesWindow::drawLightAssetProperties
@@ -1024,6 +1033,47 @@ namespace DreamTool
                 }
             );
         }
+
+        // Parameters
+        ImGui::Separator();
+
+        float shininess = materialDef->getShininessStrength();
+        if(ImGui::InputFloat("Shininess",&shininess,0.01f,1.0f))
+        {
+            materialDef->setShininessStrength(shininess);
+        }
+
+        float opacity = materialDef->getOpacity();
+        if(ImGui::InputFloat("Opacity",&opacity,0.01f,1.0f))
+        {
+            materialDef->setOpacity(opacity);
+        }
+
+        float bumpScaling = materialDef->getBumpScaling();
+        if(ImGui::InputFloat("Bump Scaling",&bumpScaling,0.01f,1.0f))
+        {
+            materialDef->setBumpScaling(bumpScaling);
+        }
+
+        float hardness = materialDef->getHardness();
+        if(ImGui::InputFloat("Hardness",&hardness,0.01f,1.0f))
+        {
+            materialDef->setHardness(hardness);
+        }
+
+        float reflectivity = materialDef->getReflectivity();
+        if(ImGui::InputFloat("Reflectivity",&reflectivity,0.01f,1.0f))
+        {
+            materialDef->setReflectivity(reflectivity);
+        }
+
+
+        float refractionIndex = materialDef->getRefractionIndex();
+        if(ImGui::InputFloat("Refraction Index",&refractionIndex,0.01f,1.0f))
+        {
+            materialDef->setRefractionIndex(refractionIndex);
+        }
+
 
         ImGui::Separator();
 
@@ -1189,14 +1239,65 @@ namespace DreamTool
     PropertiesWindow::drawModelAssetProperties
     ()
     {
-        ImGui::Columns(2);
-        ImGui::Button("Model File...");
-        ImGui::NextColumn();
-        ImGui::Button("Remove File");
-        ImGui::Columns(1);
+        auto log = getLog();
+        auto def = dynamic_cast<ModelDefinition*>(mDefinition);
+
+        bool selectFile = ImGui::Button("Model File...");
+        static ImGuiFs::Dialog openDlg;
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".obj","Select Model File");
+        if (strlen(chosenPath) > 0)
+        {
+            auto filePath = openDlg.getChosenPath();
+            log->error("Opening Model File {}",filePath);
+            File file(filePath);
+            auto data = file.readBinary();
+            ProjectDirectory projectDir(mProject);
+            projectDir.writeAssetData(def,data);
+        }
+
+        ImGui::SameLine();
+
+        bool selectAdditionalFile = ImGui::Button("Additional File...");
+        static ImGuiFs::Dialog openAdditionalFileDlg;
+        const char* chosenAdditionalFilePath =
+                openAdditionalFileDlg.chooseFileDialog(selectAdditionalFile,nullptr,nullptr,"Select Additional File");
+        if (strlen(chosenAdditionalFilePath) > 0)
+        {
+            auto filePath = openAdditionalFileDlg.getChosenPath();
+            log->error("Opening Additional Model File {}",filePath);
+            File file(filePath);
+            auto data = file.readBinary();
+            ProjectDirectory projectDir(mProject);
+            projectDir.writeAssetData(def,data,file.name());
+        }
+
+        ImGui::SameLine();
+
+        if(ImGui::Button("Remove File(s)"))
+        {
+            ProjectDirectory projectDir(mProject);
+            projectDir.removeAssetDirectory(def);
+        }
+
+        // Material List --------------------------------------------------------
+
+        vector<string> modelMaterialNames;
+        auto projRunt = mProject->getProjectRuntime();
+        if (projRunt)
+        {
+            auto modelCache = projRunt->getModelCache();
+            if (modelCache)
+            {
+                auto modelInstance = dynamic_cast<ModelInstance*>(modelCache->getInstance(def));
+                if (modelInstance)
+                {
+                    modelMaterialNames = modelInstance->getMaterialNames();
+                }
+            }
+        }
 
         ImGui::Separator();
-        ImGui::Text("Material Map");
+        ImGui::Text("Material Mappings");
         ImGui::Separator();
         ImGui::Columns(2);
         ImGui::Text("From Model");
@@ -1204,13 +1305,28 @@ namespace DreamTool
         ImGui::Text("In Dream");
         ImGui::NextColumn();
 
-        int index = 1;
-        char* materials[3] = {"Material 1", "Material 2", "Material 3" };
-        for (int i=0; i<5; i++)
+        vector<string> materialAssetNames;
+        auto projDef =  mProject->getProjectDefinition();
+        if (projDef)
         {
-            ImGui::Text("Material %d",i);
+            materialAssetNames = projDef->getAssetNamesVector(AssetType::MATERIAL);
+        }
+
+        for (string modelMaterial : modelMaterialNames)
+        {
+            ImGui::Text("%s",modelMaterial.c_str());
             ImGui::NextColumn();
-            ImGui::Combo("##hidelabel",&index, &materials[0],3);
+            ImGui::PushItemWidth(-1);
+            auto currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
+            auto currentMaterialDef = projDef->getAssetDefinitionByUuid(currentMaterialUuid);
+            int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::MATERIAL,currentMaterialDef);
+            if(StringCombo("##hidelabel",&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
+            {
+                auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);
+                def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
+                log->error("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
+            }
+            ImGui::PopItemWidth();
             ImGui::NextColumn();
         }
     }
@@ -1226,39 +1342,106 @@ namespace DreamTool
     PropertiesWindow::drawScriptProperties
     ()
     {
-        char buf[512] = {0};
-        char* templates[3] = {"Template 1","Template 2","Template 3"};
-        int currentIndex = 2;
+        char buf[BigEditorBufferSize] = {0};
+        TemplatesDirectoryModel templateModel;
+        vector<string> templates = templateModel.getTemplateNames(AssetType::SCRIPT);
+        int currentIndex = -1;
         ImGui::Columns(2);
         ImGui::Button("Save");
         ImGui::NextColumn();
         ImGui::Button("Revert");
         ImGui::Columns(1);
-        ImGui::Combo("Template",&currentIndex,templates[0],3);
-        ImGui::InputTextMultiline("##hidelabel",buf,512);
+        if (StringCombo("Template",&currentIndex,templates,templates.size()))
+        {
+            ImGui::OpenPopup("Load From Template?");
+        }
+        ImGui::Text("Script");
+        ImGui::PushItemWidth(-1);
+        ImGui::InputTextMultiline("##hidelabel",buf,BigEditorBufferSize,mBigEditorSize);
+
+        if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Load Script from template?\n\nThis will replace the existing Script.\n\n");
+            if (ImGui::Button("Cancel"))
+            {
+               ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Load Template"))
+            {
+
+               ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
     }
 
     void
     PropertiesWindow::drawShaderAssetProperties
     ()
     {
-        char buf[512] = {0};
-        char buf2[512] = {0};
-        char* templates[3] = {"Template 1","Template 2","Template 3"};
-        int currentIndex = 2;
+        auto log = getLog();
+
+        char vertBuf[BigEditorBufferSize] = {0};
+        char fragBuf[BigEditorBufferSize] = {0};
+
+        auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
+        auto projRunt = mProject->getProjectRuntime();
+        if (projRunt)
+        {
+            auto shaderCache = projRunt->getShaderCache();
+            if (shaderCache)
+            {
+                auto shaderInst = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderDef));
+                if (shaderInst)
+                {
+                    strncpy(vertBuf,shaderInst->getVertexSource().c_str(),BigEditorBufferSize);
+                    strncpy(fragBuf,shaderInst->getFragmentSource().c_str(),BigEditorBufferSize);
+                }
+            }
+        }
+        TemplatesDirectoryModel tmd;
+        vector<string> templates = tmd.getTemplateNames(AssetType::SHADER);
+        int currentIndex = -1;
         ImGui::Columns(2);
         ImGui::Button("Save");
         ImGui::NextColumn();
         ImGui::Button("Revert");
         ImGui::Columns(1);
-        ImGui::Combo("Template",&currentIndex,templates[0],3);
+        if(StringCombo("Template",&currentIndex,templates,templates.size()))
+        {
+            ImGui::OpenPopup("Load From Template?");
+        }
         ImGui::Separator();
-        ImGui::InputTextMultiline("Vertex Shader",buf,512);
+        ImGui::Text("Vertex Shader");
+        ImGui::PushItemWidth(-1);
+        ImGui::InputTextMultiline("##Vertex Shader",vertBuf,BigEditorBufferSize,mBigEditorSize);
+        ImGui::PopItemWidth();
         ImGui::Separator();
-        ImGui::InputTextMultiline("Fragment Shader",buf2,512);
-        ImGui::Separator();
-        ImGui::Text("Uniforms");
+        ImGui::Text("Fragment Shader");
+        ImGui::PushItemWidth(-1);
+        ImGui::InputTextMultiline("##Fragment Shader",fragBuf,BigEditorBufferSize,mBigEditorSize);
+        ImGui::PopItemWidth();
 
+        if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Load Shader from template?\n\nThis will replace the existing Shader.\n\n");
+            if (ImGui::Button("Cancel"))
+            {
+               ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Load Template"))
+            {
+
+               ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
     }
 
     void
@@ -1287,11 +1470,32 @@ namespace DreamTool
                 textureId = (void*)(intptr_t)txInstance->getGLID();
            }
         }
-        ImGui::Columns(2);
-        ImGui::Button("Texture File...");
-        ImGui::NextColumn();
-        ImGui::Button("Remove File");
+
+        auto log = getLog();
+        bool selectFile = ImGui::Button("Texture File...");
+        static ImGuiFs::Dialog openDlg;
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".png","Select Texture File");
+        if (strlen(chosenPath) > 0)
+        {
+            auto filePath = openDlg.getChosenPath();
+            log->error("Opening Texture File {}",filePath);
+            File file(filePath);
+            auto data = file.readBinary();
+            ProjectDirectory projectDir(mProject);
+            projectDir.writeAssetData(textureDef,data);
+        }
+
+        ImGui::SameLine();
+
+        if(ImGui::Button("Remove File"))
+        {
+            ProjectDirectory projectDir(mProject);
+            projectDir.removeAssetDirectory(textureDef);
+        }
+
         ImGui::Columns(1);
+        ImGui::Separator();
         ImGui::Image(textureId, mImageSize);
     }
+
 }

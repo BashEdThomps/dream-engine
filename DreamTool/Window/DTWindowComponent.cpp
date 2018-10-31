@@ -238,7 +238,6 @@ namespace DreamTool
                 widget->draw();
             }
         }
-
         // End Rendering
         ImGui::Render();
         glfwMakeContextCurrent(mWindow);

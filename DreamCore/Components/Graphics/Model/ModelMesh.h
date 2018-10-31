@@ -44,10 +44,10 @@
 namespace Dream
 {
     class ModelInstance;
-	class MaterialInstance;
-	class TextureInstance;
-	class ShaderInstance;
-	class SceneObjectRuntime;
+    class MaterialInstance;
+    class TextureInstance;
+    class ShaderInstance;
+    class SceneObjectRuntime;
 
     class ModelMesh : public DreamObject
     {

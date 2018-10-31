@@ -8,26 +8,25 @@ Dream is a 3D Multimedia and Game Engine.
 * OpenAL Audio
 * Bullet Physics & Collision
 * Lua Scripting
-* Gainput Input Handling
-* Project Editor Written in Qt/C++
+* Project Editor Written with ImGui
 
 ## Architecture
 This section will describe the key concepts used when working with Dream.
 
 ### Project
-Projects are the highest level of object in Dream.  A Project consists of a json and an 
-assets directory structure. The Project holds definitions of Scene(s), SceneObject(s) and 
+Projects are the highest level of object in Dream.  A Project consists of a json and an
+assets directory structure. The Project holds definitions of Scene(s), SceneObject(s) and
 AssetDefinition(s).
 
 ### Assets
-A Project will contain numerous 'Asset' objects. An Asset describes something that can 
-be added into a Scene, such as a 3D model, Audio Clip or Spline Path (full list below). 
+A Project will contain numerous 'Asset' objects. An Asset describes something that can
+be added into a Scene, such as a 3D model, Audio Clip or Spline Path (full list below).
 
-#### Asset Definitions 
-Asset Definitions are used to define an Asset's properties (at instanciation). 
+#### Asset Definitions
+Asset Definitions are used to define an Asset's properties (at instanciation).
 They are defined once at the Project level and can be reused multiple times within
-your Screen to create Asset Instances. These Asset Instances are then assigned to 
-SceneObjects within a scene. Asset Definitions are defined at the Project level so that they 
+your Screen to create Asset Instances. These Asset Instances are then assigned to
+SceneObjects within a scene. Asset Definitions are defined at the Project level so that they
 can be shared by many Scene Objects. There are several types of Asset available in Dream.
 
 * Audio
@@ -40,6 +39,7 @@ can be shared by many Scene Objects. There are several types of Asset available 
 * Script
 * Shader
 * Sprite
+* Texture
 
 ### Scenes
 A Project contains one or more Scenes that are to be displayed. A Scene is composed of one
@@ -47,9 +47,9 @@ or more SceneObjects. A Scene may for example represent a level, environment or 
 your application.
 
 ### Scene Objects
-Scene Objects are used to construct a 'Scenegraph' that describes the relationship of objects 
-within the Scene. A Scene has a single 'Root' object with n-children. Scene Objects are 
-arranged within a parent-child relationship tree, through which they can inherit their transformation. 
+Scene Objects are used to construct a 'Scenegraph' that describes the relationship of objects
+within the Scene. A Scene has a single 'Root' object with n-children. Scene Objects are
+arranged within a parent-child relationship tree, through which they can inherit their transformation.
 Each Scene Object is assigned zero or more 'Assets Definitions' to instanciate at runtime.
 
 ## DreamTool
@@ -65,15 +65,14 @@ Dream uses the following libraries.
 * ALUT
 * Assimp
 * Bullet
-* FreeType
-* Gainput
 * GLM
+* GLEW
+* GLFW
 * Nlohmann JSON
 * Lua 5.3
 * OggVorbis
 * OpenAL
 * OpenGL
-* SDL2
 * SOIL
 * SPDLOG
 * TinySpline
@@ -88,17 +87,10 @@ sudo apt-get -y install libassimp-dev libbullet-dev libglew-dev libglm-dev libop
 
 #### Manually (Not in Repositories)
 * spdlog
-* Gainput 
+* Gainput
 * TinySpline
 
 ```
 git clone https://github.com/gabime/spdlog
-git clone https://github.com/jkuhlmann/gainput
 git clone https://github.com/msteinbeck/tinyspline
 ```
-
-#### For DreamTool (Qt 5+)
-```
-	sudo apt-get install qtcreator qt5-default qt5-qmake
-```
-

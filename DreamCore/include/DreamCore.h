@@ -22,58 +22,63 @@
 
 #include "../Common/DreamObject.h"
 
+// Components -----------------------------------------------------------------
 #include "../Components/IAssetDefinition.h"
-#include "../Components/Path/PathDefinition.h"
-#include "../Components/Audio/AudioDefinition.h"
-#include "../Components/Graphics/Light/LightDefinition.h"
-#include "../Components/Graphics/Model/ModelCache.h"
-#include "../Components/Graphics/Model/ModelDefinition.h"
-#include "../Components/Graphics/Font/FontDefinition.h"
-#include "../Components/Graphics/Shader/ShaderDefinition.h"
-#include "../Components/Scripting/ScriptDefinition.h"
-#include "../Components/Physics/PhysicsObjectDefinition.h"
-#include "../Components/Graphics/Texture/TextureCache.h"
-#include "../Components/Graphics/Texture/TextureInstance.h"
-#include "../Components/Graphics/Texture/TextureDefinition.h"
-#include "../Components/Graphics/Material/MaterialDefinition.h"
-#include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-#include "../Components/Graphics/Vertex.h"
-
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
-
-#include "../Components/Path/PathComponent.h"
+// Audio -----------------------------------------------------------------------
+#include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Audio/Ogg/OggAudioInstance.h"
 #include "../Components/Audio/Wav/WavAudioInstance.h"
-#include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
-#include "../Components/Scripting/IScriptComponent.h"
-#include "../Components/Scripting/Lua/LuaComponent.h"
-#include "../Components/Physics/PhysicsComponent.h"
-
+// Graphics --------------------------------------------------------------------
+#include "../Components/Graphics/Vertex.h"
 #include "../Components/Graphics/Camera.h"
 #include "../Components/Graphics/BoundingBox.h"
+#include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Graphics/Font/FontDefinition.h"
+#include "../Components/Graphics/Light/LightDefinition.h"
+#include "../Components/Graphics/Material/MaterialDefinition.h"
+#include "../Components/Graphics/Model/ModelCache.h"
+#include "../Components/Graphics/Model/ModelDefinition.h"
 #include "../Components/Graphics/Model/ModelInstance.h"
-
+#include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
+#include "../Components/Graphics/Shader/ShaderDefinition.h"
+#include "../Components/Graphics/Shader/ShaderInstance.h"
+#include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/Graphics/Texture/TextureCache.h"
+#include "../Components/Graphics/Texture/TextureInstance.h"
+#include "../Components/Graphics/Texture/TextureDefinition.h"
+// Path ------------------------------------------------------------------------
+#include "../Components/Path/PathDefinition.h"
+#include "../Components/Path/PathComponent.h"
+// Physics ---------------------------------------------------------------------
+#include "../Components/Physics/PhysicsObjectDefinition.h"
+#include "../Components/Physics/PhysicsComponent.h"
+// Scripting -------------------------------------------------------------------
+#include "../Components/Scripting/IScriptComponent.h"
+#include "../Components/Scripting/Lua/LuaComponent.h"
+#include "../Components/Scripting/ScriptDefinition.h"
+// Window ----------------------------------------------------------------------
 #include "../Components/Window/IWindowComponent.h"
-
+// Scene -----------------------------------------------------------------------
 #include "../Scene/SceneDefinition.h"
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneState.h"
-
+// SceneObject ----------------------------------------------------------------
 #include "../Scene/SceneObject/SceneObjectDefinition.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
-
+// Project --------------------------------------------------------------------
 #include "../Project/Project.h"
 #include "../Project/ProjectDefinition.h"
 #include "../Project/ProjectRuntime.h"
-
+#include "../Project/ProjectDirectory.h"
+// Utilities -------------------------------------------------------------------
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/Uuid.h"
 #include "../Utilities/Directory.h"
 #include "../Utilities/File.h"
-
+// Dependencies ----------------------------------------------------------------
 #include "../deps/spdlog/spdlog.h"
 #include "../deps/spdlog/sinks/stdout_color_sinks.h"
 #include "../deps/json/json.hpp"

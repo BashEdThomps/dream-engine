@@ -6,6 +6,8 @@
 using Dream::IDefinition;
 using Dream::IRuntime;
 
+#define BigEditorBufferSize 1024*1024
+
 namespace DreamTool
 {
     struct PropertiesTarget
@@ -53,6 +55,7 @@ namespace DreamTool
         IDefinition* mDefinition;
         IRuntime* mRuntime;
         ImVec2 mImageSize;
+        ImVec2 mBigEditorSize;
     };
 
 }

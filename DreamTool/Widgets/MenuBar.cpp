@@ -6,12 +6,12 @@
 
 #include "../deps/ImGui/imgui_internal.h"
 #include "../deps/ImGui/imguifilesystem.h"
-#include "../Model/ProjectDirectoryModel.h"
 
 using Dream::SceneDefinition;
 using Dream::SceneState;
 using Dream::SceneRuntime;
 using Dream::ProjectRuntime;
+using Dream::ProjectDirectory;
 
 namespace DreamTool
 {
@@ -39,7 +39,7 @@ namespace DreamTool
         bool showQuit = false;
         bool newButtonClicked = false;
         bool openButtonClicked = false;
-        bool saveButtonClicked = false;
+        bool saveSuccess = false;
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -47,7 +47,20 @@ namespace DreamTool
             {
                 newButtonClicked = ImGui::MenuItem("New");
                 openButtonClicked = ImGui::MenuItem("Open");
-                saveButtonClicked = ImGui::MenuItem("Save");
+                if(ImGui::MenuItem("Save"))
+                {
+                    ProjectDirectory pDir(mProject);
+                    if(pDir.saveProject())
+                    {
+                        saveSuccess = true;
+                    }
+                }
+                ImGui::Separator();
+                if(ImGui::MenuItem("Close"))
+                {
+
+                }
+                ImGui::Separator();
                 showQuit = ImGui::MenuItem("Quit");
                 ImGui::EndMenu();
             }
@@ -74,7 +87,7 @@ namespace DreamTool
             if (ImGui::BeginMenu("Scene"))
             {
 
-                SceneRuntime* sceneRuntime = nullptr;// TODO mProject->getProjectRuntime()->getActiveSceneRuntime();
+                SceneRuntime* sceneRuntime = ProjectRuntime::CurrentSceneRuntime;
                 if (ImGui::MenuItem("Start Scene"))
                 {
                     if(sceneRuntime)
@@ -193,6 +206,12 @@ namespace DreamTool
                         pRuntime->setScriptingEnabled(scripting);
                     }
                 }
+
+                if (ImGui::MenuItem("Clear Caches"))
+                {
+
+                }
+
                 ImGui::EndMenu();
             }
 
@@ -204,7 +223,7 @@ namespace DreamTool
                     mLuaDebugWindow->setHidden(!showLuaDebug);
                 }
 
-                if(ImGui::BeginMenu("Logging"))
+                if(ImGui::BeginMenu("Engine Logging"))
                 {
                     static spdlog::level::level_enum mode = spdlog::level::off;
                     if (ImGui::RadioButton("Off", mode == spdlog::level::off))
@@ -260,6 +279,7 @@ namespace DreamTool
             */
         }
 
+        bool openProjectFailed = false;
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked);
         if (strlen(chosenPath) > 0)
@@ -270,6 +290,29 @@ namespace DreamTool
             {
                 mProject->createProjectRuntime();
             }
+            else
+            {
+                openProjectFailed = true;
+            }
+        }
+
+        if (openProjectFailed)
+        {
+            ImGui::OpenPopup("Failed to open Project");
+        }
+
+        if (ImGui::BeginPopupModal("Failed to open Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("This directory does not contain a valid Dream Project\n\n");
+            ImGui::Separator();
+
+            if (ImGui::Button("OK"))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
         }
 
         if (showQuit)
@@ -297,5 +340,27 @@ namespace DreamTool
             ImGui::SetItemDefaultFocus();
             ImGui::EndPopup();
         }
+
+        if (saveSuccess)
+        {
+            ImGui::OpenPopup("Save Success");
+        }
+
+        if (ImGui::BeginPopupModal("Save Success", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Project Saved Successfully!");
+            ImGui::Separator();
+
+            ImGui::PushItemWidth(-1);
+            if (ImGui::Button("OK"))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
     }
 }

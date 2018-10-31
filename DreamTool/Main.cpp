@@ -105,6 +105,7 @@ int main(int argc, const char** argv)
         {
             frames++;
         }
+        std::this_thread::yield();
     }
 
     spdlog::set_level(spdlog::level::trace);

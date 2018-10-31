@@ -4,8 +4,7 @@ project (Dream)
 
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
-set(DREAM_BUILD_SDL OFF)
-set(DREAM_BUILD_TOOL_IMGUI    ON)
+set(DREAM_BUILD_TOOL ON)
 
 set(
   CMAKE_MODULE_PATH
@@ -54,17 +53,12 @@ if (DREAM_BUILD_CORE)
     add_subdirectory (DreamCore)
 endif()
 
-# DreamSDL Executable
-if (DREAM_BUILD_SDL)
-    add_subdirectory (DreamSDL)
-endif()
-
 # DreamGLFW Executable
 if (DREAM_BUILD_GLFW)
     add_subdirectory (DreamGLFW)
 endif()
 
-# DreamToolImGUI Executable
-if (DREAM_BUILD_TOOL_IMGUI)
-	add_subdirectory (DreamToolImGui)
+# DreamTool Executable
+if (DREAM_BUILD_TOOL)
+    add_subdirectory (DreamTool)
 endif()

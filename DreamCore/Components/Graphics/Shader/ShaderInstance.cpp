@@ -41,8 +41,15 @@ namespace Dream
           mSpotLightCountLocation(UNIFORM_NOT_FOUND),
           mDirectionalLightCount(0),
           mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
+          mShaderProgram(0),
           mNeedsRebind(true),
-          mMaterialLocation(UNIFORM_NOT_FOUND)
+          mMaterialLocation(UNIFORM_NOT_FOUND),
+          mVertexShader(0),
+          mFragmentShader(0),
+          mRecompile(false),
+          mVertexSource(""),
+          mFragmentSource("")
+
     {
 
         setLogClassName("ShaderInstance");
@@ -165,37 +172,39 @@ namespace Dream
     ShaderInstance::load
     (string projectPath)
     {
-        auto log = getLog();
+        mProjectPath = projectPath;
+        if(!compileFragment())
+        {
+            return false;
+        }
+        if (!compileVertex())
+        {
+            return false;
+        }
+        return linkProgram();
+    }
 
-        string mVertexShaderSource;
-        string mFragmentShaderSource;
-        GLuint mVertexShader = 0;
-        GLuint mFragmentShader = 0;
+    bool
+   ShaderInstance::compileVertex
+   ()
+   {
+       auto log = getLog();
         // 1. Open Shader Files into Memory
-        File *vertexReader, *fragmentReader;
-        string absVertexPath, absFragmentPath;
-        absVertexPath   = projectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
-        absFragmentPath = projectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
-        vertexReader = new File(absVertexPath);
-        mVertexShaderSource = vertexReader->readString();
-        delete vertexReader;
-        fragmentReader = new File(absFragmentPath);
-        mFragmentShaderSource = fragmentReader->readString();
-        delete fragmentReader;
+        string absVertexPath = mProjectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
+        File vertexReader(absVertexPath);
+        mVertexSource = vertexReader.readString();
         log->trace(
-                    "Loading Shader {}\n Vertex: {}\n{}\n Fragment: {}\n{}\n",
-                    mDefinition->getNameAndUuidString(),
-                    absVertexPath,
-                    mVertexShaderSource,
-                    absFragmentPath,
-                    mFragmentShaderSource
-                    );
+            "Loading Vertex Shader for {} from {}\n Vertex: {}\n",
+            mDefinition->getNameAndUuidString(),
+            absVertexPath,
+            mVertexSource
+        );
         // 2. Compile shaders
         GLint success;
         GLchar infoLog[512];
         // Vertex Shader
         mVertexShader = glCreateShader(GL_VERTEX_SHADER);
-        const char *vSource = mVertexShaderSource.c_str();
+        const char *vSource = mVertexSource.c_str();
         glShaderSource(mVertexShader, 1, &vSource, nullptr);
         glCompileShader(mVertexShader);
         // Print compile errors if any
@@ -203,11 +212,35 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-            log->error( "SHADER VERTEX COMPILATION FAILED\n {}" ,infoLog );
+            log->error( "VERTEX SHADER COMPILATION FAILED\n {}" ,infoLog );
+            glDeleteShader(mVertexShader);
+            mVertexShader = 0;
+            return false;
         }
+        return true;
+   }
+
+    bool
+   ShaderInstance::compileFragment
+   ()
+   {
+       auto log = getLog();
+        // 1. Open Shader Files into Memory
+        string absFragmentPath = mProjectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
+        File fragmentReader(absFragmentPath);
+        mFragmentSource = fragmentReader.readString();
+        log->trace(
+            "Loading Fragment Shader for {} from {}\n {}\n",
+            mDefinition->getNameAndUuidString(),
+            absFragmentPath,
+            mFragmentSource
+        );
+        // 2. Compile shaders
+        GLint success;
+        GLchar infoLog[512];
         // Fragment Shader
         mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        const char *fSource = mFragmentShaderSource.c_str();
+        const char *fSource = mFragmentSource.c_str();
         glShaderSource(mFragmentShader, 1, &fSource, nullptr);
         glCompileShader(mFragmentShader);
         // Print compile errors if any
@@ -215,35 +248,63 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-            log->error( "SHADER FRAGMENT COMPILATION FAILED\n {}" , infoLog );
+            log->error( "FRAGMENT SHADER COMPILATION FAILED\n {}" , infoLog );
+            glDeleteShader(mFragmentShader);
+            mFragmentShader = 0;
+            return false;
         }
-        // Shader Program
-        mShaderProgram = glCreateProgram();
-        glAttachShader(mShaderProgram, mVertexShader);
-        glAttachShader(mShaderProgram, mFragmentShader);
-        glLinkProgram(mShaderProgram);
-        // Print linking errors if any
-        glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-            log->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
-        }
-        // Delete the shaders as they're linked into our program now and no longer necessery
-        glDeleteShader(mVertexShader);
-        glDeleteShader(mFragmentShader);
+        return true;
+   }
 
-        mLoaded = (mShaderProgram != 0);
+    bool
+   ShaderInstance::linkProgram
+   ()
+   {
+       auto log = getLog();
+       if (mVertexShader != 0 && mFragmentShader != 0)
+       {
+           GLint success;
 
-        if (mLoaded)
-        {
-            mPointLightCountLocation       =  glGetUniformLocation(mShaderProgram, UNIFORM_POINT_LIGHT_COUNT);
-            mSpotLightCountLocation        =  glGetUniformLocation(mShaderProgram, UNIFORM_SPOT_LIGHT_COUNT);
-            mDirectionalLightCountLocation =  glGetUniformLocation(mShaderProgram, UNIFORM_DIRECTIONAL_LIGHT_COUNT);
-        }
+            // Create Shader Program
+            mShaderProgram = glCreateProgram();
+            if (mShaderProgram == 0)
+            {
+                log->error("Unable to create shader program");
+                return false;
+            }
+
+            glAttachShader(mShaderProgram, mVertexShader);
+            glAttachShader(mShaderProgram, mFragmentShader);
+            glLinkProgram(mShaderProgram);
+
+            // Print linking errors if any
+            glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
+            GLchar infoLog[512];
+            if (!success)
+            {
+                glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
+                log->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                glDeleteProgram(mShaderProgram);
+                return false;
+            }
+
+            // Delete the shaders as they're linked into our program now and no longer necessery
+            glDeleteShader(mVertexShader);
+            glDeleteShader(mFragmentShader);
+
+            mLoaded = (mShaderProgram != 0);
+
+            if (mLoaded)
+            {
+                mPointLightCountLocation       =  glGetUniformLocation(mShaderProgram, UNIFORM_POINT_LIGHT_COUNT);
+                mSpotLightCountLocation        =  glGetUniformLocation(mShaderProgram, UNIFORM_SPOT_LIGHT_COUNT);
+                mDirectionalLightCountLocation =  glGetUniformLocation(mShaderProgram, UNIFORM_DIRECTIONAL_LIGHT_COUNT);
+            }
+       }
 
         return mLoaded;
-    }
+   }
+
 
     void
     ShaderInstance::use
@@ -725,6 +786,50 @@ namespace Dream
            bindMaterial(material);
            material->draw();
        }
+    }
+
+    bool
+    ShaderInstance::getRecompile
+    ()
+    const
+    {
+        return mRecompile;
+    }
+
+    void
+    ShaderInstance::setRecompile
+    (bool recompile)
+    {
+        mRecompile = recompile;
+    }
+
+    string
+    ShaderInstance::getVertexSource
+    () const
+    {
+        return mVertexSource;
+    }
+
+    void
+    ShaderInstance::setVertexSource
+    (string vertexSource)
+    {
+        mVertexSource = vertexSource;
+    }
+
+    string
+    ShaderInstance::getFragmentSource
+    ()
+    const
+    {
+        return mFragmentSource;
+    }
+
+    void
+    ShaderInstance::setFragmentSource
+    (string fragmentSource)
+    {
+        mFragmentSource = fragmentSource;
     }
 
     const char* ShaderInstance::UNIFORM_POINT_LIGHT_COUNT = "pointLightCount";

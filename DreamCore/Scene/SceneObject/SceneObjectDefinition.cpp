@@ -415,7 +415,7 @@ namespace Dream
     {
         auto log = getLog();
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        log->debug("Getting definition {} of in {}",typeStr, getNameAndUuidString());
+        log->trace("Getting definition {} of in {}",typeStr, getNameAndUuidString());
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
             mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
         {
@@ -423,10 +423,10 @@ namespace Dream
         }
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
         {
-            log->debug("No Instance");
+            log->trace("No Instance");
             return "";
         }
-        log->debug("Found Instance");
+        log->trace("Found Instance");
         return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
     }
 

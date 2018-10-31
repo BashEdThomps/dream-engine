@@ -443,7 +443,7 @@ namespace Dream
         {
             AssetType::MODEL,
             {
-                ASSET_FORMAT_MODEL_ASSIMP,
+                //ASSET_FORMAT_MODEL_ASSIMP,
                 ASSET_FORMAT_MODEL_OBJ
             }
         },

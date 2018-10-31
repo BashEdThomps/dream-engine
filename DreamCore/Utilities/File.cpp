@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 using std::stringstream;
 using std::ifstream;
@@ -94,7 +95,7 @@ namespace Dream
         auto file = fopen(mPath.c_str(),"wb");
         auto bytesWritten = fwrite(&data[0],sizeof(char),data.size(),file);
         fclose(file);
-        return bytesWritten = data.size();
+        return bytesWritten == data.size();
     }
 
     bool
@@ -104,8 +105,46 @@ namespace Dream
         auto file = fopen(mPath.c_str(),"wb");
         auto bytesWritten = fwrite(&data[0],sizeof(char),data.size(),file);
         fclose(file);
-        return bytesWritten = data.size();
+        return bytesWritten == data.size();
     }
 
+    bool
+    File::deleteFile
+    ()
+    {
+        auto log = getLog();
+        log->debug("Deleting file {}",mPath);
+        if(remove(mPath.c_str()) != 0)
+        {
+            log->error("Error deleting file {}",mPath );
+            perror("File check error");
+            return false;
+        }
+        return true;
+    }
 
+    bool
+    File::exists
+    ()
+    {
+        FILE* file = fopen(mPath.c_str(),"rb");
+        if (file)
+        {
+            fclose(file);
+            return true;
+        }
+        perror("File check error");
+        return false;
+    }
+
+    string
+    File::name
+    ()
+    {
+        auto log = getLog();
+        auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
+        auto fileName = mPath.substr(endOfPath);
+        log->error("Got name of file {}",fileName);
+        return fileName;
+    }
 } // End of Dream

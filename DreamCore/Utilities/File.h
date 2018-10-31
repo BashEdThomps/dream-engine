@@ -42,6 +42,9 @@ namespace Dream
         int getFileSize();
         bool writeBinary(vector<char>);
         bool writeString(string);
+        bool deleteFile();
+        bool exists();
+        string name();
 
     }; // End of FileReader
 

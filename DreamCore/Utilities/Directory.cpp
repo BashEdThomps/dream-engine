@@ -1,4 +1,5 @@
 #include "Directory.h"
+#include "File.h"
 
 #include <dirent.h>
 #include <sys/types.h>
@@ -39,6 +40,9 @@ namespace Dream
             while ((ent = readdir (dir)) != nullptr)
             {
                 string fileName(ent->d_name);
+
+                if (fileName[0] == '.') continue;
+
                 if (usingRegex)
                 {
                     if (regex_search(fileName.c_str(),match,fileRegex))
@@ -91,5 +95,24 @@ namespace Dream
     ()
     {
         return mkdir(mPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+    }
+
+    bool Directory::deleteDirectory()
+    {
+        auto log = getLog();
+        log->debug("Deleting directory {}",mPath);
+        auto files = list();
+        for (auto file : files)
+        {
+            if (file[0] == '.') continue;
+            File f(mPath+Constants::DIR_PATH_SEP+file);
+            f.deleteFile();
+        }
+        if (rmdir(mPath.c_str()) != 0)
+        {
+            log->error("Unable to delete directory {}",mPath);
+            return false;
+        }
+        return true;
     }
 }

@@ -429,7 +429,7 @@ namespace Dream
         Transform3D* initial = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
         if (initial->isTypeOffset())
         {
-            log->debug("Inheriting Offset Transform for {}",getNameAndUuidString());
+            log->trace("Inheriting Offset Transform for {}",getNameAndUuidString());
             mTransform->offsetFrom(getParentRuntime()->getTransform(), initial);
         }
         else
@@ -490,7 +490,7 @@ namespace Dream
     (Event event)
     {
         auto log = getLog();
-        log->debug
+        log->trace
         (
             "Event posted from {} to {}",
             event.getSender()->getNameAndUuidString(),
@@ -510,14 +510,14 @@ namespace Dream
     void SceneObjectRuntime::clearEventQueue()
     {
         auto log = getLog();
-        log->debug("Clearing event queue");
+        log->trace("Clearing event queue");
         mEventQueue.clear();
     }
 
     void SceneObjectRuntime::collectGarbage()
     {
         auto log = getLog();
-        log->debug("Collecting Garbage {}" ,getNameAndUuidString());
+        log->trace("Collecting Garbage {}" ,getNameAndUuidString());
 
         vector<SceneObjectRuntime*> toDelete;
 
@@ -531,7 +531,7 @@ namespace Dream
 
         for (auto child : toDelete)
         {
-            log->debug("Deleting child {}",child->getNameAndUuidString());
+            log->trace("Deleting child {}",child->getNameAndUuidString());
             mChildRuntimes.erase
             (
                 find
@@ -574,7 +574,7 @@ namespace Dream
         for (auto assetPair : mAssetDefinitions)
         {
             IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
-            log->debug("Creating {}",def->getNameAndUuidString());
+            log->trace("Creating {}",def->getNameAndUuidString());
             bool result = false;
             switch (assetPair.first)
             {
@@ -690,7 +690,7 @@ namespace Dream
     {
         removePhysicsObjectInstance();
         auto log = getLog();
-        log->debug( "Creating Physics Object Asset Instance." );
+        log->trace( "Creating Physics Object Asset Instance." );
         mPhysicsObjectInstance = new PhysicsObjectInstance(
             definition,
             mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
@@ -710,7 +710,7 @@ namespace Dream
     (PathDefinition* definition)
     {
         auto log = getLog();
-        log->debug( "Creating Path asset instance." );
+        log->trace( "Creating Path asset instance." );
         removePathInstance();
         mPathInstance = new PathInstance(definition,this);
         return mPathInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
@@ -725,7 +725,7 @@ namespace Dream
         if (audioComp != nullptr)
         {
             removeAudioInstance();
-            log->debug( "Creating Audio asset instance." );
+            log->trace( "Creating Audio asset instance." );
             mAudioInstance = audioComp->newAudioInstance(definition,this);
             return mAudioInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
         }
@@ -761,7 +761,7 @@ namespace Dream
     {
         auto log = getLog();
         removeScriptInstance();
-        log->debug("Creating Script asset instance.");
+        log->trace("Creating Script asset instance.");
         mScriptInstance = new LuaScriptInstance(definition, this);
         bool result = mScriptInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
         if (!result)
@@ -785,7 +785,7 @@ namespace Dream
     {
         auto log = getLog();
         removeLightInstance();
-        log->debug( "Creating Light Asset instance." );
+        log->trace( "Creating Light Asset instance." );
         mLightInstance = new LightInstance(
             definition,
             this
@@ -920,7 +920,7 @@ namespace Dream
     {
         auto def = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto log = getLog();
-        log->debug( "Using Definition {}", def->getNameAndUuidString());
+        log->trace( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
         setUuid(def->getUuid());
         setFollowsCamera(def->getFollowsCamera());

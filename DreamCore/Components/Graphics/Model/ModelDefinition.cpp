@@ -55,7 +55,7 @@ namespace Dream
              mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
         }
 
-        for (json matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
+        for (json& matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
         {
             if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
             {
