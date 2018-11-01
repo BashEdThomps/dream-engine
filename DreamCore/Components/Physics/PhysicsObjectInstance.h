@@ -39,21 +39,13 @@ namespace Dream
 
     class PhysicsObjectInstance : public IAssetInstance
     {
-    public:
-       // static void clearAssimpModelCache();
-
     private:
-
-        //static map<string,const aiScene*> AssimpModelCache;
-        //static ::Assimp::Importer mImporter;
-        //static const aiScene* getModelFromCache(string);
         btCollisionShape *mCollisionShape;
         btMotionState *mMotionState;
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mInPhysicsWorld;
         PhysicsComponent* mPhysicsComponentHandle;
-
     public:
         PhysicsObjectInstance(
             PhysicsObjectDefinition*,
@@ -68,10 +60,8 @@ namespace Dream
         void getWorldTransform(btTransform&);
         btCollisionObject* getCollisionObject();
         void setLinearVelocity(float, float, float);
-
         bool isInPhysicsWorld();
         void setInPhysicsWorld(bool inPhysicsWorld);
-
         void setLinearFactor(float x, float y, float z);
         void setAngularFactor(float x, float y, float z);
         vec3 getLinearVelocity();
@@ -81,15 +71,10 @@ namespace Dream
         void setFriction(float friction);
         float getMass() const;
         void setMass(float mass);
-
-
         void setAngularVelocity(float x, float y, float z);
     protected:
         void loadExtraAttributes(json) override;
         void loadExtraAttributes(json, IAssetDefinition*, bool);
-        //void processAssimpNode(aiNode*,const aiScene*, btTriangleMesh* triMesh);
-        //void processAssimpMesh(aiMesh*, btTriangleMesh*);
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
-
     }; // End of PhysicsObjectInstance
 } // End of Dream

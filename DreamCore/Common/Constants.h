@@ -243,6 +243,7 @@ namespace Dream
         const static string ASSET_ATTR_CONSTANT;
         const static string ASSET_ATTR_SIZE;
         const static string ASSET_ATTR_COMPOUND_CHILDREN;
+        const static string ASSET_ATTR_COLLISION_MODEL;
         const static string ASSET_ATTR_KINEMATIC;
         const static string ASSET_ATTR_CONTROLLABLE;
         const static string ASSET_ATTR_RESTITUTION;

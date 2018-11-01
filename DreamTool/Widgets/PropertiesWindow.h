@@ -28,6 +28,7 @@ namespace DreamTool
         void popPropertyTarget();
 
     private:
+        int getStringIndexInVector(string str, vector<string> vec);
         void drawNameAndIdProperties();
         void drawProjectProperties();
         void drawSceneProperties();

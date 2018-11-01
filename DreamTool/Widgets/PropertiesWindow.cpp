@@ -888,37 +888,93 @@ namespace DreamTool
     ()
     {
        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
-       float color[3];
-       float f;
 
+       vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::LIGHT];
+       int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
+       if(StringCombo("Type",&selectedLightType,lightTypes,lightTypes.size()))
+       {
+           lightDef->setFormat(lightTypes.at(selectedLightType));
+       }
+
+       ImGui::Separator();
+
+       float ambientColor[3] = {
+           lightDef->getAmbientRed(),
+           lightDef->getAmbientGreen(),
+           lightDef->getAmbientBlue()
+       };
+
+       float diffuseColor[3] = {
+            lightDef->getDiffuseRed(),
+            lightDef->getDiffuseGreen(),
+            lightDef->getDiffuseBlue()
+       };
+
+       float specularColor[3] =
+       {
+           lightDef->getSpecularRed(),
+           lightDef->getSpecularGreen(),
+           lightDef->getSpecularBlue()
+       };
+
+       float constant = lightDef->getConstant();
+       float linear = lightDef->getLinear();
+       float quadratic = lightDef->getQuadratic();
+       float innerCutOff, outerCutOff;;
        switch (lightDef->getType())
        {
-               break;
-           case LightType::LT_POINT:
-               ImGui::DragFloat3("Position",color,0.1f);
-               ImGui::DragFloat3("Direction",color,0.1f);
-               ImGui::DragFloat("Constant",&f,1.0f);
-               ImGui::DragFloat("Linear",&f,0.01f);
-               ImGui::DragFloat("Quadratic",&f,0.001f);
-               break;
-           case LightType::LT_DIRECTIONAL:
-                ImGui::DragFloat3("Direction", color, 0.1f);
-                break;
            case LightType::LT_SPOTLIGHT:
-               ImGui::DragFloat("Inner Cut Off", color);
-               ImGui::DragFloat("Outer Cut Off", color);
-               ImGui::DragFloat("Constant", &f);
-               ImGui::DragFloat("Linear", &f);
-               ImGui::DragFloat("Quadratic", &f);
-
+               innerCutOff = lightDef->getCutOff();
+               outerCutOff = lightDef->getOuterCutOff();
+               if(ImGui::DragFloat("Inner Cut Off", &innerCutOff))
+               {
+                   lightDef->setCutOff(innerCutOff);
+               }
+               if(ImGui::DragFloat("Outer Cut Off", &outerCutOff))
+               {
+                   lightDef->setOuterCutOff(outerCutOff);
+               }
+           case LightType::LT_POINT:
+               if(ImGui::DragFloat("Constant",&constant,1.0f))
+               {
+                  lightDef->setConstant(constant);
+               }
+               if(ImGui::DragFloat("Linear",&linear,0.01f))
+               {
+                  lightDef->setLinear(linear);
+               }
+               if(ImGui::DragFloat("Quadratic",&quadratic,0.001f))
+               {
+                  lightDef->setQuadratic(quadratic);
+               }
                break;
-           case LightType::LT_NONE:
+          case LightType::LT_DIRECTIONAL:
+          case LightType::LT_NONE:
                break;
        }
+
        ImGui::Separator();
-       ImGui::ColorEdit3("Ambient", color);
-       ImGui::ColorEdit3("Diffuse", color);
-       ImGui::ColorEdit3("Specular", color);
+
+       if(ImGui::ColorEdit3("Ambient", ambientColor))
+       {
+           lightDef->setAmbientRed(ambientColor[0]);
+           lightDef->setAmbientGreen(ambientColor[1]);
+           lightDef->setAmbientBlue(ambientColor[2]);
+       }
+
+       if(ImGui::ColorEdit3("Diffuse", diffuseColor))
+       {
+           lightDef->setDiffuseRed(diffuseColor[0]);
+           lightDef->setDiffuseGreen(diffuseColor[1]);
+           lightDef->setDiffuseBlue(diffuseColor[2]);
+       }
+
+       if(ImGui::ColorEdit3("Specular", specularColor))
+       {
+           lightDef->setSpecularRed(specularColor[0]);
+           lightDef->setSpecularGreen(specularColor[1]);
+           lightDef->setSpecularBlue(specularColor[2]);
+        }
     }
 
     void
@@ -1334,7 +1390,94 @@ namespace DreamTool
     PropertiesWindow::drawPhysicsObjectAssetProperties
     ()
     {
+        auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
+        vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::PHYSICS_OBJECT];
+        string poFormatString = pod->getFormat();
+        int poFormatIndex = getStringIndexInVector(poFormatString, poFormats);
+        if(StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
+        {
+           pod->setFormat(poFormats.at(poFormatIndex));
+        }
+        ImGui::Separator();
 
+        bool kinematic = pod->getKinematic();
+        if (ImGui::Checkbox("Kinematic",&kinematic))
+        {
+            pod->setKinematic(kinematic);
+        }
+
+        bool controllable = pod->getControllableCharacter();
+        if (ImGui::Checkbox("Controllable Character",&controllable))
+        {
+            pod->setControllableCharacter(controllable);
+        }
+
+        ImGui::Separator();
+
+        float mass = pod->getMass();
+        if(ImGui::InputFloat("Mass",&mass))
+        {
+            pod->setMass(mass);
+        }
+
+        float margin = pod->getMargin();
+        if(ImGui::InputFloat("Margin",&margin))
+        {
+            pod->setMargin(margin);
+        }
+
+        float restitution = pod->getRestitution();
+        if(ImGui::InputFloat("Restitution",&restitution))
+        {
+            pod->setRestitution(restitution);
+        }
+
+        float friction = pod->getFriction();
+        if(ImGui::InputFloat("Friction",&friction))
+        {
+            pod->setFriction(friction);
+        }
+
+        ImGui::Separator();
+
+        if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BOX) == 0)
+        {
+            float halfExtents[3] =
+            {
+                pod->getHalfExtentsX(),
+                pod->getHalfExtentsY(),
+                pod->getHalfExtentsZ()
+            };
+            if(ImGui::InputFloat3("Half-Extents",&halfExtents[0]))
+            {
+               pod->setHalfExtentsX(halfExtents[0]);
+               pod->setHalfExtentsY(halfExtents[1]);
+               pod->setHalfExtentsZ(halfExtents[2]);
+            }
+        }
+        else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
+        {
+           float radius = pod->getRadius();
+           if (ImGui::InputFloat("Radius",&radius))
+           {
+               pod->setRadius(radius);
+           }
+        }
+        else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        {
+            auto projDef = mProject->getProjectDefinition();
+
+            string selectedModelAssetUuid = pod->getCollisionModel();
+            IAssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
+            int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedModelAssetDef);
+            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
+
+            if(StringCombo("Model",&selectedModelAssetIndex,modelAssets,modelAssets.size()))
+            {
+                IAssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
+                pod->setCollisionModel(newlySelected->getUuid());
+            }
+        }
     }
 
     void
@@ -1497,4 +1640,18 @@ namespace DreamTool
         ImGui::Image(textureId, mImageSize);
     }
 
+    int
+    PropertiesWindow::getStringIndexInVector
+    (string str, vector<string> vec)
+    {
+        size_t sz = vec.size();
+        for (int i=0; i<sz; i++)
+        {
+            if (vec.at(i).compare(str) == 0)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

@@ -92,6 +92,9 @@ namespace Dream
         float getFriction();
         void  setFriction(float r);
 
+        string getCollisionModel();
+        void setCollisionModel(string);
+
     protected:
         void makeCompoundChildren();
         void makeHalfExtentsObject();

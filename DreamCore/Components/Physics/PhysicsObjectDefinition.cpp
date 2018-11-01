@@ -385,4 +385,22 @@ namespace Dream
         }
     }
 
+    string
+    PhysicsObjectDefinition::getCollisionModel
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = "";
+        }
+
+        return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
+    }
+
+    void
+    PhysicsObjectDefinition::setCollisionModel
+    (string modelUuid)
+    {
+        mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
+    }
 }

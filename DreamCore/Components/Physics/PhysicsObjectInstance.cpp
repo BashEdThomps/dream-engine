@@ -30,58 +30,7 @@
 namespace Dream
 {
 
-    /*
-    map<string,const aiScene*> PhysicsObjectInstance::AssimpModelCache = map<string,const aiScene*>();
-    ::Assimp::Importer PhysicsObjectInstance::mImporter;
 
-    void PhysicsObjectInstance::clearAssimpModelCache()
-    {
-        auto log = spdlog::get("PhysicsObjectModelCache");
-        if (log == nullptr)
-        {
-            log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
-        }
-        log->debug("Clearing Assimp model cache");
-        AssimpModelCache.clear();
-    }
-
-    const aiScene* PhysicsObjectInstance::getModelFromCache(string path)
-    {
-        auto log = spdlog::get("PhysicsObjectModelCache");
-        if (log == nullptr)
-        {
-            log = spdlog::stdout_color_mt("PhysicsObjectModelCache");
-        }
-
-        for (pair<string,const aiScene*> it : AssimpModelCache)
-        {
-            if (it.first.compare(path) == 0)
-            {
-                log->debug( "Found cached scene for {} ", path );
-                return it.second;
-            }
-        }
-        log->debug( "Loading {} from disk", path);
-        const aiScene* scene = mImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            log->error( "Error importing model {} " ,mImporter.GetErrorString() );
-            return nullptr;
-        }
-        AssimpModelCache.insert(pair<string,const aiScene*>(path,scene));
-        return scene;
-    }
-    */
-
-    bool PhysicsObjectInstance::isInPhysicsWorld()
-    {
-        return mInPhysicsWorld;
-    }
-
-    void PhysicsObjectInstance::setInPhysicsWorld(bool inPhysicsWorld)
-    {
-        mInPhysicsWorld = inPhysicsWorld;
-    }
 
     PhysicsObjectInstance::PhysicsObjectInstance
     (
@@ -483,6 +432,16 @@ namespace Dream
     const
     {
         return mRigidBody->getRestitution();
+    }
+
+    bool PhysicsObjectInstance::isInPhysicsWorld()
+    {
+        return mInPhysicsWorld;
+    }
+
+    void PhysicsObjectInstance::setInPhysicsWorld(bool inPhysicsWorld)
+    {
+        mInPhysicsWorld = inPhysicsWorld;
     }
 
 } // End of Dream
