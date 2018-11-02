@@ -56,9 +56,9 @@
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Physics/PhysicsComponent.h"
 // Scripting -------------------------------------------------------------------
-#include "../Components/Scripting/IScriptComponent.h"
-#include "../Components/Scripting/Lua/LuaComponent.h"
+#include "../Components/Scripting/LuaComponent.h"
 #include "../Components/Scripting/ScriptDefinition.h"
+#include "../Components/Scripting/LuaScriptInstance.h"
 // Window ----------------------------------------------------------------------
 #include "../Components/Window/IWindowComponent.h"
 // Scene -----------------------------------------------------------------------

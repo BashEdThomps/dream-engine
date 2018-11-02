@@ -19,14 +19,19 @@
 #include "ScriptCache.h"
 
 #include "../../Utilities/File.h"
+#include "ScriptDefinition.h"
+#include "LuaScriptInstance.h"
 
 namespace Dream
 {
     ScriptCache::ScriptCache
-    () : DreamObject ("ScriptCache")
+    (ProjectRuntime* runtime)
+        : ICache (runtime)
     {
+        setLogClassName("ScriptCache");
         auto log = getLog();
         log->trace("Constructing");
+
     }
 
     ScriptCache::~ScriptCache
@@ -36,36 +41,23 @@ namespace Dream
         log->trace("Destructing");
     }
 
-    string
-    ScriptCache::getScript
-    (string path)
+    IAssetInstance*
+    ScriptCache::loadInstance
+    (IAssetDefinition* def)
     {
-        auto log = getLog();
-      for (pair<string,string> it : mScriptCache)
-      {
-         if (it.first == path)
-         {
-             log->debug("Found script in cache {}", path);
-             return it.second;
-         }
-      }
-      return readIntoCache(path);
-    }
-
-    string
-    ScriptCache::readIntoCache
-    (string path)
-    {
-        auto log = getLog();
-        File reader(path);
-        string content = reader.readString();
-        if(content.empty())
+        auto scriptDef = dynamic_cast<ScriptDefinition*>(def);
+        for (IAssetInstance* inst: mInstances)
         {
-            log->error("Error reading  script into cache from path '{}'", path);
-           return "";
+            if (inst->getUuid().compare(scriptDef->getUuid()) == 0)
+            {
+                return inst;
+            }
         }
-        log->debug("Inserting script ", path);
-        mScriptCache.insert(pair<string,string>(path,content));
-        return content;
+        auto newScript = new LuaScriptInstance(scriptDef,nullptr);
+        auto absPath = getAbsolutePath(scriptDef);
+        File scriptFile(absPath);
+        newScript->setSource(scriptFile.readString());
+        mInstances.push_back(newScript);
+        return newScript;
     }
 }

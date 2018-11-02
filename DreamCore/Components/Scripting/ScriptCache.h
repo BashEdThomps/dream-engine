@@ -17,24 +17,16 @@
  */
 #pragma once
 
-#include <iostream>
-#include <map>
-
-#include "../../Common/DreamObject.h"
-
-using namespace std;
+#include "../ICache.h"
 
 namespace Dream
 {
-    class ScriptCache : public DreamObject
+    class ScriptCache : public ICache
     {
-    private:
-        map<string,string> mScriptCache;
     public:
-        ScriptCache();
-        ~ScriptCache();
-        string getScript(string);
-        string readIntoCache(string);
-
+        ScriptCache(ProjectRuntime* runtime);
+        ~ScriptCache() override;
+    protected:
+        IAssetInstance* loadInstance(IAssetDefinition* def) override;
     };
 }

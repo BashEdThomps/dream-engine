@@ -77,4 +77,11 @@ namespace Dream
        }
        return loadInstance(getAssetDefinitionByUuid(id));
     }
+
+    vector<IAssetInstance*>
+    ICache::getInstanceVector
+    ()
+    {
+       return mInstances;
+    }
 }

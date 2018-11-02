@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,7 +25,6 @@
 
 using std::string;
 using std::vector;
-
 
 namespace Dream
 {
@@ -39,7 +37,7 @@ namespace Dream
     class GraphicsComponent;
     class IWindowComponent;
     class PhysicsComponent;
-    class IScriptComponent;
+    class LuaComponent;
     class NanoVGComponent;
     class Transform3D;
     class Camera;
@@ -74,7 +72,7 @@ namespace Dream
         NanoVGComponent* mNanoVGComponent;
         PhysicsComponent* mPhysicsComponent;
         PathComponent* mPathComponent;
-        IScriptComponent* mScriptComponent;
+        LuaComponent* mScriptComponent;
         IWindowComponent* mWindowComponent;
 
         // Caches
@@ -105,7 +103,7 @@ namespace Dream
         GraphicsComponent* getGraphicsComponent();
         NanoVGComponent* getNanoVGComponent();
         IWindowComponent* getWindowComponent();
-        IScriptComponent* getScriptComponent();
+        LuaComponent* getScriptComponent();
         Project* getProject();
         InputComponent* getInputComponent();
 
@@ -134,6 +132,7 @@ namespace Dream
         MaterialCache* getMaterialCache();
         ModelCache* getModelCache();
         TextureCache* getTextureCache();
+        ScriptCache* getScriptCache();
 
         bool getScriptingEnabled() const;
         void setScriptingEnabled(bool);

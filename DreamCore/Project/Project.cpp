@@ -26,18 +26,11 @@
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform3D.h"
-#include "../Components/Audio/AudioComponent.h"
-#include "../Components/Graphics/Camera.h"
-#include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/IAssetInstance.h"
-#include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Physics/PhysicsObjectInstance.h"
 #include "../Components/Window/IWindowComponent.h"
-#include "../Components/Scripting/IScriptComponent.h"
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
-
 
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/File.h"

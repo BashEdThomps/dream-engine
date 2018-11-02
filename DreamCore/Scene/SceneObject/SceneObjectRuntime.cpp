@@ -47,9 +47,8 @@
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
 
 #include "../../Components/Scripting/ScriptDefinition.h"
-#include "../../Components/Scripting/ScriptInstance.h"
-#include "../../Components/Scripting/Lua/LuaComponent.h"
-#include "../../Components/Scripting/Lua/LuaScriptInstance.h"
+#include "../../Components/Scripting/LuaComponent.h"
+#include "../../Components/Scripting/LuaScriptInstance.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -170,21 +169,9 @@ namespace Dream
     SceneObjectRuntime::removeScriptInstance
     ()
     {
-        if (hasScriptInstance())
-        {
-            auto scriptComp =
-            mSceneRuntimeHandle
-                ->getProjectRuntime()
-                ->getScriptComponent();
-            if(scriptComp != nullptr)
-            {
-                scriptComp->removeFromScriptMap(this);
-            }
-        }
-
         if (mScriptInstance != nullptr)
         {
-            delete mScriptInstance;
+            mScriptInstance->removeInstance(this);
             mScriptInstance = nullptr;
         }
     }
@@ -334,7 +321,7 @@ namespace Dream
         return mModelInstance;
     }
 
-    ScriptInstance*
+    LuaScriptInstance*
     SceneObjectRuntime::getScriptInstance
     ()
     {
@@ -751,6 +738,11 @@ namespace Dream
             {
                 mModelInstance->addInstance(this);
             }
+            else
+            {
+                log->error("Error getting model instance, cache returned nullptr");
+                return false;
+            }
         }
         return mModelInstance != nullptr;
     }
@@ -762,20 +754,22 @@ namespace Dream
         auto log = getLog();
         removeScriptInstance();
         log->trace("Creating Script asset instance.");
-        mScriptInstance = new LuaScriptInstance(definition, this);
-        bool result = mScriptInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
-        if (!result)
+        auto scriptCache = (mSceneRuntimeHandle->getProjectRuntime()->getScriptCache());
+        if (scriptCache)
         {
-            log->error("Error loading script");
-            return false;
+            mScriptInstance = dynamic_cast<LuaScriptInstance*>(scriptCache->getInstance(definition));
+            if (mScriptInstance != nullptr)
+            {
+                mScriptInstance->addInstance(this);
+                return true;
+            }
+            else
+            {
+                log->error("Error getting script instance, cache returned nullptr");
+                return false;
+            }
         }
-        auto scriptComp = mSceneRuntimeHandle->getProjectRuntime()->getScriptComponent();
-        if (scriptComp != nullptr)
-        {
-            scriptComp->addToScriptMap(this,mScriptInstance);
-            return true;
-        }
-        log->error("Script component is null");
+        log->error("Script cache is null");
         return false;
     }
 
@@ -786,10 +780,7 @@ namespace Dream
         auto log = getLog();
         removeLightInstance();
         log->trace( "Creating Light Asset instance." );
-        mLightInstance = new LightInstance(
-            definition,
-            this
-        );
+        mLightInstance = new LightInstance(definition,this);
         return mLightInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 

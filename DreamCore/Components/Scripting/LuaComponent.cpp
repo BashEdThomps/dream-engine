@@ -14,37 +14,31 @@
  * this file belongs to.
  */
 
-
-
 #include "LuaComponent.h"
 #include "LuaScriptInstance.h"
-
-#include <sstream>
-
-#include "../../Event.h"
-#include "../../Transform3D.h"
-#include "../../Time.h"
-#include "../../Path/PathComponent.h"
-#include "../../Path/PathInstance.h"
-#include "../../Audio/AudioComponent.h"
-#include "../../Audio/AudioInstance.h"
-#include "../../Graphics/Model/ModelInstance.h"
-#include "../../Graphics/Camera.h"
-#include "../../Graphics/GraphicsComponent.h"
-#include "../../Graphics/NanoVGComponent.h"
-#include "../../Graphics/Light/LightInstance.h"
-#include "../../Graphics/Shader/ShaderInstance.h"
-#include "../../Input/InputComponent.h"
-#include "../../Physics/PhysicsComponent.h"
-#include "../../Physics/PhysicsObjectInstance.h"
-#include "../../Window/IWindowComponent.h"
-#include "../../../Project/ProjectRuntime.h"
-#include "../../../Scene/SceneRuntime.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Event.h"
+#include "../Transform3D.h"
+#include "../Time.h"
+#include "../Path/PathComponent.h"
+#include "../Path/PathInstance.h"
+#include "../Audio/AudioComponent.h"
+#include "../Audio/AudioInstance.h"
+#include "../Graphics/Model/ModelInstance.h"
+#include "../Graphics/Camera.h"
+#include "../Graphics/GraphicsComponent.h"
+#include "../Graphics/NanoVGComponent.h"
+#include "../Graphics/Light/LightInstance.h"
+#include "../Graphics/Shader/ShaderInstance.h"
+#include "../Input/InputComponent.h"
+#include "../Physics/PhysicsComponent.h"
+#include "../Physics/PhysicsObjectInstance.h"
+#include "../Window/IWindowComponent.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 #define SOL_CHECK_ARGUMENTS 1
-//#define SOL_SAFE_FUNCTION 1
-#include "../../../deps/sol2/sol.hpp"
+#include "../../deps/sol2/sol.hpp"
 
 using std::ostringstream;
 using std::exception;
@@ -78,9 +72,10 @@ static const struct luaL_Reg printlib [] =
 namespace Dream
 {
     LuaComponent::LuaComponent
-    (ProjectRuntime* project, ScriptCache* cache)
-        : IScriptComponent(project, cache)
-
+    (ProjectRuntime* runtime, ScriptCache* cache)
+        : IComponent(),
+          mScriptCache(cache),
+          mProjectRuntime(runtime)
     {
         setLogClassName("LuaComponent");
         auto log = getLog();
@@ -92,8 +87,7 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destroying Object" );
-        mScriptMap.clear();
-        lua_close(mState);
+        lua_close(State);
     }
 
     bool
@@ -102,8 +96,8 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Initialising LuaComponent" );
-        mState = luaL_newstate();
-        sol::state_view sView(mState);
+        State = luaL_newstate();
+        sol::state_view sView(State);
         sView.open_libraries(
             sol::lib::base,
             sol::lib::package,
@@ -112,142 +106,30 @@ namespace Dream
         );
         // Register print callback
 
-        lua_getglobal(mState, "_G");
-        luaL_setfuncs(mState, printlib, 0);
-        lua_pop(mState, 1);
+        lua_getglobal(State, "_G");
+        luaL_setfuncs(State, printlib, 0);
+        lua_pop(State, 1);
 
         log->debug( "Got a sol state" );
         exposeAPI();
         return true;
     }
 
-    bool
-    LuaComponent::createScript
-    (SceneObjectRuntime* sceneObject, ScriptInstance* script)
-    {
-        auto log = getLog();
-        if (script == nullptr)
-        {
-            log->error( "Load Failed, ScriptInstance is NULL" );
-            return false;
-        }
-
-        if (sceneObject == nullptr)
-        {
-            log->error( "Load Failed, SceneObjectRuntime is NULL" );
-            return false;
-        }
-
-        if (script->getLoadedFlag())
-        {
-            log->debug( "Script {} is already loaded" , script->getNameAndUuidString());
-            return false;
-        }
-
-        log->debug( "Loading script '{}' for '{}'" , script->getName(),sceneObject->getName());
-        log->debug( "Loading script from {}" , script->getAbsolutePath());
-
-        if (!loadScript(sceneObject))
-        {
-            return false;
-        }
-
-        log->debug( "Loaded {} successfully" , sceneObject->getUuid());
-
-        script->setLoadedFlag(true);
-
-        return true;
-    }
-
-    /*
-     * Instanciate the script and put into global registry
-     */
-    bool
-    LuaComponent::loadScript
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-
-        log->debug( "loadScript called for {}", id );
-
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error( "Cannot load script {} while in error state",id );
-            return false;
-        }
-
-        string path = scriptInstance->getAbsolutePath();
-        string script = mScriptCache->getScript(path);
-
-        log->debug( "calling scriptLoadFromString in lua for {}" , id );
-
-        sol::state_view solStateView(mState);
-        sol::environment environment(mState, sol::create, solStateView.globals());
-
-        solStateView[sceneObject->getUuid()] = environment;
-
-        auto exec_result = solStateView.script(
-            script,
-            environment,
-            [](lua_State*, sol::protected_function_result pfr)
-            {
-                // pfr will contain things that went wrong, for either loading or executing the script
-                // Can throw your own custom error
-                // You can also just return it, and let the call-site handle the error if necessary.
-                return pfr;
-            }
-        );
-        // it did not work
-        if(!exec_result.valid())
-        {
-           // An error has occured
-           sol::error err = exec_result;
-           std::string what = err.what();
-           log->critical("{}:\nCould not execute lua script:\n{}",
-                      sceneObject->getNameAndUuidString(),what);
-           scriptInstance->setError(true);
-           return false;
-        }
-
-        log->debug("Loaded Script Successfully");
-
-        return true;
-    }
-
     void
     LuaComponent::updateComponent
-    (SceneRuntime* sr)
+    (SceneRuntime*)
     {
         beginUpdate();
         auto log = getLog();
         log->debug( "Update Called" );
 
-        for (auto entry : mScriptMap)
+        for (auto inst : mScriptCache->getInstanceVector())
         {
-            auto sceneObj = entry.first;
-            auto scriptObj =  entry.second;
-
-            if (!scriptObj->getInitialised())
-            {
-                executeScriptInit(sceneObj);
-            }
-            else
-            {
-                executeScriptUpdate(sceneObj);
-
-                if (sceneObj->hasFocus())
-                {
-                    executeScriptInput(sceneObj);
-                }
-
-                if (sceneObj->hasEvents())
-                {
-                    executeScriptEvent(sceneObj);
-                }
-            }
+            auto scriptObj = dynamic_cast<LuaScriptInstance*>(inst);
+            scriptObj->executeOnInit();
+            scriptObj->executeOnInput();
+            scriptObj->executeOnEvent();
+            scriptObj->executeOnUpdate();
         }
         endUpdate();
     }
@@ -259,226 +141,12 @@ namespace Dream
         auto log = getLog();
         log->info( "UpdateNanoVG Called" );
         mProjectRuntime->getNanoVGComponent()->BeginFrame();
-        for (pair<SceneObjectRuntime*,ScriptInstance*> entry : mScriptMap)
+        for (auto inst : mScriptCache->getInstanceVector())
         {
-            SceneObjectRuntime* key = entry.first;
-            if (!executeScriptNanoVG(key))
-            {
-                continue;
-            }
+            auto scriptObj = dynamic_cast<LuaScriptInstance*>(inst);
+            scriptObj->executeOnNanoVG();
         }
         mProjectRuntime->getNanoVGComponent()->EndFrame();
-        return true;
-    }
-
-    // Function Execution =======================================================
-    bool
-    LuaComponent::executeScriptUpdate
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->debug("Calling onUpdate for {}",sceneObject->getNameAndUuidString() );
-
-        sol::state_view solStateView(mState);
-        sol::function onUpdateFunction = solStateView[sceneObject->getUuid()][Constants::LUA_UPDATE_FUNCTION];
-
-        auto result = onUpdateFunction(sceneObject);
-
-        if (!result.valid())
-        {
-            // An error has occured
-           sol::error err = result;
-           std::string what = err.what();
-           log->critical
-            (
-               "{}:\nCould not execute onUpdate in lua script:\n{}",
-                sceneObject->getNameAndUuidString(),
-                what
-            );
-           scriptInstance->setError(true);
-           return false;
-        }
-
-        return true;
-    }
-
-    bool
-    LuaComponent::executeScriptInit
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError() )
-        {
-            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        if (scriptInstance->getInitialised())
-        {
-            log->error("Script has all ready been initialised {}",scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->debug("Calling onInit in {} for {}",  scriptInstance->getName(),  sceneObject->getName());
-
-        sol::state_view solStateView(mState);
-        sol::function onInitFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INIT_FUNCTION];
-
-        auto initResult = onInitFunction(sceneObject);
-
-        if (!initResult.valid())
-        {
-            // An error has occured
-           sol::error err = initResult;
-           std::string what = err.what();
-           log->critical
-           (
-                "{}\nCould not execute onInit in lua script:\n{}",
-                sceneObject->getNameAndUuidString(),
-                what
-            );
-           scriptInstance->setError(true);
-           return false;
-        }
-
-        scriptInstance->setInitialised(true);
-
-        return true;
-    }
-
-    bool
-    LuaComponent::executeScriptInput
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error("Cannot execute {} in error state", scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->debug("Calling onInput for {} (Has Focus) {}", sceneObject->getNameAndUuidString());
-
-        sol::state_view solStateView(mState);
-        sol::function onInputFunction = solStateView[sceneObject->getUuid()][Constants::LUA_INPUT_FUNCTION];
-
-        auto result = onInputFunction(sceneObject);
-
-        if (!result.valid())
-        {
-            // An error has occured
-           sol::error err = result;
-           std::string what = err.what();
-           log->critical
-            (
-                "{}:\n"
-                "Could not execute onInput in lua script:\n"
-                "{}",
-                sceneObject->getNameAndUuidString(),
-                what
-            );
-           scriptInstance->setError(true);
-           return false;
-        }
-
-        return true;
-    }
-
-    bool
-    LuaComponent::executeScriptEvent
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        LuaScriptInstance* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-
-        if (scriptInstance->getError())
-        {
-            log->error( "Cannot execute {} in error state ",  scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->debug( "Calling onEvent for {}", sceneObject->getNameAndUuidString());
-
-        sol::state_view solStateView(mState);
-        sol::function onEventFunction = solStateView[sceneObject->getUuid()][Constants::LUA_EVENT_FUNCTION];
-
-        for (const Event& e : sceneObject->getEventQueue())
-        {
-            auto result = onEventFunction(sceneObject,e);
-
-            if (!result.valid())
-            {
-                // An error has occured
-               sol::error err = result;
-               std::string what = err.what();
-               log->error
-                (
-                   "{}:\n"
-                   "Could not execute onEvent in lua script:\n"
-                   "{}",
-                    sceneObject->getNameAndUuidString(),
-                    what
-                );
-               scriptInstance->setError(true);
-               break;
-            }
-        }
-
-        sceneObject->clearEventQueue();
-
-        return true;
-    }
-
-    bool
-    LuaComponent::executeScriptNanoVG
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        string id = sceneObject->getUuid();
-        auto* scriptInstance = dynamic_cast<LuaScriptInstance*>(sceneObject->getScriptInstance());
-        if (scriptInstance->getError())
-        {
-            log->error( "Cannot execute NanoVG {} in error state", scriptInstance->getNameAndUuidString());
-            return false;
-        }
-
-        log->info( "Calling onNanoVG for {}" , sceneObject->getNameAndUuidString() );
-
-        sol::state_view solStateView(mState);
-        sol::function onNanoVGFunction = solStateView[sceneObject->getUuid()][Constants::LUA_NANOVG_FUNCTION];
-
-        auto initResult = onNanoVGFunction(sceneObject);
-
-        if (!initResult.valid())
-        {
-            // An error has occured
-           sol::error err = initResult;
-           std::string what = err.what();
-           log->critical
-           (
-                "{}\nCould not execute onNanoVG in lua script:\n{}",
-                sceneObject->getNameAndUuidString(),
-                what
-            );
-           scriptInstance->setError(true);
-           return false;
-        }
         return true;
     }
 
@@ -489,7 +157,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ProjectRuntime");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
             "getAudioComponent",&ProjectRuntime::getAudioComponent,
             "getGraphicsComponent",&ProjectRuntime::getGraphicsComponent,
@@ -512,7 +180,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Camera");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<Camera>("Camera",
             "processKeyboard",&Camera::processKeyboard,
             "processMouseMovement",&Camera::processMouseMovement,
@@ -549,7 +217,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathComponent");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<PathComponent>("PathComponent");
     }
 
@@ -558,7 +226,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<PathInstance>("PathInstance",
             "generate",&PathInstance::generate,
             "getSplinePoints",&PathInstance::getSplinePoints,
@@ -574,7 +242,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GraphicsComponent");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
     }
 
@@ -583,7 +251,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("LightInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<LightInstance>("LightInstance");
     }
 
@@ -592,7 +260,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ShaderInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<ShaderInstance>("ShaderInstance",
             "getUuid", &ShaderInstance::getUuid,
             "addUniform",&ShaderInstance::addUniform
@@ -623,7 +291,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsComponent");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<PhysicsComponent>("PhysicsComponent",
             "setDebug",&PhysicsComponent::setDebug
         );
@@ -634,7 +302,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsObjectInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
             "getUuid", &PhysicsObjectInstance::getUuid,
 
@@ -662,7 +330,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
             "getName",&SceneObjectRuntime::getName,
             "getNameAndUuidString",&SceneObjectRuntime::getNameAndUuidString,
@@ -704,7 +372,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Transform3D");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<Transform3D>("Transform3D",
             // Translation ===========================================================
             "getTransformType",&Transform3D::getTransformType,
@@ -764,7 +432,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<Time>("Time",
             "getCurrentFrameTime",&Time::getCurrentFrameTime,
             "getLastFrameTime",&Time::getLastFrameTime,
@@ -782,7 +450,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AssimpModelInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<ModelInstance>("AssimpModelInstance");
     }
 
@@ -791,7 +459,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Event");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<Event>("Event",
             sol::constructors<Event(SceneObjectRuntime*,string)>(),
             "getSender",&Event::getSender,
@@ -808,7 +476,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioComponent");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<AudioComponent>("AudioComponent");
     }
 
@@ -824,7 +492,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioInstance");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<AudioInstance>("AudioInstance",
             "getStatus",&AudioInstance::getStatus,
             "play",&AudioInstance::play,
@@ -841,59 +509,11 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeGainput
+    LuaComponent::exposeNanoVG
     ()
     {
-        /*
-        debugRegisteringClass("Gainput");
-        sol::state_view stateView(mState);
-        stateView.new_usertype<gainput::InputMap>("InputMap",
-            "GetBool",&gainput::InputMap::GetBool,
-            "GetBoolIsNew",&gainput::InputMap::GetBoolIsNew,
-            "GetBoolPrevious",&gainput::InputMap::GetBoolPrevious,
-            "GetBoolWasDown",&gainput::InputMap::GetBoolWasDown,
-            "GetFloat",&gainput::InputMap::GetFloat,
-            "GetFloatPrevious",&gainput::InputMap::GetFloatPrevious,
-            "GetFloatDelta",&gainput::InputMap::GetFloatDelta
-        );
-
-        stateView.new_enum("InputSource",
-            "JS_FaceButtonNorth",   InputSource::JS_FaceButtonNorth,
-            "JS_FaceButtonEast",    InputSource::JS_FaceButtonEast,
-            "JS_FaceButtonWest",    InputSource::JS_FaceButtonWest,
-            "JS_FaceButtonSouth",   InputSource::JS_FaceButtonSouth,
-            "JS_FaceHome",          InputSource::JS_FaceHome,
-            "JS_FaceStart",         InputSource::JS_FaceStart,
-            "JS_FaceSelect",        InputSource::JS_FaceSelect,
-            "JS_ShoulderLeft",      InputSource::JS_ShoulderLeft,
-            "JS_ShoulderRight",     InputSource::JS_ShoulderRight,
-            "JS_TriggerLeft",       InputSource::JS_TriggerLeft,
-            "JS_TriggerRight",      InputSource::JS_TriggerRight,
-            "JS_DPadNorth",         InputSource::JS_DPadNorth,
-            "JS_DPadSouth",         InputSource::JS_DPadSouth,
-            "JS_DPadEast",          InputSource::JS_DPadEast,
-            "JS_DPadWest",          InputSource::JS_DPadWest,
-            "JS_AnalogLeftStickX",  InputSource::JS_AnalogLeftStickX,
-            "JS_AnalogLeftStickY",  InputSource::JS_AnalogLeftStickY,
-            "JS_AnalogLeftButton",  InputSource::JS_AnalogLeftButton,
-            "JS_AnalogRightStickX", InputSource::JS_AnalogRightStickX,
-            "JS_AnalogRightStickY", InputSource::JS_AnalogRightStickY,
-            "JS_AnalogRightButton", InputSource::JS_AnalogRightButton,
-            "KB_UP",     InputSource::KB_UP,
-            "KB_DOWN",   InputSource::KB_DOWN,
-            "KB_LEFT",   InputSource::KB_LEFT,
-            "KB_RIGHT",  InputSource::KB_RIGHT,
-            "KB_SPACE",  InputSource::KB_SPACE,
-            "KB_RETURN", InputSource::KB_RETURN
-        );
-        */
-    }
-
-    void
-    LuaComponent::exposeNanoVG()
-    {
         debugRegisteringClass("NanoVG");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
 
         stateView.new_usertype<NVGcolor>("NVGcolor");
         stateView.new_usertype<NVGpaint>("NVGpaint");
@@ -913,11 +533,6 @@ namespace Dream
             "NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST
         );
         stateView.new_usertype<NanoVGComponent>("NanoVGComponent",
-        /*
-            "BeginFrame",&NanoVGComponent::BeginFrame,
-            "CancelFrame",&NanoVGComponent::CancelFrame,
-            "EndFrame",&NanoVGComponent::EndFrame,
-        */
             "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation,
             "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc,
             "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate,
@@ -1014,55 +629,14 @@ namespace Dream
         );
 
         stateView["NanoVG"] = mProjectRuntime->getNanoVGComponent();
-
     }
 
     void
-    LuaComponent::removeFromScriptMap
-    (SceneObjectRuntime* sceneObject)
-    {
-        auto log = getLog();
-        map<SceneObjectRuntime*,ScriptInstance*>::iterator iter;
-        sol::state_view stateView(mState);
-        for(iter = begin(mScriptMap); iter != end(mScriptMap); iter++)
-        {
-            auto sObj = (*iter).first;
-            if (sObj == sceneObject)
-            {
-                stateView[sObj->getUuid()] = sol::lua_nil;
-
-                string name = sObj->getNameAndUuidString();
-                log->debug( "Removed script for {}" , name );
-
-                mScriptMap.erase(iter++);
-                break;
-            }
-        }
-    }
-
-    void
-    LuaComponent::addToScriptMap
-    (SceneObjectRuntime* sceneObject, ScriptInstance* script)
-    {
-        auto log = getLog();
-        log->debug(
-                    "Adding {} to script map for {}",
-                    script->getNameAndUuidString(),
-                    sceneObject->getNameAndUuidString()
-                    );
-
-        if (createScript(sceneObject,script))
-        {
-            mScriptMap.insert(
-                pair<SceneObjectRuntime*,ScriptInstance*>(sceneObject,script)
-            );
-        }
-    }
-
-    void LuaComponent::exposeGLM()
+    LuaComponent::exposeGLM
+    ()
     {
         debugRegisteringClass("GLM");
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
 
         stateView.new_usertype<glm::vec3>("vec3",
             "x", &glm::vec3::x,
@@ -1083,12 +657,10 @@ namespace Dream
     LuaComponent::exposeIDefinition
     ()
     {
-        sol::state_view stateView(mState);
+        sol::state_view stateView(State);
         stateView.new_usertype<IDefinition>("IDefinition");
 
     }
-
-    // API Exposure Methods ======================================================
 
     void
     LuaComponent::debugRegisteringClass
@@ -1096,7 +668,6 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "Registering Class {}",  className );
-        return;
     }
 
     void
@@ -1123,8 +694,6 @@ namespace Dream
         exposeShaderInstance();
         exposeGLM();
         exposeNanoVG();
-        // Input
-        exposeGainput();
         // Path
         exposePathComponent();
         exposePathInstance();
@@ -1146,5 +715,6 @@ namespace Dream
 
     LuaPrintListener::~LuaPrintListener(){}
 
+    lua_State* LuaComponent::State = nullptr;
 } // End of Dream
 

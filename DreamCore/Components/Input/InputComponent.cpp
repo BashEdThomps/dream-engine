@@ -15,7 +15,6 @@
 
 
 #include "InputComponent.h"
-#include "../Scripting/IScriptComponent.h"
 
 namespace Dream
 {

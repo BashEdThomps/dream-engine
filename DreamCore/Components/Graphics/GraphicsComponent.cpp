@@ -219,12 +219,15 @@ namespace Dream
     (SceneRuntime* sr)
     {
         auto log = getLog();
-        log->debug("Running Geometry Render Pass");
-
+        log->debug
+        (
+           "\n\n"
+           "==> Running Geometry Render Pass"
+           "\n"
+        );
         // Setup
         glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
@@ -420,6 +423,13 @@ namespace Dream
     GraphicsComponent::renderLightingPass
     ()
     {
+        auto log = getLog();
+        log->debug
+        (
+           "\n\n"
+           "==> Running Lighting Render Pass"
+           "\n"
+        );
         // Clear Buffer
         mWindowComponent->bindDefaultFrameBuffer();
         glClearColor(0.0f,0.0f,0.0f,1.0f);
@@ -493,9 +503,6 @@ namespace Dream
             )
         );
     }
-
-
-
 
     // Accessors ================================================================
 

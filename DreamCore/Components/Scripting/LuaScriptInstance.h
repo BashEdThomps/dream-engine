@@ -17,27 +17,44 @@
 
 #pragma once
 
-#include "../ScriptInstance.h"
-#include "../../Event.h"
-#include <vector>
-#include <string>
+#include "../IAssetInstance.h"
+#include "../Event.h"
 
 namespace Dream
 {
     class ScriptDefinition;
 
-    class LuaScriptInstance : public ScriptInstance
+    class LuaInstancePair
     {
-
     public:
-        LuaScriptInstance(
-            ScriptDefinition*,
-            SceneObjectRuntime*
-        );
+        SceneObjectRuntime* runtime = nullptr;
+        bool initialised = false;
+        bool error = false;
+    };
+
+    class LuaScriptInstance : public IAssetInstance
+    {
+    public:
+        LuaScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
         ~LuaScriptInstance() override;
         bool load(string) override;
         void update();
         void loadExtraAttributes(nlohmann::json) override;
+        void addInstance(SceneObjectRuntime*);
+        void removeInstance(SceneObjectRuntime*);
+        vector<SceneObjectRuntime*> getInstanceVector();
+        string getSource() const;
+        void setSource(string source);
 
+        bool executeOnInit();
+        bool executeOnUpdate();
+        bool executeOnInput();
+        bool executeOnEvent();
+        bool executeOnNanoVG();
+
+    private:
+        vector<LuaInstancePair> mInstances;
+        string mSource;
+        bool mError;
     }; // End of LuaScriptInstance
 } // End of Dream

@@ -920,7 +920,8 @@ namespace DreamTool
        float constant = lightDef->getConstant();
        float linear = lightDef->getLinear();
        float quadratic = lightDef->getQuadratic();
-       float innerCutOff, outerCutOff;;
+       float innerCutOff, outerCutOff;
+
        switch (lightDef->getType())
        {
            case LightType::LT_SPOTLIGHT:
@@ -1484,20 +1485,49 @@ namespace DreamTool
     PropertiesWindow::drawScriptProperties
     ()
     {
-        char buf[BigEditorBufferSize] = {0};
+        auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
+
+        ImGui::Columns(2);
+
+        if(ImGui::Button("Save"))
+        {
+
+        }
+
+        ImGui::NextColumn();
+
+        if(ImGui::Button("Revert"))
+        {
+
+        }
+
+        ImGui::Columns(1);
+
         TemplatesDirectoryModel templateModel;
         vector<string> templates = templateModel.getTemplateNames(AssetType::SCRIPT);
         int currentIndex = -1;
-        ImGui::Columns(2);
-        ImGui::Button("Save");
-        ImGui::NextColumn();
-        ImGui::Button("Revert");
-        ImGui::Columns(1);
         if (StringCombo("Template",&currentIndex,templates,templates.size()))
         {
             ImGui::OpenPopup("Load From Template?");
         }
+
         ImGui::Text("Script");
+
+        char buf[BigEditorBufferSize] = {0};
+        auto projRunt = mProject->getProjectRuntime();
+        if (projRunt)
+        {
+            auto scriptCache = projRunt->getScriptCache();
+            if (scriptCache)
+            {
+                auto scriptInst = dynamic_cast<LuaScriptInstance*>(scriptCache->getInstance(scriptDef));
+                if (scriptInst)
+                {
+                    strncpy(buf,scriptInst->getSource().c_str(),BigEditorBufferSize);
+                }
+            }
+        }
+
         ImGui::PushItemWidth(-1);
         ImGui::InputTextMultiline("##hidelabel",buf,BigEditorBufferSize,mBigEditorSize);
 

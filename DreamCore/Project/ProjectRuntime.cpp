@@ -36,9 +36,7 @@
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
-
-#include "../Components/Scripting/IScriptComponent.h"
-#include "../Components/Scripting/Lua/LuaComponent.h"
+#include "../Components/Scripting/LuaComponent.h"
 
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
@@ -196,12 +194,6 @@ namespace Dream
         mWindowComponent->setHeight(projDef->getWindowHeight());
         mWindowComponent->setName(projDef->getName());
 
-        /*if (!mWindowComponent->init())
-        {
-            log->error( "Unable to initialise WindowComponent" );
-            return false;
-        }
-        */
         return true;
     }
 
@@ -308,12 +300,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mScriptComponent = dynamic_cast<IScriptComponent*>(
-            new LuaComponent(
-                dynamic_cast<ProjectRuntime*>(this),
-                mScriptCache
-            )
-        );
+        mScriptComponent = new LuaComponent(this,mScriptCache);
 
         if(!mScriptComponent->init())
         {
@@ -342,7 +329,7 @@ namespace Dream
         mShaderCache  = new ShaderCache(this);
         mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
         mModelCache   = new ModelCache(this,mShaderCache, mMaterialCache);
-        mScriptCache  = new ScriptCache();
+        mScriptCache  = new ScriptCache(this);
         return true;
     }
 
@@ -468,7 +455,7 @@ namespace Dream
         return mCamera;
     }
 
-    IScriptComponent*
+    LuaComponent*
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -678,7 +665,14 @@ namespace Dream
     ProjectRuntime::getTextureCache
     ()
     {
-       return mTextureCache;
+        return mTextureCache;
+    }
+
+    ScriptCache*
+    ProjectRuntime::getScriptCache
+    ()
+    {
+       return mScriptCache;
     }
 
     void
