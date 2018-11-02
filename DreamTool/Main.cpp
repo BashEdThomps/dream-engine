@@ -19,13 +19,15 @@ using Dream::SceneDefinition;
 using Dream::ArgumentParser;
 using Dream::ProjectRuntime;
 using Dream::ProjectDefinition;
-using Dream::LuaComponent;
+using Dream::ScriptComponent;
 
 using DreamTool::DTWindowComponent;
 using DreamTool::ProjectBrowser;
 using DreamTool::PropertiesWindow;
 using DreamTool::MenuBar;
 using DreamTool::LuaDebugWindow;
+
+bool MainLoopDone = false;
 
 void showUsage(const char** argv)
 {
@@ -51,7 +53,7 @@ int main(int argc, const char** argv)
     PropertiesWindow propertiesWindow(&project);
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
     LuaDebugWindow luaDebugWindow(&project);
-    LuaComponent::AddPrintListener(&luaDebugWindow);
+    ScriptComponent::AddPrintListener(&luaDebugWindow);
     MenuBar menuBar(&project,&projectBrowser,&propertiesWindow, &luaDebugWindow);
 
     windowComponent.addWidget(&propertiesWindow);
@@ -64,12 +66,13 @@ int main(int argc, const char** argv)
     unsigned int frames = 0;
     double time = glfwGetTime();
     double one_sec = 1.0;
-    bool mDone = false;
-    while (!mDone)
+    while (!MainLoopDone)
     {
+
+        windowComponent.updateComponent(ProjectRuntime::CurrentSceneRuntime);
         if (windowComponent.shouldClose())
         {
-            mDone = true;
+            MainLoopDone = true;
         }
 
         if (ProjectRuntime::CurrentSceneRuntime != nullptr)

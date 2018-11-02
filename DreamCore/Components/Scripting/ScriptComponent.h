@@ -25,7 +25,7 @@ extern "C"
     #include <lauxlib.h>
 }
 
-#include "LuaScriptInstance.h"
+#include "ScriptInstance.h"
 #include "ScriptCache.h"
 #include "../IComponent.h"
 
@@ -44,21 +44,21 @@ namespace Dream
         virtual void onPrint(string) = 0;
     };
 
-    class LuaComponent : public IComponent
+    class ScriptComponent : public IComponent
     {
     public: // Methods
 
         static vector<LuaPrintListener*> PrintListeners;
         static void AddPrintListener(LuaPrintListener* listener);
 
-        LuaComponent(ProjectRuntime* runtime, ScriptCache* cache);
-       ~LuaComponent();
+        ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
+       ~ScriptComponent();
 
         bool init();
         void updateComponent(SceneRuntime*);
         bool updateNanoVG();
         bool loadScript(SceneObjectRuntime*);
-        bool createScript(SceneObjectRuntime*, LuaScriptInstance*);
+        bool createScript(SceneObjectRuntime*, ScriptInstance*);
         void exposeAPI();
         void debugRegisteringClass(string);
 

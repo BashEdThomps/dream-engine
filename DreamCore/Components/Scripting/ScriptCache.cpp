@@ -20,7 +20,7 @@
 
 #include "../../Utilities/File.h"
 #include "ScriptDefinition.h"
-#include "LuaScriptInstance.h"
+#include "ScriptInstance.h"
 
 namespace Dream
 {
@@ -53,7 +53,7 @@ namespace Dream
                 return inst;
             }
         }
-        auto newScript = new LuaScriptInstance(scriptDef,nullptr);
+        auto newScript = new ScriptInstance(scriptDef,nullptr);
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());

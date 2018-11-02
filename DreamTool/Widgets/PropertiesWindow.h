@@ -26,6 +26,7 @@ namespace DreamTool
         void draw() override;
         void pushPropertyTarget(PropertyType, IDefinition*, IRuntime*);
         void popPropertyTarget();
+        void clearPropertyTargets();
 
     private:
         int getStringIndexInVector(string str, vector<string> vec);

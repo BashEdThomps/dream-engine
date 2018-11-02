@@ -28,11 +28,14 @@ namespace DreamTool{
     TemplatesDirectoryModel::getTemplate
     (AssetType t, string templateName, string format)
     {
+        auto log = getLog();
         stringstream ss;
         ss << getTemplatesDirectory(t)
            << Constants::DIR_PATH_SEP
            << templateName
+           << Constants::DIR_PATH_SEP
            << format;
+        log->error("Loading template from {}" , ss.str());
         File templateFile(ss.str());
         return templateFile.readString();
     }

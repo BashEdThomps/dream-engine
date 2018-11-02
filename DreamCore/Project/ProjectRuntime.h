@@ -37,7 +37,7 @@ namespace Dream
     class GraphicsComponent;
     class IWindowComponent;
     class PhysicsComponent;
-    class LuaComponent;
+    class ScriptComponent;
     class NanoVGComponent;
     class Transform3D;
     class Camera;
@@ -72,7 +72,7 @@ namespace Dream
         NanoVGComponent* mNanoVGComponent;
         PhysicsComponent* mPhysicsComponent;
         PathComponent* mPathComponent;
-        LuaComponent* mScriptComponent;
+        ScriptComponent* mScriptComponent;
         IWindowComponent* mWindowComponent;
 
         // Caches
@@ -103,7 +103,7 @@ namespace Dream
         GraphicsComponent* getGraphicsComponent();
         NanoVGComponent* getNanoVGComponent();
         IWindowComponent* getWindowComponent();
-        LuaComponent* getScriptComponent();
+        ScriptComponent* getScriptComponent();
         Project* getProject();
         InputComponent* getInputComponent();
 

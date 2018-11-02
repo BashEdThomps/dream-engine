@@ -183,17 +183,15 @@ namespace DreamTool
     (SceneRuntime* sr)
     {
         auto log = spdlog::get("GLFWWindowComponent");
-        if (sr == nullptr)
-        {
-            log->error("No active scene runtime");
-            return;
-        }
 
         glfwPollEvents();
 
         if(glfwWindowShouldClose(mWindow))
         {
-            sr->setState(Dream::SCENE_STATE_STOPPED);
+            if (sr != nullptr)
+            {
+                sr->setState(Dream::SCENE_STATE_STOPPED);
+            }
             setShouldClose(true);
             log->error("Window should close");
         }
@@ -263,7 +261,8 @@ namespace DreamTool
     {
 
         ImGuiIO& io = ImGui::GetIO();
-        ImFont* pFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 16.0f);
+        RegularFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 16.0f);
+        MonoFont = io.Fonts->AddFontFromFileTTF("./fonts/SourceCodePro-Regular.ttf", 18.0f);
     }
 
     void
@@ -302,5 +301,8 @@ namespace DreamTool
             log->error("This instane of {} was not in the widgets list",widget->getClassName());
         }
     }
+
+    ImFont* DTWindowComponent::RegularFont = nullptr;
+    ImFont* DTWindowComponent::MonoFont = nullptr;
 } // End of Dream
 

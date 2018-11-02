@@ -1,3 +1,4 @@
+#include "../Window/DTWindowComponent.h"
 #include "PropertiesWindow.h"
 #include "ImGuiHelpers.h"
 #include "../deps/ImGui/imguifilesystem.h"
@@ -14,7 +15,7 @@ namespace DreamTool
           mDefinition(nullptr),
           mRuntime(nullptr),
           mImageSize(256,256),
-          mBigEditorSize(0,600)
+          mBigEditorSize(-1,-1)
     {
         setLogClassName("Properties Window");
     }
@@ -121,6 +122,14 @@ namespace DreamTool
         auto log = getLog();
         mHistory.pop_back();
         log->error("Popped target {}",mHistory.size());
+    }
+
+    void PropertiesWindow::clearPropertyTargets()
+    {
+        mHistory.clear();
+        setPropertyType(PropertyType::PROP_TYPE_NONE);
+        setDefinition(nullptr);
+        setRuntime(nullptr);
     }
 
     void
@@ -1485,13 +1494,35 @@ namespace DreamTool
     PropertiesWindow::drawScriptProperties
     ()
     {
+        auto log = getLog();
         auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
+        auto projRunt = mProject->getProjectRuntime();
+        char buf[BigEditorBufferSize] = {0};
+        ScriptInstance* scriptInst = nullptr;
+        if (projRunt)
+        {
+            auto scriptCache = projRunt->getScriptCache();
+            if (scriptCache)
+            {
+                scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(scriptDef));
+                if (scriptInst)
+                {
+                    strncpy(buf,scriptInst->getSource().c_str(),BigEditorBufferSize);
+                }
+            }
+        }
 
         ImGui::Columns(2);
 
         if(ImGui::Button("Save"))
         {
-
+            if(scriptInst)
+            {
+                ProjectDirectory pd(mProject);
+                string source = scriptInst->getSource();
+                vector<char> data(source.begin(),source.end());
+                pd.writeAssetData(scriptDef,data,Constants::ASSET_FORMAT_SCRIPT_LUA);
+            }
         }
 
         ImGui::NextColumn();
@@ -1505,31 +1536,27 @@ namespace DreamTool
 
         TemplatesDirectoryModel templateModel;
         vector<string> templates = templateModel.getTemplateNames(AssetType::SCRIPT);
-        int currentIndex = -1;
-        if (StringCombo("Template",&currentIndex,templates,templates.size()))
+        static int currentTemplateIndex = -1;
+        if (StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
         {
             ImGui::OpenPopup("Load From Template?");
         }
 
         ImGui::Text("Script");
 
-        char buf[BigEditorBufferSize] = {0};
-        auto projRunt = mProject->getProjectRuntime();
-        if (projRunt)
+
+
+        ImGui::PushFont(DTWindowComponent::MonoFont);
+        ImGui::PushItemWidth(-1);
+        if (ImGui::InputTextMultiline("##hidelabel",buf,BigEditorBufferSize,mBigEditorSize))
         {
-            auto scriptCache = projRunt->getScriptCache();
-            if (scriptCache)
+            if (scriptInst)
             {
-                auto scriptInst = dynamic_cast<LuaScriptInstance*>(scriptCache->getInstance(scriptDef));
-                if (scriptInst)
-                {
-                    strncpy(buf,scriptInst->getSource().c_str(),BigEditorBufferSize);
-                }
+                scriptInst->setSource(&buf[0]);
             }
         }
-
-        ImGui::PushItemWidth(-1);
-        ImGui::InputTextMultiline("##hidelabel",buf,BigEditorBufferSize,mBigEditorSize);
+        ImGui::PopItemWidth();
+        ImGui::PopFont();
 
         if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
@@ -1542,7 +1569,23 @@ namespace DreamTool
             ImGui::SameLine();
             if (ImGui::Button("Load Template"))
             {
-
+               if (currentTemplateIndex < 0)
+               {
+                   log->error("Cannot load Script template at index {}",currentTemplateIndex);
+               }
+               else
+               {
+                   auto templateName = templates.at(currentTemplateIndex);
+                   auto templateStr = templateModel.getTemplate(AssetType::SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_LUA);
+                   if (scriptInst)
+                   {
+                       scriptInst->setSource(templateStr);
+                   }
+                   else
+                   {
+                       log->error("Cannot set from template, script instance is null");
+                   }
+               }
                ImGui::CloseCurrentPopup();
             }
             ImGui::SetItemDefaultFocus();
@@ -1561,12 +1604,13 @@ namespace DreamTool
 
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
         auto projRunt = mProject->getProjectRuntime();
+        ShaderInstance* shaderInst = nullptr;
         if (projRunt)
         {
             auto shaderCache = projRunt->getShaderCache();
             if (shaderCache)
             {
-                auto shaderInst = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderDef));
+                shaderInst = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderDef));
                 if (shaderInst)
                 {
                     strncpy(vertBuf,shaderInst->getVertexSource().c_str(),BigEditorBufferSize);
@@ -1576,39 +1620,98 @@ namespace DreamTool
         }
         TemplatesDirectoryModel tmd;
         vector<string> templates = tmd.getTemplateNames(AssetType::SHADER);
-        int currentIndex = -1;
+        static int currentTemplateIndex = -1;
         ImGui::Columns(2);
-        ImGui::Button("Save");
+        if(ImGui::Button("Save"))
+        {
+           if (shaderInst)
+           {
+               ProjectDirectory pd(mProject);
+
+               string vSource = shaderInst->getVertexSource();
+               string fSource = shaderInst->getFragmentSource();
+
+               vector<char> vData(vSource.begin(),vSource.end());
+               vector<char> fData(fSource.begin(),fSource.end());
+
+               pd.writeAssetData(shaderDef,vData,Constants::SHADER_VERTEX_FILE_NAME);
+               pd.writeAssetData(shaderDef,fData,Constants::SHADER_FRAGMENT_FILE_NAME);
+           }
+        }
+
         ImGui::NextColumn();
+
         ImGui::Button("Revert");
+
         ImGui::Columns(1);
-        if(StringCombo("Template",&currentIndex,templates,templates.size()))
+
+        if(StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
         {
             ImGui::OpenPopup("Load From Template?");
         }
+
         ImGui::Separator();
+
+        ImGui::Columns(2);
         ImGui::Text("Vertex Shader");
         ImGui::PushItemWidth(-1);
-        ImGui::InputTextMultiline("##Vertex Shader",vertBuf,BigEditorBufferSize,mBigEditorSize);
+        ImGui::PushFont(DTWindowComponent::MonoFont);
+        if(ImGui::InputTextMultiline("##Vertex Shader",vertBuf,BigEditorBufferSize,mBigEditorSize))
+        {
+            if (shaderInst)
+            {
+                shaderInst->setVertexSource(&vertBuf[0]);
+            }
+        }
+        ImGui::PopFont();
         ImGui::PopItemWidth();
-        ImGui::Separator();
+
+        ImGui::NextColumn();
+
         ImGui::Text("Fragment Shader");
         ImGui::PushItemWidth(-1);
-        ImGui::InputTextMultiline("##Fragment Shader",fragBuf,BigEditorBufferSize,mBigEditorSize);
+        ImGui::PushFont(DTWindowComponent::MonoFont);
+        if(ImGui::InputTextMultiline("##Fragment Shader",fragBuf,BigEditorBufferSize,mBigEditorSize))
+        {
+            if (shaderInst)
+            {
+                shaderInst->setFragmentSource(&fragBuf[0]);
+            }
+        }
+        ImGui::PopFont();
         ImGui::PopItemWidth();
+        ImGui::Columns(1);
 
         if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Load Shader from template?\n\nThis will replace the existing Shader.\n\n");
             if (ImGui::Button("Cancel"))
             {
-               ImGui::CloseCurrentPopup();
+                ImGui::CloseCurrentPopup();
             }
-
             ImGui::SameLine();
             if (ImGui::Button("Load Template"))
             {
-
+                if (currentTemplateIndex < 0)
+                {
+                    log->error("Cannot load template {}",currentTemplateIndex);
+                }
+                else
+                {
+                    auto  templateName = templates.at(currentTemplateIndex);
+                    string vertTemplate = tmd.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
+                    string fragTemplate = tmd.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
+                    if (shaderInst)
+                    {
+                        shaderInst->setVertexSource(vertTemplate);
+                        shaderInst->setFragmentSource(fragTemplate);
+                    }
+                    else
+                    {
+                        log->error("Cannot set template, shader is null");
+                    }
+                    currentTemplateIndex = -1;
+                }
                ImGui::CloseCurrentPopup();
             }
             ImGui::SetItemDefaultFocus();

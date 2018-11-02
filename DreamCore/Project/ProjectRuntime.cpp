@@ -36,7 +36,7 @@
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
-#include "../Components/Scripting/LuaComponent.h"
+#include "../Components/Scripting/ScriptComponent.h"
 
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
@@ -300,7 +300,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mScriptComponent = new LuaComponent(this,mScriptCache);
+        mScriptComponent = new ScriptComponent(this,mScriptCache);
 
         if(!mScriptComponent->init())
         {
@@ -455,7 +455,7 @@ namespace Dream
         return mCamera;
     }
 
-    LuaComponent*
+    ScriptComponent*
     ProjectRuntime::getScriptComponent
     ()
     {
@@ -477,18 +477,14 @@ namespace Dream
         );
 
         mTime->updateFrameTime();
-
         mInputComponent->updateComponent(sr);
-
         if (mScriptingEnabled)
         {
             mScriptComponent->updateComponent(sr);
         }
-
         mCamera->updateCameraVectors();
         mPathComponent->updateComponent(sr);
         mAudioComponent->updateComponent(sr);
-        mWindowComponent->updateComponent(sr);
         mPhysicsComponent->updateComponent(sr);
         mGraphicsComponent->updateComponent(sr);
         return true;
@@ -694,7 +690,7 @@ namespace Dream
         if (mShaderCache   != nullptr) mShaderCache->clear();
         if (mMaterialCache != nullptr) mMaterialCache->clear();
         if (mTextureCache  != nullptr) mTextureCache->clear();
-        // TODO if (mScriptCache   != nullptr) mScriptCache->clear();
+        if (mScriptCache   != nullptr) mScriptCache->clear();
     }
 
     bool ProjectRuntime::getScriptingEnabled() const

@@ -13,6 +13,8 @@ using Dream::SceneRuntime;
 using Dream::ProjectRuntime;
 using Dream::ProjectDirectory;
 
+extern bool MainLoopDone;
+
 namespace DreamTool
 {
     MenuBar::MenuBar
@@ -154,6 +156,7 @@ namespace DreamTool
                                         ProjectRuntime::CurrentSceneRuntime = nullptr;
                                     }
                                     ProjectRuntime::CurrentSceneRuntime = projRunt->constructSceneRuntime(selectedSceneDef);
+                                    mPropertiesWindow->clearPropertyTargets();
                                 }
                             }
                         }
@@ -306,10 +309,12 @@ namespace DreamTool
             ImGui::Text("This directory does not contain a valid Dream Project\n\n");
             ImGui::Separator();
 
+            ImGui::PushItemWidth(-1);
             if (ImGui::Button("OK"))
             {
                 ImGui::CloseCurrentPopup();
             }
+            ImGui::PopItemWidth();
 
             ImGui::SetItemDefaultFocus();
             ImGui::EndPopup();
@@ -335,6 +340,7 @@ namespace DreamTool
             if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
             {
                 ImGui::CloseCurrentPopup();
+                MainLoopDone = true;
             }
 
             ImGui::SetItemDefaultFocus();

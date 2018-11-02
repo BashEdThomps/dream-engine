@@ -51,6 +51,8 @@ namespace DreamTool
         DTWindowComponent();
         ~DTWindowComponent() override;
 
+        static ImFont* RegularFont;
+        static ImFont* MonoFont;
         void updateComponent(SceneRuntime* sr) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;

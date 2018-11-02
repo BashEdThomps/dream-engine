@@ -47,8 +47,8 @@
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
 
 #include "../../Components/Scripting/ScriptDefinition.h"
-#include "../../Components/Scripting/LuaComponent.h"
-#include "../../Components/Scripting/LuaScriptInstance.h"
+#include "../../Components/Scripting/ScriptComponent.h"
+#include "../../Components/Scripting/ScriptInstance.h"
 
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
@@ -321,7 +321,7 @@ namespace Dream
         return mModelInstance;
     }
 
-    LuaScriptInstance*
+    ScriptInstance*
     SceneObjectRuntime::getScriptInstance
     ()
     {
@@ -757,7 +757,7 @@ namespace Dream
         auto scriptCache = (mSceneRuntimeHandle->getProjectRuntime()->getScriptCache());
         if (scriptCache)
         {
-            mScriptInstance = dynamic_cast<LuaScriptInstance*>(scriptCache->getInstance(definition));
+            mScriptInstance = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(definition));
             if (mScriptInstance != nullptr)
             {
                 mScriptInstance->addInstance(this);

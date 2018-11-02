@@ -24,7 +24,7 @@ namespace Dream
 {
     class ScriptDefinition;
 
-    class LuaInstancePair
+    class ScriptInstanceState
     {
     public:
         SceneObjectRuntime* runtime = nullptr;
@@ -32,11 +32,11 @@ namespace Dream
         bool error = false;
     };
 
-    class LuaScriptInstance : public IAssetInstance
+    class ScriptInstance : public IAssetInstance
     {
     public:
-        LuaScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
-        ~LuaScriptInstance() override;
+        ScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
+        ~ScriptInstance() override;
         bool load(string) override;
         void update();
         void loadExtraAttributes(nlohmann::json) override;
@@ -53,7 +53,7 @@ namespace Dream
         bool executeOnNanoVG();
 
     private:
-        vector<LuaInstancePair> mInstances;
+        vector<ScriptInstanceState> mInstances;
         string mSource;
         bool mError;
     }; // End of LuaScriptInstance

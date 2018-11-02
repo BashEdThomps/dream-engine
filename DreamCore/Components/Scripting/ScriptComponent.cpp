@@ -14,8 +14,8 @@
  * this file belongs to.
  */
 
-#include "LuaComponent.h"
-#include "LuaScriptInstance.h"
+#include "ScriptComponent.h"
+#include "ScriptInstance.h"
 #include "../Event.h"
 #include "../Transform3D.h"
 #include "../Time.h"
@@ -56,7 +56,7 @@ static int l_my_print(lua_State* L)
     }
 
     string out = stream.str();
-    for (auto listener : Dream::LuaComponent::PrintListeners)
+    for (auto listener : Dream::ScriptComponent::PrintListeners)
     {
         listener->onPrint(out);
     }
@@ -71,7 +71,7 @@ static const struct luaL_Reg printlib [] =
 
 namespace Dream
 {
-    LuaComponent::LuaComponent
+    ScriptComponent::ScriptComponent
     (ProjectRuntime* runtime, ScriptCache* cache)
         : IComponent(),
           mScriptCache(cache),
@@ -82,7 +82,7 @@ namespace Dream
         log->trace( "Constructing Object" );
     }
 
-    LuaComponent::~LuaComponent
+    ScriptComponent::~ScriptComponent
     ()
     {
         auto log = getLog();
@@ -91,7 +91,7 @@ namespace Dream
     }
 
     bool
-    LuaComponent::init
+    ScriptComponent::init
     ()
     {
         auto log = getLog();
@@ -116,7 +116,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::updateComponent
+    ScriptComponent::updateComponent
     (SceneRuntime*)
     {
         beginUpdate();
@@ -125,7 +125,7 @@ namespace Dream
 
         for (auto inst : mScriptCache->getInstanceVector())
         {
-            auto scriptObj = dynamic_cast<LuaScriptInstance*>(inst);
+            auto scriptObj = dynamic_cast<ScriptInstance*>(inst);
             scriptObj->executeOnInit();
             scriptObj->executeOnInput();
             scriptObj->executeOnEvent();
@@ -135,7 +135,7 @@ namespace Dream
     }
 
     bool
-    LuaComponent::updateNanoVG
+    ScriptComponent::updateNanoVG
     ()
     {
         auto log = getLog();
@@ -143,7 +143,7 @@ namespace Dream
         mProjectRuntime->getNanoVGComponent()->BeginFrame();
         for (auto inst : mScriptCache->getInstanceVector())
         {
-            auto scriptObj = dynamic_cast<LuaScriptInstance*>(inst);
+            auto scriptObj = dynamic_cast<ScriptInstance*>(inst);
             scriptObj->executeOnNanoVG();
         }
         mProjectRuntime->getNanoVGComponent()->EndFrame();
@@ -153,7 +153,7 @@ namespace Dream
     // API Exposure Methods ======================================================
 
     void
-    LuaComponent::exposeProjectRuntime
+    ScriptComponent::exposeProjectRuntime
     ()
     {
         debugRegisteringClass("ProjectRuntime");
@@ -176,7 +176,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeCamera
+    ScriptComponent::exposeCamera
     ()
     {
         debugRegisteringClass("Camera");
@@ -213,7 +213,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposePathComponent
+    ScriptComponent::exposePathComponent
     ()
     {
         debugRegisteringClass("PathComponent");
@@ -222,7 +222,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposePathInstance
+    ScriptComponent::exposePathInstance
     ()
     {
         debugRegisteringClass("PathInstance");
@@ -238,7 +238,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeGraphicsComponent
+    ScriptComponent::exposeGraphicsComponent
     ()
     {
         debugRegisteringClass("GraphicsComponent");
@@ -247,7 +247,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeLightInstance
+    ScriptComponent::exposeLightInstance
     ()
     {
         debugRegisteringClass("LightInstance");
@@ -256,7 +256,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeShaderInstance
+    ScriptComponent::exposeShaderInstance
     ()
     {
         debugRegisteringClass("ShaderInstance");
@@ -287,7 +287,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposePhysicsComponent
+    ScriptComponent::exposePhysicsComponent
     ()
     {
         debugRegisteringClass("PhysicsComponent");
@@ -298,7 +298,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposePhysicsObjectInstance
+    ScriptComponent::exposePhysicsObjectInstance
     ()
     {
         debugRegisteringClass("PhysicsObjectInstance");
@@ -326,7 +326,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeSceneObjectRuntime
+    ScriptComponent::exposeSceneObjectRuntime
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
@@ -368,7 +368,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeTransform3D
+    ScriptComponent::exposeTransform3D
     ()
     {
         debugRegisteringClass("Transform3D");
@@ -428,7 +428,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeTime
+    ScriptComponent::exposeTime
     ()
     {
         debugRegisteringClass("Time");
@@ -446,7 +446,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeAssimpModelInstance
+    ScriptComponent::exposeAssimpModelInstance
     ()
     {
         debugRegisteringClass("AssimpModelInstance");
@@ -455,7 +455,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeEvent
+    ScriptComponent::exposeEvent
     ()
     {
         debugRegisteringClass("Event");
@@ -472,7 +472,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeAudioComponent
+    ScriptComponent::exposeAudioComponent
     ()
     {
         debugRegisteringClass("AudioComponent");
@@ -481,14 +481,14 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeScriptInstance
+    ScriptComponent::exposeScriptInstance
     ()
     {
         // TODO
     }
 
     void
-    LuaComponent::exposeAudioInstance
+    ScriptComponent::exposeAudioInstance
     ()
     {
         debugRegisteringClass("AudioInstance");
@@ -509,7 +509,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeNanoVG
+    ScriptComponent::exposeNanoVG
     ()
     {
         debugRegisteringClass("NanoVG");
@@ -632,7 +632,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeGLM
+    ScriptComponent::exposeGLM
     ()
     {
         debugRegisteringClass("GLM");
@@ -654,7 +654,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeIDefinition
+    ScriptComponent::exposeIDefinition
     ()
     {
         sol::state_view stateView(State);
@@ -663,7 +663,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::debugRegisteringClass
+    ScriptComponent::debugRegisteringClass
     (string className)
     {
         auto log = getLog();
@@ -671,7 +671,7 @@ namespace Dream
     }
 
     void
-    LuaComponent::exposeAPI
+    ScriptComponent::exposeAPI
     ()
     {
         // Definitions
@@ -704,10 +704,10 @@ namespace Dream
         exposePhysicsObjectInstance();
     }
 
-    vector<LuaPrintListener*> LuaComponent::PrintListeners;
+    vector<LuaPrintListener*> ScriptComponent::PrintListeners;
 
     void
-    LuaComponent::AddPrintListener
+    ScriptComponent::AddPrintListener
     (LuaPrintListener* listener)
     {
         PrintListeners.push_back(listener);
@@ -715,6 +715,6 @@ namespace Dream
 
     LuaPrintListener::~LuaPrintListener(){}
 
-    lua_State* LuaComponent::State = nullptr;
+    lua_State* ScriptComponent::State = nullptr;
 } // End of Dream
 

@@ -15,28 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LuaScriptInstance.h"
+#include "ScriptInstance.h"
 #include "ScriptDefinition.h"
-#include "LuaComponent.h"
+#include "ScriptComponent.h"
 
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../deps/sol2/sol.hpp"
 
 namespace Dream
 {
-    LuaScriptInstance::LuaScriptInstance
+    ScriptInstance::ScriptInstance
     (ScriptDefinition* definition, SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
           mSource(""),
           mError(false)
     {
-        setLogClassName("LuaScriptInstance");
+        setLogClassName("ScriptInstance");
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString());
         return;
     }
 
-    LuaScriptInstance::~LuaScriptInstance
+    ScriptInstance::~ScriptInstance
     ()
     {
         auto log = getLog();
@@ -44,7 +44,7 @@ namespace Dream
     }
 
     bool
-    LuaScriptInstance::load
+    ScriptInstance::load
     (string projectPath)
     {
         auto log = getLog();
@@ -54,21 +54,21 @@ namespace Dream
     }
 
     void
-    LuaScriptInstance::update
+    ScriptInstance::update
     ()
     {
 
     }
 
     void
-    LuaScriptInstance::loadExtraAttributes
+    ScriptInstance::loadExtraAttributes
     (nlohmann::json)
     {
 
     }
 
     void
-    LuaScriptInstance::addInstance
+    ScriptInstance::addInstance
     (SceneObjectRuntime* sor)
     {
         auto log = getLog();
@@ -89,8 +89,8 @@ namespace Dream
             log->debug( "loadScript called for {}", id );
             log->debug( "calling scriptLoadFromString in lua for {}" , id );
 
-            sol::state_view solStateView(LuaComponent::State);
-            sol::environment environment(LuaComponent::State, sol::create, solStateView.globals());
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
 
             solStateView[sor->getUuid()] = environment;
 
@@ -120,7 +120,7 @@ namespace Dream
                 error = true;
             }
             log->debug("Loaded Script Successfully");
-            auto pair = LuaInstancePair();
+            auto pair = ScriptInstanceState();
             pair.runtime = sor;
             pair.initialised = false;
             pair.error = error;
@@ -129,7 +129,7 @@ namespace Dream
     }
 
     void
-    LuaScriptInstance::removeInstance
+    ScriptInstance::removeInstance
     (SceneObjectRuntime* sor)
     {
         auto log = getLog();
@@ -146,7 +146,7 @@ namespace Dream
 
         if (target != mInstances.end())
         {
-            sol::state_view stateView(LuaComponent::State);
+            sol::state_view stateView(ScriptComponent::State);
             stateView[sor->getUuid()] = sol::lua_nil;
             log->debug( "Removed script lua table for {}" , sor->getNameAndUuidString());
             mInstances.erase(target);
@@ -154,14 +154,14 @@ namespace Dream
     }
 
     string
-    LuaScriptInstance::getSource
+    ScriptInstance::getSource
     () const
     {
         return mSource;
     }
 
     void
-    LuaScriptInstance::setSource
+    ScriptInstance::setSource
     (string source)
     {
         mSource = source;
@@ -170,11 +170,11 @@ namespace Dream
     // Function Execution =======================================================
 
     bool
-    LuaScriptInstance::executeOnUpdate
+    ScriptInstance::executeOnUpdate
     ()
     {
         auto log = getLog();
-        sol::state_view solStateView(LuaComponent::State);
+        sol::state_view solStateView(ScriptComponent::State);
         for (auto& sceneObject : mInstances)
         {
             if (sceneObject.error)
@@ -205,11 +205,11 @@ namespace Dream
     }
 
     bool
-    LuaScriptInstance::executeOnInit
+    ScriptInstance::executeOnInit
     ()
     {
         auto log = getLog();
-        sol::state_view solStateView(LuaComponent::State);
+        sol::state_view solStateView(ScriptComponent::State);
         for (auto& sceneObject : mInstances)
         {
             if (sceneObject.error)
@@ -245,11 +245,11 @@ namespace Dream
     }
 
     bool
-    LuaScriptInstance::executeOnInput
+    ScriptInstance::executeOnInput
     ()
     {
         auto log = getLog();
-        sol::state_view solStateView(LuaComponent::State);
+        sol::state_view solStateView(ScriptComponent::State);
         for (auto& sceneObject : mInstances)
         {
             if (sceneObject.error)
@@ -286,11 +286,11 @@ namespace Dream
     }
 
     bool
-    LuaScriptInstance::executeOnEvent
+    ScriptInstance::executeOnEvent
     ()
     {
         auto log = getLog();
-        sol::state_view solStateView(LuaComponent::State);
+        sol::state_view solStateView(ScriptComponent::State);
         for (auto& sceneObject : mInstances)
         {
             if (sceneObject.error)
@@ -333,11 +333,11 @@ namespace Dream
     }
 
     bool
-    LuaScriptInstance::executeOnNanoVG
+    ScriptInstance::executeOnNanoVG
     ()
     {
         auto log = getLog();
-        sol::state_view solStateView(LuaComponent::State);
+        sol::state_view solStateView(ScriptComponent::State);
         for (auto& sceneObject : mInstances)
         {
             if (sceneObject.error)

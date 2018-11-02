@@ -40,7 +40,7 @@ namespace Dream
     class ModelInstance;
     class LightInstance;
     class PhysicsObjectInstance;
-    class LuaScriptInstance;
+    class ScriptInstance;
     class ParticleEmitterInstance;
     class SceneRuntime;
     class SceneObjectDefinition;
@@ -95,7 +95,7 @@ namespace Dream
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
         ModelInstance* getModelInstance();
-        LuaScriptInstance* getScriptInstance();
+        ScriptInstance* getScriptInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
 
@@ -175,7 +175,7 @@ namespace Dream
         ParticleEmitterInstance* mParticleEmitterInstance;
         PathInstance* mPathInstance;
         PhysicsObjectInstance* mPhysicsObjectInstance;
-        LuaScriptInstance* mScriptInstance;
+        ScriptInstance* mScriptInstance;
         Transform3D* mTransform;
 
         ModelInstance* mModelInstance;
