@@ -1,16 +1,12 @@
 cmake_minimum_required (VERSION 2.8.0)
 
-project (Dream)
+project (Dream C CXX)
 
 set(DREAM_BUILD_CORE ON)
-set(DREAM_BUILD_GLFW ON)
+set(DREAM_BUILD_GLFW OFF)
 set(DREAM_BUILD_TOOL ON)
 
-set(
-  CMAKE_MODULE_PATH
-  "${Dream_SOURCE_DIR}/CMakeModules"
-)
-
+set(CMAKE_MODULE_PATH "${Dream_SOURCE_DIR}/CMakeModules")
 message("Using modules path: " ${CMAKE_MODULE_PATH})
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
@@ -28,11 +24,9 @@ set(CMAKE_COLOR_MAKEFILE   ON)
 # Remove 'lib' prefix for shared libraries on Windows
 if (WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
-  message("Don't forget to add <PropertyGroup><PreferredToolArchitecture>x64</PreferredToolArchitecture></PropertyGroup> to Default.Cpp.Probs in .vcxproj")
-  set(CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE "x64")
-  #set(CMAKE_GENERATOR_TOOLSET "host=x64")
-  #set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}" /MTd")
-  #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}" /MTd")
+  # BigObj is required by sol2
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif()
 
 if (APPLE)

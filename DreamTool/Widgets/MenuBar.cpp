@@ -153,6 +153,7 @@ namespace DreamTool
                 int sceneToDestroyIndex = -1;
                 if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
                 {
+					mPropertiesWindow->clearPropertyTargets();
                     if (pRuntime)
                     {
                         auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);
@@ -340,14 +341,14 @@ namespace DreamTool
 
         if (showPleaseDestroyScenesDialog)
         {
-           ImGui::OpenPopup("Active Scenes");
+           ImGui::OpenPopup("Loaded Scenes");
         }
 
         if(ImGui::BeginPopupModal("Loaded Scenes", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text
             (
-                "There are 1 or more Loaded Scenes.\n"
+                "There are one or more Loaded Scenes.\n"
                 "\n"
                 "Please destroy them before clearing Caches.\n"
                 "\n"
@@ -373,14 +374,14 @@ namespace DreamTool
             ImGui::Text("Are you sure you want to quit?\n\nAny unsaved changes will be lost.\n\n");
             ImGui::Separator();
 
-            if (ImGui::Button("Cancel##cancelQuit", ImVec2(-1, 0)))
+            if (ImGui::Button("Cancel##cancelQuit", ImVec2(120, 0)))
             {
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Quit##confirmQuit", ImVec2(-1, 0)))
+            if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
             {
                 ImGui::CloseCurrentPopup();
                 MainLoopDone = true;

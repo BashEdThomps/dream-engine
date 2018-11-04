@@ -41,18 +41,25 @@ else()
             ${VORBIS_INCLUDE_DIR}
         )
 endif()
-message(${SRC_FILES})
-add_library(
-    DreamCore
-    SHARED
-    ${SRC_FILES}
-)
+
+if (WIN32)
+    add_library(
+        DreamCore
+        ${SRC_FILES}
+    )
+else()
+    add_library(
+        DreamCore
+        SHARED
+        ${SRC_FILES}
+    )
+endif()
 
 IF (WIN32)
         target_link_libraries(
             DreamCore
             ${ALUT_LIBRARY}
-            ${ASSIMP_LIBRARIES}
+            ${ASSIMP_LIBRARY_RELEASE}
             ${BULLET_LIBRARY}
             ${GLEW_LIBRARY_RELEASE}
             ${LUA_LIBRARIES}

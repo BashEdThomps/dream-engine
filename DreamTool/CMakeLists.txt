@@ -29,8 +29,8 @@ if (WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
         DreamCore
-                ${ASSIMP_LIBRARIES}
-                ${BULLET_LIBRARY}
+        ${ASSIMP_LIBRARY_RELEASE}
+        ${BULLET_LIBRARY}
         ${GLFW_LIBRARY}
         ${LUA_LIBRARIES}
     )
@@ -40,8 +40,8 @@ else()
         DreamCore
         -lpthread
         -ldl
-            ${ASSIMP_LIBRARIES}
-            ${BULLET_LIBRARY}
+        ${ASSIMP_LIBRARIES}
+        ${BULLET_LIBRARY}
         ${GLFW_LIBRARY}
         ${LUA_LIBRARIES}
     )

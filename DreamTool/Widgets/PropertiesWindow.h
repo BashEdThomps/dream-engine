@@ -6,7 +6,7 @@
 using Dream::IDefinition;
 using Dream::IRuntime;
 
-#define BigEditorBufferSize 1024*1024
+#define BigEditorBufferSize 1024*16
 
 namespace DreamTool
 {

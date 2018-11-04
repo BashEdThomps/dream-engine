@@ -1,7 +1,12 @@
 #include "Directory.h"
 #include "File.h"
 
+#ifdef WIN32
+#include "../deps/dirent.h"
+#include <direct.h>
+#else
 #include <dirent.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <regex>
@@ -94,7 +99,11 @@ namespace Dream
     Directory::create
     ()
     {
+#ifdef WIN32
+        return mkdir(mPath.c_str()) == 0;
+#else
         return mkdir(mPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+#endif
     }
 
     bool Directory::deleteDirectory()

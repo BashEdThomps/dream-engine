@@ -1379,7 +1379,8 @@ namespace DreamTool
             auto currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
             auto currentMaterialDef = projDef->getAssetDefinitionByUuid(currentMaterialUuid);
             int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::MATERIAL,currentMaterialDef);
-            if(StringCombo("##hidelabel",&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
+			string itemName = "##Material:" + modelMaterial;
+            if(StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
             {
                 auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
