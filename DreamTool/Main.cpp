@@ -7,37 +7,40 @@
 #include "Widgets/PropertiesWindow.h"
 #include "Widgets/MenuBar.h"
 #include "Widgets/LuaDebugWindow.h"
+#include "Widgets/SceneStateWindow.h"
 
 #define MINIMUM_ARGUMENTS 3
 
-using std::shared_ptr;
-using std::unique_ptr;
-using Dream::Constants;
-using Dream::Project;
-using Dream::SceneState;
-using Dream::SceneDefinition;
-using Dream::ArgumentParser;
-using Dream::ProjectRuntime;
-using Dream::ProjectDefinition;
-using Dream::ScriptComponent;
-
-using DreamTool::DTWindowComponent;
-using DreamTool::ProjectBrowser;
-using DreamTool::PropertiesWindow;
-using DreamTool::MenuBar;
-using DreamTool::LuaDebugWindow;
+using namespace std;
+using namespace Dream;
+using namespace DreamTool;
 
 bool MainLoopDone = false;
 
-void showUsage(const char** argv)
+static unsigned int Frames = 0;
+static double CurrentTime = glfwGetTime();
+static double OneSec = 1.0;
+static bool CountFPS = false;
+
+void
+showFPS
+()
 {
-    cout << "Usage:" << endl
-         << argv[0] << endl
-         << "\t" << Constants::PROJECT_DIRECTORY_ARG << " <path/to/dream/project>" << endl
-         << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
+    if (glfwGetTime() > CurrentTime + OneSec)
+    {
+        cout << "FPS: " <<  Frames << endl;
+        Frames = 0;
+        CurrentTime = glfwGetTime();
+    }
+    else
+    {
+        Frames++;
+    }
 }
 
-int main(int argc, const char** argv)
+int
+main
+(int,char**)
 {
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
@@ -54,60 +57,54 @@ int main(int argc, const char** argv)
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
     LuaDebugWindow luaDebugWindow(&project);
     ScriptComponent::AddPrintListener(&luaDebugWindow);
-    MenuBar menuBar(&project,&projectBrowser,&propertiesWindow, &luaDebugWindow);
+    SceneStateWindow sceneStateWindow(&project);
+    MenuBar menuBar
+    (
+        &project,
+        &projectBrowser,
+        &propertiesWindow,
+        &luaDebugWindow,
+        &sceneStateWindow
+    );
 
     windowComponent.addWidget(&propertiesWindow);
     windowComponent.addWidget(&projectBrowser);
     windowComponent.addWidget(&luaDebugWindow);
+    windowComponent.addWidget(&sceneStateWindow);
     windowComponent.addWidget(&menuBar);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
-    unsigned int frames = 0;
-    double time = glfwGetTime();
-    double one_sec = 1.0;
     while (!MainLoopDone)
     {
-
-        windowComponent.updateComponent(ProjectRuntime::CurrentSceneRuntime);
         if (windowComponent.shouldClose())
         {
             MainLoopDone = true;
         }
 
-        if (ProjectRuntime::CurrentSceneRuntime != nullptr)
+        auto projectRuntime = project.getProjectRuntime();
+
+        if (projectRuntime == nullptr)
         {
-            auto projectRuntime = project.getProjectRuntime();
-            if (ProjectRuntime::CurrentSceneRuntime->getState() == SceneState::SCENE_STATE_STOPPED)
-            {
-                projectRuntime->destructSceneRuntime(ProjectRuntime::CurrentSceneRuntime);
-                ProjectRuntime::CurrentSceneRuntime = nullptr;
-            }
-            else
-            {
-                projectRuntime->updateLogic(ProjectRuntime::CurrentSceneRuntime);
-                projectRuntime->updateGraphics(ProjectRuntime::CurrentSceneRuntime);
-                projectRuntime->collectGarbage(ProjectRuntime::CurrentSceneRuntime);
-            }
-        }
-        else
-        {
-            glfwPollEvents();
+            windowComponent.updateComponent(nullptr);
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
+        else if (projectRuntime)
+        {
+            if(!projectRuntime->hasActiveScene())
+            {
+                windowComponent.updateComponent(nullptr);
+                glClearColor(0.0f,0.0f,0.0f,0.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            }
+            projectRuntime->updateAll();
+        }
+
         Dream::ShaderInstance::InvalidateState();
         windowComponent.drawImGui();
         windowComponent.swapBuffers();
-        if (glfwGetTime() > time + one_sec)
-        {
-            //cout << "FPS: " <<  frames << endl;
-            frames = 0;
-            time = glfwGetTime();
-        }
-        else
-        {
-            frames++;
-        }
+        if (CountFPS) showFPS();
         std::this_thread::yield();
     }
 

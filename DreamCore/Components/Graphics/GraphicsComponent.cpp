@@ -65,7 +65,6 @@
 #include "../../Utilities/Math.h"
 #include "../Time.h"
 
-
 using glm::vec3;
 using glm::mat4;
 using glm::rotate;
@@ -77,9 +76,9 @@ namespace Dream
 
 
     GraphicsComponent::GraphicsComponent
-    (Camera* camera, IWindowComponent* windowComponent)
+    (IWindowComponent* windowComponent)
         : IComponent(),
-          mCamera(camera),
+          mCamera(nullptr),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
@@ -116,8 +115,6 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Initialising");
-
-
 
         onWindowDimensionsChanged();
         checkGLError();
@@ -190,14 +187,14 @@ namespace Dream
         beginUpdate();
         auto log = getLog();
         log->debug("GraphicsComponrnt: updateComponent() Called" );
-
-        // View transform
+        setMeshCullDistance(sr->getMeshCullDistance());
+        setMinimumDraw(sr->getMinDrawDistance());
+        setMaximumDraw(sr->getMaxDrawDistance());
+        mCamera = sr->getCamera();
+        mCamera->updateCameraVectors();
         mViewMatrix = mCamera->getViewMatrix();
-
-        if (!mWindowComponent->shouldClose())
-        {
-            updateLightQueue(sr);
-        }
+        mLightingShader = sr->getLightingShader();
+        updateLightQueue(sr);
         endUpdate();
     }
 
@@ -243,7 +240,7 @@ namespace Dream
                 clearColour[Constants::RED_INDEX],
                 clearColour[Constants::GREEN_INDEX],
                 clearColour[Constants::BLUE_INDEX],
-                1.0f//clearColour[Constants::ALPHA_INDEX]
+                1.0f
             );
         }
         else
@@ -424,16 +421,24 @@ namespace Dream
     ()
     {
         auto log = getLog();
+
         log->debug
         (
            "\n\n"
            "==> Running Lighting Render Pass"
            "\n"
         );
-        // Clear Buffer
+
         mWindowComponent->bindDefaultFrameBuffer();
+        // Clear Buffer
         glClearColor(0.0f,0.0f,0.0f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (mLightingShader == nullptr)
+        {
+            log->error("Lighting Shader is nullptr");
+            return;
+        }
 
         //glDisable(GL_DEPTH);
         //glDisable(GL_BLEND);
@@ -547,13 +552,6 @@ namespace Dream
     ()
     {
         mLightQueue.clear();
-    }
-
-    Camera*
-    GraphicsComponent::getCamera
-    ()
-    {
-        return mCamera;
     }
 
     void

@@ -190,7 +190,7 @@ namespace DreamTool
         {
             if (sr != nullptr)
             {
-                sr->setState(Dream::SCENE_STATE_STOPPED);
+                sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
             log->error("Window should close");

@@ -164,7 +164,6 @@ namespace Dream
             "getPhysicsComponent",&ProjectRuntime::getPhysicsComponent,
             "getWindowComponent",&ProjectRuntime::getWindowComponent,
             "getTime",&ProjectRuntime::getTime,
-            "getCamera",&ProjectRuntime::getCamera,
             "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid,
             "getAssetPath",&ProjectRuntime::getAssetAbsolutePath,
             "getSceneObject",&ProjectRuntime::getSceneObjectRuntimeByUuid,
@@ -203,7 +202,6 @@ namespace Dream
             "orbit",&Camera::orbit
         );
 
-        stateView["Camera"] = mProjectRuntime->getCamera();
         stateView.new_enum("CameraMovement",
             "FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD,
             "BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD,

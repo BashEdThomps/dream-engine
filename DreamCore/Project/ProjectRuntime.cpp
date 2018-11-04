@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ProjectRuntime.cpp
  *
  * Created: 05 2017 by Ashley
@@ -30,7 +30,6 @@
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Input/InputComponent.h"
-#include "../Components/Graphics/Camera.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
@@ -43,8 +42,6 @@
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Shader/ShaderInstance.h"
 #include "../Components/Graphics/Texture/TextureCache.h"
-
-using std::endl;
 
 namespace Dream
 {
@@ -59,7 +56,6 @@ namespace Dream
           ),
           mDone(false),
           mTime(nullptr),
-          mCamera(nullptr),
           mProject(project),
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
@@ -93,12 +89,6 @@ namespace Dream
         {
             delete mTime;
             mTime = nullptr;
-        }
-
-        if (mCamera != nullptr)
-        {
-            delete mCamera;
-            mCamera = nullptr;
         }
 
         deleteCaches();
@@ -189,11 +179,9 @@ namespace Dream
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-
         mWindowComponent->setWidth(projDef->getWindowWidth());
         mWindowComponent->setHeight(projDef->getWindowHeight());
         mWindowComponent->setName(projDef->getName());
-
         return true;
     }
 
@@ -251,8 +239,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        mCamera = new Camera();
-        mGraphicsComponent = new GraphicsComponent(mCamera,mWindowComponent);
+        mGraphicsComponent = new GraphicsComponent(mWindowComponent);
         mGraphicsComponent->setTime(mTime);
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
@@ -260,7 +247,6 @@ namespace Dream
             log->error( "Unable to initialise Graphics Component." );
             return false;
         }
-
         return true;
     }
 
@@ -278,7 +264,6 @@ namespace Dream
         }
         return true;
     }
-
 
     bool
     ProjectRuntime::initPathComponent
@@ -301,21 +286,10 @@ namespace Dream
     {
         auto log = getLog();
         mScriptComponent = new ScriptComponent(this,mScriptCache);
-
         if(!mScriptComponent->init())
         {
             log->error( "Unable to initialise Script Engine." );
             return false;
-        }
-
-        if (mInputComponent != nullptr)
-        {
-            //mScriptComponent->setInputMap(mInputComponent->getInputMap());
-            log->debug("Passed InputMap to ScriptComponent");
-        }
-        else
-        {
-            log->error("Cannot pass InputMap to ScriptComponent, nullptr");
         }
         return true;
     }
@@ -448,13 +422,6 @@ namespace Dream
        return mNanoVGComponent;
     }
 
-    Camera*
-    ProjectRuntime::getCamera
-    ()
-    {
-        return mCamera;
-    }
-
     ScriptComponent*
     ProjectRuntime::getScriptComponent
     ()
@@ -478,14 +445,13 @@ namespace Dream
 
         mTime->updateFrameTime();
         mInputComponent->updateComponent(sr);
+        mPhysicsComponent->updateComponent(sr);
+        mPathComponent->updateComponent(sr);
         if (mScriptingEnabled)
         {
             mScriptComponent->updateComponent(sr);
         }
-        mCamera->updateCameraVectors();
-        mPathComponent->updateComponent(sr);
         mAudioComponent->updateComponent(sr);
-        mPhysicsComponent->updateComponent(sr);
         mGraphicsComponent->updateComponent(sr);
         return true;
     }
@@ -571,53 +537,132 @@ namespace Dream
 
     void
     ProjectRuntime::updateAll
-    (SceneRuntime* rt)
+    ()
     {
-        if (rt != nullptr)
+        auto log = getLog();
+        vector<SceneRuntime*> toRemove;
+        for (auto rt : mSceneRuntimeVector)
         {
-            updateLogic(rt);
-            updateGraphics(rt);
-            collectGarbage(rt);
+            log->trace("UpdateAll on {}",rt->getNameAndUuidString());
+            switch (rt->getState())
+            {
+                case SceneState::SCENE_STATE_TO_LOAD:
+                    constructSceneRuntime(rt);
+                    break;
+                case SceneState::SCENE_STATE_LOADED:
+                    break;
+                case SceneState::SCENE_STATE_ACTIVE:
+                    mWindowComponent->updateComponent(rt);
+                    updateLogic(rt);
+                    updateGraphics(rt);
+                    collectGarbage(rt);
+                    break;
+                case SceneState::SCENE_STATE_TO_DESTROY:
+                    destructSceneRuntime(rt);
+                    break;
+                case SceneState::SCENE_STATE_DESTROYED:
+                    toRemove.push_back(rt);
+                    break;
+            }
+        }
+
+        for (auto rt : toRemove)
+        {
+           auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
+           if (itr != mSceneRuntimeVector.end())
+           {
+               mSceneRuntimeVector.erase(itr);
+           }
         }
     }
 
     SceneRuntime*
+    ProjectRuntime::getActiveSceneRuntime
+    ()
+    {
+       int nRuntimes = mSceneRuntimeVector.size();
+       for (int i=0;i<nRuntimes;i++)
+       {
+           if (mSceneRuntimeVector.at(i)->getState() == SceneState::SCENE_STATE_ACTIVE)
+           {
+               return mSceneRuntimeVector.at(i);
+           }
+       }
+       return nullptr;
+    }
+
+    SceneRuntime*
+    ProjectRuntime::getSceneRuntimeByUuid
+    (string uuid)
+    {
+        for (auto sr : mSceneRuntimeVector)
+        {
+            if (sr->getUuid().compare(uuid) == 0)
+            {
+                return sr;
+            }
+        }
+        return nullptr;
+    }
+
+    void
+    ProjectRuntime::setSceneRuntimeActive
+    (string uuid)
+    {
+       int nRuntimes = mSceneRuntimeVector.size();
+       for (int i=0;i<nRuntimes;i++)
+       {
+           auto srt = mSceneRuntimeVector.at(i);
+           if (srt->getUuid().compare(uuid) == 0)
+           {
+               srt->setState(SceneState::SCENE_STATE_ACTIVE);
+           }
+           else
+           {
+               if (srt->getState() == SceneState::SCENE_STATE_ACTIVE)
+               {
+                    srt->setState(SceneState::SCENE_STATE_LOADED);
+               }
+           }
+       }
+    }
+
+    vector<SceneRuntime*>
+    ProjectRuntime::getSceneRuntimeVector
+    ()
+    {
+       return mSceneRuntimeVector;
+    }
+
+    void
+    ProjectRuntime::addSceneRuntime
+    (SceneRuntime* rt)
+    {
+        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+        if (itr == mSceneRuntimeVector.end())
+        {
+            mSceneRuntimeVector.push_back(rt);
+        }
+    }
+
+    void
+    ProjectRuntime::removeSceneRuntime
+    (SceneRuntime* rt)
+    {
+        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+        if (itr != mSceneRuntimeVector.end())
+        {
+            mSceneRuntimeVector.erase(itr);
+        }
+    }
+
+    bool
     ProjectRuntime::constructSceneRuntime
-    (SceneDefinition* sceneDefinition)
+    (SceneRuntime* rt)
     {
         auto log = getLog();
-        SceneRuntime* rt = nullptr;
-        if (sceneDefinition == nullptr)
-        {
-            log->error( "Cannot load SceneRuntime. SceneDefinition is nullptr!" );
-            return nullptr;
-        }
-
-        // Load the new scene
-        log->debug( "Loading SceneRuntime" );
-
-        rt = new SceneRuntime(sceneDefinition,this);
-
-        if (!rt->useDefinition())
-        {
-            delete rt;
-            return nullptr;
-        }
-
-        mTextureCache->flushRawTextureImageData();
-
-        if (mGraphicsComponent != nullptr)
-        {
-            mGraphicsComponent->setMeshCullDistance(sceneDefinition->getMeshCullDistance());
-            mGraphicsComponent->setMinimumDraw(sceneDefinition->getMinDrawDistance());
-            mGraphicsComponent->setMaximumDraw(sceneDefinition->getMaxDrawDistance());
-        }
-        else
-        {
-            log->error("Unable to set mesh cull distance, graphics component is still null");
-        }
-
-        return rt;
+        log->debug( "Constructing Scene Runtime" );
+        return rt->useDefinition();
     }
 
     Project*
@@ -675,11 +720,11 @@ namespace Dream
     ProjectRuntime::destructSceneRuntime
     (SceneRuntime* rt, bool clearCaches)
     {
+        rt->destroyRuntime();
         if (clearCaches)
         {
             clearAllCaches();
         }
-        delete rt;
     }
 
     void
@@ -741,5 +786,44 @@ namespace Dream
         return mProject->getProjectPath();
     }
 
-    SceneRuntime* ProjectRuntime::CurrentSceneRuntime = nullptr;
+    bool
+    ProjectRuntime::hasActiveScene
+    ()
+    {
+        for (auto srt : mSceneRuntimeVector)
+        {
+            if (srt->getState() == SceneState::SCENE_STATE_ACTIVE) return true;
+        }
+        return false;
+    }
+
+    bool
+    ProjectRuntime::hasLoadedScenes
+    ()
+    {
+        for (auto srt : mSceneRuntimeVector)
+        {
+            if (
+                srt->getState() >= SceneState::SCENE_STATE_LOADED
+                &&
+                srt->getState() < SceneState::SCENE_STATE_DESTROYED
+            )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    bool
+    ProjectRuntime::hasSceneRuntime
+    (string uuid)
+    {
+        for (auto srt : mSceneRuntimeVector)
+        {
+            if (srt->getUuid().compare(uuid) == 0) return true;
+        }
+        return false;
+    }
 }

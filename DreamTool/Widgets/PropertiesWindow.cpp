@@ -263,12 +263,6 @@ namespace DreamTool
     {
         auto log = getLog();
 
-
-        if (ProjectRuntime::CurrentSceneRuntime)
-        {
-            mRuntime = ProjectRuntime::CurrentSceneRuntime;
-        }
-
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
 

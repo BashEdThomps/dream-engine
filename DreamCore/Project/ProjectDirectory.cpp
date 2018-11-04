@@ -161,7 +161,6 @@ namespace Dream
         auto path = getAssetDirectoryPath(ad);
         log->debug("Removing asset directory {}",path);
         Directory d(path);
-
         return d.deleteDirectory();
     }
 
@@ -169,11 +168,16 @@ namespace Dream
     ProjectDirectory::saveProject
     ()
     {
-        auto jsDef = mProject->getProjectDefinition()->getJson();
-        auto jsonStr = jsDef.dump(1);
-        auto path = getProjectFilePath();
-        File f(path);
-        return f.writeString(jsonStr);
+        auto pDef = mProject->getProjectDefinition();
+        if (pDef)
+        {
+            auto jsDef = pDef->getJson();
+            auto jsonStr = jsDef.dump(1);
+            auto path = getProjectFilePath();
+            File f(path);
+            return f.writeString(jsonStr);
+        }
+        return false;
     }
 
     string

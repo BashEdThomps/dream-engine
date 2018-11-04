@@ -40,7 +40,6 @@ namespace Dream
     class ScriptComponent;
     class NanoVGComponent;
     class Transform3D;
-    class Camera;
     class SceneRuntime;
     class SceneDefinition;
     class MaterialCache;
@@ -62,7 +61,6 @@ namespace Dream
         bool mDone;
 
         Time* mTime;
-        Camera* mCamera;
         Project* mProject;
 
         // Components
@@ -83,6 +81,8 @@ namespace Dream
         ScriptCache* mScriptCache;
         bool mScriptingEnabled;
 
+        vector<SceneRuntime*> mSceneRuntimeVector;
+
     public: // Public Functions
         ProjectRuntime(
             Project* parentProject,
@@ -92,10 +92,7 @@ namespace Dream
         void setDone(bool);
         bool isDone();
 
-        Camera* getCamera();
         Time* getTime();
-
-        static SceneRuntime* CurrentSceneRuntime;
 
         PathComponent* getPathComponent();
         AudioComponent* getAudioComponent();
@@ -112,7 +109,7 @@ namespace Dream
         void collectGarbage(SceneRuntime* rt);
         void collectGarbage() override;
 
-        void updateAll(SceneRuntime* rt);
+        void updateAll();
         bool updateLogic(SceneRuntime* rt);
         void updateGraphics(SceneRuntime* rt);
 
@@ -122,8 +119,8 @@ namespace Dream
         int getWindowHeight();
         void setWindowHeight(int);
 
-        SceneRuntime* constructSceneRuntime(SceneDefinition* sceneDefinition);
-        void destructSceneRuntime(SceneRuntime* rt, bool clearCaches = true);
+        bool constructSceneRuntime(SceneRuntime* rt);
+        void destructSceneRuntime(SceneRuntime* rt, bool clearCaches = false);
         void clearAllCaches();
 
         bool useDefinition() override;
@@ -136,13 +133,23 @@ namespace Dream
 
         bool getScriptingEnabled() const;
         void setScriptingEnabled(bool);
+        bool hasActiveScene();
 
         IAssetDefinition* getAssetDefinitionByUuid(string uuid);
         string getAssetAbsolutePath(string uuid);
 
         SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, string uuid);
-
         string getProjectPath();
+        SceneRuntime* getActiveSceneRuntime();
+        SceneRuntime* getSceneRuntimeByUuid(string uuid);
+
+        void addSceneRuntime(SceneRuntime*);
+        void removeSceneRuntime(SceneRuntime*);
+        void setSceneRuntimeActive(string uuid);
+        vector<SceneRuntime*> getSceneRuntimeVector();
+        bool hasSceneRuntime(string uuid);
+        bool hasLoadedScenes();
+
     private: // Member Functions
         bool initPathComponent();
         bool initAudioComponent();

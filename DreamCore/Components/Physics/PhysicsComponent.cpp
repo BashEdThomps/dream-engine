@@ -180,6 +180,10 @@ namespace Dream
             auto log = getLog();
             log->debug( "Update Called" );
 
+            // Setup Physics
+            setGravity(sr->getGravity());
+            setDebug(sr->getPhysicsDebug());
+
             populatePhysicsWorld(sr);
             btScalar stepValue = 0.0;
             if (mTime == nullptr )

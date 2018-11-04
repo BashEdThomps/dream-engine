@@ -3,28 +3,31 @@
 #include "LuaDebugWindow.h"
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
+#include "SceneStateWindow.h"
 
 #include "../deps/ImGui/imgui_internal.h"
 #include "../deps/ImGui/imguifilesystem.h"
 
-using Dream::SceneDefinition;
-using Dream::SceneState;
-using Dream::SceneRuntime;
-using Dream::ProjectRuntime;
-using Dream::ProjectDirectory;
-
+using namespace Dream;
 extern bool MainLoopDone;
 
 namespace DreamTool
 {
     MenuBar::MenuBar
-    (Project* def, ProjectBrowser* pb, PropertiesWindow* pw, LuaDebugWindow* debugWindow)
+    (
+        Project* def,
+        ProjectBrowser* pb,
+        PropertiesWindow* pw,
+        LuaDebugWindow* debugWindow,
+        SceneStateWindow* sceneStateWindow
+    )
         : DTWidget(def),
           mProjectBrowser(pb),
           mPropertiesWindow(pw),
-          mLuaDebugWindow(debugWindow)
+          mLuaDebugWindow(debugWindow),
+          mSceneStateWindow(sceneStateWindow)
     {
-
+        setLogClassName("MenuBar");
     }
 
     MenuBar::~MenuBar
@@ -38,10 +41,13 @@ namespace DreamTool
     {
         auto log = getLog();
 
-        bool showQuit = false;
+        bool showQuitDialog = false;
         bool newButtonClicked = false;
         bool openButtonClicked = false;
-        bool saveSuccess = false;
+        bool showSaveSuccessDialog = false;
+        bool showPleaseDestroyScenesDialog = false;
+
+        auto pRuntime = mProject->getProjectRuntime();
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -54,7 +60,7 @@ namespace DreamTool
                     ProjectDirectory pDir(mProject);
                     if(pDir.saveProject())
                     {
-                        saveSuccess = true;
+                        showSaveSuccessDialog = true;
                     }
                 }
                 ImGui::Separator();
@@ -63,56 +69,42 @@ namespace DreamTool
 
                 }
                 ImGui::Separator();
-                showQuit = ImGui::MenuItem("Quit");
+                showQuitDialog = ImGui::MenuItem("Quit");
                 ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("View"))
             {
                 bool showProjectBrowser = !mProjectBrowser->getHidden();
-                bool showPropertiesWindow = !mPropertiesWindow->getHidden();
-
                 if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
                 {
                     mProjectBrowser->setHidden(!showProjectBrowser);
                 }
 
+                bool showPropertiesWindow = !mPropertiesWindow->getHidden();
                 if(ImGui::Checkbox("Properties Window",&showPropertiesWindow))
                 {
                    mPropertiesWindow->setHidden(!showPropertiesWindow);
                 }
 
+                bool showSceneStatesWindow = !mSceneStateWindow->getHidden();
+                if (ImGui::Checkbox("Scene States",&showSceneStatesWindow))
+                {
+                   mSceneStateWindow->setHidden(!showSceneStatesWindow);
+                }
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
+
                 ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("Scene"))
             {
-
-                SceneRuntime* sceneRuntime = ProjectRuntime::CurrentSceneRuntime;
-                if (ImGui::MenuItem("Start Scene"))
-                {
-                    if(sceneRuntime)
-                    {
-                        sceneRuntime->setState(SceneState::SCENE_STATE_NOT_LOADED);
-                    }
-                }
-                if (ImGui::MenuItem("Stop Scene"))
-                {
-                    if(sceneRuntime)
-                    {
-                        sceneRuntime->setState(SceneState::SCENE_STATE_STOPPED);
-                    }
-                }
-
-                ImGui::Separator();
-
                 vector<string> sceneNames;
-                static int sceneIndex = -1;
 
+                ProjectDefinition* projDef = nullptr;
                 if (mProject)
                 {
-                    auto projDef = mProject->getProjectDefinition();
+                    projDef = mProject->getProjectDefinition();
                     if (projDef)
                     {
                         auto scenesVector = projDef->getSceneDefinitionsVector();
@@ -123,47 +115,52 @@ namespace DreamTool
                     }
                 }
 
-                if (StringCombo("Active Scene", &sceneIndex, sceneNames, sceneNames.size()))
+                int sceneToLoadIndex = -1;
+                if (StringCombo("Set Scene \"To Load\"", &sceneToLoadIndex, sceneNames, sceneNames.size()))
                 {
-                    ImGui::OpenPopup("Change Scene?");
+                    auto selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
+                    if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
+                    {
+                        auto newSceneRT = new SceneRuntime(selectedSceneDef,pRuntime);
+                        newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
+                        pRuntime->addSceneRuntime(newSceneRT);
+                    }
                 }
 
-                if (ImGui::BeginPopupModal("Change Scene?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                vector<string> runtimeNames;
+                if (pRuntime)
                 {
-                    ImGui::Text("Do you want to switch to this Scene?");
-                    ImGui::Separator();
+                    for (auto s : pRuntime->getSceneRuntimeVector())
+                    {
+                        // Show only loaded scenes
+                        runtimeNames.push_back(s->getName());
+                    }
+                }
 
-                    if (ImGui::Button("Not Now", ImVec2(120, 0)))
+                int sceneActiveIndex = -1;
+                if (StringCombo("Set Scene \"Active\"", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
+                {
+                    if (pRuntime)
                     {
-                        ImGui::CloseCurrentPopup();
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Switch Scene", ImVec2(120, 0)))
-                    {
-                        if (mProject)
+                        auto rt = pRuntime->getSceneRuntimeVector().at(sceneActiveIndex);
+                        if (rt)
                         {
-                            auto projDef = mProject->getProjectDefinition();
-                            if (projDef)
-                            {
-                                auto selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneIndex);
-                                auto projRunt = mProject->getProjectRuntime();
-                                if (projRunt)
-                                {
-                                    if (ProjectRuntime::CurrentSceneRuntime)
-                                    {
-                                        ProjectRuntime::CurrentSceneRuntime->setState(SceneState::SCENE_STATE_STOPPED);
-                                        projRunt->destructSceneRuntime(ProjectRuntime::CurrentSceneRuntime);
-                                        ProjectRuntime::CurrentSceneRuntime = nullptr;
-                                    }
-                                    ProjectRuntime::CurrentSceneRuntime = projRunt->constructSceneRuntime(selectedSceneDef);
-                                    mPropertiesWindow->clearPropertyTargets();
-                                }
-                            }
+                            pRuntime->setSceneRuntimeActive(rt->getUuid());
                         }
-                        ImGui::CloseCurrentPopup();
                     }
-                    ImGui::SetItemDefaultFocus();
-                    ImGui::EndPopup();
+                }
+
+                int sceneToDestroyIndex = -1;
+                if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
+                {
+                    if (pRuntime)
+                    {
+                        auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);
+                        if (rt)
+                        {
+                            rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
+                        }
+                    }
                 }
 
                 ImGui::EndMenu();
@@ -191,12 +188,13 @@ namespace DreamTool
 
                     ImGui::EndMenu();
                 }
+
                 float volume = 1.0f;
                 if(ImGui::SliderFloat("Volume",&volume,0.0f,1.0f))
                 {
 
                 }
-                auto pRuntime = mProject->getProjectRuntime();
+
                 bool scripting = false;
                 if (pRuntime)
                 {
@@ -212,7 +210,14 @@ namespace DreamTool
 
                 if (ImGui::MenuItem("Clear Caches"))
                 {
-
+                    if (pRuntime && !pRuntime->hasLoadedScenes())
+                    {
+                        pRuntime->clearAllCaches();
+                    }
+                    else
+                    {
+                        showPleaseDestroyScenesDialog = true;
+                    }
                 }
 
                 ImGui::EndMenu();
@@ -224,6 +229,21 @@ namespace DreamTool
                 if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
                 {
                     mLuaDebugWindow->setHidden(!showLuaDebug);
+                }
+
+                if (pRuntime)
+                {
+                    auto active = pRuntime->getActiveSceneRuntime();
+                    auto physicsDebug = active ? active->getPhysicsDebug() : false;
+                    if (ImGui::Checkbox("Physics Debug",&physicsDebug))
+                    {
+                       if (active)
+                       {
+                           active->setPhysicsDebug(physicsDebug);
+                           dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
+                       }
+
+                    }
                 }
 
                 if(ImGui::BeginMenu("Engine Logging"))
@@ -304,40 +324,63 @@ namespace DreamTool
             ImGui::OpenPopup("Failed to open Project");
         }
 
-        if (ImGui::BeginPopupModal("Failed to open Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::BeginPopupModal("Failed to open Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("This directory does not contain a valid Dream Project\n\n");
             ImGui::Separator();
 
-            ImGui::PushItemWidth(-1);
-            if (ImGui::Button("OK"))
+            if (ImGui::Button("OK",ImVec2(-1,0)))
             {
                 ImGui::CloseCurrentPopup();
             }
-            ImGui::PopItemWidth();
 
             ImGui::SetItemDefaultFocus();
             ImGui::EndPopup();
         }
 
-        if (showQuit)
+        if (showPleaseDestroyScenesDialog)
+        {
+           ImGui::OpenPopup("Active Scenes");
+        }
+
+        if(ImGui::BeginPopupModal("Loaded Scenes", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text
+            (
+                "There are 1 or more Loaded Scenes.\n"
+                "\n"
+                "Please destroy them before clearing Caches.\n"
+                "\n"
+            );
+            ImGui::Separator();
+
+            if (ImGui::Button("OK##clearCachesDialog", ImVec2(-1, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
+        if (showQuitDialog)
         {
             ImGui::OpenPopup("Quit?");
         }
 
-        if (ImGui::BeginPopupModal("Quit?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::BeginPopupModal("Quit?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Are you sure you want to quit?\n\nAny unsaved changes will be lost.\n\n");
             ImGui::Separator();
 
-            if (ImGui::Button("Cancel##cancelQuit", ImVec2(120, 0)))
+            if (ImGui::Button("Cancel##cancelQuit", ImVec2(-1, 0)))
             {
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
+            if (ImGui::Button("Quit##confirmQuit", ImVec2(-1, 0)))
             {
                 ImGui::CloseCurrentPopup();
                 MainLoopDone = true;
@@ -347,26 +390,23 @@ namespace DreamTool
             ImGui::EndPopup();
         }
 
-        if (saveSuccess)
+        if (showSaveSuccessDialog)
         {
             ImGui::OpenPopup("Save Success");
         }
 
-        if (ImGui::BeginPopupModal("Save Success", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::BeginPopupModal("Save Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Project Saved Successfully!");
             ImGui::Separator();
 
-            ImGui::PushItemWidth(-1);
-            if (ImGui::Button("OK"))
+            if (ImGui::Button("OK",ImVec2(-1,0)))
             {
                 ImGui::CloseCurrentPopup();
             }
-            ImGui::PopItemWidth();
 
             ImGui::SetItemDefaultFocus();
             ImGui::EndPopup();
         }
-
     }
 }

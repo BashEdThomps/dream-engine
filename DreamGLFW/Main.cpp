@@ -83,14 +83,7 @@ int main(int argc, const char** argv)
     }
 
     log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
-
-    auto sr = pr->constructSceneRuntime(startupSceneDefinition);
-
-    if (sr == nullptr)
-    {
-        log->error("Unable to create scene runtime, gotta go...");
-        return -1;
-    }
+    auto sr = new SceneRuntime(startupSceneDefinition,pr);
 
     spdlog::set_level(spdlog::level::err);
 
@@ -98,11 +91,9 @@ int main(int argc, const char** argv)
     unsigned int frames = 0;
     double time = glfwGetTime();
     double one_sec = 1.0;
-    while(sr->getState() != SceneState::SCENE_STATE_STOPPED)
+    while(sr->getState() != SceneState::SCENE_STATE_TO_DESTROY)
     {
-        pr->updateLogic(sr);
-        pr->updateGraphics(sr);
-        pr->collectGarbage(sr);
+        pr->updateAll();
 
         windowComponent.swapBuffers();
         if (glfwGetTime() > time + one_sec)

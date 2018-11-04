@@ -35,21 +35,24 @@
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
 
-
-
 namespace Dream
 {
+
+
     SceneRuntime::SceneRuntime
     (
-        SceneDefinition* sd,
-        ProjectRuntime* project
+            SceneDefinition* sd,
+            ProjectRuntime* project
     ) : IRuntime(sd, sd->getName(),sd->getUuid()),
+        mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
         mProjectRuntime(project),
-        mRootSceneObjectRuntime(nullptr)
+        mRootSceneObjectRuntime(nullptr),
+        mMinDrawDistance(0.1f),
+        mMaxDrawDistance(1000.0f),
+        mMeshCullDistance(1000.0f)
     {
-
         setLogClassName("SceneRuntime");
         auto log = getLog();
         log->trace( "Constructing " );
@@ -60,12 +63,34 @@ namespace Dream
     {
         auto log = getLog();
         log->trace("Destructing");
+        if (mState != SCENE_STATE_DESTROYED)
+        {
+            destroyRuntime();
+        }
+    }
+
+    void
+    SceneRuntime::destroyRuntime
+    ()
+    {
+        getLog()->critical("Destroying runtime {}",getNameAndUuidString());
 
         if (mRootSceneObjectRuntime != nullptr)
         {
             delete mRootSceneObjectRuntime;
             mRootSceneObjectRuntime = nullptr;
         }
+
+        /* Now on the stack
+        if (mCamera != nullptr)
+        {
+            delete mCamera;
+            mCamera = nullptr;
+        }
+        */
+        mLightingShader = nullptr;
+        mSceneObjectRuntimeCleanUpQueue.clear();
+        mState = SceneState::SCENE_STATE_DESTROYED;
     }
 
     SceneState
@@ -79,7 +104,15 @@ namespace Dream
     SceneRuntime::setState
     (SceneState state)
     {
-        mState = state;
+        if (state >= mState ||
+            (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
+        {
+            mState = state;
+        }
+        else
+        {
+            getLog()->error("Cannot switch scene state from {} to {}",mState,state);
+        }
     }
 
     vector<float>
@@ -267,11 +300,11 @@ namespace Dream
     ()
     {
         auto log = getLog();
-
         auto sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
         {
+            log->error("SceneDefinition is null");
             return false;
         }
 
@@ -284,26 +317,14 @@ namespace Dream
         setClearColour(sceneDefinition->getClearColour());
 
         // Setup Camera
-        mCameraHandle = mProjectRuntime->getCamera();
-        if (mCameraHandle == nullptr)
-        {
-            log->error("Camera is null");
-            return false;
-        }
-        mCameraHandle->setTranslation(sceneDefinition->getCameraTranslation());
-        mCameraHandle->setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
-        mCameraHandle->setPitch(sceneDefinition->getCameraPitch());
-        mCameraHandle->setYaw(sceneDefinition->getCameraYaw());
+        mCamera.setTranslation(sceneDefinition->getCameraTranslation());
+        mCamera.setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
+        mCamera.setPitch(sceneDefinition->getCameraPitch());
+        mCamera.setYaw(sceneDefinition->getCameraYaw());
 
-        // Setup Physics
-        auto physics = mProjectRuntime->getPhysicsComponent();
-        if (physics == nullptr)
-        {
-            log->error("Physics component is null");
-            return false;
-        }
-        physics->setGravity(sceneDefinition->getGravity());
-        physics->setDebug(sceneDefinition->getPhysicsDebug());
+        setMeshCullDistance(sceneDefinition->getMeshCullDistance());
+        setMinDrawDistance(sceneDefinition->getMinDrawDistance());
+        setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
 
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
@@ -311,20 +332,8 @@ namespace Dream
         mLightingShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
         if (mLightingShader == nullptr)
         {
-            log->error(
-                        "Unable to load lighting shader {} for Scene {}",
-                        shaderUuid,
-                        getNameAndUuidString()
-                        );
+            log->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
-        auto gfx = mProjectRuntime->getGraphicsComponent();
-        if (gfx == nullptr)
-        {
-            log->error("Graphics Component is null");
-            return false;
-        }
-        gfx->setLightingShader(mLightingShader);
-
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
         auto sor = new SceneObjectRuntime(sod,this);
@@ -336,7 +345,7 @@ namespace Dream
             return false;
         }
         setRootSceneObjectRuntime(sor);
-        setState(SCENE_STATE_LOADED);
+        setState(SceneState::SCENE_STATE_LOADED);
         mProjectRuntime->getShaderCache()->logShaders();
         return true;
     }
@@ -366,58 +375,58 @@ namespace Dream
     SceneRuntime::getCameraMovementSpeed
     ()
     {
-        return mCameraHandle->getMovementSpeed();
+        return mCamera.getMovementSpeed();
     }
 
     void
     SceneRuntime::setCameraMovementSpeed
     (float cameraMovementSpeed)
     {
-        mCameraHandle->setMovementSpeed(cameraMovementSpeed);
+        mCamera.setMovementSpeed(cameraMovementSpeed);
     }
 
     glm::vec3 SceneRuntime::getCameraLookAt()
     {
-        return mCameraHandle->getLookAt();
+        return mCamera.getLookAt();
     }
 
     void SceneRuntime::setCameraLookAt(glm::vec3 lookAt)
     {
-        mCameraHandle->setLookAt(lookAt);
+        mCamera.setLookAt(lookAt);
     }
 
     float SceneRuntime::getCameraPitch()
     {
-        return mCameraHandle->getPitch();
+        return mCamera.getPitch();
     }
 
     void SceneRuntime::setCameraPitch(float pitch)
     {
-        mCameraHandle->setPitch(pitch);
+        mCamera.setPitch(pitch);
     }
 
     float SceneRuntime::getCameraYaw()
     {
-        return mCameraHandle->getYaw();
+        return mCamera.getYaw();
     }
 
     void SceneRuntime::setCameraYaw(float yaw)
     {
-        mCameraHandle->setYaw(yaw);
+        mCamera.setYaw(yaw);
     }
 
     vec3
     SceneRuntime::getCameraTranslation
     ()
     {
-        return mCameraHandle->getTranslation();
+        return mCamera.getTranslation();
     }
 
     void
     SceneRuntime::setCameraTranslation
     (vec3 tx)
     {
-        mCameraHandle->setTranslation(tx);
+        mCamera.setTranslation(tx);
     }
 
     ShaderInstance*
@@ -438,51 +447,44 @@ namespace Dream
     SceneRuntime::setMeshCullDistance
     (float mcd)
     {
-       if (mProjectRuntime)
-       {
-           auto gfx = mProjectRuntime->getGraphicsComponent();
-           if (gfx)
-           {
-               gfx->setMeshCullDistance(mcd);
-           }
-       }
+      mMeshCullDistance = mcd;
     }
 
     float
     SceneRuntime::getMeshCullDistance
     ()
     {
-        if (mProjectRuntime)
-        {
-            auto gfx = mProjectRuntime->getGraphicsComponent();
-            if (gfx)
-            {
-               return gfx->getMeshCullDistance();
-            }
-        }
-        return 0.f;
+        return mMeshCullDistance;
     }
 
     void
     SceneRuntime::setMinDrawDistance
     (float f)
     {
-       auto gfx = mProjectRuntime->getGraphicsComponent();
-       if (gfx)
-       {
-           gfx->setMinimumDraw(f);
-       }
+        mMinDrawDistance = f;
+    }
+
+    float SceneRuntime::getMinDrawDistance() const
+    {
+        return mMinDrawDistance;
+    }
+
+    float SceneRuntime::getMaxDrawDistance() const
+    {
+        return mMaxDrawDistance;
     }
 
     void
     SceneRuntime::setMaxDrawDistance
     (float f)
     {
-       auto gfx = mProjectRuntime->getGraphicsComponent();
-       if (gfx)
-       {
-           gfx->setMaximumDraw(f);
-       }
+        mMaxDrawDistance = f;
     }
 
+    Camera*
+    SceneRuntime::getCamera
+    ()
+    {
+        return &mCamera;
+    }
 } // End of Dream

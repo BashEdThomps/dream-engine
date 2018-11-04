@@ -50,7 +50,6 @@ namespace DreamTool
 
        // Project Tree
         auto projDef = mProject->getProjectDefinition();
-        //auto projRunt = mProject->getProjectRuntime();
 
         ImGui::Text("Scenegraph");
 
@@ -83,13 +82,19 @@ namespace DreamTool
                     {
                         log->error("Scene Clicked {}", sDef->getName());
 
-                        SceneRuntime* sRunt = nullptr;// TODO projRunt->getActiveSceneRuntime();
+                        auto pRunt = mProject->getProjectRuntime();
+                        SceneRuntime* sRunt = nullptr;
+                        if (pRunt)
+                        {
+                            sRunt = pRunt->getActiveSceneRuntime();
+                        }
+
                         if (sRunt != nullptr)
                         {
                             if (sRunt->getUuid().compare(sDef->getUuid()) != 0)
                             {
-                                sRunt = nullptr;
                                 log->error("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
+                                sRunt = nullptr;
                             }
                         }
 
@@ -129,14 +134,9 @@ namespace DreamTool
                 if (ImGui::IsItemClicked())
                 {
                     SceneObjectRuntime* soRt = nullptr;
-                    if (ProjectRuntime::CurrentSceneRuntime)
+                    if (projRunt->getActiveSceneRuntime())
                     {
-                        soRt = mProject
-                            ->getProjectRuntime()
-                            ->getSceneObjectRuntimeByUuid(
-                                ProjectRuntime::CurrentSceneRuntime,
-                                def->getUuid()
-                        );
+                        soRt = projRunt->getActiveSceneRuntime()->getSceneObjectRuntimeByUuid(def->getUuid());
                     }
                     log->error("SceneObject Clicked {}",def->getName());
                     mPropertiesWindowHandle->pushPropertyTarget

@@ -147,7 +147,7 @@ namespace DreamGLFW
 
         if(glfwWindowShouldClose(mWindow))
         {
-           sr->setState(Dream::SCENE_STATE_STOPPED);
+           sr->setState(Dream::SCENE_STATE_TO_DESTROY);
         }
 
         if (WindowSizeChanged)

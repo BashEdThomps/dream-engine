@@ -143,7 +143,7 @@ namespace Dream
     {
         auto log = getLog();
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
-        auto fileName = mPath.substr(endOfPath);
+        auto fileName = mPath.substr(endOfPath+1);
         log->error("Got name of file {}",fileName);
         return fileName;
     }

@@ -76,7 +76,7 @@ namespace Dream
         ShaderInstance* mLightingShader;
 
     public:
-        GraphicsComponent(Camera*, IWindowComponent*);
+        GraphicsComponent(IWindowComponent*);
         ~GraphicsComponent() override;
 
         bool init(void) override;
@@ -93,7 +93,6 @@ namespace Dream
         void freeGeometryBuffers();
         void renderGeometryPass(SceneRuntime*);
 
-        Camera* getCamera();
         mat4 getViewMatrix();
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();

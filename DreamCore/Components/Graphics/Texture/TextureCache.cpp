@@ -119,5 +119,17 @@ namespace Dream
            }
        }
     }
+
+    void
+    TextureCache::clear
+    ()
+    {
+        flushRawTextureImageData();
+        for (IAssetInstance* instance : mInstances)
+        {
+            delete instance;
+        }
+        mInstances.clear();
+    }
 }
 

@@ -25,6 +25,7 @@
 
 #include "../Common/IRuntime.h"
 #include "../Components/Transform3D.h"
+#include "../Components/Graphics/Camera.h"
 
 using std::string;
 using std::vector;
@@ -39,7 +40,6 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
     class ShaderInstance;
-    class Camera;
 
     class SceneRuntime : public IRuntime
     {
@@ -51,12 +51,16 @@ namespace Dream
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
         ShaderInstance* mLightingShader;
-        Camera* mCameraHandle;
+        Camera mCamera;
+        float mMinDrawDistance;
+        float mMaxDrawDistance;
+        float mMeshCullDistance;
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent );
         ~SceneRuntime() override;
 
+        Camera* getCamera();
         SceneState getState();
         void setState(SceneState state);
 
@@ -77,6 +81,7 @@ namespace Dream
         void createAllAssetInstances();
 
         bool useDefinition() override;
+        void destroyRuntime();
 
         void setDeleteFlagOnAllSceneObjectRuntimes();
 
@@ -125,5 +130,7 @@ namespace Dream
 
         void setMinDrawDistance(float);
         void setMaxDrawDistance(float);
+        float getMinDrawDistance() const;
+        float getMaxDrawDistance() const;
     };
 } // End of Dream
