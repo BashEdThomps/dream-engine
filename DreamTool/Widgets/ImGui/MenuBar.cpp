@@ -1,14 +1,12 @@
 #include "MenuBar.h"
-#include "ImGuiHelpers.h"
 #include "LuaDebugWindow.h"
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
 
-#include "../deps/ImGui/imgui_internal.h"
-#include "../deps/ImGui/imguifilesystem.h"
+#include "../../deps/ImGui/imgui_internal.h"
+#include "../../deps/ImGui/imguifilesystem.h"
 
-using namespace Dream;
 extern bool MainLoopDone;
 
 namespace DreamTool
@@ -21,7 +19,7 @@ namespace DreamTool
         LuaDebugWindow* debugWindow,
         SceneStateWindow* sceneStateWindow
     )
-        : DTWidget(def),
+        : ImGuiWidget(def),
           mProjectBrowser(pb),
           mPropertiesWindow(pw),
           mLuaDebugWindow(debugWindow),
@@ -153,7 +151,7 @@ namespace DreamTool
                 int sceneToDestroyIndex = -1;
                 if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
                 {
-					mPropertiesWindow->clearPropertyTargets();
+                    mPropertiesWindow->clearPropertyTargets();
                     if (pRuntime)
                     {
                         auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);

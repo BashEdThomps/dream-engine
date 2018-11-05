@@ -1,17 +1,15 @@
 #pragma once
 
-#include "DTWidget.h"
-
-using Dream::LuaPrintListener;
+#include "ImGuiWidget.h"
 
 namespace DreamTool
 {
     class LuaDebugWindow
-            : public DTWidget,
+            : public ImGuiWidget,
               public LuaPrintListener
     {
     public:
-        LuaDebugWindow(Dream::Project* proj);
+        LuaDebugWindow(Project* proj);
         ~LuaDebugWindow() override;
 
         void draw() override;

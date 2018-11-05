@@ -8,10 +8,8 @@
 #pragma once
 
 #include <DreamCore.h>
-#include "../deps/ImGui/imgui.h"
 
-using Dream::DreamObject;
-using Dream::Project;
+using namespace Dream;
 
 namespace DreamTool
 {
@@ -27,7 +25,6 @@ namespace DreamTool
 
     protected:
         Project* mProject;
-        int mTreeID;
         bool mHidden;
     };
 }

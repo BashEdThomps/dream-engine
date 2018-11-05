@@ -3,11 +3,11 @@
 #include <memory>
 #include "Window/DTWindowComponent.h"
 #include <DreamCore.h>
-#include "Widgets/ProjectBrowser.h"
-#include "Widgets/PropertiesWindow.h"
-#include "Widgets/MenuBar.h"
-#include "Widgets/LuaDebugWindow.h"
-#include "Widgets/SceneStateWindow.h"
+#include "Widgets/ImGui/ProjectBrowser.h"
+#include "Widgets/ImGui/PropertiesWindow.h"
+#include "Widgets/ImGui/MenuBar.h"
+#include "Widgets/ImGui/LuaDebugWindow.h"
+#include "Widgets/ImGui/SceneStateWindow.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -67,11 +67,11 @@ main
         &sceneStateWindow
     );
 
-    windowComponent.addWidget(&propertiesWindow);
-    windowComponent.addWidget(&projectBrowser);
-    windowComponent.addWidget(&luaDebugWindow);
-    windowComponent.addWidget(&sceneStateWindow);
-    windowComponent.addWidget(&menuBar);
+    windowComponent.addImGuiWidget(&propertiesWindow);
+    windowComponent.addImGuiWidget(&projectBrowser);
+    windowComponent.addImGuiWidget(&luaDebugWindow);
+    windowComponent.addImGuiWidget(&sceneStateWindow);
+    windowComponent.addImGuiWidget(&menuBar);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project

@@ -1,16 +1,13 @@
-#include "../Window/DTWindowComponent.h"
+#include "../../Window/DTWindowComponent.h"
 #include "PropertiesWindow.h"
-#include "ImGuiHelpers.h"
-#include "../deps/ImGui/imguifilesystem.h"
-#include "../Model/TemplatesDirectoryModel.h"
-
-using namespace Dream;
+#include "../../deps/ImGui/imguifilesystem.h"
+#include "../../Model/TemplatesDirectoryModel.h"
 
 namespace DreamTool
 {
     PropertiesWindow::PropertiesWindow
-    (Dream::Project* proj)
-        : DTWidget (proj),
+    (Project* proj)
+        : ImGuiWidget (proj),
           mType(PROP_TYPE_NONE),
           mDefinition(nullptr),
           mRuntime(nullptr),
@@ -1379,7 +1376,7 @@ namespace DreamTool
             auto currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
             auto currentMaterialDef = projDef->getAssetDefinitionByUuid(currentMaterialUuid);
             int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::MATERIAL,currentMaterialDef);
-			string itemName = "##Material:" + modelMaterial;
+            string itemName = "##Material:" + modelMaterial;
             if(StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
             {
                 auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);

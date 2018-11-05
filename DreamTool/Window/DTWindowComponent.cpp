@@ -17,12 +17,11 @@
  */
 
 #include "DTWindowComponent.h"
-#include "../Widgets/DTWidget.h"
+#include "../Widgets/ImGui/ImGuiWidget.h"
+#include "../Widgets/GL/GLWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
 
-using Dream::Constants;
-using Dream::SceneRuntime;
-using Dream::SceneState;
+using namespace Dream;
 
 
 static bool WindowSizeChanged = false;
@@ -221,6 +220,16 @@ namespace DreamTool
     }
 
     void
+    DTWindowComponent::drawGLWidgets
+    ()
+    {
+        for (GLWidget* widget : mGLWidgets)
+        {
+            widget->draw();
+        }
+    }
+
+    void
     DTWindowComponent::drawImGui
     ()
     {
@@ -229,7 +238,7 @@ namespace DreamTool
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         // Rendering
-        for (DTWidget* widget : mWidgets)
+        for (ImGuiWidget* widget : mImGuiWidgets)
         {
             if (!widget->getHidden())
             {
@@ -266,17 +275,17 @@ namespace DreamTool
     }
 
     void
-    DTWindowComponent::addWidget
-    (DTWidget* widget)
+    DTWindowComponent::addImGuiWidget
+    (ImGuiWidget* widget)
     {
         auto log = getLog();
-        auto end = mWidgets.end();
-        auto itr = find(mWidgets.begin(), end, widget);
+        auto end = mImGuiWidgets.end();
+        auto itr = find(mImGuiWidgets.begin(), end, widget);
 
         if (itr == end)
         {
             log->debug("Adding Widget {}", widget->getClassName());
-            mWidgets.push_back(widget);
+            mImGuiWidgets.push_back(widget);
         }
         else
         {
@@ -285,16 +294,53 @@ namespace DreamTool
     }
 
     void
-    DTWindowComponent::removeWidget
-    (DTWidget* widget)
+    DTWindowComponent::removeImGuiWidget
+    (ImGuiWidget* widget)
     {
         auto log = getLog();
-        auto end = mWidgets.end();
-        auto itr = find(mWidgets.begin(), end, widget);
+        auto end = mImGuiWidgets.end();
+        auto itr = find(mImGuiWidgets.begin(), end, widget);
         if (itr != end)
         {
             log->debug("Removig instance of {} from widgets", widget->getClassName());
-            mWidgets.erase(itr);
+            mImGuiWidgets.erase(itr);
+        }
+        else
+        {
+            log->error("This instane of {} was not in the widgets list",widget->getClassName());
+        }
+    }
+
+    void
+    DTWindowComponent::addGLWidget
+    (GLWidget* widget)
+    {
+        auto log = getLog();
+        auto end = mGLWidgets.end();
+        auto itr = find(mGLWidgets.begin(), end, widget);
+
+        if (itr == end)
+        {
+            log->debug("Adding Widget {}", widget->getClassName());
+            mGLWidgets.push_back(widget);
+        }
+        else
+        {
+            log->error("Widget {} is all ready registered",widget->getClassName());
+        }
+    }
+
+    void
+    DTWindowComponent::removeGLWidget
+    (GLWidget* widget)
+    {
+        auto log = getLog();
+        auto end = mGLWidgets.end();
+        auto itr = find(mGLWidgets.begin(), end, widget);
+        if (itr != end)
+        {
+            log->debug("Removig instance of {} from widgets", widget->getClassName());
+            mGLWidgets.erase(itr);
         }
         else
         {

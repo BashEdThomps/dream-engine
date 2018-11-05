@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DTWidget.h"
+#include "ImGuiWidget.h"
 
 namespace Dream
 {
@@ -16,7 +16,7 @@ namespace DreamTool
     class PropertiesWindow;
     class SceneStateWindow;
 
-    class MenuBar : public DTWidget
+    class MenuBar : public ImGuiWidget
     {
     public:
         MenuBar(

@@ -13,7 +13,6 @@ namespace DreamTool
     (Project* project)
     : DreamObject("DTWidget"),
       mProject(project),
-      mTreeID(0),
       mHidden(false)
     {}
 

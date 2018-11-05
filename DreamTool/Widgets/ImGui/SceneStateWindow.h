@@ -1,11 +1,11 @@
 #pragma once
 
-#include "DTWidget.h"
+#include "ImGuiWidget.h"
 
 namespace DreamTool
 {
     class SceneStateWindow
-        : public DTWidget
+        : public ImGuiWidget
     {
     public:
         SceneStateWindow(Project*);

@@ -1,18 +1,7 @@
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
-#include "../deps/ImGui/imguifilesystem.h"
-#include "ImGuiHelpers.h"
+#include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
-
-using Dream::SceneDefinition;
-using Dream::SceneRuntime;
-using Dream::SceneObjectDefinition;
-using Dream::IAssetDefinition;
-using Dream::Constants;
-using Dream::IAssetDefinition;
-using Dream::ProjectRuntime;
-using Dream::SceneObjectRuntime;
-using Dream::AssetType;
 
 using std::stringstream;
 
@@ -20,7 +9,7 @@ namespace DreamTool
 {
     ProjectBrowser::ProjectBrowser
     (Project* project, PropertiesWindow* properties)
-        : DTWidget(project),
+        : ImGuiWidget(project),
           mPropertiesWindowHandle(properties)
     {}
     ProjectBrowser::~ProjectBrowser
@@ -33,7 +22,6 @@ namespace DreamTool
     ProjectBrowser::draw
     ()
     {
-        mTreeID = 0;
         ImGui::Begin("Project Browser");
         drawProjectTree();
         ImGui::Separator();
@@ -46,22 +34,19 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
-
-       // Project Tree
+        // Project Tree
         auto projDef = mProject->getProjectDefinition();
-
         ImGui::Text("Scenegraph");
-
         ImGui::Separator();
+
         if (projDef == nullptr)
         {
             ImGui::BulletText("No Project Open");
             return;
         }
 
-
-        if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,projDef->getName().c_str(),0))
+        int treeID = 0;
+        if (ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,projDef->getName().c_str(),0))
         {
             if (ImGui::IsItemClicked())
             {
@@ -74,14 +59,14 @@ namespace DreamTool
                 );
             }
 
+            int sdTreeID = 0;
             for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
             {
-                if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,sDef->getName().c_str(),0))
+                if (ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,node_flags,sDef->getName().c_str(),0))
                 {
                     if (ImGui::IsItemClicked())
                     {
                         log->error("Scene Clicked {}", sDef->getName());
-
                         auto pRunt = mProject->getProjectRuntime();
                         SceneRuntime* sRunt = nullptr;
                         if (pRunt)
@@ -97,39 +82,34 @@ namespace DreamTool
                                 sRunt = nullptr;
                             }
                         }
-
-                        mPropertiesWindowHandle->pushPropertyTarget
-                        (
-                            PROP_TYPE_SCENE,
-                            sDef,
-                            sRunt
-                        );
+                        mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_SCENE, sDef,sRunt);
                     }
+
                     SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
-                    addSceneObject(rootSo);
+                    addSceneObject(1,rootSo);
                     ImGui::TreePop();
                 } // Scene Name
             }
+
             ImGui::TreePop();
         } // Project Name
     }
 
     void
     ProjectBrowser::addSceneObject
-    (SceneObjectDefinition* def)
+    (int treeId, SceneObjectDefinition* def)
     {
         auto log = getLog();
-        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
         if (def != nullptr)
         {
-            auto projDef = mProject->getProjectDefinition();
+            ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
             auto projRunt = mProject->getProjectRuntime();
-
-            if (def->getChildCount() == 0)
-            {
-                node_flags |= ImGuiTreeNodeFlags_Leaf;
-            }
-            if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,def->getName().c_str(),0))
+            if(ImGui::TreeNodeEx(
+                   (void*)(intptr_t)treeId,
+                   flags,
+                   def->getName().c_str(),
+                   0)
+            )
             {
                 if (ImGui::IsItemClicked())
                 {
@@ -139,33 +119,31 @@ namespace DreamTool
                         soRt = projRunt->getActiveSceneRuntime()->getSceneObjectRuntimeByUuid(def->getUuid());
                     }
                     log->error("SceneObject Clicked {}",def->getName());
-                    mPropertiesWindowHandle->pushPropertyTarget
-                    (
-                        PROP_TYPE_SCENE_OBJECT,
-                        def,
-                        soRt
-                    );
+                    mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_SCENE_OBJECT, def, soRt);
                 }
+
+                int childTreeId = 0;
                 for (SceneObjectDefinition* child : def->getChildDefinitionsList())
                 {
-                    addSceneObject(child);
+                    addSceneObject(++childTreeId, child);
                 }
-                ImGui::TreePop();
-            } // Root SO
-        }
 
+
+                ImGui::TreePop();
+            }
+
+
+        }
     }
 
     void ProjectBrowser::drawAssetTree
     ()
     {
         auto log = getLog();
-        static ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         auto projDef = mProject->getProjectDefinition();
-
         ImGui::Text("Assets");
-
         ImGui::Separator();
+
         if (projDef == nullptr)
         {
             return;
@@ -179,39 +157,30 @@ namespace DreamTool
             projDef->createNewAssetDefinition(type);
         }
 
+        int assetTypeTreeId = 0;
         for (auto name : Constants::DREAM_ASSET_TYPES_READABLE_VECTOR)
         {
-           AssetType type = Constants::getAssetTypeEnumFromString(name);
-
+            AssetType type = Constants::getAssetTypeEnumFromString(name);
             auto assets = projDef->getAssetDefinitionsVector(type);
             stringstream nameCount;
             nameCount <<  name << " (" <<  assets.size() << ")";
-           if (ImGui::TreeNodeEx((void*)(intptr_t)mTreeID++,node_flags,nameCount.str().c_str(),0))
-           {
-               for (auto asset : assets)
-               {
-                   if (ImGui::TreeNodeEx
-                        (
-                            (void*)(intptr_t)mTreeID++,
-                            node_flags | ImGuiTreeNodeFlags_Leaf,
-                            asset->getName().c_str(),
-                            0
-                        )
-                    ){
-                       if (ImGui::IsItemClicked())
+            if (ImGui::TreeNodeEx((void*)(intptr_t)++assetTypeTreeId,node_flags,nameCount.str().c_str(),0))
+            {
+                int assetDefTreeId = 0;
+                for (auto asset : assets)
+                {
+                    if (ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset->getName().c_str(),0))
+                    {
+                        if (ImGui::IsItemClicked())
                         {
                             log->error("Asset Definition Clicked {}", asset->getName());
-                            mPropertiesWindowHandle->pushPropertyTarget(
-                                PROP_TYPE_ASSET,
-                                asset,
-                                nullptr
-                            );
+                            mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_ASSET, asset, nullptr);
                         }
-                       ImGui::TreePop();
-                   }
-               }
-               ImGui::TreePop();
-           }
+                        ImGui::TreePop();
+                    }
+                }
+                ImGui::TreePop();
+            }
         } // Asset Type Node
     }
 }

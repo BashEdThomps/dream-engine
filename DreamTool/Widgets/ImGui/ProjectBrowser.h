@@ -1,4 +1,4 @@
-#include "DTWidget.h"
+#include "ImGuiWidget.h"
 
 namespace Dream
 {
@@ -10,7 +10,7 @@ using Dream::SceneObjectDefinition;
 namespace DreamTool
 {
     class PropertiesWindow;
-    class ProjectBrowser : public DTWidget
+    class ProjectBrowser : public ImGuiWidget
     {
     public:
         ProjectBrowser(Project* proj, PropertiesWindow*);
@@ -19,7 +19,10 @@ namespace DreamTool
     private:
         void drawAssetTree();
         void drawProjectTree();
-        void addSceneObject(SceneObjectDefinition* def);
+        void addSceneObject(int treeId, SceneObjectDefinition* def);
         PropertiesWindow* mPropertiesWindowHandle;
+        const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
+        const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
+
     };
 }

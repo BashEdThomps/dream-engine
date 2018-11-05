@@ -2,10 +2,9 @@
 
 namespace DreamTool
 {
-
     LuaDebugWindow::LuaDebugWindow
     (Project* proj)
-        : DTWidget(proj),
+        : ImGuiWidget(proj),
         LuaPrintListener()
     {
         setLogClassName("LuaDebugWindow");

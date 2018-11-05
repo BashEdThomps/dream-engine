@@ -37,14 +37,8 @@ using Dream::SceneRuntime;
 
 namespace DreamTool
 {
-    class DTWidget;
-}
-
-using DreamTool::DTWidget;
-
-namespace DreamTool
-{
-
+    class GLWidget;
+    class ImGuiWidget;
     class DTWindowComponent : public IWindowComponent
     {
     public:
@@ -53,15 +47,20 @@ namespace DreamTool
 
         static ImFont* RegularFont;
         static ImFont* MonoFont;
+
         void updateComponent(SceneRuntime* sr) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
         void bindDefaultFrameBuffer() override;
         void drawImGui();
+        void drawGLWidgets();
 
-        void addWidget(DTWidget* widget);
-        void removeWidget(DTWidget* widget);
+        void addImGuiWidget(ImGuiWidget* widget);
+        void removeImGuiWidget(ImGuiWidget* widget);
+
+        void addGLWidget(GLWidget* widget);
+        void removeGLWidget(GLWidget* widget);
 
     private:
         bool initGLFW();
@@ -71,8 +70,8 @@ namespace DreamTool
         void setTheme();
         void setFont();
         GLFWwindow* mWindow;
-        vector<DTWidget*> mWidgets;
-
+        vector<GLWidget*> mGLWidgets;
+        vector<ImGuiWidget*> mImGuiWidgets;
     }; // End of GLFWWindowComponent
 
 } // End of Dream

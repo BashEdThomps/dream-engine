@@ -1,12 +1,10 @@
 #include "SceneStateWindow.h"
 
-using namespace Dream;
-
 namespace DreamTool
 {
     SceneStateWindow::SceneStateWindow
     (Project* p)
-        : DTWidget(p)
+        : ImGuiWidget(p)
     {
         setLogClassName("SceneStateWindow");
     }

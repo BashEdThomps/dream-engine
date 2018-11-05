@@ -1,10 +1,7 @@
 #pragma once
 
-#include "DTWidget.h"
+#include "ImGuiWidget.h"
 #include "PropertyType.h"
-
-using Dream::IDefinition;
-using Dream::IRuntime;
 
 #define BigEditorBufferSize 1024*16
 
@@ -17,7 +14,7 @@ namespace DreamTool
         IRuntime* runtime;
     };
 
-    class PropertiesWindow : public DTWidget
+    class PropertiesWindow : public ImGuiWidget
     {
     public:
         PropertiesWindow(Project*);
