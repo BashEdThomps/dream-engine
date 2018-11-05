@@ -25,9 +25,18 @@ namespace DreamTool
 {
     class Grid : public GLWidget
     {
+		enum AxisPair
+		{
+			XY,
+			XZ,
+			YZ
+		};
+
     public:
         Grid(
             Project* p,
+			AxisPair xp = AxisPair::XZ,
+			glm::vec3 position = vec3(0.0f),
             float majorSpacing = 10.0f,
             float minorSpacing = 1.0f,
             float size = 100.0f,
@@ -37,8 +46,15 @@ namespace DreamTool
 
         ~Grid() override;
         void init();
+
         float getMajorSpacing();
+		void  setMajorSpacing(float);
+
         float getMinorSpacing();
+		void  setMinorSpacing(float);
+
+		float getSize();
+		void setSize(float);
 
     protected: // Member functions
         void initMajorGridData();
@@ -46,11 +62,12 @@ namespace DreamTool
         void initAxisLines();
 
     protected: // Variables
+		AxisPair mAxisPair;
+		glm::vec3 mTranslation;
         float mSize;
         float mMajorSpacing;
         float mMinorSpacing;
         vec3 mMajorColour;
         vec3 mMinorColour;
-    };
-
+	};
 }

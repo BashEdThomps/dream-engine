@@ -62,26 +62,20 @@ namespace Dream
         (
             vec3  position = vec3(0.0f, 0.0f, 0.0f),
             vec3  up       = vec3(0.0f, 1.0f, 0.0f),
-            float yaw      = Constants::CAMERA_YAW,
-            float pitch    = Constants::CAMERA_PITCH
+            float yaw      = 0,//Constants::CAMERA_YAW,
+            float pitch    = 0//Constants::CAMERA_PITCH
         );
 
         // Constructor with scalar values
         ~Camera();
         mat4 getViewMatrix();
-        void processKeyboard(unsigned int, float);
-        void processMouseMovement(float, float, bool);
         void pan(float, float, bool);
-        void processMouseScroll(float);
         void updateCameraVectors();
         void setTranslation(vec3);
         void setTranslation(float,float,float);
         vec3 getTranslation();
         void  setMovementSpeed(float);
         float getMovementSpeed();
-        void  setMouseSensitivity(float);
-        float getMouseSensitivity();
-        float getZoom();
         void setLookAt(float x, float y, float z);
         void setLookAt(vec3);
         vec3 getLookAt();

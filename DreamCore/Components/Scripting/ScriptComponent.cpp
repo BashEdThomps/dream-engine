@@ -181,8 +181,6 @@ namespace Dream
         debugRegisteringClass("Camera");
         sol::state_view stateView(State);
         stateView.new_usertype<Camera>("Camera",
-            "processKeyboard",&Camera::processKeyboard,
-            "processMouseMovement",&Camera::processMouseMovement,
             "pan",&Camera::pan,
             "flyForward",&Camera::flyForward,
             "flyBackward",&Camera::flyBackward,

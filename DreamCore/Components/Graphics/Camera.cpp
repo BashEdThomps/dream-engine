@@ -13,14 +13,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "Camera.h"
 
 namespace Dream
 {
-    // Constructor with vectors
-
-
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
         : DreamObject("Camera"),
@@ -34,7 +30,6 @@ namespace Dream
         mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
         mZoom(Constants::CAMERA_ZOOM)
     {
-        //updateCameraVectors();
     }
 
     Camera::~Camera
@@ -110,51 +105,6 @@ namespace Dream
     (vec3 relativePosition)
     {
         return lookAt(relativePosition,getTranslation()-mFront,mUp);
-    }
-
-    void
-    Camera::processKeyboard
-    (unsigned int direction, float deltaTime)
-    {
-        float velocity = mMovementSpeed * deltaTime;
-
-        if (direction == Constants::CAMERA_MOVEMENT_FORWARD)
-        {
-            mTranslation.x += mFront.x * velocity;
-            mTranslation.y += mFront.y * velocity;
-            mTranslation.z += mFront.z * velocity;
-        }
-
-        if (direction == Constants::CAMERA_MOVEMENT_BACKWARD)
-        {
-            mTranslation.x -= mFront.x * velocity;
-            mTranslation.y -= mFront.y * velocity;
-            mTranslation.z -= mFront.z * velocity;
-        }
-
-        if (direction == Constants::CAMERA_MOVEMENT_LEFT)
-        {
-            mTranslation.x -= mRight.x * velocity;
-            mTranslation.y -= mRight.y * velocity;
-            mTranslation.z -= mRight.z * velocity;
-        }
-
-        if (direction == Constants::CAMERA_MOVEMENT_RIGHT)
-        {
-            mTranslation.x += mRight.x * velocity;
-            mTranslation.y += mRight.y * velocity;
-            mTranslation.z += mRight.z * velocity;
-        }
-
-        if (direction == Constants::CAMERA_MOVEMENT_DOWN)
-        {
-            mTranslation.y -= velocity;
-        }
-
-        if (direction == Constants::CAMERA_MOVEMENT_UP)
-        {
-            mTranslation.y += velocity;
-        }
     }
 
     void
@@ -262,64 +212,6 @@ namespace Dream
 
         mYaw = fmodf(mYaw,static_cast<float>(M_PI)*2);
         mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
-
-        // Update Front, Right and Up Vectors using the updated Eular angles
-        //updateCameraVectors();
-    }
-
-    void
-    Camera::processMouseMovement
-    (float xoffset, float yoffset, bool constrainPitch)
-    {
-        mYaw   += xoffset * mMouseSensitivity;
-        mPitch -= yoffset * mMouseSensitivity;
-
-        // Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (mPitch > Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = Constants::CAMERA_PITCH_MAX;
-            }
-
-            if (mPitch < -Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = -Constants::CAMERA_PITCH_MAX;
-            }
-        }
-
-        mYaw = fmodf(mYaw,static_cast<float>(M_PI)*2);
-        mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
-
-        // Update Front, Right and Up Vectors using the updated Eular angles
-        //updateCameraVectors();
-    }
-
-    void
-    Camera::processMouseScroll
-    (float yoffset)
-    {
-        auto log = getLog();
-        if (yoffset == 0.0f)
-        {
-            return;
-        }
-
-        if (mZoom >= Constants::CAMERA_ZOOM_MIN && mZoom <= Constants::CAMERA_ZOOM_MAX)
-        {
-            mZoom -= yoffset;
-        }
-
-        if (mZoom <= Constants::CAMERA_ZOOM_MIN)
-        {
-            mZoom = Constants::CAMERA_ZOOM_MIN;
-        }
-
-        if (mZoom >= Constants::CAMERA_ZOOM_MAX)
-        {
-            mZoom = Constants::CAMERA_ZOOM_MAX;
-        }
-        log->debug("Zoom is {}" ,mZoom );
     }
 
     void
@@ -334,7 +226,7 @@ namespace Dream
             mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
             mFront = normalize(mFront);
             mRight = normalize(cross(mFront, mWorldUp));
-            mUp    = mWorldUp;//normalize(cross(mRight, mFront));
+            mUp    = mWorldUp;
         }
         else
         {
@@ -370,27 +262,6 @@ namespace Dream
     ()
     {
         return mMovementSpeed;
-    }
-
-    void
-    Camera::setMouseSensitivity
-    (float mouseSensitivity)
-    {
-        mMouseSensitivity = mouseSensitivity;
-    }
-
-    float
-    Camera::getMouseSensitivity
-    ()
-    {
-        return mMouseSensitivity;
-    }
-
-    float
-    Camera::getZoom
-    ()
-    {
-        return mZoom;
     }
 
     void Camera::setLookAt(float x, float y, float z)

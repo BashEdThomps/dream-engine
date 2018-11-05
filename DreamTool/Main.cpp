@@ -8,6 +8,7 @@
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/LuaDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
+#include "Widgets/GL/Grid.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -52,12 +53,14 @@ main
     DTWindowComponent windowComponent;
     windowComponent.init();
 
+	// Widgets
     Project project(&windowComponent);
     PropertiesWindow propertiesWindow(&project);
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
     LuaDebugWindow luaDebugWindow(&project);
     ScriptComponent::AddPrintListener(&luaDebugWindow);
     SceneStateWindow sceneStateWindow(&project);
+
     MenuBar menuBar
     (
         &project,
@@ -67,11 +70,16 @@ main
         &sceneStateWindow
     );
 
+
     windowComponent.addImGuiWidget(&propertiesWindow);
     windowComponent.addImGuiWidget(&projectBrowser);
     windowComponent.addImGuiWidget(&luaDebugWindow);
     windowComponent.addImGuiWidget(&sceneStateWindow);
     windowComponent.addImGuiWidget(&menuBar);
+
+	Grid grid(&project);
+
+	windowComponent.addGLWidget(&grid);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
@@ -102,6 +110,7 @@ main
         }
 
         Dream::ShaderInstance::InvalidateState();
+		windowComponent.drawGLWidgets();
         windowComponent.drawImGui();
         windowComponent.swapBuffers();
         if (CountFPS) showFPS();

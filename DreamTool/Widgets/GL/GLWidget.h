@@ -27,15 +27,19 @@ namespace DreamTool
         virtual ~GLWidget();
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);
+		virtual void draw() override;
     protected:
         void addLineVertex(LineVertex lv);
-    private:
+		void initShader();
         void initVaoVbo();
     protected:
         mat4 mViewMatrix;
         mat4 mProjectionMatrix;
         GLuint mVao;
         GLuint mVbo;
+		GLuint mShaderProgram;
         vector<LineVertex> mVertexBuffer;
-    };
+
+		// Inherited via DTWidget
+	};
 }
