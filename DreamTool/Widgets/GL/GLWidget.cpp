@@ -103,6 +103,7 @@ namespace DreamTool
 
     void GLWidget::draw()
     {
+		checkGLError();
         if (mProject)
         {
             auto pRuntime = mProject->getProjectRuntime();
@@ -121,6 +122,7 @@ namespace DreamTool
         {
 #ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
+            checkGLError();
             glLineWidth(3.0f);
             checkGLError();
 #endif

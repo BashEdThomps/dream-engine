@@ -21,6 +21,7 @@ namespace DreamTool
 
     void LightViewer::draw()
     {
+		checkGLError();
         vector<IAssetInstance*> lightInstances;
         if (mProject)
         {
@@ -46,6 +47,7 @@ namespace DreamTool
         {
 #ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
+            checkGLError();
             glLineWidth(3.0f);
             checkGLError();
 #endif
@@ -53,7 +55,7 @@ namespace DreamTool
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderInstance::CurrentShaderProgram = mShaderProgram;
-
+            checkGLError();
 
             // Vertex Array
             glBindVertexArray(mVao);
@@ -78,7 +80,7 @@ namespace DreamTool
             else
             {
                 glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-            checkGLError();
+				checkGLError();
             }
 
             // Set the view matrix
@@ -92,11 +94,12 @@ namespace DreamTool
             else
             {
                 glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-            checkGLError();
+				checkGLError();
             }
 
             GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
             checkGLError();
+
             GLint lightColorUniform = glGetUniformLocation(mShaderProgram, "lightColor");
             checkGLError();
 
@@ -114,7 +117,7 @@ namespace DreamTool
                 else
                 {
                     glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-            checkGLError();
+		            checkGLError();
                 }
 
                 if (lightColorUniform == -1)
@@ -125,7 +128,7 @@ namespace DreamTool
                 else
                 {
                     glUniform3fv(lightColorUniform,1,glm::value_ptr(lightColorVec));
-            checkGLError();
+			        checkGLError();
                 }
                 // Draw
                 glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
@@ -135,6 +138,7 @@ namespace DreamTool
             // Revert State
 #ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
+			glLineWidth(1.0f);
             checkGLError();
 #endif
         }

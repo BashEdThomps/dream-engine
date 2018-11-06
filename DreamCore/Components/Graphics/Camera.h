@@ -92,6 +92,9 @@ namespace Dream
         void flyY(float speed);
         void flyZ(float speed);
 
+		void deltaPitch(float pitch);
+		void deltaYaw(float yaw);
+
         vec3 getRelativeTranslation(float relative);
         mat4 getRelativeRotation(vec3 relative);
 

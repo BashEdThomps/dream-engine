@@ -305,4 +305,14 @@ namespace Dream
         mTranslation = vec3(mtx[3]);
     }
 
+	void Camera::deltaPitch(float pitch)
+	{
+		mPitch += pitch;
+	}
+
+	void Camera::deltaYaw(float yaw)
+	{
+		mYaw += yaw;
+	}
+
 } // End of Dream

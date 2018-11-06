@@ -96,6 +96,7 @@ main
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
+	ImGuiIO& io = ImGui::GetIO();
     while (!MainLoopDone)
     {
         if (windowComponent.shouldClose())
@@ -125,6 +126,51 @@ main
         Dream::ShaderInstance::InvalidateState();
         windowComponent.drawGLWidgets();
         windowComponent.drawImGui();
+		if (projectRuntime)
+		{
+			auto sr = projectRuntime->getActiveSceneRuntime();
+			if (sr)
+			{
+				static float mouseScalar = 0.001;
+				auto camera = sr->getCamera();
+				if (!io.WantCaptureMouse)
+				{
+					if (io.MouseDown[2])
+					{
+						camera->deltaYaw(io.MouseDelta.x*mouseScalar);
+						camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
+					}
+				}
+
+				if (!io.WantCaptureKeyboard)
+				{
+					if (ImGui::IsKeyDown(GLFW_KEY_W))
+					{
+						camera->flyForward(1.0f);
+					}
+					if (ImGui::IsKeyDown(GLFW_KEY_S))
+					{
+						camera->flyBackward(1.0f);
+					}
+					if (ImGui::IsKeyDown(GLFW_KEY_A))
+					{
+						camera->flyLeft(1.0f);
+					}
+					if (ImGui::IsKeyDown(GLFW_KEY_D))
+					{
+						camera->flyRight(1.0f);
+					}
+					if (ImGui::IsKeyDown(GLFW_KEY_Q))
+					{
+						camera->flyDown(1.0f);
+					}
+					if (ImGui::IsKeyDown(GLFW_KEY_E))
+					{
+						camera->flyUp(1.0f);
+					}
+				}
+			}
+		}
         windowComponent.swapBuffers();
         if (CountFPS) showFPS();
         std::this_thread::yield();

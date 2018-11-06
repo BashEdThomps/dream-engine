@@ -38,11 +38,8 @@ namespace DreamTool
     DTWindowComponent::DTWindowComponent
     () : IWindowComponent()
     {
-        auto log = spdlog::get("GLFWWindowComponent");
-        if (log == nullptr)
-        {
-            log = spdlog::stdout_color_mt("GLFWWindowComponent");
-        }
+		setLogClassName("DTWindowComponent");
+		auto log = getLog();
         log->info("Constructing" );
         mName = "Dream";
     }
@@ -50,7 +47,7 @@ namespace DreamTool
     DTWindowComponent::~DTWindowComponent
     ()
     {
-        auto log = spdlog::get("GLFWWindowComponent");
+		auto log = getLog();
         log->info("Destructing" );
         cleanUpImGui();
         glfwTerminate();
@@ -91,7 +88,7 @@ namespace DreamTool
     DTWindowComponent::initGLFW
     ()
     {
-        auto log = spdlog::get("GLFWWindowComponent");
+		auto log = getLog();
         log->debug("Initialising GLFW");
 
         /* Initialize the library */
@@ -103,10 +100,7 @@ namespace DreamTool
 
         /* Create a windowed mode window and its OpenGL context */
 #ifdef WIN32
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -136,7 +130,7 @@ namespace DreamTool
     {
         auto log = getLog();
         log->debug("Initialising ImGui");
-        const char* glsl_version = string("#version 330").c_str();
+        char* glsl_version = "#version 330";
         // Setup Dear ImGui binding
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -153,7 +147,7 @@ namespace DreamTool
     DTWindowComponent::initGL
     ()
     {
-        auto log = spdlog::get("GLFWWindowComponent");
+		auto log = getLog();
         log->debug("Initialising GLFW::OpenGL");
         glfwMakeContextCurrent(mWindow);
 
@@ -180,7 +174,7 @@ namespace DreamTool
     DTWindowComponent::updateComponent
     (SceneRuntime* sr)
     {
-        auto log = spdlog::get("GLFWWindowComponent");
+        auto log = getLog();
 
         glfwPollEvents();
 
@@ -200,6 +194,7 @@ namespace DreamTool
             WindowSizeChanged = false;
         }
 
+		
     }
 
     void DTWindowComponent::getCurrentDimensions()
