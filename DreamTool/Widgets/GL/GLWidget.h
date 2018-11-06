@@ -24,22 +24,28 @@ namespace DreamTool
     {
     public:
         GLWidget(Project* project);
-        virtual ~GLWidget();
+        virtual ~GLWidget() override;
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);
-		virtual void draw() override;
+        virtual void draw() override;
+        void init();
     protected:
         void addLineVertex(LineVertex lv);
-		void initShader();
+        virtual void setShader();
+        void initShader();
         void initVaoVbo();
+        void setPosition(vec3);
     protected:
+        mat4 mModelMatrix;
         mat4 mViewMatrix;
         mat4 mProjectionMatrix;
         GLuint mVao;
         GLuint mVbo;
-		GLuint mShaderProgram;
+        GLuint mShaderProgram;
         vector<LineVertex> mVertexBuffer;
+        string mVertexShaderSource;
+        string mFragmentShaderSource;
 
-		// Inherited via DTWidget
-	};
+        // Inherited via DTWidget
+    };
 }

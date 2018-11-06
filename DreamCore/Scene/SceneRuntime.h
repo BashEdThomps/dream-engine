@@ -132,5 +132,7 @@ namespace Dream
         void setMaxDrawDistance(float);
         float getMinDrawDistance() const;
         float getMaxDrawDistance() const;
+
+        vector<IAssetInstance*> getAssetInstances(AssetType);
     };
 } // End of Dream

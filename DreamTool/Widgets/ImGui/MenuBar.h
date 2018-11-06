@@ -15,6 +15,7 @@ namespace DreamTool
     class ProjectBrowser;
     class PropertiesWindow;
     class SceneStateWindow;
+    class GridPropertiesWindow;
 
     class MenuBar : public ImGuiWidget
     {
@@ -24,7 +25,8 @@ namespace DreamTool
             ProjectBrowser*,
             PropertiesWindow*,
             LuaDebugWindow*,
-            SceneStateWindow*
+            SceneStateWindow*,
+            GridPropertiesWindow*
         );
         ~MenuBar() override;
 
@@ -34,5 +36,6 @@ namespace DreamTool
         PropertiesWindow* mPropertiesWindow;
         LuaDebugWindow* mLuaDebugWindow;
         SceneStateWindow* mSceneStateWindow;
+        GridPropertiesWindow* mGridPropertiesWindow;
     };
 }

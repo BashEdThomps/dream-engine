@@ -52,6 +52,7 @@ namespace Dream
     class PhysicsObjectDefinition;
     class ScriptDefinition;
     class ParticleEmitterDefinition;
+    class IAssetInstance;
 
     class SceneObjectRuntime : public IRuntime
     {
@@ -98,6 +99,8 @@ namespace Dream
         ScriptInstance* getScriptInstance();
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
+        ParticleEmitterInstance* getParticleEmitterInstance();
+        IAssetInstance* getAssetInstance(AssetType);
 
         bool hasPathInstance();
         bool hasAudioInstance();

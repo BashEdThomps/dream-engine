@@ -38,6 +38,7 @@
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
+#include "../Components/Graphics/Light/LightInstance.h"
 #include "../Components/Graphics/Material/MaterialDefinition.h"
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Model/ModelDefinition.h"

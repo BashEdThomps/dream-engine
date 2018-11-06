@@ -106,7 +106,6 @@ namespace DreamTool
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -137,7 +136,7 @@ namespace DreamTool
     {
         auto log = getLog();
         log->debug("Initialising ImGui");
-        char* glsl_version = "#version 330";
+        const char* glsl_version = string("#version 330").c_str();
         // Setup Dear ImGui binding
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -225,7 +224,10 @@ namespace DreamTool
     {
         for (GLWidget* widget : mGLWidgets)
         {
-            widget->draw();
+            if(!widget->getHidden())
+            {
+                widget->draw();
+            }
         }
     }
 

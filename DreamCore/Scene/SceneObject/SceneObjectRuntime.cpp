@@ -335,6 +335,37 @@ namespace Dream
         return mLightInstance;
     }
 
+    ParticleEmitterInstance*SceneObjectRuntime::getParticleEmitterInstance()
+    {
+       return mParticleEmitterInstance;
+    }
+
+    IAssetInstance*
+    SceneObjectRuntime::getAssetInstance
+    (AssetType type)
+    {
+       switch (type)
+       {
+           case Dream::PATH:
+               return getPathInstance();
+           case Dream::AUDIO:
+               return getAudioInstance();
+           case Dream::LIGHT:
+               return getLightInstance();
+           case Dream::MODEL:
+               return getModelInstance();
+           case Dream::PHYSICS_OBJECT:
+               return getPhysicsObjectInstance();
+           case Dream::SCRIPT:
+               return getScriptInstance();
+           case Dream::PARTICLE_EMITTER:
+               return getParticleEmitterInstance();
+           default:
+               break;
+       }
+       return nullptr;
+    }
+
     bool
     SceneObjectRuntime::hasLightInstance
     ()

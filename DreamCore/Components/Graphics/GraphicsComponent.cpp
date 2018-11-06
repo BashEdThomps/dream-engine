@@ -78,8 +78,8 @@ namespace Dream
     GraphicsComponent::GraphicsComponent
     (IWindowComponent* windowComponent)
         : IComponent(),
-		  mViewMatrix(mat4(1.0f)),
-		  mProjectionMatrix(mat4(1.0f)),
+          mViewMatrix(mat4(1.0f)),
+          mProjectionMatrix(mat4(1.0f)),
           mCamera(nullptr),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -471,17 +471,17 @@ namespace Dream
         mLightingShader->bindVertexArray(mScreenQuadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
-		// ----------------------------------------------------------------------------------
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
-		auto width = mWindowComponent->getWidth();
-		auto height = mWindowComponent->getHeight();
-		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
+        // ----------------------------------------------------------------------------------
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+        // blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
+        // the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the
+        // depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
+        auto width = mWindowComponent->getWidth();
+        auto height = mWindowComponent->getHeight();
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void

@@ -45,12 +45,12 @@ namespace Dream
         auto log = getLog();
         auto shaderInstance = new ShaderInstance(dynamic_cast<ShaderDefinition*>(def));
 
-		if (shaderInstance->load(mProjectRuntime->getProjectPath()))
-		{
-			log->error("Error while loading shader {}", def->getUuid());
-		}
-		mInstances.push_back(shaderInstance);
-		return shaderInstance;
+        if (!shaderInstance->load(mProjectRuntime->getProjectPath()))
+        {
+            log->error("Error while loading shader {}", def->getUuid());
+        }
+        mInstances.push_back(shaderInstance);
+        return shaderInstance;
     }
 
     void

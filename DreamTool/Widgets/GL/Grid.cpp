@@ -24,9 +24,9 @@ namespace DreamTool
 
     Grid::Grid
     (
-		Project* p,
-		AxisPair xp,
-		glm::vec3 position,
+        Project* p,
+        AxisPair xp,
+        glm::vec3 position,
         float majorSpacing,
         float minorSpacing,
         float size,
@@ -34,8 +34,8 @@ namespace DreamTool
         vec3 minorColour
     )
         : GLWidget(p),
-		  mTranslation(position),
-		  mAxisPair(xp),
+          mTranslation(position),
+          mAxisPair(xp),
           mSize(size),
           mMajorSpacing(majorSpacing),
           mMinorSpacing(minorSpacing),
@@ -46,7 +46,6 @@ namespace DreamTool
         setLogClassName("Grid");
         auto log = getLog();
         log->debug("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
-		init();
     }
 
     Grid::~Grid
@@ -60,9 +59,8 @@ namespace DreamTool
     Grid::init
     ()
     {
-        initMinorGridData();
-        initMajorGridData();
-        initAxisLines();
+        GLWidget::init();
+        recalculateGridLines();
     }
 
     void
@@ -107,7 +105,7 @@ namespace DreamTool
     Grid::initMinorGridData
     ()
     {
-		auto log = getLog();
+        auto log = getLog();
         log->debug("Init Minor Data");
         float halfSize = (mSize/2.0f);
 
@@ -178,19 +176,50 @@ namespace DreamTool
         mVertexBuffer.push_back(zEnd);
     }
 
+    vec3 Grid::getMinorColour() const
+    {
+        return mMinorColour;
+    }
+
+    void Grid::setMinorColour(vec3 minorColour)
+    {
+        mMinorColour = minorColour;
+    }
+
+    vec3 Grid::getMajorColour() const
+    {
+        return mMajorColour;
+    }
+
+    void Grid::setMajorColour(vec3 majorColour)
+    {
+        mMajorColour = majorColour;
+    }
+
+    glm::vec3 Grid::getTranslation() const
+    {
+        return mTranslation;
+    }
+
+    void Grid::setTranslation(vec3 translation)
+    {
+        mTranslation = translation;
+        mModelMatrix = glm::translate(mat4(1.0f),mTranslation);
+    }
+
     float
     Grid::getMajorSpacing
     ()
     {
-       return mMajorSpacing;
+        return mMajorSpacing;
     }
 
-	void 
-	Grid::setMajorSpacing
-	(float ms)
-	{
-		mMajorSpacing = ms;
-	}
+    void
+    Grid::setMajorSpacing
+    (float ms)
+    {
+        mMajorSpacing = ms;
+    }
 
     float
     Grid::getMinorSpacing
@@ -199,20 +228,28 @@ namespace DreamTool
         return mMinorSpacing;
     }
 
-	void 
-	Grid::setMinorSpacing
-	(float ms)
-	{
-		mMinorSpacing = ms;
-	}
+    void
+    Grid::setMinorSpacing
+    (float ms)
+    {
+        mMinorSpacing = ms;
+    }
 
-	float Grid::getSize()
-	{
-		return mSize;
-	}
+    float Grid::getSize()
+    {
+        return mSize;
+    }
 
-	void Grid::setSize(float sz)
-	{
-		mSize = sz;
-	}
+    void Grid::setSize(float sz)
+    {
+        mSize = sz;
+    }
+
+    void Grid::recalculateGridLines()
+    {
+        mVertexBuffer.clear();
+        initMinorGridData();
+        initMajorGridData();
+        initAxisLines();
+    }
 }

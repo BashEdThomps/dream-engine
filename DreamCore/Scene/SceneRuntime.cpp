@@ -474,6 +474,31 @@ namespace Dream
         return mMaxDrawDistance;
     }
 
+    vector<IAssetInstance*>
+    SceneRuntime::getAssetInstances(AssetType t)
+    {
+        vector<IAssetInstance*> instances;
+        if (mRootSceneObjectRuntime)
+        {
+            mRootSceneObjectRuntime->applyToAll
+            (
+                function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                (
+                    [&](SceneObjectRuntime* currentRuntime)
+                    {
+                        IAssetInstance* inst = currentRuntime->getAssetInstance(t);
+                        if (inst)
+                        {
+                            instances.push_back(inst);
+                        }
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+                )
+            );
+        }
+        return instances;
+    }
+
     void
     SceneRuntime::setMaxDrawDistance
     (float f)

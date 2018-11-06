@@ -3,6 +3,7 @@
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
+#include "GridPropertiesWidget.h"
 
 #include "../../deps/ImGui/imgui_internal.h"
 #include "../../deps/ImGui/imguifilesystem.h"
@@ -12,18 +13,18 @@ extern bool MainLoopDone;
 namespace DreamTool
 {
     MenuBar::MenuBar
-    (
-        Project* def,
+    (Project* def,
         ProjectBrowser* pb,
         PropertiesWindow* pw,
         LuaDebugWindow* debugWindow,
-        SceneStateWindow* sceneStateWindow
-    )
+        SceneStateWindow* sceneStateWindow,
+        GridPropertiesWindow* gp)
         : ImGuiWidget(def),
           mProjectBrowser(pb),
           mPropertiesWindow(pw),
           mLuaDebugWindow(debugWindow),
-          mSceneStateWindow(sceneStateWindow)
+          mSceneStateWindow(sceneStateWindow),
+          mGridPropertiesWindow(gp)
     {
         setLogClassName("MenuBar");
     }
@@ -90,6 +91,13 @@ namespace DreamTool
                 {
                    mSceneStateWindow->setHidden(!showSceneStatesWindow);
                 }
+
+                bool showGridPropsWindow = !mGridPropertiesWindow->getHidden();
+                if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
+                {
+                   mGridPropertiesWindow->setHidden(!showGridPropsWindow);
+                }
+
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
 
                 ImGui::EndMenu();

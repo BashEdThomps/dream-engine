@@ -3,12 +3,16 @@
 #include <memory>
 #include "Window/DTWindowComponent.h"
 #include <DreamCore.h>
+// ImGui Widgets
 #include "Widgets/ImGui/ProjectBrowser.h"
 #include "Widgets/ImGui/PropertiesWindow.h"
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/LuaDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
+#include "Widgets/ImGui/GridPropertiesWidget.h"
+// Plain GL Widgets
 #include "Widgets/GL/Grid.h"
+#include "Widgets/GL/LightViewer.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -53,13 +57,14 @@ main
     DTWindowComponent windowComponent;
     windowComponent.init();
 
-	// Widgets
+    // Widgets
     Project project(&windowComponent);
     PropertiesWindow propertiesWindow(&project);
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
     LuaDebugWindow luaDebugWindow(&project);
     ScriptComponent::AddPrintListener(&luaDebugWindow);
     SceneStateWindow sceneStateWindow(&project);
+    GridPropertiesWindow gridProps(&project);
 
     MenuBar menuBar
     (
@@ -67,7 +72,8 @@ main
         &projectBrowser,
         &propertiesWindow,
         &luaDebugWindow,
-        &sceneStateWindow
+        &sceneStateWindow,
+        &gridProps
     );
 
 
@@ -76,10 +82,17 @@ main
     windowComponent.addImGuiWidget(&luaDebugWindow);
     windowComponent.addImGuiWidget(&sceneStateWindow);
     windowComponent.addImGuiWidget(&menuBar);
+    windowComponent.addImGuiWidget(&gridProps);
 
-	Grid grid(&project);
+    Grid grid(&project);
+    grid.init();
+    gridProps.setGrid(&grid);
 
-	windowComponent.addGLWidget(&grid);
+    LightViewer lv(&project);
+    lv.init();
+
+    windowComponent.addGLWidget(&grid);
+    windowComponent.addGLWidget(&lv);
 
     spdlog::set_level(spdlog::level::err);
      // Run the project
@@ -110,7 +123,7 @@ main
         }
 
         Dream::ShaderInstance::InvalidateState();
-		windowComponent.drawGLWidgets();
+        windowComponent.drawGLWidgets();
         windowComponent.drawImGui();
         windowComponent.swapBuffers();
         if (CountFPS) showFPS();

@@ -25,18 +25,18 @@ namespace DreamTool
 {
     class Grid : public GLWidget
     {
-		enum AxisPair
-		{
-			XY,
-			XZ,
-			YZ
-		};
+        enum AxisPair
+        {
+            XY,
+            XZ,
+            YZ
+        };
 
     public:
         Grid(
             Project* p,
-			AxisPair xp = AxisPair::XZ,
-			glm::vec3 position = vec3(0.0f),
+            AxisPair xp = AxisPair::XZ,
+            glm::vec3 position = vec3(0.0f),
             float majorSpacing = 10.0f,
             float minorSpacing = 1.0f,
             float size = 100.0f,
@@ -48,13 +48,23 @@ namespace DreamTool
         void init();
 
         float getMajorSpacing();
-		void  setMajorSpacing(float);
+        void  setMajorSpacing(float);
 
         float getMinorSpacing();
-		void  setMinorSpacing(float);
+        void  setMinorSpacing(float);
 
-		float getSize();
-		void setSize(float);
+        float getSize();
+        void setSize(float);
+        void recalculateGridLines();
+
+        vec3 getTranslation() const;
+        void setTranslation(vec3 translation);
+
+        vec3 getMajorColour() const;
+        void setMajorColour(vec3 majorColour);
+
+        vec3 getMinorColour() const;
+        void setMinorColour(vec3 minorColour);
 
     protected: // Member functions
         void initMajorGridData();
@@ -62,12 +72,12 @@ namespace DreamTool
         void initAxisLines();
 
     protected: // Variables
-		AxisPair mAxisPair;
-		glm::vec3 mTranslation;
+        AxisPair mAxisPair;
+        glm::vec3 mTranslation;
         float mSize;
         float mMajorSpacing;
         float mMinorSpacing;
         vec3 mMajorColour;
         vec3 mMinorColour;
-	};
+    };
 }
