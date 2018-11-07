@@ -118,9 +118,6 @@ namespace Dream
         bool hasFocus() const;
         void setHasFocus(bool);
 
-        bool getLoadedFlag() const;
-        void setLoadedFlag(bool);
-
         bool hasEvents() const;
         void addEvent(Event);
         const vector<Event>& getEventQueue() const;
@@ -132,6 +129,7 @@ namespace Dream
         size_t countChildren();
         void addChildRuntime(SceneObjectRuntime*);
         void removeChildRuntime(SceneObjectRuntime*);
+		SceneObjectRuntime* createChildRuntime(SceneObjectDefinition*);
         vector<SceneObjectRuntime*> getChildRuntimes();
         bool isChildOf(SceneObjectRuntime*);
 
@@ -143,7 +141,7 @@ namespace Dream
 
         bool useDefinition() override;
 
-        bool followsCamera() const;
+        bool getFollowsCamera() const;
         void setFollowsCamera(bool followsCamera);
         void walk(float,float);
         void drive(float,float);
@@ -171,8 +169,11 @@ namespace Dream
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
-    private:
+	protected:
+        void initialTransform();
+        bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
+    private:
         AudioInstance* mAudioInstance;
         LightInstance* mLightInstance;
         ParticleEmitterInstance* mParticleEmitterInstance;
@@ -180,24 +181,16 @@ namespace Dream
         PhysicsObjectInstance* mPhysicsObjectInstance;
         ScriptInstance* mScriptInstance;
         Transform3D* mTransform;
-
         ModelInstance* mModelInstance;
-
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;
-
         SceneRuntime* mSceneRuntimeHandle;
         SceneObjectRuntime* mParentRuntimeHandle;
-
-        bool mLoaded;
         bool mHasFocus;
         bool mDeleted;
         bool mHidden;
         bool mAlwaysDraw;
-        bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
         bool mFollowsCamera;
-
-        void initialTransform();
     };
 }

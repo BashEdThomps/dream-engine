@@ -77,7 +77,6 @@ namespace Dream
         mModelInstance(nullptr),
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
-        mLoaded(false),
         mHasFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -478,21 +477,6 @@ namespace Dream
     (bool focus)
     {
         mHasFocus = focus;
-    }
-
-    bool
-    SceneObjectRuntime::getLoadedFlag
-    ()
-    const
-    {
-        return mLoaded;
-    }
-
-    void
-    SceneObjectRuntime::setLoadedFlag
-    (bool loaded)
-    {
-        mLoaded = loaded;
     }
 
     bool
@@ -952,7 +936,6 @@ namespace Dream
         initialTransform();
         if (!createAssetInstances()) return false;
         if( !loadChildrenFromDefinition(def)) return false;
-        setLoadedFlag(true);
         return true;
     }
 
@@ -960,26 +943,16 @@ namespace Dream
     SceneObjectRuntime::loadChildrenFromDefinition
     (SceneObjectDefinition* definition)
     {
-        auto log = getLog();
-
         vector<SceneObjectDefinition*> definitions = definition->getChildDefinitionsList();
-
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
-            SceneObjectRuntime* child = new SceneObjectRuntime(*it, mSceneRuntimeHandle);
-            child->setParentRuntime(this);
-            if (!child->useDefinition())
-            {
-                log->error("Error creating child runtime");
-                return false;
-            }
-            mChildRuntimes.push_back(child);
+			createChildRuntime(*it);
         }
         return true;
     }
 
     bool
-    SceneObjectRuntime::followsCamera
+    SceneObjectRuntime::getFollowsCamera
     () const
     {
         return mFollowsCamera;
@@ -1065,4 +1038,28 @@ namespace Dream
     {
         child->setDeleted(true);
     }
+
+	void 
+	SceneObjectRuntime::addChildRuntime
+	(SceneObjectRuntime* rt)
+	{
+		mChildRuntimes.push_back(rt);
+	}
+
+	SceneObjectRuntime*
+	SceneObjectRuntime::createChildRuntime
+	(SceneObjectDefinition* def)
+	{
+		auto log = getLog();
+		SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntimeHandle);
+		child->setParentRuntime(this);
+		if (!child->useDefinition())
+		{
+			log->error("Error creating child runtime");
+			delete child;
+			return nullptr;
+		}
+		addChildRuntime(child);
+		return child;
+	}
 }

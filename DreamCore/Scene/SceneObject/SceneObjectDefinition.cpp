@@ -176,14 +176,14 @@ namespace Dream
     }
 
     void
-    SceneObjectDefinition::addChildSceneObjectDefinition
+    SceneObjectDefinition::addChildDefinition
     (SceneObjectDefinition* child)
     {
         mChildDefinitions.push_back(child);
     }
 
     void
-    SceneObjectDefinition::removeChildSceneObjectDefinition
+    SceneObjectDefinition::removeChildDefinition
     (SceneObjectDefinition* child)
     {
         auto log = getLog();
@@ -208,7 +208,7 @@ namespace Dream
     }
 
     SceneObjectDefinition*
-    SceneObjectDefinition::createNewChildSceneObjectDefinition
+    SceneObjectDefinition::createNewChildDefinition
     (json* fromJson)
     {
         auto log = getLog();
@@ -240,7 +240,7 @@ namespace Dream
             true
         );
         soDefinition->loadChildSceneObjectDefinitions(true);
-        addChildSceneObjectDefinition(soDefinition);
+        addChildDefinition(soDefinition);
 
         return soDefinition;
     }
@@ -357,7 +357,7 @@ namespace Dream
             newSOD->setName(getName()+" (Copy)");
         }
 
-        mParentSceneObject->addChildSceneObjectDefinition(newSOD);
+        mParentSceneObject->addChildDefinition(newSOD);
         return newSOD;
     }
 

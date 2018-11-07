@@ -48,7 +48,6 @@ namespace DreamTool
             case DreamTool::PROP_TYPE_ASSET:
                 drawAssetProperties();
                 break;
-
         }
         ImGui::End();
     }
@@ -84,7 +83,7 @@ namespace DreamTool
                     auto parent = soDef->getParentSceneObject();
                     if (parent)
                     {
-                        parent->removeChildSceneObjectDefinition(soDef);
+                        parent->removeChildDefinition(soDef);
                     }
                 }
                 if (soRuntime)
@@ -539,6 +538,7 @@ namespace DreamTool
     PropertiesWindow::drawSceneObjectProperties
     ()
     {
+		auto projDef = mProject->getProjectDefinition();
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto log = getLog();
@@ -548,13 +548,19 @@ namespace DreamTool
             return;
         }
 
-
         ImGui::SameLine();
-        drawDeleteSceneObjectButton();
+		if (soDef->getParentSceneObject() != nullptr)
+		{
+			drawDeleteSceneObjectButton();
+		}
         ImGui::SameLine();
         if (ImGui::Button("Add Child"))
         {
-
+			auto newChildDef = soDef->createNewChildDefinition();
+			if (soRuntime)
+			{
+				soRuntime->createChildRuntime(newChildDef);
+			}
         }
         drawNameAndIdProperties();
         ImGui::Separator();
@@ -601,12 +607,27 @@ namespace DreamTool
         bool transformAbsolute = soDef->getTransform()->getTransformType().compare(Constants::TRANSFORM_TYPE_ABSOLUTE) == 0;
         if(ImGui::RadioButton("Absolute", transformAbsolute))
         {
-            soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+			if (soDef) 
+			{
+				soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+			}
+			if (soRuntime)
+			{
+				soRuntime->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+			}
         }
         ImGui::NextColumn();
         if(ImGui::RadioButton("Offset Parent", !transformAbsolute))
         {
-            soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_OFFSET);
+			if (soDef)
+			{ 
+				soDef->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_OFFSET);
+			}
+			if (soRuntime)
+			{
+				soRuntime->getTransform()->setTransformType(Constants::TRANSFORM_TYPE_OFFSET);
+			}
+
         }
 
         ImGui::Columns(1);
@@ -678,7 +699,6 @@ namespace DreamTool
         ImGui::Separator();
 
         ImGui::Text("Assets");
-        auto projDef = mProject->getProjectDefinition();
 
         // Audio
         int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::AUDIO);
@@ -705,6 +725,14 @@ namespace DreamTool
         if(StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::AUDIO, selectedAudioAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO, selectedAudioAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::AUDIO, selectedDef->getUuid());
+				}
+			}
         }
 
         // Light
@@ -734,6 +762,14 @@ namespace DreamTool
         if(StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::LIGHT, selectedLightAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT, selectedLightAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::LIGHT, selectedDef->getUuid());
+				}
+			}
         }
 
         // Model
@@ -742,7 +778,6 @@ namespace DreamTool
 
         if(ImGui::Button("-##Model"))
         {
-
             soDef->setAssetDefinition(AssetType::MODEL,"");
         }
         ImGui::SameLine();
@@ -765,6 +800,14 @@ namespace DreamTool
         if(StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::MODEL, selectedModelAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::MODEL, selectedDef->getUuid());
+				}
+			}
         }
 
         // Particle Emitter
@@ -772,8 +815,7 @@ namespace DreamTool
         vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
         if(ImGui::Button("-##ParticleEmitter"))
         {
-
-            soDef->setAssetDefinition(AssetType::PARTICLE_EMITTER,"");
+            soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
         }
         ImGui::SameLine();
 
@@ -793,6 +835,14 @@ namespace DreamTool
         if(StringCombo("Particle Emitter",&selectedParticleEmitterAsset,peAssets,peAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::PARTICLE_EMITTER, selectedDef->getUuid());
+				}
+			}
         }
 
         // Path
@@ -800,7 +850,6 @@ namespace DreamTool
         vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
         if(ImGui::Button("-##Path"))
         {
-
             soDef->setAssetDefinition(AssetType::PATH,"");
         }
         ImGui::SameLine();
@@ -822,6 +871,11 @@ namespace DreamTool
         if(StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::PATH, selectedPathAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(PATH, selectedPathAsset);
+				soRuntime->replaceAssetUuid(PATH, selectedDef->getUuid());
+			}
         }
 
         //Physics Object
@@ -829,7 +883,6 @@ namespace DreamTool
         vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
         if(ImGui::Button("-##PhysicsObject"))
         {
-
             soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,"");
         }
         ImGui::SameLine();
@@ -851,6 +904,14 @@ namespace DreamTool
         if(StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT, selectedPhysicsObjectAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::PHYSICS_OBJECT, selectedDef->getUuid());
+				}
+			}
         }
 
         // Script
@@ -879,6 +940,14 @@ namespace DreamTool
         if(StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size()))
         {
             soDef->setSelectedAssetIndex(AssetType::SCRIPT, selectedScriptAsset);
+			if (soRuntime)
+			{
+				auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT, selectedScriptAsset);
+				if (selectedDef)
+				{ 
+					soRuntime->replaceAssetUuid(AssetType::SCRIPT, selectedDef->getUuid());
+				}
+			}
         }
     }
 

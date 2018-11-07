@@ -64,9 +64,9 @@ namespace Dream
         void showStatus() override;
 
         vector<SceneObjectDefinition*> getChildDefinitionsList();
-        void addChildSceneObjectDefinition(SceneObjectDefinition* child);
-        void removeChildSceneObjectDefinition(SceneObjectDefinition* child);
-        SceneObjectDefinition* createNewChildSceneObjectDefinition(json* def = nullptr);
+        void addChildDefinition(SceneObjectDefinition* child);
+        void removeChildDefinition(SceneObjectDefinition* child);
+        SceneObjectDefinition* createNewChildDefinition(json* def = nullptr);
 
         SceneDefinition* getSceneDefinition();
         json getJson() override;

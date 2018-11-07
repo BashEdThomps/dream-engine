@@ -267,8 +267,8 @@ namespace DreamTool
     {
 
         ImGuiIO& io = ImGui::GetIO();
-        RegularFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 16.0f);
-        MonoFont = io.Fonts->AddFontFromFileTTF("./fonts/SourceCodePro-Regular.ttf", 18.0f);
+        RegularFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 24.0f);
+        MonoFont = io.Fonts->AddFontFromFileTTF("./fonts/SourceCodePro-Regular.ttf", 24.0f);
     }
 
     void
