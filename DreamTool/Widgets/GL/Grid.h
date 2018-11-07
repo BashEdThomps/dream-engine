@@ -25,14 +25,14 @@ namespace DreamTool
 {
     class Grid : public GLWidget
     {
+    public:
         enum AxisPair
         {
-            XY,
+            XY = 0,
             XZ,
             YZ
         };
 
-    public:
         Grid(
             Project* p,
             AxisPair xp = AxisPair::XZ,
@@ -65,6 +65,10 @@ namespace DreamTool
 
         vec3 getMinorColour() const;
         void setMinorColour(vec3 minorColour);
+
+        void setAxisPair(Grid::AxisPair);
+
+        Grid::AxisPair getAxisPair() const;
 
     protected: // Member functions
         void initMajorGridData();

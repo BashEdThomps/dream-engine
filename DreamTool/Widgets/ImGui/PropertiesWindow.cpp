@@ -37,47 +37,107 @@ namespace DreamTool
             case DreamTool::PROP_TYPE_NONE:
                 break;
             case DreamTool::PROP_TYPE_PROJECT:
-                ImGui::SameLine();
-                if(ImGui::Button("New Scene"))
-                {
-                    pushPropertyTarget
-                    (
-                        DreamTool::PROP_TYPE_SCENE,
-                        mProject->getProjectDefinition()->createNewSceneDefinition(),
-                        nullptr
-                    );
-                    break;
-
-                }
-                drawNameAndIdProperties();
                 drawProjectProperties();
                 break;
             case DreamTool::PROP_TYPE_SCENE:
-                ImGui::SameLine();
-                if(ImGui::Button("Delete Scene"))
-                {
-
-                }
-                drawNameAndIdProperties();
                 drawSceneProperties();
                 break;
             case DreamTool::PROP_TYPE_SCENE_OBJECT:
-                ImGui::SameLine();
-                ImGui::Button("Add Child");
-                ImGui::SameLine();
-                ImGui::Button("Delete Scene Object");
-                drawNameAndIdProperties();
                 drawSceneObjectProperties();
                 break;
             case DreamTool::PROP_TYPE_ASSET:
-                ImGui::SameLine();
-                ImGui::Button("Delete Asset");
-                drawNameAndIdProperties();
                 drawAssetProperties();
                 break;
 
         }
         ImGui::End();
+    }
+
+    void
+    PropertiesWindow::drawDeleteSceneObjectButton
+    ()
+    {
+        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
+        auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+
+        if (ImGui::Button("Delete Scene Object"))
+        {
+            ImGui::OpenPopup("Confirm Delete SceneObject");
+        }
+
+        if(ImGui::BeginPopupModal("Confirm Delete SceneObject"))
+        {
+            ImGui::Text("\n"
+                        "Are you sure you want to delete this SceneObject?\n"
+                        "\n");
+            ImGui::Separator();
+            if (ImGui::Button("Cancel",ImVec2(0,0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete SceneObject",ImVec2(0,0)))
+            {
+                // TODO Check is not active
+                if (soDef)
+                {
+                    auto parent = soDef->getParentSceneObject();
+                    if (parent)
+                    {
+                        parent->removeChildSceneObjectDefinition(soDef);
+                    }
+                }
+                if (soRuntime)
+                {
+                   auto parent = soRuntime->getParentRuntime();
+                   parent->removeChildRuntime(soRuntime);
+                }
+                mDefinition = nullptr;
+                mRuntime = nullptr;
+                popPropertyTarget();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    void
+    PropertiesWindow::drawDeleteSceneButton
+    ()
+    {
+        if(ImGui::Button("Delete Scene"))
+        {
+           ImGui::OpenPopup("Confirm Delete Scene");
+        }
+
+        auto sDef = dynamic_cast<SceneDefinition*>(mDefinition);
+        auto pDef = mProject->getProjectDefinition();
+
+        if(ImGui::BeginPopupModal("Confirm Delete Scene"))
+        {
+            ImGui::Text("\n"
+                        "Are you sure you want to delete this Scene?\n"
+                        "\n");
+            ImGui::Separator();
+            if (ImGui::Button("Cancel",ImVec2(0,0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete Scene",ImVec2(0,0)))
+            {
+                // TODO Check is not active
+                if (pDef && sDef)
+                {
+                    pDef->removeSceneDefinition(sDef);
+                    mDefinition = nullptr;
+                    mRuntime = nullptr;
+                    popPropertyTarget();
+                }
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
     }
 
     void
@@ -186,6 +246,25 @@ namespace DreamTool
     ()
     {
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+
+        if (projDef == nullptr)
+        {
+            return;
+        }
+
+        ImGui::SameLine();
+        if(ImGui::Button("New Scene"))
+        {
+            pushPropertyTarget
+            (
+                DreamTool::PROP_TYPE_SCENE,
+                mProject->getProjectDefinition()->createNewSceneDefinition(),
+                nullptr
+            );
+            return;
+        }
+        drawNameAndIdProperties();
+
         ImGui::Separator();
         // Startup Scene
         auto startup = projDef->getStartupSceneDefinition();
@@ -262,6 +341,16 @@ namespace DreamTool
 
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
+
+        if (sceneDef == nullptr)
+        {
+            return;
+        }
+
+        ImGui::SameLine();
+
+        drawDeleteSceneButton();
+        drawNameAndIdProperties();
 
         ImGui::Separator();
 
@@ -454,6 +543,20 @@ namespace DreamTool
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto log = getLog();
 
+        if (soDef == nullptr)
+        {
+            return;
+        }
+
+
+        ImGui::SameLine();
+        drawDeleteSceneObjectButton();
+        ImGui::SameLine();
+        if (ImGui::Button("Add Child"))
+        {
+
+        }
+        drawNameAndIdProperties();
         ImGui::Separator();
 
         ImGui::Columns(2);
@@ -783,8 +886,20 @@ namespace DreamTool
     PropertiesWindow::drawAssetProperties
     ()
     {
-        ImGui::Separator();
         auto assetDef = dynamic_cast<IAssetDefinition*>(mDefinition);
+        if (assetDef == nullptr)
+        {
+            return;
+        }
+
+        ImGui::SameLine();
+        if(ImGui::Button("Delete Asset"))
+        {
+
+        }
+
+        drawNameAndIdProperties();
+        ImGui::Separator();
         auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
         switch (type)
         {

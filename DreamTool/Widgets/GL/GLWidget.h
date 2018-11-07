@@ -45,6 +45,9 @@ namespace DreamTool
         vector<LineVertex> mVertexBuffer;
         string mVertexShaderSource;
         string mFragmentShaderSource;
+        GLint mModelUniform;
+        GLint mViewUniform;
+        GLint mProjectionUniform;
 
         // Inherited via DTWidget
     };

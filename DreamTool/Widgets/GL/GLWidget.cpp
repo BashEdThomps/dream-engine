@@ -103,7 +103,7 @@ namespace DreamTool
 
     void GLWidget::draw()
     {
-		checkGLError();
+        checkGLError();
         if (mProject)
         {
             auto pRuntime = mProject->getProjectRuntime();
@@ -120,12 +120,14 @@ namespace DreamTool
         auto log = getLog();
         if (!mVertexBuffer.empty())
         {
-#ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
             checkGLError();
+
+#ifndef __APPLE__
             glLineWidth(3.0f);
             checkGLError();
 #endif
+            glEnable(GL_DEPTH_TEST);
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderInstance::CurrentShaderProgram = mShaderProgram;
@@ -141,54 +143,50 @@ namespace DreamTool
             checkGLError();
 
             // Set the projection matrix
-            GLint modelUniform = glGetUniformLocation(mShaderProgram, "model");
-            if (modelUniform == -1)
+            if (mModelUniform == -1)
             {
                 log->error("Unable to find Uniform Location for model");
                 return;
             }
             else
             {
-                glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-            checkGLError();
+                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+                checkGLError();
             }
 
             // Set the projection matrix
-            GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
-            if (projUniform == -1)
+            if (mProjectionUniform == -1)
             {
                 log->error("Unable to find Uniform Location for projection");
                 return;
             }
             else
             {
-                glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-            checkGLError();
+                glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+                checkGLError();
             }
 
             // Set the view matrix
-            GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
-            if (viewUniform == -1)
+            if (mViewUniform == -1)
             {
                 log->error("Unable to find Uniform Location for view");
                 return;
             }
             else
             {
-                glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-            checkGLError();
+                glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+                checkGLError();
             }
-
-            glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-            checkGLError();
 
             // Draw
             glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
             checkGLError();
 
             // Revert State
-#ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
+            checkGLError();
+#ifndef __APPLE__
+            glLineWidth(1.0f);
             checkGLError();
 #endif
         }
@@ -285,6 +283,11 @@ namespace DreamTool
         // Delete the shaders as they're linked into our program now and no longer necessery
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        // Get Uniform Locations
+        mModelUniform = glGetUniformLocation(mShaderProgram, "model");
+        mViewUniform = glGetUniformLocation(mShaderProgram,"view");
+        mProjectionUniform = glGetUniformLocation(mShaderProgram, "projection");
     }
 
     void

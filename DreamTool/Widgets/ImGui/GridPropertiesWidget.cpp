@@ -81,10 +81,11 @@ namespace DreamTool
         ImGui::Separator();
 
         vector<string> orientations = {"XY","XZ","YZ"};
-        int orientationIndex=0;
+        int orientationIndex = mGridHandle->getAxisPair();
         if (StringCombo("Orientation",&orientationIndex,orientations,orientations.size()))
         {
-
+            mGridHandle->setAxisPair(static_cast<Grid::AxisPair>(orientationIndex));
+            mGridHandle->recalculateGridLines();
         }
 
         ImGui::Separator();

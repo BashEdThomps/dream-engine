@@ -304,6 +304,13 @@ namespace Dream
             glDeleteTextures(1, &mGeometryPassAlbedoBuffer);
             checkGLError();
         }
+
+        // Depth Buffer
+        if (mGeometryPassDepthBuffer != 0)
+        {
+            glDeleteRenderbuffers(1,&mGeometryPassDepthBuffer);
+            checkGLError();
+        }
     }
 
     bool
@@ -437,9 +444,6 @@ namespace Dream
             log->error("Lighting Shader is nullptr");
             return;
         }
-
-        //glDisable(GL_DEPTH);
-        //glDisable(GL_BLEND);
 
         mLightingShader->use();
 

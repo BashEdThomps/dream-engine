@@ -24,18 +24,18 @@ namespace DreamTool
 
     Grid::Grid
     (
-        Project* p,
-        AxisPair xp,
-        glm::vec3 position,
-        float majorSpacing,
-        float minorSpacing,
-        float size,
-        vec3 majorColour,
-        vec3 minorColour
-    )
+            Project* p,
+            AxisPair xp,
+            glm::vec3 position,
+            float majorSpacing,
+            float minorSpacing,
+            float size,
+            vec3 majorColour,
+            vec3 minorColour
+            )
         : GLWidget(p),
-          mTranslation(position),
           mAxisPair(xp),
+          mTranslation(position),
           mSize(size),
           mMajorSpacing(majorSpacing),
           mMinorSpacing(minorSpacing),
@@ -72,30 +72,60 @@ namespace DreamTool
         float halfSize = (mSize/2.0f);
 
         // Major Grid
-        for (float z = -halfSize; z <= halfSize; z += mMajorSpacing)
+        for (float axis1 = -halfSize; axis1 <= halfSize; axis1 += mMajorSpacing)
         {
             LineVertex majorStart, majorEnd;
 
-            majorStart.Position = vec3(-halfSize, 0.0f, z);
-            majorStart.Color = mMajorColour;
+            switch (mAxisPair)
+            {
+                case XZ:
+                    majorStart.Position = vec3(axis1, 0.0f, -halfSize);
+                    majorEnd.Position = vec3(axis1, 0.0f, (axis1 != 0.0f ?halfSize:0.0f));
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
+                case YZ:
+                    majorStart.Position = vec3(0.0f, axis1, -halfSize);
+                    majorEnd.Position = vec3(0.0f, axis1, (axis1 != 0.0f ?halfSize:0.0f));
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
+                case XY:
+                    majorStart.Position = vec3(axis1, -halfSize, 0.0f);
+                    majorEnd.Position = vec3(axis1, (axis1 != 0.0f ?halfSize:0.0f), 0.0f);
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
 
-            majorEnd.Position = vec3(halfSize, 0.0f, z);
-            majorEnd.Color = mMajorColour;
-
+            }
             mVertexBuffer.push_back(majorStart);
             mVertexBuffer.push_back(majorEnd);
         }
 
-        for (float x = -halfSize; x <= halfSize; x += mMajorSpacing)
+        for (float axis2 = -halfSize; axis2 <= halfSize; axis2 += mMajorSpacing)
         {
             LineVertex majorStart, majorEnd;
-
-            majorStart.Position = vec3(x, 0.0f, -halfSize);
-            majorStart.Color = mMajorColour;
-
-            majorEnd.Position = vec3(x, 0.0f, halfSize);
-            majorEnd.Color = mMajorColour;
-
+            switch (mAxisPair)
+            {
+                case XZ:
+                    majorStart.Position = vec3(-halfSize,0.0f,axis2);
+                    majorEnd.Position = vec3((axis2 != 0.0f ?halfSize:0.0f),0.0f,axis2);
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
+                case YZ:
+                    majorStart.Position = vec3(0.0f,  -halfSize, axis2);
+                    majorEnd.Position = vec3(0.0f, (axis2 != 0.0f ?halfSize:0.0f), axis2);
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
+                case XY:
+                    majorStart.Position = vec3(-halfSize,axis2,0.0f);
+                    majorEnd.Position = vec3((axis2 != 0.0f ?halfSize:0.0f),axis2,0.0f);
+                    majorStart.Color = mMajorColour;
+                    majorEnd.Color = mMajorColour;
+                    break;
+            }
             mVertexBuffer.push_back(majorStart);
             mVertexBuffer.push_back(majorEnd);
         }
@@ -110,35 +140,66 @@ namespace DreamTool
         float halfSize = (mSize/2.0f);
 
         // Minor Grid
-        for (float z = -halfSize; z <= halfSize; z += mMinorSpacing)
+        for (float axis1 = -halfSize; axis1 <= halfSize; axis1 += mMinorSpacing)
         {
-
-            if (static_cast<int>(z) % static_cast<int>(mMajorSpacing) == 0) continue;
+            if (static_cast<int>(axis1) % static_cast<int>(mMajorSpacing) == 0) continue;
 
             LineVertex minorStart, minorEnd;
+            switch(mAxisPair)
+            {
+                case XY:
+                    minorStart.Position = vec3(axis1, -halfSize, 0.0f);
+                    minorEnd.Position = vec3(axis1, (axis1 != 0.0f ?halfSize:0.0f), 0.0f);
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+                case XZ:
+                    minorStart.Position = vec3(axis1, 0.0f, -halfSize);
+                    minorEnd.Position = vec3(axis1, 0.0f, (axis1 != 0.0f ?halfSize:0.0f));
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+                case YZ:
+                    minorStart.Position = vec3(0.0f,  axis1,-halfSize);
+                    minorEnd.Position = vec3(0.0f,  axis1, (axis1 != 0.0f ?halfSize:0.0f));
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+            }
 
-            minorStart.Position = vec3(-halfSize, 0.0f, z);
-            minorStart.Color = mMinorColour;
-
-            minorEnd.Position = vec3(halfSize, 0.0f, z);
-            minorEnd.Color = mMinorColour;
 
             mVertexBuffer.push_back(minorStart);
             mVertexBuffer.push_back(minorEnd);
         }
 
-        for (float x = -halfSize; x <= halfSize; x += mMinorSpacing)
+        for (float axis2 = -halfSize; axis2 <= halfSize; axis2 += mMinorSpacing)
         {
 
-            if (static_cast<int>(x) % static_cast<int>(mMajorSpacing) == 0) continue;
+            if (static_cast<int>(axis2) % static_cast<int>(mMajorSpacing) == 0) continue;
 
             LineVertex minorStart, minorEnd;
 
-            minorStart.Position = vec3(x, 0.0f, -halfSize);
-            minorStart.Color = mMinorColour;
-
-            minorEnd.Position = vec3(x, 0.0f, halfSize);
-            minorEnd.Color = mMinorColour;
+            switch (mAxisPair)
+            {
+                case XY:
+                    minorStart.Position = vec3(-halfSize,axis2,0.0f);
+                    minorEnd.Position = vec3((axis2 != 0.0f ? halfSize:0.0f),axis2,0.0f);
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+                case XZ:
+                    minorStart.Position = vec3(-halfSize, 0.0f, axis2);
+                    minorEnd.Position = vec3((axis2 != 0.0f ?halfSize:0.0f),0.0f,axis2);
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+                case YZ:
+                    minorStart.Position = vec3( 0.0f, -halfSize, axis2);
+                    minorEnd.Position = vec3(0.0f, (axis2 != 0.0f ?halfSize:0.0f), axis2);
+                    minorStart.Color = mMinorColour;
+                    minorEnd.Color = mMinorColour;
+                    break;
+            }
 
             mVertexBuffer.push_back(minorStart);
             mVertexBuffer.push_back(minorEnd);
@@ -154,7 +215,7 @@ namespace DreamTool
         LineVertex xStart, xEnd;
         xStart.Position = vec3(0);
         xStart.Color = red;
-        xEnd.Position = vec3(mSize,0,0);
+        xEnd.Position = vec3(mSize/2,0,0);
         xEnd.Color = red;
         mVertexBuffer.push_back(xStart);
         mVertexBuffer.push_back(xEnd);
@@ -162,7 +223,7 @@ namespace DreamTool
         LineVertex yStart, yEnd;
         yStart.Position = vec3(0);
         yStart.Color = green;
-        yEnd.Position = vec3(0,mSize,0);
+        yEnd.Position = vec3(0,mSize/2,0);
         yEnd.Color = green;
         mVertexBuffer.push_back(yStart);
         mVertexBuffer.push_back(yEnd);
@@ -170,10 +231,15 @@ namespace DreamTool
         LineVertex zStart, zEnd;
         zStart.Position = vec3(0);
         zStart.Color = blue;
-        zEnd.Position = vec3(0,0,mSize);
+        zEnd.Position = vec3(0,0,mSize/2);
         zEnd.Color = blue;
         mVertexBuffer.push_back(zStart);
         mVertexBuffer.push_back(zEnd);
+    }
+
+    Grid::AxisPair Grid::getAxisPair() const
+    {
+        return mAxisPair;
     }
 
     vec3 Grid::getMinorColour() const
@@ -184,6 +250,12 @@ namespace DreamTool
     void Grid::setMinorColour(vec3 minorColour)
     {
         mMinorColour = minorColour;
+    }
+
+    void Grid::setAxisPair(Grid::AxisPair axisPair)
+    {
+        mAxisPair = axisPair;
+
     }
 
     vec3 Grid::getMajorColour() const
@@ -251,5 +323,19 @@ namespace DreamTool
         initMinorGridData();
         initMajorGridData();
         initAxisLines();
+
+        // Vertex Array
+        glBindVertexArray(mVao);
+        ShaderInstance::CurrentVAO = mVao;
+        checkGLError();
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        ShaderInstance::CurrentVBO = mVbo;
+        checkGLError();
+
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+        checkGLError();
+
+        glBindVertexArray(0);
     }
 }

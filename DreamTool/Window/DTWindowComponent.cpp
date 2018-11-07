@@ -38,8 +38,8 @@ namespace DreamTool
     DTWindowComponent::DTWindowComponent
     () : IWindowComponent()
     {
-		setLogClassName("DTWindowComponent");
-		auto log = getLog();
+        setLogClassName("DTWindowComponent");
+        auto log = getLog();
         log->info("Constructing" );
         mName = "Dream";
     }
@@ -47,7 +47,7 @@ namespace DreamTool
     DTWindowComponent::~DTWindowComponent
     ()
     {
-		auto log = getLog();
+        auto log = getLog();
         log->info("Destructing" );
         cleanUpImGui();
         glfwTerminate();
@@ -88,7 +88,7 @@ namespace DreamTool
     DTWindowComponent::initGLFW
     ()
     {
-		auto log = getLog();
+        auto log = getLog();
         log->debug("Initialising GLFW");
 
         /* Initialize the library */
@@ -100,7 +100,7 @@ namespace DreamTool
 
         /* Create a windowed mode window and its OpenGL context */
 #ifdef WIN32
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -120,7 +120,7 @@ namespace DreamTool
 
         // Resize callback
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
         return true;
     }
 
@@ -147,7 +147,7 @@ namespace DreamTool
     DTWindowComponent::initGL
     ()
     {
-		auto log = getLog();
+        auto log = getLog();
         log->debug("Initialising GLFW::OpenGL");
         glfwMakeContextCurrent(mWindow);
 
@@ -194,7 +194,7 @@ namespace DreamTool
             WindowSizeChanged = false;
         }
 
-		
+
     }
 
     void DTWindowComponent::getCurrentDimensions()

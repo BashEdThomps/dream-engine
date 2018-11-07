@@ -1058,4 +1058,11 @@ namespace Dream
     {
 
     }
+
+    void
+    SceneObjectRuntime::removeChildRuntime
+    (SceneObjectRuntime* child)
+    {
+        child->setDeleted(true);
+    }
 }

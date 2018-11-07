@@ -349,6 +349,7 @@ namespace Dream
                             sceneDef->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
+                delete (*iter);
                 mSceneDefinitions.erase(iter);
                 return;
             }

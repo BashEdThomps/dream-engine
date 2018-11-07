@@ -45,7 +45,7 @@ showFPS
 
 int
 main
-(int,char**)
+(int argc,char** argv)
 {
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
@@ -94,9 +94,17 @@ main
     windowComponent.addGLWidget(&grid);
     windowComponent.addGLWidget(&lv);
 
+    if (argc > 1)
+    {
+       if(project.openFromDirectory(argv[1]))
+       {
+          project.createProjectRuntime();
+       }
+    }
+
     spdlog::set_level(spdlog::level::err);
      // Run the project
-	ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     while (!MainLoopDone)
     {
         if (windowComponent.shouldClose())
@@ -126,51 +134,60 @@ main
         Dream::ShaderInstance::InvalidateState();
         windowComponent.drawGLWidgets();
         windowComponent.drawImGui();
-		if (projectRuntime)
-		{
-			auto sr = projectRuntime->getActiveSceneRuntime();
-			if (sr)
-			{
-				static float mouseScalar = 0.001;
-				auto camera = sr->getCamera();
-				if (!io.WantCaptureMouse)
-				{
-					if (io.MouseDown[2])
-					{
-						camera->deltaYaw(io.MouseDelta.x*mouseScalar);
-						camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
-					}
-				}
+        if (projectRuntime)
+        {
+            auto sr = projectRuntime->getActiveSceneRuntime();
+            if (sr)
+            {
+                static float mouseScalar = 0.001f;
+                auto camera = sr->getCamera();
+                if (!io.WantCaptureMouse)
+                {
+#ifdef __APPLE__
+                    if (io.MouseDown[0])
+                    {
+                        camera->deltaYaw(io.MouseDelta.x*mouseScalar);
+                        camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
 
-				if (!io.WantCaptureKeyboard)
-				{
-					if (ImGui::IsKeyDown(GLFW_KEY_W))
-					{
-						camera->flyForward(1.0f);
-					}
-					if (ImGui::IsKeyDown(GLFW_KEY_S))
-					{
-						camera->flyBackward(1.0f);
-					}
-					if (ImGui::IsKeyDown(GLFW_KEY_A))
-					{
-						camera->flyLeft(1.0f);
-					}
-					if (ImGui::IsKeyDown(GLFW_KEY_D))
-					{
-						camera->flyRight(1.0f);
-					}
-					if (ImGui::IsKeyDown(GLFW_KEY_Q))
-					{
-						camera->flyDown(1.0f);
-					}
-					if (ImGui::IsKeyDown(GLFW_KEY_E))
-					{
-						camera->flyUp(1.0f);
-					}
-				}
-			}
-		}
+                    }
+#else
+                    if (io.MouseDown[2])
+                    {
+                        camera->deltaYaw(io.MouseDelta.x*mouseScalar);
+                        camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
+                    }
+#endif
+                }
+
+                if (!io.WantCaptureKeyboard)
+                {
+                    if (ImGui::IsKeyDown(GLFW_KEY_W))
+                    {
+                        camera->flyForward(1.0f);
+                    }
+                    if (ImGui::IsKeyDown(GLFW_KEY_S))
+                    {
+                        camera->flyBackward(1.0f);
+                    }
+                    if (ImGui::IsKeyDown(GLFW_KEY_A))
+                    {
+                        camera->flyLeft(1.0f);
+                    }
+                    if (ImGui::IsKeyDown(GLFW_KEY_D))
+                    {
+                        camera->flyRight(1.0f);
+                    }
+                    if (ImGui::IsKeyDown(GLFW_KEY_Q))
+                    {
+                        camera->flyDown(1.0f);
+                    }
+                    if (ImGui::IsKeyDown(GLFW_KEY_E))
+                    {
+                        camera->flyUp(1.0f);
+                    }
+                }
+            }
+        }
         windowComponent.swapBuffers();
         if (CountFPS) showFPS();
         std::this_thread::yield();

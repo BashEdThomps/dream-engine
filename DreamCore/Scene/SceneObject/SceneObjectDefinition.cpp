@@ -199,6 +199,7 @@ namespace Dream
                     child->getNameAndUuidString(),
                     getNameAndUuidString()
                 );
+                delete (*iter);
                 mChildDefinitions.erase(iter);
                 return;
             }
