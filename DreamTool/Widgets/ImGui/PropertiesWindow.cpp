@@ -52,14 +52,15 @@ namespace DreamTool
         ImGui::End();
     }
 
-    void
+	bool
     PropertiesWindow::drawDeleteSceneObjectButton
     ()
     {
+		bool retval = false;
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
 
-        if (ImGui::Button("Delete Scene Object"))
+        if (ImGui::Button("Delete"))
         {
             ImGui::OpenPopup("Confirm Delete SceneObject");
         }
@@ -75,7 +76,7 @@ namespace DreamTool
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete SceneObject",ImVec2(0,0)))
+            if (ImGui::Button("Delete",ImVec2(0,0)))
             {
                 // TODO Check is not active
                 if (soDef)
@@ -93,18 +94,21 @@ namespace DreamTool
                 }
                 mDefinition = nullptr;
                 mRuntime = nullptr;
+				retval = true;
                 popPropertyTarget();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
+		return retval;
     }
 
-    void
+	bool
     PropertiesWindow::drawDeleteSceneButton
     ()
     {
-        if(ImGui::Button("Delete Scene"))
+		bool retval = false;
+        if(ImGui::Button("Delete"))
         {
            ImGui::OpenPopup("Confirm Delete Scene");
         }
@@ -123,7 +127,7 @@ namespace DreamTool
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete Scene",ImVec2(0,0)))
+            if (ImGui::Button("Delete",ImVec2(0,0)))
             {
                 // TODO Check is not active
                 if (pDef && sDef)
@@ -132,11 +136,13 @@ namespace DreamTool
                     mDefinition = nullptr;
                     mRuntime = nullptr;
                     popPropertyTarget();
+					retval = true;
                 }
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
+		return retval;
     }
 
     void
@@ -348,7 +354,10 @@ namespace DreamTool
 
         ImGui::SameLine();
 
-        drawDeleteSceneButton();
+		if (drawDeleteSceneButton())
+		{
+			return;
+		}
         drawNameAndIdProperties();
 
         ImGui::Separator();
@@ -551,7 +560,10 @@ namespace DreamTool
         ImGui::SameLine();
         if (soDef->getParentSceneObject() != nullptr)
         {
-            drawDeleteSceneObjectButton();
+			if (drawDeleteSceneObjectButton())
+			{
+				return;
+			}
         }
         ImGui::SameLine();
         if (ImGui::Button("Add Child"))
@@ -562,6 +574,16 @@ namespace DreamTool
                 soRuntime->createChildRuntime(newChildDef);
             }
         }
+		ImGui::SameLine();
+		if (ImGui::Button("Duplicate"))
+		{
+			auto dup = soDef->duplicate();
+			if (soRuntime)
+			{
+				soRuntime->createChildRuntime(dup);
+			}
+		}
+
         drawNameAndIdProperties();
         ImGui::Separator();
 

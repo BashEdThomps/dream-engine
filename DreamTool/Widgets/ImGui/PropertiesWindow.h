@@ -27,8 +27,8 @@ namespace DreamTool
 
     private:
         int getStringIndexInVector(string str, vector<string> vec);
-        void drawDeleteSceneObjectButton();
-        void drawDeleteSceneButton();
+        bool drawDeleteSceneObjectButton();
+        bool drawDeleteSceneButton();
         void drawNameAndIdProperties();
         void drawProjectProperties();
         void drawSceneProperties();

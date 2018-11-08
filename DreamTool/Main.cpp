@@ -55,8 +55,13 @@ main
     log->trace("Starting...");
 
     DTWindowComponent windowComponent;
+#ifdef WIN32
+	windowComponent.setUiFontSize(24.0f);
+    windowComponent.setMonoFontSize(24.0f);
+#else
     windowComponent.setUiFontSize(16.0f);
     windowComponent.setMonoFontSize(18.0f);
+#endif
     windowComponent.init();
 
     // Widgets

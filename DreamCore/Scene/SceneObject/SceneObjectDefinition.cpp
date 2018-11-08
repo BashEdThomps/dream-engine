@@ -354,7 +354,7 @@ namespace Dream
         }
         else
         {
-            newSOD->setName(getName()+" (Copy)");
+            newSOD->setName(getName()+".1");
         }
 
         mParentSceneObject->addChildDefinition(newSOD);
