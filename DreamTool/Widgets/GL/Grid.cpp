@@ -74,7 +74,7 @@ namespace DreamTool
         // Major Grid
         for (float axis1 = -halfSize; axis1 <= halfSize; axis1 += mMajorSpacing)
         {
-            LineVertex majorStart, majorEnd;
+            GLWidgetVertex majorStart, majorEnd;
 
             switch (mAxisPair)
             {
@@ -104,7 +104,7 @@ namespace DreamTool
 
         for (float axis2 = -halfSize; axis2 <= halfSize; axis2 += mMajorSpacing)
         {
-            LineVertex majorStart, majorEnd;
+            GLWidgetVertex majorStart, majorEnd;
             switch (mAxisPair)
             {
                 case XZ:
@@ -144,7 +144,7 @@ namespace DreamTool
         {
             if (static_cast<int>(axis1) % static_cast<int>(mMajorSpacing) == 0) continue;
 
-            LineVertex minorStart, minorEnd;
+            GLWidgetVertex minorStart, minorEnd;
             switch(mAxisPair)
             {
                 case XY:
@@ -177,7 +177,7 @@ namespace DreamTool
 
             if (static_cast<int>(axis2) % static_cast<int>(mMajorSpacing) == 0) continue;
 
-            LineVertex minorStart, minorEnd;
+            GLWidgetVertex minorStart, minorEnd;
 
             switch (mAxisPair)
             {
@@ -212,7 +212,7 @@ namespace DreamTool
         vec3 green(0,1,0);
         vec3 blue(0,0,1);
 
-        LineVertex xStart, xEnd;
+        GLWidgetVertex xStart, xEnd;
         xStart.Position = vec3(0);
         xStart.Color = red;
         xEnd.Position = vec3(mSize/2,0,0);
@@ -220,7 +220,7 @@ namespace DreamTool
         mVertexBuffer.push_back(xStart);
         mVertexBuffer.push_back(xEnd);
 
-        LineVertex yStart, yEnd;
+        GLWidgetVertex yStart, yEnd;
         yStart.Position = vec3(0);
         yStart.Color = green;
         yEnd.Position = vec3(0,mSize/2,0);
@@ -228,7 +228,7 @@ namespace DreamTool
         mVertexBuffer.push_back(yStart);
         mVertexBuffer.push_back(yEnd);
 
-        LineVertex zStart, zEnd;
+        GLWidgetVertex zStart, zEnd;
         zStart.Position = vec3(0);
         zStart.Color = blue;
         zEnd.Position = vec3(0,0,mSize/2);
@@ -333,7 +333,7 @@ namespace DreamTool
         ShaderInstance::CurrentVBO = mVbo;
         checkGLError();
 
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
         checkGLError();
 
         glBindVertexArray(0);

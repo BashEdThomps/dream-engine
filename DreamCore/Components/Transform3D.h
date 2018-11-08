@@ -38,18 +38,26 @@ using glm::quat;
 
 namespace Dream
 {
+
+    enum TransformType
+    {
+        Absolute,
+        Offset
+    };
+
   class Transform3D : public DreamObject
   {
   private:
     vec3 mTranslation;
     quat mOrientation;
     vec3 mScale;
-    string mTransformType;
+    TransformType mTransformType;
 
   public:
     Transform3D();
     Transform3D(glm::mat4 fromMatrix);
     explicit Transform3D(json j);
+    ~Transform3D() override;
 
     bool isTypeOffset() const;
     bool isTypeAbsolute() const;
@@ -105,8 +113,8 @@ namespace Dream
     void setScaleY(float);
     void setScaleZ(float);
 
-    string getTransformType() const;
-    void setTransformType(string);
+    TransformType getTransformType() const;
+    void setTransformType(TransformType);
 
     void translateByX(float);
     void translateByY(float);
@@ -125,7 +133,9 @@ namespace Dream
 
     json getJson();
 
-    void offsetFrom(Transform3D*, Transform3D*);
+    void setOffsetFrom(Transform3D*, Transform3D*);
+    string transformTypeToString(TransformType t);
+    TransformType transformTypeFromString(string);
   };
 
 } // End of Dream

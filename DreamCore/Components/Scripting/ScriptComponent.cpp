@@ -334,9 +334,7 @@ namespace Dream
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
 
-            "getTransform",&SceneObjectRuntime::getTransform,
-            "setTransform",&SceneObjectRuntime::setTransform,
-            "walk",&SceneObjectRuntime::walk,
+            "getCurrentTransform",&SceneObjectRuntime::getCurrentTransform,
 
             "getPath",&SceneObjectRuntime::getPathInstance,
             "getAudio",&SceneObjectRuntime::getAudioInstance,

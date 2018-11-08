@@ -734,7 +734,7 @@ namespace Dream
                 break;
             }
             auto instance = instances.at(i);
-            setModelMatrix(instance->getTransform()->asMat4(), "model["+std::to_string(i)+"]");
+            setModelMatrix(instance->getCurrentTransform()->asMat4(), "model["+std::to_string(i)+"]");
         }
     }
 

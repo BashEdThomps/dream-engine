@@ -30,34 +30,33 @@ namespace Dream
     Transform3D::Transform3D
     () : DreamObject("Transform3D")
     {
-        mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
+        mTransformType = TransformType::Absolute;
         mTranslation   = vec3(0.0f);
         mScale         = vec3(1.0f);
         mOrientation   = quat(1.0f,0.0f,0.0f,0.0f);
     }
 
-    Transform3D::Transform3D(mat4 mtx)
+    Transform3D::Transform3D
+    (mat4 mtx)
         : DreamObject("Transform3D")
     {
-       mTransformType = Constants::TRANSFORM_TYPE_ABSOLUTE;
-
+       mTransformType = TransformType::Absolute;
        setOrientation(quat(mtx));
        setTranslation(glm::vec3(mtx[3]));
        setScale(vec3(1.0f));
-
     }
 
     Transform3D::Transform3D
     (json jsonTransform)
-    : DreamObject("Transform3D")
+        : DreamObject("Transform3D")
     {
         if (!jsonTransform[Constants::TRANSFORM_TYPE].is_null())
         {
-            setTransformType(jsonTransform[Constants::TRANSFORM_TYPE]);
+            setTransformType(transformTypeFromString(jsonTransform[Constants::TRANSFORM_TYPE]));
         }
         else
         {
-            setTransformType(Constants::TRANSFORM_TYPE_ABSOLUTE);
+            setTransformType(TransformType::Absolute);
         }
 
         if (!jsonTransform[Constants::TRANSFORM_TRANSLATION].is_null())
@@ -89,14 +88,25 @@ namespace Dream
         }
     }
 
-    bool Transform3D::isTypeOffset() const
+    Transform3D::~Transform3D()
     {
-       return getTransformType().compare(Constants::TRANSFORM_TYPE_OFFSET) == 0;
+
     }
 
-    bool Transform3D::isTypeAbsolute() const
+    bool
+    Transform3D::isTypeOffset
+    ()
+    const
     {
-       return getTransformType().compare(Constants::TRANSFORM_TYPE_ABSOLUTE) == 0;
+       return getTransformType() == TransformType::Offset;
+    }
+
+    bool
+    Transform3D::isTypeAbsolute
+    ()
+    const
+    {
+       return getTransformType() == TransformType::Absolute;
     }
 
     // Translation ===================================================================
@@ -306,27 +316,40 @@ namespace Dream
         mOrientation = orientation;
     }
 
-    float Transform3D::getOrientationW() const
+    float
+    Transform3D::getOrientationW
+    ()
+    const
     {
        return mOrientation.w;
     }
 
-    void  Transform3D::setOrientationW(float w)
+    void
+    Transform3D::setOrientationW
+    (float w)
     {
        mOrientation.w = w;
     }
 
-    float Transform3D::getOrientationX() const
+    float
+    Transform3D::getOrientationX
+    ()
+    const
     {
        return mOrientation.x;
     }
 
-    void  Transform3D::setOrientationX(float x)
+    void
+    Transform3D::setOrientationX
+    (float x)
     {
        mOrientation.x = x;
     }
 
-    float Transform3D::getOrientationY() const
+    float
+    Transform3D::getOrientationY
+    ()
+    const
     {
         return mOrientation.y;
     }
@@ -341,7 +364,9 @@ namespace Dream
        return mOrientation.z;
     }
 
-    void Transform3D::setOrientationZ(float z)
+    void
+    Transform3D::setOrientationZ
+    (float z)
     {
        mOrientation.z = z;
     }
@@ -440,12 +465,12 @@ namespace Dream
 
     void
     Transform3D::setTransformType
-    (string type)
+    (TransformType type)
     {
         mTransformType = type;
     }
 
-    string
+    TransformType
     Transform3D::getTransformType
     ()
     const
@@ -502,7 +527,7 @@ namespace Dream
     {
         json j = json::object();
         // Translation Type
-        j[Constants::TRANSFORM_TYPE] = getTransformType();
+        j[Constants::TRANSFORM_TYPE] = transformTypeToString(getTransformType());
         // Translation
         j[Constants::TRANSFORM_TRANSLATION] = json::object();
         j[Constants::TRANSFORM_TRANSLATION][Constants::X] = getTranslationX();
@@ -523,8 +548,8 @@ namespace Dream
     }
 
     void
-    Transform3D::offsetFrom
-    (Transform3D* parent, Transform3D* initial)
+    Transform3D::setOffsetFrom
+    (Transform3D* parent, Transform3D* defined)
     {
         auto log = getLog();
         log->trace(
@@ -538,16 +563,43 @@ namespace Dream
        mat4 rot = mat4_cast(parent->getOrientation());
        mtx = mtx*rot;
        // Tx to child (this)
-       mtx = glm::translate(mtx, initial->getTranslation());
+       mtx = glm::translate(mtx, defined->getTranslation());
        // Set child rotation
-       rot = mat4_cast(initial->getOrientation());
+       rot = mat4_cast(defined->getOrientation());
        mtx = mtx*rot;
        setFromMat4(mtx);
        // Maintain Scale
-       setScale(initial->getScale());
+       setScale(defined->getScale());
     }
 
-    glm::mat4 Transform3D::asMat4() const
+    string
+    Transform3D::transformTypeToString
+    (TransformType t)
+    {
+       switch (t)
+       {
+           case Absolute:
+               return Constants::TRANSFORM_TYPE_ABSOLUTE;
+           case Offset:
+               return Constants::TRANSFORM_TYPE_OFFSET;
+       }
+    }
+
+    TransformType
+    Transform3D::transformTypeFromString
+    (string type)
+    {
+       if (type.compare(Constants::TRANSFORM_TYPE_OFFSET) == 0)
+       {
+           return TransformType::Offset;
+       }
+       return TransformType::Absolute;
+    }
+
+    glm::mat4
+    Transform3D::asMat4
+    ()
+    const
     {
        mat4 trans = glm::translate(mat4(1.0f), mTranslation);
        mat4 rot = mat4_cast(mOrientation);
@@ -555,11 +607,11 @@ namespace Dream
        return glm::scale(trans,mScale);
     }
 
-    void Transform3D::setFromMat4(glm::mat4 mtx)
+    void
+    Transform3D::setFromMat4
+    (glm::mat4 mtx)
     {
        setOrientation(quat(mtx));
        setTranslation(glm::vec3(mtx[3]));
     }
-
-
 } // End of Dream

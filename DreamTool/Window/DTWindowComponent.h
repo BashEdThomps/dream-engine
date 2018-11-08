@@ -62,6 +62,12 @@ namespace DreamTool
         void addGLWidget(GLWidget* widget);
         void removeGLWidget(GLWidget* widget);
 
+        float getUiFontSize() const;
+        void setUiFontSize(float uiFontSize);
+
+        float getMonoFontSize() const;
+        void setMonoFontSize(float monoFontSize);
+
     private:
         bool initGLFW();
         bool initGL();
@@ -72,6 +78,8 @@ namespace DreamTool
         GLFWwindow* mWindow;
         vector<GLWidget*> mGLWidgets;
         vector<ImGuiWidget*> mImGuiWidgets;
+        float mUiFontSize;
+        float mMonoFontSize;
     }; // End of GLFWWindowComponent
 
 } // End of Dream

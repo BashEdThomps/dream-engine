@@ -267,8 +267,28 @@ namespace DreamTool
     {
 
         ImGuiIO& io = ImGui::GetIO();
-        RegularFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", 24.0f);
-        MonoFont = io.Fonts->AddFontFromFileTTF("./fonts/SourceCodePro-Regular.ttf", 24.0f);
+        RegularFont = io.Fonts->AddFontFromFileTTF("./fonts/Roboto-Medium.ttf", mUiFontSize);
+        MonoFont = io.Fonts->AddFontFromFileTTF("./fonts/SourceCodePro-Regular.ttf", mMonoFontSize);
+    }
+
+    float DTWindowComponent::getMonoFontSize() const
+    {
+        return mMonoFontSize;
+    }
+
+    void DTWindowComponent::setMonoFontSize(float monoFontSize)
+    {
+        mMonoFontSize = monoFontSize;
+    }
+
+    float DTWindowComponent::getUiFontSize() const
+    {
+        return mUiFontSize;
+    }
+
+    void DTWindowComponent::setUiFontSize(float uiFontSize)
+    {
+        mUiFontSize = uiFontSize;
     }
 
     void

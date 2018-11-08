@@ -14,7 +14,7 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    struct LineVertex
+    struct GLWidgetVertex
     {
         vec3 Position;
         vec3 Color;
@@ -30,7 +30,7 @@ namespace DreamTool
         virtual void draw() override;
         void init();
     protected:
-        void addLineVertex(LineVertex lv);
+        void addVertex(GLWidgetVertex lv);
         virtual void setShader();
         void initShader();
         void initVaoVbo();
@@ -42,7 +42,8 @@ namespace DreamTool
         GLuint mVao;
         GLuint mVbo;
         GLuint mShaderProgram;
-        vector<LineVertex> mVertexBuffer;
+        vector<GLWidgetVertex> mVertexBuffer;
+        vector<GLuint> mIndexBuffer;
         string mVertexShaderSource;
         string mFragmentShaderSource;
         GLint mModelUniform;

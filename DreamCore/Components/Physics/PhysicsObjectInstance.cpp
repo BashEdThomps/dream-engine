@@ -123,7 +123,7 @@ namespace Dream
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(mSceneObjectRuntime->getTransform());
+        mMotionState = new PhysicsMotionState(mSceneObjectRuntime->getCurrentTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);

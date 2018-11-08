@@ -168,7 +168,7 @@ namespace Dream
     PointLight LightInstance::getPointLightData()
     {
         return PointLight {
-            mSceneObjectRuntime->getTransform()->getTranslation(),
+            mSceneObjectRuntime->getCurrentTransform()->getTranslation(),
             mConstant,
             mLinear,
             mQuadratic,
@@ -181,7 +181,7 @@ namespace Dream
     SpotLight LightInstance::getSpotLightData()
     {
         return SpotLight {
-            mSceneObjectRuntime->getTransform()->getTranslation(),
+            mSceneObjectRuntime->getCurrentTransform()->getTranslation(),
             mDirection,
             mCutOff,
             mOuterCutOff,
@@ -197,7 +197,7 @@ namespace Dream
     DirLight LightInstance::getDirectionalLightData()
     {
         return DirLight {
-            mSceneObjectRuntime->getTransform()->getTranslation(),
+            mSceneObjectRuntime->getCurrentTransform()->getTranslation(),
             mAmbient,
             mDiffuse,
             mSpecular

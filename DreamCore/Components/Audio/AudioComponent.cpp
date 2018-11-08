@@ -278,7 +278,7 @@ namespace Dream
 
                 if (sort == nullptr) return;
 
-                auto transform = sort->getTransform();
+                auto transform = sort->getCurrentTransform();
 
                 vec3 tx = transform->getTranslation();
                 vector<char>  bufferData = audioAsset->getAudioDataBuffer();

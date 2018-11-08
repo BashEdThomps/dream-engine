@@ -71,7 +71,7 @@ namespace DreamTool
         checkGLError();
         glVertexAttribPointer(
             0, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(LineVertex)),
+            static_cast<GLint>(sizeof(GLWidgetVertex)),
             static_cast<GLvoid*>(0)
         );
         checkGLError();
@@ -81,7 +81,7 @@ namespace DreamTool
         checkGLError();
         glVertexAttribPointer(
             1, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(LineVertex)),
+            static_cast<GLint>(sizeof(GLWidgetVertex)),
             (GLvoid*)(sizeof(float)*3)
         );
         checkGLError();
@@ -297,7 +297,7 @@ namespace DreamTool
         mProjectionMatrix = projection;
     }
 
-    void GLWidget::addLineVertex(LineVertex lv)
+    void GLWidget::addVertex(GLWidgetVertex lv)
     {
         mVertexBuffer.push_back(lv);
     }

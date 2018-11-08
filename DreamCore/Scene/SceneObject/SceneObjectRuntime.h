@@ -74,25 +74,6 @@ namespace Dream
         bool createParticleEmitterInstance(ParticleEmitterDefinition*);
         bool createLightInstance(LightDefinition*);
 
-        quat getOrientation();
-
-        vec3 getTranslation();
-        void setTranslation(float, float, float);
-        void setTranslation(vec3);
-        void resetTranslation();
-
-        glm::vec3 getRotation();
-        void setRotation(float, float, float);
-        void setRotation(glm::vec3);
-        void resetRotation();
-
-        glm::vec3 getScale();
-        void setScale(float, float, float);
-        void setScale(glm::vec3);
-        void resetScale();
-
-        void resetTransform();
-
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
         ModelInstance* getModelInstance();
@@ -109,11 +90,11 @@ namespace Dream
         bool hasPhysicsObjectInstance();
         bool hasLightInstance();
 
-        string getTransformType() const;
-        void setTransformType(string);
+        TransformType getTransformType() const;
+        void setTransformType(TransformType);
 
-        Transform3D* getTransform();
-        void setTransform(Transform3D*);
+        Transform3D* getCurrentTransform();
+        Transform3D* getDefinedTransform();
 
         bool hasFocus() const;
         void setHasFocus(bool);
@@ -129,7 +110,7 @@ namespace Dream
         size_t countChildren();
         void addChildRuntime(SceneObjectRuntime*);
         void removeChildRuntime(SceneObjectRuntime*);
-		SceneObjectRuntime* createChildRuntime(SceneObjectDefinition*);
+        SceneObjectRuntime* createChildRuntime(SceneObjectDefinition*);
         vector<SceneObjectRuntime*> getChildRuntimes();
         bool isChildOf(SceneObjectRuntime*);
 
@@ -143,8 +124,6 @@ namespace Dream
 
         bool getFollowsCamera() const;
         void setFollowsCamera(bool followsCamera);
-        void walk(float,float);
-        void drive(float,float);
 
         bool getDeleted() const;
         void setDeleted(bool deleted);
@@ -158,7 +137,6 @@ namespace Dream
         void removeLightInstance();
         void removeScriptInstance();
         void removePhysicsObjectInstance();
-
         void removeParticleEmitterInstance();
 
         bool replaceAssetUuid(AssetType type, string uuid);
@@ -169,8 +147,8 @@ namespace Dream
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
-	protected:
-        void initialTransform();
+    protected:
+        void initTransform();
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
     private:
@@ -180,8 +158,9 @@ namespace Dream
         PathInstance* mPathInstance;
         PhysicsObjectInstance* mPhysicsObjectInstance;
         ScriptInstance* mScriptInstance;
-        Transform3D* mTransform;
         ModelInstance* mModelInstance;
+        Transform3D* mCurrentTransform;
+        Transform3D* mDefinedTransform;
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;

@@ -13,7 +13,7 @@ namespace DreamTool
         void init();
     protected:
         void setShader() override;
-        const static vector<LineVertex> LightModelVertices;
+        const static vector<GLWidgetVertex> LightModelVertices;
         const static vector<GLuint> LightModelIndices;
         GLint mLightColorUniform;
     };
