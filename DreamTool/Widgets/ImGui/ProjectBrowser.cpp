@@ -119,6 +119,7 @@ namespace DreamTool
         {
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
             auto projRunt = mProject->getProjectRuntime();
+            ImGui::PushID(treeId);
             if(ImGui::TreeNodeEx(
                    (void*)(intptr_t)treeId,
                    flags,
@@ -126,19 +127,53 @@ namespace DreamTool
                    0)
             )
             {
+                SceneObjectRuntime* soRt = nullptr;
+                if (projRunt->getActiveSceneRuntime())
+                {
+                    soRt = projRunt->getActiveSceneRuntime()->getSceneObjectRuntimeByUuid(def->getUuid());
+                }
+
                 if (ImGui::IsItemClicked())
                 {
-                    SceneObjectRuntime* soRt = nullptr;
-                    if (projRunt->getActiveSceneRuntime())
+                    if (mSelectionHighlighter && soRt)
                     {
-                        soRt = projRunt->getActiveSceneRuntime()->getSceneObjectRuntimeByUuid(def->getUuid());
-                        if (mSelectionHighlighter && soRt)
-                        {
-                            mSelectionHighlighter->setSelectedSceneObject(soRt);
-                        }
+                        mSelectionHighlighter->setSelectedSceneObject(soRt);
                     }
                     log->error("SceneObject Clicked {}",def->getName());
                     mPropertiesWindowHandle->pushPropertyTarget(SceneObject, def, soRt);
+                }
+
+                // Our buttons are both drag sources and drag targets here!
+                if (def->getParentSceneObject() != nullptr)
+                {
+                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+                    {
+                        ImGui::SetDragDropPayload(Constants::SCENE_OBJECT.c_str(), &def, sizeof(SceneObjectDefinition*));
+                        ImGui::Text("Copy: %s",def->getName().c_str());
+                        ImGui::EndDragDropSource();
+                    }
+                }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::SCENE_OBJECT.c_str()))
+                    {
+                        IM_ASSERT(payload->DataSize == sizeof(SceneObjectDefinition*));
+                        SceneObjectDefinition* droppedDef = *(static_cast<SceneObjectDefinition**>(payload->Data));
+                        log->error(
+                            "Definition {} was dropped onto {}",
+                            droppedDef->getNameAndUuidString(),
+                            def->getNameAndUuidString()
+                        );
+                        SceneObjectDefinition* newDef = new SceneObjectDefinition(def,def->getSceneDefinition(),droppedDef->getJson());
+                        newDef->loadChildSceneObjectDefinitions(true);
+                        def->addChildDefinition(newDef);
+                        if (soRt)
+                        {
+                            soRt->createChildRuntime(newDef);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
                 }
 
                 int childTreeId = 0;
@@ -148,6 +183,7 @@ namespace DreamTool
                 }
                 ImGui::TreePop();
             }
+            ImGui::PopID();
         }
     }
 

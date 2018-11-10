@@ -26,7 +26,7 @@ namespace DreamTool
         void pushPropertyTarget(PropertyType, IDefinition*, IRuntime*);
         void popPropertyTarget();
         void clearPropertyTargets();
-
+        void removeFromHistory(IDefinition* def);
         void setSelectionHighlighter(SelectionHighlighterWidget* selectionHighlighter);
 
     private:

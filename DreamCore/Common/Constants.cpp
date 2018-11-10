@@ -196,6 +196,7 @@ namespace Dream
     const string Constants::SCENE_LIGHTING_SHADER = "lighting_shader";
 
     // SceneObject ==============================================================
+    const string Constants::SCENE_OBJECT = "scene_object";
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";

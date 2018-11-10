@@ -99,10 +99,10 @@ namespace DreamTool
                 {
                     mSelectionHighlighter->clearSelection();
                 }
+                removeFromHistory(mDefinition);
                 mDefinition = nullptr;
                 mRuntime = nullptr;
                 retval = true;
-                popPropertyTarget();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -140,9 +140,9 @@ namespace DreamTool
                 if (pDef && sDef)
                 {
                     pDef->removeSceneDefinition(sDef);
+                    removeFromHistory(mDefinition);
                     mDefinition = nullptr;
                     mRuntime = nullptr;
-                    popPropertyTarget();
                     retval = true;
                 }
                 ImGui::CloseCurrentPopup();
@@ -180,10 +180,28 @@ namespace DreamTool
     }
 
     void
+    PropertiesWindow::removeFromHistory(IDefinition* def)
+    {
+       auto itr = mHistory.end();
+       for (itr = mHistory.begin(); itr != mHistory.end(); itr++)
+       {
+            if ((*itr).definition == def)
+            {
+                break;
+            }
+       }
+       if (itr != mHistory.end())
+       {
+           mHistory.erase(itr);
+       }
+    }
+
+    void
     PropertiesWindow::popPropertyTarget
     ()
     {
         if (mHistory.empty()) return;
+
         PropertiesTarget last = mHistory.back();
         setPropertyType(last.type);
         setDefinition(last.definition);
@@ -582,10 +600,12 @@ namespace DreamTool
         if (ImGui::Button("Add Child"))
         {
             auto newChildDef = soDef->createNewChildDefinition();
+            SceneObjectRuntime* newRt = nullptr;
             if (soRuntime)
             {
-                soRuntime->createChildRuntime(newChildDef);
+                newRt = soRuntime->createChildRuntime(newChildDef);
             }
+            pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
         }
 
         if (soDef->getParentSceneObject() != nullptr)

@@ -176,6 +176,7 @@ namespace Dream
 
 
         // SceneObject ==========================================================
+        const static string SCENE_OBJECT;
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_DEFAULT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
