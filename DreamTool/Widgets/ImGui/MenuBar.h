@@ -16,6 +16,7 @@ namespace DreamTool
     class PropertiesWindow;
     class SceneStateWindow;
     class GridPropertiesWindow;
+	class SelectionHighlighterWidget;
 
     class MenuBar : public ImGuiWidget
     {
@@ -29,13 +30,14 @@ namespace DreamTool
             GridPropertiesWindow*
         );
         ~MenuBar() override;
-
         void draw() override;
+		void setSelectionHighlighter(SelectionHighlighterWidget* sh);
     private:
         ProjectBrowser* mProjectBrowser;
         PropertiesWindow* mPropertiesWindow;
         LuaDebugWindow* mLuaDebugWindow;
         SceneStateWindow* mSceneStateWindow;
         GridPropertiesWindow* mGridPropertiesWindow;
+		SelectionHighlighterWidget* mSelectionHighlighter;
     };
 }

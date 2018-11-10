@@ -7,24 +7,26 @@
 
 #include "../../deps/ImGui/imgui_internal.h"
 #include "../../deps/ImGui/imguifilesystem.h"
+#include "../GL/SelectionHighlighterWidget.h"
 
 extern bool MainLoopDone;
 
 namespace DreamTool
 {
-    MenuBar::MenuBar
-    (Dream::Project* def,
-        ProjectBrowser* pb,
-        PropertiesWindow* pw,
-        LuaDebugWindow* debugWindow,
-        SceneStateWindow* sceneStateWindow,
-        GridPropertiesWindow* gp)
-        : ImGuiWidget(def),
-          mProjectBrowser(pb),
-          mPropertiesWindow(pw),
-          mLuaDebugWindow(debugWindow),
-          mSceneStateWindow(sceneStateWindow),
-          mGridPropertiesWindow(gp)
+	MenuBar::MenuBar
+	(Dream::Project* def,
+		ProjectBrowser* pb,
+		PropertiesWindow* pw,
+		LuaDebugWindow* debugWindow,
+		SceneStateWindow* sceneStateWindow,
+		GridPropertiesWindow* gp)
+		: ImGuiWidget(def),
+		mProjectBrowser(pb),
+		mPropertiesWindow(pw),
+		mLuaDebugWindow(debugWindow),
+		mSceneStateWindow(sceneStateWindow),
+		mGridPropertiesWindow(gp),
+		mSelectionHighlighter(nullptr)
     {
         setLogClassName("MenuBar");
     }
@@ -167,6 +169,10 @@ namespace DreamTool
                         {
                             rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
                         }
+						if (mSelectionHighlighter)
+						{ 
+							mSelectionHighlighter->clearSelection();
+						}
                     }
                 }
 
@@ -416,4 +422,9 @@ namespace DreamTool
             ImGui::EndPopup();
         }
     }
+
+	void MenuBar::setSelectionHighlighter(SelectionHighlighterWidget* shw)
+	{
+		mSelectionHighlighter = shw;
+	}
 }

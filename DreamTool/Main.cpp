@@ -105,6 +105,7 @@ main
     sh.init();
     projectBrowser.setSelectionHighlighterWidget(&sh);
     propertiesWindow.setSelectionHighlighter(&sh);
+	menuBar.setSelectionHighlighter(&sh);
 
     windowComponent.addGLWidget(&grid);
     windowComponent.addGLWidget(&lv);

@@ -715,23 +715,23 @@ namespace DreamTool
         }
 
         float rx[3] = {
-            soDef->getTransform()->getRotationX(),
-            soDef->getTransform()->getRotationY(),
-            soDef->getTransform()->getRotationZ()
+            glm::degrees(soDef->getTransform()->getRotationX()),
+            glm::degrees(soDef->getTransform()->getRotationY()),
+            glm::degrees(soDef->getTransform()->getRotationZ())
         };
         if (ImGui::DragFloat3("Rotation",rx,0.1f))
         {
             if(soDef)
             {
-                soDef->getTransform()->setRotationX(rx[0]);
-                soDef->getTransform()->setRotationX(rx[1]);
-                soDef->getTransform()->setRotationX(rx[2]);
+                soDef->getTransform()->setRotationX(glm::radians(rx[0]));
+                soDef->getTransform()->setRotationY(glm::radians(rx[1]));
+                soDef->getTransform()->setRotationZ(glm::radians(rx[2]));
             }
             if (soRuntime && soRuntime->getTransformType() == TransformType::Absolute)
             {
-                soRuntime->getCurrentTransform()->setRotationX(rx[0]);
-                soRuntime->getCurrentTransform()->setRotationY(rx[1]);
-                soRuntime->getCurrentTransform()->setRotationZ(rx[2]);
+                soRuntime->getCurrentTransform()->setRotationX(glm::radians(rx[0]));
+                soRuntime->getCurrentTransform()->setRotationY(glm::radians(rx[1]));
+                soRuntime->getCurrentTransform()->setRotationZ(glm::radians(rx[2]));
             }
         }
 
