@@ -21,7 +21,7 @@ namespace DreamTool
     {
     public:
         MenuBar(
-            Project*,
+            Dream::Project*,
             ProjectBrowser*,
             PropertiesWindow*,
             LuaDebugWindow*,

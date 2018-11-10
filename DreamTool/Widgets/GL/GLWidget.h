@@ -23,7 +23,7 @@ namespace DreamTool
     class GLWidget : public DTWidget
     {
     public:
-        GLWidget(Project* project);
+        GLWidget(Dream::Project* project);
         virtual ~GLWidget() override;
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);

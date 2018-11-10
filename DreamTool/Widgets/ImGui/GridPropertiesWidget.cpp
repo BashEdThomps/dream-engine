@@ -38,14 +38,21 @@ namespace DreamTool
             mGridHandle->setTranslation(vec3(pos[0],pos[1],pos[2]));
         }
         ImGui::Separator();
+        float size = mGridHandle->getSize();
+        if(ImGui::DragFloat("Size",&size,2.0f))
+        {
+            mGridHandle->setSize(size);
+            mGridHandle->recalculateGridLines();
+        }
+
         float maj = mGridHandle->getMajorSpacing();
-        if(ImGui::InputFloat("Major Spacing",&maj))
+        if(ImGui::DragFloat("Major Spacing",&maj,1.0f))
         {
             mGridHandle->setMajorSpacing(maj);
             mGridHandle->recalculateGridLines();
         }
         float min = mGridHandle->getMinorSpacing();
-        if(ImGui::InputFloat("Minor Spacing",&min))
+        if(ImGui::DragFloat("Minor Spacing",&min,1.0f))
         {
             mGridHandle->setMinorSpacing(min);
             mGridHandle->recalculateGridLines();

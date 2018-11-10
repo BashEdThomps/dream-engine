@@ -34,7 +34,6 @@
 // Graphics --------------------------------------------------------------------
 #include "../Components/Graphics/Vertex.h"
 #include "../Components/Graphics/Camera.h"
-#include "../Components/Graphics/BoundingBox.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
@@ -69,6 +68,7 @@
 // SceneObject ----------------------------------------------------------------
 #include "../Scene/SceneObject/SceneObjectDefinition.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Scene/SceneObject/BoundingBox.h"
 // Project --------------------------------------------------------------------
 #include "../Project/Project.h"
 #include "../Project/ProjectDefinition.h"

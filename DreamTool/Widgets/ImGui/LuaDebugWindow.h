@@ -9,7 +9,7 @@ namespace DreamTool
               public LuaPrintListener
     {
     public:
-        LuaDebugWindow(Project* proj);
+        LuaDebugWindow(Dream::Project* proj);
         ~LuaDebugWindow() override;
 
         void draw() override;

@@ -90,7 +90,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            log->info( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
             return false;
         }
 
@@ -127,7 +127,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->warn( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->info( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
@@ -143,7 +143,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            log->warn( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->info( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
@@ -160,7 +160,7 @@ namespace Dream
 
         if (uCamPos == UNIFORM_NOT_FOUND)
         {
-            log->warn( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
+            log->info( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniform3fv(uCamPos,1,value_ptr(value));
@@ -576,7 +576,7 @@ namespace Dream
         }
         else if (mPointLightCount > 0)
         {
-            log->warn("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
+            log->info("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
@@ -586,7 +586,7 @@ namespace Dream
         }
         else if (mSpotLightCount > 0)
         {
-            log->warn("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
+            log->info("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
@@ -596,7 +596,7 @@ namespace Dream
         }
         else if (mDirectionalLightCount > 0)
         {
-            log->warn("Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
+            log->info("Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         // Sync user uniforms
@@ -628,7 +628,7 @@ namespace Dream
             auto location = uniform->getLocation();
             if (location == UNIFORM_NOT_FOUND)
             {
-                log->warn( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
+                log->info( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
                 continue;
             }
             else
@@ -730,7 +730,7 @@ namespace Dream
         {
             if (i>=MAX_INSTANCES)
             {
-                log->warn("Maximum number of instances reached");
+                log->info("Maximum number of instances reached");
                 break;
             }
             auto instance = instances.at(i);

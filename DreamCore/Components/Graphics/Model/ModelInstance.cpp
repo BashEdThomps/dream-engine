@@ -29,7 +29,6 @@
 #include "../Texture/TextureInstance.h"
 #include "../Material/MaterialCache.h"
 
-#include "../BoundingBox.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Shader/ShaderCache.h"
 #include "../Shader/ShaderDefinition.h"
@@ -56,7 +55,6 @@ namespace Dream
         setLogClassName("ModelInstance");
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
-        mBoundingBox.init();
         return;
     }
 
@@ -100,6 +98,7 @@ namespace Dream
         }
 
         mDirectory = path.substr(0, path.find_last_of('/'));
+        mBoundingBox.setToLimits();
         processNode(scene->mRootNode, scene);
         mLoaded = true;
         return mLoaded;
@@ -113,7 +112,7 @@ namespace Dream
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            mBoundingBox.updateFromMesh(mesh);
+            updateBoundingBox(mesh);
             auto aMesh = processMesh(mesh, scene);
             if (aMesh != nullptr)
             {
@@ -244,8 +243,6 @@ namespace Dream
                 return nullptr;
             }
             log->debug( "Using Material {}" , material->getName());
-            BoundingBox box;
-            box.updateFromMesh(mesh);
             auto aMesh = new ModelMesh
             (
                 this,
@@ -254,7 +251,6 @@ namespace Dream
                 indices,
                 material
             );
-            aMesh->setBoundingBox(box);
             material->addMesh(aMesh);
             material->debug();
             return aMesh;
@@ -272,7 +268,7 @@ namespace Dream
     (json)
     {}
 
-    BoundingBox
+    BoundingBox&
     ModelInstance::getBoundingBox
     ()
     {
@@ -339,5 +335,65 @@ namespace Dream
         }
 
         return importer;
+    }
+
+    void
+    ModelInstance::updateBoundingBox
+    (aiMesh* mesh)
+    {
+        auto log = getLog();
+        log->debug( "Updating bounding box");
+
+        for (unsigned int i=0; i < mesh->mNumVertices; i++)
+        {
+            aiVector3D vertex = mesh->mVertices[i];
+
+            // Maximum
+            if (mBoundingBox.maximum.x < vertex.x)
+            {
+                mBoundingBox.maximum.x = vertex.x;
+            }
+
+            if (mBoundingBox.maximum.y < vertex.y)
+            {
+                mBoundingBox.maximum.y = vertex.y;
+            }
+
+            if (mBoundingBox.maximum.z < vertex.z)
+            {
+                mBoundingBox.maximum.z = vertex.z;
+            }
+
+            // Maximum
+            if (mBoundingBox.minimum.x > vertex.x)
+            {
+                mBoundingBox.minimum.x = vertex.x;
+            }
+
+            if (mBoundingBox.minimum.y > vertex.y)
+            {
+                mBoundingBox.minimum.y = vertex.y;
+            }
+
+            if (mBoundingBox.minimum.z > vertex.z)
+            {
+                mBoundingBox.minimum.z = vertex.z;
+            }
+        }
+
+        float maxBound;
+        maxBound = (
+            mBoundingBox.maximum.x > mBoundingBox.maximum.y ?
+            mBoundingBox.maximum.x :
+            mBoundingBox.maximum.y
+        );
+
+        maxBound = (
+            maxBound > mBoundingBox.maximum.z ?
+            maxBound :
+            mBoundingBox.maximum.z
+        );
+
+        mBoundingBox.maxDimension = maxBound;
     }
 } // End of Dream

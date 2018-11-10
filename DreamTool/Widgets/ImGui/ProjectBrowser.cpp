@@ -2,16 +2,22 @@
 #include "PropertiesWindow.h"
 #include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
+#include "../GL/SelectionHighlighterWidget.h"
 
 using std::stringstream;
 
 namespace DreamTool
 {
     ProjectBrowser::ProjectBrowser
-    (Project* project, PropertiesWindow* properties)
+    (
+        Dream::Project* project,
+        PropertiesWindow* properties
+    )
         : ImGuiWidget(project),
-          mPropertiesWindowHandle(properties)
+          mPropertiesWindowHandle(properties),
+          mSelectionHighlighter(nullptr)
     {}
+
     ProjectBrowser::~ProjectBrowser
     ()
     {
@@ -30,6 +36,13 @@ namespace DreamTool
     }
 
     void
+    ProjectBrowser::setSelectionHighlighterWidget
+    (SelectionHighlighterWidget* shw)
+    {
+       mSelectionHighlighter = shw;
+    }
+
+    void
     ProjectBrowser::drawProjectTree
     ()
     {
@@ -45,6 +58,7 @@ namespace DreamTool
             return;
         }
 
+        ImGui::PushID("ProjectTree");
         int treeID = 0;
         if (ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,projDef->getName().c_str(),0))
         {
@@ -53,7 +67,7 @@ namespace DreamTool
                 log->error("Project clicked {}", projDef->getName());
                 mPropertiesWindowHandle->pushPropertyTarget
                 (
-                    PROP_TYPE_PROJECT,
+                    Project,
                     projDef,
                     mProject->getProjectRuntime()
                 );
@@ -82,7 +96,7 @@ namespace DreamTool
                                 sRunt = nullptr;
                             }
                         }
-                        mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_SCENE, sDef,sRunt);
+                        mPropertiesWindowHandle->pushPropertyTarget(Scene, sDef,sRunt);
                     }
 
                     SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
@@ -93,6 +107,7 @@ namespace DreamTool
 
             ImGui::TreePop();
         } // Project Name
+        ImGui::PopID();
     }
 
     void
@@ -117,9 +132,13 @@ namespace DreamTool
                     if (projRunt->getActiveSceneRuntime())
                     {
                         soRt = projRunt->getActiveSceneRuntime()->getSceneObjectRuntimeByUuid(def->getUuid());
+                        if (mSelectionHighlighter && soRt)
+                        {
+                            mSelectionHighlighter->setSelectedSceneObject(soRt);
+                        }
                     }
                     log->error("SceneObject Clicked {}",def->getName());
-                    mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_SCENE_OBJECT, def, soRt);
+                    mPropertiesWindowHandle->pushPropertyTarget(SceneObject, def, soRt);
                 }
 
                 int childTreeId = 0;
@@ -127,12 +146,8 @@ namespace DreamTool
                 {
                     addSceneObject(++childTreeId, child);
                 }
-
-
                 ImGui::TreePop();
             }
-
-
         }
     }
 
@@ -157,6 +172,7 @@ namespace DreamTool
             projDef->createNewAssetDefinition(type);
         }
 
+        ImGui::PushID("AssetTree");
         int assetTypeTreeId = 0;
         for (auto name : Constants::DREAM_ASSET_TYPES_READABLE_VECTOR)
         {
@@ -174,7 +190,7 @@ namespace DreamTool
                         if (ImGui::IsItemClicked())
                         {
                             log->error("Asset Definition Clicked {}", asset->getName());
-                            mPropertiesWindowHandle->pushPropertyTarget(PROP_TYPE_ASSET, asset, nullptr);
+                            mPropertiesWindowHandle->pushPropertyTarget(Asset, asset, nullptr);
                         }
                         ImGui::TreePop();
                     }
@@ -182,6 +198,7 @@ namespace DreamTool
                 ImGui::TreePop();
             }
         } // Asset Type Node
+        ImGui::PopID();
     }
 }
 

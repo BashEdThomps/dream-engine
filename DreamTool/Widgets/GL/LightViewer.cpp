@@ -3,7 +3,7 @@
 namespace DreamTool
 {
     LightViewer::LightViewer
-    (Project* p)
+    (Dream::Project* p)
         : GLWidget(p)
     {
         setLogClassName("LightViewer");

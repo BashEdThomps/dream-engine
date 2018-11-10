@@ -16,14 +16,10 @@
  * this file belongs to.
  */
 
-#include "SceneObjectRuntime.h"
-
 #include <iostream>
-
+#include "SceneObjectRuntime.h"
 #include "SceneObjectDefinition.h"
-
 #include "../SceneRuntime.h"
-
 #include "../../Components/Event.h"
 #include "../../Components/Path/PathInstance.h"
 #include "../../Components/Audio/AudioInstance.h"
@@ -35,21 +31,16 @@
 #include "../../Components/Physics/PhysicsObjectInstance.h"
 #include "../../Components/Physics/PhysicsComponent.h"
 #include "../../Components/IAssetDefinition.h"
-
 #include "../../Components/Audio/AudioDefinition.h"
-
 #include "../../Components/Graphics/Font/FontDefinition.h"
 #include "../../Components/Graphics/Light/LightDefinition.h"
 #include "../../Components/Graphics/Model/ModelDefinition.h"
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-
 #include "../../Components/Path/PathDefinition.h"
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
-
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptComponent.h"
 #include "../../Components/Scripting/ScriptInstance.h"
-
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -78,6 +69,7 @@ namespace Dream
         mDefinedTransform(nullptr),
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
+        mBoundingBox(),
         mHasFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -867,6 +859,8 @@ namespace Dream
         return true;
     }
 
+
+
     bool
     SceneObjectRuntime::getFollowsCamera
     () const
@@ -930,5 +924,23 @@ namespace Dream
         }
         addChildRuntime(child);
         return child;
+    }
+
+    BoundingBox&
+    SceneObjectRuntime::getBoundingBox
+    ()
+    {
+        if (mModelInstance != nullptr)
+        {
+            return mModelInstance->getBoundingBox();
+        }
+        return mBoundingBox;
+    }
+
+    void
+    SceneObjectRuntime::setBoundingBox
+    (BoundingBox boundingBox)
+    {
+        mBoundingBox = boundingBox;
     }
 }

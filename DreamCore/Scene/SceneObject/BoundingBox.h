@@ -27,15 +27,14 @@ namespace Dream
     class BoundingBox : DreamObject
     {
     public:
-        BoundingBox(glm::vec3 minimum = {-1.0f,-1.0f,-1.0f}, vec3 maximum = {1.0f,1.0f,1.0f});
+        BoundingBox(glm::vec3 minimum = {-0.5f,-0.5f,-0.5f}, vec3 maximum = {0.5f,0.5f,0.5f});
         ~BoundingBox();
 
         float maxDimension;
-        void init();
+        void setToLimits();
         vec3 minimum;
         vec3 maximum;
         vec3 getCenter();
-        void updateFromMesh(aiMesh*);
     };
 }
 

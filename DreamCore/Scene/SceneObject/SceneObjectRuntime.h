@@ -21,6 +21,7 @@
 #include <vector>
 
 #include <glm/vec3.hpp>
+#include "BoundingBox.h"
 #include "../../Common/IRuntime.h"
 #include "../../Components/Transform3D.h"
 
@@ -147,6 +148,9 @@ namespace Dream
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
+        BoundingBox& getBoundingBox();
+        void setBoundingBox(BoundingBox boundingBox);
+
     protected:
         void initTransform();
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
@@ -166,6 +170,7 @@ namespace Dream
         vector<SceneObjectRuntime*> mChildRuntimes;
         SceneRuntime* mSceneRuntimeHandle;
         SceneObjectRuntime* mParentRuntimeHandle;
+        BoundingBox mBoundingBox;
         bool mHasFocus;
         bool mDeleted;
         bool mHidden;

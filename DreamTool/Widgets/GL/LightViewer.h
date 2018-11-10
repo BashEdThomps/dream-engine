@@ -7,7 +7,7 @@ namespace DreamTool
         public GLWidget
     {
     public:
-        LightViewer(Project* project);
+        LightViewer(Dream::Project* project);
         ~LightViewer() override;
         void draw() override;
         void init();

@@ -1,14 +1,17 @@
+// Maintain include order for GL Defines
 #include "../../Window/DTWindowComponent.h"
 #include "PropertiesWindow.h"
 #include "../../deps/ImGui/imguifilesystem.h"
 #include "../../Model/TemplatesDirectoryModel.h"
+#include "../GL/SelectionHighlighterWidget.h"
 
 namespace DreamTool
 {
     PropertiesWindow::PropertiesWindow
-    (Project* proj)
+    (Dream::Project* proj)
         : ImGuiWidget (proj),
-          mType(PROP_TYPE_NONE),
+          mSelectionHighlighter(nullptr),
+          mType(None),
           mDefinition(nullptr),
           mRuntime(nullptr),
           mImageSize(256,256),
@@ -34,29 +37,29 @@ namespace DreamTool
         }
         switch (mType)
         {
-            case DreamTool::PROP_TYPE_NONE:
+            case PropertyType::None:
                 break;
-            case DreamTool::PROP_TYPE_PROJECT:
+            case PropertyType::Project:
                 drawProjectProperties();
                 break;
-            case DreamTool::PROP_TYPE_SCENE:
+            case PropertyType::Scene:
                 drawSceneProperties();
                 break;
-            case DreamTool::PROP_TYPE_SCENE_OBJECT:
+            case PropertyType::SceneObject:
                 drawSceneObjectProperties();
                 break;
-            case DreamTool::PROP_TYPE_ASSET:
+            case PropertyType::Asset:
                 drawAssetProperties();
                 break;
         }
         ImGui::End();
     }
 
-	bool
+    bool
     PropertiesWindow::drawDeleteSceneObjectButton
     ()
     {
-		bool retval = false;
+        bool retval = false;
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
 
@@ -92,22 +95,26 @@ namespace DreamTool
                    auto parent = soRuntime->getParentRuntime();
                    parent->removeChildRuntime(soRuntime);
                 }
+                if (mSelectionHighlighter)
+                {
+                    mSelectionHighlighter->clearSelection();
+                }
                 mDefinition = nullptr;
                 mRuntime = nullptr;
-				retval = true;
+                retval = true;
                 popPropertyTarget();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
-		return retval;
+        return retval;
     }
 
-	bool
+    bool
     PropertiesWindow::drawDeleteSceneButton
     ()
     {
-		bool retval = false;
+        bool retval = false;
         if(ImGui::Button("Delete"))
         {
            ImGui::OpenPopup("Confirm Delete Scene");
@@ -136,13 +143,13 @@ namespace DreamTool
                     mDefinition = nullptr;
                     mRuntime = nullptr;
                     popPropertyTarget();
-					retval = true;
+                    retval = true;
                 }
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
-		return retval;
+        return retval;
     }
 
     void
@@ -189,7 +196,7 @@ namespace DreamTool
     void PropertiesWindow::clearPropertyTargets()
     {
         mHistory.clear();
-        setPropertyType(PropertyType::PROP_TYPE_NONE);
+        setPropertyType(PropertyType::None);
         setDefinition(nullptr);
         setRuntime(nullptr);
     }
@@ -234,16 +241,21 @@ namespace DreamTool
     PropertiesWindow::clear
     ()
     {
-        mType = PROP_TYPE_NONE;
+        mType = None;
         mDefinition = nullptr;
         mRuntime = nullptr;
+    }
+
+    void PropertiesWindow::setSelectionHighlighter(SelectionHighlighterWidget* selectionHighlighter)
+    {
+        mSelectionHighlighter = selectionHighlighter;
     }
 
     void
     PropertiesWindow::setPropertyType
     (PropertyType t)
     {
-       mType = t;
+        mType = t;
     }
 
     void
@@ -262,7 +274,7 @@ namespace DreamTool
         {
             pushPropertyTarget
             (
-                DreamTool::PROP_TYPE_SCENE,
+                DreamTool::Scene,
                 mProject->getProjectDefinition()->createNewSceneDefinition(),
                 nullptr
             );
@@ -354,10 +366,10 @@ namespace DreamTool
 
         ImGui::SameLine();
 
-		if (drawDeleteSceneButton())
-		{
-			return;
-		}
+        if (drawDeleteSceneButton())
+        {
+            return;
+        }
         drawNameAndIdProperties();
 
         ImGui::Separator();
@@ -557,13 +569,14 @@ namespace DreamTool
             return;
         }
 
-        ImGui::SameLine();
         if (soDef->getParentSceneObject() != nullptr)
         {
-			if (drawDeleteSceneObjectButton())
-			{
-				return;
-			}
+
+            ImGui::SameLine();
+            if (drawDeleteSceneObjectButton())
+            {
+                return;
+            }
         }
         ImGui::SameLine();
         if (ImGui::Button("Add Child"))
@@ -574,15 +587,21 @@ namespace DreamTool
                 soRuntime->createChildRuntime(newChildDef);
             }
         }
-		ImGui::SameLine();
-		if (ImGui::Button("Duplicate"))
-		{
-			auto dup = soDef->duplicate();
-			if (soRuntime)
-			{
-				soRuntime->createChildRuntime(dup);
-			}
-		}
+
+        if (soDef->getParentSceneObject() != nullptr)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Duplicate"))
+            {
+                auto dup = soDef->duplicate();
+                SceneObjectRuntime* newRt = nullptr;
+                if (soRuntime)
+                {
+                    newRt = soRuntime->createChildRuntime(dup);
+                }
+                pushPropertyTarget(PropertyType::SceneObject,dup,newRt);
+            }
+        }
 
         drawNameAndIdProperties();
         ImGui::Separator();
@@ -738,7 +757,7 @@ namespace DreamTool
             if (selectedAudioAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO,selectedAudioAsset);
             pushPropertyTarget(
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -780,7 +799,7 @@ namespace DreamTool
             if (selectedLightAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT,selectedLightAsset);
             pushPropertyTarget(
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -823,7 +842,7 @@ namespace DreamTool
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::MODEL,selectedModelAsset);
             pushPropertyTarget
             (
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -864,7 +883,7 @@ namespace DreamTool
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
             pushPropertyTarget
             (
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -903,7 +922,7 @@ namespace DreamTool
             if (selectedPathAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PATH,selectedPathAsset);
             pushPropertyTarget(
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -940,7 +959,7 @@ namespace DreamTool
             if (selectedPhysicsObjectAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
             pushPropertyTarget(
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );
@@ -980,7 +999,7 @@ namespace DreamTool
             if (selectedScriptAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,selectedScriptAsset);
             pushPropertyTarget(
-                PropertyType::PROP_TYPE_ASSET,
+                PropertyType::Asset,
                 asset,
                 nullptr
             );

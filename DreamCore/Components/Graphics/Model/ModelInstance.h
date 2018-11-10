@@ -34,7 +34,7 @@
 #include <map>
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
-#include "../BoundingBox.h"
+#include "../../../Scene/SceneObject/BoundingBox.h"
 #include "../../IAssetInstance.h"
 #include <glm/matrix.hpp>
 
@@ -42,7 +42,6 @@
 struct aiScene;
 struct aiMaterial;
 struct aiNode;
-
 using nlohmann::json;
 using glm::mat4;
 using Assimp::Importer;
@@ -71,13 +70,14 @@ namespace Dream
         ~ModelInstance() override;
         bool load(string) override;
         void loadExtraAttributes(json) override;
-        BoundingBox getBoundingBox();
+        BoundingBox& getBoundingBox();
         void setModelMatrix(mat4);
         mat4 getModelMatrix();
 
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
         vector<string> getMaterialNames();
+
 
     private:
         // Variables
@@ -90,11 +90,9 @@ namespace Dream
         vector<string> mMaterialNames;
 
         // Methods
+        void updateBoundingBox(aiMesh* mesh);
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
-
-        void updateBoundingBox(BoundingBox& box, aiMesh* mesh);
-
         void processNode(aiNode*, const aiScene*);
         ModelMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);

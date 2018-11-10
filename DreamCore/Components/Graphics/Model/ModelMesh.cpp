@@ -23,24 +23,6 @@
 namespace Dream
 {
 
-    GLuint ModelMesh::getVAO() const
-    {
-        return mVAO;
-    }
-
-    void
-    ModelMesh::drawInstances
-    (ShaderInstance* shader)
-    {
-        auto log = getLog();
-        log->debug("Drawing {} instances of mesh {}", mInstances.size(), getName());
-        shader->bindVertexArray(mVAO);
-        shader->bindInstances(mInstances);
-        shader->syncUniforms();
-        auto size = static_cast<GLsizei>(mInstances.size());
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
-    }
-
     ModelMesh::ModelMesh
     (ModelInstance* parent,
         string name,
@@ -78,20 +60,6 @@ namespace Dream
     (const string& name)
     {
         mName = name;
-    }
-
-    BoundingBox
-    ModelMesh::getBoundingBox
-    () const
-    {
-        return mBoundingBox;
-    }
-
-    void
-    ModelMesh::setBoundingBox
-    (const BoundingBox& boundingBox)
-    {
-        mBoundingBox = boundingBox;
     }
 
     vector<Vertex>
@@ -196,6 +164,26 @@ namespace Dream
     ()
     {
        return mMaterial;
+    }
+
+
+
+    GLuint ModelMesh::getVAO() const
+    {
+        return mVAO;
+    }
+
+    void
+    ModelMesh::drawInstances
+    (ShaderInstance* shader)
+    {
+        auto log = getLog();
+        log->debug("Drawing {} instances of mesh {}", mInstances.size(), getName());
+        shader->bindVertexArray(mVAO);
+        shader->bindInstances(mInstances);
+        shader->syncUniforms();
+        auto size = static_cast<GLsizei>(mInstances.size());
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
     }
 
 } // End of Dream

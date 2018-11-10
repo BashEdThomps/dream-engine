@@ -9,7 +9,7 @@ namespace DreamTool
             : public ImGuiWidget
     {
     public:
-        GridPropertiesWindow(Project* p);
+        GridPropertiesWindow(Dream::Project* p);
         ~GridPropertiesWindow() override;
         void draw() override;
         void setGrid(Grid* gridHandle);

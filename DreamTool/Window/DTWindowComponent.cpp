@@ -16,6 +16,8 @@
  * this file belongs to.
  */
 
+
+#define GL_SILENCE_DEPRECATION
 #include "DTWindowComponent.h"
 #include "../Widgets/ImGui/ImGuiWidget.h"
 #include "../Widgets/GL/GLWidget.h"
@@ -30,7 +32,7 @@ namespace DreamTool
 {
     void
     FramebufferSizeCallback
-    (GLFWwindow* windows98, int w, int h)
+    (GLFWwindow*, int, int)
     {
         WindowSizeChanged = true;
     }
@@ -130,7 +132,7 @@ namespace DreamTool
     {
         auto log = getLog();
         log->debug("Initialising ImGui");
-        char* glsl_version = "#version 330";
+        const char* glsl_version = "#version 330";
         // Setup Dear ImGui binding
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();

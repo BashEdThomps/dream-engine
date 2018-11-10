@@ -1,3 +1,5 @@
+#define GL_SILENCE_DEPRECATION
+
 #include <iostream>
 #include <thread>
 #include <memory>
@@ -13,6 +15,7 @@
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
+#include "Widgets/GL/SelectionHighlighterWidget.h"
 
 #define MINIMUM_ARGUMENTS 3
 
@@ -56,7 +59,7 @@ main
 
     DTWindowComponent windowComponent;
 #ifdef WIN32
-	windowComponent.setUiFontSize(24.0f);
+    windowComponent.setUiFontSize(24.0f);
     windowComponent.setMonoFontSize(24.0f);
 #else
     windowComponent.setUiFontSize(16.0f);
@@ -65,7 +68,7 @@ main
     windowComponent.init();
 
     // Widgets
-    Project project(&windowComponent);
+    Dream::Project project(&windowComponent);
     PropertiesWindow propertiesWindow(&project);
     ProjectBrowser projectBrowser(&project, &propertiesWindow);
     LuaDebugWindow luaDebugWindow(&project);
@@ -98,8 +101,14 @@ main
     LightViewer lv(&project);
     lv.init();
 
+    SelectionHighlighterWidget sh(&project);
+    sh.init();
+    projectBrowser.setSelectionHighlighterWidget(&sh);
+    propertiesWindow.setSelectionHighlighter(&sh);
+
     windowComponent.addGLWidget(&grid);
     windowComponent.addGLWidget(&lv);
+    windowComponent.addGLWidget(&sh);
 
     if (argc > 1)
     {

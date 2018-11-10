@@ -32,7 +32,6 @@
 #include <sstream>
 #include <vector>
 
-#include "../BoundingBox.h"
 #include "../Material/MaterialInstance.h"
 #include "../Shader/ShaderInstance.h"
 #include "../Vertex.h"
@@ -55,16 +54,12 @@ namespace Dream
         ModelInstance* mParent;
         MaterialInstance* mMaterial;
         string  mName;
-
         GLuint mVAO;
         GLuint mVBO;
         GLuint mIBO;
-
         vector<Vertex>  mVertices;
         vector<GLuint> mIndices;
-        BoundingBox mBoundingBox;
         vector<SceneObjectRuntime*> mInstances;
-
     public:
         ModelMesh
         (
@@ -76,17 +71,14 @@ namespace Dream
         );
 
         ~ModelMesh();
+
         void init();
         void logInstances();
         void addInstance(SceneObjectRuntime* runt);
         void removeInstance(SceneObjectRuntime* runt);
-
         MaterialInstance* getMaterial();
-
         string getName() const;
         void setName(const string& name);
-        BoundingBox getBoundingBox() const;
-        void setBoundingBox(const BoundingBox& boundingBox);
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
         GLuint getVAO() const;

@@ -13,7 +13,7 @@ extern bool MainLoopDone;
 namespace DreamTool
 {
     MenuBar::MenuBar
-    (Project* def,
+    (Dream::Project* def,
         ProjectBrowser* pb,
         PropertiesWindow* pw,
         LuaDebugWindow* debugWindow,
