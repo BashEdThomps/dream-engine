@@ -23,7 +23,6 @@
 #include "../Widgets/ImGui/ImGuiWidget.h"
 #include "../Widgets/GL/GLWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
-#include <GLFW/glfw3native.h>
 
 using namespace Dream;
 

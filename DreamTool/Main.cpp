@@ -6,6 +6,10 @@
 
 #define MINIMUM_ARGUMENTS 3
 
+#ifdef WIN32
+#include <GL/glew.h>
+#endif
+
 #include "DTState.h"
 
 using namespace DreamTool;

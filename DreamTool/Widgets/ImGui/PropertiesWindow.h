@@ -27,7 +27,6 @@ namespace DreamTool
         void popPropertyTarget();
         void clearPropertyTargets();
         void removeFromHistory(IDefinition* def);
-        void setSelectionHighlighter(SelectionHighlighter* selectionHighlighter);
 
     private:
         int getStringIndexInVector(string str, vector<string> vec);
@@ -56,12 +55,10 @@ namespace DreamTool
         void clear();
     private:
         vector<PropertiesTarget> mHistory;
-        SelectionHighlighter* mSelectionHighlighter;
         PropertyType mType;
         IDefinition* mDefinition;
         IRuntime* mRuntime;
         ImVec2 mImageSize;
         ImVec2 mBigEditorSize;
     };
-
 }

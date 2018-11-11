@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef WIN32
+#include <GL/glew.h>
+#endif
 #include "../../DreamCore/Common/DreamObject.h"
 #include "Window/DTWindowComponent.h"
 // ImGui Widgets

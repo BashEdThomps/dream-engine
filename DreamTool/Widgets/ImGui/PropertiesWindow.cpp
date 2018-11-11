@@ -9,7 +9,6 @@ namespace DreamTool
     PropertiesWindow::PropertiesWindow
     (DTState* proj)
         : ImGuiWidget (proj),
-          mSelectionHighlighter(nullptr),
           mType(None),
           mDefinition(nullptr),
           mRuntime(nullptr),
@@ -94,10 +93,7 @@ namespace DreamTool
                    auto parent = soRuntime->getParentRuntime();
                    parent->removeChildRuntime(soRuntime);
                 }
-                if (mSelectionHighlighter)
-                {
-                    mSelectionHighlighter->clearSelection();
-                }
+                mState->selectionHighlighter.clearSelection();
                 removeFromHistory(mDefinition);
                 mDefinition = nullptr;
                 mRuntime = nullptr;
@@ -261,11 +257,6 @@ namespace DreamTool
         mType = None;
         mDefinition = nullptr;
         mRuntime = nullptr;
-    }
-
-    void PropertiesWindow::setSelectionHighlighter(SelectionHighlighter* selectionHighlighter)
-    {
-        mSelectionHighlighter = selectionHighlighter;
     }
 
     void
