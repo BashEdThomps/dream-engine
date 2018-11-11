@@ -23,18 +23,20 @@ namespace DreamTool
     class GLWidget : public DTWidget
     {
     public:
-        GLWidget(Dream::Project* project);
+        GLWidget(DTState* project);
         virtual ~GLWidget() override;
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);
         virtual void draw() override;
         void init();
+        void setPosition(vec3);
+        vec3 getPosition();
     protected:
         void addVertex(GLWidgetVertex lv);
         virtual void setShader();
         void initShader();
         void initVaoVbo();
-        void setPosition(vec3);
+
     protected:
         mat4 mModelMatrix;
         mat4 mViewMatrix;

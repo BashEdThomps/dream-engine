@@ -43,7 +43,7 @@ else()
     set(GLFW_X11_LIB_DIRS "")
 endif()
 
-find_path( GLFW_INCLUDE_DIR 
+find_path( GLFW_INCLUDE_DIR
     NAMES
         GLFW/glfw3.h
     HINTS
@@ -60,14 +60,14 @@ find_path( GLFW_INCLUDE_DIR
         /usr/local/include
         /usr/include/GL
         /usr/include
-    DOC 
+    DOC
         "The directory where GLFW/glfw3.h resides"
 )
 
 #
 # XXX: Do we still need to search for GL/glfw.h?
 #
-find_path( GLFW_INCLUDE_DIR 
+find_path( GLFW_INCLUDE_DIR
     NAMES
         GL/glfw.h
     HINTS
@@ -84,13 +84,13 @@ find_path( GLFW_INCLUDE_DIR
         /usr/local/include
         /usr/include/GL
         /usr/include
-    DOC 
+    DOC
         "The directory where GL/glfw.h resides"
 )
 
 if (WIN32)
     if(CYGWIN)
-        find_library( GLFW_glfw_LIBRARY 
+        find_library( GLFW_glfw_LIBRARY
             NAMES
                 glfw32
             HINTS
@@ -103,14 +103,14 @@ if (WIN32)
                 /usr/lib/w32api
                 /usr/local/lib
                 "${GLFW_X11_LIB_DIRS}"
-            DOC 
+            DOC
                 "The GLFW library"
         )
     else()
         find_library( GLFW_glfw_LIBRARY
-            NAMES 
-                glfw32 
-                glfw32s 
+            NAMES
+                glfw32
+                glfw32s
                 glfw
                 glfw3
             HINTS
@@ -125,14 +125,14 @@ if (WIN32)
             PATHS
                 "$ENV{PROGRAMFILES}/GLFW/lib"
                 "${OPENGL_LIBRARY_DIR}"
-            DOC 
+            DOC
                 "The GLFW library"
         )
     endif()
 else ()
     if (APPLE)
         find_library( GLFW_glfw_LIBRARY glfw
-            NAMES 
+            NAMES
                 glfw
                 glfw3
             HINTS
@@ -148,7 +148,7 @@ else ()
         set(GLFW_iokit_LIBRARY "-framework IOKit" CACHE STRING "IOKit framework for OSX")
     else ()
         # (*)NIX
-        
+
         find_package(Threads REQUIRED)
 
         if(NOT NO_GLFW_X11)
@@ -178,7 +178,7 @@ else ()
         endif (NOT NO_GLFW_X11)
 
         find_library( GLFW_glfw_LIBRARY
-            NAMES 
+            NAMES
                 glfw
                 glfw3
             HINTS
@@ -195,7 +195,7 @@ else ()
                 /usr/local/lib/${CMAKE_LIBRARY_ARCHITECTURE}
                 /usr/openwin/lib
                 "${GLFW_X11_LIB_DIRS}"
-            DOC 
+            DOC
                 "The GLFW library"
         )
     endif (APPLE)
@@ -219,15 +219,15 @@ if(GLFW_INCLUDE_DIR)
 
     # Tease the GLFW_VERSION numbers from the lib headers
     function(parseVersion FILENAME VARNAME)
-            
+
         set(PATTERN "^#define ${VARNAME}.*$")
-        
+
         file(STRINGS "${GLFW_INCLUDE_DIR}/${FILENAME}" TMP REGEX ${PATTERN})
-        
+
         string(REGEX MATCHALL "[0-9]+" TMP ${TMP})
-        
+
         set(${VARNAME} ${TMP} PARENT_SCOPE)
-        
+
     endfunction()
 
 
@@ -242,7 +242,7 @@ if(GLFW_INCLUDE_DIR)
         parseVersion(GLFW/glfw3.h GLFW_VERSION_MAJOR)
         parseVersion(GLFW/glfw3.h GLFW_VERSION_MINOR)
         parseVersion(GLFW/glfw3.h GLFW_VERSION_REVISION)
- 
+
     endif()
 
     if("${GLFW_VERSION_MAJOR}" OR "${GLFW_VERSION_MINOR}" OR "${GLFW_VERSION_REVISION}")
@@ -250,12 +250,12 @@ if(GLFW_INCLUDE_DIR)
         set(GLFW_VERSION_STRING "${GLFW_VERSION}")
         mark_as_advanced(GLFW_VERSION)
     endif()
-    
+
 endif(GLFW_INCLUDE_DIR)
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(GLFW 
+find_package_handle_standard_args(GLFW
     REQUIRED_VARS
         GLFW_INCLUDE_DIR
         GLFW_LIBRARIES
@@ -269,5 +269,9 @@ mark_as_advanced(
   GLFW_glfw_LIBRARY
   GLFW_cocoa_LIBRARY
 )
+
+message("Using GLFW Headers " ${GLFW_INCLUDE_DIR})
+message("Using GLFW Lib " ${GLFW_LIBRARIES})
+message("Using GLFW Version " ${GLFW_VERSION})
 
 

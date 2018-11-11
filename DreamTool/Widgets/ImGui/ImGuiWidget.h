@@ -15,8 +15,12 @@ namespace DreamTool
     class ImGuiWidget : public DTWidget
     {
     public:
-        ImGuiWidget(Project* project);
+        ImGuiWidget(DTState* project);
         ~ImGuiWidget() override;
-        bool StringCombo(const char* label, int* current_item, const vector<string>& items, int items_count, int height_in_items = -1);
+        bool StringCombo(const char* label,
+                         int* current_item,
+                         const vector<string>& items,
+                         size_t items_count,
+                         int height_in_items = -1);
     };
 }

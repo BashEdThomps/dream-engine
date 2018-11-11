@@ -10,9 +10,9 @@
 namespace DreamTool
 {
     DTWidget::DTWidget
-    (Project* project)
+    (DTState* state)
     : DreamObject("DTWidget"),
-      mProject(project),
+      mState(state),
       mHidden(false)
     {}
 

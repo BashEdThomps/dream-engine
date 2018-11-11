@@ -3,7 +3,7 @@
 namespace DreamTool
 {
     LuaDebugWindow::LuaDebugWindow
-    (Project* proj)
+    (DTState* proj)
         : ImGuiWidget(proj),
         LuaPrintListener()
     {

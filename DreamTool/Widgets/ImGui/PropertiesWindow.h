@@ -7,7 +7,7 @@
 
 namespace DreamTool
 {
-    class SelectionHighlighterWidget;
+    class SelectionHighlighter;
 
     struct PropertiesTarget
     {
@@ -19,7 +19,7 @@ namespace DreamTool
     class PropertiesWindow : public ImGuiWidget
     {
     public:
-        PropertiesWindow(Dream::Project*);
+        PropertiesWindow(DTState*);
         ~PropertiesWindow() override;
 
         void draw() override;
@@ -27,7 +27,7 @@ namespace DreamTool
         void popPropertyTarget();
         void clearPropertyTargets();
         void removeFromHistory(IDefinition* def);
-        void setSelectionHighlighter(SelectionHighlighterWidget* selectionHighlighter);
+        void setSelectionHighlighter(SelectionHighlighter* selectionHighlighter);
 
     private:
         int getStringIndexInVector(string str, vector<string> vec);
@@ -56,7 +56,7 @@ namespace DreamTool
         void clear();
     private:
         vector<PropertiesTarget> mHistory;
-        SelectionHighlighterWidget* mSelectionHighlighter;
+        SelectionHighlighter* mSelectionHighlighter;
         PropertyType mType;
         IDefinition* mDefinition;
         IRuntime* mRuntime;

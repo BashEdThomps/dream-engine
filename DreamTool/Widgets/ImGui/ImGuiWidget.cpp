@@ -10,7 +10,7 @@
 namespace DreamTool
 {
     ImGuiWidget::ImGuiWidget
-    (Project* project)
+    (DTState* project)
         : DTWidget(project)
     {
         setLogClassName("ImGuiWidget");
@@ -23,7 +23,7 @@ namespace DreamTool
     (
         const char* label, int* current_item,
         const vector<string>& items,
-        int items_count, int height_in_items
+        size_t items_count, int height_in_items
     )
     {
         return ImGui::Combo

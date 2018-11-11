@@ -1,9 +1,10 @@
 #include "LightViewer.h"
+#include "../../DTState.h"
 
 namespace DreamTool
 {
     LightViewer::LightViewer
-    (Dream::Project* p)
+    (DTState* p)
         : GLWidget(p)
     {
         setLogClassName("LightViewer");
@@ -23,9 +24,9 @@ namespace DreamTool
     {
         checkGLError();
         vector<IAssetInstance*> lightInstances;
-        if (mProject)
+        if (mState->project)
         {
-            auto pRuntime = mProject->getProjectRuntime();
+            auto pRuntime = mState->project->getProjectRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();

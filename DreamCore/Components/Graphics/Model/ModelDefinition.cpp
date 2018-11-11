@@ -25,13 +25,8 @@ namespace Dream
     (ProjectDefinition* pd, json js)
         : IAssetDefinition(pd,js)
     {
-
-        auto log = spdlog::get("ModelDefinition");
-        if (log == nullptr)
-        {
-            log = spdlog::stdout_color_mt("ModelDefinition");
-        }
-        log->trace("Constructing");
+        auto log = getLog();
+        log->trace("Constructing {}", getNameAndUuidString());
     }
 
     ModelDefinition::~ModelDefinition()
@@ -86,7 +81,7 @@ namespace Dream
     ModelDefinition::removeModelMaterial
     (string material)
     {
-        auto log = spdlog::get("ModelDefinition");
+        auto log = getLog();
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {

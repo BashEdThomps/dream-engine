@@ -34,7 +34,7 @@ namespace DreamTool
         };
 
         Grid(
-            Dream::Project* p,
+            DTState* p,
             AxisPair xp = AxisPair::XZ,
             glm::vec3 position = vec3(0.0f),
             float majorSpacing = 10.0f,

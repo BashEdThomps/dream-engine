@@ -4,12 +4,12 @@
 
 namespace DreamTool
 {
-    class SelectionHighlighterWidget
+    class SelectionHighlighter
             : public GLWidget
     {
     public:
-        SelectionHighlighterWidget(Dream::Project* project);
-        ~SelectionHighlighterWidget() override;
+        SelectionHighlighter(DTState* project);
+        ~SelectionHighlighter() override;
         void setSelectedSceneObject(SceneObjectRuntime* selected);
         void draw() override;
         void init();

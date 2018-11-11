@@ -6,11 +6,12 @@
 //
 
 #include "GLWidget.h"
+#include "../../DTState.h"
 
 namespace DreamTool
 {
     GLWidget::GLWidget
-    (Project* project)
+    (DTState* project)
         : DTWidget (project),
           mModelMatrix(mat4(1.0f)),
           mViewMatrix(mat4(1.0f)),
@@ -91,7 +92,12 @@ namespace DreamTool
 
     void GLWidget::setPosition(vec3 pos)
     {
-       mModelMatrix = glm::translate(mat4(1.0f),pos);
+        mModelMatrix = glm::translate(mat4(1.0f),pos);
+    }
+
+    vec3 GLWidget::getPosition()
+    {
+       return vec3(mModelMatrix[3]);
     }
 
     void
@@ -104,9 +110,9 @@ namespace DreamTool
     void GLWidget::draw()
     {
         checkGLError();
-        if (mProject)
+        if (mState->project)
         {
-            auto pRuntime = mProject->getProjectRuntime();
+            auto pRuntime = mState->project->getProjectRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();

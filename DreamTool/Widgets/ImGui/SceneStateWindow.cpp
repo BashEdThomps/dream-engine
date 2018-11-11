@@ -1,9 +1,10 @@
 #include "SceneStateWindow.h"
+#include "../../DTState.h"
 
 namespace DreamTool
 {
     SceneStateWindow::SceneStateWindow
-    (Project* p)
+    (DTState* p)
         : ImGuiWidget(p)
     {
         setLogClassName("SceneStateWindow");
@@ -26,8 +27,8 @@ namespace DreamTool
         ImGui::Text("State");
         ImGui::NextColumn();
 
-        auto pDef = mProject->getProjectDefinition();
-        auto pRunt = mProject->getProjectRuntime();
+        auto pDef = mState->project->getProjectDefinition();
+        auto pRunt = mState->project->getProjectRuntime();
         if (pDef)
         {
             for (auto sceneDef : pDef->getSceneDefinitionsVector())

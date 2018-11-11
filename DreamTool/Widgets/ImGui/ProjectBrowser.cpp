@@ -1,8 +1,9 @@
+
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
-#include "../GL/SelectionHighlighterWidget.h"
+#include "../../DTState.h"
 
 using std::stringstream;
 
@@ -10,12 +11,9 @@ namespace DreamTool
 {
     ProjectBrowser::ProjectBrowser
     (
-        Dream::Project* project,
-        PropertiesWindow* properties
+        DTState* project
     )
-        : ImGuiWidget(project),
-          mPropertiesWindowHandle(properties),
-          mSelectionHighlighter(nullptr)
+        : ImGuiWidget(project)
     {}
 
     ProjectBrowser::~ProjectBrowser
@@ -36,19 +34,12 @@ namespace DreamTool
     }
 
     void
-    ProjectBrowser::setSelectionHighlighterWidget
-    (SelectionHighlighterWidget* shw)
-    {
-       mSelectionHighlighter = shw;
-    }
-
-    void
     ProjectBrowser::drawProjectTree
     ()
     {
         auto log = getLog();
         // Project Tree
-        auto projDef = mProject->getProjectDefinition();
+        auto projDef = mState->project->getProjectDefinition();
         ImGui::Text("Scenegraph");
         ImGui::Separator();
 
@@ -65,11 +56,11 @@ namespace DreamTool
             if (ImGui::IsItemClicked())
             {
                 log->error("Project clicked {}", projDef->getName());
-                mPropertiesWindowHandle->pushPropertyTarget
+                mState->propertiesWindow.pushPropertyTarget
                 (
                     Project,
                     projDef,
-                    mProject->getProjectRuntime()
+                    mState->project->getProjectRuntime()
                 );
             }
 
@@ -81,7 +72,7 @@ namespace DreamTool
                     if (ImGui::IsItemClicked())
                     {
                         log->error("Scene Clicked {}", sDef->getName());
-                        auto pRunt = mProject->getProjectRuntime();
+                        auto pRunt = mState->project->getProjectRuntime();
                         SceneRuntime* sRunt = nullptr;
                         if (pRunt)
                         {
@@ -96,7 +87,7 @@ namespace DreamTool
                                 sRunt = nullptr;
                             }
                         }
-                        mPropertiesWindowHandle->pushPropertyTarget(Scene, sDef,sRunt);
+                        mState->propertiesWindow.pushPropertyTarget(Scene, sDef,sRunt);
                     }
 
                     SceneObjectDefinition* rootSo = sDef->getRootSceneObjectDefinition();
@@ -118,7 +109,7 @@ namespace DreamTool
         if (def != nullptr)
         {
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
-            auto projRunt = mProject->getProjectRuntime();
+            auto projRunt = mState->project->getProjectRuntime();
             ImGui::PushID(treeId);
             if(ImGui::TreeNodeEx(
                    (void*)(intptr_t)treeId,
@@ -135,12 +126,12 @@ namespace DreamTool
 
                 if (ImGui::IsItemClicked())
                 {
-                    if (mSelectionHighlighter && soRt)
+                    if (soRt)
                     {
-                        mSelectionHighlighter->setSelectedSceneObject(soRt);
+                        mState->selectionHighlighter.setSelectedSceneObject(soRt);
                     }
                     log->error("SceneObject Clicked {}",def->getName());
-                    mPropertiesWindowHandle->pushPropertyTarget(SceneObject, def, soRt);
+                    mState->propertiesWindow.pushPropertyTarget(SceneObject, def, soRt);
                 }
 
                 // Our buttons are both drag sources and drag targets here!
@@ -191,7 +182,7 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        auto projDef = mProject->getProjectDefinition();
+        auto projDef = mState->project->getProjectDefinition();
         ImGui::Text("Assets");
         ImGui::Separator();
 
@@ -226,7 +217,7 @@ namespace DreamTool
                         if (ImGui::IsItemClicked())
                         {
                             log->error("Asset Definition Clicked {}", asset->getName());
-                            mPropertiesWindowHandle->pushPropertyTarget(Asset, asset, nullptr);
+                            mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
                         }
                         ImGui::TreePop();
                     }

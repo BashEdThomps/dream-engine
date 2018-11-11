@@ -3,30 +3,14 @@
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
-#include "GridPropertiesWidget.h"
-
+#include "../../DTState.h"
 #include "../../deps/ImGui/imgui_internal.h"
 #include "../../deps/ImGui/imguifilesystem.h"
-#include "../GL/SelectionHighlighterWidget.h"
-
-extern bool MainLoopDone;
 
 namespace DreamTool
 {
-	MenuBar::MenuBar
-	(Dream::Project* def,
-		ProjectBrowser* pb,
-		PropertiesWindow* pw,
-		LuaDebugWindow* debugWindow,
-		SceneStateWindow* sceneStateWindow,
-		GridPropertiesWindow* gp)
-		: ImGuiWidget(def),
-		mProjectBrowser(pb),
-		mPropertiesWindow(pw),
-		mLuaDebugWindow(debugWindow),
-		mSceneStateWindow(sceneStateWindow),
-		mGridPropertiesWindow(gp),
-		mSelectionHighlighter(nullptr)
+    MenuBar::MenuBar(DTState* def)
+        : ImGuiWidget(def)
     {
         setLogClassName("MenuBar");
     }
@@ -48,7 +32,7 @@ namespace DreamTool
         bool showSaveSuccessDialog = false;
         bool showPleaseDestroyScenesDialog = false;
 
-        auto pRuntime = mProject->getProjectRuntime();
+        auto pRuntime = mState->project->getProjectRuntime();
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -58,7 +42,7 @@ namespace DreamTool
                 openButtonClicked = ImGui::MenuItem("Open");
                 if(ImGui::MenuItem("Save"))
                 {
-                    ProjectDirectory pDir(mProject);
+                    ProjectDirectory pDir(mState->project);
                     if(pDir.saveProject())
                     {
                         showSaveSuccessDialog = true;
@@ -76,28 +60,28 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("View"))
             {
-                bool showProjectBrowser = !mProjectBrowser->getHidden();
+                bool showProjectBrowser = !mState->projectBrowser.getHidden();
                 if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
                 {
-                    mProjectBrowser->setHidden(!showProjectBrowser);
+                    mState->projectBrowser.setHidden(!showProjectBrowser);
                 }
 
-                bool showPropertiesWindow = !mPropertiesWindow->getHidden();
+                bool showPropertiesWindow = !mState->propertiesWindow.getHidden();
                 if(ImGui::Checkbox("Properties Window",&showPropertiesWindow))
                 {
-                   mPropertiesWindow->setHidden(!showPropertiesWindow);
+                   mState->propertiesWindow.setHidden(!showPropertiesWindow);
                 }
 
-                bool showSceneStatesWindow = !mSceneStateWindow->getHidden();
+                bool showSceneStatesWindow = !mState->sceneStateWindow.getHidden();
                 if (ImGui::Checkbox("Scene States",&showSceneStatesWindow))
                 {
-                   mSceneStateWindow->setHidden(!showSceneStatesWindow);
+                   mState->sceneStateWindow.setHidden(!showSceneStatesWindow);
                 }
 
-                bool showGridPropsWindow = !mGridPropertiesWindow->getHidden();
+                bool showGridPropsWindow = !mState->gridPropertiesWindow.getHidden();
                 if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
                 {
-                   mGridPropertiesWindow->setHidden(!showGridPropsWindow);
+                   mState->gridPropertiesWindow.setHidden(!showGridPropsWindow);
                 }
 
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
@@ -110,9 +94,9 @@ namespace DreamTool
                 vector<string> sceneNames;
 
                 ProjectDefinition* projDef = nullptr;
-                if (mProject)
+                if (mState->project)
                 {
-                    projDef = mProject->getProjectDefinition();
+                    projDef = mState->project->getProjectDefinition();
                     if (projDef)
                     {
                         auto scenesVector = projDef->getSceneDefinitionsVector();
@@ -161,7 +145,7 @@ namespace DreamTool
                 int sceneToDestroyIndex = -1;
                 if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
                 {
-                    mPropertiesWindow->clearPropertyTargets();
+                    mState->propertiesWindow.clearPropertyTargets();
                     if (pRuntime)
                     {
                         auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);
@@ -169,10 +153,7 @@ namespace DreamTool
                         {
                             rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
                         }
-						if (mSelectionHighlighter)
-						{ 
-							mSelectionHighlighter->clearSelection();
-						}
+                        mState->selectionHighlighter.clearSelection();
                     }
                 }
 
@@ -238,10 +219,10 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("Debug"))
             {
-                auto showLuaDebug = !mLuaDebugWindow->getHidden();
+                auto showLuaDebug = !mState->luaDebugWindow.getHidden();
                 if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
                 {
-                    mLuaDebugWindow->setHidden(!showLuaDebug);
+                    mState->luaDebugWindow.setHidden(!showLuaDebug);
                 }
 
                 if (pRuntime)
@@ -311,7 +292,7 @@ namespace DreamTool
             /*
                 auto path = newDlg.getChosenPath();
                 ProjectDirectoryModel dirModel();
-                mProject->clear();
+                mState->project->clear();
             */
         }
 
@@ -322,9 +303,9 @@ namespace DreamTool
         {
             auto projectDir = openDlg.getChosenPath();
             log->error("Opening project {}",projectDir);
-            if(mProject->openFromDirectory(projectDir))
+            if(mState->project->openFromDirectory(projectDir))
             {
-                mProject->createProjectRuntime();
+                mState->project->createProjectRuntime();
             }
             else
             {
@@ -396,7 +377,7 @@ namespace DreamTool
             if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
             {
                 ImGui::CloseCurrentPopup();
-                MainLoopDone = true;
+                mState->MainLoopDone = true;
             }
 
             ImGui::SetItemDefaultFocus();
@@ -422,9 +403,4 @@ namespace DreamTool
             ImGui::EndPopup();
         }
     }
-
-	void MenuBar::setSelectionHighlighter(SelectionHighlighterWidget* shw)
-	{
-		mSelectionHighlighter = shw;
-	}
 }

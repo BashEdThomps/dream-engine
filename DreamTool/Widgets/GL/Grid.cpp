@@ -24,7 +24,7 @@ namespace DreamTool
 
     Grid::Grid
     (
-            Project* p,
+            DTState* p,
             AxisPair xp,
             glm::vec3 position,
             float majorSpacing,

@@ -23,11 +23,12 @@
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLEW
 
+// Maintain include order for GL
+#include <GLFW/glfw3.h>
 #include "../deps/ImGui/imgui.h"
 #include "../deps/ImGui/imgui_impl_glfw.h"
 #include "../deps/ImGui/imgui_impl_opengl3.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+
 #include <DreamCore.h>
 
 using std::unique_ptr;
@@ -48,6 +49,7 @@ namespace DreamTool
         static ImFont* RegularFont;
         static ImFont* MonoFont;
 
+        GLFWwindow* getGlfwWindow();
         void updateComponent(SceneRuntime* sr) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
@@ -80,6 +82,7 @@ namespace DreamTool
         vector<ImGuiWidget*> mImGuiWidgets;
         float mUiFontSize;
         float mMonoFontSize;
+        float mDPIScaleX, mDPIScaleY;
     }; // End of GLFWWindowComponent
 
 } // End of Dream

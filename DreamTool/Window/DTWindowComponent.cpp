@@ -18,10 +18,12 @@
 
 
 #define GL_SILENCE_DEPRECATION
+#include <GL/glew.h>
 #include "DTWindowComponent.h"
 #include "../Widgets/ImGui/ImGuiWidget.h"
 #include "../Widgets/GL/GLWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
+#include <GLFW/glfw3native.h>
 
 using namespace Dream;
 
@@ -38,7 +40,9 @@ namespace DreamTool
     }
 
     DTWindowComponent::DTWindowComponent
-    () : IWindowComponent()
+    () : IWindowComponent(),
+         mDPIScaleX(1.0f),
+         mDPIScaleY(1.0f)
     {
         setLogClassName("DTWindowComponent");
         auto log = getLog();
@@ -54,6 +58,11 @@ namespace DreamTool
         cleanUpImGui();
         glfwTerminate();
         mWindow = nullptr;
+    }
+
+    GLFWwindow*DTWindowComponent::getGlfwWindow()
+    {
+       return mWindow;
     }
 
     bool
@@ -105,8 +114,8 @@ namespace DreamTool
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #endif
@@ -123,6 +132,9 @@ namespace DreamTool
         // Resize callback
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
         glfwSwapInterval(0);
+        //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
+        glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
+        log->debug("Queried Framebuffer size as {}x{}",mWidth,mHeight);
         return true;
     }
 

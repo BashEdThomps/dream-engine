@@ -26,7 +26,7 @@ namespace Dream
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
           mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
           mShouldClose(false),
-          mSizeHasChanged(false),
+          mSizeHasChanged(true),
           mMouseX(0),
           mMouseY(0)
     {

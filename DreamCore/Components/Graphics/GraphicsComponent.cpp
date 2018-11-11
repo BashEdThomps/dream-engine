@@ -75,6 +75,16 @@ namespace Dream
 {
 
 
+    float GraphicsComponent::getMinimumDraw() const
+    {
+        return mMinimumDraw;
+    }
+
+    float GraphicsComponent::getMaximumDraw() const
+    {
+        return mMaximumDraw;
+    }
+
     GraphicsComponent::GraphicsComponent
     (IWindowComponent* windowComponent)
         : IComponent(),

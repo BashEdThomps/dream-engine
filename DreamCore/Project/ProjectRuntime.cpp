@@ -179,8 +179,8 @@ namespace Dream
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        mWindowComponent->setWidth(projDef->getWindowWidth());
-        mWindowComponent->setHeight(projDef->getWindowHeight());
+        //mWindowComponent->setWidth(projDef->getWindowWidth());
+        //mWindowComponent->setHeight(projDef->getWindowHeight());
         mWindowComponent->setName(projDef->getName());
         return true;
     }

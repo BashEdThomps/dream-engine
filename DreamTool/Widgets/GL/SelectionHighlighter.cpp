@@ -1,10 +1,11 @@
-#include "SelectionHighlighterWidget.h"
+#include "SelectionHighlighter.h"
+#include "../../DTState.h"
 
 namespace DreamTool
 {
 
-    SelectionHighlighterWidget::SelectionHighlighterWidget
-    (Dream::Project* project)
+    SelectionHighlighter::SelectionHighlighter
+    (DTState* project)
         :GLWidget (project),
           mSelectedSceneObjectRuntime(nullptr),
           mSelectionColour(vec3(0.0,1.0f,0.40f)),
@@ -18,14 +19,14 @@ namespace DreamTool
         getLog()->trace("Constructing");
     }
 
-    SelectionHighlighterWidget::~SelectionHighlighterWidget
+    SelectionHighlighter::~SelectionHighlighter
     ()
     {
         getLog()->trace("Destructing");
     }
 
     void
-    SelectionHighlighterWidget::setSelectedSceneObject
+    SelectionHighlighter::setSelectedSceneObject
     (SceneObjectRuntime* selected)
     {
         auto log = getLog();
@@ -34,13 +35,13 @@ namespace DreamTool
         updateGeometry();
     }
 
-    void SelectionHighlighterWidget::init()
+    void SelectionHighlighter::init()
     {
        GLWidget::init();
     }
 
     void
-    SelectionHighlighterWidget::updateGeometry
+    SelectionHighlighter::updateGeometry
     ()
     {
         auto log = getLog();
@@ -198,7 +199,7 @@ namespace DreamTool
         glBindVertexArray(0);
     }
 
-    void SelectionHighlighterWidget::draw()
+    void SelectionHighlighter::draw()
     {
         auto log = getLog();
         checkGLError();
@@ -208,9 +209,9 @@ namespace DreamTool
             return;
         }
 
-        if (mProject)
+        if (mState->project)
         {
-            auto pRuntime = mProject->getProjectRuntime();
+            auto pRuntime = mState->project->getProjectRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();
@@ -300,7 +301,7 @@ namespace DreamTool
     }
 
     void
-    SelectionHighlighterWidget::setShader
+    SelectionHighlighter::setShader
     ()
     {
         mVertexShaderSource =
@@ -333,7 +334,7 @@ namespace DreamTool
     }
 
     bool
-    SelectionHighlighterWidget::getOutlineOnly
+    SelectionHighlighter::getOutlineOnly
     ()
     const
     {
@@ -341,14 +342,14 @@ namespace DreamTool
     }
 
     void
-    SelectionHighlighterWidget::setOutlineOnly
+    SelectionHighlighter::setOutlineOnly
     (bool outlineOnly)
     {
         mOutlineOnly = outlineOnly;
     }
 
     void
-    SelectionHighlighterWidget::clearSelection
+    SelectionHighlighter::clearSelection
     ()
     {
        mSelectedSceneObjectRuntime =  nullptr;

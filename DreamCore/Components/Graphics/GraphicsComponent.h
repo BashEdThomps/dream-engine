@@ -53,24 +53,18 @@ namespace Dream
     private:
         mat4 mProjectionMatrix;
         mat4 mViewMatrix;
-
         Camera* mCamera;
-
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
-
         vector<LightInstance*> mLightQueue;
-
         IWindowComponent* mWindowComponent;
         ShaderCache* mShaderCacheHandle;
-
         GLuint mGeometryPassFB;
         GLuint mGeometryPassPositionBuffer;
         GLuint mGeometryPassAlbedoBuffer;
         GLuint mGeometryPassNormalBuffer;
         GLuint mGeometryPassDepthBuffer;
-
         GLuint mScreenQuadVAO;
         GLuint mScreenQuadVBO;
         ShaderInstance* mLightingShader;
@@ -105,5 +99,7 @@ namespace Dream
         ShaderInstance* getLightingShader() const;
         void setLightingShader(ShaderInstance* lightingShader);
 
+        float getMinimumDraw() const;
+        float getMaximumDraw() const;
     }; // End of GraphicsComponent
 } // End of Dream

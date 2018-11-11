@@ -31,7 +31,7 @@ namespace Dream
     {
         setLogClassName("SceneDefinition");
         auto log = getLog();
-        log->trace( "Constructing ", getNameAndUuidString() );
+        log->trace( "Constructing {}", getNameAndUuidString() );
     }
 
     SceneDefinition::~SceneDefinition

@@ -13,10 +13,11 @@ using namespace Dream;
 
 namespace DreamTool
 {
+    class DTState;
     class DTWidget : public DreamObject
     {
     public:
-        DTWidget(Project* project);
+        DTWidget(DTState* state);
         virtual ~DTWidget();
         virtual void draw() = 0;
 
@@ -24,7 +25,7 @@ namespace DreamTool
         void setHidden(bool hidden);
 
     protected:
-        Project* mProject;
+        DTState* mState;
         bool mHidden;
     };
 }
