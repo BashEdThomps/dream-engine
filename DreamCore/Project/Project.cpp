@@ -91,7 +91,15 @@ namespace Dream
             return false;
         }
 
-        json projectJson = json::parse(projectJsonStr);
+        json projectJson;
+        try
+        {
+            projectJson = json::parse(projectJsonStr);
+        }
+        catch (json::parse_error ex)
+        {
+            log->error("Exception while parsing project file: {}",ex.what());
+        }
 
         log->debug("Project path", projectPath);
 

@@ -37,7 +37,21 @@ namespace Dream
     ()
     {
         auto log = getLog();
-         log->debug( "FileReader: Destroying reader for {}" , mPath );
+        log->debug( "FileReader: Destroying reader for {}" , mPath );
+    }
+
+    string File::getDirectory()
+    {
+        auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
+        if (endOfPath == string::npos)
+        {
+            endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP_WINDOWS);
+        }
+        if (endOfPath == string::npos)
+        {
+            return "";
+        }
+        return mPath.substr(0,endOfPath);
     }
 
     string
@@ -138,13 +152,23 @@ namespace Dream
     }
 
     string
-    File::name
+    File::nameWithExtension
     ()
     {
         auto log = getLog();
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
-        log->error("Got name of file {}",fileName);
+        log->error("Got file name with extension {}",fileName);
         return fileName;
+    }
+
+    string File::nameWithoutExtension()
+    {
+        auto log = getLog();
+        auto name = nameWithExtension();
+        auto extStart = name.find_last_of(".");
+        auto nameOnly = name.substr(0,extStart);
+        log->error("Got file name without extension {}",nameOnly);
+        return nameOnly;
     }
 } // End of Dream

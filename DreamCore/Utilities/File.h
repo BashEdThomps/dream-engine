@@ -36,6 +36,7 @@ namespace Dream
         File(string);
         ~File();
 
+        string getDirectory();
         string getPath();
         string readString();
         vector<char> readBinary();
@@ -44,7 +45,8 @@ namespace Dream
         bool writeString(string);
         bool deleteFile();
         bool exists();
-        string name();
+        string nameWithExtension();
+        string nameWithoutExtension();
 
     }; // End of FileReader
 

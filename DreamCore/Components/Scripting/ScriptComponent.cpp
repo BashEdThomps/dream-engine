@@ -181,7 +181,6 @@ namespace Dream
         debugRegisteringClass("Camera");
         sol::state_view stateView(State);
         stateView.new_usertype<Camera>("Camera",
-            "pan",&Camera::pan,
             "flyForward",&Camera::flyForward,
             "flyBackward",&Camera::flyBackward,
             "flyLeft",&Camera::flyLeft,
@@ -334,6 +333,7 @@ namespace Dream
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
 
+            "getDefinedTransform",&SceneObjectRuntime::getDefinedTransform,
             "getCurrentTransform",&SceneObjectRuntime::getCurrentTransform,
 
             "getPath",&SceneObjectRuntime::getPathInstance,

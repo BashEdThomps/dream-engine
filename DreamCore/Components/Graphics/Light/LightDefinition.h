@@ -37,6 +37,7 @@ namespace Dream
     {
     public:
         LightDefinition(ProjectDefinition* pd, json js);
+        ~LightDefinition() override;
 
         void setDiffuse(vec3);
         vec3 getDiffuse();
@@ -46,9 +47,6 @@ namespace Dream
 
         void setSpecular(vec3);
         vec3 getSpecular();
-
-        void setDirection(vec3);
-        vec3 getDirection();
 
         void setType(LightType);
         LightType getType();
@@ -88,15 +86,5 @@ namespace Dream
         void setDiffuseGreen(float diffuseGreen);
         float getDiffuseBlue() ;
         void setDiffuseBlue(float diffuseBlue);
-
-        float getDirectionX();
-        void setDirectionX(float dir);
-
-        float getDirectionY();
-        void setDirectionY(float dir);
-
-        float getDirectionZ();
-        void setDirectionZ(float dir);
     };
-
 }

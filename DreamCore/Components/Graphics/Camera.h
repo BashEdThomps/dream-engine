@@ -19,7 +19,7 @@
 #define GLM_FORCE_RADIANS
 
 #ifdef WIN32
-	#define _USE_MATH_DEFINES // for C++  
+    #define _USE_MATH_DEFINES // for C++
 #endif
 
 #include <iostream>
@@ -69,7 +69,6 @@ namespace Dream
         // Constructor with scalar values
         ~Camera();
         mat4 getViewMatrix();
-        void pan(float, float, bool);
         void updateCameraVectors();
         void setTranslation(vec3);
         void setTranslation(float,float,float);
@@ -92,8 +91,8 @@ namespace Dream
         void flyY(float speed);
         void flyZ(float speed);
 
-		void deltaPitch(float pitch);
-		void deltaYaw(float yaw);
+        void deltaPitch(float pitch);
+        void deltaYaw(float yaw);
 
         vec3 getRelativeTranslation(float relative);
         mat4 getRelativeRotation(vec3 relative);

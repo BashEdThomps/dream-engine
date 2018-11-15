@@ -190,31 +190,6 @@ namespace Dream
     }
 
     void
-    Camera::pan
-    (float xoffset, float yoffset, bool constrainPitch)
-    {
-        mYaw   += xoffset;
-        mPitch -= yoffset;
-
-        // Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (mPitch > Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = Constants::CAMERA_PITCH_MAX;
-            }
-
-            if (mPitch < -Constants::CAMERA_PITCH_MAX)
-            {
-                mPitch = -Constants::CAMERA_PITCH_MAX;
-            }
-        }
-
-        mYaw = fmodf(mYaw,static_cast<float>(M_PI)*2);
-        mPitch = fmodf(mPitch,static_cast<float>(M_PI)*2);
-    }
-
-    void
     Camera::updateCameraVectors
     ()
     {
@@ -305,14 +280,14 @@ namespace Dream
         mTranslation = vec3(mtx[3]);
     }
 
-	void Camera::deltaPitch(float pitch)
-	{
-		mPitch += pitch;
-	}
+    void Camera::deltaPitch(float pitch)
+    {
+        mPitch += pitch;
+    }
 
-	void Camera::deltaYaw(float yaw)
-	{
-		mYaw += yaw;
-	}
+    void Camera::deltaYaw(float yaw)
+    {
+        mYaw += yaw;
+    }
 
 } // End of Dream

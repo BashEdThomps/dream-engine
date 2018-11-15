@@ -24,47 +24,38 @@ using glm::vec3;
 
 namespace Dream
 {
-    typedef struct
+    struct DirLight
     {
-        float constant;
-        float linear;
-        float quadratic;
-    } KMap;
-
-    typedef struct {
         vec3 direction;
-
         vec3 ambient;
         vec3 diffuse;
         vec3 specular;
-    } DirLight;
+    };
 
-    typedef struct {
+    struct PointLight
+    {
         vec3 position;
-
         float constant;
         float linear;
         float quadratic;
-
         vec3 ambient;
         vec3 diffuse;
         vec3 specular;
-    } PointLight;
+    };
 
-    typedef struct {
+    struct SpotLight
+    {
         vec3 position;
         vec3 direction;
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
         float cutOff;
         float outerCutOff;
-
         float constant;
         float linear;
         float quadratic;
-
-        vec3 ambient;
-        vec3 diffuse;
-        vec3 specular;
-    } SpotLight;
+    };
 
     class LightDefinition;
     class LightInstance : public IAssetInstance
@@ -72,7 +63,6 @@ namespace Dream
         vec3 mAmbient;
         vec3 mDiffuse;
         vec3 mSpecular;
-        vec3 mDirection;
         float mConstant;
         float mLinear;
         float mQuadratic;
@@ -90,9 +80,6 @@ namespace Dream
         bool load(string) override;
         void loadExtraAttributes(json) override;
 
-        static KMap getKMap(int distance);
-        static map<int, KMap> K_VALUE_MAP;
-
         vec3 getAmbient() const;
         void setAmbient(const vec3& ambient);
 
@@ -101,9 +88,6 @@ namespace Dream
 
         vec3 getSpecular() const;
         void setSpecular(const vec3& specular);
-
-        vec3 getDirection() const;
-        void setDirection(const vec3& direction);
 
         float getConstant() const;
         void setConstant(float constant);

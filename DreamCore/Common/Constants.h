@@ -54,7 +54,7 @@ namespace Dream
 
         // Misc =================================================================
         const static string DIR_PATH_SEP;
-        const static string DREAM_TOOL_DIR;
+        const static string DIR_PATH_SEP_WINDOWS;
         const static string PATH_DELIMETER;
         const static string HTTP_ARG;
         // Project ==============================================================

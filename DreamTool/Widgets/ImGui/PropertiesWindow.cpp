@@ -1,7 +1,6 @@
 // Maintain include order for GL Defines
 #include "PropertiesWindow.h"
 #include "../../deps/ImGui/imguifilesystem.h"
-#include "../../Model/TemplatesDirectoryModel.h"
 #include "../../DTState.h"
 
 namespace DreamTool
@@ -413,8 +412,8 @@ namespace DreamTool
 
         float cameraRotation[3] =
         {
-            sceneDef->getCameraPitch(),
-            sceneDef->getCameraYaw(),
+            degrees(sceneDef->getCameraPitch()),
+            degrees(sceneDef->getCameraYaw()),
             0.0f
         };
 
@@ -422,15 +421,15 @@ namespace DreamTool
         {
             if (sceneDef != nullptr)
             {
-                sceneDef->setCameraPitch(cameraRotation[0]);
-                sceneDef->setCameraYaw(cameraRotation[1]);
+                sceneDef->setCameraPitch(radians(cameraRotation[0]));
+                sceneDef->setCameraYaw(radians(cameraRotation[1]));
 
             }
 
             if (sceneRuntime != nullptr)
             {
-                sceneRuntime->setCameraPitch(cameraTranslation[0]);
-                sceneRuntime->setCameraYaw(cameraTranslation[1]);
+                sceneRuntime->setCameraPitch(radians(cameraRotation[0]));
+                sceneRuntime->setCameraYaw(radians(cameraRotation[1]));
             }
 
         }
@@ -1102,15 +1101,18 @@ namespace DreamTool
         auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
 
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectAudioFile,nullptr,".ogg;.wav","Select Audio File");
+        const char* chosenPath = openDlg.chooseFileDialog(selectAudioFile,mState->lastDirectory.c_str(),".ogg;.wav","Select Audio File");
         if (strlen(chosenPath) > 0)
         {
             auto audioFilePath = openDlg.getChosenPath();
             log->error("Opening Audio File {}",audioFilePath);
             File audioFile(audioFilePath);
+            mState->lastDirectory = audioFile.getDirectory();
+            log->error("Setting last directory {}",mState->lastDirectory);
             auto audioData = audioFile.readBinary();
             ProjectDirectory projectDir(mState->project);
             projectDir.writeAssetData(audioDef,audioData);
+            audioDef->setName(audioFile.nameWithoutExtension());
         }
 
         ImGui::SameLine();
@@ -1131,15 +1133,17 @@ namespace DreamTool
         auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".ttf","Select Font File");
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".ttf","Select Font File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
             log->error("Opening Font File {}",filePath);
             File file(filePath);
+            mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
             ProjectDirectory projectDir(mState->project);
             projectDir.writeAssetData(def,data);
+            def->setName(file.nameWithoutExtension());
         }
 
         ImGui::SameLine();
@@ -1202,6 +1206,7 @@ namespace DreamTool
                {
                    lightDef->setOuterCutOff(outerCutOff);
                }
+               break;
            case LightType::LT_POINT:
                if(ImGui::DragFloat("Constant",&constant,1.0f))
                {
@@ -1567,15 +1572,17 @@ namespace DreamTool
 
         bool selectFile = ImGui::Button("Model File...");
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".obj","Select Model File");
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".obj","Select Model File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
             log->error("Opening Model File {}",filePath);
             File file(filePath);
+            mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
             ProjectDirectory projectDir(mState->project);
             projectDir.writeAssetData(def,data);
+            def->setName(file.nameWithoutExtension());
         }
 
         ImGui::SameLine();
@@ -1583,15 +1590,16 @@ namespace DreamTool
         bool selectAdditionalFile = ImGui::Button("Additional File...");
         static ImGuiFs::Dialog openAdditionalFileDlg;
         const char* chosenAdditionalFilePath =
-                openAdditionalFileDlg.chooseFileDialog(selectAdditionalFile,nullptr,nullptr,"Select Additional File");
+                openAdditionalFileDlg.chooseFileDialog(selectAdditionalFile,mState->lastDirectory.c_str(),nullptr,"Select Additional File");
         if (strlen(chosenAdditionalFilePath) > 0)
         {
             auto filePath = openAdditionalFileDlg.getChosenPath();
             log->error("Opening Additional Model File {}",filePath);
             File file(filePath);
+            mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
             ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(def,data,file.name());
+            projectDir.writeAssetData(def,data,file.nameWithExtension());
         }
 
         ImGui::SameLine();
@@ -1755,100 +1763,11 @@ namespace DreamTool
     {
         auto log = getLog();
         auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
-        auto projRunt = mState->project->getProjectRuntime();
-        char buf[BigEditorBufferSize] = {0};
-        ScriptInstance* scriptInst = nullptr;
-        if (projRunt)
+
+        if(ImGui::Button("Open Script Editor..."))
         {
-            auto scriptCache = projRunt->getScriptCache();
-            if (scriptCache)
-            {
-                scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(scriptDef));
-                if (scriptInst)
-                {
-                    strncpy(buf,scriptInst->getSource().c_str(),BigEditorBufferSize);
-                }
-            }
-        }
-
-        ImGui::Columns(2);
-
-        if(ImGui::Button("Save"))
-        {
-            if(scriptInst)
-            {
-                ProjectDirectory pd(mState->project);
-                string source = scriptInst->getSource();
-                vector<char> data(source.begin(),source.end());
-                pd.writeAssetData(scriptDef,data,Constants::ASSET_FORMAT_SCRIPT_LUA);
-            }
-        }
-
-        ImGui::NextColumn();
-
-        if(ImGui::Button("Revert"))
-        {
-
-        }
-
-        ImGui::Columns(1);
-
-        TemplatesDirectoryModel templateModel;
-        vector<string> templates = templateModel.getTemplateNames(AssetType::SCRIPT);
-        static int currentTemplateIndex = -1;
-        if (StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
-        {
-            ImGui::OpenPopup("Load From Template?");
-        }
-
-        ImGui::Text("Script");
-
-
-
-        ImGui::PushFont(DTWindowComponent::MonoFont);
-        ImGui::PushItemWidth(-1);
-        if (ImGui::InputTextMultiline("##hidelabel",buf,BigEditorBufferSize,mBigEditorSize))
-        {
-            if (scriptInst)
-            {
-                scriptInst->setSource(&buf[0]);
-            }
-        }
-        ImGui::PopItemWidth();
-        ImGui::PopFont();
-
-        if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Load Script from template?\n\nThis will replace the existing Script.\n\n");
-            if (ImGui::Button("Cancel"))
-            {
-               ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Load Template"))
-            {
-               if (currentTemplateIndex < 0)
-               {
-                   log->error("Cannot load Script template at index {}",currentTemplateIndex);
-               }
-               else
-               {
-                   auto templateName = templates.at(currentTemplateIndex);
-                   auto templateStr = templateModel.getTemplate(AssetType::SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_LUA);
-                   if (scriptInst)
-                   {
-                       scriptInst->setSource(templateStr);
-                   }
-                   else
-                   {
-                       log->error("Cannot set from template, script instance is null");
-                   }
-               }
-               ImGui::CloseCurrentPopup();
-            }
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
+            mState->scriptEditorWindow.setScriptDefinition(scriptDef);
+            mState->scriptEditorWindow.setHidden(false);
         }
     }
 
@@ -1877,8 +1796,7 @@ namespace DreamTool
                 }
             }
         }
-        TemplatesDirectoryModel tmd;
-        vector<string> templates = tmd.getTemplateNames(AssetType::SHADER);
+        vector<string> templates = mState->templatesModel.getTemplateNames(AssetType::SHADER);
         static int currentTemplateIndex = -1;
         ImGui::Columns(2);
         if(ImGui::Button("Save"))
@@ -1958,8 +1876,8 @@ namespace DreamTool
                 else
                 {
                     auto  templateName = templates.at(currentTemplateIndex);
-                    string vertTemplate = tmd.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
-                    string fragTemplate = tmd.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
+                    string vertTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
+                    string fragTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
                     if (shaderInst)
                     {
                         shaderInst->setVertexSource(vertTemplate);
@@ -2008,15 +1926,17 @@ namespace DreamTool
         auto log = getLog();
         bool selectFile = ImGui::Button("Texture File...");
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,nullptr,".png","Select Texture File");
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".png","Select Texture File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
             log->error("Opening Texture File {}",filePath);
             File file(filePath);
+            mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
             ProjectDirectory projectDir(mState->project);
             projectDir.writeAssetData(textureDef,data);
+            textureDef->setName(file.nameWithoutExtension());
         }
 
         ImGui::SameLine();

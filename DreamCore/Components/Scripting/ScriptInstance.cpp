@@ -94,7 +94,7 @@ namespace Dream
 
             solStateView[sor->getUuid()] = environment;
 
-            auto exec_result = solStateView.script
+            auto exec_result = solStateView.safe_script
             (   mSource, environment,
                 [](lua_State*, sol::protected_function_result pfr)
                 {
@@ -153,9 +153,9 @@ namespace Dream
         }
     }
 
-    string
+    string&
     ScriptInstance::getSource
-    () const
+    ()
     {
         return mSource;
     }
@@ -184,7 +184,7 @@ namespace Dream
             }
 
             log->debug("Calling onUpdate for {}",sceneObject.runtime->getNameAndUuidString() );
-            sol::function onUpdateFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_UPDATE_FUNCTION];
+            sol::protected_function onUpdateFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_UPDATE_FUNCTION];
             auto result = onUpdateFunction(sceneObject.runtime);
             if (!result.valid())
             {
@@ -223,7 +223,7 @@ namespace Dream
                 continue;
             }
             log->debug("Calling onInit in {} for {}",  getName(),  sceneObject.runtime->getName());
-            sol::function onInitFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INIT_FUNCTION];
+            sol::protected_function onInitFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INIT_FUNCTION];
             auto initResult = onInitFunction(sceneObject.runtime);
             if (!initResult.valid())
             {
@@ -264,7 +264,7 @@ namespace Dream
             }
 
             log->debug("Calling onInput for {} (Has Focus) {}", sceneObject.runtime->getNameAndUuidString());
-            sol::function onInputFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INPUT_FUNCTION];
+            sol::protected_function onInputFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INPUT_FUNCTION];
             auto result = onInputFunction(sceneObject.runtime);
             if (!result.valid())
             {
@@ -306,7 +306,7 @@ namespace Dream
             }
 
             log->debug( "Calling onEvent for {}", sceneObject.runtime->getNameAndUuidString());
-            sol::function onEventFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_EVENT_FUNCTION];
+            sol::protected_function onEventFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_EVENT_FUNCTION];
             for (const Event& e : sceneObject.runtime->getEventQueue())
             {
                 auto result = onEventFunction(sceneObject.runtime,e);
@@ -346,7 +346,7 @@ namespace Dream
                 return false;
             }
             log->info( "Calling onNanoVG for {}" , sceneObject.runtime->getNameAndUuidString() );
-            sol::function onNanoVGFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_NANOVG_FUNCTION];
+            sol::protected_function onNanoVGFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_NANOVG_FUNCTION];
             auto initResult = onNanoVGFunction(sceneObject.runtime);
 
             if (!initResult.valid())

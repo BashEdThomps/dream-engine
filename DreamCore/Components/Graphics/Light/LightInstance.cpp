@@ -29,7 +29,6 @@ namespace Dream
         mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
         mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
         mSpecular(glm::vec3(0.0f,0.0f,0.0f)),
-        mDirection(glm::vec3(0.0f,0.0f,0.0f)),
         mConstant(0.0f),
         mLinear(0.0f),
         mQuadratic(0.0f),
@@ -77,16 +76,6 @@ namespace Dream
     void LightInstance::setSpecular(const vec3& specular)
     {
         mSpecular = specular;
-    }
-
-    vec3 LightInstance::getDirection() const
-    {
-        return mDirection;
-    }
-
-    void LightInstance::setDirection(const vec3& direction)
-    {
-        mDirection = direction;
     }
 
     float LightInstance::getConstant() const
@@ -180,31 +169,33 @@ namespace Dream
 
     SpotLight LightInstance::getSpotLightData()
     {
-        return SpotLight {
-            mSceneObjectRuntime->getCurrentTransform()->getTranslation(),
-            mDirection,
+        auto transform = mSceneObjectRuntime->getCurrentTransform();
+        return SpotLight
+        {
+            transform->getTranslation(),
+            transform->getRotation(),
+            mAmbient,
+            mDiffuse,
+            mSpecular,
             mCutOff,
             mOuterCutOff,
             mConstant,
             mLinear,
             mQuadratic,
-            mAmbient,
-            mDiffuse,
-            mSpecular
         };
     }
 
     DirLight LightInstance::getDirectionalLightData()
     {
-        return DirLight {
-            mSceneObjectRuntime->getCurrentTransform()->getTranslation(),
+        auto transform = mSceneObjectRuntime->getCurrentTransform();
+        return DirLight
+        {
+            transform->getRotation(),
             mAmbient,
             mDiffuse,
             mSpecular
         };
     }
-
-
 
     bool
     LightInstance::load
@@ -237,61 +228,15 @@ namespace Dream
                 mLinear      = lightDef->getLinear();
                 mQuadratic   = lightDef->getQuadratic();
                 break;
-            case Dream::LT_DIRECTIONAL:
-                mDirection   = lightDef->getDirection();
-                break;
             case Dream::LT_SPOTLIGHT:
-                mDirection   = lightDef->getDirection();
                 mCutOff      = lightDef->getCutOff();
                 mOuterCutOff = lightDef->getOuterCutOff();
                 mConstant    = lightDef->getConstant();
                 mLinear      = lightDef->getLinear();
                 mQuadratic   = lightDef->getQuadratic();
                 break;
+            case Dream::LT_DIRECTIONAL:
+                break;
         }
     }
-
-    KMap LightInstance::getKMap(int distance)
-    {
-        for (auto pair : K_VALUE_MAP)
-        {
-           if (pair.first >= distance)
-           {
-               return pair.second;
-           }
-        }
-        return K_VALUE_MAP[0];
-    }
-
-
-    /*
-     * Distance	Constant 	Linear	Quadratic
-        13	    1.0	 0.35	0.44
-        20	    1.0	 0.22	0.20
-        32	    1.0	 0.14	0.07
-        50	    1.0	 0.09	0.032
-        65	    1.0	 0.07	0.017
-        100	    1.0	 0.045	0.0075
-        160	    1.0	 0.027	0.0028
-        200	    1.0	 0.022	0.0019
-        325	    1.0	 0.014	0.0007
-        600	    1.0	 0.007	0.0002
-        3250	    1.0	 0.0014	0.000007
-     */
-    map<int, KMap> LightInstance::K_VALUE_MAP
-    {
-        pair<int,KMap>(7,    KMap{1.0f, 0.7f,    1.8f}),
-        pair<int,KMap>(13,   KMap{1.0f,	0.35f,   0.44f}),
-        pair<int,KMap>(20,   KMap{1.0f,	0.22f,   0.20f}),
-        pair<int,KMap>(32,   KMap{1.0f,	0.14f,   0.07f}),
-        pair<int,KMap>(50,   KMap{1.0f,	0.09f,   0.032f}),
-        pair<int,KMap>(65,   KMap{1.0f,	0.07f,   0.017f}),
-        pair<int,KMap>(100,  KMap{1.0f,	0.045f,  0.0075f}),
-        pair<int,KMap>(160,  KMap{1.0f,	0.027f,  0.0028f}),
-        pair<int,KMap>(200,  KMap{1.0f,	0.022f,  0.0019f}),
-        pair<int,KMap>(325,  KMap{1.0f,	0.014f,  0.0007f}),
-        pair<int,KMap>(600,  KMap{1.0f,	0.007f,  0.0002f}),
-        pair<int,KMap>(3250, KMap{1.0f,	0.0014f, 0.000007f})
-    };
-
 } // End of Dream

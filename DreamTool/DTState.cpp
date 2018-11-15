@@ -9,6 +9,7 @@ namespace DreamTool
            luaDebugWindow(LuaDebugWindow(this)),
            sceneStateWindow(SceneStateWindow(this)),
            gridPropertiesWindow(GridPropertiesWindow(this)),
+           scriptEditorWindow(ScriptEditorWindow(this)),
            menuBar(MenuBar(this)),
            grid(Grid(this)),
            lightViewer(LightViewer(this)),
@@ -47,6 +48,8 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&sceneStateWindow);
         windowComponent.addImGuiWidget(&menuBar);
         windowComponent.addImGuiWidget(&gridPropertiesWindow);
+        windowComponent.addImGuiWidget(&scriptEditorWindow);
+
         // GL Widgets
         grid.init();
         lightViewer.init();
@@ -112,7 +115,7 @@ namespace DreamTool
                     if (!io.WantCaptureMouse)
                     {
 #ifdef __APPLE__
-                        if (io.MouseDown[1])
+                        if (io.MouseDown[0])
                         {
                             camera->deltaYaw(io.MouseDelta.x*mouseScalar);
                             camera->deltaPitch(-io.MouseDelta.y*mouseScalar);

@@ -43,7 +43,7 @@ namespace Dream
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
         vector<SceneObjectRuntime*> getInstanceVector();
-        string getSource() const;
+        string& getSource();
         void setSource(string source);
 
         bool executeOnInit();

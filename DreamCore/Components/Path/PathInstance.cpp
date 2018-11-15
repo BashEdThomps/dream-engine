@@ -139,7 +139,7 @@ namespace Dream
         if (splineType == TS_CLAMPED)
         {
             tsDeBoorNet net1, net2, net3;
-            tsReal *result1, *result2, *result3;
+            tsReal *result1 = nullptr, *result2 = nullptr, *result3 = nullptr;
             tsReal *knots;
 
             /* draw spline */

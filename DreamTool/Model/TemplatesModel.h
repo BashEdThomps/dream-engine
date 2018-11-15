@@ -6,11 +6,11 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    class TemplatesDirectoryModel : public DreamObject
+    class TemplatesModel : public DreamObject
     {
     public:
-        TemplatesDirectoryModel();
-        ~TemplatesDirectoryModel();
+        TemplatesModel();
+        ~TemplatesModel();
 
         vector<string> getTemplateNames(AssetType t);
         string getTemplate(AssetType t, string templateName, string format);

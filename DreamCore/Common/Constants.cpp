@@ -81,7 +81,7 @@ namespace Dream
 
     // Misc =====================================================================
     const string Constants::DIR_PATH_SEP = "/";
-    const string Constants::DREAM_TOOL_DIR = ".dreamtool";
+    const string Constants::DIR_PATH_SEP_WINDOWS = "\\";
     const string Constants::PATH_DELIMETER = "::";
     const string Constants::HTTP_ARG = "--http";
 

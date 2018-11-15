@@ -1,8 +1,9 @@
-#include "TemplatesDirectoryModel.h"
+#include "TemplatesModel.h"
 #include <sstream>
 
-namespace DreamTool{
-    TemplatesDirectoryModel::TemplatesDirectoryModel
+namespace DreamTool
+{
+    TemplatesModel::TemplatesModel
     ()
         :DreamObject ("TemplatesDirectoryModel"),
           mBaseDir("./templates")
@@ -10,13 +11,13 @@ namespace DreamTool{
 
     }
 
-    TemplatesDirectoryModel::~TemplatesDirectoryModel()
+    TemplatesModel::~TemplatesModel()
     {
 
     }
 
     vector<string>
-    TemplatesDirectoryModel::getTemplateNames
+    TemplatesModel::getTemplateNames
     (AssetType t)
     {
        auto path = getTemplatesDirectory(t);
@@ -25,7 +26,7 @@ namespace DreamTool{
     }
 
     string
-    TemplatesDirectoryModel::getTemplate
+    TemplatesModel::getTemplate
     (AssetType t, string templateName, string format)
     {
         auto log = getLog();
@@ -41,7 +42,7 @@ namespace DreamTool{
     }
 
     string
-    TemplatesDirectoryModel::getTemplatesDirectory
+    TemplatesModel::getTemplatesDirectory
     (AssetType t)
     {
         stringstream ss;

@@ -18,8 +18,26 @@ namespace DreamTool
 
     void GridPropertiesWindow::draw()
     {
-        ImGui::Begin("Grid Properties");
+        ImGui::Begin("Tools");
+
+        ImGui::Text("Selection");
+        bool highlightSelected = !mState->selectionHighlighter.getHidden();
+        if (ImGui::Checkbox("Highlight Selected",&highlightSelected))
+        {
+            mState->selectionHighlighter.setHidden(!highlightSelected);
+        }
+        ImGui::Separator();
+
         ImGui::Text("Cursor");
+
+        bool showCursor = !mState->cursor.getHidden();
+        if(ImGui::Checkbox("Show Cursor",&showCursor))
+        {
+           mState->cursor.setHidden(!showCursor);
+        }
+
+        ImGui::SameLine();
+
         static bool snapToGrid = true;
         ImGui::Checkbox("Snap to Grid",&snapToGrid);
         ImGui::PushItemWidth(-1);

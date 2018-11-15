@@ -25,6 +25,8 @@ namespace Dream
     (ProjectDefinition* pd, json js)
         : IAssetDefinition(pd,js) {}
 
+    LightDefinition::~LightDefinition(){}
+
     void
     LightDefinition::setDiffuse
     (vec3 diffuse)
@@ -116,37 +118,6 @@ namespace Dream
         specular.g = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN]);
         specular.b = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]);
         return specular;
-    }
-
-    void LightDefinition::setDirection(vec3 direction)
-    {
-        if (mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION] = json::object();
-        }
-        mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::X] = direction.x;
-        mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Y] = direction.y;
-        mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Z] = direction.z;
-
-    }
-
-    vec3
-    LightDefinition::getDirection
-    ()
-    {
-        vec3 direction;
-        if (mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION]=json::object();
-            mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::X] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Y] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Z] = 0.0f;
-        }
-        direction.x = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::X]);
-        direction.y = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Y]);
-        direction.z = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIRECTION][Constants::Z]);
-        return direction;
-
     }
 
     void LightDefinition::setType(LightType type)
@@ -369,53 +340,5 @@ namespace Dream
         auto current = getSpecular();
         current.r = specularRed;
         setSpecular(current);
-    }
-
-    float
-    LightDefinition::getDirectionX
-    ()
-    {
-       return getDirection().x;
-    }
-
-    void
-    LightDefinition::setDirectionX
-    (float dir)
-    {
-       auto current = getDirection();
-       current.x = dir;
-       setDirection(current);
-    }
-
-    float
-    LightDefinition::getDirectionY
-    ()
-    {
-       return getDirection().y;
-    }
-
-    void
-    LightDefinition::setDirectionY
-    (float dir)
-    {
-       auto current = getDirection();
-       current.y = dir;
-       setDirection(current);
-    }
-
-    float
-    LightDefinition::getDirectionZ
-    ()
-    {
-        return getDirection().z;
-    }
-
-    void
-    LightDefinition::setDirectionZ
-    (float dir)
-    {
-       auto current = getDirection();
-       current.z = dir;
-       setDirection(current);
     }
 }

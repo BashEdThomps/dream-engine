@@ -262,7 +262,7 @@ TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPositi
 		
 		// First we find the hovered column coord.
 		while ( mTextStart + cumulatedStringWidth[0] < local.x &&
-			    columnCoord < line.size())
+			    (size_t)columnCoord < line.size())
 		{		
 			cumulatedStringWidth[1] = cumulatedStringWidth[0]; 
 			cumulatedString += line[columnCoord].mChar;
@@ -273,7 +273,7 @@ TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPositi
 
 		// Then we reduce by 1 column coord if cursor is on the left side of the hovered column.
 		if( mTextStart + cumulatedStringWidth[0] - columnWidth / 2.0f > local.x)
-			columnCoord = std::max(0, --columnCoord);
+			columnCoord = std::max(0, columnCoord - 1);
 	}
 
 	return SanitizeCoordinates(Coordinates(lineNo, columnCoord));
@@ -337,7 +337,7 @@ void TextEditor::RemoveLine(int aStart, int aEnd)
 {
 	assert(!mReadOnly);
 	assert(aEnd >= aStart);
-	assert(mLines.size() > aEnd - aStart);
+	assert(mLines.size() > (size_t)(aEnd - aStart));
 	
 	ErrorMarkers etmp;
 	for (auto& i : mErrorMarkers)
@@ -465,11 +465,11 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 		io.WantCaptureKeyboard = true;
 		io.WantTextInput = true;
 
-		if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed('Z'))
+		if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Z)))
 			Undo();
 		else if (!IsReadOnly() && !ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Backspace)))
 			Undo();
-		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed('Y'))
+		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Y)))
 			Redo();
 		else if (!ctrl && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow)))
 			MoveUp(1, shift);
@@ -495,17 +495,17 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 			Delete();
 		else if (!IsReadOnly() && !ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Backspace)))
 			BackSpace();
-		else if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(45))
+		else if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Insert)))
 			mOverwrite ^= true;
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(45))
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Insert)))
 			Copy();
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed('C'))
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_C)))
 			Copy();
-		else if (!IsReadOnly() && !ctrl && shift && !alt && ImGui::IsKeyPressed(45))
+		else if (!IsReadOnly() && !ctrl && shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Insert)))
 			Paste();
-		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed('V'))
+		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)))
 			Paste();
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed('X'))
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_X)))
 			Cut();
 		else if (!ctrl && shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
 			Cut();
@@ -825,7 +825,7 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 void TextEditor::SetText(const std::string & aText)
 {
 	mLines.clear();
-	mLines.push_back(Line());
+	mLines.emplace_back(Line());
 	for (auto chr : aText)
 	{
 		if (chr == '\r')
@@ -833,14 +833,43 @@ void TextEditor::SetText(const std::string & aText)
 			// ignore the carriage return character
 		}
 		else if (chr == '\n')
-			mLines.push_back(Line());
+			mLines.emplace_back(Line());
 		else
 		{
-			mLines.back().push_back(Glyph(chr, PaletteIndex::Default));
+			mLines.back().emplace_back(Glyph(chr, PaletteIndex::Default));
 		}
 
 		mTextChanged = true;
 	}
+
+	mUndoBuffer.clear();
+
+	Colorize();
+}
+
+void TextEditor::SetTextLines(const std::vector<std::string> & aLines)
+{
+	mLines.clear();
+	
+	if (aLines.empty())
+	{
+		mLines.emplace_back(Line());
+	}
+	else
+	{
+		mLines.resize(aLines.size());
+		
+		for (size_t i = 0; i < aLines.size(); ++i)
+		{
+			const std::string & aLine = aLines[i];
+			
+			mLines[i].reserve(aLine.size());
+			for (size_t j = 0; j < aLine.size(); ++j)
+				mLines[i].emplace_back(Glyph(aLine[j], PaletteIndex::Default));
+		}
+	}
+
+	mTextChanged = true;
 
 	mUndoBuffer.clear();
 
@@ -1027,7 +1056,7 @@ void TextEditor::SetSelection(const Coordinates & aStart, const Coordinates & aE
 	case TextEditor::SelectionMode::Line:
 	{
 		const auto lineNo = mState.mSelectionEnd.mLine;
-		const auto lineSize = lineNo < mLines.size() ? mLines[lineNo].size() : 0;
+		const auto lineSize = (size_t)lineNo < mLines.size() ? mLines[lineNo].size() : 0;
 		mState.mSelectionStart = Coordinates(mState.mSelectionStart.mLine, 0);
 		mState.mSelectionEnd = Coordinates(lineNo, (int) lineSize);
 		break;
@@ -1627,6 +1656,27 @@ std::string TextEditor::GetText() const
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
 }
 
+std::vector<std::string> TextEditor::GetTextLines() const
+{
+	std::vector<std::string> result;
+	
+	result.reserve(mLines.size());
+	
+	for (auto & line : mLines)
+	{
+		std::string text;
+		
+		text.resize(line.size());
+		
+		for (size_t i = 0; i < line.size(); ++i)
+			text[i] = line[i].mChar;
+		
+		result.emplace_back(std::move(text));
+	}
+	
+	return result;
+}
+
 std::string TextEditor::GetSelectedText() const
 {
 	return GetText(mState.mSelectionStart, mState.mSelectionEnd);
@@ -1755,7 +1805,7 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 					preproc = true;
 				}
 				
-				for (int j = 0; j < token_length; ++j)
+				for (size_t j = 0; j < token_length; ++j)
 					line[(token_begin - bufferBegin) + j].mColorIndex = token_color;
 				
 				first = token_end;
@@ -2202,6 +2252,8 @@ static bool TokenizeCStyleNumber(const char * in_begin, const char * in_end, con
 
 static bool TokenizeCStylePunctuation(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
 {
+	(void)in_end;
+
 	switch (*in_begin)
 	{
 		case '[':

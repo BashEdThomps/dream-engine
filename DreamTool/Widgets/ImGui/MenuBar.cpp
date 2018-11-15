@@ -286,9 +286,10 @@ namespace DreamTool
         }
 
         static ImGuiFs::Dialog newDlg;
-        newDlg.chooseFolderDialog(newButtonClicked);
+        newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
         if (strlen(newDlg.getChosenPath())>0)
         {
+            mState->lastDirectory = newDlg.getChosenPath();
             /*
                 auto path = newDlg.getChosenPath();
                 ProjectDirectoryModel dirModel();
@@ -298,10 +299,11 @@ namespace DreamTool
 
         bool openProjectFailed = false;
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked);
+        const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked,mState->lastDirectory.c_str());
         if (strlen(chosenPath) > 0)
         {
             auto projectDir = openDlg.getChosenPath();
+            mState->lastDirectory = projectDir;
             log->error("Opening project {}",projectDir);
             if(mState->project->openFromDirectory(projectDir))
             {

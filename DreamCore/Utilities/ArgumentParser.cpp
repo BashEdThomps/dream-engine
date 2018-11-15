@@ -89,11 +89,6 @@ namespace Dream
             nextArg = nullptr;
         }
 
-        if (mDreamPath.size() == 0)
-        {
-            mDreamPath = Environment::getHomeDirectory() + Constants::PROJECT_PATH_SEP + Constants::DREAM_TOOL_DIR;
-        }
-
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
         log->debug( "Got Project Path {}" , mProjectPath );
