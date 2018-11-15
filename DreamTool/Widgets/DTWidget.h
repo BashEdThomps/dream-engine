@@ -21,11 +21,11 @@ namespace DreamTool
         virtual ~DTWidget();
         virtual void draw() = 0;
 
-        bool getHidden() const;
-        void setHidden(bool hidden);
+        bool getVisible() const;
+        void setVisible(bool hidden);
 
     protected:
         DTState* mState;
-        bool mHidden;
+        bool mVisible;
     };
 }

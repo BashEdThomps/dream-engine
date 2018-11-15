@@ -10,7 +10,7 @@ namespace DreamTool
           mScriptDefinition(nullptr)
     {
         setLogClassName("ScriptEditorWidget");
-        //mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
+        mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
     }
 
     ScriptEditorWindow::~ScriptEditorWindow
@@ -28,20 +28,15 @@ namespace DreamTool
             return;
         }
 
-        ImGui::Begin("Script Editor");
+        ImGui::Begin("Script Editor",&mVisible);
         auto log = getLog();
         auto projRunt = mState->project->getProjectRuntime();
         ScriptInstance* scriptInst = nullptr;
-        if (projRunt)
         {
             auto scriptCache = projRunt->getScriptCache();
             if (scriptCache)
             {
                 scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(mScriptDefinition));
-                if (scriptInst)
-                {
-                    mTextEditor.SetText(scriptInst->getSource());
-                }
             }
         }
 
@@ -50,6 +45,8 @@ namespace DreamTool
             if(scriptInst)
             {
                 ProjectDirectory pd(mState->project);
+                auto currentText = mTextEditor.GetText();
+                scriptInst->setSource(currentText);
                 string source = scriptInst->getSource();
                 vector<char> data(source.begin(),source.end());
                 pd.writeAssetData(mScriptDefinition,data,Constants::ASSET_FORMAT_SCRIPT_LUA);
@@ -76,7 +73,6 @@ namespace DreamTool
             mTextEditor.CanUndo() ? "*" : " ",
             mTextEditor.GetLanguageDefinition().mName.c_str(),
             mScriptDefinition->getNameAndUuidString().c_str());
-
         mTextEditor.Render("Text Editor");
         ImGui::PopFont();
 
@@ -102,6 +98,7 @@ namespace DreamTool
                    if (scriptInst)
                    {
                        scriptInst->setSource(templateStr);
+                       setScriptDefinition(mScriptDefinition);
                    }
                    else
                    {
@@ -131,9 +128,8 @@ namespace DreamTool
                 scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(mScriptDefinition));
                 if (scriptInst)
                 {
-                    mContent = scriptInst->getSource();
                     mTextEditor.SetReadOnly(false);
-                    mTextEditor.SetText(mContent);
+                    mTextEditor.SetText(scriptInst->getSource());
                 }
             }
         }

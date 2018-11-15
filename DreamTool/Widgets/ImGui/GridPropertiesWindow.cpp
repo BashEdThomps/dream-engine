@@ -18,22 +18,22 @@ namespace DreamTool
 
     void GridPropertiesWindow::draw()
     {
-        ImGui::Begin("Tools");
+        ImGui::Begin("Tools",&mVisible);
 
         ImGui::Text("Selection");
-        bool highlightSelected = !mState->selectionHighlighter.getHidden();
+        bool highlightSelected = mState->selectionHighlighter.getVisible();
         if (ImGui::Checkbox("Highlight Selected",&highlightSelected))
         {
-            mState->selectionHighlighter.setHidden(!highlightSelected);
+            mState->selectionHighlighter.setVisible(highlightSelected);
         }
         ImGui::Separator();
 
         ImGui::Text("Cursor");
 
-        bool showCursor = !mState->cursor.getHidden();
+        bool showCursor = mState->cursor.getVisible();
         if(ImGui::Checkbox("Show Cursor",&showCursor))
         {
-           mState->cursor.setHidden(!showCursor);
+           mState->cursor.setVisible(showCursor);
         }
 
         ImGui::SameLine();
@@ -51,10 +51,10 @@ namespace DreamTool
 
         ImGui::Separator();
 
-        bool showGrid = !mState->grid.getHidden();
+        bool showGrid = mState->grid.getVisible();
         if (ImGui::Checkbox("Show Grid",&showGrid))
         {
-            mState->grid.setHidden(!showGrid);
+            mState->grid.setVisible(showGrid);
         }
 
         ImGui::Separator();
@@ -127,9 +127,6 @@ namespace DreamTool
             mState->cursor.onAxisPairChanged(ap);
             mState->grid.recalculateGridLines();
         }
-
-
-
         ImGui::End();
     }
 }

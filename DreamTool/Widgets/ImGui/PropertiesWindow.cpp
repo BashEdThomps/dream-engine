@@ -27,7 +27,7 @@ namespace DreamTool
     PropertiesWindow::draw
     ()
     {
-        ImGui::Begin("Properties");
+        ImGui::Begin("Properties",&mVisible);
         if(ImGui::Button("<- Back"))
         {
             popPropertyTarget();
@@ -1764,11 +1764,13 @@ namespace DreamTool
         auto log = getLog();
         auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
 
+        ImGui::PushItemWidth(-1);
         if(ImGui::Button("Open Script Editor..."))
         {
             mState->scriptEditorWindow.setScriptDefinition(scriptDef);
-            mState->scriptEditorWindow.setHidden(false);
+            mState->scriptEditorWindow.setVisible(true);
         }
+        ImGui::PopItemWidth();
     }
 
     void
@@ -1776,10 +1778,6 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-
-        char vertBuf[BigEditorBufferSize] = {0};
-        char fragBuf[BigEditorBufferSize] = {0};
-
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
         auto projRunt = mState->project->getProjectRuntime();
         ShaderInstance* shaderInst = nullptr;
@@ -1789,111 +1787,15 @@ namespace DreamTool
             if (shaderCache)
             {
                 shaderInst = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderDef));
-                if (shaderInst)
-                {
-                    strncpy(vertBuf,shaderInst->getVertexSource().c_str(),BigEditorBufferSize);
-                    strncpy(fragBuf,shaderInst->getFragmentSource().c_str(),BigEditorBufferSize);
-                }
             }
         }
-        vector<string> templates = mState->templatesModel.getTemplateNames(AssetType::SHADER);
-        static int currentTemplateIndex = -1;
-        ImGui::Columns(2);
-        if(ImGui::Button("Save"))
-        {
-           if (shaderInst)
-           {
-               ProjectDirectory pd(mState->project);
-
-               string vSource = shaderInst->getVertexSource();
-               string fSource = shaderInst->getFragmentSource();
-
-               vector<char> vData(vSource.begin(),vSource.end());
-               vector<char> fData(fSource.begin(),fSource.end());
-
-               pd.writeAssetData(shaderDef,vData,Constants::SHADER_VERTEX_FILE_NAME);
-               pd.writeAssetData(shaderDef,fData,Constants::SHADER_FRAGMENT_FILE_NAME);
-           }
-        }
-
-        ImGui::NextColumn();
-
-        ImGui::Button("Revert");
-
-        ImGui::Columns(1);
-
-        if(StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
-        {
-            ImGui::OpenPopup("Load From Template?");
-        }
-
-        ImGui::Separator();
-
-        ImGui::Columns(2);
-        ImGui::Text("Vertex Shader");
         ImGui::PushItemWidth(-1);
-        ImGui::PushFont(DTWindowComponent::MonoFont);
-        if(ImGui::InputTextMultiline("##Vertex Shader",vertBuf,BigEditorBufferSize,mBigEditorSize))
+        if(ImGui::Button("Open Shader Editor..."))
         {
-            if (shaderInst)
-            {
-                shaderInst->setVertexSource(&vertBuf[0]);
-            }
+            mState->shaderEditorWindow.setShaderDefinition(shaderDef);
+            mState->shaderEditorWindow.setVisible(true);
         }
-        ImGui::PopFont();
         ImGui::PopItemWidth();
-
-        ImGui::NextColumn();
-
-        ImGui::Text("Fragment Shader");
-        ImGui::PushItemWidth(-1);
-        ImGui::PushFont(DTWindowComponent::MonoFont);
-        if(ImGui::InputTextMultiline("##Fragment Shader",fragBuf,BigEditorBufferSize,mBigEditorSize))
-        {
-            if (shaderInst)
-            {
-                shaderInst->setFragmentSource(&fragBuf[0]);
-            }
-        }
-        ImGui::PopFont();
-        ImGui::PopItemWidth();
-        ImGui::Columns(1);
-
-        if(ImGui::BeginPopupModal("Load From Template?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Load Shader from template?\n\nThis will replace the existing Shader.\n\n");
-            if (ImGui::Button("Cancel"))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Load Template"))
-            {
-                if (currentTemplateIndex < 0)
-                {
-                    log->error("Cannot load template {}",currentTemplateIndex);
-                }
-                else
-                {
-                    auto  templateName = templates.at(currentTemplateIndex);
-                    string vertTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
-                    string fragTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
-                    if (shaderInst)
-                    {
-                        shaderInst->setVertexSource(vertTemplate);
-                        shaderInst->setFragmentSource(fragTemplate);
-                    }
-                    else
-                    {
-                        log->error("Cannot set template, shader is null");
-                    }
-                    currentTemplateIndex = -1;
-                }
-               ImGui::CloseCurrentPopup();
-            }
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
-        }
     }
 
     void

@@ -13,6 +13,7 @@
 #include "Widgets/ImGui/SceneStateWindow.h"
 #include "Widgets/ImGui/GridPropertiesWindow.h"
 #include "Widgets/ImGui/ScriptEditorWindow.h"
+#include "Widgets/ImGui/ShaderEditorWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
@@ -41,6 +42,7 @@ namespace DreamTool
         SceneStateWindow sceneStateWindow;
         GridPropertiesWindow gridPropertiesWindow;
         ScriptEditorWindow scriptEditorWindow;
+        ShaderEditorWindow shaderEditorWindow;
         MenuBar menuBar;
         // GL Widgets
         Grid grid;

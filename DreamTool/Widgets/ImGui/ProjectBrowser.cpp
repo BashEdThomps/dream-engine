@@ -26,7 +26,7 @@ namespace DreamTool
     ProjectBrowser::draw
     ()
     {
-        ImGui::Begin("Project Browser");
+        ImGui::Begin("Project Browser",&mVisible);
         drawProjectTree();
         ImGui::Separator();
         drawAssetTree();

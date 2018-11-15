@@ -60,28 +60,28 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("View"))
             {
-                bool showProjectBrowser = !mState->projectBrowser.getHidden();
+                bool showProjectBrowser = mState->projectBrowser.getVisible();
                 if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
                 {
-                    mState->projectBrowser.setHidden(!showProjectBrowser);
+                    mState->projectBrowser.setVisible(showProjectBrowser);
                 }
 
-                bool showPropertiesWindow = !mState->propertiesWindow.getHidden();
+                bool showPropertiesWindow = mState->propertiesWindow.getVisible();
                 if(ImGui::Checkbox("Properties Window",&showPropertiesWindow))
                 {
-                   mState->propertiesWindow.setHidden(!showPropertiesWindow);
+                   mState->propertiesWindow.setVisible(showPropertiesWindow);
                 }
 
-                bool showSceneStatesWindow = !mState->sceneStateWindow.getHidden();
+                bool showSceneStatesWindow = mState->sceneStateWindow.getVisible();
                 if (ImGui::Checkbox("Scene States",&showSceneStatesWindow))
                 {
-                   mState->sceneStateWindow.setHidden(!showSceneStatesWindow);
+                   mState->sceneStateWindow.setVisible(showSceneStatesWindow);
                 }
 
-                bool showGridPropsWindow = !mState->gridPropertiesWindow.getHidden();
+                bool showGridPropsWindow = mState->gridPropertiesWindow.getVisible();
                 if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
                 {
-                   mState->gridPropertiesWindow.setHidden(!showGridPropsWindow);
+                   mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
                 }
 
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
@@ -219,10 +219,10 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("Debug"))
             {
-                auto showLuaDebug = !mState->luaDebugWindow.getHidden();
+                auto showLuaDebug = mState->luaDebugWindow.getVisible();
                 if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
                 {
-                    mState->luaDebugWindow.setHidden(!showLuaDebug);
+                    mState->luaDebugWindow.setVisible(showLuaDebug);
                 }
 
                 if (pRuntime)
@@ -236,7 +236,6 @@ namespace DreamTool
                            active->setPhysicsDebug(physicsDebug);
                            dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
                        }
-
                     }
                 }
 

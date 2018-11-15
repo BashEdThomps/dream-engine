@@ -13,18 +13,25 @@ namespace DreamTool
     (DTState* state)
     : DreamObject("DTWidget"),
       mState(state),
-      mHidden(false)
+      mVisible(true)
     {}
 
-    DTWidget::~DTWidget() {}
+    DTWidget::~DTWidget
+    ()
+    {}
 
-    bool DTWidget::getHidden() const
+    bool
+    DTWidget::getVisible
+    ()
+    const
     {
-        return mHidden;
+        return mVisible;
     }
 
-    void DTWidget::setHidden(bool hidden)
+    void
+    DTWidget::setVisible
+    (bool v)
     {
-        mHidden = hidden;
+        mVisible = v;
     }
 }

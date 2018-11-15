@@ -8,7 +8,7 @@ namespace DreamTool
         LuaPrintListener()
     {
         setLogClassName("LuaDebugWindow");
-        mHidden = true;
+        mVisible = false;
     }
 
     LuaDebugWindow::~LuaDebugWindow
@@ -21,7 +21,7 @@ namespace DreamTool
     LuaDebugWindow::draw
     ()
     {
-        ImGui::Begin("Lua Debug Output");
+        ImGui::Begin("Lua Debug Output",&mVisible);
 
         if(ImGui::Button("Clear"))
         {

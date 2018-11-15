@@ -20,7 +20,7 @@ namespace DreamTool
     SceneStateWindow::draw
     ()
     {
-        ImGui::Begin("Scene States");
+        ImGui::Begin("Scene States",&mVisible);
         ImGui::Columns(2);
         ImGui::Text("Scene");
         ImGui::NextColumn();

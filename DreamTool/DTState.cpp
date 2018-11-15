@@ -10,6 +10,7 @@ namespace DreamTool
            sceneStateWindow(SceneStateWindow(this)),
            gridPropertiesWindow(GridPropertiesWindow(this)),
            scriptEditorWindow(ScriptEditorWindow(this)),
+           shaderEditorWindow(ShaderEditorWindow(this)),
            menuBar(MenuBar(this)),
            grid(Grid(this)),
            lightViewer(LightViewer(this)),
@@ -49,6 +50,7 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&menuBar);
         windowComponent.addImGuiWidget(&gridPropertiesWindow);
         windowComponent.addImGuiWidget(&scriptEditorWindow);
+        windowComponent.addImGuiWidget(&shaderEditorWindow);
 
         // GL Widgets
         grid.init();

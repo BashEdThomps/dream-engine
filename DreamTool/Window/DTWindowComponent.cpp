@@ -232,7 +232,7 @@ namespace DreamTool
     {
         for (GLWidget* widget : mGLWidgets)
         {
-            if(!widget->getHidden())
+            if(widget->getVisible())
             {
                 widget->draw();
             }
@@ -250,7 +250,7 @@ namespace DreamTool
         // Rendering
         for (ImGuiWidget* widget : mImGuiWidgets)
         {
-            if (!widget->getHidden())
+            if (widget->getVisible())
             {
                 widget->draw();
             }

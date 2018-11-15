@@ -17,6 +17,5 @@ namespace DreamTool
     private:
         ScriptDefinition* mScriptDefinition;
         TextEditor mTextEditor;
-        string mContent;
     };
 }
