@@ -31,7 +31,7 @@ namespace Dream
     class ModelMesh;
     class ShaderInstance;
     class MaterialDefinition;
-	class TextureInstance;
+    class TextureInstance;
 
     class MaterialInstance : public IAssetInstance
     {
@@ -48,7 +48,6 @@ namespace Dream
         void draw();
 
         bool load(string) override;
-        void loadExtraAttributes(nlohmann::json) override;
 
         TextureInstance* getDiffuseTexture() const;
         void setDiffuseTexture(TextureInstance* diffuseTexture);

@@ -81,15 +81,15 @@ namespace Dream
         void setFreeMode(bool freemode);
         void orbit(vec3,float elevation, float radius, float pitch, float yaw);
 
-        void flyForward(float speed);
-        void flyBackward(float speed);
-        void flyLeft(float speed);
-        void flyRight(float speed);
-        void flyUp(float speed);
-        void flyDown(float speed);
-        void flyX(float speed);
-        void flyY(float speed);
-        void flyZ(float speed);
+        void flyForward();
+        void flyBackward();
+        void flyLeft();
+        void flyRight();
+        void flyUp();
+        void flyDown();
+        void flyX();
+        void flyY();
+        void flyZ();
 
         void deltaPitch(float pitch);
         void deltaYaw(float yaw);

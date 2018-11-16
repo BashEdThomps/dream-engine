@@ -22,6 +22,8 @@
 #include "../SceneRuntime.h"
 #include "../../Components/Event.h"
 #include "../../Components/Path/PathInstance.h"
+#include "../../Components/Animation/AnimationDefinition.h"
+#include "../../Components/Animation/AnimationInstance.h"
 #include "../../Components/Audio/AudioInstance.h"
 #include "../../Components/Audio/AudioComponent.h"
 #include "../../Components/Graphics/Model/ModelInstance.h"
@@ -58,6 +60,7 @@ namespace Dream
         SceneObjectDefinition* sd,
         SceneRuntime* sr
     ):  IRuntime(sd, sd->getName(), sd->getUuid()),
+        mAnimationInstance(nullptr),
         mAudioInstance(nullptr),
         mLightInstance(nullptr),
         mParticleEmitterInstance(nullptr),
@@ -96,6 +99,7 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
+        removeAnimationInstance();
         removeAudioInstance();
         removeLightInstance();
         removeModelInstance();
@@ -108,6 +112,17 @@ namespace Dream
         {
             delete mCurrentTransform;
             mCurrentTransform = nullptr;
+        }
+    }
+
+    void
+    SceneObjectRuntime::removeAnimationInstance
+    ()
+    {
+        if (mAnimationInstance != nullptr)
+        {
+            delete mAnimationInstance;
+            mAnimationInstance = nullptr;
         }
     }
 
@@ -137,10 +152,8 @@ namespace Dream
     SceneObjectRuntime::removeModelInstance
     ()
     {
-        auto log = getLog();
         if (mModelInstance != nullptr)
         {
-            log->info("Deleting ModelInstance for {}",getNameAndUuidString());
             mModelInstance->removeInstance(this);
         }
     }
@@ -198,6 +211,13 @@ namespace Dream
         }
     }
 
+    AnimationInstance*
+    SceneObjectRuntime::getAnimationInstance
+    ()
+    {
+        return mAnimationInstance;
+    }
+
     PathInstance*
     SceneObjectRuntime::getPathInstance
     ()
@@ -246,6 +266,8 @@ namespace Dream
     {
        switch (type)
        {
+           case Dream::ANIMATION:
+               return getAnimationInstance();
            case Dream::PATH:
                return getPathInstance();
            case Dream::AUDIO:
@@ -264,6 +286,13 @@ namespace Dream
                break;
        }
        return nullptr;
+    }
+
+    bool
+    SceneObjectRuntime::hasAnimationInstance
+    ()
+    {
+        return mAnimationInstance != nullptr;
     }
 
     bool
@@ -495,6 +524,9 @@ namespace Dream
             bool result = false;
             switch (assetPair.first)
             {
+                case AssetType::ANIMATION:
+                    result = createAnimationInstance(dynamic_cast<AnimationDefinition*>(def));
+                    break;
                 case AssetType::AUDIO:
                     result = createAudioInstance(dynamic_cast<AudioDefinition*>(def));
                     break;
@@ -582,6 +614,8 @@ namespace Dream
         }
         switch (type)
         {
+            case AssetType::ANIMATION:
+                return createAnimationInstance(dynamic_cast<AnimationDefinition*>(def));
             case AssetType::AUDIO:
                 return createAudioInstance(dynamic_cast<AudioDefinition*>(def));
             case AssetType::LIGHT:
@@ -620,6 +654,17 @@ namespace Dream
         SceneObjectRuntime::createParticleEmitterInstance(ParticleEmitterDefinition *)
     {
         return false;
+    }
+
+    bool
+    SceneObjectRuntime::createAnimationInstance
+    (AnimationDefinition* definition)
+    {
+        auto log = getLog();
+        log->trace( "Creating Animation asset instance." );
+        removePathInstance();
+        mAnimationInstance = new AnimationInstance(definition,this);
+        return mAnimationInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
     bool
@@ -858,8 +903,6 @@ namespace Dream
         }
         return true;
     }
-
-
 
     bool
     SceneObjectRuntime::getFollowsCamera

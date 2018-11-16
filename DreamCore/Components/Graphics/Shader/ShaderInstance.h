@@ -105,7 +105,6 @@ namespace Dream
         static void InvalidateState();
 
         bool load(string) override;
-        void loadExtraAttributes(json) override;
 
         void use();
         void unbind();

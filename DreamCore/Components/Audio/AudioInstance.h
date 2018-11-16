@@ -79,8 +79,6 @@ namespace Dream
         void pause();
         void stop();
 
-        void loadExtraAttributes(nlohmann::json) override;
-        void loadSpectrumAnalyser();
         void setSourcePosision(glm::vec3 pos);
         long long getStartTime() const;
         void setStartTime(long long startTime);

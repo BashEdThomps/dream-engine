@@ -61,13 +61,6 @@ namespace Dream
     }
 
     void
-    ScriptInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
-
-    }
-
-    void
     ScriptInstance::addInstance
     (SceneObjectRuntime* sor)
     {

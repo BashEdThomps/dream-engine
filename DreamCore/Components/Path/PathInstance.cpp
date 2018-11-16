@@ -75,8 +75,6 @@ namespace Dream
             return true;
         }
 
-        loadExtraAttributes(mDefinition->getJson());
-
         mUStep = 1.0/(animDef->numberOfControlPoints()*animDef->getStepScalar());
 
         if (animDef->numberOfControlPoints() >= SPLINE_DIMENSIONS)
@@ -193,11 +191,6 @@ namespace Dream
         }
 
         log->debug("Finished Loading spline for {}",getNameAndUuidString());
-    }
-
-    void PathInstance::loadExtraAttributes(nlohmann::json)
-    {
-
     }
 
     vector<pair<vec3, vec3> > PathInstance::getSplineDerivatives() const

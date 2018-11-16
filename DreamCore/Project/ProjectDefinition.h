@@ -62,6 +62,7 @@ namespace Dream
         void showStatus() override;
         size_t countAssetDefinitions();
         IAssetDefinition* getAssetDefinitionByUuid(string uuid);
+        IAssetDefinition* getAssetDefinitionByName(string name);
 
         size_t countScenesDefinitions();
         SceneDefinition* getSceneDefinitionByUuid(string uuid);
@@ -75,9 +76,6 @@ namespace Dream
         SceneDefinition* createNewSceneDefinition();
         IAssetDefinition* createNewAssetDefinition(AssetType type);
         map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
-        vector<ShaderDefinition*> getShaderDefinitionsVector();
-        vector<TextureDefinition*> getTextureDefinitionVector();
-        vector<MaterialDefinition*> getMaterialDefinitionVector();
 
         json getJson() override;
 

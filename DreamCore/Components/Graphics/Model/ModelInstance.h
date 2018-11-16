@@ -69,7 +69,6 @@ namespace Dream
 
         ~ModelInstance() override;
         bool load(string) override;
-        void loadExtraAttributes(json) override;
         BoundingBox& getBoundingBox();
         void setModelMatrix(mat4);
         mat4 getModelMatrix();

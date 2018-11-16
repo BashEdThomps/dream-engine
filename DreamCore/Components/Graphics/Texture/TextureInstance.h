@@ -59,7 +59,6 @@ namespace Dream
         bool operator==(const TextureInstance& other);
 
         bool load(string) override;
-        void loadExtraAttributes(nlohmann::json) override;
 
         GLuint getGLID() const;
         void setGLID(const GLuint& gLID);

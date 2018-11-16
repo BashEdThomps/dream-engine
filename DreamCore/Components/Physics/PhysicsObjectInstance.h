@@ -73,8 +73,6 @@ namespace Dream
         void setMass(float mass);
         void setAngularVelocity(float x, float y, float z);
     protected:
-        void loadExtraAttributes(json) override;
-        void loadExtraAttributes(json, IAssetDefinition*, bool);
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
     }; // End of PhysicsObjectInstance
 } // End of Dream

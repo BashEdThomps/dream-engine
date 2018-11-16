@@ -39,7 +39,6 @@ namespace Dream
         ~ScriptInstance() override;
         bool load(string) override;
         void update();
-        void loadExtraAttributes(nlohmann::json) override;
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
         vector<SceneObjectRuntime*> getInstanceVector();

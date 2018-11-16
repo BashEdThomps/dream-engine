@@ -78,7 +78,6 @@ namespace Dream
         ~LightInstance() override;
 
         bool load(string) override;
-        void loadExtraAttributes(json) override;
 
         vec3 getAmbient() const;
         void setAmbient(const vec3& ambient);

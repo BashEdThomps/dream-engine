@@ -22,6 +22,7 @@
 // Models
 #include "Model/TemplatesModel.h"
 #include "Model/PreferencesModel.h"
+#include "Model/ModelDefinitionBatchImporter.h"
 
 namespace Dream
 {
@@ -52,6 +53,7 @@ namespace DreamTool
         // Data Models
         TemplatesModel templatesModel;
         PreferencesModel preferencesModel;
+        ModelDefinitionBatchImporter modelDefinitionBatchImporter;
 
         int argc;
         char** argv;

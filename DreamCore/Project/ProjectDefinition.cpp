@@ -1,5 +1,5 @@
 /*
- * ProjectDefinition.cpp
+ * ProjectDefinition
  *
  * Created: 16 2017 by Ashley
  *
@@ -18,15 +18,11 @@
  */
 
 #include "ProjectDefinition.h"
-
 #include "Project.h"
-
 #include "../Scene/SceneDefinition.h"
-#include "../Utilities/Uuid.h"
-
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
-
+#include "../Components/Animation/AnimationDefinition.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
 #include "../Components/Graphics/Light/LightDefinition.h"
 #include "../Components/Graphics/Material/MaterialDefinition.h"
@@ -34,10 +30,10 @@
 #include "../Components/Graphics/Shader/ShaderDefinition.h"
 #include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "../Components/Graphics/Texture/TextureDefinition.h"
-
 #include "../Components/Path/PathDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
+#include "../Utilities/Uuid.h"
 
 namespace Dream
 {
@@ -182,6 +178,8 @@ namespace Dream
 
         switch (type)
         {
+            case ANIMATION:
+                return new AnimationDefinition(this, assetDefinitionJs);
             case AUDIO:
                 return new AudioDefinition(this, assetDefinitionJs);
             case FONT:
@@ -264,6 +262,20 @@ namespace Dream
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             if ((*it)->hasUuid(uuid))
+            {
+                return (*it);
+            }
+        }
+        return nullptr;
+    }
+
+    IAssetDefinition*
+    ProjectDefinition::getAssetDefinitionByName
+    (string name)
+    {
+        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
+        {
+            if ((*it)->hasName(name))
             {
                 return (*it);
             }
@@ -486,54 +498,6 @@ namespace Dream
             current++;
         }
         return handlesMap;
-    }
-
-    vector<ShaderDefinition*>
-    ProjectDefinition::getShaderDefinitionsVector
-    ()
-    {
-        vector<ShaderDefinition*> shaders;
-        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
-        {
-            IAssetDefinition* next = (*it);
-            if (next->getType() == Constants::ASSET_TYPE_SHADER)
-            {
-                shaders.push_back(dynamic_cast<ShaderDefinition*>(next));
-            }
-        }
-        return shaders;
-    }
-
-    vector<TextureDefinition*>
-    ProjectDefinition::getTextureDefinitionVector
-    ()
-    {
-        vector<TextureDefinition*> textures;
-        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
-        {
-            IAssetDefinition* next = (*it);
-            if (next->getType() == Constants::ASSET_TYPE_TEXTURE)
-            {
-                textures.push_back(dynamic_cast<TextureDefinition*>(next));
-            }
-        }
-        return textures;
-    }
-
-    vector<MaterialDefinition*>
-    ProjectDefinition::getMaterialDefinitionVector
-    ()
-    {
-        vector<MaterialDefinition*> materials;
-        for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
-        {
-            IAssetDefinition* next = (*it);
-            if (next->getType() == Constants::ASSET_TYPE_MATERIAL)
-            {
-                materials.push_back(dynamic_cast<MaterialDefinition*>(next));
-            }
-        }
-        return materials;
     }
 
     bool ProjectDefinition::getCaptureKeyboard()

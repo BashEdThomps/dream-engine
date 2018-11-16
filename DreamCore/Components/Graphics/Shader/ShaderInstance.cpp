@@ -327,14 +327,6 @@ namespace Dream
         }
     }
 
-    void
-    ShaderInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
-        // pass
-        return;
-    }
-
     // API Setters =============================================================
 
     void

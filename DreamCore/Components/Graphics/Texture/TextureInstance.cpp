@@ -97,10 +97,4 @@ namespace Dream
         return false;
     }
 
-    void
-    TextureInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
-    }
-
 }

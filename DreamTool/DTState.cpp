@@ -16,6 +16,7 @@ namespace DreamTool
            lightViewer(LightViewer(this)),
            selectionHighlighter(SelectionHighlighter(this)),
            cursor(Cursor(this)),
+           modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
            argc(_argc),
            argv(_argv)
      {
@@ -139,27 +140,27 @@ namespace DreamTool
                         {
                             if (ImGui::IsKeyDown(GLFW_KEY_W))
                             {
-                                camera->flyForward(1.0f);
+                                camera->flyForward();
                             }
                             if (ImGui::IsKeyDown(GLFW_KEY_S))
                             {
-                                camera->flyBackward(1.0f);
+                                camera->flyBackward();
                             }
                             if (ImGui::IsKeyDown(GLFW_KEY_A))
                             {
-                                camera->flyLeft(1.0f);
+                                camera->flyLeft();
                             }
                             if (ImGui::IsKeyDown(GLFW_KEY_D))
                             {
-                                camera->flyRight(1.0f);
+                                camera->flyRight();
                             }
                             if (ImGui::IsKeyDown(GLFW_KEY_Q))
                             {
-                                camera->flyDown(1.0f);
+                                camera->flyDown();
                             }
                             if (ImGui::IsKeyDown(GLFW_KEY_E))
                             {
-                                camera->flyUp(1.0f);
+                                camera->flyUp();
                             }
                         }
                         // Send to cursor

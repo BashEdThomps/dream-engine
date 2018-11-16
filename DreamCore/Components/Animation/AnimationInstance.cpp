@@ -14,39 +14,42 @@
 */
 
 
-#include "ParticleEmitterInstance.h"
+#include <algorithm>
 
-#include "ParticleEmitterDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "AnimationInstance.h"
+
+#include "../../Utilities/String.h"
+#include "../../deps/tinyspline/tinyspline.h"
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Dream
 {
-    ParticleEmitterInstance::ParticleEmitterInstance
-    (
-        ParticleEmitterDefinition* definition,
-        SceneObjectRuntime* transform
-    ) : IAssetInstance(definition,transform),
-        mColor(glm::vec3(0.0f,0.0f,0.0f)),
-        mIntensity(0.0f)
 
+    AnimationInstance::AnimationInstance
+    (
+        AnimationDefinition* definition,
+        SceneObjectRuntime* runtime
+    ) : IAssetInstance(definition,runtime)
     {
-        setLogClassName("ParticleEmitterInstance");
+        setLogClassName("AnimationInstance");
+        auto log = getLog();
+        log->trace("Constructing Object");
     }
 
-    ParticleEmitterInstance::~ParticleEmitterInstance
+    AnimationInstance::~AnimationInstance
     ()
     {
         auto log = getLog();
-        log->debug("Destroying Object" );
-        return;
+        log->trace("Destroying Object");
     }
 
     bool
-    ParticleEmitterInstance::load
-    (string projectDir)
+    AnimationInstance::load
+    (string)
     {
         mLoaded = true;
         return mLoaded;
     }
-
-} // End of Dream
+}

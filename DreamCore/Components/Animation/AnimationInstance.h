@@ -1,4 +1,6 @@
 /*
+ * AnimationInstance
+ *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -13,34 +15,22 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #pragma once
 
-#include "../../IAssetInstance.h"
-#include <glm/glm.hpp>
-
-using glm::vec3;
+#include "AnimationDefinition.h"
+#include "../IAssetInstance.h"
+#include "AnimationKeyframe.h"
 
 namespace Dream
 {
-    class ParticleEmitterDefinition;
-    class ParticleEmitterInstance : public IAssetInstance
+    class AnimationInstance : public IAssetInstance
     {
-        vec3 mColor;
-        float mIntensity;
 
     public:
-        ParticleEmitterInstance(
-            ParticleEmitterDefinition*,
-            SceneObjectRuntime*
-        );
-        ~ParticleEmitterInstance();
-
-        bool load(string);
-
-        vec3 getColor();
-        float getIntensity();
-
-    }; // End of ParticleEmitterInstance
-
-} // End of Dream
+        AnimationInstance(AnimationDefinition*, SceneObjectRuntime*);
+        ~AnimationInstance() override;
+        bool load(string) override;
+    private:
+        vector<AnimationKeyframe> mKeyframes;
+    };
+}

@@ -161,12 +161,6 @@ namespace Dream
         return true;
     }
 
-    void
-    MaterialInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
-    }
-
     ShaderInstance*
     MaterialInstance::getShader
     () const

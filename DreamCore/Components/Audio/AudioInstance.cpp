@@ -39,7 +39,6 @@ namespace Dream
         setLooping(false);
         setBuffer(0);
         setSource(0);
-        loadExtraAttributes(json::object());
         generateEventList();
     }
 
@@ -152,12 +151,6 @@ namespace Dream
     ()
     {
         return mStatus;
-    }
-
-    void
-    AudioInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
     }
 
     void

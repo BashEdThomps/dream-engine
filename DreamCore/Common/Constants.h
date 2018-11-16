@@ -30,17 +30,18 @@ namespace Dream
 {
     enum AssetType
     {
-        PATH,
+        ANIMATION,
         AUDIO,
         FONT,
         LIGHT,
+        MATERIAL,
         MODEL,
+        PARTICLE_EMITTER,
+        PATH,
         PHYSICS_OBJECT,
         SCRIPT,
         SHADER,
         TEXTURE,
-        PARTICLE_EMITTER,
-        MATERIAL,
         NONE
     };
 
@@ -87,11 +88,12 @@ namespace Dream
 
         // Types
         const static string ASSET_TYPE;
-        const static string ASSET_TYPE_PATH;
+        const static string ASSET_TYPE_ANIMATION;
         const static string ASSET_TYPE_AUDIO;
         const static string ASSET_TYPE_LIGHT;
         const static string ASSET_TYPE_FONT;
         const static string ASSET_TYPE_MODEL;
+        const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
         const static string ASSET_TYPE_SHADER;
@@ -112,7 +114,6 @@ namespace Dream
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
 
-        const static string ASSET_FORMAT_PATH_DREAM;
 
         const static string ASSET_FORMAT_FONT_TTF;
 
@@ -124,8 +125,8 @@ namespace Dream
         const static string ASSET_DEFINITION_DEFAULT_NAME;
 
         // Readable Names
+        const static string ASSET_TYPE_ANIMATION_READABLE;
         const static string ASSET_TYPE_PATH_READABLE;
-        const static string ASSET_TYPE_DREAM_READABLE;
         const static string ASSET_TYPE_AUDIO_READABLE;
         const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
@@ -146,7 +147,6 @@ namespace Dream
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
         const static string ASSET_FORMAT_AUDIO_WAV_READABLE;
         const static string ASSET_FORMAT_DREAM_READABLE;
-        const static string ASSET_FORMAT_PATH_DREAM_READABLE;
         const static string ASSET_FORMAT_FONT_TTF_READABLE;
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
@@ -339,6 +339,12 @@ namespace Dream
         const static string ASSET_ATTR_AUDIO_EM_NAME;
         const static string ASSET_ATTR_AUDIO_EM_REPEAT;
         const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
+
+        // Animation/Keyframe ===================================================
+        const static string KEYFRAME_VALUE;
+        const static string KEYFRAME_VALUES;
+        const static string KEYFRAME_TIME;
+        const static string KEYFRAME_TARGET;
 
         // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;

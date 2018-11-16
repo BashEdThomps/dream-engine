@@ -22,8 +22,13 @@ namespace Dream
     TextureCache::loadInstance
     (IAssetDefinition* def)
     {
-        auto textureDef = dynamic_cast<TextureDefinition*>(def);
         auto log = getLog();
+        if (!def)
+        {
+            log->error("Cannot load texture, TextureDefinition is null");
+            return nullptr;
+        }
+        auto textureDef = dynamic_cast<TextureDefinition*>(def);
         string filename = getAbsolutePath(def);
 
         File txFile{filename};

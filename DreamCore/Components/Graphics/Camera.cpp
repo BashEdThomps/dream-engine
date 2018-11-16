@@ -109,77 +109,77 @@ namespace Dream
 
     void
     Camera::flyForward
-    (float speed)
+    ()
     {
-        mTranslation.x += mFront.x * speed;
-        mTranslation.y += mFront.y * speed;
-        mTranslation.z += mFront.z * speed;
+        mTranslation.x += mFront.x * mMovementSpeed;
+        mTranslation.y += mFront.y * mMovementSpeed;
+        mTranslation.z += mFront.z * mMovementSpeed;
     }
 
     void
     Camera::flyZ
-    (float speed)
+    ()
     {
-        mTranslation.x += mFront.x * speed;
-        mTranslation.y += mFront.y * speed;
-        mTranslation.z += mFront.z * speed;
+        mTranslation.x += mFront.x * mMovementSpeed;
+        mTranslation.y += mFront.y * mMovementSpeed;
+        mTranslation.z += mFront.z * mMovementSpeed;
     }
 
     void
     Camera::flyBackward
-    (float speed)
+    ()
     {
-        mTranslation.x -= mFront.x * speed;
-        mTranslation.y -= mFront.y * speed;
-        mTranslation.z -= mFront.z * speed;
+        mTranslation.x -= mFront.x * mMovementSpeed;
+        mTranslation.y -= mFront.y * mMovementSpeed;
+        mTranslation.z -= mFront.z * mMovementSpeed;
     }
 
     void
     Camera::flyLeft
-    (float speed)
+    ()
     {
-        mTranslation.x -= mRight.x * speed;
-        mTranslation.y -= mRight.y * speed;
-        mTranslation.z -= mRight.z * speed;
+        mTranslation.x -= mRight.x * mMovementSpeed;
+        mTranslation.y -= mRight.y * mMovementSpeed;
+        mTranslation.z -= mRight.z * mMovementSpeed;
     }
 
     void
     Camera::flyRight
-    (float speed)
+    ()
     {
-        mTranslation.x += mRight.x * speed;
-        mTranslation.y += mRight.y * speed;
-        mTranslation.z += mRight.z * speed;
+        mTranslation.x += mRight.x * mMovementSpeed;
+        mTranslation.y += mRight.y * mMovementSpeed;
+        mTranslation.z += mRight.z * mMovementSpeed;
     }
 
     void
     Camera::flyX
-    (float speed)
+    ()
     {
-        mTranslation.x += mRight.x * speed;
-        mTranslation.y += mRight.y * speed;
-        mTranslation.z += mRight.z * speed;
+        mTranslation.x += mRight.x * mMovementSpeed;
+        mTranslation.y += mRight.y * mMovementSpeed;
+        mTranslation.z += mRight.z * mMovementSpeed;
     }
 
     void
     Camera::flyUp
-    (float speed)
+    ()
     {
-        mTranslation.y += speed;
+        mTranslation.y += mMovementSpeed;
     }
 
     void
     Camera::flyY
-    (float speed)
+    ()
     {
-        mTranslation.y += speed;
+        mTranslation.y += mMovementSpeed;
     }
 
     void
     Camera::flyDown
-    (float speed)
+    ()
     {
-        mTranslation.y -= speed;
+        mTranslation.y -= mMovementSpeed;
     }
 
     vec3

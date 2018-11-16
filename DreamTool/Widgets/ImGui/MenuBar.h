@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
+#include "../../Model/ModelDefinitionBatchImporter.h"
 
 namespace Dream
 {

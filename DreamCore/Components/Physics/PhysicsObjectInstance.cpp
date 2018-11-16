@@ -92,29 +92,12 @@ namespace Dream
         return mCollisionShape;
     }
 
-    void
-    PhysicsObjectInstance::loadExtraAttributes
-    (nlohmann::json jsonData)
-    {
-        loadExtraAttributes(jsonData,mDefinition,false);
-    }
-
-    void
-    PhysicsObjectInstance::loadExtraAttributes
-    (
-        nlohmann::json jsonData,
-        IAssetDefinition* definition,
-        bool isChild)
-    {
-    }
-
     bool
     PhysicsObjectInstance::load
     (string projectPath)
     {
         auto log = getLog();
         auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
-        loadExtraAttributes(pod->getJson(),mDefinition,false);
         mCollisionShape = createCollisionShape(pod,projectPath);
         if (!mCollisionShape)
         {
@@ -245,7 +228,6 @@ namespace Dream
             for (CompoundChildDefinition child : pod->getCompoundChildren())
             {
                 auto def = getAssetDefinitionByUuid(child.uuid);
-                loadExtraAttributes(def->getJson(),def,true);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
                 compound->addChildShape(child.transform.getTransformAsBtTransform(),shape);
             }

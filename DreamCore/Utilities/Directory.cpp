@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <regex>
+#include <sstream>
 
 using std::regex;
 
@@ -82,6 +83,18 @@ namespace Dream
         mPath = path;
     }
 
+    string Directory::getName()
+    {
+       auto nameStart = mPath.find_last_of(Constants::DIR_PATH_SEP);
+       {
+           if (nameStart != string::npos)
+           {
+              return mPath.substr(nameStart+1);
+           }
+       }
+       return "";
+    }
+
     bool
     Directory::exists
     ()
@@ -123,5 +136,14 @@ namespace Dream
             return false;
         }
         return true;
+    }
+
+    File
+    Directory::file
+    (string fileName)
+    {
+        stringstream ss;
+        ss << mPath << Constants::DIR_PATH_SEP << fileName;
+        return File(ss.str());
     }
 }

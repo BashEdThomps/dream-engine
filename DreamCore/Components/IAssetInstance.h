@@ -50,7 +50,6 @@ namespace Dream
         string getNameAndUuidString();
 
         virtual bool load(string) = 0;
-        virtual void loadExtraAttributes(json) = 0;
 
         string getAbsolutePath();
         void setAbsolutePath(string);

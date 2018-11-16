@@ -6,6 +6,7 @@
 #include "../../DTState.h"
 #include "../../deps/ImGui/imgui_internal.h"
 #include "../../deps/ImGui/imguifilesystem.h"
+#include <sstream>
 
 namespace DreamTool
 {
@@ -31,6 +32,7 @@ namespace DreamTool
         bool openButtonClicked = false;
         bool showSaveSuccessDialog = false;
         bool showPleaseDestroyScenesDialog = false;
+        bool modelBatchImportClicked = false;
 
         auto pRuntime = mState->project->getProjectRuntime();
 
@@ -217,6 +219,15 @@ namespace DreamTool
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Tools"))
+            {
+                if (ImGui::MenuItem("Model Batch Importer"))
+                {
+                   modelBatchImportClicked = true;
+                }
+                ImGui::EndMenu();
+            }
+
             if (ImGui::BeginMenu("Debug"))
             {
                 auto showLuaDebug = mState->luaDebugWindow.getVisible();
@@ -284,6 +295,7 @@ namespace DreamTool
             ImGui::EndMainMenuBar();
         }
 
+        // New Project
         static ImGuiFs::Dialog newDlg;
         newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
         if (strlen(newDlg.getChosenPath())>0)
@@ -296,6 +308,7 @@ namespace DreamTool
             */
         }
 
+        // Open Project
         bool openProjectFailed = false;
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked,mState->lastDirectory.c_str());
@@ -336,6 +349,111 @@ namespace DreamTool
         if (showPleaseDestroyScenesDialog)
         {
            ImGui::OpenPopup("Loaded Scenes");
+        }
+
+        static ImGuiFs::Dialog modelBatchImportDlg;
+        const char* modelBatchPath = modelBatchImportDlg.chooseFolderDialog(modelBatchImportClicked,mState->lastDirectory.c_str());
+        if (strlen(modelBatchPath) >0 )
+        {
+            string dir = modelBatchImportDlg.getChosenPath();
+            mState->lastDirectory = dir;
+            mState->modelDefinitionBatchImporter.setDirectory(dir);
+            mState->modelDefinitionBatchImporter.findModels();
+        }
+
+        if (mState->modelDefinitionBatchImporter.hasModels())
+        {
+            ImGui::OpenPopup("Batch Import Models");
+        }
+
+        if(ImGui::BeginPopupModal("Batch Import Models"))
+        {
+            ImGui::Columns(2);
+
+            ImGui::BeginChild("ModelsList");
+            {
+                ImGui::Columns(2);
+                ImGui::Text("Model");
+                ImGui::NextColumn();
+                ImGui::Text("Import");
+                ImGui::NextColumn();
+                ImGui::Separator();
+
+                int index = 0;
+                for (string modelName : mState->modelDefinitionBatchImporter.getModelsFoundNames())
+                {
+                    ImGui::Text("%s",modelName.c_str());
+                    ImGui::NextColumn();
+                    ImGui::PushID(index);
+                    ImGui::Checkbox("##",(mState->modelDefinitionBatchImporter.getModelsToImport()+index));
+                    ImGui::PopID();
+                    ImGui::NextColumn();
+                    index++;
+                }
+                ImGui::Columns(1);
+            }
+            ImGui::EndChild();
+
+            ImGui::NextColumn();
+            ImGui::Text("Options");
+            bool appendDirName = mState->modelDefinitionBatchImporter.getAppendDirectoryName();
+            stringstream appendLabel;
+            appendLabel << "Append Directory Name (";
+            appendLabel << mState->modelDefinitionBatchImporter.getDirectoryName();
+            appendLabel << ")";
+            if (ImGui::Checkbox(appendLabel.str().c_str(),&appendDirName))
+            {
+               mState->modelDefinitionBatchImporter.setAppendDirectoryName(appendDirName);
+            }
+
+            auto replace = mState->modelDefinitionBatchImporter.getReplaceExisting();
+            if(ImGui::Checkbox("Replace Existing",&replace))
+            {
+               mState->modelDefinitionBatchImporter.setReplaceExisting(replace);
+            }
+            if(ImGui::Button("Cancel"))
+            {
+                mState->modelDefinitionBatchImporter.clear();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Import Models"))
+            {
+                mState->modelDefinitionBatchImporter.import();
+                ImGui::CloseCurrentPopup();
+            }
+
+           ImGui::EndPopup();
+        }
+
+        if (mState->modelDefinitionBatchImporter.hasResults())
+        {
+            ImGui::OpenPopup("Model Import Results");
+        }
+
+        if (ImGui::BeginPopupModal("Model Import Results"))
+        {
+            ImGui::Columns(2);
+            ImGui::Text("Model");
+            ImGui::NextColumn();
+            ImGui::Text("Result");
+            ImGui::Separator();
+            ImGui::NextColumn();
+            for (auto result : mState->modelDefinitionBatchImporter.getImportResults())
+            {
+               ImGui::Text("%s",result.definition->getName().c_str());
+               ImGui::NextColumn();
+               ImGui::Text("%s",ModelDefinitionBatchImporter::resultString(result.result).c_str());
+               ImGui::NextColumn();
+            }
+            ImGui::Columns(1);
+            ImGui::Separator();
+            if(ImGui::Button("OK"))
+            {
+                mState->modelDefinitionBatchImporter.clear();
+                ImGui::CloseCurrentPopup();
+            }
+           ImGui::EndPopup();
         }
 
         if(ImGui::BeginPopupModal("Loaded Scenes", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
@@ -404,4 +522,6 @@ namespace DreamTool
             ImGui::EndPopup();
         }
     }
+
+
 }

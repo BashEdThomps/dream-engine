@@ -433,6 +433,18 @@ namespace DreamTool
             }
 
         }
+        float camSpeed = sceneDef->getCameraMovementSpeed();
+        if(ImGui::DragFloat("CameraSpeed",&camSpeed))
+        {
+           if (sceneDef)
+           {
+               sceneDef->setCameraMovementSpeed(camSpeed);
+           }
+           if (sceneRuntime)
+           {
+               sceneRuntime->setCameraMovementSpeed(camSpeed);
+           }
+        }
         ImGui::Separator();
 
         // Rendering
@@ -1046,7 +1058,14 @@ namespace DreamTool
         ImGui::SameLine();
         if(ImGui::Button("Delete Asset"))
         {
-
+            ProjectDirectory dir(mState->project);
+            dir.removeAssetDirectory(assetDef);
+            auto projDef = mState->project->getProjectDefinition();
+            projDef->removeAssetDefinition(assetDef);
+            removeFromHistory(mDefinition);
+            mDefinition = nullptr;
+            mRuntime = nullptr;
+            return;
         }
 
         drawNameAndIdProperties();

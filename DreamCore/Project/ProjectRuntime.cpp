@@ -30,6 +30,7 @@
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Input/InputComponent.h"
+#include "../Components/Animation/AnimationComponent.h"
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
@@ -57,6 +58,7 @@ namespace Dream
           mDone(false),
           mTime(nullptr),
           mProject(project),
+          mAnimationComponent(nullptr),
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
           mGraphicsComponent(nullptr),
@@ -159,10 +161,16 @@ namespace Dream
             return false;
         }
 
+        if(!initAnimationComponent())
+        {
+            return false;
+        }
+
         if (!initScriptComponent())
         {
             return false;
         }
+
         log->debug( "Successfuly created Components." );
 
         return true;
@@ -179,8 +187,6 @@ namespace Dream
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        //mWindowComponent->setWidth(projDef->getWindowWidth());
-        //mWindowComponent->setHeight(projDef->getWindowHeight());
         mWindowComponent->setName(projDef->getName());
         return true;
     }
@@ -280,6 +286,23 @@ namespace Dream
         return true;
     }
 
+
+    bool
+    ProjectRuntime::initAnimationComponent
+    ()
+    {
+        auto log = getLog();
+        mAnimationComponent = new AnimationComponent();
+        mAnimationComponent->setTime(mTime);
+        if (!mAnimationComponent->init())
+        {
+            log->error( "Unable to initialise Animation Component." );
+            return false;
+        }
+        return true;
+    }
+
+
     bool
     ProjectRuntime::initScriptComponent
     ()
@@ -343,36 +366,48 @@ namespace Dream
 
     void ProjectRuntime::deleteComponents()
     {
+        if (mAnimationComponent != nullptr)
+        {
+            delete mAnimationComponent;
+            mAnimationComponent = nullptr;
+        }
+
         if (mAudioComponent != nullptr)
         {
             delete mAudioComponent;
             mAudioComponent = nullptr;
         }
+
         if (mInputComponent != nullptr)
         {
             delete mInputComponent;
             mInputComponent = nullptr;
         }
+
         if (mGraphicsComponent != nullptr)
         {
             delete mGraphicsComponent;
             mGraphicsComponent = nullptr;
         }
+
         if (mNanoVGComponent != nullptr)
         {
             delete mNanoVGComponent;
             mNanoVGComponent = nullptr;
         }
+
         if (mPhysicsComponent != nullptr)
         {
             delete mPhysicsComponent;
             mPhysicsComponent = nullptr;
         }
+
         if (mPathComponent != nullptr)
         {
             delete mPathComponent;
             mPathComponent = nullptr;
         }
+
         if (mScriptComponent != nullptr)
         {
             delete mScriptComponent;
@@ -385,6 +420,13 @@ namespace Dream
     ()
     {
         return mDone;
+    }
+
+    AnimationComponent*
+    ProjectRuntime::getAnimationComponent
+    ()
+    {
+        return mAnimationComponent;
     }
 
     PathComponent*
@@ -447,6 +489,7 @@ namespace Dream
         mInputComponent->updateComponent(sr);
         mPhysicsComponent->updateComponent(sr);
         mPathComponent->updateComponent(sr);
+        mAnimationComponent->updateComponent(sr);
         if (mScriptingEnabled)
         {
             mScriptComponent->updateComponent(sr);

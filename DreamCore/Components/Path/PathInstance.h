@@ -61,9 +61,6 @@ namespace Dream
         vector<pair<vec3, vec3> > getSplineDerivatives() const;
 
     private:
-        void loadExtraAttributes(json) override;
-
-    private:
         bool mWrapPath;
         size_t mCurrentIndex;
         double mUStep;

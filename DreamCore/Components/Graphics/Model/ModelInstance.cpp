@@ -263,11 +263,6 @@ namespace Dream
         return nullptr;
     }
 
-    void
-    ModelInstance::loadExtraAttributes
-    (json)
-    {}
-
     BoundingBox&
     ModelInstance::getBoundingBox
     ()

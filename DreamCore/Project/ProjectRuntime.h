@@ -32,6 +32,7 @@ namespace Dream
 
     class Project;
     class PathComponent;
+    class AnimationComponent;
     class AudioComponent;
     class InputComponent;
     class GraphicsComponent;
@@ -64,6 +65,7 @@ namespace Dream
         Project* mProject;
 
         // Components
+        AnimationComponent* mAnimationComponent;
         AudioComponent* mAudioComponent;
         InputComponent* mInputComponent;
         GraphicsComponent* mGraphicsComponent;
@@ -94,6 +96,7 @@ namespace Dream
 
         Time* getTime();
 
+        AnimationComponent* getAnimationComponent();
         PathComponent* getPathComponent();
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
@@ -152,6 +155,7 @@ namespace Dream
 
     private: // Member Functions
         bool initPathComponent();
+        bool initAnimationComponent();
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();

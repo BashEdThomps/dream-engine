@@ -38,7 +38,6 @@ namespace Dream
 
     {
         setLogClassName("LightInstance");
-        loadExtraAttributes(definition->getJson());
     }
 
     LightInstance::~LightInstance
@@ -201,16 +200,7 @@ namespace Dream
     LightInstance::load
     (string)
     {
-        mLoaded = true;
-        return mLoaded;
-    }
-
-    void
-    LightInstance::loadExtraAttributes
-    (nlohmann::json)
-    {
         auto log = getLog();
-
         auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
 
         mAmbient = lightDef->getAmbient();
@@ -238,5 +228,8 @@ namespace Dream
             case Dream::LT_DIRECTIONAL:
                 break;
         }
+
+        mLoaded = true;
+        return mLoaded;
     }
 } // End of Dream

@@ -36,6 +36,7 @@ namespace Dream
     class SceneObject;
     class Scene;
     class Event;
+    class AnimationInstance;
     class AudioInstance;
     class PathInstance;
     class ModelInstance;
@@ -47,6 +48,7 @@ namespace Dream
     class SceneObjectDefinition;
     class IAssetDefinition;
     class PathDefinition;
+    class AnimationDefinition;
     class AudioDefinition;
     class LightDefinition;
     class ModelDefinition;
@@ -67,6 +69,7 @@ namespace Dream
         SceneObjectDefinition* getSceneObjectDefinition();
 
         bool createAssetInstances();
+        bool createAnimationInstance(AnimationDefinition*);
         bool createPathInstance(PathDefinition*);
         bool createAudioInstance(AudioDefinition*);
         bool createModelInstance(ModelDefinition*);
@@ -75,6 +78,7 @@ namespace Dream
         bool createParticleEmitterInstance(ParticleEmitterDefinition*);
         bool createLightInstance(LightDefinition*);
 
+        AnimationInstance* getAnimationInstance();
         PathInstance*  getPathInstance();
         AudioInstance* getAudioInstance();
         ModelInstance* getModelInstance();
@@ -84,6 +88,7 @@ namespace Dream
         ParticleEmitterInstance* getParticleEmitterInstance();
         IAssetInstance* getAssetInstance(AssetType);
 
+        bool hasAnimationInstance();
         bool hasPathInstance();
         bool hasAudioInstance();
         bool hasModelInstance();
@@ -132,6 +137,7 @@ namespace Dream
         bool getHidden() const;
         void setHidden(bool hidden);
 
+        void removeAnimationInstance();
         void removeAudioInstance();
         void removePathInstance();
         void removeModelInstance();
@@ -141,7 +147,7 @@ namespace Dream
         void removeParticleEmitterInstance();
 
         bool replaceAssetUuid(AssetType type, string uuid);
-        IAssetDefinition*getAssetDefinitionByUuid(string uuid);
+        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
         string getProjectPath();
         void setAssetDefinitionsMap(map<AssetType,string> loadQueue);
         map<AssetType, string> getAssetDefinitionsMap();
@@ -156,6 +162,7 @@ namespace Dream
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
     private:
+        AnimationInstance* mAnimationInstance;
         AudioInstance* mAudioInstance;
         LightInstance* mLightInstance;
         ParticleEmitterInstance* mParticleEmitterInstance;

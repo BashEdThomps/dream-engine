@@ -51,6 +51,11 @@ namespace Dream
     (IAssetDefinition* def)
     {
         auto log = getLog();
+        if (!def)
+        {
+            log->error("Material Definition is null");
+            return nullptr;
+        }
         auto matDef = dynamic_cast<MaterialDefinition*>(def);
         auto shader = dynamic_cast<ShaderInstance*>(mShaderCache->getInstance(matDef->getShader()));
 

@@ -158,7 +158,7 @@ namespace Dream
         auto log = getLog();
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
-        log->error("Got file name with extension {}",fileName);
+        log->trace("Got file name with extension {}",fileName);
         return fileName;
     }
 
@@ -168,7 +168,7 @@ namespace Dream
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         auto nameOnly = name.substr(0,extStart);
-        log->error("Got file name without extension {}",nameOnly);
+        log->trace("Got file name without extension {}",nameOnly);
         return nameOnly;
     }
 } // End of Dream
