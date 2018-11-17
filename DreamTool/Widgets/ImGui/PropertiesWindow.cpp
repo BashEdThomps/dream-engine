@@ -1,6 +1,7 @@
 // Maintain include order for GL Defines
 #include "PropertiesWindow.h"
 #include "../../deps/ImGui/imguifilesystem.h"
+#include "../../deps/ImGui/ImGuizmo.h"
 #include "../../DTState.h"
 
 namespace DreamTool
@@ -89,8 +90,8 @@ namespace DreamTool
                 }
                 if (soRuntime)
                 {
-                   auto parent = soRuntime->getParentRuntime();
-                   parent->removeChildRuntime(soRuntime);
+                    auto parent = soRuntime->getParentRuntime();
+                    parent->removeChildRuntime(soRuntime);
                 }
                 mState->selectionHighlighter.clearSelection();
                 removeFromHistory(mDefinition);
@@ -111,7 +112,7 @@ namespace DreamTool
         bool retval = false;
         if(ImGui::Button("Delete"))
         {
-           ImGui::OpenPopup("Confirm Delete Scene");
+            ImGui::OpenPopup("Confirm Delete Scene");
         }
 
         auto sDef = dynamic_cast<SceneDefinition*>(mDefinition);
@@ -152,13 +153,13 @@ namespace DreamTool
     {
         // Remove old
         auto itr = std::find_if(
-            mHistory.begin(),
-            mHistory.end(),
-            [&](PropertiesTarget& tgt)
-            {
+                    mHistory.begin(),
+                    mHistory.end(),
+                    [&](PropertiesTarget& tgt)
+        {
                 return tgt.definition == def;
-            }
-        );
+    }
+                );
 
         if (itr != mHistory.end())
         {
@@ -176,18 +177,18 @@ namespace DreamTool
     void
     PropertiesWindow::removeFromHistory(IDefinition* def)
     {
-       auto itr = mHistory.end();
-       for (itr = mHistory.begin(); itr != mHistory.end(); itr++)
-       {
+        auto itr = mHistory.end();
+        for (itr = mHistory.begin(); itr != mHistory.end(); itr++)
+        {
             if ((*itr).definition == def)
             {
                 break;
             }
-       }
-       if (itr != mHistory.end())
-       {
-           mHistory.erase(itr);
-       }
+        }
+        if (itr != mHistory.end())
+        {
+            mHistory.erase(itr);
+        }
     }
 
     void
@@ -223,7 +224,7 @@ namespace DreamTool
             strncpy(&nameBuf[0],mDefinition->getName().c_str(),mDefinition->getName().size());
             if(ImGui::InputText("Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
             {
-               mDefinition->setName(nameBuf);
+                mDefinition->setName(nameBuf);
             }
 
             char idBuf[128] = {0};
@@ -280,11 +281,11 @@ namespace DreamTool
         if(ImGui::Button("New Scene"))
         {
             pushPropertyTarget
-            (
-                DreamTool::Scene,
-                mState->project->getProjectDefinition()->createNewSceneDefinition(),
-                nullptr
-            );
+                    (
+                        DreamTool::Scene,
+                        mState->project->getProjectDefinition()->createNewSceneDefinition(),
+                        nullptr
+                        );
             return;
         }
         drawNameAndIdProperties();
@@ -296,7 +297,7 @@ namespace DreamTool
         vector<string> scenes;
         for(SceneDefinition* scene : projDef->getSceneDefinitionsVector())
         {
-           scenes.push_back(scene->getName());
+            scenes.push_back(scene->getName());
         }
         if(StringCombo("Startup Scene",&startupScene,scenes,scenes.size()))
         {
@@ -355,6 +356,7 @@ namespace DreamTool
         {
             projDef->setDescription(descriptionBuffer);
         }
+
     }
 
     void
@@ -402,11 +404,11 @@ namespace DreamTool
             if (sceneRuntime != nullptr)
             {
                 sceneRuntime->setCameraTranslation
-                ({
-                    cameraTranslation[0],
-                    cameraTranslation[1],
-                    cameraTranslation[2]
-                });
+                        ({
+                             cameraTranslation[0],
+                             cameraTranslation[1],
+                             cameraTranslation[2]
+                         });
             }
         }
 
@@ -436,14 +438,14 @@ namespace DreamTool
         float camSpeed = sceneDef->getCameraMovementSpeed();
         if(ImGui::DragFloat("CameraSpeed",&camSpeed))
         {
-           if (sceneDef)
-           {
-               sceneDef->setCameraMovementSpeed(camSpeed);
-           }
-           if (sceneRuntime)
-           {
-               sceneRuntime->setCameraMovementSpeed(camSpeed);
-           }
+            if (sceneDef)
+            {
+                sceneDef->setCameraMovementSpeed(camSpeed);
+            }
+            if (sceneRuntime)
+            {
+                sceneRuntime->setCameraMovementSpeed(camSpeed);
+            }
         }
         ImGui::Separator();
 
@@ -495,10 +497,10 @@ namespace DreamTool
             if (sceneRuntime)
             {
                 sceneRuntime->setClearColour({
-                    clearVec[0],
-                    clearVec[1],
-                    clearVec[2]
-                });
+                                                 clearVec[0],
+                                                 clearVec[1],
+                                                 clearVec[2]
+                                             });
             }
         }
 
@@ -514,10 +516,10 @@ namespace DreamTool
             if (sceneRuntime)
             {
                 sceneRuntime->setAmbientColour({
-                    ambientVec[0],
-                    ambientVec[1],
-                    ambientVec[2]
-                    });
+                                                   ambientVec[0],
+                                                   ambientVec[1],
+                                                   ambientVec[2]
+                                               });
             }
         }
 
@@ -664,8 +666,11 @@ namespace DreamTool
         ImGui::Columns(1);
 
         ImGui::Separator();
-        ImGui::Text("Transform");
 
+        ImGui::Text("Transform");
+        drawImGizmo();
+
+        /*
         ImGui::Columns(2);
 
         bool transformAbsolute = soDef->getTransform()->isTypeAbsolute();
@@ -758,6 +763,7 @@ namespace DreamTool
                 soRuntime->getCurrentTransform()->setScaleZ(scale[2]);
             }
         }
+        */
 
         ImGui::Separator();
 
@@ -780,10 +786,10 @@ namespace DreamTool
             if (selectedAudioAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO,selectedAudioAsset);
             pushPropertyTarget(
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -822,10 +828,10 @@ namespace DreamTool
             if (selectedLightAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT,selectedLightAsset);
             pushPropertyTarget(
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -864,11 +870,11 @@ namespace DreamTool
             if (selectedModelAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::MODEL,selectedModelAsset);
             pushPropertyTarget
-            (
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                    (
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -905,11 +911,11 @@ namespace DreamTool
             if (selectedParticleEmitterAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
             pushPropertyTarget
-            (
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                    (
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
         ImGui::SameLine();
@@ -945,10 +951,10 @@ namespace DreamTool
             if (selectedPathAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PATH,selectedPathAsset);
             pushPropertyTarget(
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -982,10 +988,10 @@ namespace DreamTool
             if (selectedPhysicsObjectAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
             pushPropertyTarget(
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -1022,10 +1028,10 @@ namespace DreamTool
             if (selectedScriptAsset < 0) return;
             auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,selectedScriptAsset);
             pushPropertyTarget(
-                PropertyType::Asset,
-                asset,
-                nullptr
-            );
+                        PropertyType::Asset,
+                        asset,
+                        nullptr
+                        );
             return;
         }
 
@@ -1040,6 +1046,127 @@ namespace DreamTool
                 if (selectedDef)
                 {
                     soRuntime->replaceAssetUuid(AssetType::SCRIPT, selectedDef->getUuid());
+                }
+            }
+        }
+    }
+
+    void PropertiesWindow::drawImGizmo()
+    {
+        auto log = getLog();
+        float *matrix = nullptr;
+        auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+        if (soRunt)
+        {
+            matrix = (float*)glm::value_ptr(soRunt->getCurrentTransform()->asMat4());
+        }
+        else
+        {
+            log->error("No Matrix");
+            return;
+        }
+
+        static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+        if (ImGui::IsKeyPressed(90))
+        {
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+        }
+        if (ImGui::IsKeyPressed(69))
+        {
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+        }
+        if (ImGui::IsKeyPressed(82)) // r Key
+        {
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+        }
+
+        if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+        {
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+        {
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+        {
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+        }
+
+        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+
+        ImGui::InputFloat3("Translation", matrixTranslation, 3);
+        ImGui::InputFloat3("Rotation", matrixRotation, 3);
+        ImGui::InputFloat3("Scale", matrixScale, 3);
+
+        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+
+        if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+        {
+            if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+            {
+                mCurrentGizmoMode = ImGuizmo::LOCAL;
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+            {
+                mCurrentGizmoMode = ImGuizmo::WORLD;
+            }
+        }
+        static bool useSnap(false);
+        if (ImGui::IsKeyPressed(83))
+        {
+            useSnap = !useSnap;
+        }
+        ImGui::Checkbox("", &useSnap);
+        ImGui::SameLine();
+        vec3 snap(1.0f);
+
+        switch (mCurrentGizmoOperation)
+        {
+            case ImGuizmo::TRANSLATE:
+                ImGui::InputFloat3("Snap", &snap.x);
+                break;
+            case ImGuizmo::ROTATE:
+                ImGui::InputFloat("Angle Snap", &snap.x);
+                break;
+            case ImGuizmo::SCALE:
+                ImGui::InputFloat("Scale Snap", &snap.x);
+                break;
+            default:
+                break;
+        }
+
+        auto pRunt = mState->project->getProjectRuntime();
+        if (pRunt)
+        {
+            auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
+            auto sRunt = pRunt->getActiveSceneRuntime();
+            if (sRunt)
+            {
+                auto cam = sRunt->getCamera();
+                if (cam)
+                {
+                    auto view = cam->getViewMatrix();
+                    ImGuiIO& io = ImGui::GetIO();
+                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+                    ImGuizmo::Manipulate
+                    (
+                        glm::value_ptr(view),
+                        glm::value_ptr(proj),
+                        mCurrentGizmoOperation,
+                        mCurrentGizmoMode,
+                        matrix,
+                        nullptr,
+                        useSnap ? &snap.x : nullptr
+                    );
+                    mat4 newmtx = glm::make_mat4(matrix);
+                    soRunt->getCurrentTransform()->fromMat4(newmtx);
                 }
             }
         }
@@ -1073,6 +1200,9 @@ namespace DreamTool
         auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
         switch (type)
         {
+            case AssetType::ANIMATION:
+                //drawAnimationAssetProperties();
+                break;
             case AssetType::AUDIO:
                 drawAudioAssetProperties();
                 break;
@@ -1177,95 +1307,95 @@ namespace DreamTool
     void PropertiesWindow::drawLightAssetProperties
     ()
     {
-       auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
+        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
 
-       vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::LIGHT];
-       int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
-       if(StringCombo("Type",&selectedLightType,lightTypes,lightTypes.size()))
-       {
-           lightDef->setFormat(lightTypes.at(selectedLightType));
-       }
+        vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::LIGHT];
+        int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
+        if(StringCombo("Type",&selectedLightType,lightTypes,lightTypes.size()))
+        {
+            lightDef->setFormat(lightTypes.at(selectedLightType));
+        }
 
-       ImGui::Separator();
+        ImGui::Separator();
 
-       float ambientColor[3] = {
-           lightDef->getAmbientRed(),
-           lightDef->getAmbientGreen(),
-           lightDef->getAmbientBlue()
-       };
+        float ambientColor[3] = {
+            lightDef->getAmbientRed(),
+            lightDef->getAmbientGreen(),
+            lightDef->getAmbientBlue()
+        };
 
-       float diffuseColor[3] = {
+        float diffuseColor[3] = {
             lightDef->getDiffuseRed(),
             lightDef->getDiffuseGreen(),
             lightDef->getDiffuseBlue()
-       };
+        };
 
-       float specularColor[3] =
-       {
-           lightDef->getSpecularRed(),
-           lightDef->getSpecularGreen(),
-           lightDef->getSpecularBlue()
-       };
+        float specularColor[3] =
+        {
+            lightDef->getSpecularRed(),
+            lightDef->getSpecularGreen(),
+            lightDef->getSpecularBlue()
+        };
 
-       float constant = lightDef->getConstant();
-       float linear = lightDef->getLinear();
-       float quadratic = lightDef->getQuadratic();
-       float innerCutOff, outerCutOff;
+        float constant = lightDef->getConstant();
+        float linear = lightDef->getLinear();
+        float quadratic = lightDef->getQuadratic();
+        float innerCutOff, outerCutOff;
 
-       switch (lightDef->getType())
-       {
-           case LightType::LT_SPOTLIGHT:
-               innerCutOff = lightDef->getCutOff();
-               outerCutOff = lightDef->getOuterCutOff();
-               if(ImGui::DragFloat("Inner Cut Off", &innerCutOff))
-               {
-                   lightDef->setCutOff(innerCutOff);
-               }
-               if(ImGui::DragFloat("Outer Cut Off", &outerCutOff))
-               {
-                   lightDef->setOuterCutOff(outerCutOff);
-               }
-               break;
-           case LightType::LT_POINT:
-               if(ImGui::DragFloat("Constant",&constant,1.0f))
-               {
-                  lightDef->setConstant(constant);
-               }
-               if(ImGui::DragFloat("Linear",&linear,0.01f))
-               {
-                  lightDef->setLinear(linear);
-               }
-               if(ImGui::DragFloat("Quadratic",&quadratic,0.001f))
-               {
-                  lightDef->setQuadratic(quadratic);
-               }
-               break;
-          case LightType::LT_DIRECTIONAL:
-          case LightType::LT_NONE:
-               break;
-       }
+        switch (lightDef->getType())
+        {
+            case LightType::LT_SPOTLIGHT:
+                innerCutOff = lightDef->getCutOff();
+                outerCutOff = lightDef->getOuterCutOff();
+                if(ImGui::DragFloat("Inner Cut Off", &innerCutOff))
+                {
+                    lightDef->setCutOff(innerCutOff);
+                }
+                if(ImGui::DragFloat("Outer Cut Off", &outerCutOff))
+                {
+                    lightDef->setOuterCutOff(outerCutOff);
+                }
+                break;
+            case LightType::LT_POINT:
+                if(ImGui::DragFloat("Constant",&constant,1.0f))
+                {
+                    lightDef->setConstant(constant);
+                }
+                if(ImGui::DragFloat("Linear",&linear,0.01f))
+                {
+                    lightDef->setLinear(linear);
+                }
+                if(ImGui::DragFloat("Quadratic",&quadratic,0.001f))
+                {
+                    lightDef->setQuadratic(quadratic);
+                }
+                break;
+            case LightType::LT_DIRECTIONAL:
+            case LightType::LT_NONE:
+                break;
+        }
 
-       ImGui::Separator();
+        ImGui::Separator();
 
-       if(ImGui::ColorEdit3("Ambient", ambientColor))
-       {
-           lightDef->setAmbientRed(ambientColor[0]);
-           lightDef->setAmbientGreen(ambientColor[1]);
-           lightDef->setAmbientBlue(ambientColor[2]);
-       }
+        if(ImGui::ColorEdit3("Ambient", ambientColor))
+        {
+            lightDef->setAmbientRed(ambientColor[0]);
+            lightDef->setAmbientGreen(ambientColor[1]);
+            lightDef->setAmbientBlue(ambientColor[2]);
+        }
 
-       if(ImGui::ColorEdit3("Diffuse", diffuseColor))
-       {
-           lightDef->setDiffuseRed(diffuseColor[0]);
-           lightDef->setDiffuseGreen(diffuseColor[1]);
-           lightDef->setDiffuseBlue(diffuseColor[2]);
-       }
+        if(ImGui::ColorEdit3("Diffuse", diffuseColor))
+        {
+            lightDef->setDiffuseRed(diffuseColor[0]);
+            lightDef->setDiffuseGreen(diffuseColor[1]);
+            lightDef->setDiffuseBlue(diffuseColor[2]);
+        }
 
-       if(ImGui::ColorEdit3("Specular", specularColor))
-       {
-           lightDef->setSpecularRed(specularColor[0]);
-           lightDef->setSpecularGreen(specularColor[1]);
-           lightDef->setSpecularBlue(specularColor[2]);
+        if(ImGui::ColorEdit3("Specular", specularColor))
+        {
+            lightDef->setSpecularRed(specularColor[0]);
+            lightDef->setSpecularGreen(specularColor[1]);
+            lightDef->setSpecularBlue(specularColor[2]);
         }
     }
 
@@ -1308,10 +1438,10 @@ namespace DreamTool
         if (ImGui::ColorEdit3("Diffuse", diffuseColor))
         {
             materialDef->setDiffuseColour(RGB{
-                diffuseColor[0],
-                diffuseColor[1],
-                diffuseColor[2]
-                });
+                                              diffuseColor[0],
+                                              diffuseColor[1],
+                                              diffuseColor[2]
+                                          });
         }
 
         float specularColor[3] = {
@@ -1322,13 +1452,13 @@ namespace DreamTool
         if (ImGui::ColorEdit3("Specular", specularColor))
         {
             materialDef->setSpecularColour(
-                RGB
-                {
-                    specularColor[0],
-                    specularColor[1],
-                    specularColor[2]
-                }
-            );
+                        RGB
+            {
+                            specularColor[0],
+                            specularColor[1],
+                            specularColor[2]
+                        }
+                        );
         }
 
         float ambientColor[3] = {
@@ -1339,12 +1469,12 @@ namespace DreamTool
         if (ImGui::ColorEdit3("Ambient", ambientColor))
         {
             materialDef->setAmbientColour(
-                RGB{
-                    ambientColor[0],
-                    ambientColor[1],
-                    ambientColor[2]
-                }
-            );
+                        RGB{
+                            ambientColor[0],
+                            ambientColor[1],
+                            ambientColor[2]
+                        }
+                        );
         }
 
         float reflectiveColor[3] = {
@@ -1355,13 +1485,13 @@ namespace DreamTool
         if (ImGui::ColorEdit3("Reflective", reflectiveColor))
         {
             materialDef->setReflectiveColour(
-                RGB
-                {
-                    reflectiveColor[0],
-                    reflectiveColor[1],
-                    reflectiveColor[2]
-                }
-            );
+                        RGB
+            {
+                            reflectiveColor[0],
+                            reflectiveColor[1],
+                            reflectiveColor[2]
+                        }
+                        );
         }
 
         float emissiveColor[3] = {
@@ -1372,13 +1502,13 @@ namespace DreamTool
         if(ImGui::ColorEdit3("Emissive", emissiveColor))
         {
             materialDef->setEmissiveColour(
-                RGB
-                {
-                    emissiveColor[0],
-                    emissiveColor[1],
-                    emissiveColor[2]
-                }
-            );
+                        RGB
+            {
+                            emissiveColor[0],
+                            emissiveColor[1],
+                            emissiveColor[2]
+                        }
+                        );
         }
 
         // Parameters
@@ -1499,21 +1629,21 @@ namespace DreamTool
         {
             textures = projDef->getAssetNamesVector(AssetType::TEXTURE);
             diffuseIndex = projDef->getAssetDefinitionIndex(
-                AssetType::TEXTURE,
-                projDef->getAssetDefinitionByUuid(diffuseUuid)
-            );
+                        AssetType::TEXTURE,
+                        projDef->getAssetDefinitionByUuid(diffuseUuid)
+                        );
             specularIndex = projDef->getAssetDefinitionIndex(
-                AssetType::TEXTURE,
-                projDef->getAssetDefinitionByUuid(specularUuid)
-            );
+                        AssetType::TEXTURE,
+                        projDef->getAssetDefinitionByUuid(specularUuid)
+                        );
             normalIndex = projDef->getAssetDefinitionIndex(
-                AssetType::TEXTURE,
-                projDef->getAssetDefinitionByUuid(normalUuid)
-            );
+                        AssetType::TEXTURE,
+                        projDef->getAssetDefinitionByUuid(normalUuid)
+                        );
             displacementIndex = projDef->getAssetDefinitionIndex(
-                AssetType::TEXTURE,
-                projDef->getAssetDefinitionByUuid(displacementUuid)
-            );
+                        AssetType::TEXTURE,
+                        projDef->getAssetDefinitionByUuid(displacementUuid)
+                        );
         }
 
         // Diffuse
@@ -1692,7 +1822,7 @@ namespace DreamTool
         int poFormatIndex = getStringIndexInVector(poFormatString, poFormats);
         if(StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
         {
-           pod->setFormat(poFormats.at(poFormatIndex));
+            pod->setFormat(poFormats.at(poFormatIndex));
         }
         ImGui::Separator();
 
@@ -1746,18 +1876,18 @@ namespace DreamTool
             };
             if(ImGui::InputFloat3("Half-Extents",&halfExtents[0]))
             {
-               pod->setHalfExtentsX(halfExtents[0]);
-               pod->setHalfExtentsY(halfExtents[1]);
-               pod->setHalfExtentsZ(halfExtents[2]);
+                pod->setHalfExtentsX(halfExtents[0]);
+                pod->setHalfExtentsY(halfExtents[1]);
+                pod->setHalfExtentsZ(halfExtents[2]);
             }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
         {
-           float radius = pod->getRadius();
-           if (ImGui::InputFloat("Radius",&radius))
-           {
-               pod->setRadius(radius);
-           }
+            float radius = pod->getRadius();
+            if (ImGui::InputFloat("Radius",&radius))
+            {
+                pod->setRadius(radius);
+            }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
@@ -1823,6 +1953,11 @@ namespace DreamTool
     {}
 
     void
+    PropertiesWindow::drawAnimationAssetProperties
+    ()
+    {}
+
+    void
     PropertiesWindow::drawParticleEmitterAssetProperties
     ()
     {}
@@ -1836,12 +1971,12 @@ namespace DreamTool
         auto projRunt = mState->project->getProjectRuntime();
         if (projRunt)
         {
-           auto txCache = projRunt->getTextureCache();
-           auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(textureDef));
-           if (txInstance)
-           {
+            auto txCache = projRunt->getTextureCache();
+            auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(textureDef));
+            if (txInstance)
+            {
                 textureId = (void*)(intptr_t)txInstance->getGLID();
-           }
+            }
         }
 
         auto log = getLog();

@@ -9,8 +9,6 @@ using namespace glm;
 
 namespace Dream
 {
-    class AnimationInstance;
-
     enum KeyframeTarget
     {
         TransformTranslation = 0,
@@ -21,7 +19,7 @@ namespace Dream
     class AnimationKeyframe : public DreamObject
     {
     public:
-        AnimationKeyframe(AnimationInstance* parent);
+        AnimationKeyframe();
         ~AnimationKeyframe() override;
 
         void setValue(KeyframeTarget,vec3);
@@ -30,8 +28,6 @@ namespace Dream
         long getTime() const;
         void setTime(long time);
 
-        AnimationInstance* getParent() const;
-
         void fromJson(json js);
         json toJson();
 
@@ -39,9 +35,9 @@ namespace Dream
         bool operator<= (const AnimationKeyframe &other);
         bool operator<  (const AnimationKeyframe &other);
         bool operator>= (const AnimationKeyframe &other);
+        bool operator== (const AnimationKeyframe &other);
 
     private:
-        AnimationInstance* mParent;
         map<KeyframeTarget,vec3> mValues;
         long mTime;
     };

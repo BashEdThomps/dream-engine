@@ -23,6 +23,7 @@
 #include "../Widgets/ImGui/ImGuiWidget.h"
 #include "../Widgets/GL/GLWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
+#include "../deps/ImGui/ImGuizmo.h"
 
 using namespace Dream;
 
@@ -247,6 +248,8 @@ namespace DreamTool
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
+        ImGuizmo::Enable(true);
         // Rendering
         for (ImGuiWidget* widget : mImGuiWidgets)
         {

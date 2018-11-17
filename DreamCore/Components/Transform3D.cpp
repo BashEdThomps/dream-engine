@@ -28,7 +28,8 @@ namespace Dream
 {
 
     Transform3D::Transform3D
-    () : DreamObject("Transform3D")
+    ()
+        : DreamObject("Transform3D")
     {
         mTransformType = TransformType::Absolute;
         mTranslation   = vec3(0.0f);
@@ -40,9 +41,15 @@ namespace Dream
     (mat4 mtx)
         : DreamObject("Transform3D")
     {
+        fromMat4(mtx);
+    }
+
+    void
+    Transform3D::fromMat4(mat4 mtx)
+    {
        mTransformType = TransformType::Absolute;
        setOrientation(quat(mtx));
-       setTranslation(glm::vec3(mtx[3]));
+       setTranslation(vec3(mtx[3]));
        setScale(vec3(1.0f));
     }
 
@@ -354,12 +361,17 @@ namespace Dream
         return mOrientation.y;
     }
 
-    void Transform3D::setOrientationY(float y)
+    void
+    Transform3D::setOrientationY
+    (float y)
     {
         mOrientation.y = y;
     }
 
-    float Transform3D::getOrientationZ() const
+    float
+    Transform3D::getOrientationZ
+    ()
+    const
     {
        return mOrientation.z;
     }
@@ -558,12 +570,12 @@ namespace Dream
             parent->getRotationX(), parent->getRotationY(), parent->getRotationZ()
         );
        // Tx to parent
-       mat4 mtx = glm::translate(mat4(1.0f), parent->getTranslation());
+       mat4 mtx = translate(mat4(1.0f), parent->getTranslation());
        // match parent rotation
        mat4 rot = mat4_cast(parent->getOrientation());
        mtx = mtx*rot;
        // Tx to child (this)
-       mtx = glm::translate(mtx, defined->getTranslation());
+       mtx = translate(mtx, defined->getTranslation());
        // Set child rotation
        rot = mat4_cast(defined->getOrientation());
        mtx = mtx*rot;
@@ -596,22 +608,22 @@ namespace Dream
        return TransformType::Absolute;
     }
 
-    glm::mat4
+    mat4
     Transform3D::asMat4
     ()
     const
     {
-       mat4 trans = glm::translate(mat4(1.0f), mTranslation);
+       mat4 trans = translate(mat4(1.0f), mTranslation);
        mat4 rot = mat4_cast(mOrientation);
        trans = trans*rot;
-       return glm::scale(trans,mScale);
+       return scale(trans,mScale);
     }
 
     void
     Transform3D::setFromMat4
-    (glm::mat4 mtx)
+    (mat4 mtx)
     {
        setOrientation(quat(mtx));
-       setTranslation(glm::vec3(mtx[3]));
+       setTranslation(vec3(mtx[3]));
     }
 } // End of Dream

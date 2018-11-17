@@ -22,11 +22,16 @@
 
 namespace Dream
 {
-
+    class AnimationKeyframe;
     class AnimationDefinition : public IAssetDefinition
     {
     public:
         AnimationDefinition(ProjectDefinition*, json);
         ~AnimationDefinition() override;
+        vector<AnimationKeyframe> getKeyframes();
+        void addKeyframe(AnimationKeyframe kf);
+        void removeKeyframe(AnimationKeyframe kf);
     };
+
+
 }

@@ -4,9 +4,8 @@
 namespace Dream
 {
     AnimationKeyframe::AnimationKeyframe
-    (AnimationInstance* parent)
-        : DreamObject("AnimationKeyframe"),
-          mParent(parent)
+    ()
+        : DreamObject("AnimationKeyframe")
     {
 
     }
@@ -48,13 +47,6 @@ namespace Dream
         mTime = time;
     }
 
-    AnimationInstance*
-    AnimationKeyframe::getParent()
-    const
-    {
-        return mParent;
-    }
-
     void
     AnimationKeyframe::fromJson
     (json js)
@@ -75,6 +67,7 @@ namespace Dream
                     js[Constants::KEYFRAME_VALUE][Constants::Y],
                     js[Constants::KEYFRAME_VALUE][Constants::Z],
                 };
+                mValues.insert(pair<KeyframeTarget,vec3>(target,value));
             }
         }
     }
@@ -126,5 +119,12 @@ namespace Dream
     (const AnimationKeyframe& other)
     {
         return mTime >= other.mTime;
+    }
+
+    bool
+    AnimationKeyframe::operator==
+    (const AnimationKeyframe& other)
+    {
+       return mTime == other.mTime;
     }
 }

@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "AnimationDefinition.h"
+#include "AnimationKeyframe.h"
 
 namespace Dream
 {
@@ -23,11 +24,52 @@ namespace Dream
     (ProjectDefinition* pd, json js)
         : IAssetDefinition(pd,js)
     {
-
+        if (js[Constants::ASSET_ATTR_KEYFRAMES].is_null())
+        {
+            js[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
+        }
     }
 
     AnimationDefinition::~AnimationDefinition()
     {
 
+    }
+
+    vector<AnimationKeyframe>
+    AnimationDefinition::getKeyframes
+    ()
+    {
+        vector<AnimationKeyframe> keyframes;
+        for (auto js : mJson[Constants::ASSET_ATTR_KEYFRAMES])
+        {
+            AnimationKeyframe newKeyframe;
+            newKeyframe.fromJson(js);
+            keyframes.push_back(newKeyframe);
+        }
+        return keyframes;
+    }
+
+    void AnimationDefinition::addKeyframe(AnimationKeyframe kf)
+    {
+        removeKeyframe(kf);
+        mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
+    }
+
+    void AnimationDefinition::removeKeyframe(AnimationKeyframe kf)
+    {
+        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+        for (;itr != end; itr++)
+        {
+           if ((*itr)[Constants::KEYFRAME_TIME] == kf.getTime())
+           {
+               break;
+           }
+        }
+
+        if (itr != end)
+        {
+            mJson[Constants::ASSET_ATTR_KEYFRAMES].erase(itr);
+        }
     }
 }

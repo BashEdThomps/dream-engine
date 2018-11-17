@@ -28,7 +28,8 @@ namespace DreamTool
         void clearPropertyTargets();
         void removeFromHistory(IDefinition* def);
 
-    private:
+    protected:
+        void drawImGizmo();
         int getStringIndexInVector(string str, vector<string> vec);
         bool drawDeleteSceneObjectButton();
         bool drawDeleteSceneButton();
@@ -37,6 +38,7 @@ namespace DreamTool
         void drawSceneProperties();
         void drawSceneObjectProperties();
         void drawAssetProperties();
+        void drawAnimationAssetProperties();
         void drawAudioAssetProperties();
         void drawFontAssetProperties();
         void drawLightAssetProperties();

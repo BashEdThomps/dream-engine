@@ -18,11 +18,7 @@
 
 #pragma once
 
-#pragma once
-
 #include "../deps/json/json.hpp"
-
-
 #include <string>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -31,10 +27,9 @@
 #include <LinearMath/btQuaternion.h>
 #include "../Common/DreamObject.h"
 
-using std::string;
-using nlohmann::json;
-using glm::vec3;
-using glm::quat;
+using namespace std;
+using namespace nlohmann;
+using namespace glm;
 
 namespace Dream
 {
@@ -136,6 +131,7 @@ namespace Dream
     void setOffsetFrom(Transform3D*, Transform3D*);
     string transformTypeToString(TransformType t);
     TransformType transformTypeFromString(string);
+    void fromMat4(mat4 mtx);
   };
 
 } // End of Dream
