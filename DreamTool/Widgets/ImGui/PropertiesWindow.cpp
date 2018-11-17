@@ -13,7 +13,9 @@ namespace DreamTool
           mDefinition(nullptr),
           mRuntime(nullptr),
           mImageSize(256,256),
-          mBigEditorSize(-1,-1)
+          mBigEditorSize(-1,-1),
+          mGizmoUseSnap(true),
+          mGizmoSnap(1.0f,1.0f,1.0f)
     {
         setLogClassName("Properties Window");
     }
@@ -603,12 +605,13 @@ namespace DreamTool
         if (ImGui::Button("Add Child"))
         {
             auto newChildDef = soDef->createNewChildDefinition();
-            newChildDef->getTransform()->setTranslation(mState->cursor.getPosition());
+            mat4 cursorTx = glm::translate(mat4(1.0f),mState->cursor.getPosition());
+            newChildDef->setTransform(Transform(cursorTx));
             SceneObjectRuntime* newRt = nullptr;
             if (soRuntime)
             {
                 newRt = soRuntime->createChildRuntime(newChildDef);
-                newRt->getDefinedTransform()->setTranslation(mState->cursor.getPosition());
+                newRt->getTransform().setMatrix(cursorTx);
             }
             pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
         }
@@ -667,103 +670,7 @@ namespace DreamTool
 
         ImGui::Separator();
 
-        ImGui::Text("Transform");
         drawImGizmo();
-
-        /*
-        ImGui::Columns(2);
-
-        bool transformAbsolute = soDef->getTransform()->isTypeAbsolute();
-        if(ImGui::RadioButton("Absolute", transformAbsolute))
-        {
-            if (soDef)
-            {
-                soDef->getTransform()->setTransformType(TransformType::Absolute);
-            }
-            if (soRuntime)
-            {
-                soRuntime->setTransformType(TransformType::Absolute);
-            }
-        }
-        ImGui::NextColumn();
-        if(ImGui::RadioButton("Offset Parent", !transformAbsolute))
-        {
-            if (soDef)
-            {
-                soDef->getTransform()->setTransformType(TransformType::Offset);
-            }
-            if (soRuntime)
-            {
-                soRuntime->setTransformType(TransformType::Offset);
-            }
-
-        }
-
-        ImGui::Columns(1);
-
-        float tx[3] = {
-            soDef->getTransform()->getTranslationX(),
-            soDef->getTransform()->getTranslationY(),
-            soDef->getTransform()->getTranslationZ()
-        };
-        if (ImGui::DragFloat3("Translation", tx,0.1f))
-        {
-            if (soDef)
-            {
-                soDef->getTransform()->setTranslationX(tx[0]);
-                soDef->getTransform()->setTranslationY(tx[1]);
-                soDef->getTransform()->setTranslationZ(tx[2]);
-            }
-            if(soRuntime && soRuntime->getTransformType() == TransformType::Absolute)
-            {
-                soRuntime->getCurrentTransform()->setTranslationX(tx[0]);
-                soRuntime->getCurrentTransform()->setTranslationY(tx[1]);
-                soRuntime->getCurrentTransform()->setTranslationZ(tx[2]);
-            }
-        }
-
-        float rx[3] = {
-            glm::degrees(soDef->getTransform()->getRotationX()),
-            glm::degrees(soDef->getTransform()->getRotationY()),
-            glm::degrees(soDef->getTransform()->getRotationZ())
-        };
-        if (ImGui::DragFloat3("Rotation",rx,0.1f))
-        {
-            if(soDef)
-            {
-                soDef->getTransform()->setRotationX(glm::radians(rx[0]));
-                soDef->getTransform()->setRotationY(glm::radians(rx[1]));
-                soDef->getTransform()->setRotationZ(glm::radians(rx[2]));
-            }
-            if (soRuntime && soRuntime->getTransformType() == TransformType::Absolute)
-            {
-                soRuntime->getCurrentTransform()->setRotationX(glm::radians(rx[0]));
-                soRuntime->getCurrentTransform()->setRotationY(glm::radians(rx[1]));
-                soRuntime->getCurrentTransform()->setRotationZ(glm::radians(rx[2]));
-            }
-        }
-
-        float scale[3] = {
-            soDef->getTransform()->getScaleX(),
-            soDef->getTransform()->getScaleY(),
-            soDef->getTransform()->getScaleZ()
-        };
-        if(ImGui::DragFloat3("Scale",scale,0.1f))
-        {
-            if(soDef)
-            {
-                soDef->getTransform()->setScaleX(scale[0]);
-                soDef->getTransform()->setScaleY(scale[1]);
-                soDef->getTransform()->setScaleZ(scale[2]);
-            }
-            if(soRuntime && soRuntime->getTransformType() == TransformType::Absolute)
-            {
-                soRuntime->getCurrentTransform()->setScaleX(scale[0]);
-                soRuntime->getCurrentTransform()->setScaleY(scale[1]);
-                soRuntime->getCurrentTransform()->setScaleZ(scale[2]);
-            }
-        }
-        */
 
         ImGui::Separator();
 
@@ -1051,14 +958,18 @@ namespace DreamTool
         }
     }
 
-    void PropertiesWindow::drawImGizmo()
+    void
+    PropertiesWindow::drawImGizmo
+    ()
     {
         auto log = getLog();
         float *matrix = nullptr;
         auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
+
         if (soRunt)
         {
-            matrix = (float*)glm::value_ptr(soRunt->getCurrentTransform()->asMat4());
+            matrix = soRunt->getTransform().getMatrixFloatPointer();
         }
         else
         {
@@ -1066,9 +977,13 @@ namespace DreamTool
             return;
         }
 
+        ImGui::Text("Transform");
+        ImGui::Separator();
+
         static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
 
+        /*
         if (ImGui::IsKeyPressed(90))
         {
             mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -1081,22 +996,25 @@ namespace DreamTool
         {
             mCurrentGizmoOperation = ImGuizmo::SCALE;
         }
+        */
 
+        ImGui::Columns(3);
         if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
         {
             mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
         }
-        ImGui::SameLine();
+        ImGui::NextColumn();
         if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
         {
             mCurrentGizmoOperation = ImGuizmo::ROTATE;
         }
-        ImGui::SameLine();
+        ImGui::NextColumn();
         if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
         {
             mCurrentGizmoOperation = ImGuizmo::SCALE;
         }
 
+        ImGui::Columns(1);
         float matrixTranslation[3], matrixRotation[3], matrixScale[3];
         ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
 
@@ -1106,41 +1024,73 @@ namespace DreamTool
 
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
+
+
+        ImGui::Columns(1);
+
+        /*
+        if (ImGui::IsKeyPressed(83))
+        {
+            mGizmoUseSnap = !mGizmoUseSnap;
+        }
+        */
+        ImGui::Separator();
+
+        ImGui::Checkbox("Snap to Grid", &mGizmoUseSnap);
+
+        switch (mCurrentGizmoOperation)
+        {
+            case ImGuizmo::TRANSLATE:
+                ImGui::InputFloat3("Snap", &mGizmoSnap.x);
+                break;
+            case ImGuizmo::ROTATE:
+                ImGui::InputFloat("Angle Snap", &mGizmoSnap.x);
+                break;
+            case ImGuizmo::SCALE:
+                ImGui::InputFloat("Scale Snap", &mGizmoSnap.x);
+                break;
+            default:
+                break;
+        }
+
+        ImGui::Separator();
+
+        ImGui::Columns(2);
+
         if (mCurrentGizmoOperation != ImGuizmo::SCALE)
         {
             if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
             {
                 mCurrentGizmoMode = ImGuizmo::LOCAL;
             }
-            ImGui::SameLine();
+            ImGui::NextColumn();
             if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
             {
                 mCurrentGizmoMode = ImGuizmo::WORLD;
             }
+            ImGui::Separator();
+            ImGui::NextColumn();
         }
-        static bool useSnap(false);
-        if (ImGui::IsKeyPressed(83))
-        {
-            useSnap = !useSnap;
-        }
-        ImGui::Checkbox("", &useSnap);
-        ImGui::SameLine();
-        vec3 snap(1.0f);
 
-        switch (mCurrentGizmoOperation)
+        if(ImGui::Button("Capture Initial"))
         {
-            case ImGuizmo::TRANSLATE:
-                ImGui::InputFloat3("Snap", &snap.x);
-                break;
-            case ImGuizmo::ROTATE:
-                ImGui::InputFloat("Angle Snap", &snap.x);
-                break;
-            case ImGuizmo::SCALE:
-                ImGui::InputFloat("Scale Snap", &snap.x);
-                break;
-            default:
-                break;
+            if (soDef && soRunt)
+            {
+                soDef->setTransform(soRunt->getTransform());
+            }
         }
+        ImGui::NextColumn();
+        if(ImGui::Button("Restore Initial"))
+        {
+            if (soDef && soRunt)
+            {
+                soRunt->setTransform(soDef->getTransform());
+            }
+
+        }
+
+        ImGui::Columns(1);
+
 
         auto pRunt = mState->project->getProjectRuntime();
         if (pRunt)
@@ -1163,10 +1113,8 @@ namespace DreamTool
                         mCurrentGizmoMode,
                         matrix,
                         nullptr,
-                        useSnap ? &snap.x : nullptr
+                        mGizmoUseSnap ? &mGizmoSnap.x : nullptr
                     );
-                    mat4 newmtx = glm::make_mat4(matrix);
-                    soRunt->getCurrentTransform()->fromMat4(newmtx);
                 }
             }
         }

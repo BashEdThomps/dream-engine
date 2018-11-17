@@ -703,21 +703,6 @@ namespace Dream
     (vector<SceneObjectRuntime*> instances)
     {
         auto log = getLog();
-        /*
-        // glob these matricies and push as one uniform
-        mInstanceMatricies.clear();
-        for (size_t i=0; i<instances.size(); i++)
-        {
-            if (i>MAX_INSTANCES)
-            {
-                log->warn("Maximum number of instances reached");
-                break;
-            }
-            auto instance = instances.at(i);
-            mInstanceMatricies.push_back(instance->getTransform()->asMat4());
-        }
-        setInstanceModelMatricies(mInstanceMatricies);
-        */
         for (size_t i=0; i<instances.size(); i++)
         {
             if (i>=MAX_INSTANCES)
@@ -726,7 +711,7 @@ namespace Dream
                 break;
             }
             auto instance = instances.at(i);
-            setModelMatrix(instance->getCurrentTransform()->asMat4(), "model["+std::to_string(i)+"]");
+            setModelMatrix(instance->getTransform().getMatrix(), "model["+std::to_string(i)+"]");
         }
     }
 

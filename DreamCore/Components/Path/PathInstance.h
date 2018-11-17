@@ -52,7 +52,7 @@ namespace Dream
         size_t getCurrentIndex() const;
         void setCurrentIndex(size_t currentIndex);
 
-        Transform3D stepPath();
+        Transform stepPath();
 
         bool getWrapPath() const;
         void setWrapPath(bool wrapPath);

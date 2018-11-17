@@ -17,7 +17,7 @@
  */
 #include "SceneDefinition.h"
 #include "SceneObject/SceneObjectDefinition.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 #include "../Project/ProjectDefinition.h"
 #include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
@@ -403,7 +403,7 @@ namespace Dream
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::SCENE_OBJECT_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
-        Transform3D transform;
+        Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
         mRootSceneObjectDefinition = new SceneObjectDefinition
         (

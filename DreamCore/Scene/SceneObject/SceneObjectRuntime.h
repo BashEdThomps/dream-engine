@@ -23,7 +23,7 @@
 #include <glm/vec3.hpp>
 #include "BoundingBox.h"
 #include "../../Common/IRuntime.h"
-#include "../../Components/Transform3D.h"
+#include "../../Components/Transform.h"
 
 using std::vector;
 using std::function;
@@ -96,11 +96,8 @@ namespace Dream
         bool hasPhysicsObjectInstance();
         bool hasLightInstance();
 
-        TransformType getTransformType() const;
-        void setTransformType(TransformType);
-
-        Transform3D* getCurrentTransform();
-        Transform3D* getDefinedTransform();
+        Transform& getTransform();
+        void setTransform(const Transform& transform);
 
         bool hasFocus() const;
         void setHasFocus(bool);
@@ -157,6 +154,7 @@ namespace Dream
         BoundingBox& getBoundingBox();
         void setBoundingBox(BoundingBox boundingBox);
 
+
     protected:
         void initTransform();
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
@@ -170,8 +168,7 @@ namespace Dream
         PhysicsObjectInstance* mPhysicsObjectInstance;
         ScriptInstance* mScriptInstance;
         ModelInstance* mModelInstance;
-        Transform3D* mCurrentTransform;
-        Transform3D* mDefinedTransform;
+        Transform mTransform;
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;

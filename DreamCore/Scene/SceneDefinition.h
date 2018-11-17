@@ -21,7 +21,7 @@
 #include <vector>
 #include <memory>
 #include "../Common/IDefinition.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 
 using std::vector;
 using std::unique_ptr;

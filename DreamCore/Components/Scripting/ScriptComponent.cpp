@@ -17,7 +17,7 @@
 #include "ScriptComponent.h"
 #include "ScriptInstance.h"
 #include "../Event.h"
-#include "../Transform3D.h"
+#include "../Transform.h"
 #include "../Time.h"
 #include "../Path/PathComponent.h"
 #include "../Path/PathInstance.h"
@@ -333,8 +333,7 @@ namespace Dream
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
 
-            "getDefinedTransform",&SceneObjectRuntime::getDefinedTransform,
-            "getCurrentTransform",&SceneObjectRuntime::getCurrentTransform,
+            "getTransform",&SceneObjectRuntime::getTransform,
 
             "getPath",&SceneObjectRuntime::getPathInstance,
             "getAudio",&SceneObjectRuntime::getAudioInstance,
@@ -367,57 +366,9 @@ namespace Dream
     {
         debugRegisteringClass("Transform3D");
         sol::state_view stateView(State);
-        stateView.new_usertype<Transform3D>("Transform3D",
+        stateView.new_usertype<Transform>("Transform3D",
             // Translation ===========================================================
-            "getTransformType",&Transform3D::getTransformType,
-            "getTranslationX",&Transform3D::getTranslationX,
-            "getTranslationY",&Transform3D::getTranslationY,
-            "getTranslationZ",&Transform3D::getTranslationZ,
-            "setTranslationX",&Transform3D::setTranslationX,
-            "setTranslationY",&Transform3D::setTranslationY,
-            "setTranslationZ",&Transform3D::setTranslationZ,
-            "translateByX",&Transform3D::translateByX,
-            "translateByY",&Transform3D::translateByY,
-            "translateByZ",&Transform3D::translateByZ,
-            "setTranslation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setTranslation),
-            "setTranslation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setTranslation),
-            "getTranslation",&Transform3D::getTranslation,
-            // Rotation =============================================================
-            "getRotationX",&Transform3D::getRotationX,
-            "getRotationY",&Transform3D::getRotationY,
-            "getRotationZ",&Transform3D::getRotationZ,
-            "setRotationX",&Transform3D::setRotationX,
-            "setRotationY",&Transform3D::setRotationY,
-            "setRotationZ",&Transform3D::setRotationZ,
-            "rotateByX",&Transform3D::rotateByX,
-            "rotateByY",&Transform3D::rotateByY,
-            "rotateByZ",&Transform3D::rotateByZ,
-            "setRotation",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setRotation),
-            "setRotation",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setRotation),
-            "getOrientation",&Transform3D::getOrientation,
-            "setOrientation",static_cast<void(Transform3D::*)(float,float,float,float)>(&Transform3D::setOrientation),
-            "setOrientation",static_cast<void(Transform3D::*)(glm::quat)>(&Transform3D::setOrientation),
-            "setOrientationW",&Transform3D::setOrientationW,
-            "getOrientationW",&Transform3D::getOrientationW,
-            "setOrientationX",&Transform3D::setOrientationX,
-            "getOrientationX",&Transform3D::getOrientationX,
-            "setOrientationY",&Transform3D::setOrientationY,
-            "getOrientationY",&Transform3D::getOrientationY,
-            "setOrientationZ",&Transform3D::setOrientationZ,
-            "getOrientationZ",&Transform3D::getOrientationZ,
-
-            // Scale ================================================================
-            "getScaleX",&Transform3D::getScaleX,
-            "getScaleY",&Transform3D::getScaleY,
-            "getScaleZ",&Transform3D::getScaleZ,
-            "setScaleX",&Transform3D::setScaleX,
-            "setScaleY",&Transform3D::setScaleY,
-            "setScaleZ",&Transform3D::setScaleZ,
-            "scaleByX",&Transform3D::scaleByX,
-            "scaleByY",&Transform3D::scaleByY,
-            "scaleByZ",&Transform3D::scaleByZ,
-            "setScale",static_cast<void(Transform3D::*)(float,float,float)>(&Transform3D::setScale),
-            "setScale",static_cast<void(Transform3D::*)(glm::vec3)>(&Transform3D::setScale)
+            "getMatrix",&Transform::getMatrix
         );
     }
 

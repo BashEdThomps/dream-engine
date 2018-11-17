@@ -25,7 +25,7 @@ namespace Dream
     class CompoundChildDefinition
     {
     public:
-       Transform3D transform;
+       Transform transform;
        string      uuid;
 
        json getJson()

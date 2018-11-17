@@ -273,7 +273,7 @@ namespace DreamTool
                 checkGLError();
             }
 
-            mModelMatrix = mSelectedSceneObjectRuntime->getCurrentTransform()->asMat4();
+            mModelMatrix = mSelectedSceneObjectRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {

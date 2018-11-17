@@ -189,12 +189,7 @@ namespace Dream
 
         // Transform ============================================================
         const static string TRANSFORM;
-        const static string TRANSFORM_TYPE;
-        const static string TRANSFORM_TRANSLATION;
-        const static string TRANSFORM_ORIENTATION;
-        const static string TRANSFORM_SCALE;
-        const static string TRANSFORM_TYPE_ABSOLUTE;
-        const static string TRANSFORM_TYPE_OFFSET;
+        const static string TRANSFORM_MATRIX;
 
         // Generic ==============================================================
         const static string X;

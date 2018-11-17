@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "../../Common/IDefinition.h"
-#include "../../Components/Transform3D.h"
+#include "../../Components/Transform.h"
 
 using std::string;
 using std::vector;
@@ -39,7 +39,6 @@ namespace Dream
         SceneObjectDefinition* mParentSceneObject;
         SceneDefinition* mSceneDefinition;
         vector<SceneObjectDefinition*> mChildDefinitions;
-        Transform3D* mTransform;
 
     public:
         SceneObjectDefinition(
@@ -58,8 +57,8 @@ namespace Dream
         void setFollowsCamera(bool fc);
         bool getFollowsCamera();
 
-        Transform3D* getTransform();
-        void setTransform(Transform3D* tform);
+        Transform getTransform();
+        void setTransform(Transform tform);
 
         void showStatus() override;
 

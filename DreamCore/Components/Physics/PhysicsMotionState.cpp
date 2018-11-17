@@ -29,7 +29,7 @@
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (Transform3D* dreamTransform)
+    (Transform& dreamTransform)
         : btMotionState(),
           DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
@@ -47,7 +47,7 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (Transform3D* transform)
+    (Transform& transform)
     {
         auto log = getLog();
         log->debug( "setTransform called" );
@@ -60,8 +60,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "getWorldTransform called" );
-        worldTrans.setOrigin(mDreamTransform->getTranslationAsBtVector3());
-        worldTrans.setRotation(mDreamTransform->getOrientationAsBtQuaternion());
+        worldTrans = mDreamTransform.getBtTransform();
     }
 
     void
@@ -70,13 +69,8 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "setWorldTransform called" );
-
-        // Translation
-        btVector3 pos = worldTrans.getOrigin();
-        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
-        // Rotation
-        btQuaternion rot = worldTrans.getRotation();
-        mDreamTransform->setOrientation(rot.getW(),rot.getX(),rot.getY(),rot.getZ());
+        float* mtx = mDreamTransform.getMatrixFloatPointer();
+        worldTrans.getOpenGLMatrix(mtx);
     }
 
     void
@@ -85,9 +79,6 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "setKinematicPos called" );
-        btVector3 pos = trans.getOrigin();
-        mDreamTransform->setTranslation(pos.x(), pos.y(), pos.z());
+        setWorldTransform(trans);
     }
-
-
 } // End of Dream

@@ -26,7 +26,7 @@
 
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Input/InputComponent.h"

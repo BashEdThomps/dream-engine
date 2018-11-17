@@ -25,7 +25,7 @@
 // Components -----------------------------------------------------------------
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 // Audio -----------------------------------------------------------------------
 #include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Audio/AudioComponent.h"

@@ -18,7 +18,7 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
-#include "../Transform3D.h"
+#include "../Transform.h"
 
 class btTransform;
 
@@ -27,13 +27,13 @@ namespace Dream
     class PhysicsMotionState : public btMotionState, DreamObject
     {
     protected:
-        Transform3D* mDreamTransform;
+        Transform& mDreamTransform;
 
     public:
-        PhysicsMotionState(Transform3D*);
+        PhysicsMotionState(Transform&);
         ~PhysicsMotionState();
 
-        void setTransform(Transform3D*);
+        void setTransform(Transform&);
 
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);

@@ -62,5 +62,7 @@ namespace DreamTool
         IRuntime* mRuntime;
         ImVec2 mImageSize;
         ImVec2 mBigEditorSize;
+        bool mGizmoUseSnap;
+        vec3 mGizmoSnap;
     };
 }

@@ -218,10 +218,10 @@ namespace Dream
         mCurrentIndex = currentIndex;
     }
 
-    Transform3D PathInstance::stepPath()
+    Transform PathInstance::stepPath()
     {
         auto log = getLog();
-        Transform3D retval;
+        Transform retval;
 
         if (mSplinePoints.empty())
         {
@@ -242,12 +242,13 @@ namespace Dream
             }
         }
 
-
         vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
         quat thisOrient = mSplineTangents.at(mCurrentIndex);
 
-        retval.setTranslation(thisPoint);
-        retval.setOrientation(thisOrient);
+        mat4 mat(1.0f);
+        mat  = glm::translate(mat,thisPoint);
+        auto rot = mat4_cast(thisOrient);
+        retval.setMatrix(mat*rot);
         vec3 ang = eulerAngles(thisOrient);
         log->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),

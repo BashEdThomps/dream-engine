@@ -278,9 +278,9 @@ namespace Dream
 
                 if (sort == nullptr) return;
 
-                auto transform = sort->getCurrentTransform();
+                auto transform = sort->getTransform();
 
-                vec3 tx = transform->getTranslation();
+                vec3 tx = transform.decomposeMatrix().translation;
                 vector<char>  bufferData = audioAsset->getAudioDataBuffer();
                 if (bufferData.empty())
                 {

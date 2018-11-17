@@ -25,7 +25,7 @@
 
 #include "../Components/IAssetDefinition.h"
 #include "../Components/Time.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 #include "../Components/IAssetInstance.h"
 #include "../Components/Window/IWindowComponent.h"
 

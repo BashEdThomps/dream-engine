@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 #include "DreamObject.h"
 
 using std::string;

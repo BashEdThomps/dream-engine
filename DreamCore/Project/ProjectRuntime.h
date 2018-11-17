@@ -40,7 +40,7 @@ namespace Dream
     class PhysicsComponent;
     class ScriptComponent;
     class NanoVGComponent;
-    class Transform3D;
+    class Transform;
     class SceneRuntime;
     class SceneDefinition;
     class MaterialCache;

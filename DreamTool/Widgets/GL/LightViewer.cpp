@@ -101,10 +101,7 @@ namespace DreamTool
             for (auto inst : lightInstances)
             {
                 auto light = dynamic_cast<LightInstance*>(inst);
-                mModelMatrix = glm::translate(
-                    mat4(1.0f),
-                    light->getSceneObjectRuntime()->getCurrentTransform()->getTranslation()
-                );
+                mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();
                 vec3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)

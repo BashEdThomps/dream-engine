@@ -22,7 +22,7 @@
 #include "../../Project/ProjectDefinition.h"
 
 #include "../../Components/IAssetDefinition.h"
-#include "../../Components/Transform3D.h"
+#include "../../Components/Transform.h"
 #include "../../Utilities/Uuid.h"
 
 #include <regex>
@@ -50,7 +50,7 @@ namespace Dream
             mJson[Constants::UUID] = Uuid::generateUuid();
             log->trace( "With new UUID",getNameAndUuidString());
         }
-        mTransform = new Transform3D(jsonData[Constants::TRANSFORM]);
+        mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
     }
 
     SceneObjectDefinition::~SceneObjectDefinition
@@ -58,13 +58,6 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
-
-        if (mTransform != nullptr)
-        {
-            delete mTransform;
-            mTransform = nullptr;
-        }
-
         deleteChildSceneObjectDefinitions();
     }
 
@@ -77,18 +70,18 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_CHILDREN].size();
     }
 
-    Transform3D*
+    Transform
     SceneObjectDefinition::getTransform
     ()
     {
-        return mTransform;
+        return Transform(mJson[Constants::TRANSFORM]);
     }
 
     void
     SceneObjectDefinition::setTransform
-    (Transform3D* tform)
+    (Transform tform)
     {
-        mTransform = tform;
+        mJson[Constants::TRANSFORM] = tform.getJson();
     }
 
     void
@@ -221,8 +214,7 @@ namespace Dream
             log->debug("from scratch");
             defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
 
-            Transform3D transform;
-            transform.setScale(1.0f,1.0f,1.0f);
+            Transform transform;
             defJson[Constants::TRANSFORM] = transform.getJson();
         }
         else
@@ -258,7 +250,6 @@ namespace Dream
     ()
     {
         mJson[Constants::SCENE_OBJECT_CHILDREN] = json::array();
-        mJson[Constants::TRANSFORM] = mTransform->getJson();
         for (SceneObjectDefinition* sod : mChildDefinitions)
         {
             mJson[Constants::SCENE_OBJECT_CHILDREN].push_back(sod->getJson());
@@ -341,9 +332,7 @@ namespace Dream
         {
             resultStr = match[0].str();
             num = atoi(resultStr.c_str());
-
         }
-
 
         if (num > -1)
         {

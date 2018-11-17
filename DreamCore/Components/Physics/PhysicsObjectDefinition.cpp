@@ -348,7 +348,7 @@ namespace Dream
         {
            CompoundChildDefinition def;
            def.uuid = childJson[Constants::UUID];
-           def.transform = Transform3D(childJson[Constants::TRANSFORM]);
+           def.transform = Transform(childJson[Constants::TRANSFORM]);
            retval.push_back(def);
 
         }

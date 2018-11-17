@@ -208,13 +208,7 @@ namespace Dream
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
-    const string Constants::TRANSFORM_TRANSLATION = "translation";
-    const string Constants::TRANSFORM_ORIENTATION = "orientation";
-    const string Constants::TRANSFORM_SCALE = "scale";
-    const string Constants::TRANSFORM_TYPE = "transformType";
-    const string Constants::TRANSFORM_TYPE_ABSOLUTE = "absolute";
-    const string Constants::TRANSFORM_TYPE_OFFSET = "offset";
-
+    const string Constants::TRANSFORM_MATRIX = "matrix";
     // Generic ==================================================================
     const string Constants::X = "x";
     const string Constants::Y = "y";

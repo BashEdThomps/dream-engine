@@ -68,8 +68,6 @@ namespace Dream
         mPhysicsObjectInstance(nullptr),
         mScriptInstance(nullptr),
         mModelInstance(nullptr),
-        mCurrentTransform(new Transform3D()),
-        mDefinedTransform(nullptr),
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
         mBoundingBox(),
@@ -107,12 +105,6 @@ namespace Dream
         removePathInstance();
         removePhysicsObjectInstance();
         removeScriptInstance();
-
-        if (mCurrentTransform != nullptr)
-        {
-            delete mCurrentTransform;
-            mCurrentTransform = nullptr;
-        }
     }
 
     void
@@ -347,65 +339,19 @@ namespace Dream
         return mPhysicsObjectInstance;
     }
 
-    TransformType
-    SceneObjectRuntime::getTransformType
-    ()
-    const
-    {
-        return mDefinedTransform->getTransformType();
-    }
-
-    void
-    SceneObjectRuntime::setTransformType
-    (TransformType transformType)
-    {
-        mDefinedTransform->setTransformType(transformType);
-        mCurrentTransform->setTransformType(transformType);
-    }
-
-    Transform3D*
-    SceneObjectRuntime::getCurrentTransform
+    Transform&
+    SceneObjectRuntime::getTransform
     ()
     {
-        if (mDefinedTransform->getTransformType() == TransformType::Offset)
-        {
-            mCurrentTransform->setOffsetFrom(getParentRuntime()->getCurrentTransform(), mDefinedTransform);
-            return mCurrentTransform;
-        }
-        return mCurrentTransform;
-    }
-
-    Transform3D*
-    SceneObjectRuntime::getDefinedTransform
-    ()
-    {
-        return mDefinedTransform;
+        return mTransform;
     }
 
     void
     SceneObjectRuntime::initTransform()
     {
         auto log = getLog();
-        mDefinedTransform = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
-        if (mDefinedTransform->isTypeOffset())
-        {
-            log->trace("Inheriting Offset Transform for {}",getNameAndUuidString());
-            auto parent=getParentRuntime()->getCurrentTransform();
-            if (parent != nullptr)
-            {
-                mCurrentTransform->setOffsetFrom(parent, mDefinedTransform);
-            }
-            else
-            {
-                log->error("{} has no parent to inherit transform from",getNameAndUuidString());
-            }
-        }
-        else
-        {
-            mCurrentTransform->setTranslation(mDefinedTransform->getTranslation());
-            mCurrentTransform->setOrientation(mDefinedTransform->getOrientation());
-            mCurrentTransform->setScale(mDefinedTransform->getScale());
-        }
+        auto definedTransform = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
+        mTransform = Transform(definedTransform);
     }
 
     bool
@@ -902,6 +848,13 @@ namespace Dream
             createChildRuntime(*it);
         }
         return true;
+    }
+
+    void
+    SceneObjectRuntime::setTransform
+    (const Transform& transform)
+    {
+        mTransform = transform;
     }
 
     bool

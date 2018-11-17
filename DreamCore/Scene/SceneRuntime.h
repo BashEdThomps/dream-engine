@@ -24,7 +24,7 @@
 #include "SceneState.h"
 
 #include "../Common/IRuntime.h"
-#include "../Components/Transform3D.h"
+#include "../Components/Transform.h"
 #include "../Components/Graphics/Camera.h"
 
 using std::string;

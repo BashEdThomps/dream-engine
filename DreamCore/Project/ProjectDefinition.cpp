@@ -405,7 +405,7 @@ namespace Dream
         json scene;
         scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
-        Transform3D camTransform;
+        Transform camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
         auto sd = new SceneDefinition(this, scene);
         sd->createNewRootSceneObjectDefinition();

@@ -24,11 +24,8 @@
 #include <vector>
 #include <btBulletDynamicsCommon.h>
 
-using std::string;
-using std::map;
-using std::vector;
-using glm::vec3;
-
+using namespace std;
+using namespace glm;
 using nlohmann::json;
 
 namespace Dream
