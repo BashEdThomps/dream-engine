@@ -217,8 +217,12 @@ namespace DreamTool
                 auto gfx = pRuntime->getGraphicsComponent();
                 if (gfx)
                 {
-                    mViewMatrix = gfx->getViewMatrix();
                     mProjectionMatrix = gfx->getProjectionMatrix();
+                }
+                auto sRunt = pRuntime->getActiveSceneRuntime();
+                if (sRunt)
+                {
+                    mViewMatrix = sRunt->getCamera()->getViewMatrix();
                 }
             }
         }

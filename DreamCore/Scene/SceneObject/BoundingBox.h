@@ -20,7 +20,6 @@
 #include "../../Common/DreamObject.h"
 
 using namespace glm;
-struct aiMesh;
 
 namespace Dream
 {
@@ -35,6 +34,8 @@ namespace Dream
         vec3 minimum;
         vec3 maximum;
         vec3 getCenter();
+        vec3 getNegativeVertex(const vec3& position, const vec3& normal) const;
+        vec3 getPositiveVertex(const vec3& position, const vec3& normal) const;
     };
 }
 

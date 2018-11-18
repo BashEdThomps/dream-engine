@@ -756,12 +756,12 @@ namespace Dream
 
     void
     ShaderInstance::draw
-    ()
+    (Camera* camera)
     {
        for (auto material : mMaterials)
        {
            bindMaterial(material);
-           material->draw();
+           material->draw(camera);
        }
     }
 

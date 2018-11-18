@@ -32,6 +32,7 @@ namespace Dream
     class ShaderInstance;
     class MaterialDefinition;
     class TextureInstance;
+    class Camera;
 
     class MaterialInstance : public IAssetInstance
     {
@@ -45,7 +46,7 @@ namespace Dream
         bool operator==(MaterialInstance& other);
         void debug();
         void logMeshes();
-        void draw();
+        void draw(Camera*);
 
         bool load(string) override;
 

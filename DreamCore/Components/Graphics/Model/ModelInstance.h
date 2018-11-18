@@ -42,6 +42,7 @@
 struct aiScene;
 struct aiMaterial;
 struct aiNode;
+struct aiMesh;
 using nlohmann::json;
 using glm::mat4;
 using Assimp::Importer;

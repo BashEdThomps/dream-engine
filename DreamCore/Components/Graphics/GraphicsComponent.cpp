@@ -73,8 +73,6 @@ using glm::scale;
 
 namespace Dream
 {
-
-
     float GraphicsComponent::getMinimumDraw() const
     {
         return mMinimumDraw;
@@ -88,9 +86,7 @@ namespace Dream
     GraphicsComponent::GraphicsComponent
     (IWindowComponent* windowComponent)
         : IComponent(),
-          mViewMatrix(mat4(1.0f)),
           mProjectionMatrix(mat4(1.0f)),
-          mCamera(nullptr),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
@@ -123,7 +119,7 @@ namespace Dream
 
     bool
     GraphicsComponent::init
-    (void)
+    ()
     {
         auto log = getLog();
         log->debug("Initialising");
@@ -168,7 +164,8 @@ namespace Dream
         checkGLError();
 
         // Perspective Projection Matrix
-        mProjectionMatrix = perspective(
+        mProjectionMatrix = perspective
+        (
             Constants::CAMERA_ZOOM,
             static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
             mMinimumDraw,
@@ -198,9 +195,8 @@ namespace Dream
         setMeshCullDistance(sr->getMeshCullDistance());
         setMinimumDraw(sr->getMinDrawDistance());
         setMaximumDraw(sr->getMaxDrawDistance());
-        mCamera = sr->getCamera();
-        mCamera->updateCameraVectors();
-        mViewMatrix = mCamera->getViewMatrix();
+        sr->getCamera()->setProjectionMatrix(mProjectionMatrix);
+        sr->getCamera()->updateCameraVectors();
         mLightingShader = sr->getLightingShader();
         updateLightQueue(sr);
         endUpdate();
@@ -261,9 +257,8 @@ namespace Dream
         {
             mShaderCacheHandle->draw
             (
-                mViewMatrix,
-                mProjectionMatrix,
-                mCamera->getTranslation()
+                sr->getCamera(),
+                mProjectionMatrix
             );
         }
     }
@@ -433,7 +428,7 @@ namespace Dream
 
     void
     GraphicsComponent::renderLightingPass
-    ()
+    (SceneRuntime* sr)
     {
         auto log = getLog();
 
@@ -478,7 +473,7 @@ namespace Dream
         mLightingShader->addUniform(INT1,"gNormal"    ,1, &norm);
         mLightingShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
 
-        mLightingShader->setViewerPosition(mCamera->getTranslation());
+        mLightingShader->setViewerPosition(sr->getCamera()->getTranslation());
         mLightingShader->bindLightQueue(mLightQueue);
         mLightingShader->syncUniforms();
 
@@ -548,13 +543,6 @@ namespace Dream
     (float meshCullDistance)
     {
         mMeshCullDistance = meshCullDistance;
-    }
-
-    mat4
-    GraphicsComponent::getViewMatrix
-    ()
-    {
-        return mViewMatrix;
     }
 
     mat4

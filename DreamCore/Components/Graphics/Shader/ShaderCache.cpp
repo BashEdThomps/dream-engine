@@ -19,6 +19,7 @@
 #include "ShaderDefinition.h"
 #include "ShaderInstance.h"
 #include "../../../Project/ProjectRuntime.h"
+#include "../Camera.h"
 
 namespace Dream
 {
@@ -70,21 +71,19 @@ namespace Dream
     void
     ShaderCache::draw
     (
-        mat4 viewMatrix,
-        mat4 projectionMatrix,
-        vec3 viewPos
+        Camera* camera,
+        mat4 projectionMatrix
     )
     {
         for (auto instance : mInstances)
         {
             auto shader = dynamic_cast<ShaderInstance*>(instance);
             if (shader->countMaterials() == 0) continue;
-
             shader->use();
-            shader->setViewMatrix(viewMatrix);
+            shader->setViewMatrix(camera->getViewMatrix());
             shader->setProjectionMatrix(projectionMatrix);
-            shader->setViewerPosition(viewPos);
-            shader->draw();
+            shader->setViewerPosition(camera->getTranslation());
+            shader->draw(camera);
         }
     }
 } // End of Dream

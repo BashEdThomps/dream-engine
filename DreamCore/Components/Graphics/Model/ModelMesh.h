@@ -47,6 +47,7 @@ namespace Dream
     class TextureInstance;
     class ShaderInstance;
     class SceneObjectRuntime;
+    class Camera;
 
     class ModelMesh : public DreamObject
     {
@@ -61,6 +62,8 @@ namespace Dream
         vector<GLuint> mIndices;
         vector<SceneObjectRuntime*> mInstances;
     public:
+        static long DrawCalls;
+        static long InstancesDrawn;
         ModelMesh
         (
             ModelInstance* parent,
@@ -82,6 +85,6 @@ namespace Dream
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
         GLuint getVAO() const;
-        void drawInstances(ShaderInstance* shader);
+        void drawInstances(Camera* camera, ShaderInstance* shader);
     };
 }

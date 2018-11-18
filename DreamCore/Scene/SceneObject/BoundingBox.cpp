@@ -49,4 +49,28 @@ namespace Dream
         maximum = vec3(numeric_limits<float>::min());
         minimum = vec3(numeric_limits<float>::max());
     }
+
+    vec3
+    BoundingBox::getPositiveVertex
+    (const vec3& position, const vec3& normal)
+    const
+    {
+        vec3 positiveVertex = minimum;
+        if( normal.x >= 0.0f ) positiveVertex.x = maximum.x;
+        if( normal.y >= 0.0f ) positiveVertex.y = maximum.y;
+        if( normal.z >= 0.0f ) positiveVertex.z = maximum.z;
+        return position+positiveVertex;
+    }
+
+    vec3
+    BoundingBox::getNegativeVertex
+    (const vec3& position, const vec3& normal)
+    const
+    {
+        vec3 negativeVertex = maximum;
+        if( normal.x >= 0.0f ) negativeVertex.x = minimum.x;
+        if( normal.y >= 0.0f ) negativeVertex.y = minimum.y;
+        if( normal.z >= 0.0f ) negativeVertex.z = minimum.z;
+        return position+negativeVertex;
+    }
 }

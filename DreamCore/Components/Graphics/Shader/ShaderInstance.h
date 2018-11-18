@@ -55,7 +55,7 @@ namespace Dream
     class ShaderDefinition;
     class MaterialInstance;
     class LightInstance;
-
+    class Camera;
     class ShaderInstance : public IAssetInstance
     {
     private:
@@ -138,7 +138,7 @@ namespace Dream
 
         void logMaterials();
 
-        void draw();
+        void draw(Camera*);
 
         bool getRecompile() const;
         void setRecompile(bool recompile);

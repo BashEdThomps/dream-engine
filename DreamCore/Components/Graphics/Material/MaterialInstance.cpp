@@ -19,6 +19,7 @@
 #include "../Texture/TextureInstance.h"
 #include "../Model/ModelMesh.h"
 #include "MaterialDefinition.h"
+#include "../Camera.h"
 
 namespace Dream
 {
@@ -132,11 +133,11 @@ namespace Dream
 
     void
     MaterialInstance::draw
-    ()
+    (Camera* camera)
     {
        for (auto mesh : mUsedBy)
        {
-           mesh->drawInstances(mShader);
+           mesh->drawInstances(camera, mShader);
        }
     }
 

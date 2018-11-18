@@ -29,15 +29,17 @@
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "../../Scene/SceneObject/BoundingBox.h"
 #include "../../Common/DreamObject.h"
 #include "../Transform.h"
+#include "Frustum.h"
 
 using glm::vec3;
 using glm::mat4;
 
 namespace Dream
 {
+    class SceneObjectRuntime;
     class Camera : public DreamObject
     {
     private:
@@ -56,6 +58,8 @@ namespace Dream
         float mMovementSpeed;
         float mMouseSensitivity;
         float mZoom;
+        mat4 mProjectionMatrix;
+        Frustum mFrustum;
     public:
         // Constructor with vectors
         Camera
@@ -103,5 +107,8 @@ namespace Dream
         void setYaw(float yaw);
         float getPitch() const;
         void setPitch(float pitch);
+        bool inFrustum(SceneObjectRuntime*);
+        mat4 getProjectionMatrix() const;
+        void setProjectionMatrix(const mat4& projectionMatrix);
     }; // End of Camera
 } // End of Dream

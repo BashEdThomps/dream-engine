@@ -36,7 +36,6 @@ namespace Dream
 {
     class ShaderCache;
     class IWindowComponent;
-    class Camera;
     class ModelInstance;
     class ShaderInstance;
     class LightInstance;
@@ -52,8 +51,6 @@ namespace Dream
     {
     private:
         mat4 mProjectionMatrix;
-        mat4 mViewMatrix;
-        Camera* mCamera;
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
@@ -73,21 +70,20 @@ namespace Dream
         GraphicsComponent(IWindowComponent*);
         ~GraphicsComponent() override;
 
-        bool init(void) override;
+        bool init() override;
         void updateComponent(SceneRuntime*) override;
 
         void addToLightQueue(LightInstance*);
         void clearLightQueue();
         void updateLightQueue(SceneRuntime*);
         bool setupScreenQuad();
-        void renderLightingPass();
+        void renderLightingPass(SceneRuntime* sr);
 
         bool setupGeometryBuffers();
 
         void freeGeometryBuffers();
         void renderGeometryPass(SceneRuntime*);
 
-        mat4 getViewMatrix();
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
         void handleResize();

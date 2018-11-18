@@ -19,6 +19,7 @@
 #include "ModelInstance.h"
 #include "../Shader/ShaderInstance.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Camera.h"
 
 namespace Dream
 {
@@ -175,15 +176,29 @@ namespace Dream
 
     void
     ModelMesh::drawInstances
-    (ShaderInstance* shader)
+    (Camera* camera, ShaderInstance* shader)
     {
         auto log = getLog();
+        vector<SceneObjectRuntime*> inFrustum;
+        for (int i=0; i<mInstances.size();i++)
+        {
+            auto sor = mInstances.at(i);
+            if(camera->inFrustum(sor))
+            {
+                inFrustum.push_back(sor);
+            }
+        }
         log->debug("Drawing {} instances of mesh {}", mInstances.size(), getName());
         shader->bindVertexArray(mVAO);
-        shader->bindInstances(mInstances);
+        shader->bindInstances(inFrustum);
         shader->syncUniforms();
-        auto size = static_cast<GLsizei>(mInstances.size());
+        auto size = static_cast<GLsizei>(inFrustum.size());
+        InstancesDrawn += size;
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
+        DrawCalls++;
     }
+
+    long ModelMesh::DrawCalls = 0;
+    long ModelMesh::InstancesDrawn = 0;
 
 } // End of Dream

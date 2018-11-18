@@ -22,12 +22,12 @@
 #include "../../ICache.h"
 
 using namespace std;
-using glm::vec3;
-using glm::mat4;
+using namespace glm;
 
 namespace Dream
 {
     class LightInstance;
+    class Camera;
 
     class ShaderCache : public ICache
     {
@@ -35,7 +35,7 @@ namespace Dream
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
         void logShaders();
-        void draw(mat4 viewMatrix, mat4 projectionMatrix, vec3 viewPos);
+        void draw(Camera* camera, mat4 projectionMatrix);
 
         // ICache interface
     protected:

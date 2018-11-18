@@ -32,13 +32,13 @@ namespace DreamTool
                 auto gfx = pRuntime->getGraphicsComponent();
                 if (gfx)
                 {
-                    mViewMatrix = gfx->getViewMatrix();
                     mProjectionMatrix = gfx->getProjectionMatrix();
                 }
                 auto activeSR = pRuntime->getActiveSceneRuntime();
                 if (activeSR)
                 {
                     lightInstances = activeSR->getAssetInstances(AssetType::LIGHT);
+                    mViewMatrix = activeSR->getCamera()->getViewMatrix();
                 }
             }
         }

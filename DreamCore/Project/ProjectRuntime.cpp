@@ -34,6 +34,7 @@
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
+#include "../Components/Graphics/Model/ModelMesh.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/IWindowComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
@@ -512,17 +513,20 @@ namespace Dream
             mTime->nowLL()
         );
         // Draw 3D/PhysicsDebug/2D
+        ModelMesh::DrawCalls = 0;
+        ModelMesh::InstancesDrawn = 0;
         mGraphicsComponent->handleResize();
         mGraphicsComponent->renderGeometryPass(sr);
-        mGraphicsComponent->renderLightingPass();
+        mGraphicsComponent->renderLightingPass(sr);
         mScriptComponent->updateNanoVG();
         ShaderInstance::InvalidateState();
         mPhysicsComponent->setViewProjectionMatrix
         (
-            mGraphicsComponent->getViewMatrix(),
+            sr->getCamera()->getViewMatrix(),
             mGraphicsComponent->getProjectionMatrix()
         );
         mPhysicsComponent->drawDebug();
+        log->critical("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
     }
 
     int
