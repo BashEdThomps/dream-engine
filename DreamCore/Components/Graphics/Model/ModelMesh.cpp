@@ -188,7 +188,12 @@ namespace Dream
                 inFrustum.push_back(sor);
             }
         }
-        log->debug("Drawing {} instances of mesh {}", mInstances.size(), getName());
+        if (inFrustum.empty())
+        {
+            log->error("No instances of {} in Frustum", getName());
+            return;
+        }
+        log->error("Drawing {} instances of mesh {}", mInstances.size(), getName());
         shader->bindVertexArray(mVAO);
         shader->bindInstances(inFrustum);
         shader->syncUniforms();
