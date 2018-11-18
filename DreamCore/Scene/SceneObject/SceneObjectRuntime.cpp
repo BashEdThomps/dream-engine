@@ -466,8 +466,13 @@ namespace Dream
         for (auto assetPair : mAssetDefinitions)
         {
             IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
-            log->trace("Creating {}",def->getNameAndUuidString());
             bool result = false;
+            if (def == nullptr)
+            {
+                log->error("Could not find asset definition {}", assetPair.second);
+                continue;
+            }
+            log->trace("Creating {}",def->getNameAndUuidString());
             switch (assetPair.first)
             {
                 case AssetType::ANIMATION:
