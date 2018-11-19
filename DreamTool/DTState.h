@@ -14,6 +14,7 @@
 #include "Widgets/ImGui/GridPropertiesWindow.h"
 #include "Widgets/ImGui/ScriptEditorWindow.h"
 #include "Widgets/ImGui/ShaderEditorWindow.h"
+#include "Widgets/ImGui/RenderPipelinePreviewWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
@@ -45,6 +46,7 @@ namespace DreamTool
         ScriptEditorWindow scriptEditorWindow;
         ShaderEditorWindow shaderEditorWindow;
         MenuBar menuBar;
+        RenderPipelinePreviewWindow renderPipelineWindow;
         // GL Widgets
         Grid grid;
         LightViewer lightViewer;

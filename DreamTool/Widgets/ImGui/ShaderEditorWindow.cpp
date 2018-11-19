@@ -124,8 +124,8 @@ namespace DreamTool
                     string fragTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
                     if (shaderInst)
                     {
-                        shaderInst->setVertexSource(vertTemplate);
-                        shaderInst->setFragmentSource(fragTemplate);
+                        mVertexEditor.SetText(vertTemplate);
+                        mFragmentEditor.SetText(fragTemplate);
                     }
                     else
                     {

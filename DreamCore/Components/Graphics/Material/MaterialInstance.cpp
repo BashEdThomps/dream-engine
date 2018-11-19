@@ -53,7 +53,14 @@ namespace Dream
     MaterialInstance::clearMeshes
     ()
     {
-       mUsedBy.clear();
+        mUsedBy.clear();
+    }
+
+    size_t
+    MaterialInstance::countMeshes
+    ()
+    {
+       return mUsedBy.size();
     }
 
     bool
@@ -132,12 +139,23 @@ namespace Dream
     }
 
     void
-    MaterialInstance::draw
+    MaterialInstance::drawGeometryPass
     (Camera* camera)
+    {
+
+       for (auto mesh : mUsedBy)
+       {
+           mesh->drawGeometryPassInstances(camera, mShader);
+       }
+    }
+
+    void
+    MaterialInstance::drawShadowPass
+    (ShaderInstance* shader)
     {
        for (auto mesh : mUsedBy)
        {
-           mesh->drawInstances(camera, mShader);
+           mesh->drawShadowPassInstances(shader);
        }
     }
 

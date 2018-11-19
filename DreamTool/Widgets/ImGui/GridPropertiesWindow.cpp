@@ -5,7 +5,7 @@ namespace DreamTool
 {
     GridPropertiesWindow::GridPropertiesWindow
     (DTState* p)
-        : ImGuiWidget(p)
+        : ImGuiWidget(p,false)
     {
        setLogClassName("GridPropertiesWidget");
     }

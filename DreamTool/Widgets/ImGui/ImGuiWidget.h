@@ -15,7 +15,7 @@ namespace DreamTool
     class ImGuiWidget : public DTWidget
     {
     public:
-        ImGuiWidget(DTState* project);
+        ImGuiWidget(DTState* project,bool visible = true);
         ~ImGuiWidget() override;
         bool StringCombo(const char* label,
                          int* current_item,

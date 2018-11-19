@@ -50,7 +50,8 @@ namespace Dream
         ProjectRuntime* mProjectRuntime;
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
-        ShaderInstance* mLightingShader;
+        ShaderInstance* mLightingPassShader;
+        ShaderInstance* mShadowPassShader;
         Camera mCamera;
         float mMinDrawDistance;
         float mMaxDrawDistance;
@@ -122,8 +123,8 @@ namespace Dream
         float getCameraYaw();
         void setCameraYaw(float);
 
-        ShaderInstance* getLightingShader() const;
-        void setLightingShader(ShaderInstance* lightingShader);
+        ShaderInstance* getLightingPassShader() const;
+        void setLightingPassShader(ShaderInstance* lightingShader);
 
         void setMeshCullDistance(float);
         float getMeshCullDistance();
@@ -134,5 +135,7 @@ namespace Dream
         float getMaxDrawDistance() const;
 
         vector<IAssetInstance*> getAssetInstances(AssetType);
+        ShaderInstance* getShadowPassShader() const;
+        void setShadowPassShader(ShaderInstance* shadowPassShader);
     };
 } // End of Dream

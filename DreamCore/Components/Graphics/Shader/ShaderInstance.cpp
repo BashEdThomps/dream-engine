@@ -756,15 +756,29 @@ namespace Dream
     }
 
     void
-    ShaderInstance::draw
+    ShaderInstance::drawGeometryPass
     (Camera* camera)
     {
        for (auto material : mMaterials)
        {
+           if (material->countMeshes() == 0) continue;
            bindMaterial(material);
-           material->draw(camera);
+           syncUniforms();
+           material->drawGeometryPass(camera);
        }
     }
+
+    void
+    ShaderInstance::drawShadowPass
+    (ShaderInstance* shadowPassShader)
+    {
+       for (auto material : mMaterials)
+       {
+           if (material->countMeshes() == 0) continue;
+           material->drawShadowPass(shadowPassShader);
+       }
+    }
+
 
     bool
     ShaderInstance::getRecompile

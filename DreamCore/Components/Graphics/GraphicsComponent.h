@@ -57,14 +57,28 @@ namespace Dream
         vector<LightInstance*> mLightQueue;
         IWindowComponent* mWindowComponent;
         ShaderCache* mShaderCacheHandle;
+        // Geom
         GLuint mGeometryPassFB;
         GLuint mGeometryPassPositionBuffer;
         GLuint mGeometryPassAlbedoBuffer;
         GLuint mGeometryPassNormalBuffer;
         GLuint mGeometryPassDepthBuffer;
+        GLuint mGeometryPassDepthOutBuffer;
+
+        // Shadow
+        SceneObjectRuntime* mShadowLight;
+        ShaderInstance* mShadowPassShader;
+        GLuint mShadowPassFB;
+        GLuint mShadowPassDepthBuffer;
+        mat4 mShadowMatrix;
+
+        // Lighting
+        ShaderInstance* mLightingPassShader;
         GLuint mScreenQuadVAO;
         GLuint mScreenQuadVBO;
-        ShaderInstance* mLightingShader;
+
+        const int SHADOW_WIDTH = 2048;
+        const int SHADOW_HEIGHT = 2048;
 
     public:
         GraphicsComponent(IWindowComponent*);
@@ -80,9 +94,12 @@ namespace Dream
         void renderLightingPass(SceneRuntime* sr);
 
         bool setupGeometryBuffers();
-
         void freeGeometryBuffers();
         void renderGeometryPass(SceneRuntime*);
+
+        bool setupShadowBuffers();
+        void freeShadowBuffers();
+        void renderShadowPass(SceneRuntime*);
 
         mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
@@ -97,5 +114,14 @@ namespace Dream
 
         float getMinimumDraw() const;
         float getMaximumDraw() const;
+        ShaderInstance* getShadowPassShader() const;
+        void setShadowPassShader(ShaderInstance* shadowPassShader);
+        GLuint getGeometryPassPositionBuffer() const;
+        GLuint getGeometryPassAlbedoBuffer() const;
+        void setGeometryPassAlbedoBuffer(const GLuint& geometryPassAlbedoBuffer);
+        GLuint getGeometryPassNormalBuffer() const;
+        GLuint getGeometryPassDepthBuffer() const;
+        GLuint getShadowPassDepthBuffer() const;
+        GLuint getGeometryPassDepthOutBuffer() const;
     }; // End of GraphicsComponent
 } // End of Dream

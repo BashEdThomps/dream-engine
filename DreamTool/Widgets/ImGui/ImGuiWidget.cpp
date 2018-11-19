@@ -10,8 +10,8 @@
 namespace DreamTool
 {
     ImGuiWidget::ImGuiWidget
-    (DTState* project)
-        : DTWidget(project)
+    (DTState* project, bool visible)
+        : DTWidget(project, visible)
     {
         setLogClassName("ImGuiWidget");
     }

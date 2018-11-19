@@ -11,8 +11,8 @@
 namespace DreamTool
 {
     GLWidget::GLWidget
-    (DTState* project)
-        : DTWidget (project),
+    (DTState* project, bool visible)
+        : DTWidget (project, visible),
           mModelMatrix(mat4(1.0f)),
           mViewMatrix(mat4(1.0f)),
           mProjectionMatrix(mat4(1.0f)),

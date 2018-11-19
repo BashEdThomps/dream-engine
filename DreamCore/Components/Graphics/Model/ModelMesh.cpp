@@ -169,41 +169,65 @@ namespace Dream
 
 
 
-    GLuint ModelMesh::getVAO() const
+    GLuint
+    ModelMesh::getVAO
+    ()
+    const
     {
         return mVAO;
     }
 
     void
-    ModelMesh::drawInstances
+    ModelMesh::drawGeometryPassInstances
     (Camera* camera, ShaderInstance* shader)
     {
         auto log = getLog();
-        vector<SceneObjectRuntime*> inFrustum;
-        for (int i=0; i<mInstances.size();i++)
+        mInstancesInFrustum.clear();
+        for (size_t i=0; i<mInstances.size();i++)
         {
             auto sor = mInstances.at(i);
             if(camera->inFrustum(sor))
             {
-                inFrustum.push_back(sor);
+                mInstancesInFrustum.push_back(sor);
             }
         }
-        if (inFrustum.empty())
+        if (mInstancesInFrustum.empty())
         {
-            log->error("No instances of {} in Frustum", getName());
+            log->debug("(Geometry) No instances of {} in Frustum", getName());
             return;
         }
-        log->error("Drawing {} instances of mesh {}", mInstances.size(), getName());
+        log->trace("(Geometry) Drawing {} instances of mesh {} for Geometry pass", mInstances.size(), getName());
         shader->bindVertexArray(mVAO);
-        shader->bindInstances(inFrustum);
-        shader->syncUniforms();
-        auto size = static_cast<GLsizei>(inFrustum.size());
+        shader->bindInstances(mInstancesInFrustum);
+        auto size = static_cast<GLsizei>(mInstancesInFrustum.size());
         InstancesDrawn += size;
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
         DrawCalls++;
     }
 
+    void
+    ModelMesh::drawShadowPassInstances
+    (ShaderInstance* shader)
+    {
+        auto log = getLog();
+        if (mInstancesInFrustum.empty())
+        {
+            log->debug("(Shadow) No instances of {} in Frustum", getName());
+            return;
+        }
+        log->trace("(Shadow) Drawing {} instances of mesh {}", mInstances.size(), getName());
+        shader->bindVertexArray(mVAO);
+        shader->bindInstances(mInstancesInFrustum);
+        auto size = static_cast<GLsizei>(mInstancesInFrustum.size());
+        ShadowInstancesDrawn += size;
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
+        ShadowDrawCalls++;
+    }
+
     long ModelMesh::DrawCalls = 0;
     long ModelMesh::InstancesDrawn = 0;
+    long ModelMesh::ShadowDrawCalls = 0;
+    long ModelMesh::ShadowInstancesDrawn = 0;
+
 
 } // End of Dream

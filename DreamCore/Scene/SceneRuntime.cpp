@@ -39,11 +39,21 @@ namespace Dream
 {
 
 
+    ShaderInstance* SceneRuntime::getShadowPassShader() const
+    {
+        return mShadowPassShader;
+    }
+
+    void SceneRuntime::setShadowPassShader(ShaderInstance* shadowPassShader)
+    {
+        mShadowPassShader = shadowPassShader;
+    }
+
     SceneRuntime::SceneRuntime
     (
             SceneDefinition* sd,
             ProjectRuntime* project
-    ) : IRuntime(sd, sd->getName(),sd->getUuid()),
+            ) : IRuntime(sd, sd->getName(),sd->getUuid()),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
@@ -88,7 +98,7 @@ namespace Dream
             mCamera = nullptr;
         }
         */
-        mLightingShader = nullptr;
+        mLightingPassShader = nullptr;
         mSceneObjectRuntimeCleanUpQueue.clear();
         mState = SceneState::SCENE_STATE_DESTROYED;
     }
@@ -328,11 +338,17 @@ namespace Dream
 
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
-        auto shaderUuid = sceneDefinition->getLightingShader();
-        mLightingShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
-        if (mLightingShader == nullptr)
+        auto shaderUuid = sceneDefinition->getLightingPassShader();
+        mLightingPassShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
+        shaderUuid = sceneDefinition->getShadowPassShader();
+        mShadowPassShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
+        if (mLightingPassShader == nullptr)
         {
             log->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+        }
+        if (mShadowPassShader == nullptr)
+        {
+            log->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
@@ -430,17 +446,17 @@ namespace Dream
     }
 
     ShaderInstance*
-    SceneRuntime::getLightingShader
+    SceneRuntime::getLightingPassShader
     () const
     {
-        return mLightingShader;
+        return mLightingPassShader;
     }
 
     void
-    SceneRuntime::setLightingShader
+    SceneRuntime::setLightingPassShader
     (ShaderInstance* lightingShader)
     {
-        mLightingShader = lightingShader;
+        mLightingPassShader = lightingShader;
     }
 
     void

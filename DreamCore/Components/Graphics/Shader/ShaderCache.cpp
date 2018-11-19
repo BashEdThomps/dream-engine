@@ -69,7 +69,7 @@ namespace Dream
     }
 
     void
-    ShaderCache::draw
+    ShaderCache::drawGeometryPass
     (
         Camera* camera,
         mat4 projectionMatrix
@@ -83,7 +83,23 @@ namespace Dream
             shader->setViewMatrix(camera->getViewMatrix());
             shader->setProjectionMatrix(projectionMatrix);
             shader->setViewerPosition(camera->getTranslation());
-            shader->draw(camera);
+            shader->drawGeometryPass(camera);
+        }
+    }
+
+    void
+    ShaderCache::drawShadowPass
+    (
+        mat4 matrix, ShaderInstance* shader
+    )
+    {
+        shader->use();
+        auto lsUniform = shader->getUniformLocation("lightSpaceMatrix");
+        glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
+        for (auto instance : mInstances)
+        {
+            auto s = dynamic_cast<ShaderInstance*>(instance);
+            s->drawShadowPass(shader);
         }
     }
 } // End of Dream

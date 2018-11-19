@@ -20,6 +20,7 @@
 
 #include <glm/mat4x4.hpp>
 #include "../../ICache.h"
+#include "../Light/LightInstance.h"
 
 using namespace std;
 using namespace glm;
@@ -28,6 +29,7 @@ namespace Dream
 {
     class LightInstance;
     class Camera;
+    class ShaderInstance;
 
     class ShaderCache : public ICache
     {
@@ -35,7 +37,8 @@ namespace Dream
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
         void logShaders();
-        void draw(Camera* camera, mat4 projectionMatrix);
+        void drawGeometryPass(Camera*, mat4);
+        void drawShadowPass(mat4, ShaderInstance*);
 
         // ICache interface
     protected:

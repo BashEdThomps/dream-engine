@@ -17,12 +17,12 @@ namespace DreamTool
     class DTWidget : public DreamObject
     {
     public:
-        DTWidget(DTState* state);
+        DTWidget(DTState* state, bool visible = true);
         virtual ~DTWidget();
         virtual void draw() = 0;
 
         bool getVisible() const;
-        void setVisible(bool hidden);
+        void setVisible(bool);
 
     protected:
         DTState* mState;

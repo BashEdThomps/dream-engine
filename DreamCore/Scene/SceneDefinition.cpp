@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "SceneDefinition.h"
+#include "SceneDefinition.h"
 #include "SceneObject/SceneObjectDefinition.h"
 #include "../Components/Transform.h"
 #include "../Project/ProjectDefinition.h"
@@ -588,28 +589,55 @@ namespace Dream
     }
 
     string
-    SceneDefinition::getLightingShader
+    SceneDefinition::getLightingPassShader
     ()
     {
-       if (mJson[Constants::SCENE_LIGHTING_SHADER].is_null())
+       if (mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_null())
        {
-           mJson[Constants::SCENE_LIGHTING_SHADER] = "";
+           mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = "";
        }
-       return  mJson[Constants::SCENE_LIGHTING_SHADER];
+       return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
 
     }
 
     void
-    SceneDefinition::setLightingShader
+    SceneDefinition::setLightingPassShader
     (string shader)
     {
-       mJson[Constants::SCENE_LIGHTING_SHADER] = shader;
+       mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
+    }
+
+    string
+    SceneDefinition::getShadowPassShader
+    ()
+    {
+       if (mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_null())
+       {
+           mJson[Constants::SCENE_SHADOW_PASS_SHADER] = "";
+       }
+       return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
+
+    }
+
+    void
+    SceneDefinition::setShadowPassShader
+    (string shader)
+    {
+       mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
 
     int
-    SceneDefinition::getCurrentLightingShaderIndex
+    SceneDefinition::getCurrentLightingPassShaderIndex
     ()
     {
-        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getLightingShader());
+        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getLightingPassShader());
     }
+
+    int
+    SceneDefinition::getCurrentShadowPassShaderIndex
+    ()
+    {
+        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getShadowPassShader());
+    }
+
 }

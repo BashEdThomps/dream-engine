@@ -42,12 +42,11 @@
 #include "../../../Common/DreamObject.h"
 #include "../../IAssetInstance.h"
 #include "ShaderUniform.h"
+#include "../Light/LightInstance.h"
 
-using std::vector;
-using std::string;
-using nlohmann::json;
-using glm::mat4;
-using glm::vec3;
+using namespace std;
+using namespace nlohmann;
+using namespace glm;
 
 namespace Dream
 {
@@ -113,7 +112,6 @@ namespace Dream
 
         // MVP
         bool setModelMatrix(mat4,string name = "model");
-        //bool setInstanceModelMatricies(vector<mat4> value, string name="model");
         bool setViewMatrix(mat4,string name = "view");
         bool setProjectionMatrix(mat4,string name = "projection");
 
@@ -138,7 +136,8 @@ namespace Dream
 
         void logMaterials();
 
-        void draw(Camera*);
+        void drawGeometryPass(Camera*);
+        void drawShadowPass(ShaderInstance* shadowPassShader);
 
         bool getRecompile() const;
         void setRecompile(bool recompile);

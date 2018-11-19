@@ -38,7 +38,7 @@
 #include "../Texture/TextureInstance.h"
 #include "../../../Common/DreamObject.h"
 #include <glm/glm.hpp>
-
+#include "../Light/LightInstance.h"
 
 namespace Dream
 {
@@ -61,9 +61,13 @@ namespace Dream
         vector<Vertex>  mVertices;
         vector<GLuint> mIndices;
         vector<SceneObjectRuntime*> mInstances;
+        vector<SceneObjectRuntime*> mInstancesInFrustum;
     public:
         static long DrawCalls;
         static long InstancesDrawn;
+        static long ShadowDrawCalls;
+        static long ShadowInstancesDrawn;
+
         ModelMesh
         (
             ModelInstance* parent,
@@ -85,6 +89,7 @@ namespace Dream
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
         GLuint getVAO() const;
-        void drawInstances(Camera* camera, ShaderInstance* shader);
+        void drawGeometryPassInstances(Camera* camera, ShaderInstance* shader);
+        void drawShadowPassInstances(ShaderInstance* shader);
     };
 }

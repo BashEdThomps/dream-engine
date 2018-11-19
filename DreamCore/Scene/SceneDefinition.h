@@ -118,8 +118,11 @@ namespace Dream
         float getCameraPitch();
         float getCameraYaw();
 
-        string getLightingShader();
-        void setLightingShader(string shader);
-		int getCurrentLightingShaderIndex();
+        string getLightingPassShader();
+        void setLightingPassShader(string shader);
+        int getCurrentLightingPassShaderIndex();
+        int getCurrentShadowPassShaderIndex();
+        string getShadowPassShader();
+        void setShadowPassShader(string shader);
     };
 }

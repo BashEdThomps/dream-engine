@@ -86,6 +86,12 @@ namespace DreamTool
                    mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
                 }
 
+                bool showRenderingPipeline = mState->renderPipelineWindow.getVisible();
+                if (ImGui::Checkbox("Rendering Pipeline",&showRenderingPipeline))
+                {
+                    mState->renderPipelineWindow.setVisible(showRenderingPipeline);
+                }
+
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
 
                 ImGui::EndMenu();

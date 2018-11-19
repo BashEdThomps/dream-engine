@@ -5,7 +5,7 @@ namespace DreamTool
 {
     SceneStateWindow::SceneStateWindow
     (DTState* p)
-        : ImGuiWidget(p)
+        : ImGuiWidget(p,false)
     {
         setLogClassName("SceneStateWindow");
     }

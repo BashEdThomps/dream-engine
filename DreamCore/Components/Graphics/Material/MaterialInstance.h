@@ -21,6 +21,7 @@
 #include <memory>
 #include "../../IAssetInstance.h"
 #include <glm/vec3.hpp>
+#include "../Light/LightInstance.h"
 
 using namespace std;
 using namespace glm;
@@ -42,11 +43,13 @@ namespace Dream
 
         void addMesh(ModelMesh* mesh);
         void clearMeshes();
+        size_t countMeshes();
 
         bool operator==(MaterialInstance& other);
         void debug();
         void logMeshes();
-        void draw(Camera*);
+        void drawGeometryPass(Camera*);
+        void drawShadowPass(ShaderInstance* shader);
 
         bool load(string) override;
 

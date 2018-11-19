@@ -517,6 +517,7 @@ namespace Dream
         ModelMesh::InstancesDrawn = 0;
         mGraphicsComponent->handleResize();
         mGraphicsComponent->renderGeometryPass(sr);
+        mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
         mScriptComponent->updateNanoVG();
         ShaderInstance::InvalidateState();

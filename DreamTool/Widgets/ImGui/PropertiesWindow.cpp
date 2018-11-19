@@ -525,7 +525,8 @@ namespace DreamTool
             }
         }
 
-        int lightingShaderIndex = sceneDef->getCurrentLightingShaderIndex();
+        int lightingShaderIndex = sceneDef->getCurrentLightingPassShaderIndex();
+        int shadowShaderIndex = sceneDef->getCurrentShadowPassShaderIndex();
         auto shaderList = mState->project->getProjectDefinition()->getAssetNamesVector(AssetType::SHADER);
 
         if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
@@ -533,10 +534,22 @@ namespace DreamTool
             auto selectedShader = mState->project->getProjectDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, lightingShaderIndex);
             auto uuid = selectedShader->getUuid();
             auto name = selectedShader->getName();
-            sceneDef->setLightingShader(uuid);
-            log->error("Switched lighting shader to {} {}", name, uuid);
+            sceneDef->setLightingPassShader(uuid);
+            log->error("Switched lighting pass shader to {} {}", name, uuid);
+        }
+
+        ImGui::Separator();
+
+        if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
+        {
+            auto selectedShader = mState->project->getProjectDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, shadowShaderIndex);
+            auto uuid = selectedShader->getUuid();
+            auto name = selectedShader->getName();
+            sceneDef->setShadowPassShader(uuid);
+            log->error("Switched shadow pass shader to {} {}", name, uuid);
         }
         ImGui::Separator();
+
 
         // Physics
         bool physicsDebug = sceneDef->getPhysicsDebug();

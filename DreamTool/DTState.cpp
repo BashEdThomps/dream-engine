@@ -12,6 +12,7 @@ namespace DreamTool
            scriptEditorWindow(ScriptEditorWindow(this)),
            shaderEditorWindow(ShaderEditorWindow(this)),
            menuBar(MenuBar(this)),
+           renderPipelineWindow(RenderPipelinePreviewWindow(this)),
            grid(Grid(this)),
            lightViewer(LightViewer(this)),
            selectionHighlighter(SelectionHighlighter(this)),
@@ -52,6 +53,7 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&gridPropertiesWindow);
         windowComponent.addImGuiWidget(&scriptEditorWindow);
         windowComponent.addImGuiWidget(&shaderEditorWindow);
+        windowComponent.addImGuiWidget(&renderPipelineWindow);
 
         // GL Widgets
         grid.init();
@@ -75,7 +77,7 @@ namespace DreamTool
             }
         }
 
-        spdlog::set_level(spdlog::level::err);
+        spdlog::set_level(spdlog::level::off);
         // Run the project
         ImGuiIO& io = ImGui::GetIO();
         while (!MainLoopDone)
