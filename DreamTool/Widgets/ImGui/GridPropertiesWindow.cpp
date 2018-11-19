@@ -50,6 +50,12 @@ namespace DreamTool
         ImGui::PopItemWidth();
 
         ImGui::Separator();
+        bool showLights = mState->lightViewer.getVisible();
+        if(ImGui::Checkbox("Show Light Markers",&showLights))
+        {
+            mState->lightViewer.setVisible(showLights);
+        }
+        ImGui::Separator();
 
         bool showGrid = mState->grid.getVisible();
         if (ImGui::Checkbox("Show Grid",&showGrid))

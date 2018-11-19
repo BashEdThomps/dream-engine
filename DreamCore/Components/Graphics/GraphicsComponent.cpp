@@ -97,6 +97,7 @@ namespace Dream
         log->trace("Destroying Object");
         clearLightQueue();
         freeGeometryBuffers();
+        freeShadowBuffers();
     }
 
     // Init/Setup ===============================================================
@@ -652,6 +653,7 @@ namespace Dream
             vec3(0.0f,1.0f,0.0f) // Up
         );
         mShadowMatrix = lightProjection*lightView;
+        glDisable( GL_CULL_FACE );
         if (mShaderCacheHandle != nullptr)
         {
             mShaderCacheHandle->drawShadowPass
@@ -660,6 +662,7 @@ namespace Dream
                 mShadowPassShader
             );
         }
+        glEnable( GL_CULL_FACE );
     }
 
     void
