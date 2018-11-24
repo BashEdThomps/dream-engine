@@ -315,9 +315,9 @@ namespace Dream
         }
 
          // Depth Buffer
-        if (mGeometryPassDepthOutBuffer != 0)
+        if (mGeometryPassIgnoreBuffer != 0)
         {
-            glDeleteTextures(1,&mGeometryPassDepthOutBuffer);
+            glDeleteTextures(1,&mGeometryPassIgnoreBuffer);
             checkGLError();
         }
     }
@@ -353,7 +353,7 @@ namespace Dream
         // - position color buffer
         glGenTextures(1, &mGeometryPassPositionBuffer);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGeometryPassPositionBuffer, 0);
@@ -362,7 +362,7 @@ namespace Dream
         // - normal color buffer
         glGenTextures(1, &mGeometryPassNormalBuffer);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mGeometryPassNormalBuffer, 0);
@@ -371,19 +371,19 @@ namespace Dream
         // - color + specular color buffer
         glGenTextures(1, &mGeometryPassAlbedoBuffer);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, mGeometryPassAlbedoBuffer, 0);
         checkGLError();
 
-        // - Depth debug output
-        glGenTextures(1, &mGeometryPassDepthOutBuffer);
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassDepthOutBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width,height, 0, GL_RGB, GL_FLOAT, NULL);
+        // - Ignore Lighting Buffer
+        glGenTextures(1, &mGeometryPassIgnoreBuffer);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width,height, 0, GL_RGB, GL_FLOAT, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, mGeometryPassDepthOutBuffer, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, mGeometryPassIgnoreBuffer, 0);
         checkGLError();
 
         // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
@@ -485,15 +485,22 @@ namespace Dream
         glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
         ShaderInstance::CurrentTexture3 = mShadowPassDepthBuffer;
 
-        GLuint pos, norm, alb, shadow;
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
+        ShaderInstance::CurrentTexture4 = mGeometryPassIgnoreBuffer;
+
+        GLuint pos, norm, alb, shadow, ignore;
         pos = 0;
         norm = 1;
         alb  = 2;
         shadow = 3;
+        ignore = 4;
         mLightingPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
         mLightingPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
         mLightingPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
         mLightingPassShader->addUniform(INT1,"gShadow",1, &shadow);
+        mLightingPassShader->addUniform(INT1,"gIgnore",1,&ignore);
+
         auto shadowMtx = mLightingPassShader->getUniformLocation("shadowSpaceMatrix");
         glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
 
@@ -504,15 +511,7 @@ namespace Dream
         mLightingPassShader->bindVertexArray(mScreenQuadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
-        // ----------------------------------------------------------------------------------
-        // blit to default framebuffer.
-        // Note that this may or may not work as the internal formats of both the
-        // FBO and default framebuffer have to match.
-        // The internal formats are implementation defined. This works on all of
-        // my systems, but if it doesn't on yours you'll likely have to write to the
-        // depth buffer in another shader stage (or somehow see to match the default
-        // framebuffer's internal format with the FBO's internal format).
+        // Copy content of geometry's depth buffer to default framebuffer's depth buffer
         auto width = mWindowComponent->getWidth();
         auto height = mWindowComponent->getHeight();
         glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
@@ -808,9 +807,9 @@ namespace Dream
         return mShadowPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassDepthOutBuffer() const
+    GLuint GraphicsComponent::getGeometryPassIgnoreBuffer() const
     {
-        return mGeometryPassDepthOutBuffer;
+        return mGeometryPassIgnoreBuffer;
     }
 
 } // End of Dream

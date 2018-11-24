@@ -16,20 +16,17 @@
  * this file belongs to.
  */
 #include "IRuntime.h"
+#include "IDefinition.h"
 
 namespace Dream
 {
     IRuntime::IRuntime
-    (
-        IDefinition* def,
-        string uuid,
-        string name
-    )
+    (IDefinition* def)
         : // Init List
           DreamObject("IRuntime"),
           mDefinition(def),
-          mUuid(uuid),
-          mName(name)
+          mUuid(def->getUuid()),
+          mName(def->getName())
     {
 
     }
@@ -95,5 +92,4 @@ namespace Dream
     {
         return mDefinition;
     }
-
 }

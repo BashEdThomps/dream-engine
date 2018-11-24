@@ -37,23 +37,11 @@
 
 namespace Dream
 {
-
-
-    ShaderInstance* SceneRuntime::getShadowPassShader() const
-    {
-        return mShadowPassShader;
-    }
-
-    void SceneRuntime::setShadowPassShader(ShaderInstance* shadowPassShader)
-    {
-        mShadowPassShader = shadowPassShader;
-    }
-
     SceneRuntime::SceneRuntime
     (
-            SceneDefinition* sd,
-            ProjectRuntime* project
-            ) : IRuntime(sd, sd->getName(),sd->getUuid()),
+        SceneDefinition* sd,
+        ProjectRuntime* project
+    ) : IRuntime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
@@ -91,13 +79,6 @@ namespace Dream
             mRootSceneObjectRuntime = nullptr;
         }
 
-        /* Now on the stack
-        if (mCamera != nullptr)
-        {
-            delete mCamera;
-            mCamera = nullptr;
-        }
-        */
         mLightingPassShader = nullptr;
         mSceneObjectRuntimeCleanUpQueue.clear();
         mState = SceneState::SCENE_STATE_DESTROYED;
@@ -178,12 +159,21 @@ namespace Dream
     SceneRuntime::getSceneObjectRuntimeByUuid
     (string uuid)
     {
+        if (!mRootSceneObjectRuntime)
+        {
+            return nullptr;
+        }
+
         return mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (
                 [&](SceneObjectRuntime* currentRuntime)
                 {
+                    if (!currentRuntime)
+                    {
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
                     if (currentRuntime->hasUuid(uuid))
                     {
                         return currentRuntime;
@@ -198,12 +188,21 @@ namespace Dream
     SceneRuntime::getSceneObjectRuntimeByName
     (string name)
     {
+        if (!mRootSceneObjectRuntime)
+        {
+            return nullptr;
+        }
         return mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (
                 [&](SceneObjectRuntime* currentRuntime)
                 {
+                    if (!currentRuntime)
+                    {
+                        return static_cast<SceneObjectRuntime*>(nullptr);
+                    }
+
                     if (currentRuntime->hasName(name))
                     {
                         return currentRuntime;
@@ -218,6 +217,10 @@ namespace Dream
     SceneRuntime::countSceneObjectRuntimes
     ()
     {
+        if (!mRootSceneObjectRuntime)
+        {
+            return 0;
+        }
         int count = 0;
         mRootSceneObjectRuntime->applyToAll
         (
@@ -360,9 +363,15 @@ namespace Dream
             sor = nullptr;
             return false;
         }
+
+        // Physics
+        mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
         setRootSceneObjectRuntime(sor);
         setState(SceneState::SCENE_STATE_LOADED);
         mProjectRuntime->getShaderCache()->logShaders();
+        auto focused = getSceneObjectRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
+        mCamera.setFocusedSceneObejct(focused);
+
         return true;
     }
 
@@ -385,64 +394,6 @@ namespace Dream
         {
             mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
         }
-    }
-
-    float
-    SceneRuntime::getCameraMovementSpeed
-    ()
-    {
-        return mCamera.getMovementSpeed();
-    }
-
-    void
-    SceneRuntime::setCameraMovementSpeed
-    (float cameraMovementSpeed)
-    {
-        mCamera.setMovementSpeed(cameraMovementSpeed);
-    }
-
-    glm::vec3 SceneRuntime::getCameraLookAt()
-    {
-        return mCamera.getLookAt();
-    }
-
-    void SceneRuntime::setCameraLookAt(glm::vec3 lookAt)
-    {
-        mCamera.setLookAt(lookAt);
-    }
-
-    float SceneRuntime::getCameraPitch()
-    {
-        return mCamera.getPitch();
-    }
-
-    void SceneRuntime::setCameraPitch(float pitch)
-    {
-        mCamera.setPitch(pitch);
-    }
-
-    float SceneRuntime::getCameraYaw()
-    {
-        return mCamera.getYaw();
-    }
-
-    void SceneRuntime::setCameraYaw(float yaw)
-    {
-        mCamera.setYaw(yaw);
-    }
-
-    vec3
-    SceneRuntime::getCameraTranslation
-    ()
-    {
-        return mCamera.getTranslation();
-    }
-
-    void
-    SceneRuntime::setCameraTranslation
-    (vec3 tx)
-    {
-        mCamera.setTranslation(tx);
     }
 
     ShaderInstance*
@@ -527,5 +478,15 @@ namespace Dream
     ()
     {
         return &mCamera;
+    }
+
+    ShaderInstance* SceneRuntime::getShadowPassShader() const
+    {
+        return mShadowPassShader;
+    }
+
+    void SceneRuntime::setShadowPassShader(ShaderInstance* shadowPassShader)
+    {
+        mShadowPassShader = shadowPassShader;
     }
 } // End of Dream

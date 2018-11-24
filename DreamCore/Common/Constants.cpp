@@ -192,6 +192,7 @@ namespace Dream
     const string Constants::SCENE_CAMERA_LOOK_AT = "camera_look_at";
     const string Constants::SCENE_CAMERA_PITCH = "camera_pitch";
     const string Constants::SCENE_CAMERA_YAW = "camera_yaw";
+    const string Constants::SCENE_CAMERA_FOCUSED_ON = "camera_focused_on";
     const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
 
@@ -200,8 +201,8 @@ namespace Dream
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
-    const string Constants::SCENE_OBJECT_HAS_FOCUS = "hasFocus";
-    const string Constants::SCENE_OBJECT_FOLLOWS_CAMERA = "followsCamera";
+    const string Constants::SCENE_OBJECT_HAS_INPUT_FOCUS = "input_focus";
+    const string Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS = "camera_focus";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
     const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
     const string Constants::SCENE_OBJECT_STATIC = "static";
@@ -317,6 +318,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY = "reflectivity";
     const string Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH = "shininess_strength";
     const string Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX = "refraction_index";
+    const string Constants::ASSET_ATTR_MATERIAL_IGNORE = "ignore";
 
     // Model ================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_LIST = "material_list";

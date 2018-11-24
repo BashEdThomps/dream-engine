@@ -374,5 +374,18 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
     }
 
+    bool MaterialDefinition::getIgnore()
+    {
+        if (mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
+    }
+
+    void MaterialDefinition::setIgnore(bool ignore)
+    {
+            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
+    }
 }
 

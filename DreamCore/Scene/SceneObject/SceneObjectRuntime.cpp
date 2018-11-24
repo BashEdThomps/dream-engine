@@ -59,7 +59,7 @@ namespace Dream
     SceneObjectRuntime::SceneObjectRuntime(
         SceneObjectDefinition* sd,
         SceneRuntime* sr
-    ):  IRuntime(sd, sd->getName(), sd->getUuid()),
+    ):  IRuntime(sd),
         mAnimationInstance(nullptr),
         mAudioInstance(nullptr),
         mLightInstance(nullptr),
@@ -71,11 +71,11 @@ namespace Dream
         mSceneRuntimeHandle(sr),
         mParentRuntimeHandle(nullptr),
         mBoundingBox(),
-        mHasFocus(false),
+        mHasInputFocus(false),
+        mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
-        mAlwaysDraw(false),
-        mFollowsCamera(false)
+        mAlwaysDraw(false)
     {
         setLogClassName("SceneObjectRuntime");
         auto log = getLog();
@@ -355,18 +355,18 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasFocus
+    SceneObjectRuntime::getHasInputFocus
     ()
     const
     {
-        return mHasFocus;
+        return mHasInputFocus;
     }
 
     void
-    SceneObjectRuntime::setHasFocus
+    SceneObjectRuntime::setHasInputFocus
     (bool focus)
     {
-        mHasFocus = focus;
+        mHasInputFocus = focus;
     }
 
     bool
@@ -833,11 +833,11 @@ namespace Dream
         log->trace( "Using Definition {}", def->getNameAndUuidString());
         setName(def->getName());
         setUuid(def->getUuid());
-        setFollowsCamera(def->getFollowsCamera());
-        setAssetDefinitionsMap(def->getAssetDefinitionsMap());
-        setHasFocus(def->getHasFocus());
+        setHasCameraFocus(def->getHasCameraFocus());
+        setHasInputFocus(def->getHasInputFocus());
         setHidden(def->getHidden());
         initTransform();
+        setAssetDefinitionsMap(def->getAssetDefinitionsMap());
         if (!createAssetInstances()) return false;
         if( !loadChildrenFromDefinition(def)) return false;
         return true;
@@ -863,17 +863,17 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::getFollowsCamera
+    SceneObjectRuntime::getHasCameraFocus
     () const
     {
-        return mFollowsCamera;
+        return mHasCameraFocus;
     }
 
     void
-    SceneObjectRuntime::setFollowsCamera
-    (bool followsCamera)
+    SceneObjectRuntime::setHasCameraFocus
+    (bool cf)
     {
-        mFollowsCamera = followsCamera;
+        mHasCameraFocus = cf;
     }
 
     bool SceneObjectRuntime::getDeleted() const

@@ -187,16 +187,9 @@ namespace Dream
             "flyRight",&Camera::flyRight,
             "flyUp",&Camera::flyUp,
             "flyDown",&Camera::flyDown,
-            "flyX",&Camera::flyX,
-            "flyY",&Camera::flyY,
-            "flyZ",&Camera::flyZ,
-            "setFreeMode",&Camera::setFreeMode,
-            "setLookAt",static_cast<void(Camera::*)(float,float,float)>(&Camera::setLookAt),
-            "setLookAt",static_cast<void(Camera::*)(vec3)>( &Camera::setLookAt),
             "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
             "setTranslation",static_cast<void(Camera::*)(vec3)>(&Camera::setTranslation),
-            "getTranslation",&Camera::getTranslation,
-            "orbit",&Camera::orbit
+            "getTranslation",&Camera::getTranslation
         );
 
         stateView.new_enum("CameraMovement",

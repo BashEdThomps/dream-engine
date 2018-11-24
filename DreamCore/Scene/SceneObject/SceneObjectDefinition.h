@@ -25,8 +25,7 @@
 #include "../../Common/IDefinition.h"
 #include "../../Components/Transform.h"
 
-using std::string;
-using std::vector;
+using namespace std;
 
 namespace Dream
 {
@@ -51,11 +50,12 @@ namespace Dream
         ~SceneObjectDefinition() override;
 
         int getChildCount();
-        void setHasFocus(bool focus);
-        bool getHasFocus();
 
-        void setFollowsCamera(bool fc);
-        bool getFollowsCamera();
+        void setHasInputFocus(bool focus);
+        bool getHasInputFocus();
+
+        void setHasCameraFocus(bool fc);
+        bool getHasCameraFocus();
 
         Transform getTransform();
         void setTransform(Transform tform);
@@ -94,5 +94,4 @@ namespace Dream
         void deleteChildSceneObjectDefinitions();
         void setEmptyAssetsObject();
     };
-
 }

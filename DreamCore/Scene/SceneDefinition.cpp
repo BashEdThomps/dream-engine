@@ -451,61 +451,6 @@ namespace Dream
         return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
     }
 
-
-    float SceneDefinition::getCameraLookAtX()
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X];
-    }
-
-    float SceneDefinition::getCameraLookAtY()
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y];
-    }
-
-    float SceneDefinition::getCameraLookAtZ()
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        return mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z];
-    }
-
-    void SceneDefinition::setCameraLookAtX(float val)
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = val;
-    }
-
-    void SceneDefinition::setCameraLookAtY(float val)
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y] = val;
-    }
-
-    void SceneDefinition::setCameraLookAtZ(float val)
-    {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-           setCameraLookAt(vec3(0));
-        }
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z] = val;
-    }
-
     float SceneDefinition::getCameraTranslationX()
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
@@ -588,6 +533,23 @@ namespace Dream
        return  mJson[Constants::SCENE_CAMERA_YAW];
     }
 
+    string SceneDefinition::getCameraFocusedOn()
+    {
+        if (mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_null())
+       {
+           mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = "";
+       }
+       return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
+
+    }
+
+    void
+    SceneDefinition::setCameraFocusedOn
+    (string focusedOn)
+    {
+        mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
+    }
+
     string
     SceneDefinition::getLightingPassShader
     ()
@@ -625,19 +587,4 @@ namespace Dream
     {
        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
-
-    int
-    SceneDefinition::getCurrentLightingPassShaderIndex
-    ()
-    {
-        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getLightingPassShader());
-    }
-
-    int
-    SceneDefinition::getCurrentShadowPassShaderIndex
-    ()
-    {
-        return mProjectDefinition->getAssetDefinitionIndex(AssetType::SHADER, getShadowPassShader());
-    }
-
 }

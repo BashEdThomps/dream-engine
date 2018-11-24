@@ -172,6 +172,7 @@ namespace Dream
         const static string SCENE_CAMERA_LOOK_AT;
         const static string SCENE_CAMERA_PITCH;
         const static string SCENE_CAMERA_YAW;
+        const static string SCENE_CAMERA_FOCUSED_ON;
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
 
@@ -181,8 +182,8 @@ namespace Dream
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_DEFAULT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
-        const static string SCENE_OBJECT_HAS_FOCUS;
-        const static string SCENE_OBJECT_FOLLOWS_CAMERA;
+        const static string SCENE_OBJECT_HAS_INPUT_FOCUS;
+        const static string SCENE_OBJECT_HAS_CAMERA_FOCUS;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
         const static string SCENE_OBJECT_ALWAYS_DRAW;
         const static string SCENE_OBJECT_STATIC;
@@ -307,6 +308,7 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_REFLECTIVITY;
         const static string ASSET_ATTR_MATERIAL_SHININESS_STRENGTH;
         const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
+        const static string ASSET_ATTR_MATERIAL_IGNORE;
 
         // Model ================================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_LIST;

@@ -33,7 +33,7 @@ namespace DreamTool
             vec3 majorColour,
             vec3 minorColour
             )
-        : GLWidget(p),
+        : GLWidget(p,false),
           mAxisPair(xp),
           mTranslation(position),
           mSize(size),

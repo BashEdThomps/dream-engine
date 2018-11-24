@@ -26,9 +26,6 @@
 
 namespace Dream
 {
-
-
-
     PhysicsObjectInstance::PhysicsObjectInstance
     (
         PhysicsObjectDefinition* definition,

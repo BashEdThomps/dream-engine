@@ -71,7 +71,10 @@ namespace Dream
     const
     {
         btTransform transform;
-        transform.setFromOpenGLMatrix(value_ptr(mMatrix));
+        float tmp[16];
+        const float* matPtr = value_ptr(mMatrix);
+        memcpy(tmp,matPtr,sizeof(float)*16);
+        transform.setFromOpenGLMatrix(tmp);
         return transform;
     }
 
@@ -104,7 +107,7 @@ namespace Dream
     Transform::getMatrixFloatPointer
     ()
     {
-        return glm::value_ptr(mMatrix);
+        return (float*)(&mMatrix[0]);
     }
 
     mat4&
@@ -130,8 +133,15 @@ namespace Dream
     {
         mMatrix = mat4(1.0f);
         mMatrix = mat4_cast(decomp.rotation)*mMatrix;
-        mMatrix = translate(mMatrix,decomp.translation);
+        mMatrix = glm::translate(mMatrix,decomp.translation);
         mMatrix = glm::scale(mMatrix,decomp.scale);
+    }
+
+    void
+    Transform::translate
+    (vec3 tx)
+    {
+       mMatrix = glm::translate(mMatrix,tx);
     }
 
 } // End of Dream

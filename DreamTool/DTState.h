@@ -15,6 +15,7 @@
 #include "Widgets/ImGui/ScriptEditorWindow.h"
 #include "Widgets/ImGui/ShaderEditorWindow.h"
 #include "Widgets/ImGui/RenderPipelinePreviewWindow.h"
+#include "Widgets/ImGui/GamepadStateWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
@@ -35,6 +36,12 @@ namespace DreamTool
     class DTState : public DreamObject
     {
     public:
+        enum InputTarget
+        {
+            EDITOR,
+            SCENE
+        };
+
         // ImGui Widgets
         DTWindowComponent windowComponent;
         Dream::Project* project;
@@ -47,6 +54,7 @@ namespace DreamTool
         ShaderEditorWindow shaderEditorWindow;
         MenuBar menuBar;
         RenderPipelinePreviewWindow renderPipelineWindow;
+        GamepadStateWindow gamepadStateWindow;
         // GL Widgets
         Grid grid;
         LightViewer lightViewer;
@@ -63,13 +71,15 @@ namespace DreamTool
         unsigned int Frames = 0;
         double CurrentTime = glfwGetTime();
         double OneSec = 1.0;
-        bool CountFPS = false;
+        InputTarget inputTarget=EDITOR;
 
         DTState(int _argc, char** _argv);
         ~DTState();
         void init();
         void run();
-        void showFPS();
+        void FPS();
+        void handleEditorInput(SceneRuntime*);
+        void handleSceneInput(SceneRuntime*);
         string lastDirectory;
     };
 }

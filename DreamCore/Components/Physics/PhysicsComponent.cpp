@@ -119,8 +119,6 @@ namespace Dream
             delete mCollisionConfiguration;
             mCollisionConfiguration = nullptr;
         }
-
-        //PhysicsObjectInstance::clearAssimpModelCache();
     }
 
     void
@@ -181,7 +179,7 @@ namespace Dream
             log->debug( "Update Called" );
 
             // Setup Physics
-            setGravity(sr->getGravity());
+            //setGravity(sr->getGravity());
             setDebug(sr->getPhysicsDebug());
 
             populatePhysicsWorld(sr);

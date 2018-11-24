@@ -4,7 +4,7 @@
 namespace DreamTool
 {
     Cursor::Cursor(DTState* state)
-        : GLWidget(state),
+        : GLWidget(state,false),
           mStepMajor(false),
           mOrientation(mat4(1.0f))
     {

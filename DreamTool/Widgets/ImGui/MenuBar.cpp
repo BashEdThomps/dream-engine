@@ -11,7 +11,8 @@
 namespace DreamTool
 {
     MenuBar::MenuBar(DTState* def)
-        : ImGuiWidget(def)
+        : ImGuiWidget(def),
+          mFPS(0)
     {
         setLogClassName("MenuBar");
     }
@@ -86,11 +87,6 @@ namespace DreamTool
                    mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
                 }
 
-                bool showRenderingPipeline = mState->renderPipelineWindow.getVisible();
-                if (ImGui::Checkbox("Rendering Pipeline",&showRenderingPipeline))
-                {
-                    mState->renderPipelineWindow.setVisible(showRenderingPipeline);
-                }
 
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
 
@@ -124,6 +120,7 @@ namespace DreamTool
                         auto newSceneRT = new SceneRuntime(selectedSceneDef,pRuntime);
                         newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
                         pRuntime->addSceneRuntime(newSceneRT);
+                        setMessageString("Added Scene Runtime: "+newSceneRT->getName());
                     }
                 }
 
@@ -146,6 +143,7 @@ namespace DreamTool
                         if (rt)
                         {
                             pRuntime->setSceneRuntimeActive(rt->getUuid());
+                            setMessageString("Activated Scene: "+rt->getName());
                         }
                     }
                 }
@@ -160,6 +158,7 @@ namespace DreamTool
                         if (rt)
                         {
                             rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
+                            setMessageString("Destroyed Scene: "+rt->getName());
                         }
                         mState->selectionHighlighter.clearSelection();
                     }
@@ -170,31 +169,35 @@ namespace DreamTool
 
             if(ImGui::BeginMenu("Components"))
             {
-                if (ImGui::BeginMenu("Camera"))
+                if (ImGui::BeginMenu("Input"))
                 {
-                    static int mode = 1;
-                    if (ImGui::RadioButton("Free Mode",mode == 0))
+                    DTState::InputTarget mode = mState->inputTarget;
+                    if (ImGui::RadioButton("To Editor",mode == DTState::InputTarget::EDITOR))
                     {
-
+                        mState->inputTarget = DTState::InputTarget::EDITOR;
                     }
 
-                    if (ImGui::RadioButton("Look At", mode == 1))
+                    if (ImGui::RadioButton("To Scene", mode == DTState::InputTarget::SCENE))
                     {
-
+                        mState->inputTarget = DTState::InputTarget::SCENE;
                     }
-
-                    if (ImGui::RadioButton("Scripted", mode == 2))
-                    {
-
-                    }
-
                     ImGui::EndMenu();
                 }
 
                 float volume = 1.0f;
+                auto rt = mState->project->getProjectRuntime();
+                auto audioComp = rt->getAudioComponent();
+                if (audioComp)
+                {
+                    volume = audioComp->getVolume();
+                }
+
                 if(ImGui::SliderFloat("Volume",&volume,0.0f,1.0f))
                 {
-
+                    if (audioComp)
+                    {
+                        audioComp->setVolume(volume);
+                    }
                 }
 
                 bool scripting = false;
@@ -236,6 +239,17 @@ namespace DreamTool
 
             if (ImGui::BeginMenu("Debug"))
             {
+                bool showRenderingPipeline = mState->renderPipelineWindow.getVisible();
+                if (ImGui::Checkbox("Rendering Pipeline",&showRenderingPipeline))
+                {
+                    mState->renderPipelineWindow.setVisible(showRenderingPipeline);
+                }
+
+                bool showJoystickDebug = mState->gamepadStateWindow.getVisible();
+                if (ImGui::Checkbox("Joystick State",&showJoystickDebug))
+                {
+                    mState->gamepadStateWindow.setVisible(showJoystickDebug);
+                }
                 auto showLuaDebug = mState->luaDebugWindow.getVisible();
                 if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
                 {
@@ -298,6 +312,26 @@ namespace DreamTool
                 }
                 ImGui::EndMenu();
             }
+
+            static char msgBuf[512] = {0};
+            snprintf(
+                msgBuf,
+                512,
+                "%s | Input -> %s | %03d fps",
+                mMessageString.c_str(),
+                (
+                    mState->inputTarget == DTState::InputTarget::EDITOR ?
+                    "Editor" : "Scene"
+                ),
+                mFPS
+            );
+
+            auto maxX = ImGui::GetWindowContentRegionMax().x;
+            ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);
+
+            ImGui::SameLine(maxX-msgSize.x-mMessagePadding);
+            ImGui::Text("%s", msgBuf);
+
             ImGui::EndMainMenuBar();
         }
 
@@ -529,5 +563,33 @@ namespace DreamTool
         }
     }
 
+    float MenuBar::getMessagePadding() const
+    {
+        return mMessagePadding;
+    }
 
+    void MenuBar::setMessagePadding(float messagePadding)
+    {
+        mMessagePadding = messagePadding;
+    }
+
+    string MenuBar::getMessageString() const
+    {
+        return mMessageString;
+    }
+
+    void MenuBar::setMessageString(const string& messageString)
+    {
+        mMessageString = messageString;
+    }
+
+    int MenuBar::getFPS() const
+    {
+        return mFPS;
+    }
+
+    void MenuBar::setFPS(int fPS)
+    {
+        mFPS = fPS;
+    }
 }

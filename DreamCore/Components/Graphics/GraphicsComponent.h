@@ -24,10 +24,8 @@
 #include <glm/matrix.hpp>
 #include "../IComponent.h"
 
-using std::string;
-using std::map;
-using std::vector;
-using glm::mat4;
+using namespace std;
+using namespace glm;
 
 typedef struct NVGcontext NVGcontext;
 typedef unsigned int GLuint;
@@ -63,7 +61,7 @@ namespace Dream
         GLuint mGeometryPassAlbedoBuffer;
         GLuint mGeometryPassNormalBuffer;
         GLuint mGeometryPassDepthBuffer;
-        GLuint mGeometryPassDepthOutBuffer;
+        GLuint mGeometryPassIgnoreBuffer;
 
         // Shadow
         SceneObjectRuntime* mShadowLight;
@@ -122,6 +120,6 @@ namespace Dream
         GLuint getGeometryPassNormalBuffer() const;
         GLuint getGeometryPassDepthBuffer() const;
         GLuint getShadowPassDepthBuffer() const;
-        GLuint getGeometryPassDepthOutBuffer() const;
+        GLuint getGeometryPassIgnoreBuffer() const;
     }; // End of GraphicsComponent
 } // End of Dream

@@ -20,19 +20,69 @@ namespace Dream
 {
 
 
+    SceneObjectRuntime* Camera::getFocusedSceneObject() const
+    {
+        return mFocusedSceneObject;
+    }
+
+    float Camera::getFocusPitch() const
+    {
+        return mFocusPitch;
+    }
+
+    void Camera::setFocusPitch(float focusPitch)
+    {
+        mFocusPitch = focusPitch;
+    }
+
+    float Camera::getFocusYaw() const
+    {
+        return mFocusYaw;
+    }
+
+    void Camera::setFocusYaw(float focusYaw)
+    {
+        mFocusYaw = focusYaw;
+    }
+
+    float Camera::getFocusRadius() const
+    {
+        return mFocusRadius;
+    }
+
+    void Camera::setFocusRadius(float focusRadius)
+    {
+        mFocusRadius = focusRadius;
+    }
+
+    float Camera::getFocusElevation() const
+    {
+        return mFocusElevation;
+    }
+
+    void Camera::setFocusElevation(float focusElevation)
+    {
+        mFocusElevation = focusElevation;
+    }
+
     Camera::Camera
     (vec3 translation, vec3 up, float yaw, float pitch)
         : DreamObject("Camera"),
           mTranslation(translation),
           mFront(vec3(0.0f, 0.0f, -1.0f)),
-        mWorldUp(up),
-        mFreeMode(true),
-        mYaw(yaw),
-        mPitch(pitch),
-        mMovementSpeed(Constants::CAMERA_SPEED),
-        mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
-        mZoom(Constants::CAMERA_ZOOM),
-        mFrustum(Frustum(this))
+          mWorldUp(up),
+          mYaw(yaw),
+          mPitch(pitch),
+          mMovementSpeed(Constants::CAMERA_SPEED),
+          mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
+          mZoom(Constants::CAMERA_ZOOM),
+          mFrustum(Frustum(this)),
+          mFocusedSceneObject(nullptr),
+          mFocusPitch(0.0f),
+          mFocusYaw(0.0f),
+          mFocusRadius(10.0f),
+          mFocusElevation(0.0f),
+          mFocusTranslation(vec3(0.0f))
     {
     }
 
@@ -44,7 +94,7 @@ namespace Dream
         return;
     }
 
-     float Camera::getYaw() const
+    float Camera::getYaw() const
     {
         return mYaw;
     }
@@ -68,13 +118,21 @@ namespace Dream
     Camera::getViewMatrix
     ()
     {
-        if (mFreeMode)
+        if (mFocusedSceneObject)
         {
-            return lookAt(mTranslation,mTranslation+mFront,mUp);
+            return lookAt(
+                        mFocusTranslation,
+                        mFocusedSceneObject->getTransform().decomposeMatrix().translation,
+                        mUp
+                        );
         }
         else
         {
-            return lookAt(mTranslation,mLookAt,mUp);
+            return lookAt(
+                        mTranslation,
+                        mTranslation+mFront,
+                        mUp
+                        );
         }
     }
 
@@ -92,98 +150,100 @@ namespace Dream
         return mFront;
     }
 
-    vec3
-    Camera::getRelativeTranslation
-    (float relative)
-    {
-        return vec3
-        (
-            mTranslation.x + (mFront.x * relative),
-            mTranslation.y + (mFront.y * relative),
-            mTranslation.z + (mFront.z * relative)
-        );
-    }
-
-    mat4
-    Camera::getRelativeRotation
-    (vec3 relativePosition)
-    {
-        return lookAt(relativePosition,getTranslation()-mFront,mUp);
-    }
-
     void
     Camera::flyForward
-    ()
+    (float scalar)
     {
-        mTranslation.x += mFront.x * mMovementSpeed;
-        mTranslation.y += mFront.y * mMovementSpeed;
-        mTranslation.z += mFront.z * mMovementSpeed;
-    }
-
-    void
-    Camera::flyZ
-    ()
-    {
-        mTranslation.x += mFront.x * mMovementSpeed;
-        mTranslation.y += mFront.y * mMovementSpeed;
-        mTranslation.z += mFront.z * mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+           mFocusRadius -= mMovementSpeed*scalar;
+           if (mFocusRadius < 0.0f)
+           {
+               mFocusRadius = 0.1f;
+           }
+        }
+        else
+        {
+            mTranslation.x += mFront.x * mMovementSpeed*scalar;
+            mTranslation.y += mFront.y * mMovementSpeed*scalar;
+            mTranslation.z += mFront.z * mMovementSpeed*scalar;
+        }
     }
 
     void
     Camera::flyBackward
-    ()
+    (float scalar)
     {
-        mTranslation.x -= mFront.x * mMovementSpeed;
-        mTranslation.y -= mFront.y * mMovementSpeed;
-        mTranslation.z -= mFront.z * mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+           mFocusRadius += mMovementSpeed*scalar;
+        }
+        else
+        {
+            mTranslation.x -= mFront.x * mMovementSpeed*scalar;
+            mTranslation.y -= mFront.y * mMovementSpeed*scalar;
+            mTranslation.z -= mFront.z * mMovementSpeed*scalar;
+        }
     }
 
     void
     Camera::flyLeft
-    ()
+    (float scalar)
     {
-        mTranslation.x -= mRight.x * mMovementSpeed;
-        mTranslation.y -= mRight.y * mMovementSpeed;
-        mTranslation.z -= mRight.z * mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+            mFocusYaw -= mMovementSpeed*scalar;
+        }
+        else
+        {
+            mTranslation.x -= mRight.x * mMovementSpeed*scalar;
+            mTranslation.y -= mRight.y * mMovementSpeed*scalar;
+            mTranslation.z -= mRight.z * mMovementSpeed*scalar;
+        }
     }
 
     void
     Camera::flyRight
-    ()
+    (float scalar)
     {
-        mTranslation.x += mRight.x * mMovementSpeed;
-        mTranslation.y += mRight.y * mMovementSpeed;
-        mTranslation.z += mRight.z * mMovementSpeed;
-    }
-
-    void
-    Camera::flyX
-    ()
-    {
-        mTranslation.x += mRight.x * mMovementSpeed;
-        mTranslation.y += mRight.y * mMovementSpeed;
-        mTranslation.z += mRight.z * mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+            mFocusYaw += mMovementSpeed*scalar;
+        }
+        else
+        {
+            mTranslation.x += mRight.x * mMovementSpeed*scalar;
+            mTranslation.y += mRight.y * mMovementSpeed*scalar;
+            mTranslation.z += mRight.z * mMovementSpeed*scalar;
+        }
     }
 
     void
     Camera::flyUp
-    ()
+    (float scalar)
     {
-        mTranslation.y += mMovementSpeed;
-    }
-
-    void
-    Camera::flyY
-    ()
-    {
-        mTranslation.y += mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+            mFocusElevation += mMovementSpeed*scalar;
+        }
+        else
+        {
+            mTranslation.y += mMovementSpeed*scalar;
+        }
     }
 
     void
     Camera::flyDown
-    ()
+    (float scalar)
     {
-        mTranslation.y -= mMovementSpeed;
+        if (mFocusedSceneObject)
+        {
+            mFocusElevation -= mMovementSpeed*scalar;
+        }
+        else
+        {
+            mTranslation.y -= mMovementSpeed*scalar;
+        }
     }
 
     vec3
@@ -197,8 +257,15 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        // mFreeMode == Don't enforce mLookAt
-        if (mFreeMode)
+        if (mFocusedSceneObject)
+        {
+            vec3 tx = mFocusedSceneObject->getTransform().decomposeMatrix().translation;
+            setFocusTranslationFromTarget(tx);
+            mFront = normalize(tx);
+            mRight = normalize(cross(mFront, mWorldUp));
+            mUp    = mWorldUp;
+        }
+        else
         {
             mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
             mFront.y = static_cast<float>(sin(mPitch));
@@ -207,12 +274,7 @@ namespace Dream
             mRight = normalize(cross(mFront, mWorldUp));
             mUp    = mWorldUp;
         }
-        else
-        {
-            mFront = normalize(mLookAt);
-            mRight = normalize(cross(mFront, mWorldUp));
-            mUp    = mWorldUp;
-        }
+
         mFrustum.updatePlanes();
     }
 
@@ -244,45 +306,17 @@ namespace Dream
         return mMovementSpeed;
     }
 
-    void Camera::setLookAt(float x, float y, float z)
-    {
-        mLookAt.x = x;
-        mLookAt.y = y;
-        mLookAt.z = z;
-    }
-
     void
-    Camera::setLookAt
-    (vec3 transform)
-    {
-        mLookAt = transform;
-    }
-
-    glm::vec3
-    Camera::getLookAt
-    ()
-    {
-       return mLookAt;
-    }
-
-    void
-    Camera::setFreeMode
-    (bool freemode)
-    {
-       mFreeMode = freemode;
-    }
-
-    void
-    Camera::orbit
-    (vec3 target, float elevation, float radius, float pitch, float yaw)
+    Camera::setFocusTranslationFromTarget
+    (vec3 target)
     {
         mat4 mtx(1.0f);
-        target.y += elevation;
+        target.y += mFocusElevation;
         mtx = translate(mtx, target);
-        mtx = rotate(mtx,pitch, vec3(1,0,0));
-        mtx = rotate(mtx,yaw, vec3(0,1,0));
-        mtx = translate(mtx,vec3(0,0,-radius));
-        mTranslation = vec3(mtx[3]);
+        mtx = rotate(mtx,mFocusPitch, vec3(1,0,0));
+        mtx = rotate(mtx,mFocusYaw, vec3(0,1,0));
+        mtx = translate(mtx,vec3(0,0,-mFocusRadius));
+        mFocusTranslation = vec3(mtx[3]);
     }
 
     void Camera::deltaPitch(float pitch)
@@ -295,14 +329,26 @@ namespace Dream
         mYaw += yaw;
     }
 
+    float Camera::getFocusedObjectTheta()
+    {
+        if (mFocusedSceneObject)
+        {
+            vec3 objTx = mFocusedSceneObject->getTransform().decomposeMatrix().translation;
+            float x = mFocusTranslation.x - objTx.x;
+            float z = mFocusTranslation.z - objTx.z;
+            return atan2(x,z);
+        }
+        return 0.0f;
+    }
+
     bool
     Camera::inFrustum
     (SceneObjectRuntime* sor)
     {
         return mFrustum.testIntersection(
-            sor->getTransform().getMatrix(),
-            sor->getBoundingBox()
-        ) != Frustum::TEST_OUTSIDE;
+                    sor->getTransform().getMatrix(),
+                    sor->getBoundingBox()
+                    ) != Frustum::TEST_OUTSIDE;
     }
 
     mat4 Camera::getProjectionMatrix() const
@@ -310,9 +356,18 @@ namespace Dream
         return mProjectionMatrix;
     }
 
-    void Camera::setProjectionMatrix(const mat4& projectionMatrix)
+    void
+    Camera::setProjectionMatrix
+    (const mat4& projectionMatrix)
     {
         mProjectionMatrix = projectionMatrix;
+    }
+
+    void
+    Camera::setFocusedSceneObejct
+    (SceneObjectRuntime* rt)
+    {
+        mFocusedSceneObject = rt;
     }
 
 } // End of Dream

@@ -25,6 +25,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Dream
 {
@@ -60,7 +61,10 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "getWorldTransform called" );
-        worldTrans = mDreamTransform.getBtTransform();
+        auto mtx = mDreamTransform.getMatrix();
+        float mtxPtr[16];
+        memcpy(mtxPtr,glm::value_ptr(mtx),sizeof(float)*16);
+        worldTrans.setFromOpenGLMatrix(mtxPtr);
     }
 
     void
@@ -69,8 +73,9 @@ namespace Dream
     {
         auto log = getLog();
         log->debug( "setWorldTransform called" );
-        float* mtx = mDreamTransform.getMatrixFloatPointer();
+        float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
+        mDreamTransform.setMatrix(glm::make_mat4(mtx));
     }
 
     void

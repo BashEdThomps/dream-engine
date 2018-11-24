@@ -49,8 +49,6 @@ namespace Dream
         vec3 mUp;
         vec3 mRight;
         vec3 mWorldUp;
-        vec3 mLookAt;
-        bool mFreeMode;
         // Eular Angles
         float mYaw;
         float mPitch;
@@ -60,14 +58,21 @@ namespace Dream
         float mZoom;
         mat4 mProjectionMatrix;
         Frustum mFrustum;
+        // Focus on SO
+        SceneObjectRuntime* mFocusedSceneObject;
+        float mFocusPitch;
+        float mFocusYaw;
+        float mFocusRadius;
+        float mFocusElevation;
+        vec3 mFocusTranslation;
     public:
         // Constructor with vectors
         Camera
         (
             vec3  position = vec3(0.0f, 0.0f, 0.0f),
             vec3  up       = vec3(0.0f, 1.0f, 0.0f),
-            float yaw      = 0,//Constants::CAMERA_YAW,
-            float pitch    = 0//Constants::CAMERA_PITCH
+            float yaw      = 0,
+            float pitch    = 0
         );
 
         // Constructor with scalar values
@@ -79,36 +84,49 @@ namespace Dream
         vec3 getTranslation();
         void  setMovementSpeed(float);
         float getMovementSpeed();
-        void setLookAt(float x, float y, float z);
-        void setLookAt(vec3);
-        vec3 getLookAt();
-        void setFreeMode(bool freemode);
-        void orbit(vec3,float elevation, float radius, float pitch, float yaw);
 
-        void flyForward();
-        void flyBackward();
-        void flyLeft();
-        void flyRight();
-        void flyUp();
-        void flyDown();
-        void flyX();
-        void flyY();
-        void flyZ();
+        void flyForward(float scalar=1.0f);
+        void flyBackward(float scalar=1.0f);
+        void flyLeft(float scalar=1.0f);
+        void flyRight(float scalar=1.0f);
+        void flyUp(float scalar=1.0f);
+        void flyDown(float scalar=1.0f);
 
         void deltaPitch(float pitch);
         void deltaYaw(float yaw);
 
-        vec3 getRelativeTranslation(float relative);
-        mat4 getRelativeRotation(vec3 relative);
+        float getFocusedObjectTheta();
 
         vec3 getUp();
         vec3 getFront();
+
         float getYaw() const;
         void setYaw(float yaw);
+
         float getPitch() const;
         void setPitch(float pitch);
+
         bool inFrustum(SceneObjectRuntime*);
+
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
+
+        void setFocusedSceneObejct(SceneObjectRuntime*);
+        SceneObjectRuntime* getFocusedSceneObject() const;
+
+        float getFocusPitch() const;
+        void setFocusPitch(float focusPitch);
+
+        float getFocusYaw() const;
+        void setFocusYaw(float focusYaw);
+
+        float getFocusRadius() const;
+        void setFocusRadius(float focusRadius);
+
+        float getFocusElevation() const;
+        void setFocusElevation(float focusElevation);
+
+    private:
+        void setFocusTranslationFromTarget(vec3 target);
     }; // End of Camera
 } // End of Dream

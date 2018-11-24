@@ -23,8 +23,7 @@
 #include "../Common/IDefinition.h"
 #include "../Components/Transform.h"
 
-using std::vector;
-using std::unique_ptr;
+using namespace std;
 
 namespace Dream
 {
@@ -62,7 +61,6 @@ namespace Dream
         void setMaxDrawDistance(float mdd);
         float getMaxDrawDistance();
 
-
         string getNotes();
         void setNotes(string notes);
 
@@ -97,14 +95,6 @@ namespace Dream
 
         json getJson() override;
 
-        float getCameraLookAtX();
-        float getCameraLookAtY();
-        float getCameraLookAtZ();
-
-        void setCameraLookAtX(float val);
-        void setCameraLookAtY(float val);
-        void setCameraLookAtZ(float val);
-
         float getCameraTranslationX();
         float getCameraTranslationY();
         float getCameraTranslationZ();
@@ -114,14 +104,17 @@ namespace Dream
         void setCameraTranslationZ(float val);
 
         void setCameraPitch(float pitch);
-        void setCameraYaw(float yaw);
         float getCameraPitch();
+
+        void setCameraYaw(float yaw);
         float getCameraYaw();
+
+        string getCameraFocusedOn();
+        void setCameraFocusedOn(string focus);
 
         string getLightingPassShader();
         void setLightingPassShader(string shader);
-        int getCurrentLightingPassShaderIndex();
-        int getCurrentShadowPassShaderIndex();
+
         string getShadowPassShader();
         void setShadowPassShader(string shader);
     };

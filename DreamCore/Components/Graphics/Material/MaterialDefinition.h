@@ -85,6 +85,9 @@ namespace Dream
         float getRefractionIndex();
         void  setRefractionIndex(float);
 
+        bool getIgnore();
+        void setIgnore(bool);
+
     private:
         json wrapColourObject(RGB);
         RGB unwrapColourObject(json);

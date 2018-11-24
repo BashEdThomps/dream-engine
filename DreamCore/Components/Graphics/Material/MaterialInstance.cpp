@@ -90,6 +90,7 @@ namespace Dream
             "Reflectivity............{}\n"
             "ShininessStrength.......{}\n"
             "RefractI................{}\n"
+            "Ignore..................{}\n"
 
             "DiffuseColour...........({},{},{})\n"
             "AmbientColour...........({},{},{})\n"
@@ -109,6 +110,7 @@ namespace Dream
             mReflectivity,
             mShininessStrength,
             mRefracti,
+            mIgnore,
 
             mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
             mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
@@ -171,6 +173,7 @@ namespace Dream
         mReflectivity = matDef->getReflectivity();
         mShininessStrength = matDef->getShininessStrength();
         mRefracti = matDef->getRefractionIndex();
+        mIgnore = matDef->getIgnore();
         // Colours
         mColorDiffuse = rgbToVec3(matDef->getDiffuseColour());
         mColorSpecular = rgbToVec3(matDef->getSpecularColour());
@@ -252,6 +255,16 @@ namespace Dream
     void MaterialInstance::setShininessStrength(float shininessStrength)
     {
         mShininessStrength = shininessStrength;
+    }
+
+    bool MaterialInstance::getIgnore() const
+    {
+        return mIgnore;
+    }
+
+    void MaterialInstance::setIgnore(bool ignore)
+    {
+        mIgnore = ignore;
     }
 
     vec3

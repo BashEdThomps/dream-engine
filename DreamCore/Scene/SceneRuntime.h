@@ -108,21 +108,6 @@ namespace Dream
         bool getPhysicsDebug();
         void setPhysicsDebug(bool physicsDebug);
 
-        float getCameraMovementSpeed();
-        void setCameraMovementSpeed(float cameraMovementSpeed);
-
-        vec3 getCameraTranslation();
-        void setCameraTranslation(vec3 cameraTransform);
-
-        vec3 getCameraLookAt();
-        void setCameraLookAt(vec3 lookAt);
-
-        float getCameraPitch();
-        void setCameraPitch(float);
-
-        float getCameraYaw();
-        void setCameraYaw(float);
-
         ShaderInstance* getLightingPassShader() const;
         void setLightingPassShader(ShaderInstance* lightingShader);
 

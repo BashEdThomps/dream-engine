@@ -532,7 +532,14 @@ namespace Dream
     AudioComponent::setVolume
     (float volume)
     {
-       alListenerf(AL_GAIN,volume);
+        alListenerf(AL_GAIN,volume);
+    }
+
+    float AudioComponent::getVolume()
+    {
+        float vol;
+        alGetListenerf(AL_GAIN,&vol);
+        return vol;
     }
 
 } // End of Dream

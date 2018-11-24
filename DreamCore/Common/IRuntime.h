@@ -35,11 +35,7 @@ namespace Dream
         string mUuid;
         string mName;
     public:
-        IRuntime(
-            IDefinition* def,
-            string uuid,
-            string name
-        );
+        IRuntime(IDefinition* def);
         virtual ~IRuntime();
 
         string getUuid();

@@ -48,8 +48,8 @@ namespace DreamTool
                     ImGui::Image((void*)(intptr_t)gfx->getGeometryPassNormalBuffer(),PreviewSize, UV1, UV2);
                     ImGui::NextColumn();
 
-                    ImGui::Text("Depth");
-                    ImGui::Image((void*)(intptr_t)gfx->getGeometryPassDepthOutBuffer(),PreviewSize, UV1, UV2);
+                    ImGui::Text("Ignore");
+                    ImGui::Image((void*)(intptr_t)gfx->getGeometryPassIgnoreBuffer(),PreviewSize, UV1, UV2);
 
                     ImGui::Columns(1);
                 }

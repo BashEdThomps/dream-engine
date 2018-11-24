@@ -98,6 +98,7 @@ namespace Dream
         static GLuint CurrentTexture1;
         static GLuint CurrentTexture2;
         static GLuint CurrentTexture3;
+        static GLuint CurrentTexture4;
         static GLuint CurrentShaderProgram;
         static GLuint CurrentVAO;
         static GLuint CurrentVBO;

@@ -51,11 +51,7 @@ namespace Dream
     (
             Project* project,
             IWindowComponent* windowComponent)
-        : IRuntime(
-              project->getProjectDefinition(),
-              project->getProjectDefinition()->getName(),
-              project->getProjectDefinition()->getUuid()
-          ),
+        : IRuntime(project->getProjectDefinition()),
           mDone(false),
           mTime(nullptr),
           mProject(project),
@@ -718,6 +714,13 @@ namespace Dream
     ()
     {
         return mProject;
+    }
+
+    InputComponent*
+    ProjectRuntime::getInputComponent
+    ()
+    {
+       return mInputComponent;
     }
 
     bool

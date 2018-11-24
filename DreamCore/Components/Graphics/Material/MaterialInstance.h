@@ -86,6 +86,9 @@ namespace Dream
         float getShininessStrength() const;
         void setShininessStrength(float shininessStrength);
 
+        bool getIgnore() const;
+        void setIgnore(bool ignore);
+
     protected:
         float mOpacity = 0.0f;
         float mBumpScaling = 0.0f;
@@ -93,6 +96,7 @@ namespace Dream
         float mReflectivity = 0.0f;
         float mShininessStrength = 0.0f;
         float mRefracti = 0.0f;
+        bool mIgnore = false;
 
         vec3 mColorDiffuse;
         vec3 mColorAmbient;

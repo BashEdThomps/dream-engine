@@ -173,15 +173,13 @@ namespace Dream
     (string projectPath)
     {
         mProjectPath = projectPath;
-        if(!compileFragment())
+        bool compileV = compileVertex();
+        bool compileF = compileFragment();
+        if (compileV && compileF)
         {
-            return false;
+            return linkProgram();
         }
-        if (!compileVertex())
-        {
-            return false;
-        }
-        return linkProgram();
+        return false;
     }
 
     bool
@@ -469,6 +467,9 @@ namespace Dream
                 CurrentTexture3 = id;
             }
         }
+
+        float ignore = material->getIgnore() ? 1.0f : 0.0f;
+        addUniform(FLOAT1, "material.ignore", 1, &ignore);
         checkGLError();
     }
 
@@ -683,6 +684,7 @@ namespace Dream
         CurrentTexture1 = 0;
         CurrentTexture2 = 0;
         CurrentTexture3 = 0;
+        CurrentTexture4 = 0;
         CurrentShaderProgram = 0;
         CurrentVAO = 0;
         CurrentVBO = 0;
@@ -834,6 +836,7 @@ namespace Dream
     GLuint ShaderInstance::CurrentTexture1 = 0;
     GLuint ShaderInstance::CurrentTexture2 = 0;
     GLuint ShaderInstance::CurrentTexture3 = 0;
+    GLuint ShaderInstance::CurrentTexture4 = 0;
     GLuint ShaderInstance::CurrentShaderProgram = 0;
     GLuint ShaderInstance::CurrentVAO = 0;
     GLuint ShaderInstance::CurrentVBO = 0;

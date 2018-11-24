@@ -6,7 +6,7 @@ namespace DreamTool
 
     SelectionHighlighter::SelectionHighlighter
     (DTState* project)
-        :GLWidget (project),
+        :GLWidget (project,false),
           mSelectedSceneObjectRuntime(nullptr),
           mSelectionColour(vec3(0.0,1.0f,0.40f)),
           mOffset(0.25f),

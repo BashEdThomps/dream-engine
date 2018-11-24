@@ -1,28 +1,30 @@
 #include "DTState.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
-     DTState::DTState(int _argc, char** _argv)
-         : DreamObject("DTState"),
-           propertiesWindow(PropertiesWindow(this)),
-           projectBrowser(ProjectBrowser(this)),
-           luaDebugWindow(LuaDebugWindow(this)),
-           sceneStateWindow(SceneStateWindow(this)),
-           gridPropertiesWindow(GridPropertiesWindow(this)),
-           scriptEditorWindow(ScriptEditorWindow(this)),
-           shaderEditorWindow(ShaderEditorWindow(this)),
-           menuBar(MenuBar(this)),
-           renderPipelineWindow(RenderPipelinePreviewWindow(this)),
-           grid(Grid(this)),
-           lightViewer(LightViewer(this)),
-           selectionHighlighter(SelectionHighlighter(this)),
-           cursor(Cursor(this)),
-           modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
-           argc(_argc),
-           argv(_argv)
-     {
+    DTState::DTState(int _argc, char** _argv)
+        : DreamObject("DTState"),
+          propertiesWindow(PropertiesWindow(this)),
+          projectBrowser(ProjectBrowser(this)),
+          luaDebugWindow(LuaDebugWindow(this)),
+          sceneStateWindow(SceneStateWindow(this)),
+          gridPropertiesWindow(GridPropertiesWindow(this)),
+          scriptEditorWindow(ScriptEditorWindow(this)),
+          shaderEditorWindow(ShaderEditorWindow(this)),
+          menuBar(MenuBar(this)),
+          renderPipelineWindow(RenderPipelinePreviewWindow(this)),
+          gamepadStateWindow(GamepadStateWindow(this)),
+          grid(Grid(this)),
+          lightViewer(LightViewer(this)),
+          selectionHighlighter(SelectionHighlighter(this)),
+          cursor(Cursor(this)),
+          modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
+          argc(_argc),
+          argv(_argv)
+    {
 
-     }
+    }
 
     DTState::~DTState()
     {
@@ -54,6 +56,7 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&scriptEditorWindow);
         windowComponent.addImGuiWidget(&shaderEditorWindow);
         windowComponent.addImGuiWidget(&renderPipelineWindow);
+        windowComponent.addImGuiWidget(&gamepadStateWindow);
 
         // GL Widgets
         grid.init();
@@ -74,12 +77,15 @@ namespace DreamTool
             if(project->openFromDirectory(argv[1]))
             {
                 project->createProjectRuntime();
+                stringstream ss;
+                ss  << "Opened Project: "
+                    << project->getProjectDefinition()->getName();
+                menuBar.setMessageString(ss.str());
             }
         }
 
         spdlog::set_level(spdlog::level::off);
         // Run the project
-        ImGuiIO& io = ImGui::GetIO();
         while (!MainLoopDone)
         {
             if (windowComponent.shouldClose())
@@ -109,116 +115,203 @@ namespace DreamTool
             Dream::ShaderInstance::InvalidateState();
             windowComponent.drawGLWidgets();
             windowComponent.drawImGui();
+            if (ImGui::IsKeyPressed(GLFW_KEY_TAB,false))
+            {
+                switch (inputTarget)
+                {
+                    case EDITOR:
+                        inputTarget = SCENE;
+                        break;
+                    case SCENE:
+                        inputTarget = EDITOR;
+                        break;
+                }
+            }
+
             if (projectRuntime)
             {
+
                 auto sr = projectRuntime->getActiveSceneRuntime();
                 if (sr)
                 {
-                    static float mouseScalar = 0.001f;
-                    auto camera = sr->getCamera();
-                    bool sendKeysToCamera = false;
-                    if (!io.WantCaptureMouse)
+                    switch (inputTarget)
                     {
-#ifdef __APPLE__
-                        if (io.MouseDown[0])
-                        {
-                            camera->deltaYaw(io.MouseDelta.x*mouseScalar);
-                            camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
-                            sendKeysToCamera = true;
-                        }
-#else
-                        if (io.MouseDown[2])
-                        {
-                            camera->deltaYaw(io.MouseDelta.x*mouseScalar);
-                            camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
-                            sendKeysToCamera = true;
-                        }
-#endif
-                    }
-
-                    if (!io.WantCaptureKeyboard)
-                    {
-                        if (sendKeysToCamera)
-                        {
-                            if (ImGui::IsKeyDown(GLFW_KEY_W))
-                            {
-                                camera->flyForward();
-                            }
-                            if (ImGui::IsKeyDown(GLFW_KEY_S))
-                            {
-                                camera->flyBackward();
-                            }
-                            if (ImGui::IsKeyDown(GLFW_KEY_A))
-                            {
-                                camera->flyLeft();
-                            }
-                            if (ImGui::IsKeyDown(GLFW_KEY_D))
-                            {
-                                camera->flyRight();
-                            }
-                            if (ImGui::IsKeyDown(GLFW_KEY_Q))
-                            {
-                                camera->flyDown();
-                            }
-                            if (ImGui::IsKeyDown(GLFW_KEY_E))
-                            {
-                                camera->flyUp();
-                            }
-                        }
-                        // Send to cursor
-                        else
-                        {
-                            // Z
-                            if (ImGui::IsKeyPressed(GLFW_KEY_W))
-                            {
-                                cursor.onAction(Cursor::ZPlus);
-                            }
-                            if (ImGui::IsKeyPressed(GLFW_KEY_S))
-                            {
-                                cursor.onAction(Cursor::ZMinus);
-                            }
-
-                            // X
-                            if (ImGui::IsKeyPressed(GLFW_KEY_A))
-                            {
-                                cursor.onAction(Cursor::XMinus);
-                            }
-                            if (ImGui::IsKeyPressed(GLFW_KEY_D))
-                            {
-                                cursor.onAction(Cursor::XPlus);
-                            }
-
-                            // Y
-                            if (ImGui::IsKeyPressed(GLFW_KEY_Q))
-                            {
-                                cursor.onAction(Cursor::YMinus);
-                            }
-                            if (ImGui::IsKeyPressed(GLFW_KEY_E))
-                            {
-                                cursor.onAction(Cursor::YPlus);
-                            }
-
-                        }
+                        case InputTarget::EDITOR:
+                            handleEditorInput(sr);
+                            break;
+                        case InputTarget::SCENE:
+                            handleSceneInput(sr);
+                            break;
                     }
                 }
             }
             windowComponent.swapBuffers();
-            if (CountFPS) showFPS();
-            std::this_thread::yield();
+            FPS();
         }
     }
 
-    void DTState::showFPS()
+    void DTState::FPS()
     {
         if (glfwGetTime() > CurrentTime + OneSec)
         {
-            cout << "FPS: " <<  Frames << endl;
+            menuBar.setFPS(Frames);
             Frames = 0;
             CurrentTime = glfwGetTime();
         }
         else
         {
             Frames++;
+        }
+    }
+
+    void
+    DTState::handleEditorInput
+    (SceneRuntime* sr)
+    {
+        static ImGuiIO& io = ImGui::GetIO();
+        static float mouseScalar = 0.001f;
+        auto camera = sr->getCamera();
+        bool sendKeysToCamera = false;
+        if (!io.WantCaptureMouse)
+        {
+#ifdef __APPLE__
+            if (io.MouseDown[0])
+            {
+                camera->deltaYaw(io.MouseDelta.x*mouseScalar);
+                camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
+                sendKeysToCamera = true;
+            }
+#else
+            if (io.MouseDown[2])
+            {
+                camera->deltaYaw(io.MouseDelta.x*mouseScalar);
+                camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
+                sendKeysToCamera = true;
+            }
+#endif
+        }
+
+        if (!io.WantCaptureKeyboard)
+        {
+            if (sendKeysToCamera)
+            {
+                if (ImGui::IsKeyDown(GLFW_KEY_W))
+                {
+                    camera->flyForward();
+                }
+                if (ImGui::IsKeyDown(GLFW_KEY_S))
+                {
+                    camera->flyBackward();
+                }
+                if (ImGui::IsKeyDown(GLFW_KEY_A))
+                {
+                    camera->flyLeft();
+                }
+                if (ImGui::IsKeyDown(GLFW_KEY_D))
+                {
+                    camera->flyRight();
+                }
+                if (ImGui::IsKeyDown(GLFW_KEY_Q))
+                {
+                    camera->flyDown();
+                }
+                if (ImGui::IsKeyDown(GLFW_KEY_E))
+                {
+                    camera->flyUp();
+                }
+            }
+            // Send to cursor
+            else
+            {
+                // Z
+                if (ImGui::IsKeyPressed(GLFW_KEY_W))
+                {
+                    cursor.onAction(Cursor::ZPlus);
+                }
+                if (ImGui::IsKeyPressed(GLFW_KEY_S))
+                {
+                    cursor.onAction(Cursor::ZMinus);
+                }
+
+                // X
+                if (ImGui::IsKeyPressed(GLFW_KEY_A))
+                {
+                    cursor.onAction(Cursor::XMinus);
+                }
+                if (ImGui::IsKeyPressed(GLFW_KEY_D))
+                {
+                    cursor.onAction(Cursor::XPlus);
+                }
+
+                // Y
+                if (ImGui::IsKeyPressed(GLFW_KEY_Q))
+                {
+                    cursor.onAction(Cursor::YMinus);
+                }
+                if (ImGui::IsKeyPressed(GLFW_KEY_E))
+                {
+                    cursor.onAction(Cursor::YPlus);
+                }
+            }
+        }
+    }
+
+    void
+    DTState::handleSceneInput
+    (SceneRuntime* sRunt)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        auto pRunt = project->getProjectRuntime();
+        if (pRunt)
+        {
+            auto inputComp = pRunt->getInputComponent();
+            if (inputComp)
+            {
+                MouseState& ms = inputComp->getMouseState();
+                KeyboardState& ks = inputComp->getKeyboardState();
+                JoystickState& js = inputComp->getJoystickState();
+
+                // Mouse
+                memcpy(ms.ButtonsDown, io.MouseDown, sizeof(bool)*5);
+                ms.PosX = io.MousePos.x;
+                ms.PosY = io.MousePos.y;
+                ms.ScrollX = io.MouseWheelH;
+                ms.ScrollY = io.MouseWheel;
+
+                // Keys
+                memcpy(ks.KeysDown, io.KeysDown, sizeof(bool)*512);
+
+                // Joystick
+                for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
+                {
+
+                    if (glfwJoystickPresent(id))
+                    {
+                        js.Name = glfwGetJoystickName(id);
+                        int numAxis, numButtons;
+                        const float* axisData = glfwGetJoystickAxes(id,&numAxis);
+                        const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
+                        if (axisData != nullptr)
+                        {
+                            js.AxisCount = numAxis;
+                            memcpy(&js.AxisData[0],axisData,sizeof(float)*numAxis);
+                        }
+                        else
+                        {
+                            js.AxisCount = 0;
+                        }
+                        if (buttonData != nullptr)
+                        {
+                            js.ButtonCount = numButtons;
+                            memcpy(&js.ButtonData[0],buttonData,sizeof(unsigned char)*numButtons);
+                        }
+                        else
+                        {
+                            js.ButtonCount = 0;
+                        }
+                    }
+                }
+            }
         }
     }
 }

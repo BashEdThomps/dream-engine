@@ -5,7 +5,7 @@ namespace DreamTool
 {
     LightViewer::LightViewer
     (DTState* p)
-        : GLWidget(p)
+        : GLWidget(p,false)
     {
         setLogClassName("LightViewer");
         for (auto index : LightModelIndices)

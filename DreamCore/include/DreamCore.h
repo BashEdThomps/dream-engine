@@ -49,6 +49,8 @@
 #include "../Components/Graphics/Texture/TextureCache.h"
 #include "../Components/Graphics/Texture/TextureInstance.h"
 #include "../Components/Graphics/Texture/TextureDefinition.h"
+// Input -----------------------------------------------------------------------
+#include "../Components/Input/InputComponent.h"
 // Path ------------------------------------------------------------------------
 #include "../Components/Path/PathDefinition.h"
 #include "../Components/Path/PathComponent.h"

@@ -210,15 +210,15 @@ namespace Dream
     (ShaderInstance* shader)
     {
         auto log = getLog();
-        if (mInstancesInFrustum.empty())
+        if (mInstances.empty())
         {
             log->debug("(Shadow) No instances of {} in Frustum", getName());
             return;
         }
         log->trace("(Shadow) Drawing {} instances of mesh {}", mInstances.size(), getName());
         shader->bindVertexArray(mVAO);
-        shader->bindInstances(mInstancesInFrustum);
-        auto size = static_cast<GLsizei>(mInstancesInFrustum.size());
+        shader->bindInstances(mInstances);
+        auto size = static_cast<GLsizei>(mInstances.size());
         ShadowInstancesDrawn += size;
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
         ShadowDrawCalls++;

@@ -85,40 +85,40 @@ namespace Dream
     }
 
     void
-    SceneObjectDefinition::setHasFocus
+    SceneObjectDefinition::setHasInputFocus
     (bool focus)
     {
-        mJson[Constants::SCENE_OBJECT_HAS_FOCUS] = focus;
+        mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS] = focus;
     }
 
     bool
-    SceneObjectDefinition::getHasFocus
+    SceneObjectDefinition::getHasInputFocus
     ()
     {
-        if (mJson[Constants::SCENE_OBJECT_HAS_FOCUS].is_null())
+        if (mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS].is_null())
         {
-            mJson[Constants::SCENE_OBJECT_HAS_FOCUS] = false;
+            mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS] = false;
         }
 
-        return mJson[Constants::SCENE_OBJECT_HAS_FOCUS];
+        return mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS];
     }
 
     void
-    SceneObjectDefinition::setFollowsCamera
+    SceneObjectDefinition::setHasCameraFocus
     (bool fc)
     {
-        mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA] = fc;
+        mJson[Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS] = fc;
     }
 
     bool
-    SceneObjectDefinition::getFollowsCamera
+    SceneObjectDefinition::getHasCameraFocus
     ()
     {
-        if (mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA].is_null())
+        if (mJson[Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS].is_null())
         {
-            mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA] = false;
+            mJson[Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS] = false;
         }
-        return mJson[Constants::SCENE_OBJECT_FOLLOWS_CAMERA];
+        return mJson[Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS];
     }
 
     void

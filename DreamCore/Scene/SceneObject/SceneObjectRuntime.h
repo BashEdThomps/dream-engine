@@ -99,8 +99,11 @@ namespace Dream
         Transform& getTransform();
         void setTransform(const Transform& transform);
 
-        bool hasFocus() const;
-        void setHasFocus(bool);
+        bool getHasInputFocus() const;
+        void setHasInputFocus(bool);
+
+        bool getHasCameraFocus() const;
+        void setHasCameraFocus(bool);
 
         bool hasEvents() const;
         void addEvent(Event);
@@ -124,9 +127,6 @@ namespace Dream
         bool applyToAll(function<bool(SceneObjectRuntime*)>);
 
         bool useDefinition() override;
-
-        bool getFollowsCamera() const;
-        void setFollowsCamera(bool followsCamera);
 
         bool getDeleted() const;
         void setDeleted(bool deleted);
@@ -175,10 +175,10 @@ namespace Dream
         SceneRuntime* mSceneRuntimeHandle;
         SceneObjectRuntime* mParentRuntimeHandle;
         BoundingBox mBoundingBox;
-        bool mHasFocus;
+        bool mHasInputFocus;
+        bool mHasCameraFocus;
         bool mDeleted;
         bool mHidden;
         bool mAlwaysDraw;
-        bool mFollowsCamera;
     };
 }

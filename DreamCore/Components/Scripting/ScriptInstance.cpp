@@ -251,7 +251,7 @@ namespace Dream
                 continue;
             }
 
-            if (!sceneObject.runtime->hasFocus())
+            if (!sceneObject.runtime->getHasInputFocus())
             {
                 continue;
             }

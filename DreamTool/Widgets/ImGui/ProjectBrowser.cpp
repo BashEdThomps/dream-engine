@@ -196,18 +196,18 @@ namespace DreamTool
         if(StringCombo("New",&assetTypeIndex,assetTypes,assetTypes.size()))
         {
             auto type = Constants::getAssetTypeEnumFromString(assetTypes.at(assetTypeIndex));
-            projDef->createNewAssetDefinition(type);
+            auto newDef = projDef->createNewAssetDefinition(type);
+            mState->propertiesWindow.pushPropertyTarget(Asset,newDef,nullptr);
         }
 
         ImGui::PushID("AssetTree");
-        int assetTypeTreeId = 0;
         for (auto name : Constants::DREAM_ASSET_TYPES_READABLE_VECTOR)
         {
             AssetType type = Constants::getAssetTypeEnumFromString(name);
             auto assets = projDef->getAssetDefinitionsVector(type);
             stringstream nameCount;
             nameCount <<  name << " (" <<  assets.size() << ")";
-            if (ImGui::TreeNodeEx((void*)(intptr_t)++assetTypeTreeId,node_flags,nameCount.str().c_str(),0))
+            if (ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags))
             {
                 int assetDefTreeId = 0;
                 for (auto asset : assets)
@@ -222,7 +222,6 @@ namespace DreamTool
                         ImGui::TreePop();
                     }
                 }
-                ImGui::TreePop();
             }
         } // Asset Type Node
         ImGui::PopID();

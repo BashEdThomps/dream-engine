@@ -61,7 +61,7 @@ namespace Dream
         float* getMatrixFloatPointer();
         MatrixDecomposition decomposeMatrix();
         void recomposeMatrix(MatrixDecomposition decomp);
-
+        void translate(vec3);
         json getJson();
     };
 

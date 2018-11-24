@@ -75,6 +75,7 @@ namespace Dream
         vector<char> getAudioBuffer(AudioInstance*, size_t, size_t) const;
         AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         void setVolume(float);
+        float getVolume();
 
         void deleteBuffers(int, ALuint);
         void deleteSources(int, ALuint);
