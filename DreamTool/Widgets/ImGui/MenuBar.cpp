@@ -317,7 +317,7 @@ namespace DreamTool
             snprintf(
                 msgBuf,
                 512,
-                "%s | Input -> %s | %03d fps",
+                "%s | Input -> %s | %.2f fps",
                 mMessageString.c_str(),
                 (
                     mState->inputTarget == DTState::InputTarget::EDITOR ?
@@ -583,12 +583,7 @@ namespace DreamTool
         mMessageString = messageString;
     }
 
-    int MenuBar::getFPS() const
-    {
-        return mFPS;
-    }
-
-    void MenuBar::setFPS(int fPS)
+    void MenuBar::setFPS(double fPS)
     {
         mFPS = fPS;
     }

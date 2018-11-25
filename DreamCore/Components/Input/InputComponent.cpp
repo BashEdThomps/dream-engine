@@ -128,36 +128,48 @@ namespace Dream
             auto lTrigger = mJoystickState.ButtonData[mJoystickMapping.TriggerLeftButton];
             auto rTrigger = mJoystickState.ButtonData[mJoystickMapping.TriggerRightButton];
 
-            static float jsScale = 0.25f;
-            cam->flyDown(clearDeadzone(rightY)*jsScale);
-            cam->flyRight(clearDeadzone(rightX)*jsScale);
+            static float jsScale = 0.025f;
+            cam->flyUp(rightY*jsScale);
+            cam->flyLeft(rightX*jsScale*2.0f);
 
-            if (lTrigger)
+            if (dPadDown)
             {
                 cam->flyBackward();
             }
-            if (rTrigger)
+            if (dPadUp)
             {
                 cam->flyForward();
             }
 
             auto so = cam->getFocusedSceneObject();
-            auto ly = clearDeadzone(leftY);
-            auto lx = clearDeadzone(leftX);
-            if (so && (lx != 0.0f || ly != 0.0f))
+            auto ly = leftY;
+            auto lx = leftX;
+            if (so )
             {
-                auto decomp = so->getTransform().decomposeMatrix();
-                float xTheta = atan2(ly,lx);
-                float camTheta = cam->getFocusedObjectTheta();
-                float rot = camTheta-(xTheta+(static_cast<float>(M_PI)/2.0f));
-                mat4 mat(1.0f);
-                vec3 tx = (decomp.translation);
-                mat = glm::translate(mat,tx);
-                mat = glm::rotate(mat,rot,vec3(0.0f,1.0f,0.0f));
-                mat4 newTx(1.0f);
-                newTx = glm::translate(newTx,vec3(lx*jsScale,0.0f,ly*jsScale));
-                mat *= newTx;
-                so->getTransform().setMatrix(mat);
+
+                if(lx != 0.0f || ly != 0.0f)
+                {
+                    float yDelta=0.0f;
+                    if (rTrigger)
+                    {
+                        yDelta=jsScale;
+                    }
+                    else if (lTrigger)
+                    {
+                        yDelta=-jsScale;
+                    }
+                    auto decomp = so->getTransform().decomposeMatrix();
+                    // Theta of camera and joystick
+                    float xTheta = atan2(ly,lx);
+                    float camTheta = cam->getFocusedObjectTheta();
+                    float rot = camTheta-(xTheta+(static_cast<float>(M_PI)/2.0f));
+                    // Distance from center (r in polar coords)
+                    float distance = sqrt((lx*lx)+(ly*ly))*jsScale;
+                    mat4 originalTx = glm::translate(mat4(1.0f),decomp.translation);
+                    mat4 rotMat = glm::rotate(mat4(1.0f),rot,vec3(0.0f,1.0f,0.0f));
+                    mat4 jsTx = glm::translate(mat4(1.0f), vec3(0.0f, yDelta,-distance));
+                    so->getTransform().setMatrix(originalTx*rotMat*jsTx);
+                }
             }
         }
         endUpdate();

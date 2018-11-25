@@ -68,9 +68,9 @@ namespace DreamTool
         int argc;
         char** argv;
         bool MainLoopDone = false;
-        unsigned int Frames = 0;
+        double LastTime = glfwGetTime();
         double CurrentTime = glfwGetTime();
-        double OneSec = 1.0;
+        double Frames = 0;
         InputTarget inputTarget=EDITOR;
 
         DTState(int _argc, char** _argv);

@@ -152,16 +152,10 @@ namespace DreamTool
 
     void DTState::FPS()
     {
-        if (glfwGetTime() > CurrentTime + OneSec)
-        {
-            menuBar.setFPS(Frames);
-            Frames = 0;
-            CurrentTime = glfwGetTime();
-        }
-        else
-        {
-            Frames++;
-        }
+        LastTime = CurrentTime;
+        CurrentTime = glfwGetTime();
+        Frames = 1.0/(CurrentTime-LastTime);
+        menuBar.setFPS(Frames);
     }
 
     void
