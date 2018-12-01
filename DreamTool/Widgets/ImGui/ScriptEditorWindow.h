@@ -3,6 +3,12 @@
 #include "ImGuiWidget.h"
 #include "../../deps/ImGui/TextEditor.h"
 
+
+namespace Dream
+{
+    class ScriptDefinition;
+}
+
 namespace DreamTool
 {
     class ScriptEditorWindow : public ImGuiWidget

@@ -33,6 +33,8 @@ using namespace std;
 namespace Dream
 {
 
+    class Camera;
+
     struct PhysicsDebugVertex
     {
         glm::vec3 Position;
@@ -41,8 +43,7 @@ namespace Dream
 
     class PhysicsDebugDrawer : public btIDebugDraw, DreamObject
     {
-        glm::mat4 mProjectionMatrix;
-        glm::mat4 mViewMatrix;
+        Camera* mCamera;
         GLuint mShaderProgram;
         GLuint mVAO, mVBO;
         vector<PhysicsDebugVertex> mVertexBuffer;
@@ -50,27 +51,26 @@ namespace Dream
 
     public:
         PhysicsDebugDrawer();
-        ~PhysicsDebugDrawer();
+        ~PhysicsDebugDrawer() override;
 
         void init();
         void initShader();
         void initVaoVbo();
-        void setProjectionMatrix(glm::mat4);
-        void setViewMatrix(glm::mat4);
-        void drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor);
-        void drawLine(const btVector3& from,const btVector3& to,const btVector3& color);
-        void drawSphere (const btVector3& p, btScalar radius, const btVector3& color);
-        void drawTriangle(const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha);
-        void drawContactPoint(const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color);
-        void reportErrorWarning(const char* warningString);
-        void draw3dText(const btVector3& location,const char* textString);
-        void setDebugMode(int debugMode);
-        int  getDebugMode() const { return mDebugMode;}
+        void drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) override;
+        void drawLine(const btVector3& from,const btVector3& to,const btVector3& color) override;
+        void drawSphere (const btVector3& p, btScalar radius, const btVector3& color) override;
+        void drawTriangle(const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha) override;
+        void drawContactPoint(const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) override;
+        void reportErrorWarning(const char* warningString) override;
+        void draw3dText(const btVector3& location,const char* textString) override;
+        void setDebugMode(int debugMode) override;
+        int  getDebugMode() const  override { return mDebugMode;}
         string btVecToString(const btVector3&);
         void drawAll();
         void preRender();
         void postRender();
 
+        void setCamera(Camera* camera);
     };
 
 } // End of Dream

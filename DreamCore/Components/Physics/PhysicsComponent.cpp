@@ -16,24 +16,16 @@
 */
 
 #include "PhysicsComponent.h"
-
 #include <iostream>
-
 #include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
-
 #include "../IComponent.h"
-
+#include "../Transform.h"
 #include "../Event.h"
-
 #include "../Time.h"
-
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-
-#include "../Transform.h"
-
 #include "../../Utilities/String.h"
 
 namespace Dream
@@ -134,7 +126,9 @@ namespace Dream
         }
     }
 
-    vector<float> PhysicsComponent::getGravity()
+    vector<float>
+    PhysicsComponent::getGravity
+    ()
     {
         if (mDynamicsWorld != nullptr)
         {
@@ -144,7 +138,8 @@ namespace Dream
         return vector<float>{0.0f,0.0f,0.0f};
     }
 
-    bool PhysicsComponent::init
+    bool
+    PhysicsComponent::init
     ()
     {
         auto log = getLog();
@@ -186,7 +181,7 @@ namespace Dream
             btScalar stepValue = 0.0;
             if (mTime == nullptr )
             {
-                log->error("I don't haveTime for this");
+                log->error("I don't have Time for this");
                 return;
             }
             stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
@@ -280,13 +275,12 @@ namespace Dream
     }
 
     void
-    PhysicsComponent::setViewProjectionMatrix
-    (glm::mat4 view, glm::mat4 proj)
+    PhysicsComponent::setCamera
+    (Camera* camera)
     {
         if (mDebugDrawer != nullptr)
         {
-            mDebugDrawer->setViewMatrix(view);
-            mDebugDrawer->setProjectionMatrix(proj);
+            mDebugDrawer->setCamera(camera);
         }
     }
 
@@ -385,9 +379,6 @@ namespace Dream
             {
                 log->error("Contact Manifold Found but Collision Objects are nullptr");
             }
-
-
-
         }
     }
 

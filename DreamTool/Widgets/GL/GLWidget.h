@@ -7,10 +7,18 @@
 
 #pragma once
 
-#include <DreamCore.h>
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else
+    #include <GL/glu.h>
+#endif
+
 #include "../DTWidget.h"
+#include <glm/glm.hpp>
 
 using namespace Dream;
+using namespace glm;
 
 namespace DreamTool
 {

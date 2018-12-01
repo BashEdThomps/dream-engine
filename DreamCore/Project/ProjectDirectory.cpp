@@ -105,11 +105,11 @@ namespace Dream
             auto assetTypeEnum = Constants::getAssetTypeEnumFromString(assetDef->getType());
             if (!assetTypeDirectoryExists(assetTypeEnum))
             {
-               if(!createAssetTypeDirectory(assetTypeEnum))
-               {
-                   log->error("Unable to create asset type directory");
-                   return false;
-               }
+                if(!createAssetTypeDirectory(assetTypeEnum))
+                {
+                    log->error("Unable to create asset type directory");
+                    return false;
+                }
             }
             if(!dir.create())
             {
@@ -217,6 +217,53 @@ namespace Dream
         string assetTypeDirPath = getAssetTypeDirectory(type);
         Directory dir(assetTypeDirPath);
         return dir.create();
+    }
+
+    void
+    ProjectDirectory::cleanupAssetsDirectory
+    ()
+    {
+        auto log = getLog();
+        auto pDef = mProject->getProjectDefinition();
+        if (!pDef)
+        {
+            log->error("Cannot cleanup, no project definition");
+            return;
+        }
+
+        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        {
+            AssetType type = typePair.first;
+            string typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+            string path = getAssetTypeDirectory(type);
+            Directory assetDir(path);
+            if (assetDir.exists())
+            {
+                auto subdirs = assetDir.listSubdirectories();
+                log->error("Cleaning up {} containing {} definitions", path, subdirs.size());
+                int deletedCount=0;
+                for (auto subdirPath : subdirs)
+                {
+                    Directory subdir(subdirPath);
+                    if (subdir.exists())
+                    {
+                        auto name = subdir.getName();
+                        log->error("Checking subdir {} has definition",name);
+                        auto def = pDef->getAssetDefinitionByUuid(name);
+                        if (!def)
+                        {
+                            log->error("Definition {} does not exist, removing...",name);
+                            subdir.deleteDirectory();
+                        }
+                    }
+                }
+                log->error("Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+            }
+            else
+            {
+                log->error("No Directory {}",path);
+            }
+        }
     }
 
     const size_t ProjectDirectory::BufferSize = 1024*1024;

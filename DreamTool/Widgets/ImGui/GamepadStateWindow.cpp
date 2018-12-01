@@ -1,5 +1,9 @@
 #include "GamepadStateWindow.h"
 #include "../../DTState.h"
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Components/Input/InputComponent.h"
+
 
 namespace DreamTool
 {

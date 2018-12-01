@@ -1,5 +1,6 @@
 #include "GridPropertiesWindow.h"
 #include "../../DTState.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace DreamTool
 {
@@ -14,7 +15,6 @@ namespace DreamTool
     {
 
     }
-
 
     void GridPropertiesWindow::draw()
     {

@@ -120,6 +120,7 @@ namespace Dream
         float getMaxDrawDistance() const;
 
         vector<IAssetInstance*> getAssetInstances(AssetType);
+        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(IAssetDefinition* def);
         ShaderInstance* getShadowPassShader() const;
         void setShadowPassShader(ShaderInstance* shadowPassShader);
     };

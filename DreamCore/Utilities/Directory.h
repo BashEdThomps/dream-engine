@@ -13,6 +13,7 @@ namespace Dream
         ~Directory();
 
         vector<string> list(string regex = "");
+        vector<string> listSubdirectories(string regex = "");
 
         string getPath() const;
         void setPath(string path);
@@ -22,6 +23,7 @@ namespace Dream
         bool create();
         bool deleteDirectory();
         File file(string fileName);
+        bool isDirectory();
 
     private:
         string mPath;

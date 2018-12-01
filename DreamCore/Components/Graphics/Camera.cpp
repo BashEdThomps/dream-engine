@@ -74,8 +74,6 @@ namespace Dream
           mYaw(yaw),
           mPitch(pitch),
           mMovementSpeed(Constants::CAMERA_SPEED),
-          mMouseSensitivity(Constants::CAMERA_SENSITIVTY),
-          mZoom(Constants::CAMERA_ZOOM),
           mFrustum(Frustum(this)),
           mFocusedSceneObject(nullptr),
           mFocusPitch(0.0f),
@@ -350,6 +348,15 @@ namespace Dream
                     sor->getBoundingBox()
                     ) != Frustum::TEST_OUTSIDE;
     }
+
+    bool
+    Camera::inFrustum
+    (const BoundingBox& bb)
+    {
+        const static mat4 tx(1.0f);
+        return mFrustum.testIntersection(tx,bb) != Frustum::TEST_OUTSIDE;
+    }
+
 
     mat4 Camera::getProjectionMatrix() const
     {

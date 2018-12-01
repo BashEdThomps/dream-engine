@@ -262,6 +262,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_COLLISION_MODEL = "collisionModel";
     const string Constants::ASSET_ATTR_KINEMATIC = "kinematic";
     const string Constants::ASSET_ATTR_CONTROLLABLE = "controllable";
+    const string Constants::ASSET_ATTR_CCD_SPR = "ccd_spr";
     const string Constants::ASSET_ATTR_RESTITUTION = "restitution";
     const string Constants::ASSET_ATTR_FRICTION = "friction";
 

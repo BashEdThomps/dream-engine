@@ -1,8 +1,43 @@
 // Maintain include order for GL Defines
 #include "PropertiesWindow.h"
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include "../../deps/ImGui/imguifilesystem.h"
 #include "../../deps/ImGui/ImGuizmo.h"
 #include "../../DTState.h"
+
+
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Project/ProjectDefinition.h"
+#include "../../../DreamCore/Project/ProjectDirectory.h"
+
+#include "../../../DreamCore/Scene/SceneDefinition.h"
+#include "../../../DreamCore/Scene/SceneRuntime.h"
+
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+
+#include "../../../DreamCore/Components/Audio/AudioDefinition.h"
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelInstance.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelCache.h"
+#include "../../../DreamCore/Components/Graphics/Light/LightDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Light/LightInstance.h"
+#include "../../../DreamCore/Components/Graphics/Material/MaterialDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Material/MaterialInstance.h"
+#include "../../../DreamCore/Components/Graphics/Texture/TextureInstance.h"
+#include "../../../DreamCore/Components/Graphics/Texture/TextureDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
+#include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
+#include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
+#include "../../../DreamCore/Components/Scripting/ScriptInstance.h"
 
 namespace DreamTool
 {
@@ -81,7 +116,6 @@ namespace DreamTool
             ImGui::SameLine();
             if (ImGui::Button("Delete",ImVec2(0,0)))
             {
-                // TODO Check is not active
                 if (soDef)
                 {
                     auto parent = soDef->getParentSceneObject();
@@ -1185,6 +1219,64 @@ namespace DreamTool
     }
 
     void
+    PropertiesWindow::drawPhysicsImGizmo
+    (CompoundChildDefinition ccd)
+    {
+        auto log = getLog();
+        float* matrix = ccd.transform.getMatrixFloatPointer();
+
+        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
+        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+
+        ImGui::InputFloat3("##Translation", matrixTranslation, 3);
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE))
+        {
+            currentGizmoOperation = ImGuizmo::TRANSLATE;
+        }
+
+        ImGui::InputFloat3("##Rotation", matrixRotation, 3);
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE))
+        {
+            currentGizmoOperation = ImGuizmo::ROTATE;
+        }
+
+        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+
+        auto pRunt = mState->project->getProjectRuntime();
+        if (pRunt)
+        {
+            auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
+            auto sRunt = pRunt->getActiveSceneRuntime();
+            if (sRunt)
+            {
+                auto cam = sRunt->getCamera();
+                if (cam)
+                {
+                    auto view = cam->getViewMatrix();
+                    ImGuiIO& io = ImGui::GetIO();
+                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+                    ImGuizmo::Manipulate
+                    (
+                        glm::value_ptr(view),
+                        glm::value_ptr(proj),
+                        currentGizmoOperation,
+                        currentGizmoMode,
+                        matrix,
+                        nullptr,
+                        mGizmoUseSnap ? &mGizmoSnap.x : nullptr
+                    );
+                    ccd.parent->updateCompoundChildTransform(ccd);
+                    replaceRuntimeInstances(ccd.parent);
+                }
+            }
+        }
+    }
+
+    void
     PropertiesWindow::drawAssetProperties
     ()
     {
@@ -1250,6 +1342,25 @@ namespace DreamTool
                 break;
             case AssetType::NONE:
                 break;
+        }
+
+        auto pRunt = mState->project->getProjectRuntime();
+        if (pRunt)
+        {
+            auto activeScene = pRunt->getActiveSceneRuntime();
+            if (activeScene)
+            {
+                ImGui::Separator();
+                ImGui::Columns(1);
+                if(ImGui::CollapsingHeader("Active Instances"))
+                {
+                    auto instances = activeScene->getSceneObjectsWithInstanceOf(assetDef);
+                    for (auto instance : instances)
+                    {
+                        ImGui::Text("%s",instance->getNameAndUuidString().c_str());
+                    }
+                }
+            }
         }
     }
 
@@ -1832,6 +1943,7 @@ namespace DreamTool
     PropertiesWindow::drawPhysicsObjectAssetProperties
     ()
     {
+        bool modified = false;
         auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
         vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::PHYSICS_OBJECT];
         string poFormatString = pod->getFormat();
@@ -1839,6 +1951,7 @@ namespace DreamTool
         if(StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
         {
             pod->setFormat(poFormats.at(poFormatIndex));
+            modified = true;
         }
         ImGui::Separator();
 
@@ -1846,12 +1959,14 @@ namespace DreamTool
         if (ImGui::Checkbox("Kinematic",&kinematic))
         {
             pod->setKinematic(kinematic);
+            modified = true;
         }
 
         bool controllable = pod->getControllableCharacter();
         if (ImGui::Checkbox("Controllable Character",&controllable))
         {
             pod->setControllableCharacter(controllable);
+            modified = true;
         }
 
         ImGui::Separator();
@@ -1860,24 +1975,35 @@ namespace DreamTool
         if(ImGui::InputFloat("Mass",&mass))
         {
             pod->setMass(mass);
+            modified = true;
         }
 
         float margin = pod->getMargin();
         if(ImGui::InputFloat("Margin",&margin))
         {
             pod->setMargin(margin);
+            modified = true;
         }
 
         float restitution = pod->getRestitution();
         if(ImGui::InputFloat("Restitution",&restitution))
         {
             pod->setRestitution(restitution);
+            modified = true;
         }
 
         float friction = pod->getFriction();
         if(ImGui::InputFloat("Friction",&friction))
         {
             pod->setFriction(friction);
+            modified = true;
+        }
+
+        float ccdspr = pod->getCcdSweptSphereRadius();
+        if (ImGui::InputFloat("CCD Swept Sphere Radius",&ccdspr))
+        {
+            pod->setCcdSweptSphereRadius(ccdspr);
+            modified = true;
         }
 
         ImGui::Separator();
@@ -1895,6 +2021,7 @@ namespace DreamTool
                 pod->setHalfExtentsX(halfExtents[0]);
                 pod->setHalfExtentsY(halfExtents[1]);
                 pod->setHalfExtentsZ(halfExtents[2]);
+            modified = true;
             }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
@@ -1918,6 +2045,7 @@ namespace DreamTool
             {
                 IAssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
                 pod->setCollisionModel(newlySelected->getUuid());
+            modified = true;
             }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
@@ -1933,7 +2061,71 @@ namespace DreamTool
                 pod->setNormalX(normal[0]);
                 pod->setNormalY(normal[1]);
                 pod->setNormalZ(normal[2]);
+                modified = true;
            }
+        }
+        else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
+        {
+            ImGui::Columns(2);
+            auto pDef = mState->project->getProjectDefinition();
+            if (pDef)
+            {
+                auto shapeNames = pDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
+                static int shapeNameIndex = -1;
+                StringCombo("Shape",&shapeNameIndex,shapeNames,shapeNames.size());
+
+                ImGui::NextColumn();
+                if(ImGui::Button("Add Compound Child"))
+                {
+                    if (shapeNameIndex >= 0)
+                    {
+                        auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,shapeNameIndex);
+                        pod->addCompoundChild(
+                            CompoundChildDefinition
+                            {
+                                        pod,
+                                Transform(),
+                                childDef->getUuid()
+                            }
+                        );
+                    }
+                    modified = true;
+                }
+                ImGui::Separator();
+                ImGui::Columns(1);
+                ImGui::Text("Child Shapes");
+                ImGui::Separator();
+
+                auto shapes = pod->getCompoundChildren();
+                static string selectedToTransform = "";
+                for (auto shape : shapes)
+                {
+                   auto shapeDef = pDef->getAssetDefinitionByUuid(shape.uuid);
+
+                   if (!shapeDef)
+                   {
+                       continue;
+                   }
+                   ImGui::PushID(shape.uuid.c_str());
+                   ImGui::SetNextTreeNodeOpen(selectedToTransform.compare(shape.uuid) == 0);
+                   if (ImGui::CollapsingHeader(shapeDef->getName().c_str()))
+                   {
+                        selectedToTransform = shape.uuid;
+                        drawPhysicsImGizmo(shape);
+                        if(ImGui::Button("Remove Shape"))
+                        {
+                            pod->removeCompoundChild(shape);
+                            modified = true;
+                        }
+                   }
+                   ImGui::PopID();
+                }
+            }
+        }
+        if (modified)
+        {
+
+            replaceRuntimeInstances(pod);
         }
     }
 
@@ -2052,5 +2244,24 @@ namespace DreamTool
             }
         }
         return -1;
+    }
+
+    void
+    PropertiesWindow::replaceRuntimeInstances
+    (IAssetDefinition* assetDef)
+    {
+        auto pRunt = mState->project->getProjectRuntime();
+        if (pRunt)
+        {
+            auto sRunt = pRunt->getActiveSceneRuntime();
+            if (sRunt)
+            {
+                auto runts = sRunt->getSceneObjectsWithInstanceOf(assetDef);
+                for (auto soRunt : runts)
+                {
+                    soRunt->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());
+                }
+            }
+        }
     }
 }

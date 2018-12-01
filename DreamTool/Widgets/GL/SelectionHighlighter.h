@@ -2,6 +2,13 @@
 
 #include "GLWidget.h"
 
+namespace Dream
+{
+    class SceneObjectRuntime;
+}
+
+using namespace Dream;
+
 namespace DreamTool
 {
     class SelectionHighlighter

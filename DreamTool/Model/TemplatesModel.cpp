@@ -1,5 +1,7 @@
 #include "TemplatesModel.h"
 #include <sstream>
+#include "../../DreamCore/Utilities/File.h"
+#include "../../DreamCore/Utilities/Directory.h"
 
 namespace DreamTool
 {

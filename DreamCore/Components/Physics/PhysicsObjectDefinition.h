@@ -22,13 +22,17 @@
 
 namespace Dream
 {
+
+    class PhysicsObjectDefinition;
+
     class CompoundChildDefinition
     {
     public:
+       PhysicsObjectDefinition* parent;
        Transform transform;
        string      uuid;
 
-       json getJson()
+       const json getJson()
        {
            json retval = json::object();
            retval[Constants::UUID] = uuid;
@@ -37,7 +41,8 @@ namespace Dream
        }
     };
 
-    class PhysicsObjectDefinition : public IAssetDefinition
+    class PhysicsObjectDefinition
+            : public IAssetDefinition
     {
     public:
         PhysicsObjectDefinition(ProjectDefinition* pd, json js);
@@ -82,9 +87,13 @@ namespace Dream
         bool getControllableCharacter();
         void setControllableCharacter(bool controllable);
 
+        void setCcdSweptSphereRadius(float rad);
+        float getCcdSweptSphereRadius();
+
         void addCompoundChild(CompoundChildDefinition child);
         void removeCompoundChild(CompoundChildDefinition def);
         vector<CompoundChildDefinition> getCompoundChildren();
+        void updateCompoundChildTransform(CompoundChildDefinition);
 
         float getRestitution();
         void setRestitution(float r);

@@ -1,6 +1,13 @@
 #include "LightViewer.h"
 #include "../../DTState.h"
 
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Scene/SceneRuntime.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+
 namespace DreamTool
 {
     LightViewer::LightViewer

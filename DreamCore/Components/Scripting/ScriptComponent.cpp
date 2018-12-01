@@ -14,6 +14,11 @@
  * this file belongs to.
  */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+#pragma clang diagnostic ignored "-Wcomma"
+#pragma clang diagnostic pop
+
 #include "ScriptComponent.h"
 #include "ScriptInstance.h"
 #include "../Event.h"
@@ -354,14 +359,27 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeTransform3D
+    ScriptComponent::exposeTransform
     ()
     {
-        debugRegisteringClass("Transform3D");
+        debugRegisteringClass("Transform");
         sol::state_view stateView(State);
-        stateView.new_usertype<Transform>("Transform3D",
+        stateView.new_usertype<Transform>("Transform",
             // Translation ===========================================================
-            "getMatrix",&Transform::getMatrix
+            "getMatrix",&Transform::getMatrix,
+            "setMatrix",&Transform::getMatrix,
+            "decomposeMatrix",&Transform::decomposeMatrix,
+            "recomposeMatrix",&Transform::recomposeMatrix
+        );
+
+        stateView.new_usertype<MatrixDecomposition>
+        (
+            "MatrixDecomposition",
+            "translation",&MatrixDecomposition::translation,
+            "rotation",&MatrixDecomposition::rotation,
+            "scale",&MatrixDecomposition::scale,
+            "skew",&MatrixDecomposition::skew,
+            "perspective",&MatrixDecomposition::perspective
         );
     }
 
@@ -384,12 +402,12 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeAssimpModelInstance
+    ScriptComponent::exposeModelInstance
     ()
     {
-        debugRegisteringClass("AssimpModelInstance");
+        debugRegisteringClass("ModelInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<ModelInstance>("AssimpModelInstance");
+        stateView.new_usertype<ModelInstance>("ModelInstance");
     }
 
     void
@@ -620,13 +638,13 @@ namespace Dream
         // Dream Misc
         exposeEvent();
         exposeTime();
-        exposeTransform3D();
+        exposeTransform();
         // Audio
         exposeAudioComponent();
         exposeAudioInstance();
         // Graphics
         exposeGraphicsComponent();
-        exposeAssimpModelInstance();
+        exposeModelInstance();
         exposeCamera();
         exposeLightInstance();
         exposeShaderInstance();

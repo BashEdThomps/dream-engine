@@ -23,16 +23,19 @@
 #include <map>
 #include <vector>
 #include <btBulletDynamicsCommon.h>
+#include "../Transform.h"
 
 using namespace std;
 using namespace glm;
-using nlohmann::json;
+using namespace nlohmann;
 
 namespace Dream
 {
     class PhysicsMotionState;
     class PhysicsObjectDefinition;
     class PhysicsComponent;
+    class ModelCache;
+    class ModelInstance;
 
     class PhysicsObjectInstance : public IAssetInstance
     {
@@ -43,10 +46,12 @@ namespace Dream
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mInPhysicsWorld;
         PhysicsComponent* mPhysicsComponentHandle;
+        ModelCache* mModelCache;
     public:
         PhysicsObjectInstance(
             PhysicsObjectDefinition*,
             PhysicsComponent*,
+            ModelCache*,
             SceneObjectRuntime*
         );
         ~PhysicsObjectInstance() override;
@@ -56,20 +61,41 @@ namespace Dream
         btRigidBody* getRigidBody();
         void getWorldTransform(btTransform&);
         btCollisionObject* getCollisionObject();
+
+        vec3 getCenterOfMassPosition();
+        void applyCentralImpulse(vec3);
+        void applyTorqueImpulse(vec3);
+        void applyForce(vec3);
+        void applyTorque(vec3);
+        void clearForces();
+
+        void setCenterOfMassTransform(const Transform& tx);
+        void setWorldTransform(const Transform& tx);
+
+        vec3 getLinearVelocity();
         void setLinearVelocity(float, float, float);
+
         bool isInPhysicsWorld();
         void setInPhysicsWorld(bool inPhysicsWorld);
+
         void setLinearFactor(float x, float y, float z);
+
         void setAngularFactor(float x, float y, float z);
-        vec3 getLinearVelocity();
+        void setAngularVelocity(float x, float y, float z);
+
         float getRestitution() const;
         void setRestitution(float r);
+
         float getFriction() const;
         void setFriction(float friction);
+
         float getMass() const;
         void setMass(float mass);
-        void setAngularVelocity(float x, float y, float z);
+
+        void  setCcdSweptSphereRadius(float);
+        float getCcdSweptSphereRadius();
     protected:
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
+        btCollisionShape* createTriangleMeshShape(ModelInstance*);
     }; // End of PhysicsObjectInstance
 } // End of Dream

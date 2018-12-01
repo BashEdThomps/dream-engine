@@ -291,6 +291,21 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
     }
 
+    void PhysicsObjectDefinition::setCcdSweptSphereRadius(float rad)
+    {
+        mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
+    }
+
+    float PhysicsObjectDefinition::getCcdSweptSphereRadius()
+    {
+
+        if (mJson[Constants::ASSET_ATTR_CCD_SPR].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_CCD_SPR];
+    }
+
     float
     PhysicsObjectDefinition::getRestitution
     ()
@@ -347,12 +362,35 @@ namespace Dream
         for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
         {
            CompoundChildDefinition def;
+           def.parent = this;
            def.uuid = childJson[Constants::UUID];
            def.transform = Transform(childJson[Constants::TRANSFORM]);
            retval.push_back(def);
 
         }
         return retval;
+    }
+
+    void
+    PhysicsObjectDefinition::updateCompoundChildTransform
+    (CompoundChildDefinition def)
+    {
+        makeCompoundChildren();
+        for
+        (
+            auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+            iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+            iter++
+       )
+       {
+            string jsUuid = (*iter)[Constants::UUID];
+            if (def.uuid.compare(jsUuid) == 0)
+            {
+               (*iter)[Constants::TRANSFORM] = def.transform.getJson();
+                return;
+            }
+       }
+
     }
 
     void

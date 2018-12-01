@@ -1,6 +1,8 @@
 #include "RenderPipelinePreviewWindow.h"
 #include "../../DTState.h"
-#include <DreamCore.h>
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 
 using namespace Dream;
 

@@ -60,14 +60,12 @@ namespace Dream
         {
             sr->getRootSceneObjectRuntime()->applyToAll
             (
-                function< SceneObjectRuntime* (SceneObjectRuntime*) >
+                function<SceneObjectRuntime*(SceneObjectRuntime*) >
                 (
                     [&](SceneObjectRuntime* currentSceneObject)
                     {
                         if (currentSceneObject->hasAnimationInstance())
                         {
-                            AnimationInstance* animInstance = currentSceneObject->getAnimationInstance();
-                            // TODO: Fix dis
                         }
                         return nullptr;
                     }

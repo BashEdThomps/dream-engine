@@ -162,15 +162,20 @@ namespace Dream
         int FaceButtonEast; // B
         int FaceButtonSouth; // A
         int FaceButtonWest; // X
-        int ShoulderLeft;
-        int ShoulderRight;
-        int TriggerLeftButton;
-        int TriggerRightButton;
+
         int FaceButtonSelect;
         int FaceButtonStart;
+        int FaceButtonHome;
+
+        int ShoulderLeft;
+        int ShoulderRight;
+
+        int TriggerLeftButton;
+        int TriggerRightButton;
+
         int AnalogLeftButton;
         int AnalogRightButton;
-        int FaceButtonHome;
+
         int DPadNorth;
         int DPadWest;
         int DPadSouth;
@@ -185,7 +190,7 @@ namespace Dream
         unsigned char ButtonData[32] = {0};
         int AxisCount = 0;
         float AxisData[32] = {0.0f};
-        float DeadZone = 0.2f;
+        float DeadZone = 0.25f;
     };
 
     struct MouseState

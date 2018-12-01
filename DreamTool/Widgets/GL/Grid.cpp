@@ -16,7 +16,9 @@
  * this file belongs to.
  */
 #include "Grid.h"
-#include <DreamCore.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
 
 using namespace Dream;
 namespace DreamTool

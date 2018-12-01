@@ -1,10 +1,9 @@
 #pragma once
 #include "GLWidget.h"
 #include "Grid.h"
+
 namespace DreamTool
 {
-
-
     class Cursor : public GLWidget
     {
     public:

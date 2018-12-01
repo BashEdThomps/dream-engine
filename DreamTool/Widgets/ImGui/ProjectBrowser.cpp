@@ -4,6 +4,13 @@
 #include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
 #include "../../DTState.h"
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectDefinition.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Scene/SceneDefinition.h"
+#include "../../../DreamCore/Scene/SceneRuntime.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
 
 using std::stringstream;
 

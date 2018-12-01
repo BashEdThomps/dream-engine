@@ -78,6 +78,7 @@ namespace Dream
         void removeInstance(SceneObjectRuntime*);
         vector<string> getMaterialNames();
 
+        vector<ModelMesh*> getMeshes() const;
 
     private:
         // Variables

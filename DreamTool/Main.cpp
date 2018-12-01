@@ -24,7 +24,10 @@ main
     log->trace("Starting...");
     DTState state(argc,argv);
     state.init();
+
+    spdlog::set_level(spdlog::level::off);
     state.run();
+
     spdlog::set_level(spdlog::level::trace);
     log->info("Run is done. Performing stack-based clean up");
     return 0;

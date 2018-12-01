@@ -43,9 +43,9 @@ namespace Dream
 
     AssetType
     IAssetDefinition::getAssetType
-    (json js)
+    ()
     {
-        return Constants::getAssetTypeEnumFromString(js[Constants::ASSET_TYPE]);
+        return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
     }
 
     void
@@ -164,7 +164,6 @@ namespace Dream
     IAssetDefinition::getAssetTypeDirectory
     ()
     {
-
         if (isTypeAudio())
         {
             return Constants::ASSET_TYPE_AUDIO;

@@ -24,6 +24,7 @@
 #include "../Widgets/GL/GLWidget.h"
 #include "../deps/ImGui/imgui_internal.h"
 #include "../deps/ImGui/ImGuizmo.h"
+#include "../../DreamCore/Scene/SceneRuntime.h"
 
 using namespace Dream;
 

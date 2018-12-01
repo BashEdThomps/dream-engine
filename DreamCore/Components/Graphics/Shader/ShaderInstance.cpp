@@ -705,7 +705,7 @@ namespace Dream
     (vector<SceneObjectRuntime*> instances)
     {
         auto log = getLog();
-        // TODO - Bind as single uniform?
+        // TODO - Bind as single uniform or UBO?
         for (size_t i=0; i<instances.size(); i++)
         {
             if (i>=MAX_INSTANCES)

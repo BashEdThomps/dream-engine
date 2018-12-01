@@ -83,6 +83,7 @@ namespace Dream
     json
     Transform::getJson
     ()
+    const
     {
         json j = json::object();
         // Translation
@@ -123,7 +124,7 @@ namespace Dream
     {
         MatrixDecomposition decomp;
         glm::decompose(mMatrix, decomp.scale, decomp.rotation, decomp.translation, decomp.skew, decomp.perspective);
-        decomp.rotation = glm::conjugate(decomp.rotation);
+        //decomp.rotation = glm::conjugate(decomp.rotation);
         return decomp;
     }
 

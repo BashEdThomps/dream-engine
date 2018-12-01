@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DreamCore.h>
+#include "../../DreamCore/Common/DreamObject.h"
 
 using namespace Dream;
 

@@ -43,6 +43,7 @@ namespace Dream
     class PhysicsObjectInstance;
     class SceneRuntime;
     class SceneObjectRuntime;
+    class Camera;
 
     class PhysicsComponent : public IComponent
     {
@@ -70,7 +71,7 @@ namespace Dream
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);
-        void setViewProjectionMatrix(mat4, mat4);
+        void setCamera(Camera* cam);
         void checkContactManifolds(SceneRuntime* scene);
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();

@@ -20,9 +20,13 @@
 #include "PhysicsComponent.h"
 #include "PhysicsObjectDefinition.h"
 
+#include "../../Scene/SceneRuntime.h"
 #include "../../Project/ProjectDefinition.h"
+#include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-
+#include "../Graphics/Model/ModelCache.h"
+#include "../Graphics/Model/ModelInstance.h"
+#include "../Graphics/Model/ModelMesh.h"
 
 namespace Dream
 {
@@ -30,6 +34,7 @@ namespace Dream
     (
         PhysicsObjectDefinition* definition,
         PhysicsComponent* comp,
+        ModelCache* modelCache,
         SceneObjectRuntime* transform)
         : IAssetInstance(definition,transform),
          mCollisionShape(nullptr),
@@ -37,7 +42,8 @@ namespace Dream
          mRigidBody(nullptr),
          mRigidBodyConstructionInfo(nullptr),
          mInPhysicsWorld(false),
-          mPhysicsComponentHandle(comp)
+         mPhysicsComponentHandle(comp),
+         mModelCache(modelCache)
     {
         setLogClassName("PhysicsObjectInstance");
         auto log = getLog();
@@ -129,6 +135,7 @@ namespace Dream
 
         setRestitution(pod->getRestitution());
         setFriction(pod->getFriction());
+        setCcdSweptSphereRadius(pod->getCcdSweptSphereRadius());
 
         mLoaded = (mRigidBody != nullptr);
 
@@ -189,14 +196,24 @@ namespace Dream
         else if (format.compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
             // Load Collision Data
-            /*
-            string path = projectPath+pod->getAssetPath();
-            log->debug( "Loading collision geometry from {}", path );
-            //const aiScene* scene = getModelFromCache(path);
-            btTriangleMesh *triMesh = new btTriangleMesh();
-            processAssimpNode(scene->mRootNode, scene, triMesh);
-            collisionShape = new btBvhTriangleMeshShape(triMesh,true,true);
-            */
+            auto sceneRt = mSceneObjectRuntime->getSceneRuntime();
+            if (sceneRt)
+            {
+                auto modelUuid = pod->getCollisionModel();
+                auto pDef = dynamic_cast<ProjectDefinition*>(sceneRt->getProjectRuntime()->getDefinition());
+                if (pDef)
+                {
+                    auto modelDef = pDef->getAssetDefinitionByUuid(modelUuid);
+                    if (modelDef)
+                    {
+                        auto model = dynamic_cast<ModelInstance*>(mModelCache->getInstance(modelDef));
+                        if (model)
+                        {
+                            collisionShape = createTriangleMeshShape(model);
+                        }
+                    }
+                }
+            }
         }
         else if (format.compare(Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
         {
@@ -217,13 +234,16 @@ namespace Dream
         else if (format.compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
         {
             collisionShape = new btCompoundShape();
-            btCompoundShape *compound = static_cast<btCompoundShape*>(collisionShape);
+            btCompoundShape* compound = static_cast<btCompoundShape*>(collisionShape);
 
             for (CompoundChildDefinition child : pod->getCompoundChildren())
             {
                 auto def = getAssetDefinitionByUuid(child.uuid);
                 btCollisionShape *shape = createCollisionShape(def,projectPath);
-                compound->addChildShape(child.transform.getBtTransform(),shape);
+                if (shape)
+                {
+                    compound->addChildShape(child.transform.getBtTransform(),shape);
+                }
             }
         }
 
@@ -234,6 +254,51 @@ namespace Dream
         }
 
         return collisionShape;
+    }
+
+    btCollisionShape*
+    PhysicsObjectInstance::createTriangleMeshShape
+    (ModelInstance* model)
+    {
+        btTriangleMesh *triMesh = new btTriangleMesh();
+        auto meshes = model->getMeshes();
+
+        if (meshes.empty())
+        {
+            return nullptr;
+        }
+
+        for (auto mesh : meshes)
+        {
+            auto idx = mesh->getIndices();
+            auto verts = mesh->getVertices();
+            for (size_t i=0; i<idx.size()-3;)
+            {
+                btVector3 v1,v2,v3;
+
+                auto i1 = verts.at(idx.at(i)).Position;
+                i++;
+                auto i2 = verts.at(idx.at(i)).Position;
+                i++;
+                auto i3 = verts.at(idx.at(i)).Position;
+                i++;
+
+               v1.setX(i1.x);
+               v1.setY(i1.y);
+               v1.setZ(i1.z);
+
+               v2.setX(i2.x);
+               v2.setY(i2.y);
+               v2.setZ(i2.z);
+
+               v3.setX(i3.x);
+               v3.setY(i3.y);
+               v3.setZ(i3.z);
+
+               triMesh->addTriangle(v1,v2,v3);
+            }
+        }
+        return new btBvhTriangleMeshShape(triMesh,true,true);
     }
 
     btRigidBody*
@@ -255,6 +320,61 @@ namespace Dream
     ()
     {
         return mRigidBody;
+    }
+
+    vec3
+    PhysicsObjectInstance::getCenterOfMassPosition
+    ()
+    {
+       auto tx = mRigidBody->getCenterOfMassPosition();
+       return vec3(tx.x(),tx.y(),tx.z());
+    }
+
+    void
+    PhysicsObjectInstance::applyCentralImpulse(vec3 force)
+    {
+        mRigidBody->applyCentralImpulse(btVector3(force.x,force.y,force.z));
+    }
+
+    void
+    PhysicsObjectInstance::applyTorqueImpulse(vec3 torque)
+    {
+        mRigidBody->applyTorqueImpulse(btVector3(torque.x,torque.y,torque.z));
+    }
+
+    void
+    PhysicsObjectInstance::applyForce
+    (vec3 force)
+    {
+       mRigidBody->applyForce(btVector3(force.x,force.y,force.z),btVector3(0.0f,0.0f,0.0f));
+    }
+
+    void
+    PhysicsObjectInstance::applyTorque
+    (vec3 torque)
+    {
+        mRigidBody->applyTorque(btVector3(torque.x,torque.y,torque.z));
+    }
+
+    void
+    PhysicsObjectInstance::clearForces
+    ()
+    {
+       mRigidBody->clearForces();
+    }
+
+    void
+    PhysicsObjectInstance::setCenterOfMassTransform
+    (const Transform& tx)
+    {
+       mRigidBody->setCenterOfMassTransform(tx.getBtTransform());
+    }
+
+    void
+    PhysicsObjectInstance::setWorldTransform
+    (const Transform& tx)
+    {
+       mRigidBody->setWorldTransform(tx.getBtTransform());
     }
 
     void
@@ -338,6 +458,21 @@ namespace Dream
         mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
         mRigidBody->setMassProps(mass,inertia);
         mPhysicsComponentHandle->addRigidBody(mRigidBody);
+    }
+
+    void
+    PhysicsObjectInstance::setCcdSweptSphereRadius
+    (float ccd)
+    {
+        mRigidBody->setCcdMotionThreshold(1e-7f);
+        mRigidBody->setCcdSweptSphereRadius(ccd);
+    }
+
+    float
+    PhysicsObjectInstance::getCcdSweptSphereRadius
+    ()
+    {
+        return mRigidBody->getCcdSweptSphereRadius();
     }
 
     float

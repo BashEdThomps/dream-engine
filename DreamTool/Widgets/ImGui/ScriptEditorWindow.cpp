@@ -1,5 +1,10 @@
 #include "ScriptEditorWindow.h"
 #include "../../DTState.h"
+#include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectDefinition.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Project/ProjectDirectory.h"
 
 namespace DreamTool
 {

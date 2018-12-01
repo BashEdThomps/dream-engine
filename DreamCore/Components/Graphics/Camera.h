@@ -53,9 +53,7 @@ namespace Dream
         float mYaw;
         float mPitch;
         // Camera options
-        float mMovementSpeed;
-        float mMouseSensitivity;
-        float mZoom;
+            float mMovementSpeed;
         mat4 mProjectionMatrix;
         Frustum mFrustum;
         // Focus on SO
@@ -107,6 +105,7 @@ namespace Dream
         void setPitch(float pitch);
 
         bool inFrustum(SceneObjectRuntime*);
+        bool inFrustum(const BoundingBox&);
 
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);

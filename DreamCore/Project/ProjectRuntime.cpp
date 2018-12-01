@@ -484,13 +484,14 @@ namespace Dream
 
         mTime->updateFrameTime();
         mInputComponent->updateComponent(sr);
+        mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->updateComponent(sr);
-        mPathComponent->updateComponent(sr);
-        mAnimationComponent->updateComponent(sr);
         if (mScriptingEnabled)
         {
             mScriptComponent->updateComponent(sr);
         }
+        mPathComponent->updateComponent(sr);
+        mAnimationComponent->updateComponent(sr);
         mAudioComponent->updateComponent(sr);
         mGraphicsComponent->updateComponent(sr);
         return true;
@@ -517,13 +518,8 @@ namespace Dream
         mGraphicsComponent->renderLightingPass(sr);
         mScriptComponent->updateNanoVG();
         ShaderInstance::InvalidateState();
-        mPhysicsComponent->setViewProjectionMatrix
-        (
-            sr->getCamera()->getViewMatrix(),
-            mGraphicsComponent->getProjectionMatrix()
-        );
         mPhysicsComponent->drawDebug();
-        log->critical("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
+        log->trace("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
     }
 
     int

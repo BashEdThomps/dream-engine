@@ -3,6 +3,13 @@
 #include "ImGuiWidget.h"
 #include "../../deps/ImGui/TextEditor.h"
 
+namespace Dream
+{
+    class ShaderDefinition;
+}
+
+using namespace Dream;
+
 namespace DreamTool
 {
     class ShaderEditorWindow : public ImGuiWidget

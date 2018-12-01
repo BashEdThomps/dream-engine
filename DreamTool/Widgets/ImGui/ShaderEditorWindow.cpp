@@ -1,5 +1,12 @@
 #include "ShaderEditorWindow.h"
 #include "../../DTState.h"
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectDefinition.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Project/ProjectDirectory.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
 
 namespace DreamTool
 {

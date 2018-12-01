@@ -596,15 +596,21 @@ namespace Dream
         mPhysicsObjectInstance = new PhysicsObjectInstance(
             definition,
             mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
+            mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
             this
         );
         return mPhysicsObjectInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
     bool
-        SceneObjectRuntime::createParticleEmitterInstance(ParticleEmitterDefinition *)
+    SceneObjectRuntime::createParticleEmitterInstance
+    (ParticleEmitterDefinition* definition)
     {
-        return false;
+        auto log = getLog();
+        log->trace( "Creating ParticleEmitter asset instance." );
+        removeParticleEmitterInstance();
+        mParticleEmitterInstance = new ParticleEmitterInstance(definition,this);
+        return mParticleEmitterInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }
 
     bool
@@ -613,7 +619,7 @@ namespace Dream
     {
         auto log = getLog();
         log->trace( "Creating Animation asset instance." );
-        removePathInstance();
+        removeAnimationInstance();
         mAnimationInstance = new AnimationInstance(definition,this);
         return mAnimationInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
     }

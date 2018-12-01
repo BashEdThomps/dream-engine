@@ -1,5 +1,5 @@
 #include "PreferencesModel.h"
-#include "../Utilities/File.h"
+#include "../../DreamCore/Utilities/File.h"
 
 namespace DreamTool
 {

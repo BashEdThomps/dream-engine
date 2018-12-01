@@ -28,6 +28,7 @@ namespace Dream
         bool assetTypeDirectoryExists(AssetType type);
         string getAssetTypeDirectory(AssetType type);
         bool createAssetTypeDirectory(AssetType type);
+        void cleanupAssetsDirectory();
 
     private:
         Project* mProject;

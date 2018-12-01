@@ -3,7 +3,18 @@
 #include "ImGuiWidget.h"
 #include "PropertyType.h"
 
-#define BigEditorBufferSize 1024*16
+#include <glm/vec3.hpp>
+
+namespace Dream
+{
+    class IDefinition;
+    class IRuntime;
+    class CompoundChildDefinition;
+    class IAssetDefinition;
+}
+
+using namespace glm;
+using namespace Dream;
 
 namespace DreamTool
 {
@@ -55,6 +66,8 @@ namespace DreamTool
         void setDefinition(IDefinition* def);
         void setPropertyType(PropertyType t);
         void clear();
+        void drawPhysicsImGizmo(CompoundChildDefinition);
+        void replaceRuntimeInstances(IAssetDefinition* assetDef);
     private:
         vector<PropertiesTarget> mHistory;
         PropertyType mType;

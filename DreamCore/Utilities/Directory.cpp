@@ -71,6 +71,57 @@ namespace Dream
         return directoryContents;
     }
 
+    vector<string>
+    Directory::listSubdirectories
+    (string regexStr)
+    {
+        auto log=getLog();
+        auto usingRegex = !regexStr.empty();
+        vector<string> directoryContents;
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(mPath.c_str())) != nullptr)
+        {
+            regex fileRegex(regexStr);
+            cmatch match;
+
+            while ((ent = readdir (dir)) != nullptr)
+            {
+                string fileName(ent->d_name);
+                if (fileName[0] == '.') continue;
+                stringstream abs;
+                abs << mPath << Constants::DIR_PATH_SEP << fileName;
+                const char* absPath = abs.str().c_str();
+
+                Directory subDir(absPath);
+                if (!subDir.isDirectory())
+                {
+                    continue;
+                }
+
+                if (usingRegex)
+                {
+                    if (regex_search(fileName.c_str(),match,fileRegex))
+                    {
+                        directoryContents.push_back(absPath);
+                    }
+                }
+                else
+                {
+                    directoryContents.push_back(absPath);
+                }
+            }
+            closedir (dir);
+        }
+        else
+        {
+            log->error( "Unable to open directory {}", mPath );
+            return directoryContents;
+        }
+        return directoryContents;
+
+    }
+
     string Directory::getPath() const
     {
         return mPath;
@@ -85,14 +136,14 @@ namespace Dream
 
     string Directory::getName()
     {
-       auto nameStart = mPath.find_last_of(Constants::DIR_PATH_SEP);
-       {
-           if (nameStart != string::npos)
-           {
-              return mPath.substr(nameStart+1);
-           }
-       }
-       return "";
+        auto nameStart = mPath.find_last_of(Constants::DIR_PATH_SEP);
+        {
+            if (nameStart != string::npos)
+            {
+                return mPath.substr(nameStart+1);
+            }
+        }
+        return "";
     }
 
     bool
@@ -126,9 +177,23 @@ namespace Dream
         auto files = list();
         for (auto file : files)
         {
-            if (file[0] == '.') continue;
-            File f(mPath+Constants::DIR_PATH_SEP+file);
-            f.deleteFile();
+            if (file.compare(".") == 0) continue;
+            if (file.compare("..") == 0) continue;
+
+            string absPath = mPath+Constants::DIR_PATH_SEP+file;
+            Directory d(absPath);
+            if (d.isDirectory())
+            {
+                d.deleteDirectory();
+            }
+            else
+            {
+                File f(absPath);
+                if (f.exists())
+                {
+                    f.deleteFile();
+                }
+            }
         }
         if (rmdir(mPath.c_str()) != 0)
         {
@@ -145,5 +210,23 @@ namespace Dream
         stringstream ss;
         ss << mPath << Constants::DIR_PATH_SEP << fileName;
         return File(ss.str());
+    }
+
+    bool Directory::isDirectory()
+    {
+        auto log = getLog();
+        bool result = false;
+        struct stat sb;
+        if (stat(mPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
+        {
+            result = true;
+        }
+        log->error
+        (
+           "{} Directory {}",
+           result? "Is a" : "Not a",
+           mPath
+        );
+        return result;
     }
 }

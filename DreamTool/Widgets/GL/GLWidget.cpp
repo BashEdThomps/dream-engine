@@ -6,7 +6,13 @@
 //
 
 #include "GLWidget.h"
+#include <glm/gtc/matrix_transform.hpp>
 #include "../../DTState.h"
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Scene/SceneRuntime.h"
 
 namespace DreamTool
 {

@@ -17,6 +17,7 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../Graphics/Camera.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Physics/PhysicsObjectInstance.h"
 
 namespace Dream
 {
@@ -121,16 +122,21 @@ namespace Dream
             auto leftY = mJoystickState.AxisData[mJoystickMapping.AnalogLeftYAxis];
             auto rightX = mJoystickState.AxisData[mJoystickMapping.AnalogRightXAxis];
             auto rightY = mJoystickState.AxisData[mJoystickMapping.AnalogRightYAxis];
+
             auto dPadUp = mJoystickState.ButtonData[mJoystickMapping.DPadNorth];
             auto dPadDown = mJoystickState.ButtonData[mJoystickMapping.DPadSouth];
             auto dPadLeft = mJoystickState.ButtonData[mJoystickMapping.DPadWest];
             auto dPadRight = mJoystickState.ButtonData[mJoystickMapping.DPadEast];
+
             auto lTrigger = mJoystickState.ButtonData[mJoystickMapping.TriggerLeftButton];
             auto rTrigger = mJoystickState.ButtonData[mJoystickMapping.TriggerRightButton];
+            auto lShoulder = mJoystickState.ButtonData[mJoystickMapping.ShoulderLeft];
+            auto rShoulder = mJoystickState.ButtonData[mJoystickMapping.ShoulderRight];
 
-            static float jsScale = 0.025f;
-            cam->flyUp(rightY*jsScale);
-            cam->flyLeft(rightX*jsScale*2.0f);
+            static float jsSpeedScale = 0.075f;
+            static float jsCamScale = 0.15f;
+            cam->flyUp(clearDeadzone(rightY)*jsCamScale);
+            cam->flyLeft(clearDeadzone(rightX)*jsCamScale);
 
             if (dPadDown)
             {
@@ -142,33 +148,78 @@ namespace Dream
             }
 
             auto so = cam->getFocusedSceneObject();
-            auto ly = leftY;
-            auto lx = leftX;
-            if (so )
-            {
 
-                if(lx != 0.0f || ly != 0.0f)
+            if (so)
+            {
+                auto lx = clearDeadzone(leftX);
+                auto ly = clearDeadzone(leftY);
+
+                float yDelta=0.0f;
+                if (rTrigger)
                 {
-                    float yDelta=0.0f;
-                    if (rTrigger)
-                    {
-                        yDelta=jsScale;
-                    }
-                    else if (lTrigger)
-                    {
-                        yDelta=-jsScale;
-                    }
+                    yDelta=jsSpeedScale;
+                }
+                else if (lTrigger)
+                {
+                    yDelta=-jsSpeedScale;
+                }
+
+                if (lx != 0.0f || ly != 0.0f || yDelta != 0.0f)
+                {
                     auto decomp = so->getTransform().decomposeMatrix();
-                    // Theta of camera and joystick
-                    float xTheta = atan2(ly,lx);
-                    float camTheta = cam->getFocusedObjectTheta();
-                    float rot = camTheta-(xTheta+(static_cast<float>(M_PI)/2.0f));
-                    // Distance from center (r in polar coords)
-                    float distance = sqrt((lx*lx)+(ly*ly))*jsScale;
+                    float distance = 0.0f;
+                    float rot = 0.0f;
+                    float distanceScaled = 0.0f;
+                    bool rotationChanged = false;
                     mat4 originalTx = glm::translate(mat4(1.0f),decomp.translation);
-                    mat4 rotMat = glm::rotate(mat4(1.0f),rot,vec3(0.0f,1.0f,0.0f));
-                    mat4 jsTx = glm::translate(mat4(1.0f), vec3(0.0f, yDelta,-distance));
-                    so->getTransform().setMatrix(originalTx*rotMat*jsTx);
+                    mat4 jsTx(1.0f);
+                    mat4 rotMat(1.0f);
+
+                    // Theta of camera and joystick
+                    if (lx != 0.0f || ly != 0.0f)
+                    {
+                        float xTheta = atan2(ly,lx);
+                        float camTheta = cam->getFocusedObjectTheta();
+                        rot = camTheta-(xTheta+(static_cast<float>(M_PI)/2.0f));
+                        distance = sqrt((lx*lx)+(ly*ly));
+                        distanceScaled = distance * jsSpeedScale;
+                        rotationChanged = true;
+                    }
+
+                    if (rotationChanged)
+                    {
+                        rotMat = glm::rotate(mat4(1.0f),rot,vec3(0.0f,1.0f,0.0f));
+                    }
+                    else
+                    {
+                        rotMat = mat4_cast(decomp.rotation);
+                    }
+
+                    jsTx = glm::translate(mat4(1.0f), vec3(0.0f, 0.0f,-distanceScaled));
+
+
+                    if (so->hasPhysicsObjectInstance())
+                    {
+                        auto po = so->getPhysicsObjectInstance();
+                        originalTx = glm::translate(mat4(1.0f), po->getCenterOfMassPosition());
+                        auto lv = po->getLinearVelocity().y;
+                        po->setLinearVelocity(0.0f,0.0f,0.0f);
+                        po->setAngularVelocity(0.0f,0.0f,0.0f);
+                        po->clearForces();
+                        po->setWorldTransform(originalTx*rotMat*jsTx);
+                        if (yDelta == 0.0f)
+                        {
+                            po->setLinearVelocity(0.0f,lv,0.0f);
+                        }
+                        else
+                        {
+                            po->setLinearVelocity(0.0f,yDelta*10,0.0f);
+                        }
+                    }
+                    else
+                    {
+                        so->getTransform().setMatrix(originalTx*rotMat*jsTx);
+                    }
                 }
             }
         }
@@ -281,24 +332,37 @@ namespace Dream
     InputComponent::clearDeadzone
     (float val)
     {
-        return  val > mJoystickState.DeadZone ||
-                val < -mJoystickState.DeadZone ?
-                    val : 0.0f;
+        if(val > mJoystickState.DeadZone)
+        {
+            return  val - mJoystickState.DeadZone;
+        }
+        else if (val < -mJoystickState.DeadZone)
+        {
+            return val+mJoystickState.DeadZone;
+        }
+        return 0.0f;
     }
 
     const JoystickMapping
     InputComponent::JsPsxMapping
     {
         // Axis
+
         0,    // AnalogLeftXAxis
         1,    // AnalogLeftYAxis
         2,    // AnalogRightXAxis
         3,    // AnalogRightYAxis
+
         // Buttons
+
         12,   // FaceButtonNorth
         13,   // FaceButtonEast
         14,   // FaceButtonSouth
         15,   // FaceButtonWest
+
+        0,   // FaceButtonSelect
+        3,   // FaceButtonStart
+        16,   // FaceButtonHome
 
         10,   // ShoulderLeft
         11,   // ShoulderRight
@@ -306,11 +370,10 @@ namespace Dream
         8,   // LeftTriggerButton
         9,   // RighTriggerButton
 
-        0,   // FaceButtonSelect
-        3,   // FaceButtonStart
+
+
         1,   // AnalogLeftButton
         2,   // AnalogRightButton
-        16,   // FaceButtonHome
 
         4,   // DPadNorth
         5,   // DPadWest
@@ -322,24 +385,32 @@ namespace Dream
     InputComponent::JsXboxMapping
     {
         // Axis
+
         0, // AnalogLeftXAxis
         1, // AnalogLeftYAxis
         2, // AnalogRightXAxis
         3, // AnalogRightYAxis
+
         // Buttons
+
         0, // Y
         1, // B
         2, // A
         3, // X
-        4, // ShoulderLeft
-        5, // ShoulderRight
-        6,  // LeftTriggerButton
-        7,  // RighTriggerButton
+
         8,  // FaceButtonSelect
         9,  // FaceButtonStart
+        12, // FaceButtonHome
+
+        4, // ShoulderLeft
+        5, // ShoulderRight
+
+        6,  // LeftTriggerButton
+        7,  // RighTriggerButton
+
         10, // AnalogLeftButton
         11, // AnalogRightButton
-        12, // FaceButtonHome
+
         13, // DPadNorth
         14, // DPadWest
         15, // DPadSouth

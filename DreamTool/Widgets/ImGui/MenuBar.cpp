@@ -8,6 +8,17 @@
 #include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
 
+#include "../../../DreamCore/Project/Project.h"
+#include "../../../DreamCore/Project/ProjectDefinition.h"
+#include "../../../DreamCore/Project/ProjectRuntime.h"
+#include "../../../DreamCore/Project/ProjectDirectory.h"
+#include "../../../DreamCore/Scene/SceneDefinition.h"
+#include "../../../DreamCore/Scene/SceneRuntime.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
+#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../DreamCore/Components/Audio/AudioComponent.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
+
 namespace DreamTool
 {
     MenuBar::MenuBar(DTState* def)
@@ -31,7 +42,6 @@ namespace DreamTool
         bool showQuitDialog = false;
         bool newButtonClicked = false;
         bool openButtonClicked = false;
-        bool showSaveSuccessDialog = false;
         bool showPleaseDestroyScenesDialog = false;
         bool modelBatchImportClicked = false;
 
@@ -48,7 +58,7 @@ namespace DreamTool
                     ProjectDirectory pDir(mState->project);
                     if(pDir.saveProject())
                     {
-                        showSaveSuccessDialog = true;
+                        setMessageString("Saved Successfully");
                     }
                 }
                 ImGui::Separator();
@@ -234,6 +244,11 @@ namespace DreamTool
                 {
                    modelBatchImportClicked = true;
                 }
+                if(ImGui::MenuItem("Clean Up Assets Directory"))
+                {
+                    ProjectDirectory pDir(mState->project);
+                    pDir.cleanupAssetsDirectory();
+                }
                 ImGui::EndMenu();
             }
 
@@ -313,17 +328,14 @@ namespace DreamTool
                 ImGui::EndMenu();
             }
 
-            static char msgBuf[512] = {0};
+            static char msgBuf[128] = {0};
             snprintf(
                 msgBuf,
-                512,
-                "%s | Input -> %s | %.2f fps",
+                128,
+                "%s | Input to %s | %.3d fps",
                 mMessageString.c_str(),
-                (
-                    mState->inputTarget == DTState::InputTarget::EDITOR ?
-                    "Editor" : "Scene"
-                ),
-                mFPS
+                (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"),
+                static_cast<int>(mFPS)
             );
 
             auto maxX = ImGui::GetWindowContentRegionMax().x;
@@ -331,7 +343,6 @@ namespace DreamTool
 
             ImGui::SameLine(maxX-msgSize.x-mMessagePadding);
             ImGui::Text("%s", msgBuf);
-
             ImGui::EndMainMenuBar();
         }
 
@@ -537,25 +548,6 @@ namespace DreamTool
             {
                 ImGui::CloseCurrentPopup();
                 mState->MainLoopDone = true;
-            }
-
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
-        }
-
-        if (showSaveSuccessDialog)
-        {
-            ImGui::OpenPopup("Save Success");
-        }
-
-        if (ImGui::BeginPopupModal("Save Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Project Saved Successfully!");
-            ImGui::Separator();
-
-            if (ImGui::Button("OK",ImVec2(-1,0)))
-            {
-                ImGui::CloseCurrentPopup();
             }
 
             ImGui::SetItemDefaultFocus();

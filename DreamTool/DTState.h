@@ -3,7 +3,7 @@
 #ifdef WIN32
 #include <GL/glew.h>
 #endif
-#include "../../DreamCore/Common/DreamObject.h"
+#include "../DreamCore/Common/DreamObject.h"
 #include "Window/DTWindowComponent.h"
 // ImGui Widgets
 #include "Widgets/ImGui/ProjectBrowser.h"
@@ -29,7 +29,10 @@
 namespace Dream
 {
     class Project;
+    class SceneRuntime;
 }
+
+using namespace Dream;
 
 namespace DreamTool
 {
@@ -71,7 +74,7 @@ namespace DreamTool
         double LastTime = glfwGetTime();
         double CurrentTime = glfwGetTime();
         double Frames = 0;
-        InputTarget inputTarget=EDITOR;
+        InputTarget inputTarget=SCENE;
 
         DTState(int _argc, char** _argv);
         ~DTState();

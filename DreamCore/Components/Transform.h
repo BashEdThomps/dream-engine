@@ -62,7 +62,7 @@ namespace Dream
         MatrixDecomposition decomposeMatrix();
         void recomposeMatrix(MatrixDecomposition decomp);
         void translate(vec3);
-        json getJson();
+        json getJson() const;
     };
 
 } // End of Dream

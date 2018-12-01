@@ -311,6 +311,11 @@ namespace Dream
        return mMaterialNames;
     }
 
+    vector<ModelMesh*> ModelInstance::getMeshes() const
+    {
+        return mMeshes;
+    }
+
     shared_ptr<Importer>
     ModelInstance::loadImporter
     (string path)

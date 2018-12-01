@@ -14,10 +14,18 @@
 */
 
 
+#include <algorithm>
 #include "PhysicsDebugDrawer.h"
+#include "../../Scene/SceneObject/BoundingBox.h"
+#include "../Graphics/Camera.h"
 
 namespace Dream
 {
+
+    void PhysicsDebugDrawer::setCamera(Camera* camera)
+    {
+        mCamera = camera;
+    }
 
     PhysicsDebugDrawer::PhysicsDebugDrawer
     () : DreamObject ("PhysicsDebugDrawer")
@@ -25,7 +33,7 @@ namespace Dream
         auto log = getLog();
         log->debug( "Constructing Object" );
 
-        mDebugMode = 0;
+        mDebugMode = DBG_DrawAabb;
         mShaderProgram = 0;
     }
 
@@ -50,6 +58,25 @@ namespace Dream
     {
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
+        // Vertex Array
+        glBindVertexArray(mVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+        // Vertex Positions
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer
+                (
+                    0, 3, GL_FLOAT, GL_FALSE,
+                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+                    static_cast<GLvoid*>(nullptr)
+                    );
+        // Vertex Colors
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer
+                (
+                    1, 3, GL_FLOAT, GL_FALSE,
+                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
+                    (GLvoid*)offsetof(PhysicsDebugVertex, Color)
+                    );
     }
 
     void
@@ -128,7 +155,8 @@ namespace Dream
 
         // Print linking errors if any
         glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
+        if (!success)
+        {
             glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
             log->error ("SHADER:PROGRAM:LINKING_FAILED\n {}" , infoLog );
         }
@@ -142,37 +170,45 @@ namespace Dream
     PhysicsDebugDrawer::drawLine
     (const btVector3& from,const btVector3& to,const btVector3& color, const btVector3& color2)
     {
-        PhysicsDebugVertex a, b;
+        // Too many lines to be effective?
+        /*
+        BoundingBox bb;
+        bb.minimum.x = std::min(from.x(),to.x());
+        bb.minimum.y = std::min(from.y(),to.y());
+        bb.minimum.z = std::min(from.z(),to.z());
 
-        a.Position.x = from.getX();
-        a.Position.y = from.getY();
-        a.Position.z = from.getZ();
-        a.Color.r = color.getX();
-        a.Color.g = color.getY();
-        a.Color.b = color.getZ();
-        mVertexBuffer.push_back(a);
+        bb.maximum.x = std::max(from.x(),to.x());
+        bb.maximum.y = std::max(from.y(),to.y());
+        bb.maximum.z = std::max(from.z(),to.z());
 
-        b.Position.x = to.getX();
-        b.Position.y = to.getY();
-        b.Position.z = to.getZ();
-        b.Color.r = color2.getX();
-        b.Color.g = color2.getY();
-        b.Color.b = color2.getZ();
-        mVertexBuffer.push_back(b);
-    }
+        if (mCamera->inFrustum(bb))
+        {
+        */
+            PhysicsDebugVertex a, b;
 
-    void
-    PhysicsDebugDrawer::setProjectionMatrix
-    (glm::mat4 projMat)
-    {
-        mProjectionMatrix = projMat;
-    }
+            a.Position.x = from.getX();
+            a.Position.y = from.getY();
+            a.Position.z = from.getZ();
+            a.Color.r = color.getX();
+            a.Color.g = color.getY();
+            a.Color.b = color.getZ();
+            mVertexBuffer.push_back(a);
 
-    void
-    PhysicsDebugDrawer::setViewMatrix
-    (glm::mat4 viewMat)
-    {
-        mViewMatrix = viewMat;
+            b.Position.x = to.getX();
+            b.Position.y = to.getY();
+            b.Position.z = to.getZ();
+            b.Color.r = color2.getX();
+            b.Color.g = color2.getY();
+            b.Color.b = color2.getZ();
+            mVertexBuffer.push_back(b);
+            /*
+        }
+        else
+        {
+            auto log = getLog();
+            log->error("Skipping debug point");
+        }
+        */
     }
 
     void
@@ -255,6 +291,8 @@ namespace Dream
 
         // Enable shader program
         glUseProgram(mShaderProgram);
+
+        glBindVertexArray(mVAO);
         ShaderInstance::CurrentShaderProgram = mShaderProgram;
 
         // Set the projection matrix
@@ -267,7 +305,8 @@ namespace Dream
         }
         else
         {
-            glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+            mat4 projectionMatrix = mCamera->getProjectionMatrix();
+            glUniformMatrix4fv(projUniform, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
         }
 
         // Set the view matrix
@@ -280,35 +319,16 @@ namespace Dream
         }
         else
         {
-            glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+            mat4 viewMatrix = mCamera->getViewMatrix();
+            glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(PhysicsDebugVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
 
-        // Vertex Array
-        glBindVertexArray(mVAO);
-        // Vertex Positions
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer
-                (
-                    0, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
-                    static_cast<GLvoid*>(nullptr)
-                    );
-        // Vertex Colors
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer
-                (
-                    1, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(PhysicsDebugVertex)),
-                    (GLvoid*)offsetof(PhysicsDebugVertex, Color)
-                    );
         // Draw
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
         // Unbind
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
         postRender();
         // Clear old buffer
         mVertexBuffer.clear();

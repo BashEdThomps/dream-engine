@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLEW
@@ -28,19 +27,17 @@
 #include "../deps/ImGui/imgui.h"
 #include "../deps/ImGui/imgui_impl_glfw.h"
 #include "../deps/ImGui/imgui_impl_opengl3.h"
+#include "../../DreamCore/Components/Window/IWindowComponent.h"
 
-#include <DreamCore.h>
-
-using std::unique_ptr;
-using std::vector;
-using Dream::IWindowComponent;
-using Dream::SceneRuntime;
+using namespace std;
+using namespace Dream;
 
 namespace DreamTool
 {
     class GLWidget;
     class ImGuiWidget;
-    class DTWindowComponent : public IWindowComponent
+    class DTWindowComponent
+            : public IWindowComponent
     {
     public:
         DTWindowComponent();

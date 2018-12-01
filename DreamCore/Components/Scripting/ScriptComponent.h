@@ -70,7 +70,7 @@ namespace Dream
         // API Exposure Methods ======================================================
         void exposePathComponent();
         void exposePathInstance();
-        void exposeAssimpModelInstance();
+        void exposeModelInstance();
         void exposeCamera();
         void exposeProjectRuntime();
         void exposeEvent();
@@ -84,7 +84,7 @@ namespace Dream
         void exposeShaderInstance();
         void exposeSceneObjectRuntime();
         void exposeTime();
-        void exposeTransform3D();
+        void exposeTransform();
         void exposeGLM();
         void exposeIDefinition();
         void exposeNanoVG();

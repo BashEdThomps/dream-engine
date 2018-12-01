@@ -1,5 +1,12 @@
 #include "DTState.h"
-#include <DreamCore.h>
+#include "../DreamCore/Scene/SceneRuntime.h"
+#include "../DreamCore/Project/Project.h"
+#include "../DreamCore/Project/ProjectDefinition.h"
+#include "../DreamCore/Project/ProjectRuntime.h"
+#include "../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../DreamCore/Components/Input/InputComponent.h"
+
+using namespace Dream;
 
 namespace DreamTool
 {
@@ -84,7 +91,6 @@ namespace DreamTool
             }
         }
 
-        spdlog::set_level(spdlog::level::off);
         // Run the project
         while (!MainLoopDone)
         {
@@ -112,7 +118,7 @@ namespace DreamTool
                 projectRuntime->updateAll();
             }
 
-            Dream::ShaderInstance::InvalidateState();
+            ShaderInstance::InvalidateState();
             windowComponent.drawGLWidgets();
             windowComponent.drawImGui();
             if (ImGui::IsKeyPressed(GLFW_KEY_TAB,false))

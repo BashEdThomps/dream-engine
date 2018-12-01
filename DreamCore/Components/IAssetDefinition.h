@@ -30,7 +30,7 @@ namespace Dream
 
     public:
         IAssetDefinition(ProjectDefinition*, json);
-        static AssetType getAssetType(json);
+        AssetType getAssetType();
 
         virtual ~IAssetDefinition();
 
