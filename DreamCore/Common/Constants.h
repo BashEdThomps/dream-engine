@@ -84,6 +84,8 @@ namespace Dream
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
+        const static string ASSET_ATTR_GROUP;
+        const static string ASSET_ATTR_GROUP_DEFAULT;
         //const static string ASSET_DIR;
 
         // Types
@@ -175,6 +177,8 @@ namespace Dream
         const static string SCENE_CAMERA_FOCUSED_ON;
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
+        const static string SCENE_INPUT_SCRIPT;
+        const static string SCENE_NANOVG_SCRIPT;
 
 
         // SceneObject ==========================================================

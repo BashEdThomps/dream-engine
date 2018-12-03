@@ -75,6 +75,7 @@ namespace Dream
         void exposeProjectRuntime();
         void exposeEvent();
         void exposeGraphicsComponent();
+        void exposeInputComponent();
         void exposeAudioComponent();
         void exposeAudioInstance();
         void exposeLightInstance();
@@ -82,6 +83,7 @@ namespace Dream
         void exposePhysicsComponent();
         void exposePhysicsObjectInstance();
         void exposeShaderInstance();
+        void exposeSceneRuntime();
         void exposeSceneObjectRuntime();
         void exposeTime();
         void exposeTransform();

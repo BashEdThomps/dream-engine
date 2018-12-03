@@ -205,6 +205,7 @@ namespace DreamTool
             auto type = Constants::getAssetTypeEnumFromString(assetTypes.at(assetTypeIndex));
             auto newDef = projDef->createNewAssetDefinition(type);
             mState->propertiesWindow.pushPropertyTarget(Asset,newDef,nullptr);
+            projDef->regroupAssetDefinitions();
         }
 
         ImGui::PushID("AssetTree");
@@ -212,24 +213,43 @@ namespace DreamTool
         {
             AssetType type = Constants::getAssetTypeEnumFromString(name);
             auto assets = projDef->getAssetDefinitionsVector(type);
+            auto typeGroups = projDef->getAssetDefinitionGroups()[type];
             stringstream nameCount;
             nameCount <<  name << " (" <<  assets.size() << ")";
+            ImGui::PushID(name.c_str());
+            static string selectedAssetType = "";
+            ImGui::SetNextTreeNodeOpen(selectedAssetType.compare(name) == 0);
             if (ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags))
             {
+                selectedAssetType = name;
                 int assetDefTreeId = 0;
-                for (auto asset : assets)
+                for (string group : typeGroups)
                 {
-                    if (ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset->getName().c_str(),0))
+                    ImGui::PushID(group.c_str());
+                    if (ImGui::TreeNode(group.c_str()))
                     {
-                        if (ImGui::IsItemClicked())
+                        for (auto asset : assets)
                         {
-                            log->error("Asset Definition Clicked {}", asset->getName());
-                            mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
+                            if (asset->getGroup().compare(group) == 0)
+                            {
+                                if (ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset->getName().c_str(),0))
+                                {
+                                    if (ImGui::IsItemClicked())
+                                    {
+                                        log->error("Asset Definition Clicked {}", asset->getName());
+                                        mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
+                                    }
+                                    ImGui::TreePop();
+                                }
+
+                            }
                         }
                         ImGui::TreePop();
                     }
+                    ImGui::PopID();
                 }
             }
+            ImGui::PopID();
         } // Asset Type Node
         ImGui::PopID();
     }

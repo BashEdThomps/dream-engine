@@ -634,7 +634,6 @@ namespace DreamTool
                 log->error("Switched lighting pass shader to {} {}", name, uuid);
             }
 
-            ImGui::Separator();
 
             if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
             {
@@ -644,7 +643,32 @@ namespace DreamTool
                 sceneDef->setShadowPassShader(uuid);
                 log->error("Switched shadow pass shader to {} {}", name, uuid);
             }
+        }
 
+        if (ImGui::CollapsingHeader("Scripting"))
+        {
+            auto pDef=mState->project->getProjectDefinition();
+            vector<string> scriptAssets = mState->project->getProjectDefinition()->getAssetNamesVector(AssetType::SCRIPT);
+
+            string inputScriptUuid = sceneDef->getInputScript();
+            auto inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
+            int inputScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,inputScriptDef);
+            if (StringCombo("Input Script",&inputScriptIndex,scriptAssets,scriptAssets.size()))
+            {
+                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,inputScriptIndex);
+                auto uuid = selected->getUuid();
+                sceneDef->setInputScript(uuid);
+            }
+
+            string nvgScriptUuid = sceneDef->getNanoVGScript();
+            auto nvgScriptDef = pDef->getAssetDefinitionByUuid(nvgScriptUuid);
+            int nvgScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,nvgScriptDef);
+            if (StringCombo("NanoVG Script",&nvgScriptIndex,scriptAssets,scriptAssets.size()))
+            {
+                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,nvgScriptIndex);
+                auto uuid = selected->getUuid();
+                sceneDef->setNanoVGScript(uuid);
+            }
         }
 
         // Physics
@@ -1296,10 +1320,19 @@ namespace DreamTool
             removeFromHistory(mDefinition);
             mDefinition = nullptr;
             mRuntime = nullptr;
+            projDef->regroupAssetDefinitions();
             return;
         }
 
         drawNameAndIdProperties();
+        ImGui::Separator();
+        char groupStr[128] = {0};
+        strncpy(&groupStr[0], assetDef->getGroup().c_str(), assetDef->getGroup().size());
+        if (ImGui::InputText("Group", &groupStr[0],128))
+        {
+           assetDef->setGroup(groupStr);
+           assetDef->getProject()->regroupAssetDefinitions();
+        }
         ImGui::Separator();
         auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
         switch (type)

@@ -23,6 +23,9 @@
 namespace Dream
 {
     class ScriptDefinition;
+    class InputComponent;
+    class NanoVGComponent;
+    class SceneRuntime;
 
     class ScriptInstanceState
     {
@@ -38,7 +41,6 @@ namespace Dream
         ScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
         ~ScriptInstance() override;
         bool load(string) override;
-        void update();
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
         vector<SceneObjectRuntime*> getInstanceVector();
@@ -47,10 +49,13 @@ namespace Dream
 
         bool executeOnInit();
         bool executeOnUpdate();
-        bool executeOnInput();
         bool executeOnEvent();
-        bool executeOnNanoVG();
 
+        bool executeOnInput(InputComponent*, SceneRuntime*);
+        bool executeOnNanoVG(NanoVGComponent*, SceneRuntime*);
+
+        void registerInputScript();
+        void registerNanoVGScript();
     private:
         vector<ScriptInstanceState> mInstances;
         string mSource;

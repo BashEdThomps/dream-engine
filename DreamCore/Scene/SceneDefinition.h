@@ -117,5 +117,11 @@ namespace Dream
 
         string getShadowPassShader();
         void setShadowPassShader(string shader);
+
+        string getInputScript();
+        void setInputScript(string shader);
+
+        string getNanoVGScript();
+        void setNanoVGScript(string shader);
     };
 }

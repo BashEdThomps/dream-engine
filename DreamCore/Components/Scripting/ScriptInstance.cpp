@@ -19,6 +19,9 @@
 #include "ScriptDefinition.h"
 #include "ScriptComponent.h"
 
+#include "../Input/InputComponent.h"
+#include "../Graphics/NanoVGComponent.h"
+#include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../deps/sol2/sol.hpp"
 
@@ -51,13 +54,6 @@ namespace Dream
         mAbsolutePath = projectPath + mDefinition->getAssetPath();
         log->debug( "Script at {}" , mAbsolutePath );
         return mAbsolutePath.size() != 0;
-    }
-
-    void
-    ScriptInstance::update
-    ()
-    {
-
     }
 
     void
@@ -239,43 +235,21 @@ namespace Dream
 
     bool
     ScriptInstance::executeOnInput
-    ()
+    (InputComponent* inputComp, SceneRuntime* sr)
     {
         auto log = getLog();
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mInstances)
+        sol::protected_function onInputFunction = solStateView[getUuid()][Constants::LUA_INPUT_FUNCTION];
+        auto result = onInputFunction(inputComp, sr);
+        if (!result.valid())
         {
-            if (sceneObject.error)
-            {
-                log->error( "Cannot execute {} in error state ",  sceneObject.runtime->getNameAndUuidString());
-                continue;
-            }
-
-            if (!sceneObject.runtime->getHasInputFocus())
-            {
-                continue;
-            }
-
-            log->debug("Calling onInput for {} (Has Focus) {}", sceneObject.runtime->getNameAndUuidString());
-            sol::protected_function onInputFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INPUT_FUNCTION];
-            auto result = onInputFunction(sceneObject.runtime);
-            if (!result.valid())
-            {
-                // An error has occured
-               sol::error err = result;
-               std::string what = err.what();
-               log->critical
-                (
-                    "{}:\n"
-                    "Could not execute onInput in lua script:\n"
-                    "{}",
-                    sceneObject.runtime->getNameAndUuidString(),
-                    what
-                );
-               sceneObject.error = true;
-            }
+            // An error has occured
+           sol::error err = result;
+           std::string what = err.what();
+           log->critical("Could not execute onInput in lua script:\n{}",what);
+           return false;
         }
-        return true;
+       return true;
     }
 
     bool
@@ -327,36 +301,75 @@ namespace Dream
 
     bool
     ScriptInstance::executeOnNanoVG
+    (NanoVGComponent* nvg, SceneRuntime* sr)
+    {
+        auto log = getLog();
+        sol::state_view solStateView(ScriptComponent::State);
+        log->info( "Calling onNanoVG for {}" , getNameAndUuidString() );
+        sol::protected_function onNanoVGFunction = solStateView[getUuid()][Constants::LUA_NANOVG_FUNCTION];
+        auto initResult = onNanoVGFunction(nvg,sr);
+        if (!initResult.valid())
+        {
+            // An error has occured
+           sol::error err = initResult;
+           std::string what = err.what();
+           log->critical("Could not execute onNanoVG in lua script:\n{}",what);
+           return false;
+        }
+        return true;
+    }
+
+    void
+    ScriptInstance::registerInputScript
     ()
     {
         auto log = getLog();
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mInstances)
+        sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+        solStateView[getUuid()] = environment;
+        auto exec_result = solStateView.safe_script
+        (   mSource, environment,
+            [](lua_State*, sol::protected_function_result pfr)
+            {
+                return pfr;
+            }
+        );
+        // it did not work
+        if(!exec_result.valid())
         {
-            if (sceneObject.error)
-            {
-                log->error( "Cannot execute NanoVG {} in error state", sceneObject.runtime->getNameAndUuidString());
-                return false;
-            }
-            log->info( "Calling onNanoVG for {}" , sceneObject.runtime->getNameAndUuidString() );
-            sol::protected_function onNanoVGFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_NANOVG_FUNCTION];
-            auto initResult = onNanoVGFunction(sceneObject.runtime);
-
-            if (!initResult.valid())
-            {
-                // An error has occured
-               sol::error err = initResult;
-               std::string what = err.what();
-               log->critical
-               (
-                    "{}\nCould not execute onNanoVG in lua script:\n{}",
-                    sceneObject.runtime->getNameAndUuidString(),
-                    what
-                );
-               sceneObject.error = true;
-            }
+            // An error has occured
+            sol::error err = exec_result;
+            std::string what = err.what();
+            log->critical("Could not execute lua script:\n{}",what);
         }
-        return true;
+        log->debug("Loaded Script Successfully");
     }
+
+    void
+    ScriptInstance::registerNanoVGScript
+    ()
+    {
+        auto log = getLog();
+        sol::state_view solStateView(ScriptComponent::State);
+        sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+        solStateView[getUuid()] = environment;
+        auto exec_result = solStateView.safe_script
+        (   mSource, environment,
+            [](lua_State*, sol::protected_function_result pfr)
+            {
+                return pfr;
+            }
+        );
+        // it did not work
+        if(!exec_result.valid())
+        {
+            // An error has occured
+            sol::error err = exec_result;
+            std::string what = err.what();
+            log->critical("Could not execute lua script:\n{}",what);
+        }
+        log->debug("Loaded Script Successfully");
+    }
+
 
 } // End of Dream

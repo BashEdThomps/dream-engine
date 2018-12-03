@@ -587,4 +587,44 @@ namespace Dream
     {
        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
+
+   string
+    SceneDefinition::getInputScript
+    ()
+    {
+       if (mJson[Constants::SCENE_INPUT_SCRIPT].is_null())
+       {
+           mJson[Constants::SCENE_INPUT_SCRIPT] = "";
+       }
+       return  mJson[Constants::SCENE_INPUT_SCRIPT];
+
+    }
+
+    void
+    SceneDefinition::setInputScript
+    (string shader)
+    {
+       mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
+    }
+
+        string
+    SceneDefinition::getNanoVGScript
+    ()
+    {
+       if (mJson[Constants::SCENE_NANOVG_SCRIPT].is_null())
+       {
+           mJson[Constants::SCENE_NANOVG_SCRIPT] = "";
+       }
+       return  mJson[Constants::SCENE_NANOVG_SCRIPT];
+
+    }
+
+    void
+    SceneDefinition::setNanoVGScript
+    (string shader)
+    {
+       mJson[Constants::SCENE_NANOVG_SCRIPT] = shader;
+    }
+
+
 }

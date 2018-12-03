@@ -516,7 +516,7 @@ namespace Dream
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
-        mScriptComponent->updateNanoVG();
+        mNanoVGComponent->render(sr);
         ShaderInstance::InvalidateState();
         mPhysicsComponent->drawDebug();
         log->trace("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);

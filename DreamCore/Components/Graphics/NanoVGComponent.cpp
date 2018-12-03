@@ -16,6 +16,8 @@
 
 #include "NanoVGComponent.h"
 #include "../Window/IWindowComponent.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../Scripting/ScriptInstance.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -64,6 +66,23 @@ namespace Dream
     void NanoVGComponent::updateComponent(SceneRuntime*)
     {
 
+    }
+
+    bool
+    NanoVGComponent::render
+    (SceneRuntime* sr)
+    {
+        auto log = getLog();
+        log->info( "UpdateNanoVG Called" );
+        auto scriptObj = sr->getNanoVGScript();
+        if (sr)
+        {
+            BeginFrame();
+            scriptObj->executeOnNanoVG(this,sr);
+            EndFrame();
+            return true;
+        }
+        return false;
     }
 
     void NanoVGComponent::BeginFrame()

@@ -34,19 +34,22 @@
 
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
+#include "../Components/Input/FlyingInputHandler.h"
 
 namespace Dream
 {
     SceneRuntime::SceneRuntime
     (
-        SceneDefinition* sd,
-        ProjectRuntime* project
-    ) : IRuntime(sd),
+            SceneDefinition* sd,
+            ProjectRuntime* project
+            ) : IRuntime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
         mProjectRuntime(project),
         mRootSceneObjectRuntime(nullptr),
+        mInputScript(nullptr),
+        mNanoVGScript(nullptr),
         mMinDrawDistance(0.1f),
         mMaxDrawDistance(1000.0f),
         mMeshCullDistance(1000.0f)
@@ -353,6 +356,24 @@ namespace Dream
         {
             log->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
+        // Scripts
+        auto scriptCache = mProjectRuntime->getScriptCache();
+        auto inputScriptUuid = sceneDefinition->getInputScript();
+        mInputScript = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(inputScriptUuid));
+        if (!mInputScript)
+        {
+            log->error("Unable to load Input Handler Script {}",inputScriptUuid);
+        }
+        mInputScript->registerInputScript();
+
+        auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
+        mNanoVGScript = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(nvgScriptUuid));
+        if (!mNanoVGScript)
+        {
+            log->error("Unable to load NanoVG Script {}",nvgScriptUuid);
+        }
+        mNanoVGScript->registerNanoVGScript();
+
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
         auto sor = new SceneObjectRuntime(sod,this);
@@ -506,13 +527,35 @@ namespace Dream
         return &mCamera;
     }
 
-    ShaderInstance* SceneRuntime::getShadowPassShader() const
+    ShaderInstance*
+    SceneRuntime::getShadowPassShader
+    ()
+    const
     {
         return mShadowPassShader;
     }
 
-    void SceneRuntime::setShadowPassShader(ShaderInstance* shadowPassShader)
+    void
+    SceneRuntime::setShadowPassShader
+    (ShaderInstance* shadowPassShader)
     {
         mShadowPassShader = shadowPassShader;
     }
+
+    ScriptInstance*
+    SceneRuntime::getInputScript
+    ()
+    const
+    {
+        return mInputScript;
+    }
+
+    ScriptInstance*
+    SceneRuntime::getNanoVGScript
+    ()
+    const
+    {
+        return mNanoVGScript;
+    }
+
 } // End of Dream

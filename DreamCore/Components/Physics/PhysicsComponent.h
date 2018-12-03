@@ -36,6 +36,7 @@ class btSequentialImpulseConstraintSolver;
 class btVector3;
 class btRigidBody;
 class btCollisionObject;
+class btPersistentManifold;
 
 namespace Dream
 {
@@ -56,7 +57,11 @@ namespace Dream
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
         btVector3 mGravity;
+        PhysicsObjectInstance* mCharacter;
         bool mDebug;
+        bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
+        bool recoverFromPenetration(btPersistentManifold* );
+        void recoverCharacter(btPersistentManifold*);
     public:
         PhysicsComponent();
         ~PhysicsComponent() override;
@@ -68,6 +73,7 @@ namespace Dream
         bool init() override;
         void updateComponent(SceneRuntime* sr) override;
         void addPhysicsObjectInstance(PhysicsObjectInstance*);
+        void setCharacter(PhysicsObjectInstance*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectInstance(PhysicsObjectInstance*);

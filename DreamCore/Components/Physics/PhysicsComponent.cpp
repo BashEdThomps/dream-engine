@@ -32,10 +32,11 @@ namespace Dream
 {
     PhysicsComponent::PhysicsComponent
     ()
-        : IComponent()
+        : IComponent(),
+          mCharacter(nullptr),
+          mDebug(false)
     {
         setLogClassName("PhysicsComponent");
-        mDebug = false;
     }
 
     PhysicsComponent::~PhysicsComponent
@@ -174,7 +175,6 @@ namespace Dream
             log->debug( "Update Called" );
 
             // Setup Physics
-            //setGravity(sr->getGravity());
             setDebug(sr->getPhysicsDebug());
 
             populatePhysicsWorld(sr);
@@ -187,6 +187,8 @@ namespace Dream
             stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
             mDynamicsWorld->stepSimulation(stepValue);
             checkContactManifolds(sr);
+
+
             // Put debug info to queue, no draw calls made here sonny
             if (mDebug)
             {
@@ -239,7 +241,15 @@ namespace Dream
     PhysicsComponent::addPhysicsObjectInstance
     (PhysicsObjectInstance* physicsObjejct)
     {
-        addRigidBody(physicsObjejct->getRigidBody());
+        auto rb = physicsObjejct->getRigidBody();
+        addRigidBody(rb);
+        if (
+            (rb->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT)
+            == btCollisionObject::CF_CHARACTER_OBJECT
+        )
+        {
+            mCharacter = physicsObjejct;
+        }
     }
 
     void
@@ -369,6 +379,18 @@ namespace Dream
 
                     sObjB->addEvent(aHitsB);
                     sObjA->addEvent(bHitsA);
+
+                    // Recover
+
+                    if (sObjA->getPhysicsObjectInstance() == mCharacter)
+                    {
+                       recoverCharacter(contactManifold);
+                    }
+                    else if (sObjB->getPhysicsObjectInstance() == mCharacter)
+                    {
+                       recoverCharacter(contactManifold);
+                    }
+
                 }
                 else
                 {
@@ -416,4 +438,69 @@ namespace Dream
         }
     }
 
-} // End of Dream
+
+    bool
+    PhysicsComponent::recoverFromPenetration
+    (btPersistentManifold* manifold)
+    {
+        static auto log = getLog();
+        bool penetration = false;
+        auto body =  mCharacter->getRigidBody();
+        auto currentPosition = body->getWorldTransform().getOrigin();
+        float maxPenDepth = 0.01f;
+        btScalar directionSign = manifold->getBody0() == body ? btScalar(-1.0) : btScalar(1.0);
+        for (int p = 0; p < manifold->getNumContacts(); p++)
+        {
+            const btManifoldPoint& pt = manifold->getContactPoint(p);
+            btScalar dist = pt.getDistance();
+            log->trace("dist: {} dirSign: {} mpd: {}",dist,directionSign,maxPenDepth);
+            if (dist < -maxPenDepth)
+            {
+                log->trace("recovered");
+                currentPosition += pt.m_normalWorldOnB * directionSign * dist * btScalar(0.2);
+                penetration = true;
+            }
+        }
+        btTransform newTrans = body->getWorldTransform();
+        newTrans.setOrigin(currentPosition);
+        body->setWorldTransform(newTrans);
+        return penetration;
+    }
+
+    bool
+    PhysicsComponent::needsCollision
+    (const btCollisionObject* body0, const btCollisionObject* body1)
+    {
+        bool collides = (body0->getBroadphaseHandle()->m_collisionFilterGroup & body1->getBroadphaseHandle()->m_collisionFilterMask) != 0;
+        collides = collides && (body1->getBroadphaseHandle()->m_collisionFilterGroup & body0->getBroadphaseHandle()->m_collisionFilterMask);
+        return collides;
+    }
+
+    void PhysicsComponent::recoverCharacter(btPersistentManifold* manifold)
+    {
+        if (mCharacter)
+        {
+            int recoveryLoops = 0;
+            do
+            {
+                if (!recoverFromPenetration(manifold))
+                {
+                    recoveryLoops++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while(recoveryLoops < 10);
+        }
+    }
+
+    void
+    PhysicsComponent::setCharacter
+    (PhysicsObjectInstance* character)
+    {
+        mCharacter=character;
+    }
+
+}// End of Dream

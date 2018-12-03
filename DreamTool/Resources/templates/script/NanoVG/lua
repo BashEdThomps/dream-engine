@@ -1,0 +1,5 @@
+-- Template NanoVG Lua Script
+
+function onNanoVG(sceneObject)
+  -- Draw NanoVG Here
+end

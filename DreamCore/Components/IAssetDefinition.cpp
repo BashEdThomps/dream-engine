@@ -237,6 +237,24 @@ namespace Dream
         return pathStream.str();
     }
 
+    string
+    IAssetDefinition::getGroup
+    ()
+    {
+        if (mJson[Constants::ASSET_ATTR_GROUP].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
+        }
+        return mJson[Constants::ASSET_ATTR_GROUP];
+    }
+
+    void
+    IAssetDefinition::setGroup
+    (string group)
+    {
+        mJson[Constants::ASSET_ATTR_GROUP] = group;
+    }
+
 
     void
     IAssetDefinition::showStatus

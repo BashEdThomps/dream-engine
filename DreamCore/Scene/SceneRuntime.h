@@ -40,6 +40,7 @@ namespace Dream
     class IAssetDefinition;
     class SceneObjectRuntime;
     class ShaderInstance;
+    class ScriptInstance;
 
     class SceneRuntime : public IRuntime
     {
@@ -52,6 +53,8 @@ namespace Dream
         SceneObjectRuntime* mRootSceneObjectRuntime;
         ShaderInstance* mLightingPassShader;
         ShaderInstance* mShadowPassShader;
+        ScriptInstance* mInputScript;
+        ScriptInstance* mNanoVGScript;
         Camera mCamera;
         float mMinDrawDistance;
         float mMaxDrawDistance;
@@ -123,5 +126,7 @@ namespace Dream
         vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(IAssetDefinition* def);
         ShaderInstance* getShadowPassShader() const;
         void setShadowPassShader(ShaderInstance* shadowPassShader);
+        ScriptInstance* getInputScript() const;
+        ScriptInstance* getNanoVGScript() const;
     };
 } // End of Dream

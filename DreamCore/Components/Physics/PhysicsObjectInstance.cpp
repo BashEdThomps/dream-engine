@@ -464,8 +464,11 @@ namespace Dream
     PhysicsObjectInstance::setCcdSweptSphereRadius
     (float ccd)
     {
-        mRigidBody->setCcdMotionThreshold(1e-7f);
-        mRigidBody->setCcdSweptSphereRadius(ccd);
+        if (ccd != 0.0f)
+        {
+            mRigidBody->setCcdMotionThreshold(1e-7f);
+            mRigidBody->setCcdSweptSphereRadius(ccd);
+        }
     }
 
     float

@@ -62,6 +62,9 @@ namespace Dream
         void setProjectPath(string);
         string getProjectPath();
 
+        string getGroup();
+        void setGroup(string group);
+
     protected:
         ProjectDefinition* mProjectDefinition;
 

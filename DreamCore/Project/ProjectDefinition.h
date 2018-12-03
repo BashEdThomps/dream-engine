@@ -98,6 +98,9 @@ namespace Dream
         IAssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);
+        void regroupAssetDefinitions();
+
+        map<AssetType, vector<string>>& getAssetDefinitionGroups();
 
     private:
         void loadSceneDefinitions();
@@ -105,5 +108,6 @@ namespace Dream
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
         IAssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
+        map<AssetType,vector<string>> mAssetDefinitionGroups;
     };
 }

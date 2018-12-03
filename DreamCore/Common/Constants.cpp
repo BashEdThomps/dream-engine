@@ -161,6 +161,8 @@ namespace Dream
     const string Constants::ASSET_TYPE_TEXTURE_READABLE = "Texture";
     const string Constants::ASSET_TYPE_MATERIAL_READABLE = "Material";
     const string Constants::ASSET_TYPE_PARTICLE_EMITTER_READABLE = "Particle Emitter";
+    const string Constants::ASSET_ATTR_GROUP = "group";
+    const string Constants::ASSET_ATTR_GROUP_DEFAULT = "None";
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
@@ -195,6 +197,8 @@ namespace Dream
     const string Constants::SCENE_CAMERA_FOCUSED_ON = "camera_focused_on";
     const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
+    const string Constants::SCENE_INPUT_SCRIPT = "input_script";
+    const string Constants::SCENE_NANOVG_SCRIPT = "nanovg_script";
 
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT = "scene_object";

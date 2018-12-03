@@ -153,6 +153,7 @@ namespace Dream
         {
             loadAssetDefinition(it);
         }
+        regroupAssetDefinitions();
     }
 
     void
@@ -207,6 +208,13 @@ namespace Dream
                 break;
         }
         return nullptr;
+    }
+
+    map<AssetType, vector<string>>&
+    ProjectDefinition::getAssetDefinitionGroups
+    ()
+    {
+        return mAssetDefinitionGroups;
     }
 
     void
@@ -629,5 +637,31 @@ namespace Dream
             retval.push_back(asset->getName());
         }
         return retval;
+    }
+
+    void
+    ProjectDefinition::regroupAssetDefinitions
+    ()
+    {
+        mAssetDefinitionGroups.clear();
+        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        {
+            mAssetDefinitionGroups.insert(
+                pair<AssetType,vector<string>>(
+                    typePair.first,
+                    vector<string>()
+                )
+            );
+        }
+
+        for (auto ad : mAssetDefinitions)
+        {
+            auto group = ad->getGroup();
+            auto& groups = mAssetDefinitionGroups[Constants::getAssetTypeEnumFromString(ad->getType())];
+            if (find(groups.begin(),groups.end(), group) == groups.end())
+            {
+                groups.push_back(group);
+            }
+        }
     }
 }

@@ -132,28 +132,13 @@ namespace Dream
         {
             auto scriptObj = dynamic_cast<ScriptInstance*>(inst);
             scriptObj->executeOnInit();
-            scriptObj->executeOnInput();
             scriptObj->executeOnEvent();
             scriptObj->executeOnUpdate();
         }
         endUpdate();
     }
 
-    bool
-    ScriptComponent::updateNanoVG
-    ()
-    {
-        auto log = getLog();
-        log->info( "UpdateNanoVG Called" );
-        mProjectRuntime->getNanoVGComponent()->BeginFrame();
-        for (auto inst : mScriptCache->getInstanceVector())
-        {
-            auto scriptObj = dynamic_cast<ScriptInstance*>(inst);
-            scriptObj->executeOnNanoVG();
-        }
-        mProjectRuntime->getNanoVGComponent()->EndFrame();
-        return true;
-    }
+
 
     // API Exposure Methods ======================================================
 
@@ -428,6 +413,23 @@ namespace Dream
     }
 
     void
+    ScriptComponent::exposeInputComponent
+    ()
+    {
+        debugRegisteringClass("InputComponent");
+        sol::state_view stateView(State);
+        stateView.new_usertype<InputComponent>(
+            "InputComponent",
+            "clearDeadzone",&InputComponent::clearDeadzone,
+            "isKeyDown",&InputComponent::isKeyDown,
+            "getKeyboardState",&InputComponent::getKeyboardState,
+            "getMouseState",&InputComponent::getMouseState,
+            "getJoystickState",&InputComponent::getJoystickState
+        );
+    }
+
+
+    void
     ScriptComponent::exposeAudioComponent
     ()
     {
@@ -488,6 +490,7 @@ namespace Dream
             "NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED,
             "NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST
         );
+
         stateView.new_usertype<NanoVGComponent>("NanoVGComponent",
             "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation,
             "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc,
@@ -583,8 +586,17 @@ namespace Dream
             "TextMetrics",&NanoVGComponent::TextMetrics,
             "TextBreakLines",&NanoVGComponent::TextBreakLines
         );
-
-        stateView["NanoVG"] = mProjectRuntime->getNanoVGComponent();
+    }
+    void
+    ScriptComponent::exposeSceneRuntime
+    ()
+    {
+        debugRegisteringClass("SceneRuntime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<SceneRuntime>(
+            "SceneRuntime",
+            "getCamera",&SceneRuntime::getCamera
+        );
     }
 
     void
@@ -634,6 +646,7 @@ namespace Dream
         exposeIDefinition();
         // Runtimes
         exposeProjectRuntime();
+        exposeSceneRuntime();
         exposeSceneObjectRuntime();
         // Dream Misc
         exposeEvent();
@@ -642,6 +655,8 @@ namespace Dream
         // Audio
         exposeAudioComponent();
         exposeAudioInstance();
+        // Input
+        exposeInputComponent();
         // Graphics
         exposeGraphicsComponent();
         exposeModelInstance();
