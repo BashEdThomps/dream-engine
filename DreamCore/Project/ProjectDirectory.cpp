@@ -125,6 +125,27 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
+    (string uuid)
+    {
+        auto assetDef = mProject->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        if (assetDef)
+        {
+            stringstream path;
+            path << mProject->getProjectPath()
+                 << Constants::DIR_PATH_SEP
+                 << assetDef->getType()
+                 << Constants::DIR_PATH_SEP
+                 << assetDef->getUuid()
+                 << Constants::DIR_PATH_SEP
+                 << assetDef->getFormat();
+            return path.str();
+        }
+        return "";
+    }
+
+
+    string
+    ProjectDirectory::getAssetAbsolutePath
     (IAssetDefinition* assetDef, string format)
     {
         stringstream path;
@@ -138,6 +159,14 @@ namespace Dream
         return path.str();
 
     }
+
+    string
+    ProjectDirectory::getAssetAbsolutePath
+    (IAssetDefinition* assetDef)
+    {
+        return getAssetAbsolutePath(assetDef,"");
+    }
+
 
     string
     ProjectDirectory::getAssetDirectoryPath

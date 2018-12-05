@@ -15,6 +15,16 @@ namespace Dream
         int AxisCount = 0;
         float AxisData[32] = {0.0f};
         float DeadZone = 0.25f;
+
+        float getAxisData(int idx)
+        {
+           return AxisData[idx];
+        }
+
+        bool getButtonData(int idx)
+        {
+            return ButtonData[idx] != 0;
+        }
     };
 
     struct MouseState

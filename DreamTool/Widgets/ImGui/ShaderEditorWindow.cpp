@@ -80,7 +80,7 @@ namespace DreamTool
         // Editors
         ImGui::Columns(2);
 
-       // ImGui::PushFont(DTWindowComponent::MonoFont);
+       ImGui::PushFont(DTWindowComponent::MonoFont);
 
         auto cposVert = mVertexEditor.GetCursorPosition();
         ImGui::Text(
@@ -107,7 +107,8 @@ namespace DreamTool
             mFragmentEditor.GetLanguageDefinition().mName.c_str()
         );
         mFragmentEditor.Render("Fragment Editor");
-        //ImGui::PopFont();
+
+        ImGui::PopFont();
         ImGui::Columns(1);
 
         if(ImGui::BeginPopupModal("Load From Template?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))

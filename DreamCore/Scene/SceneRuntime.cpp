@@ -34,7 +34,6 @@
 
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
-#include "../Components/Input/FlyingInputHandler.h"
 
 namespace Dream
 {

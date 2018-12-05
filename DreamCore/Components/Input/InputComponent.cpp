@@ -14,7 +14,6 @@
 */
 
 #include "InputComponent.h"
-#include "InputHandler.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../Scripting/ScriptComponent.h"
 

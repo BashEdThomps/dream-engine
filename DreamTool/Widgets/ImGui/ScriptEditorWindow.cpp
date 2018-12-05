@@ -66,7 +66,7 @@ namespace DreamTool
             ImGui::OpenPopup("Load From Template?");
         }
 
-        //ImGui::PushFont(DTWindowComponent::MonoFont);
+        ImGui::PushFont(DTWindowComponent::MonoFont);
 
         auto cpos = mTextEditor.GetCursorPosition();
         ImGui::Text(
@@ -79,7 +79,8 @@ namespace DreamTool
             mTextEditor.GetLanguageDefinition().mName.c_str(),
             mScriptDefinition->getNameAndUuidString().c_str());
         mTextEditor.Render("Text Editor");
-        //ImGui::PopFont();
+
+        ImGui::PopFont();
 
         if(ImGui::BeginPopupModal("Load From Template?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {

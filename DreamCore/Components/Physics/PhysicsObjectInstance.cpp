@@ -371,6 +371,13 @@ namespace Dream
     }
 
     void
+    PhysicsObjectInstance::setCenterOfMassTransform
+    (const mat4& tx)
+    {
+       mRigidBody->setCenterOfMassTransform(Transform(tx).getBtTransform());
+    }
+
+    void
     PhysicsObjectInstance::setWorldTransform
     (const Transform& tx)
     {

@@ -20,7 +20,9 @@ namespace Dream
 
         vector<char> readAssetData(IAssetDefinition*, string format = "");
         bool writeAssetData(IAssetDefinition*, vector<char>, string format = "");
-        string getAssetAbsolutePath(IAssetDefinition*, string format = "");
+        string getAssetAbsolutePath(string);
+        string getAssetAbsolutePath(IAssetDefinition*);
+        string getAssetAbsolutePath(IAssetDefinition*, string format);
         string getAssetDirectoryPath(IAssetDefinition*);
         bool removeAssetDirectory(IAssetDefinition*);
         bool saveProject();

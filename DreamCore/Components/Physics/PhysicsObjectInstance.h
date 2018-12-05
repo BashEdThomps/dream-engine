@@ -94,6 +94,8 @@ namespace Dream
 
         void  setCcdSweptSphereRadius(float);
         float getCcdSweptSphereRadius();
+        void setCenterOfMassTransform(const mat4& tx);
+
     protected:
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
         btCollisionShape* createTriangleMeshShape(ModelInstance*);

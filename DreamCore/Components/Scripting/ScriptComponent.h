@@ -28,6 +28,7 @@ extern "C"
 #include "ScriptInstance.h"
 #include "ScriptCache.h"
 #include "../IComponent.h"
+#include "../../Project/ProjectDirectory.h"
 
 namespace Dream
 {
@@ -64,8 +65,10 @@ namespace Dream
 
         static lua_State* State;
     private:
+        const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
         ProjectRuntime* mProjectRuntime;
+        ProjectDirectory mProjectDirectory;
 
         // API Exposure Methods ======================================================
         void exposePathComponent();
@@ -73,7 +76,9 @@ namespace Dream
         void exposeModelInstance();
         void exposeCamera();
         void exposeProjectRuntime();
+        void exposeProjectDirectory();
         void exposeEvent();
+        void exposeWindowComponent();
         void exposeGraphicsComponent();
         void exposeInputComponent();
         void exposeAudioComponent();
