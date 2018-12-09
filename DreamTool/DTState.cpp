@@ -12,6 +12,7 @@ namespace DreamTool
 {
     DTState::DTState(int _argc, char** _argv)
         : DreamObject("DTState"),
+          project(nullptr),
           propertiesWindow(PropertiesWindow(this)),
           projectBrowser(ProjectBrowser(this)),
           luaDebugWindow(LuaDebugWindow(this)),
@@ -30,17 +31,16 @@ namespace DreamTool
           argc(_argc),
           argv(_argv)
     {
-
+        getLog()->trace("Constructing");
     }
 
     DTState::~DTState()
     {
-
+        getLog()->trace("Destructing");
     }
 
     void DTState::init()
     {
-        project = new Dream::Project(&windowComponent);
 #ifdef WIN32
         windowComponent.setUiFontSize(24.0f);
         windowComponent.setMonoFontSize(24.0f);
@@ -81,14 +81,7 @@ namespace DreamTool
         auto log = getLog();
         if (argc > 1)
         {
-            if(project->openFromDirectory(argv[1]))
-            {
-                project->createProjectRuntime();
-                stringstream ss;
-                ss  << "Opened Project: "
-                    << project->getProjectDefinition()->getName();
-                menuBar.setMessageString(ss.str());
-            }
+            openProject(argv[1]);
         }
 
         // Run the project
@@ -99,16 +92,9 @@ namespace DreamTool
                 MainLoopDone = true;
             }
 
-            auto projectRuntime = project->getProjectRuntime();
-
-            if (projectRuntime == nullptr)
+            if (project && project->getRuntime())
             {
-                windowComponent.updateComponent(nullptr);
-                glClearColor(0.0f,0.0f,0.0f,0.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            }
-            else if (projectRuntime)
-            {
+                auto projectRuntime = project->getRuntime();
                 if(!projectRuntime->hasActiveScene())
                 {
                     windowComponent.updateComponent(nullptr);
@@ -116,6 +102,12 @@ namespace DreamTool
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 }
                 projectRuntime->updateAll();
+            }
+            else
+            {
+                windowComponent.updateComponent(nullptr);
+                glClearColor(0.0f,0.0f,0.0f,0.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
             ShaderInstance::InvalidateState();
@@ -134,10 +126,9 @@ namespace DreamTool
                 }
             }
 
-            if (projectRuntime)
+            if (project && project->getRuntime())
             {
-
-                auto sr = projectRuntime->getActiveSceneRuntime();
+                auto sr = project->getRuntime()->getActiveSceneRuntime();
                 if (sr)
                 {
                     switch (inputTarget)
@@ -261,7 +252,7 @@ namespace DreamTool
     (SceneRuntime* sRunt)
     {
         ImGuiIO& io = ImGui::GetIO();
-        auto pRunt = project->getProjectRuntime();
+        auto pRunt = project->getRuntime();
         if (pRunt)
         {
             auto inputComp = pRunt->getInputComponent();
@@ -313,5 +304,58 @@ namespace DreamTool
                 }
             }
         }
+    }
+
+    void
+    DTState::closeProject
+    ()
+    {
+        propertiesWindow.clearPropertyTargets();
+        projectDirectory.closeProject();
+        project = nullptr;
+    }
+
+    bool
+    DTState::openProject
+    (string dir)
+    {
+        closeProject();
+        auto log = getLog();
+        log->debug("Opening project {}",dir);
+        lastDirectory = dir;
+        project = projectDirectory.openFromDirectory(dir);
+        if(project)
+        {
+            project->setWindowComponent(&windowComponent);
+            project->createProjectRuntime();
+            stringstream ss;
+            ss  << "Opened Project: "
+                << project->getDefinition()->getName();
+            menuBar.setMessageString(ss.str());
+            return true;
+        }
+        return false;
+    }
+
+    bool
+    DTState::newProject
+    (string dir)
+    {
+        auto log = getLog();
+        log->debug("Creating Project {}",dir);
+        lastDirectory = dir;
+        closeProject();
+        project = projectDirectory.newProject(dir);
+        if(project)
+        {
+            project->setWindowComponent(&windowComponent);
+            project->createProjectRuntime();
+            stringstream ss;
+            ss  << "Created Project in: "
+                << dir;
+            menuBar.setMessageString(ss.str());
+            return true;
+        }
+        return false;
     }
 }

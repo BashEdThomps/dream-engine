@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../IAssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace  Dream
 {
@@ -60,7 +60,7 @@ namespace  Dream
     };
     */
 
-    class AudioDefinition : public IAssetDefinition
+    class AudioDefinition : public AssetDefinition
     {
     public:
         AudioDefinition(ProjectDefinition* pd, json js);

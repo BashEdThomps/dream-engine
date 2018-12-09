@@ -3,12 +3,13 @@
 #include "TextureInstance.h"
 #include "../../../deps/soil/SOIL.h"
 #include "../../../Utilities/File.h"
+#include "../../SharedAssetInstance.h"
 
 namespace Dream
 {
     TextureCache::TextureCache
     (ProjectRuntime* runtime)
-        : ICache(runtime)
+        : Cache(runtime)
     {
         setLogClassName("TextureCache");
     }
@@ -18,9 +19,9 @@ namespace Dream
         flushRawTextureImageData();
     }
 
-    IAssetInstance*
+    SharedAssetInstance*
     TextureCache::loadInstance
-    (IAssetDefinition* def)
+    (AssetDefinition* def)
     {
         auto log = getLog();
         if (!def)
@@ -39,7 +40,7 @@ namespace Dream
         }
 
         log->debug("Loading texture: {}",filename);
-        for (auto instance : mInstances)
+        for (auto* instance : mInstances)
         {
             auto nextTexture = dynamic_cast<TextureInstance*>(instance);
             if (nextTexture->getPath().compare(filename) == 0)
@@ -57,7 +58,7 @@ namespace Dream
 
         // Check image data against existing textures
 
-        for (auto instance : mInstances)
+        for (auto* instance : mInstances)
         {
             auto nextTexture = dynamic_cast<TextureInstance*>(instance);
             if (nextTexture->getWidth() == width &&
@@ -99,7 +100,7 @@ namespace Dream
 
         checkGLError();
 
-        auto texture = new TextureInstance(textureDef);
+        auto texture = new TextureInstance(textureDef,mProjectRuntime);
         texture->setPath(filename);
         texture->setGLID(textureID);
         texture->setWidth(width);
@@ -130,7 +131,7 @@ namespace Dream
     ()
     {
         flushRawTextureImageData();
-        for (IAssetInstance* instance : mInstances)
+        for (auto* instance : mInstances)
         {
             delete instance;
         }

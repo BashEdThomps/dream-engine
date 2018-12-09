@@ -17,10 +17,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "../../IAssetInstance.h"
 #include "LightDefinition.h"
+#include "../../DiscreteAssetInstance.h"
 
-using glm::vec3;
+using namespace glm;
 
 namespace Dream
 {
@@ -58,7 +58,9 @@ namespace Dream
     };
 
     class LightDefinition;
-    class LightInstance : public IAssetInstance
+
+    class LightInstance
+        : public DiscreteAssetInstance
     {
         vec3 mAmbient;
         vec3 mDiffuse;
@@ -77,7 +79,7 @@ namespace Dream
         );
         ~LightInstance() override;
 
-        bool load(string) override;
+        bool load() override;
 
         vec3 getAmbient() const;
         void setAmbient(const vec3& ambient);
@@ -113,6 +115,5 @@ namespace Dream
 
     protected:
 
-    }; // End of LightInstance
-
-} // End of Dream
+    };
+}

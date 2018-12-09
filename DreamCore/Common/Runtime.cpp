@@ -15,15 +15,15 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "IRuntime.h"
-#include "IDefinition.h"
+#include "Runtime.h"
+#include "Definition.h"
 
 namespace Dream
 {
-    IRuntime::IRuntime
-    (IDefinition* def)
+    Runtime::Runtime
+    (Definition* def)
         : // Init List
-          DreamObject("IRuntime"),
+          DreamObject("Runtime"),
           mDefinition(def),
           mUuid(def->getUuid()),
           mName(def->getName())
@@ -31,63 +31,63 @@ namespace Dream
 
     }
 
-    IRuntime::~IRuntime
+    Runtime::~Runtime
     ()
     {
 
     }
 
     string
-    IRuntime::getUuid
+    Runtime::getUuid
     ()
     {
         return mUuid;
     }
 
     void
-    IRuntime::setUuid
+    Runtime::setUuid
     (string uuid)
     {
         mUuid = uuid;
     }
 
     string
-    IRuntime::getName
+    Runtime::getName
     ()
     {
         return mName;
     }
 
     void
-    IRuntime::setName
+    Runtime::setName
     (string name)
     {
         mName = name;
     }
 
     string
-    IRuntime::getNameAndUuidString
+    Runtime::getNameAndUuidString
     ()
     {
         return "[" + getName() + " : " + getUuid() + "]";
     }
 
     bool
-    IRuntime::hasName
+    Runtime::hasName
     (string name)
     {
         return getName().compare(name) == 0;
     }
 
     bool
-    IRuntime::hasUuid
+    Runtime::hasUuid
     (string uuid)
     {
         return getUuid().compare(uuid) == 0;
     }
 
-    IDefinition*
-    IRuntime::getDefinition
+    Definition*
+    Runtime::getDefinition
     ()
     {
         return mDefinition;

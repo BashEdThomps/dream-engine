@@ -1,5 +1,5 @@
 /*
-* Dream::IAssetInstance
+* Dream::AssetInstance
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,47 +18,36 @@
 #pragma once
 
 #include "../Common/DreamObject.h"
-#include "../deps/json/json.hpp"
+#include <string>
 
-
-using std::string;
-using nlohmann::json;
+using namespace std;
 
 namespace Dream
 {
-    class IAssetDefinition;
-    class SceneObjectRuntime;
+    class AssetDefinition;
 
-    class IAssetInstance : public DreamObject
+    class AssetInstance : public DreamObject
     {
     protected:
         bool mLoaded;
-        string mAbsolutePath;
-        IAssetDefinition* mDefinition;
-        SceneObjectRuntime* mSceneObjectRuntime;
+        AssetDefinition* mDefinition;
     public:
-        IAssetInstance
+        AssetInstance
         (
-            IAssetDefinition* asset,
-            SceneObjectRuntime* runtime
+            AssetDefinition* asset
         );
-        virtual ~IAssetInstance();
+        virtual ~AssetInstance();
 
         string getUuid();
         string getName();
 
         string getNameAndUuidString();
+        virtual string getAssetFilePath(string fmt = "") = 0;
+        virtual string getAssetDirectoryPath() = 0;
 
-        virtual bool load(string) = 0;
-
-        string getAbsolutePath();
-        void setAbsolutePath(string);
+        virtual bool load() = 0;
 
         bool getLoadedFlag();
         void setLoadedFlag(bool);
-
-        SceneObjectRuntime* getSceneObjectRuntime();
-
-    }; // End of IAssetInstance
-
-} // End of Dream
+    };
+}

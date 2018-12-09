@@ -16,11 +16,11 @@
  * this file belongs to.
  */
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
-    class ModelDefinition : public IAssetDefinition
+    class ModelDefinition : public AssetDefinition
     {
     public:
         ModelDefinition(ProjectDefinition* pd, json js);

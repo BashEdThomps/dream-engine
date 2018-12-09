@@ -16,12 +16,9 @@
 
 #pragma once
 
-//#include <assimp/types.h>
 #include <vector>
-#include <memory>
-#include "../../IAssetInstance.h"
 #include <glm/vec3.hpp>
-#include "../Light/LightInstance.h"
+#include "../../SharedAssetInstance.h"
 
 using namespace std;
 using namespace glm;
@@ -35,10 +32,10 @@ namespace Dream
     class TextureInstance;
     class Camera;
 
-    class MaterialInstance : public IAssetInstance
+    class MaterialInstance : public SharedAssetInstance
     {
     public:
-        MaterialInstance(MaterialDefinition* def, SceneObjectRuntime* rt);
+        MaterialInstance(MaterialDefinition* def, ProjectRuntime* rt);
         ~MaterialInstance() override;
 
         void addMesh(ModelMesh* mesh);
@@ -51,7 +48,7 @@ namespace Dream
         void drawGeometryPass(Camera*);
         void drawShadowPass(ShaderInstance* shader);
 
-        bool load(string) override;
+        bool load() override;
 
         TextureInstance* getDiffuseTexture() const;
         void setDiffuseTexture(TextureInstance* diffuseTexture);

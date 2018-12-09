@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "../Common/IRuntime.h"
+#include "../Common/Runtime.h"
 
 using std::string;
 using std::vector;
@@ -49,13 +49,13 @@ namespace Dream
     class ModelCache;
     class ShaderCache;
     class ComponentThread;
-    class IAssetDefinition;
+    class AssetDefinition;
     class SceneObjectRuntime;
 
     class Time;
 
     // Class Declaration
-    class ProjectRuntime : public IRuntime
+    class ProjectRuntime : public Runtime
     {
 
     private: // Member Variables
@@ -138,11 +138,9 @@ namespace Dream
         void setScriptingEnabled(bool);
         bool hasActiveScene();
 
-        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
-        string getAssetAbsolutePath(string uuid);
+        AssetDefinition* getAssetDefinitionByUuid(string uuid);
 
         SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, string uuid);
-        string getProjectPath();
         SceneRuntime* getActiveSceneRuntime();
         SceneRuntime* getSceneRuntimeByUuid(string uuid);
 

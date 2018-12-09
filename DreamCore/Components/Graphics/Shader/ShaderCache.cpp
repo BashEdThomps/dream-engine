@@ -25,7 +25,7 @@ namespace Dream
 {
     ShaderCache::ShaderCache
     (ProjectRuntime* rt)
-        : ICache(rt)
+        : Cache(rt)
     {
         setLogClassName("ShaderCache");
         auto log = getLog();
@@ -39,14 +39,14 @@ namespace Dream
         log->trace( "Destructing" );
     }
 
-    IAssetInstance*
+    SharedAssetInstance*
     ShaderCache::loadInstance
-    (IAssetDefinition* def)
+    (AssetDefinition* def)
     {
         auto log = getLog();
-        auto shaderInstance = new ShaderInstance(dynamic_cast<ShaderDefinition*>(def));
+        auto shaderInstance = new ShaderInstance(dynamic_cast<ShaderDefinition*>(def), mProjectRuntime);
 
-        if (!shaderInstance->load(mProjectRuntime->getProjectPath()))
+        if (!shaderInstance->load())
         {
             log->error("Error while loading shader {}", def->getUuid());
         }

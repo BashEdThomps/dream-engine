@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <memory>
-#include "../Common/IDefinition.h"
+#include "../Common/Definition.h"
 #include "../Components/Transform.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ namespace Dream
     class SceneObject;
     class SceneObjectDefinition;
 
-    class SceneDefinition : public IDefinition
+    class SceneDefinition : public Definition
     {
 
     private:

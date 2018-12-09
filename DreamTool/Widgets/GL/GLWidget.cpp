@@ -118,7 +118,7 @@ namespace DreamTool
         checkGLError();
         if (mState->project)
         {
-            auto pRuntime = mState->project->getProjectRuntime();
+            auto pRuntime = mState->project->getRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();

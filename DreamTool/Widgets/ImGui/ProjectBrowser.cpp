@@ -4,6 +4,8 @@
 #include "../../deps/ImGui/imguifilesystem.h"
 #include <sstream>
 #include "../../DTState.h"
+
+#include "../../../DreamCore/Components/AssetDefinition.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectDefinition.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
@@ -33,11 +35,14 @@ namespace DreamTool
     ProjectBrowser::draw
     ()
     {
-        ImGui::Begin("Project Browser",&mVisible);
-        drawProjectTree();
-        ImGui::Separator();
-        drawAssetTree();
-        ImGui::End();
+        if (mState->project)
+        {
+            ImGui::Begin("Project Browser",&mVisible);
+            drawProjectTree();
+            ImGui::Separator();
+            drawAssetTree();
+            ImGui::End();
+        }
     }
 
     void
@@ -46,7 +51,7 @@ namespace DreamTool
     {
         auto log = getLog();
         // Project Tree
-        auto projDef = mState->project->getProjectDefinition();
+        auto projDef = mState->project->getDefinition();
         ImGui::Text("Scenegraph");
         ImGui::Separator();
 
@@ -67,7 +72,7 @@ namespace DreamTool
                 (
                     Project,
                     projDef,
-                    mState->project->getProjectRuntime()
+                    mState->project->getRuntime()
                 );
             }
 
@@ -79,7 +84,7 @@ namespace DreamTool
                     if (ImGui::IsItemClicked())
                     {
                         log->error("Scene Clicked {}", sDef->getName());
-                        auto pRunt = mState->project->getProjectRuntime();
+                        auto pRunt = mState->project->getRuntime();
                         SceneRuntime* sRunt = nullptr;
                         if (pRunt)
                         {
@@ -116,7 +121,7 @@ namespace DreamTool
         if (def != nullptr)
         {
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
-            auto projRunt = mState->project->getProjectRuntime();
+            auto projRunt = mState->project->getRuntime();
             ImGui::PushID(treeId);
             if(ImGui::TreeNodeEx(
                    (void*)(intptr_t)treeId,
@@ -189,7 +194,7 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        auto projDef = mState->project->getProjectDefinition();
+        auto projDef = mState->project->getDefinition();
         ImGui::Text("Assets");
         ImGui::Separator();
 

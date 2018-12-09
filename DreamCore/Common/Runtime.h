@@ -26,17 +26,17 @@ using std::string;
 
 namespace Dream
 {
-    class IDefinition;
+    class Definition;
 
-    class IRuntime : public DreamObject
+    class Runtime : public DreamObject
     {
     protected:
-        IDefinition* mDefinition;
+        Definition* mDefinition;
         string mUuid;
         string mName;
     public:
-        IRuntime(IDefinition* def);
-        virtual ~IRuntime();
+        Runtime(Definition* def);
+        virtual ~Runtime();
 
         string getUuid();
         void setUuid(string uuid);
@@ -51,6 +51,6 @@ namespace Dream
         virtual bool useDefinition() = 0;
 
         virtual void collectGarbage() = 0;
-        IDefinition* getDefinition();
+        Definition* getDefinition();
     };
 }

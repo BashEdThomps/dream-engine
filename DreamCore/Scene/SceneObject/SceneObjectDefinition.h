@@ -22,17 +22,17 @@
 #include <vector>
 #include <memory>
 
-#include "../../Common/IDefinition.h"
+#include "../../Common/Definition.h"
 #include "../../Components/Transform.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class IAssetDefinition;
+    class AssetDefinition;
     class SceneDefinition;
 
-    class SceneObjectDefinition : public IDefinition
+    class SceneObjectDefinition : public Definition
     {
     private:
         SceneObjectDefinition* mParentSceneObject;

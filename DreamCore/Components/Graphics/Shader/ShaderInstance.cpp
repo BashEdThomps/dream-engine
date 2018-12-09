@@ -33,8 +33,8 @@ namespace Dream
     const GLint ShaderInstance::UNIFORM_NOT_FOUND = -1;
 
     ShaderInstance::ShaderInstance
-    (ShaderDefinition* definition)
-        : IAssetInstance(definition,nullptr),
+    (ShaderDefinition* definition, ProjectRuntime* rt)
+        : SharedAssetInstance(definition,rt),
           mPointLightCount(0),
           mPointLightCountLocation(UNIFORM_NOT_FOUND),
           mSpotLightCount(0),
@@ -170,9 +170,8 @@ namespace Dream
 
     bool
     ShaderInstance::load
-    (string projectPath)
+    ()
     {
-        mProjectPath = projectPath;
         bool compileV = compileVertex();
         bool compileF = compileFragment();
         if (compileV && compileF)
@@ -188,7 +187,7 @@ namespace Dream
    {
        auto log = getLog();
         // 1. Open Shader Files into Memory
-        string absVertexPath = mProjectPath+mDefinition->getAssetPath() + Constants::SHADER_VERTEX;
+        string absVertexPath = getAssetFilePath(Constants::SHADER_VERTEX_FILE_NAME);
         File vertexReader(absVertexPath);
         mVertexSource = vertexReader.readString();
         log->trace(
@@ -224,7 +223,7 @@ namespace Dream
    {
        auto log = getLog();
         // 1. Open Shader Files into Memory
-        string absFragmentPath = mProjectPath+mDefinition->getAssetPath() + Constants::SHADER_FRAGMENT;
+        string absFragmentPath = getAssetFilePath(Constants::SHADER_FRAGMENT_FILE_NAME);
         File fragmentReader(absFragmentPath);
         mFragmentSource = fragmentReader.readString();
         log->trace(

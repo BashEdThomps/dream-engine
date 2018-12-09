@@ -31,7 +31,7 @@ namespace Dream
     (
         AnimationDefinition* definition,
         SceneObjectRuntime* runtime
-    ) : IAssetInstance(definition,runtime)
+    ) : DiscreteAssetInstance(definition,runtime)
     {
         setLogClassName("AnimationInstance");
         auto log = getLog();
@@ -47,7 +47,7 @@ namespace Dream
 
     bool
     AnimationInstance::load
-    (string)
+    ()
     {
         mLoaded = true;
         return mLoaded;

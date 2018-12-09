@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "../IComponent.h"
+#include "../Component.h"
 #include "InputMapping.h"
 #include "InputState.h"
 
@@ -25,7 +25,7 @@ using namespace std;
 namespace Dream
 {
 
-    class InputComponent : public IComponent
+    class InputComponent : public Component
     {
     public:
         InputComponent(bool useKeyboard = false, bool useMouse = false, bool useJoystick = false);

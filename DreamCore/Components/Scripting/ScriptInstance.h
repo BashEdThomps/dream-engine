@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../IAssetInstance.h"
+#include "../SharedAssetInstance.h"
 #include "../Event.h"
 
 namespace Dream
@@ -35,12 +35,12 @@ namespace Dream
         bool error = false;
     };
 
-    class ScriptInstance : public IAssetInstance
+    class ScriptInstance : public SharedAssetInstance
     {
     public:
-        ScriptInstance(ScriptDefinition*,SceneObjectRuntime*);
+        ScriptInstance(ScriptDefinition*,ProjectRuntime*);
         ~ScriptInstance() override;
-        bool load(string) override;
+        bool load() override;
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
         vector<SceneObjectRuntime*> getInstanceVector();
@@ -60,5 +60,5 @@ namespace Dream
         vector<ScriptInstanceState> mInstances;
         string mSource;
         bool mError;
-    }; // End of LuaScriptInstance
-} // End of Dream
+    };
+}

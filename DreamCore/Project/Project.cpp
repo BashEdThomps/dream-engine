@@ -23,10 +23,10 @@
 #include "ProjectRuntime.h"
 #include "ProjectDefinition.h"
 
-#include "../Components/IAssetDefinition.h"
+#include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform.h"
-#include "../Components/IAssetInstance.h"
+#include "../Components/AssetInstance.h"
 #include "../Components/Window/IWindowComponent.h"
 
 #include "../Scene/SceneRuntime.h"
@@ -41,28 +41,21 @@
 namespace Dream
 {
     Project::Project
-    (IWindowComponent* windowComponent)
+    (ProjectDirectory* dir)
         : DreamObject("Project"),
           mDefinition(nullptr),
           mRuntime(nullptr),
-          mWindowComponent(windowComponent),
-          mProjectPath("")
-
+          mWindowComponent(nullptr),
+          mDirectory(dir)
     {
         getLog()->trace("Constructing");
     }
 
-    Project::~Project()
-    {
-        auto log = getLog();
-        log->trace("Destructing");
-        clear();
-    }
-
-    void
-    Project::clear
+    Project::~Project
     ()
     {
+        getLog()->trace("Destructing");
+
         if (mRuntime != nullptr)
         {
             delete mRuntime;
@@ -76,80 +69,12 @@ namespace Dream
         }
     }
 
-    bool
-    Project::openFromFileReader
-    (string projectPath, File &reader)
-    {
-        auto log = getLog();
-        log->debug("Loading project from FileReader", reader.getPath());
-
-        string projectJsonStr = reader.readString();
-
-        if (projectJsonStr.empty())
-        {
-            log->error("Loading Failed. Project Content is Empty");
-            return false;
-        }
-
-        json projectJson;
-        try
-        {
-            projectJson = json::parse(projectJsonStr);
-        }
-        catch (json::parse_error ex)
-        {
-            log->error("Exception while parsing project file: {}",ex.what());
-        }
-
-        log->debug("Project path", projectPath);
-
-        mProjectPath = projectPath;
-        mDefinition = new ProjectDefinition(projectJson);
-        mDefinition->loadChildDefinitions();
-        return true;
-    }
-
-    bool
-    Project::openFromDirectory
-    (string directory)
-    {
-        auto log = getLog();
-        Directory dir(directory);
-        vector<string> directoryContents;
-        directoryContents = dir.list();
-
-        string projectFileName;
-
-        for (string filename : directoryContents)
-        {
-            size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
-            if (dotJsonIndex != string::npos)
-            {
-                projectFileName = filename.substr(0,dotJsonIndex);
-                log->debug( "Project: openFromDirectory - Found project file ",projectFileName );
-            }
-        }
-
-        if (projectFileName.size() == 0)
-        {
-            log->error( "Project: Error {} is not a valid project directory!", directory  );
-            return false;
-        }
-
-        log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
-
-        string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
-
-        File projectFileReader(projectFilePath);
-
-        return openFromFileReader(directory, projectFileReader);
-    }
-
     ProjectRuntime*
     Project::createProjectRuntime
     ()
     {
         auto log = getLog();
+        log->debug("Creating project runtime for {}", mDefinition->getNameAndUuidString());
         mRuntime = new ProjectRuntime(this, mWindowComponent);
         if (!mRuntime->useDefinition())
         {
@@ -160,30 +85,7 @@ namespace Dream
         return mRuntime;
     }
 
-    ProjectDefinition*
-    Project::createNewProjectDefinition
-    (string name)
-    {
-        json j = json::object();
 
-        j[Constants::NAME] = name;
-        j[Constants::UUID] = Uuid::generateUuid();
-        j[Constants::PROJECT_AUTHOR] = "";
-        j[Constants::PROJECT_DESCRIPTION] = "";
-        j[Constants::PROJECT_STARTUP_SCENE] = "";
-        j[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
-        j[Constants::PROJECT_CAPTURE_MOUSE] = false;
-        j[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
-
-        j[Constants::PROJECT_WINDOW_SIZE] = json::object();
-        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;
-        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = Constants::PROJECT_DEFAULT_WINDOW_HEIGHT;
-
-        j[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        j[Constants::PROJECT_SCENE_ARRAY] = json::array();
-
-        return new ProjectDefinition(j);
-    }
 
     bool
     Project::hasProjectRuntime
@@ -207,39 +109,23 @@ namespace Dream
         return mDefinition != nullptr;
     }
 
-    bool
-    Project::openFromArgumentParser
-    (ArgumentParser &parser)
-    {
-        auto log = getLog();
-        log->debug( "Project: Loading from ArgumentParser" );
-        File projectFileReader(parser.getProjectFilePath());
-        bool loadSuccess = openFromFileReader(parser.getProjectPath(), projectFileReader);
-        return loadSuccess;
-    }
-
     ProjectRuntime*
-    Project::getProjectRuntime
+    Project::getRuntime
     ()
     {
         return mRuntime;
     }
 
     ProjectDefinition*
-    Project::getProjectDefinition
-    ()
+    Project::getDefinition
+    () const
     {
         return mDefinition;
     }
 
-    string
-    Project::getProjectPath
-    ()
-    {
-        return mProjectPath;
-    }
-
-    IAssetDefinition* Project::getAssetDefinitionByUuid(string uuid)
+    AssetDefinition*
+    Project::getAssetDefinitionByUuid
+    (string uuid)
     {
         if (mDefinition != nullptr)
         {
@@ -249,5 +135,26 @@ namespace Dream
         return nullptr;
     }
 
+    void
+    Project::setDefinition
+    (ProjectDefinition* definition)
+    {
+        mDefinition = definition;
+    }
+
+    void
+    Project::setWindowComponent
+    (IWindowComponent* windowComponent)
+    {
+        mWindowComponent = windowComponent;
+    }
+
+    ProjectDirectory*
+    Project::getDirectory
+    ()
+    const
+    {
+        return mDirectory;
+    }
 
 } // End of Dream

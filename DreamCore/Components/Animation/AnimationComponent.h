@@ -18,11 +18,11 @@
 #pragma once
 
 #include "AnimationInstance.h"
-#include "../IComponent.h"
+#include "../Component.h"
 
 namespace Dream
 {
-    class AnimationComponent : public IComponent
+    class AnimationComponent : public Component
     {
     public:
         AnimationComponent();

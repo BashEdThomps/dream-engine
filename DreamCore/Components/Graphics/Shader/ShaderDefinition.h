@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
-    class ShaderDefinition : public IAssetDefinition
+    class ShaderDefinition : public AssetDefinition
     {
     public:
         ShaderDefinition(ProjectDefinition* pd, json js);

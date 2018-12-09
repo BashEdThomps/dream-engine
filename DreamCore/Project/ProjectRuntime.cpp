@@ -19,12 +19,13 @@
 
 #include "Project.h"
 #include "ProjectDefinition.h"
+#include "ProjectDirectory.h"
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 
-#include "../Components/IAssetDefinition.h"
+#include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform.h"
 #include "../Components/Path/PathComponent.h"
@@ -51,7 +52,7 @@ namespace Dream
     (
             Project* project,
             IWindowComponent* windowComponent)
-        : IRuntime(project->getProjectDefinition()),
+        : Runtime(project->getDefinition()),
           mDone(false),
           mTime(nullptr),
           mProject(project),
@@ -795,7 +796,7 @@ namespace Dream
         mScriptingEnabled = en;
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectRuntime::getAssetDefinitionByUuid
     (string uuid)
     {
@@ -804,14 +805,6 @@ namespace Dream
             return mProject->getAssetDefinitionByUuid(uuid);
         }
         return nullptr;
-    }
-
-    string
-    ProjectRuntime::getAssetAbsolutePath
-    (string uuid)
-    {
-        auto def = getAssetDefinitionByUuid(uuid);
-        return mProject->getProjectPath()+def->getAssetPath();
     }
 
     SceneObjectRuntime*
@@ -824,13 +817,6 @@ namespace Dream
         }
 
         return rt->getSceneObjectRuntimeByUuid(uuid);
-    }
-
-    string
-    ProjectRuntime::getProjectPath
-    ()
-    {
-        return mProject->getProjectPath();
     }
 
     bool

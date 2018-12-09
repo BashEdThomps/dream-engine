@@ -22,13 +22,11 @@
 
 namespace Dream
 {
-
-
     AudioInstance::AudioInstance
     (AudioComponent* component,
      AudioDefinition* definition,
-     SceneObjectRuntime* transform)
-        : IAssetInstance(definition, transform),
+     SceneObjectRuntime* rt)
+        : DiscreteAssetInstance(definition, rt),
           mAudioComponent(component),
           mStartTime(-1),
           mLastSampleOffset(0),

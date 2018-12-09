@@ -34,42 +34,37 @@ namespace Dream
     class File;
     class ProjectRuntime;
     class ProjectDefinition;
-    class IAssetDefinition;
+    class AssetDefinition;
     class IWindowComponent;
+    class ProjectDirectory;
 
     class Project :
         public DreamObject
     {
         // Variables
     private:
+        ProjectDirectory* mDirectory;
         ProjectDefinition* mDefinition;
         ProjectRuntime* mRuntime;
         IWindowComponent* mWindowComponent;
-        string mProjectPath;
 
         // Public Methods
     public:
-        Project(IWindowComponent* wc = nullptr);
+        Project(ProjectDirectory* dir);
         ~Project();
 
-        ProjectRuntime* getProjectRuntime();
-        ProjectDefinition* getProjectDefinition();
-
-        bool openFromFileReader(string directory, File &fileReader);
-        bool openFromArgumentParser(ArgumentParser &parser);
-        bool openFromDirectory(string directory);
-        void clear();
-
+        ProjectRuntime* getRuntime();
         ProjectRuntime* createProjectRuntime();
-        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
-
         bool hasProjectRuntime();
         void resetProjectRuntime();
 
-        string getProjectPath();
-
+        ProjectDefinition* getDefinition() const;
+        void setDefinition(ProjectDefinition* definition);
         bool hasProjectDefinition();
-        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
-    }; // End of Project
 
-} // End of Dream
+        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        void setWindowComponent(IWindowComponent* windowComponent);
+
+        ProjectDirectory* getDirectory() const;
+    };
+}

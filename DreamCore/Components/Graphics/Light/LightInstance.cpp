@@ -15,7 +15,6 @@
 
 
 #include "LightInstance.h"
-
 #include "LightDefinition.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 
@@ -25,7 +24,7 @@ namespace Dream
     (
         LightDefinition* definition,
         SceneObjectRuntime* transform
-    ) : IAssetInstance(definition,transform),
+    ) : DiscreteAssetInstance(definition,transform),
         mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
         mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
         mSpecular(glm::vec3(0.0f,0.0f,0.0f)),
@@ -200,7 +199,7 @@ namespace Dream
 
     bool
     LightInstance::load
-    (string)
+    ()
     {
         auto log = getLog();
         auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);

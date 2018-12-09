@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
@@ -28,7 +28,7 @@ namespace Dream
         float b;
     };
 
-    class MaterialDefinition : public IAssetDefinition
+    class MaterialDefinition : public AssetDefinition
     {
     public:
         MaterialDefinition(ProjectDefinition* pd, json js);

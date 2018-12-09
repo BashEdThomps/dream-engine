@@ -23,7 +23,7 @@ namespace Dream
 {
     MaterialDefinition::MaterialDefinition
     (ProjectDefinition* pd, json js)
-        :IAssetDefinition(pd,js)
+        :AssetDefinition(pd,js)
     {
     }
 

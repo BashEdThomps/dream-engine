@@ -22,7 +22,7 @@ namespace Dream
 
     IWindowComponent::IWindowComponent
     ()
-        : IComponent(),
+        : Component(),
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
           mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
           mShouldClose(false),

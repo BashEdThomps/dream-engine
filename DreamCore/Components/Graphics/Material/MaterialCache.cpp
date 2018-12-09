@@ -19,6 +19,10 @@
 #include "MaterialCache.h"
 #include "MaterialDefinition.h"
 #include "MaterialInstance.h"
+
+#include "../../../Project/Project.h"
+#include "../../../Project/ProjectDirectory.h"
+
 #include "../Texture/TextureDefinition.h"
 #include "../Texture/TextureInstance.h"
 #include "../Texture/TextureCache.h"
@@ -30,7 +34,7 @@ namespace Dream
 {
     MaterialCache::MaterialCache
     (ProjectRuntime* parent, ShaderCache* shaderCache, TextureCache* textureCache)
-        : ICache(parent),
+        : Cache(parent),
           mShaderCache(shaderCache),
           mTextureCache(textureCache)
     {
@@ -46,9 +50,9 @@ namespace Dream
         log->trace( "Destructing" );
     }
 
-    IAssetInstance*
+    SharedAssetInstance*
     MaterialCache::loadInstance
-    (IAssetDefinition* def)
+    (AssetDefinition* def)
     {
         auto log = getLog();
         if (!def)
@@ -65,12 +69,12 @@ namespace Dream
             return nullptr;
         }
 
-        auto material = new MaterialInstance(matDef,nullptr);
+        auto material = new MaterialInstance(matDef,mProjectRuntime);
         auto diffuse = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
         auto specular = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
         auto normal = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getNormalTexture()));
         auto displacement = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
-        material->load(mProjectRuntime->getProjectPath());
+        material->load();
 
         material->setDiffuseTexture(diffuse);
         material->setSpecularTexture(specular);

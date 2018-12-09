@@ -27,7 +27,7 @@ namespace Dream
 {
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinition, json data)
-        : IDefinition(data),
+        : Definition(data),
           mProjectDefinition(projectDefinition)
     {
         setLogClassName("SceneDefinition");

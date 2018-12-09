@@ -1,5 +1,5 @@
 /*
-* Dream::IComponent
+* Dream::Component
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@ namespace Dream
     class Time;
     class SceneRuntime;
 
-    class IComponent : public DreamObject
+    class Component : public DreamObject
     {
 
     public:
-        IComponent();
-        virtual ~IComponent();
+        Component();
+        virtual ~Component();
         virtual bool init() = 0;
         virtual void updateComponent(SceneRuntime*) = 0;
 
@@ -39,7 +39,11 @@ namespace Dream
         long long getYieldedTime() const;
         void setTime(Time*);
 
+        bool getEnabled() const;
+        void setEnabled(bool enabled);
+
     protected:
+
         void beginUpdate();
         void endUpdate();
 
@@ -51,7 +55,8 @@ namespace Dream
         bool mBusy;
 
         Time* mTime;
+        bool  mEnabled;
 
-    }; // End of IComponent
+    }; // End of Component
 
 } // End of Dream

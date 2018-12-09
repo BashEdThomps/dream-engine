@@ -28,7 +28,7 @@ namespace Dream
 {
     PathComponent::PathComponent
     ()
-        : IComponent()
+        : Component()
 
     {
         setLogClassName("PathComponent");
@@ -55,6 +55,13 @@ namespace Dream
     PathComponent::updateComponent
     (SceneRuntime* sr)
     {
+        auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
         beginUpdate();
         if (sr != nullptr)
         {

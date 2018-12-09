@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "../IAssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace Dream
 {
-    class ScriptDefinition : public IAssetDefinition
+    class ScriptDefinition : public AssetDefinition
     {
     public:
         ScriptDefinition(ProjectDefinition* pd, json js);

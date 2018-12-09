@@ -1,56 +1,64 @@
-#include "ICache.h"
+#include "Cache.h"
+
+#include "../Project/Project.h"
+#include "../Project/ProjectDirectory.h"
 #include "../Project/ProjectRuntime.h"
+#include "SharedAssetInstance.h"
+#include "AssetDefinition.h"
 
 namespace Dream
 {
-    ICache::ICache
+    Cache::Cache
     (ProjectRuntime* parent)
-        : DreamObject ("ICache"),
+        : DreamObject ("Cache"),
           mProjectRuntime(parent)
     {
 
     }
 
-    ICache::~ICache
+    Cache::~Cache
     ()
     {
        clear();
     }
 
     std::string
-    ICache::getAbsolutePath
-    (IAssetDefinition* def)
+    Cache::getAbsolutePath
+    (AssetDefinition* def)
     {
-        return mProjectRuntime->getAssetAbsolutePath(def->getUuid());
+        return mProjectRuntime
+                ->getProject()
+                ->getDirectory()
+                ->getAssetAbsolutePath(def);
     }
 
     void
-    ICache::clear
+    Cache::clear
     ()
     {
-        for (IAssetInstance* instance : mInstances)
+        for (auto* instance : mInstances)
         {
             delete instance;
         }
         mInstances.clear();
     }
 
-    IAssetDefinition*
-    ICache::getAssetDefinitionByUuid
+    AssetDefinition*
+    Cache::getAssetDefinitionByUuid
     (string uuid)
     {
         return mProjectRuntime->getAssetDefinitionByUuid(uuid);
     }
 
-    IAssetInstance*
-    ICache::getInstance
-    (IAssetDefinition* def)
+    SharedAssetInstance*
+    Cache::getInstance
+    (AssetDefinition* def)
     {
         if (def == nullptr)
         {
             return nullptr;
         }
-       for (auto instance : mInstances)
+       for (auto* instance : mInstances)
        {
            if (instance->getUuid().compare(def->getUuid()) == 0)
            {
@@ -60,8 +68,8 @@ namespace Dream
        return loadInstance(def);
     }
 
-    IAssetInstance*
-    ICache::getInstance
+    SharedAssetInstance*
+    Cache::getInstance
     (std::string id)
     {
        if (id.empty())
@@ -78,8 +86,8 @@ namespace Dream
        return loadInstance(getAssetDefinitionByUuid(id));
     }
 
-    vector<IAssetInstance*>
-    ICache::getInstanceVector
+    vector<SharedAssetInstance*>&
+    Cache::getInstanceVector
     ()
     {
        return mInstances;

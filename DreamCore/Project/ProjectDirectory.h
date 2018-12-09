@@ -1,39 +1,52 @@
 #pragma once
 
 #include "../Common/DreamObject.h"
+#include "../Utilities/ArgumentParser.h"
+#include "../Utilities/File.h"
 
 namespace Dream
 {
     class Project;
-    class IAssetDefinition;
+    class AssetDefinition;
 
     class ProjectDirectory : public DreamObject
     {
     public:
+        ProjectDirectory();
         ProjectDirectory(Project* project);
         ~ProjectDirectory() override;
 
         bool baseDirectoryExists();
         bool createBaseDirectory();
-        bool createAssetDirectory(string, AssetType);
-        bool createAllAssetDirectories(string);
+        bool createAllAssetDirectories();
 
-        vector<char> readAssetData(IAssetDefinition*, string format = "");
-        bool writeAssetData(IAssetDefinition*, vector<char>, string format = "");
+        vector<char> readAssetData(AssetDefinition*, string format = "");
+        bool writeAssetData(AssetDefinition*, vector<char>, string format = "");
+
         string getAssetAbsolutePath(string);
-        string getAssetAbsolutePath(IAssetDefinition*);
-        string getAssetAbsolutePath(IAssetDefinition*, string format);
-        string getAssetDirectoryPath(IAssetDefinition*);
-        bool removeAssetDirectory(IAssetDefinition*);
-        bool saveProject();
+        string getAssetAbsolutePath(AssetDefinition*);
+        string getAssetAbsolutePath(AssetDefinition*, string format);
+        string getAssetDirectoryPath(AssetDefinition*);
+        string getAssetTypeDirectory(AssetType type);
+
+        bool removeAssetDirectory(AssetDefinition*);
+
         string getProjectFilePath();
         bool assetTypeDirectoryExists(AssetType type);
-        string getAssetTypeDirectory(AssetType type);
+
         bool createAssetTypeDirectory(AssetType type);
         void cleanupAssetsDirectory();
 
+        Project* newProject(string projectDir);
+        Project* openFromFileReader(string directory, File &fileReader);
+        Project* openFromArgumentParser(ArgumentParser &parser);
+        Project* openFromDirectory(string directory);
+        bool     saveProject();
+        void     closeProject();
+
     private:
         Project* mProject;
+        string mPath;
         const static size_t BufferSize;
     };
 }

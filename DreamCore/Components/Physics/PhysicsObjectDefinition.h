@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../IAssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace Dream
 {
@@ -42,7 +42,7 @@ namespace Dream
     };
 
     class PhysicsObjectDefinition
-            : public IAssetDefinition
+            : public AssetDefinition
     {
     public:
         PhysicsObjectDefinition(ProjectDefinition* pd, json js);

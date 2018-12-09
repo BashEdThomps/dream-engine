@@ -21,7 +21,7 @@ namespace Dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
 
     }

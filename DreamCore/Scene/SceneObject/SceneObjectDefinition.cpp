@@ -21,7 +21,7 @@
 #include "../SceneDefinition.h"
 #include "../../Project/ProjectDefinition.h"
 
-#include "../../Components/IAssetDefinition.h"
+#include "../../Components/AssetDefinition.h"
 #include "../../Components/Transform.h"
 #include "../../Utilities/Uuid.h"
 
@@ -37,7 +37,7 @@ namespace Dream
             json jsonData,
             bool randomUuid
             )
-        : IDefinition(jsonData),
+        : Definition(jsonData),
           mParentSceneObject(parent),
           mSceneDefinition(sceneDefinition)
     {

@@ -31,9 +31,7 @@
 #endif
 
 #include <iostream>
-//#include <assimp/types.h>
-//#include <assimp/material.h>
-#include "../../IAssetInstance.h"
+#include "../../SharedAssetInstance.h"
 
 using namespace std;
 
@@ -43,7 +41,7 @@ namespace Dream
     class TextureDefinition;
     class SceneObjectRuntime;
 
-    class TextureInstance : public IAssetInstance
+    class TextureInstance : public SharedAssetInstance
     {
     private:
         GLuint mGLID = 0;
@@ -53,12 +51,12 @@ namespace Dream
         int mChannels = 0;
         unsigned char* mImage = nullptr;
     public:
-        TextureInstance(TextureDefinition* def);
+        TextureInstance(TextureDefinition* def, ProjectRuntime*);
         ~TextureInstance() override;
 
         bool operator==(const TextureInstance& other);
 
-        bool load(string) override;
+        bool load() override;
 
         GLuint getGLID() const;
         void setGLID(const GLuint& gLID);

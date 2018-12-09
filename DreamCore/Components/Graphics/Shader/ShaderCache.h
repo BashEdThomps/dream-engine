@@ -19,7 +19,7 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
-#include "../../ICache.h"
+#include "../../Cache.h"
 #include "../Light/LightInstance.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ namespace Dream
     class Camera;
     class ShaderInstance;
 
-    class ShaderCache : public ICache
+    class ShaderCache : public Cache
     {
     public:
         ShaderCache(ProjectRuntime* rt);
@@ -40,8 +40,8 @@ namespace Dream
         void drawGeometryPass(Camera*, mat4);
         void drawShadowPass(mat4, ShaderInstance*);
 
-        // ICache interface
+        // Cache interface
     protected:
-        IAssetInstance* loadInstance(IAssetDefinition* def) override;
+        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
     };
 }

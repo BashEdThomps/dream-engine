@@ -39,7 +39,7 @@ namespace Dream
 {
 
     NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle)
-        : IComponent (),
+        : Component (),
           mWindowComponentHandle(windowComponentHandle)
     {
         setLogClassName("NanoVGComponent");
@@ -65,6 +65,12 @@ namespace Dream
 
     void NanoVGComponent::updateComponent(SceneRuntime*)
     {
+        auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
 
     }
 
@@ -75,7 +81,7 @@ namespace Dream
         auto log = getLog();
         log->info( "UpdateNanoVG Called" );
         auto scriptObj = sr->getNanoVGScript();
-        if (sr)
+        if (scriptObj)
         {
             BeginFrame();
             scriptObj->executeOnNanoVG(this,sr);

@@ -25,7 +25,7 @@ namespace Dream
 {
     ModelCache::ModelCache
     (ProjectRuntime* rt, ShaderCache* shaderCache, MaterialCache* matCache)
-        :ICache(rt),
+        : Cache(rt),
           mShaderCacheHandle(shaderCache),
           mMaterialCacheHandle(matCache)
     {
@@ -41,14 +41,14 @@ namespace Dream
         log->debug("Destructing" );
     }
 
-    IAssetInstance*
+    SharedAssetInstance*
     ModelCache::loadInstance
-    (IAssetDefinition* def)
+    (AssetDefinition* def)
     {
         auto log = getLog();
         log->debug("Loading {} from disk",  def->getUuid());
-        auto model = new ModelInstance(mShaderCacheHandle, mMaterialCacheHandle,def);
-        model->load(mProjectRuntime->getProjectPath());
+        auto model = new ModelInstance(mShaderCacheHandle, mMaterialCacheHandle,def,mProjectRuntime);
+        model->load();
         mInstances.push_back(model);
         return model;
     }

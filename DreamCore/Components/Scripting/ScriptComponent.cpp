@@ -16,6 +16,7 @@
 
 #include "ScriptComponent.h"
 #include "ScriptInstance.h"
+#include "../../Project/Project.h"
 #include "../Event.h"
 #include "../Transform.h"
 #include "../Time.h"
@@ -74,10 +75,9 @@ namespace Dream
 {
     ScriptComponent::ScriptComponent
     (ProjectRuntime* runtime, ScriptCache* cache)
-        : IComponent(),
+        : Component(),
           mScriptCache(cache),
-          mProjectRuntime(runtime),
-          mProjectDirectory(runtime->getProject())
+          mProjectRuntime(runtime)
     {
         setLogClassName("LuaComponent");
         auto log = getLog();
@@ -87,9 +87,13 @@ namespace Dream
     ScriptComponent::~ScriptComponent
     ()
     {
-        auto log = getLog();
-        log->trace( "Destroying Object" );
-        lua_close(State);
+        getLog()->trace("Destroying Object");
+
+        if (State != nullptr)
+        {
+            lua_close(State);
+            State = nullptr;
+        }
     }
 
     bool
@@ -125,8 +129,14 @@ namespace Dream
     ScriptComponent::updateComponent
     (SceneRuntime*)
     {
-        beginUpdate();
         auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
+        beginUpdate();
         log->debug( "Update Called" );
 
         for (auto inst : mScriptCache->getInstanceVector())
@@ -152,7 +162,6 @@ namespace Dream
         stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
             "getTime",&ProjectRuntime::getTime,
             "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid,
-            "getAssetPath",&ProjectRuntime::getAssetAbsolutePath,
             "getSceneObject",&ProjectRuntime::getSceneObjectRuntimeByUuid,
             "windowWidth",&ProjectRuntime::getWindowWidth,
             "windowHeight",&ProjectRuntime::getWindowHeight
@@ -174,7 +183,7 @@ namespace Dream
                     (&ProjectDirectory::getAssetAbsolutePath)
         );
 
-        stateView["Dir"] = &mProjectDirectory;
+        stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
     }
 
     void
@@ -890,11 +899,11 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeIDefinition
+    ScriptComponent::exposeDefinition
     ()
     {
         sol::state_view stateView(State);
-        stateView.new_usertype<IDefinition>("IDefinition");
+        stateView.new_usertype<Definition>("Definition");
 
     }
 
@@ -910,7 +919,7 @@ namespace Dream
     ScriptComponent::exposeAPI
     ()
     {
-        exposeIDefinition();
+        exposeDefinition();
 
         exposeProjectRuntime();
         exposeProjectDirectory();

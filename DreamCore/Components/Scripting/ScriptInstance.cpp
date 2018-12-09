@@ -28,8 +28,8 @@
 namespace Dream
 {
     ScriptInstance::ScriptInstance
-    (ScriptDefinition* definition, SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform),
+    (ScriptDefinition* definition, ProjectRuntime* rt)
+        : SharedAssetInstance(definition,rt),
           mSource(""),
           mError(false)
     {
@@ -48,12 +48,12 @@ namespace Dream
 
     bool
     ScriptInstance::load
-    (string projectPath)
+    ()
     {
         auto log = getLog();
-        mAbsolutePath = projectPath + mDefinition->getAssetPath();
-        log->debug( "Script at {}" , mAbsolutePath );
-        return mAbsolutePath.size() != 0;
+        auto path = getAssetFilePath();
+        log->debug( "Script at {}" , path);
+        return true;
     }
 
     void

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "../IComponent.h"
+#include "../Component.h"
 extern "C" {
     #include "../../deps/nanovg/nanovg.h"
 }
@@ -29,7 +29,7 @@ namespace Dream
     class IWindowComponent;
     class SceneRuntime;
 
-    class NanoVGComponent : public IComponent
+    class NanoVGComponent : public Component
     {
     public:
         NanoVGComponent(IWindowComponent* windowComponentHandle);

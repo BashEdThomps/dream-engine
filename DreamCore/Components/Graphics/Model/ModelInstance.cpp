@@ -47,8 +47,10 @@ namespace Dream
     (
         ShaderCache* shaderCache,
         MaterialCache* texCache,
-        IAssetDefinition* definition)
-        : IAssetInstance(definition,nullptr),
+        AssetDefinition* definition,
+        ProjectRuntime* runtime
+    )
+        : SharedAssetInstance(definition,runtime),
           mMaterialCache(texCache),
           mShaderCache(shaderCache)
     {
@@ -73,10 +75,10 @@ namespace Dream
 
     bool
     ModelInstance::load
-    (string projectPath)
+    ()
     {
         auto log = getLog();
-        string path = projectPath + mDefinition->getAssetPath();
+        string path = getAssetFilePath();
         log->info( "Loading Model - {}" , path);
 
         mMaterialNames.clear();
@@ -97,7 +99,7 @@ namespace Dream
             return false;
         }
 
-        mDirectory = path.substr(0, path.find_last_of('/'));
+        mDirectory = getAssetDirectoryPath(); //path.substr(0, path.find_last_of('/'));
         mBoundingBox.setToLimits();
         processNode(scene->mRootNode, scene);
         mLoaded = true;
@@ -311,7 +313,10 @@ namespace Dream
        return mMaterialNames;
     }
 
-    vector<ModelMesh*> ModelInstance::getMeshes() const
+    vector<ModelMesh*>
+    ModelInstance::getMeshes
+    ()
+    const
     {
         return mMeshes;
     }

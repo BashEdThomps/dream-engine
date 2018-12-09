@@ -23,7 +23,7 @@ namespace Dream
 {
     ModelDefinition::ModelDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
         auto log = getLog();
         log->trace("Constructing {}", getNameAndUuidString());

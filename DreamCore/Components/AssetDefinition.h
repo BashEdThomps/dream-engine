@@ -16,7 +16,7 @@
 */
 #pragma once
 
-#include "../Common/IDefinition.h"
+#include "../Common/Definition.h"
 #include "Transform.h"
 
 using std::vector;
@@ -25,14 +25,14 @@ namespace Dream
 {
     class ProjectDefinition;
 
-    class IAssetDefinition : public IDefinition
+    class AssetDefinition : public Definition
     {
 
     public:
-        IAssetDefinition(ProjectDefinition*, json);
+        AssetDefinition(ProjectDefinition*, json);
         AssetType getAssetType();
 
-        virtual ~IAssetDefinition();
+        virtual ~AssetDefinition();
 
         ProjectDefinition* getProject();
         void showStatus();

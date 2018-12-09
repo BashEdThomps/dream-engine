@@ -12,17 +12,16 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #pragma once
 
-#include "../IAssetInstance.h"
-
-#include <glm/glm.hpp>
 #include <string>
 #include <map>
 #include <vector>
+
+#include <glm/glm.hpp>
 #include <btBulletDynamicsCommon.h>
+
+#include "../DiscreteAssetInstance.h"
 #include "../Transform.h"
 
 using namespace std;
@@ -36,8 +35,9 @@ namespace Dream
     class PhysicsComponent;
     class ModelCache;
     class ModelInstance;
+    class SceneObjectRuntime;
 
-    class PhysicsObjectInstance : public IAssetInstance
+    class PhysicsObjectInstance : public DiscreteAssetInstance
     {
     private:
         btCollisionShape *mCollisionShape;
@@ -47,16 +47,18 @@ namespace Dream
         bool mInPhysicsWorld;
         PhysicsComponent* mPhysicsComponentHandle;
         ModelCache* mModelCache;
+
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
+        btCollisionShape* createTriangleMeshShape(ModelInstance*);
+
     public:
         PhysicsObjectInstance(
-            PhysicsObjectDefinition*,
-            PhysicsComponent*,
-            ModelCache*,
-            SceneObjectRuntime*
+            PhysicsObjectDefinition*, PhysicsComponent*,
+            ModelCache*, SceneObjectRuntime*
         );
         ~PhysicsObjectInstance() override;
-        bool load(string) override;
-        btCollisionShape* createCollisionShape(PhysicsObjectDefinition*, string projectPath);
+        bool load() override;
+        btCollisionShape* createCollisionShape(PhysicsObjectDefinition*);
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
         void getWorldTransform(btTransform&);
@@ -95,9 +97,5 @@ namespace Dream
         void  setCcdSweptSphereRadius(float);
         float getCcdSweptSphereRadius();
         void setCenterOfMassTransform(const mat4& tx);
-
-    protected:
-        PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
-        btCollisionShape* createTriangleMeshShape(ModelInstance*);
-    }; // End of PhysicsObjectInstance
-} // End of Dream
+    };
+}

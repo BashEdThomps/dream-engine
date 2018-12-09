@@ -21,7 +21,7 @@
 
 #include <LinearMath/btVector3.h>
 
-#include "../IComponent.h"
+#include "../Component.h"
 #include <glm/matrix.hpp>
 
 using glm::mat4;
@@ -46,7 +46,7 @@ namespace Dream
     class SceneObjectRuntime;
     class Camera;
 
-    class PhysicsComponent : public IComponent
+    class PhysicsComponent : public Component
     {
     protected:
         PhysicsDebugDrawer* mDebugDrawer;

@@ -23,8 +23,8 @@
 
 namespace Dream
 {
-    MaterialInstance::MaterialInstance(MaterialDefinition* def, SceneObjectRuntime* rt)
-        : IAssetInstance(def, rt),
+    MaterialInstance::MaterialInstance(MaterialDefinition* def, ProjectRuntime* rt)
+        : SharedAssetInstance(def, rt),
           mDiffuseTexture(nullptr),
           mSpecularTexture(nullptr),
           mNormalTexture(nullptr),
@@ -163,7 +163,7 @@ namespace Dream
 
     bool
     MaterialInstance::load
-    (string)
+    ()
     {
         auto matDef = dynamic_cast<MaterialDefinition*>(mDefinition);
         // Parameters

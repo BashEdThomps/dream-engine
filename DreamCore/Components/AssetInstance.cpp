@@ -1,4 +1,6 @@
 /*
+* AssetInstance
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -13,36 +15,59 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "AssetInstance.h"
 
-#include "ParticleEmitterInstance.h"
-#include "ParticleEmitterDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "AssetDefinition.h"
+#include "../Utilities/Uuid.h"
 
 namespace Dream
 {
-    ParticleEmitterInstance::ParticleEmitterInstance
-    (
-        ParticleEmitterDefinition* definition,
-        SceneObjectRuntime* transform
-    ) : DiscreteAssetInstance(definition,transform),
-        mColor(glm::vec3(0.0f,0.0f,0.0f)),
-        mIntensity(0.0f)
+    AssetInstance::AssetInstance
+    (AssetDefinition* definition)
+      : DreamObject("AssetInstance"),
+        mLoaded(false),
+        mDefinition(definition)
     {
-        setLogClassName("ParticleEmitterInstance");
+
     }
 
-    ParticleEmitterInstance::~ParticleEmitterInstance
+    AssetInstance::~AssetInstance
     ()
     {
-        getLog()->trace("Destroying Object" );
-        return;
+    }
+
+    string
+    AssetInstance::getName
+    ()
+    {
+        return mDefinition->getName();
+    }
+
+    string
+    AssetInstance::getUuid
+    ()
+    {
+        return mDefinition->getUuid();
+    }
+
+    string
+    AssetInstance::getNameAndUuidString
+    ()
+    {
+        return "["+getName()+" : "+getUuid()+"]";
     }
 
     bool
-    ParticleEmitterInstance::load
+    AssetInstance::getLoadedFlag
     ()
     {
-        mLoaded = true;
         return mLoaded;
+    }
+
+    void
+    AssetInstance::setLoadedFlag
+    (bool loaded)
+    {
+        mLoaded = loaded;
     }
 }

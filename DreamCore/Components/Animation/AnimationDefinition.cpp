@@ -22,7 +22,7 @@ namespace Dream
 {
     AnimationDefinition::AnimationDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
         if (js[Constants::ASSET_ATTR_KEYFRAMES].is_null())
         {

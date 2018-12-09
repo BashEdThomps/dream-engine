@@ -157,7 +157,7 @@ namespace DreamTool
     ()
     {
         auto log = getLog();
-        auto projDef = mState->project->getProjectDefinition();
+        auto projDef = mState->project->getDefinition();
         if (!projDef)
         {
             log->error("Import failed. No Project Definition");
@@ -171,8 +171,6 @@ namespace DreamTool
             log->error("Model Parameters are not set");
             return;
         }
-
-        ProjectDirectory projDir(mState->project);
 
         for (int idx = 0; idx<mModelsFound.size();idx++)
         {
@@ -212,8 +210,8 @@ namespace DreamTool
                 if (objFile.exists() && mtlFile.exists())
                 {
                     log->error("Copying asset data for {}", modelDef->getNameAndUuidString());
-                    projDir.writeAssetData(modelDef,objFile.readBinary());
-                    projDir.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
+                    mState->projectDirectory.writeAssetData(modelDef,objFile.readBinary());
+                    mState->projectDirectory.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
                 }
             }
         }

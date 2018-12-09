@@ -20,7 +20,7 @@
 #include "ProjectDefinition.h"
 #include "Project.h"
 #include "../Scene/SceneDefinition.h"
-#include "../Components/IAssetDefinition.h"
+#include "../Components/AssetDefinition.h"
 #include "../Components/Audio/AudioDefinition.h"
 #include "../Components/Animation/AnimationDefinition.h"
 #include "../Components/Graphics/Font/FontDefinition.h"
@@ -38,7 +38,7 @@
 namespace Dream
 {
     ProjectDefinition::ProjectDefinition(json data)
-        : IDefinition(data)
+        : Definition(data)
 
     {
         setLogClassName("ProjectDefinition");
@@ -170,7 +170,7 @@ namespace Dream
     }
 
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
@@ -221,7 +221,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (json assetDefinitionJs)
     {
-        IAssetDefinition* newDef = createAssetDefinitionInstance(assetDefinitionJs);
+        AssetDefinition* newDef = createAssetDefinitionInstance(assetDefinitionJs);
         if (newDef != nullptr)
         {
             mAssetDefinitions.push_back(newDef);
@@ -230,7 +230,7 @@ namespace Dream
 
     void
     ProjectDefinition::removeAssetDefinition
-    (IAssetDefinition* assetDefinition)
+    (AssetDefinition* assetDefinition)
     {
         auto log = getLog();
         log->debug(
@@ -263,7 +263,7 @@ namespace Dream
         return mAssetDefinitions.size();
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectDefinition::getAssetDefinitionByUuid
     (string uuid)
     {
@@ -277,7 +277,7 @@ namespace Dream
         return nullptr;
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectDefinition::getAssetDefinitionByName
     (string name)
     {
@@ -377,11 +377,11 @@ namespace Dream
         }
     }
 
-    vector<IAssetDefinition*>
+    vector<AssetDefinition*>
     ProjectDefinition::getAssetDefinitionsVector
     ()
     {
-        vector<IAssetDefinition*> definitionsList;
+        vector<AssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             definitionsList.push_back((*it));
@@ -389,11 +389,11 @@ namespace Dream
         return definitionsList;
     }
 
-    vector<IAssetDefinition*>
+    vector<AssetDefinition*>
     ProjectDefinition::getAssetDefinitionsVector
     (AssetType type)
     {
-        vector<IAssetDefinition*> definitionsList;
+        vector<AssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             auto thisAssetType = Constants::getAssetTypeEnumFromString((*it)->getType());
@@ -421,7 +421,7 @@ namespace Dream
         return sd;
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
@@ -437,7 +437,7 @@ namespace Dream
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-        IAssetDefinition* ad = createAssetDefinitionInstance(assetDefinitionJson);
+        AssetDefinition* ad = createAssetDefinitionInstance(assetDefinitionJson);
         mAssetDefinitions.push_back(ad);
 
         return ad;
@@ -458,7 +458,7 @@ namespace Dream
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
-        for (IAssetDefinition* ad : getAssetDefinitionsVector())
+        for (AssetDefinition* ad : getAssetDefinitionsVector())
         {
             mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->getJson());
         }
@@ -472,12 +472,12 @@ namespace Dream
         return mJson;
     }
 
-    map<AssetType, vector<IAssetDefinition*>>
+    map<AssetType, vector<AssetDefinition*>>
     ProjectDefinition::getAssetDefinitionsMap
     ()
     {
-        vector<IAssetDefinition*> ads = getAssetDefinitionsVector();
-        map<AssetType, vector<IAssetDefinition*>> handlesMap;
+        vector<AssetDefinition*> ads = getAssetDefinitionsVector();
+        map<AssetType, vector<AssetDefinition*>> handlesMap;
 
         auto begins = begin(ads);
         auto ends = end(ads);
@@ -496,9 +496,9 @@ namespace Dream
             if (typeVector == endMap)
             {
                 // Create it
-                vector<IAssetDefinition*> typeVector;
+                vector<AssetDefinition*> typeVector;
                 handlesMap.insert(
-                            std::pair<AssetType, vector<IAssetDefinition*>>
+                            std::pair<AssetType, vector<AssetDefinition*>>
                             (currentType, typeVector)
                             );
             }
@@ -593,9 +593,9 @@ namespace Dream
 
     long
     ProjectDefinition::getAssetDefinitionIndex
-    (AssetType type, IAssetDefinition* sDef)
+    (AssetType type, AssetDefinition* sDef)
     {
-        vector<IAssetDefinition*> defs = getAssetDefinitionsVector(type);
+        vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         auto it = std::find(defs.begin(), defs.end(), sDef);
         if (it == defs.end())
         {
@@ -611,7 +611,7 @@ namespace Dream
     ProjectDefinition::getAssetDefinitionIndex
     (AssetType type, string uuid)
     {
-        vector<IAssetDefinition*> defs = getAssetDefinitionsVector(type);
+        vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         for (int i = 0; i < defs.size(); i++)
         {
             if (defs.at(i)->getUuid().compare(uuid) == 0) return i;
@@ -619,7 +619,7 @@ namespace Dream
         return -1;
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     ProjectDefinition::getAssetDefinitionAtIndex
     (AssetType type, int idx)
     {
@@ -663,5 +663,30 @@ namespace Dream
                 groups.push_back(group);
             }
         }
+    }
+
+    ProjectDefinition*
+    ProjectDefinition::createNewProjectDefinition
+    (string name)
+    {
+        json j = json::object();
+
+        j[Constants::NAME] = name;
+        j[Constants::UUID] = Uuid::generateUuid();
+        j[Constants::PROJECT_AUTHOR] = "";
+        j[Constants::PROJECT_DESCRIPTION] = "";
+        j[Constants::PROJECT_STARTUP_SCENE] = "";
+        j[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
+        j[Constants::PROJECT_CAPTURE_MOUSE] = false;
+        j[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
+
+        j[Constants::PROJECT_WINDOW_SIZE] = json::object();
+        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;
+        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = Constants::PROJECT_DEFAULT_WINDOW_HEIGHT;
+
+        j[Constants::PROJECT_ASSET_ARRAY] = json::array();
+        j[Constants::PROJECT_SCENE_ARRAY] = json::array();
+
+        return new ProjectDefinition(j);
     }
 }

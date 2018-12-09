@@ -67,6 +67,7 @@ namespace DreamTool
         TemplatesModel templatesModel;
         PreferencesModel preferencesModel;
         ModelDefinitionBatchImporter modelDefinitionBatchImporter;
+        ProjectDirectory projectDirectory;
 
         int argc;
         char** argv;
@@ -75,14 +76,18 @@ namespace DreamTool
         double CurrentTime = glfwGetTime();
         double Frames = 0;
         InputTarget inputTarget=SCENE;
+        string lastDirectory;
 
         DTState(int _argc, char** _argv);
         ~DTState();
+
         void init();
         void run();
         void FPS();
         void handleEditorInput(SceneRuntime*);
         void handleSceneInput(SceneRuntime*);
-        string lastDirectory;
+        void closeProject();
+        bool openProject(string);
+        bool newProject(string dir);
     };
 }

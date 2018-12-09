@@ -1,4 +1,5 @@
 #include "LuaDebugWindow.h"
+#include "../../DTState.h"
 
 namespace DreamTool
 {
@@ -20,33 +21,36 @@ namespace DreamTool
     LuaDebugWindow::draw
     ()
     {
-        ImGui::Begin("Lua Debug Output",&mVisible);
-
-        if(ImGui::Button("Clear"))
+        if (mState->project)
         {
-            mLogBuffer.clear();
+            ImGui::Begin("Lua Debug Output",&mVisible);
+
+            if(ImGui::Button("Clear"))
+            {
+                mLogBuffer.clear();
+            }
+
+            ImGui::SameLine();
+
+            static bool scrollToBottom = false;
+            ImGui::Checkbox("AutoScroll",&scrollToBottom);
+
+            ImGui::Separator();
+            ImGui::BeginChild("scrolling");
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,1));
+
+            ImGui::TextUnformatted(mLogBuffer.begin());
+
+            if (scrollToBottom)
+            {
+                ImGui::SetScrollHere(1.0f);
+            }
+
+            ImGui::PopStyleVar();
+            ImGui::EndChild();
+
+            ImGui::End();
         }
-
-        ImGui::SameLine();
-
-        static bool scrollToBottom = false;
-        ImGui::Checkbox("AutoScroll",&scrollToBottom);
-
-        ImGui::Separator();
-        ImGui::BeginChild("scrolling");
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,1));
-
-        ImGui::TextUnformatted(mLogBuffer.begin());
-
-        if (scrollToBottom)
-        {
-            ImGui::SetScrollHere(1.0f);
-        }
-
-        ImGui::PopStyleVar();
-        ImGui::EndChild();
-
-        ImGui::End();
     }
 
     void

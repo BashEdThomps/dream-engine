@@ -1,6 +1,4 @@
 /*
- * ScriptCache.cpp
- *
  * Created: 04/04/2017 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
@@ -26,7 +24,7 @@ namespace Dream
 {
     ScriptCache::ScriptCache
     (ProjectRuntime* runtime)
-        : ICache (runtime)
+        : Cache (runtime)
     {
         setLogClassName("ScriptCache");
         auto log = getLog();
@@ -41,19 +39,19 @@ namespace Dream
         log->trace("Destructing");
     }
 
-    IAssetInstance*
+    SharedAssetInstance*
     ScriptCache::loadInstance
-    (IAssetDefinition* def)
+    (AssetDefinition* def)
     {
         auto scriptDef = dynamic_cast<ScriptDefinition*>(def);
-        for (IAssetInstance* inst: mInstances)
+        for (auto* inst: mInstances)
         {
             if (inst->getUuid().compare(scriptDef->getUuid()) == 0)
             {
                 return inst;
             }
         }
-        auto newScript = new ScriptInstance(scriptDef,nullptr);
+        auto newScript = new ScriptInstance(scriptDef,mProjectRuntime);
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());

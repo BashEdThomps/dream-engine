@@ -32,7 +32,7 @@
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterInstance.h"
 #include "../../Components/Physics/PhysicsObjectInstance.h"
 #include "../../Components/Physics/PhysicsComponent.h"
-#include "../../Components/IAssetDefinition.h"
+#include "../../Components/AssetDefinition.h"
 #include "../../Components/Audio/AudioDefinition.h"
 #include "../../Components/Graphics/Font/FontDefinition.h"
 #include "../../Components/Graphics/Light/LightDefinition.h"
@@ -59,7 +59,7 @@ namespace Dream
     SceneObjectRuntime::SceneObjectRuntime(
         SceneObjectDefinition* sd,
         SceneRuntime* sr
-    ):  IRuntime(sd),
+    ):  Runtime(sd),
         mAnimationInstance(nullptr),
         mAudioInstance(nullptr),
         mLightInstance(nullptr),
@@ -252,7 +252,7 @@ namespace Dream
        return mParticleEmitterInstance;
     }
 
-    IAssetInstance*
+    AssetInstance*
     SceneObjectRuntime::getAssetInstance
     (AssetType type)
     {
@@ -465,7 +465,7 @@ namespace Dream
         auto log = getLog();
         for (auto assetPair : mAssetDefinitions)
         {
-            IAssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
+            AssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
             bool result = false;
             if (def == nullptr)
             {
@@ -510,7 +510,7 @@ namespace Dream
         return true;
     }
 
-    IAssetDefinition*
+    AssetDefinition*
     SceneObjectRuntime::getAssetDefinitionByUuid
     (string uuid)
     {
@@ -521,30 +521,13 @@ namespace Dream
             log->error("Project is not found");
             return nullptr;
         }
-        auto assetDefinition = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        auto assetDefinition = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDefinition == nullptr)
         {
             log->error("AssetDefinition not found");
         }
         return assetDefinition;
     }
-
-    string
-    SceneObjectRuntime::getProjectPath
-    ()
-    {
-        auto log = getLog();
-        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
-
-        if (project == nullptr)
-        {
-            log->error("Project is null");
-            return "";
-        }
-
-        return project->getProjectPath();
-    }
-
 
     bool
     SceneObjectRuntime::replaceAssetUuid
@@ -558,7 +541,7 @@ namespace Dream
             log->error("Project is not found");
             return false;
         }
-        auto def = project->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        auto def = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (def == nullptr)
         {
             log->error("AssetDefinition not found");
@@ -599,7 +582,7 @@ namespace Dream
             mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
             this
         );
-        return mPhysicsObjectInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+        return mPhysicsObjectInstance->load();
     }
 
     bool
@@ -610,7 +593,7 @@ namespace Dream
         log->trace( "Creating ParticleEmitter asset instance." );
         removeParticleEmitterInstance();
         mParticleEmitterInstance = new ParticleEmitterInstance(definition,this);
-        return mParticleEmitterInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+        return mParticleEmitterInstance->load();
     }
 
     bool
@@ -621,7 +604,7 @@ namespace Dream
         log->trace( "Creating Animation asset instance." );
         removeAnimationInstance();
         mAnimationInstance = new AnimationInstance(definition,this);
-        return mAnimationInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+        return mAnimationInstance->load();
     }
 
     bool
@@ -632,7 +615,7 @@ namespace Dream
         log->trace( "Creating Path asset instance." );
         removePathInstance();
         mPathInstance = new PathInstance(definition,this);
-        return mPathInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+        return mPathInstance->load();
     }
 
     bool
@@ -646,7 +629,7 @@ namespace Dream
             removeAudioInstance();
             log->trace( "Creating Audio asset instance." );
             mAudioInstance = audioComp->newAudioInstance(definition,this);
-            return mAudioInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+            return mAudioInstance->load();
         }
         else
         {
@@ -713,7 +696,7 @@ namespace Dream
         removeLightInstance();
         log->trace( "Creating Light Asset instance." );
         mLightInstance = new LightInstance(definition,this);
-        return mLightInstance->load(mSceneRuntimeHandle->getProjectRuntime()->getProjectPath());
+        return mLightInstance->load();
     }
 
     bool

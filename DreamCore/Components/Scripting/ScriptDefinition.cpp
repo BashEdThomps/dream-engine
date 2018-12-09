@@ -21,7 +21,7 @@ namespace Dream
 {
     ScriptDefinition::ScriptDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
 
     }

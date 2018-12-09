@@ -30,7 +30,7 @@
 #endif
 
 #include "AudioStatus.h"
-#include "../IComponent.h"
+#include "../Component.h"
 #include <glm/vec3.hpp>
 
 using std::vector;
@@ -41,7 +41,7 @@ namespace Dream
     class AudioDefinition;
     class SceneObjectRuntime;
 
-    class AudioComponent : public IComponent
+    class AudioComponent : public Component
     {
 
     private:

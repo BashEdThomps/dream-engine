@@ -39,10 +39,11 @@
 #include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 
-#include "../../../Common/DreamObject.h"
-#include "../../IAssetInstance.h"
 #include "ShaderUniform.h"
+
+#include "../../SharedAssetInstance.h"
 #include "../Light/LightInstance.h"
+#include "../../../Common/DreamObject.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -55,7 +56,9 @@ namespace Dream
     class MaterialInstance;
     class LightInstance;
     class Camera;
-    class ShaderInstance : public IAssetInstance
+
+    class ShaderInstance
+            : public SharedAssetInstance
     {
     private:
         const static unsigned int MAX_LIGHTS;
@@ -86,12 +89,11 @@ namespace Dream
         GLuint mVertexShader;
         GLuint mFragmentShader;
         bool mRecompile;
-        string mProjectPath;
         string mVertexSource;
         string mFragmentSource;
 
     public:
-        ShaderInstance(ShaderDefinition*);
+        ShaderInstance(ShaderDefinition*, ProjectRuntime*);
         ~ShaderInstance() override;
 
         static GLuint CurrentTexture0;
@@ -104,7 +106,7 @@ namespace Dream
         static GLuint CurrentVBO;
         static void InvalidateState();
 
-        bool load(string) override;
+        bool load() override;
 
         void use();
         void unbind();
@@ -153,6 +155,5 @@ namespace Dream
         bool compileVertex();
         bool compileFragment();
         bool linkProgram();
-    }; // End of ShaderInstance
-
-} // End of Dream
+    };
+}

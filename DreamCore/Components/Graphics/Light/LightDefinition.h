@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 #include <glm/vec3.hpp>
 
 using namespace glm;
@@ -33,7 +33,7 @@ namespace Dream
         LT_SPOTLIGHT
     };
 
-    class LightDefinition : public IAssetDefinition
+    class LightDefinition : public AssetDefinition
     {
     public:
         LightDefinition(ProjectDefinition* pd, json js);

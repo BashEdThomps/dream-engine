@@ -37,7 +37,7 @@ namespace Dream
 {
     AudioComponent::AudioComponent
     ()
-        : IComponent()
+        : Component()
     {
         setLogClassName("AudioComponent");
         auto log = getLog();
@@ -341,6 +341,13 @@ namespace Dream
     AudioComponent::updateComponent
     (SceneRuntime*)
     {
+        auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
         beginUpdate();
         updateInstances();
         updatePlayQueue();

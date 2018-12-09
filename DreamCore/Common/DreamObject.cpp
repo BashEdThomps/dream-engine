@@ -15,11 +15,7 @@
 
 
 #include "DreamObject.h"
-
 #include <iostream>
-
-using std::cerr;
-using std::endl;
 
 namespace Dream
 {
@@ -57,7 +53,7 @@ namespace Dream
             auto log = spdlog::get(_CLASSNAME_);
             if (log == nullptr)
             {
-                log = spdlog::stdout_color_mt(_CLASSNAME_);
+                log = spdlog::stdout_color_st(_CLASSNAME_);
             }
             return log;
         }

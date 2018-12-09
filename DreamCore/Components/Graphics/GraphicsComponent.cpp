@@ -61,7 +61,7 @@ namespace Dream
 {
     GraphicsComponent::GraphicsComponent
     (IWindowComponent* windowComponent)
-        : IComponent(),
+        : Component(),
           mProjectionMatrix(mat4(1.0f)),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -180,8 +180,14 @@ namespace Dream
     GraphicsComponent::updateComponent
     (SceneRuntime* sr)
     {
-        beginUpdate();
         auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
+        beginUpdate();
         log->debug("GraphicsComponrnt: updateComponent() Called" );
         setMeshCullDistance(sr->getMeshCullDistance());
         setMinimumDraw(sr->getMinDrawDistance());
@@ -212,6 +218,12 @@ namespace Dream
     (SceneRuntime* sr)
     {
         auto log = getLog();
+        if (!mEnabled)
+        {
+            log->critical("Component Disabled");
+            return;
+        }
+
         log->debug
         (
            "\n\n"
@@ -445,6 +457,12 @@ namespace Dream
     (SceneRuntime* sr)
     {
         auto log = getLog();
+        if (!mEnabled)
+        {
+            log->critical("Component Disabled");
+            return;
+        }
+
 
         log->debug
         (
@@ -616,6 +634,13 @@ namespace Dream
     (SceneRuntime* sr)
     {
         auto log = getLog();
+
+        if (!mEnabled)
+        {
+            log->critical("Component Disabled");
+            return;
+        }
+
         if (mShadowLight == nullptr || mShadowPassShader == nullptr)
         {
             log->error

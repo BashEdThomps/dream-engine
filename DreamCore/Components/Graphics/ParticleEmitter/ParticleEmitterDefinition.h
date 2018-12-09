@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
-    class ParticleEmitterDefinition : public IAssetDefinition
+    class ParticleEmitterDefinition : public AssetDefinition
     {
     public:
         ParticleEmitterDefinition(ProjectDefinition* pd, json js);

@@ -41,11 +41,10 @@ namespace Dream
 
     bool
     OggAudioInstance::load
-    (string projectPath)
+    ()
     {
         auto log = getLog();
-        string absPath = projectPath+mDefinition->getAssetPath();
-        setAbsolutePath(absPath);
+        auto absPath = getAssetFilePath();
         log->debug("Loading Instance: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian

@@ -22,7 +22,7 @@
 
 #include <glm/vec3.hpp>
 #include "BoundingBox.h"
-#include "../../Common/IRuntime.h"
+#include "../../Common/Runtime.h"
 #include "../../Components/Transform.h"
 
 using std::vector;
@@ -46,7 +46,7 @@ namespace Dream
     class ParticleEmitterInstance;
     class SceneRuntime;
     class SceneObjectDefinition;
-    class IAssetDefinition;
+    class AssetDefinition;
     class PathDefinition;
     class AnimationDefinition;
     class AudioDefinition;
@@ -55,9 +55,9 @@ namespace Dream
     class PhysicsObjectDefinition;
     class ScriptDefinition;
     class ParticleEmitterDefinition;
-    class IAssetInstance;
+    class AssetInstance;
 
-    class SceneObjectRuntime : public IRuntime
+    class SceneObjectRuntime : public Runtime
     {
     public:
         SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr);
@@ -86,7 +86,7 @@ namespace Dream
         PhysicsObjectInstance* getPhysicsObjectInstance();
         LightInstance* getLightInstance();
         ParticleEmitterInstance* getParticleEmitterInstance();
-        IAssetInstance* getAssetInstance(AssetType);
+        AssetInstance* getAssetInstance(AssetType);
 
         bool hasAnimationInstance();
         bool hasPathInstance();
@@ -144,8 +144,7 @@ namespace Dream
         void removeParticleEmitterInstance();
 
         bool replaceAssetUuid(AssetType type, string uuid);
-        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
-        string getProjectPath();
+        AssetDefinition* getAssetDefinitionByUuid(string uuid);
         void setAssetDefinitionsMap(map<AssetType,string> loadQueue);
         map<AssetType, string> getAssetDefinitionsMap();
         bool getAlwaysDraw() const;

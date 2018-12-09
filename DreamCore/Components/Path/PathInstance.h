@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "PathDefinition.h"
-#include "../IAssetInstance.h"
+#include "../DiscreteAssetInstance.h"
 
 using namespace tinyspline;
 using namespace std;
@@ -27,16 +27,13 @@ using namespace nlohmann;
 
 namespace Dream
 {
-    class PathInstance : public IAssetInstance
+    class PathInstance : public DiscreteAssetInstance
     {
 
     public:
-        PathInstance(
-            PathDefinition*,
-            SceneObjectRuntime*
-        );
+        PathInstance(PathDefinition*,SceneObjectRuntime*);
         ~PathInstance() override;
-        bool load(string) override;
+        bool load() override;
 
         double getUStep() const;
         void setUStep(double uStep);
@@ -67,7 +64,5 @@ namespace Dream
         vector<vec3> mSplinePoints;
         vector<pair<vec3,vec3>> mSplineDerivatives;
         vector<quat> mSplineTangents;
-
-    }; // End of PathInstance
-
-} // End of Dream
+    };
+}

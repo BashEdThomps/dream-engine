@@ -16,15 +16,16 @@
 
 #pragma once
 
-#include "../../IAssetInstance.h"
 #include <glm/glm.hpp>
 
-using glm::vec3;
+#include "../../DiscreteAssetInstance.h"
+
+using namespace glm;
 
 namespace Dream
 {
     class ParticleEmitterDefinition;
-    class ParticleEmitterInstance : public IAssetInstance
+    class ParticleEmitterInstance : public DiscreteAssetInstance
     {
         vec3 mColor;
         float mIntensity;
@@ -36,7 +37,7 @@ namespace Dream
         );
         ~ParticleEmitterInstance();
 
-        bool load(string);
+        bool load();
 
         vec3 getColor();
         float getIntensity();

@@ -22,7 +22,7 @@
 #include <vector>
 
 #include <glm/matrix.hpp>
-#include "../IComponent.h"
+#include "../Component.h"
 
 using namespace std;
 using namespace glm;
@@ -45,7 +45,7 @@ namespace Dream
     class ShaderCache;
     class ShaderInstance;
 
-    class GraphicsComponent : public IComponent
+    class GraphicsComponent : public Component
     {
     private:
         mat4 mProjectionMatrix;

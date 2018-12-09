@@ -1,6 +1,4 @@
 /*
- * ScriptCache.h
- *
  * Created: 04/04/2017 2017 by Ashley
  *
  * Copyright 2017 Octronic. All rights reserved.
@@ -17,16 +15,16 @@
  */
 #pragma once
 
-#include "../ICache.h"
+#include "../Cache.h"
 
 namespace Dream
 {
-    class ScriptCache : public ICache
+    class ScriptCache : public Cache
     {
     public:
         ScriptCache(ProjectRuntime* runtime);
         ~ScriptCache() override;
     protected:
-        IAssetInstance* loadInstance(IAssetDefinition* def) override;
+        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
     };
 }

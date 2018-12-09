@@ -34,18 +34,18 @@
 #include <map>
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
-#include "../../../Scene/SceneObject/BoundingBox.h"
-#include "../../IAssetInstance.h"
 #include <glm/matrix.hpp>
+
+#include "../../SharedAssetInstance.h"
+#include "../../../Scene/SceneObject/BoundingBox.h"
 
 
 struct aiScene;
 struct aiMaterial;
 struct aiNode;
 struct aiMesh;
-using nlohmann::json;
-using glm::mat4;
-using Assimp::Importer;
+using namespace glm;
+using namespace Assimp;
 
 
 namespace Dream
@@ -58,26 +58,31 @@ namespace Dream
     struct Vertex;
     class Texture;
     class MaterialInstance;
+    class SceneObjectRuntime;
 
-    class ModelInstance : public IAssetInstance
+    class ModelInstance
+        : public SharedAssetInstance
     {
     public:
         ModelInstance(
             ShaderCache*,
             MaterialCache*,
-            IAssetDefinition*
+            AssetDefinition*,
+            ProjectRuntime*
         );
 
         ~ModelInstance() override;
-        bool load(string) override;
+        bool load() override;
+
         BoundingBox& getBoundingBox();
+
         void setModelMatrix(mat4);
         mat4 getModelMatrix();
 
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
-        vector<string> getMaterialNames();
 
+        vector<string> getMaterialNames();
         vector<ModelMesh*> getMeshes() const;
 
     private:
@@ -98,6 +103,6 @@ namespace Dream
         ModelMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-    }; // End of AssimpModelInstance
+    };
 
-} // End of Dream
+}

@@ -23,7 +23,7 @@
 
 #include "SceneState.h"
 
-#include "../Common/IRuntime.h"
+#include "../Common/Runtime.h"
 #include "../Components/Transform.h"
 #include "../Components/Graphics/Camera.h"
 
@@ -36,13 +36,13 @@ namespace Dream
     class ProjectRuntime;
     class SceneObject;
     class SceneDefinition;
-    class IAssetInstance;
-    class IAssetDefinition;
+    class AssetInstance;
+    class AssetDefinition;
     class SceneObjectRuntime;
     class ShaderInstance;
     class ScriptInstance;
 
-    class SceneRuntime : public IRuntime
+    class SceneRuntime : public Runtime
     {
     private:
         SceneState mState;
@@ -122,8 +122,8 @@ namespace Dream
         float getMinDrawDistance() const;
         float getMaxDrawDistance() const;
 
-        vector<IAssetInstance*> getAssetInstances(AssetType);
-        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(IAssetDefinition* def);
+        vector<AssetInstance*> getAssetInstances(AssetType);
+        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(AssetDefinition* def);
         ShaderInstance* getShadowPassShader() const;
         void setShadowPassShader(ShaderInstance* shadowPassShader);
         ScriptInstance* getInputScript() const;

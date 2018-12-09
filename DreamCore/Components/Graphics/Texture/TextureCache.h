@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../ICache.h"
+#include "../../Cache.h"
 
 namespace Dream
 {
     class TextureInstance;
     class TextureDefinition;
 
-    class TextureCache : public ICache
+    class TextureCache : public Cache
     {
     public:
         TextureCache(ProjectRuntime* runtime);
@@ -15,6 +15,6 @@ namespace Dream
         void clear() override;
         void flushRawTextureImageData();
     protected:
-        IAssetInstance* loadInstance(IAssetDefinition* def) override;
+        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
     };
 }

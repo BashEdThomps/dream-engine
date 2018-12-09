@@ -19,7 +19,7 @@
 #include <string>
 #include "Constants.h"
 
-using std::string;
+using namespace std;
 using namespace spdlog;
 
 namespace Dream

@@ -5,13 +5,20 @@
 #include "../Utilities/Directory.h"
 #include "../Utilities/File.h"
 #include "../Project/Project.h"
-#include "../Components/IAssetDefinition.h"
+#include "../Components/AssetDefinition.h"
 #include "ProjectDefinition.h"
 
 using std::stringstream;
 
 namespace Dream
 {
+    ProjectDirectory::ProjectDirectory()
+        : DreamObject ("ProjectDirectory"),
+         mProject(nullptr)
+    {
+
+    }
+
     ProjectDirectory::ProjectDirectory
     (Project* proj)
         : DreamObject("ProjectDirectory"),
@@ -23,13 +30,15 @@ namespace Dream
     ProjectDirectory::~ProjectDirectory
     ()
     {
+        closeProject();
+
     }
 
     bool
     ProjectDirectory::baseDirectoryExists
     ()
     {
-        Directory d(mProject->getProjectPath());
+        Directory d(mPath);
         return d.exists();
     }
 
@@ -38,12 +47,11 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        auto projPath = mProject->getProjectPath();
-        log->debug("Creating project directory {}",projPath);
-        Directory d(projPath);
+        log->debug("Creating project directory {}",mPath);
+        Directory d(mPath);
         if(!d.create())
         {
-            log->error("Unable to create project directory {}",projPath);
+            log->error("Unable to create project directory {}",mPath);
             return false;
         }
         return true;
@@ -51,14 +59,14 @@ namespace Dream
 
     bool
     ProjectDirectory::createAllAssetDirectories
-    (string projPath)
+    ()
     {
         auto log = getLog();
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (auto typePair : assetTypes)
         {
             auto type = typePair.first;
-            if (!createAssetDirectory(projPath,type))
+            if (!createAssetTypeDirectory(type))
             {
                 log->error("Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
                 return false;
@@ -67,22 +75,9 @@ namespace Dream
         return true;
     }
 
-    bool
-    ProjectDirectory::createAssetDirectory
-    (string base, AssetType t)
-    {
-        auto log = getLog();
-        stringstream ss;
-        ss << base << Constants::DIR_PATH_SEP << Constants::getAssetTypeStringFromTypeEnum(t);
-        auto dir = ss.str();
-        log->debug("Creating asset directory {}",dir);
-        Directory d(dir);
-        return d.create();
-    }
-
     vector<char>
     ProjectDirectory::readAssetData
-    (IAssetDefinition* assetDef, string format)
+    (AssetDefinition* assetDef, string format)
     {
         auto path = getAssetAbsolutePath(assetDef,format);
         File f(path);
@@ -91,7 +86,7 @@ namespace Dream
 
     bool
     ProjectDirectory::writeAssetData
-    (IAssetDefinition* assetDef, vector<char> data, string format)
+    (AssetDefinition* assetDef, vector<char> data, string format)
     {
         auto log = getLog();
         auto dataPath = getAssetDirectoryPath(assetDef);
@@ -127,11 +122,11 @@ namespace Dream
     ProjectDirectory::getAssetAbsolutePath
     (string uuid)
     {
-        auto assetDef = mProject->getProjectDefinition()->getAssetDefinitionByUuid(uuid);
+        auto assetDef = mProject->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDef)
         {
             stringstream path;
-            path << mProject->getProjectPath()
+            path << mPath
                  << Constants::DIR_PATH_SEP
                  << assetDef->getType()
                  << Constants::DIR_PATH_SEP
@@ -146,10 +141,10 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (IAssetDefinition* assetDef, string format)
+    (AssetDefinition* assetDef, string format)
     {
         stringstream path;
-        path << mProject->getProjectPath()
+        path << mPath
              << Constants::DIR_PATH_SEP
              << assetDef->getType()
              << Constants::DIR_PATH_SEP
@@ -162,7 +157,7 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (IAssetDefinition* assetDef)
+    (AssetDefinition* assetDef)
     {
         return getAssetAbsolutePath(assetDef,"");
     }
@@ -170,10 +165,10 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetDirectoryPath
-    (IAssetDefinition* assetDef)
+    (AssetDefinition* assetDef)
     {
         stringstream path;
-        path << mProject->getProjectPath()
+        path << mPath
              << Constants::DIR_PATH_SEP
              << assetDef->getType()
              << Constants::DIR_PATH_SEP
@@ -184,7 +179,7 @@ namespace Dream
 
     bool
     ProjectDirectory::removeAssetDirectory
-    (Dream::IAssetDefinition* ad)
+    (Dream::AssetDefinition* ad)
     {
         auto log = getLog();
         auto path = getAssetDirectoryPath(ad);
@@ -197,7 +192,7 @@ namespace Dream
     ProjectDirectory::saveProject
     ()
     {
-        auto pDef = mProject->getProjectDefinition();
+        auto pDef = mProject->getDefinition();
         if (pDef)
         {
             auto jsDef = pDef->getJson();
@@ -214,9 +209,9 @@ namespace Dream
     ()
     {
         stringstream ss;
-        ss << mProject->getProjectPath()
+        ss << mPath
            << Constants::DIR_PATH_SEP
-           << mProject->getProjectDefinition()->getUuid()
+           << mProject->getDefinition()->getUuid()
            << Constants::PROJECT_EXTENSION;
         return ss.str();
     }
@@ -235,7 +230,7 @@ namespace Dream
     (AssetType type)
     {
         stringstream ss;
-        ss << mProject->getProjectPath()
+        ss << mPath
            << Constants::DIR_PATH_SEP
            << Constants::getAssetTypeStringFromTypeEnum(type);
         return ss.str();
@@ -245,6 +240,7 @@ namespace Dream
     {
         string assetTypeDirPath = getAssetTypeDirectory(type);
         Directory dir(assetTypeDirPath);
+        getLog()->debug("Creating asset dir {}", assetTypeDirPath);
         return dir.create();
     }
 
@@ -253,7 +249,7 @@ namespace Dream
     ()
     {
         auto log = getLog();
-        auto pDef = mProject->getProjectDefinition();
+        auto pDef = mProject->getDefinition();
         if (!pDef)
         {
             log->error("Cannot cleanup, no project definition");
@@ -295,5 +291,123 @@ namespace Dream
         }
     }
 
+    Project*
+    ProjectDirectory::newProject
+    (string projectDir)
+    {
+        if (mProject)
+        {
+            closeProject();
+        }
+
+        mProject = new Project(this);
+        mProject->setDefinition(ProjectDefinition::createNewProjectDefinition());
+        mPath = projectDir;
+
+        if(!baseDirectoryExists())
+        {
+            createBaseDirectory();
+        }
+
+        createAllAssetDirectories();
+
+        saveProject();
+        return mProject;
+    }
+
+    Project*
+    ProjectDirectory::openFromFileReader
+    (string projectPath, File &reader)
+    {
+        auto log = getLog();
+        log->debug("Loading project from FileReader", reader.getPath());
+
+        string projectJsonStr = reader.readString();
+
+        if (projectJsonStr.empty())
+        {
+            log->error("Loading Failed. Project Content is Empty");
+            return nullptr;
+        }
+
+        json projectJson;
+        try
+        {
+            projectJson = json::parse(projectJsonStr);
+        }
+        catch (json::parse_error ex)
+        {
+            log->error("Exception while parsing project file: {}",ex.what());
+            return nullptr;
+        }
+
+        mPath = projectPath;
+        log->debug("Project path is: {}", mPath);
+        mProject = new Project(this);
+        auto pDef = new ProjectDefinition(projectJson);
+        mProject->setDefinition(pDef);
+        pDef->loadChildDefinitions();
+        return mProject;
+    }
+
+    Project*
+    ProjectDirectory::openFromDirectory
+    (string directory)
+    {
+        auto log = getLog();
+        Directory dir(directory);
+        vector<string> directoryContents;
+        directoryContents = dir.list();
+
+        string projectFileName;
+
+        for (string filename : directoryContents)
+        {
+            size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
+            if (dotJsonIndex != string::npos)
+            {
+                projectFileName = filename.substr(0,dotJsonIndex);
+                log->debug( "Project: openFromDirectory - Found project file ",projectFileName );
+            }
+        }
+
+        if (projectFileName.size() == 0)
+        {
+            log->error( "Project: Error {} is not a valid project directory!", directory  );
+            return nullptr;
+        }
+
+        log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
+
+        string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
+
+        File projectFileReader(projectFilePath);
+
+        return openFromFileReader(directory, projectFileReader);
+    }
+
+    void
+    ProjectDirectory::closeProject
+    ()
+    {
+        mPath = "";
+        if (mProject)
+        {
+            delete mProject;
+            mProject = nullptr;
+        }
+    }
+
+    Project*
+    ProjectDirectory::openFromArgumentParser
+    (ArgumentParser &parser)
+    {
+        auto log = getLog();
+        log->debug( "Project: Loading from ArgumentParser" );
+        File projectFileReader(parser.getProjectFilePath());
+        return openFromFileReader(parser.getProjectPath(), projectFileReader);
+    }
+
     const size_t ProjectDirectory::BufferSize = 1024*1024;
+
 }

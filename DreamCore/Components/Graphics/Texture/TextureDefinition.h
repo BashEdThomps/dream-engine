@@ -17,11 +17,11 @@
  */
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
-    class TextureDefinition : public IAssetDefinition
+    class TextureDefinition : public AssetDefinition
     {
     public:
         TextureDefinition(ProjectDefinition* pd, json js);

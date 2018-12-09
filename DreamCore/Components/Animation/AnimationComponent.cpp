@@ -28,7 +28,7 @@ namespace Dream
 {
     AnimationComponent::AnimationComponent
     ()
-        : IComponent()
+        : Component()
 
     {
         setLogClassName("AnimationComponent");
@@ -55,6 +55,13 @@ namespace Dream
     AnimationComponent::updateComponent
     (SceneRuntime* sr)
     {
+        auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
         beginUpdate();
         if (sr != nullptr)
         {

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../Common/IDefinition.h"
+#include "../Common/Definition.h"
 
 using std::string;
 using std::vector;
@@ -27,16 +27,16 @@ namespace Dream
 {
     class Project;
     class SceneDefinition;
-    class IAssetDefinition;
+    class AssetDefinition;
     class ShaderDefinition;
     class TextureDefinition;
     class MaterialDefinition;
 
-    class ProjectDefinition : public IDefinition
+    class ProjectDefinition : public Definition
     {
     private:
         vector<SceneDefinition*> mSceneDefinitions;
-        vector<IAssetDefinition*> mAssetDefinitions;
+        vector<AssetDefinition*> mAssetDefinitions;
     public:
         ProjectDefinition(json data);
         ~ProjectDefinition() override;
@@ -61,8 +61,8 @@ namespace Dream
 
         void showStatus() override;
         size_t countAssetDefinitions();
-        IAssetDefinition* getAssetDefinitionByUuid(string uuid);
-        IAssetDefinition* getAssetDefinitionByName(string name);
+        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        AssetDefinition* getAssetDefinitionByName(string name);
 
         size_t countScenesDefinitions();
         SceneDefinition* getSceneDefinitionByUuid(string uuid);
@@ -70,12 +70,12 @@ namespace Dream
         vector<SceneDefinition*> getSceneDefinitionsVector();
         void removeSceneDefinition(SceneDefinition* sceneDef);
 
-        void removeAssetDefinition(IAssetDefinition* assetDef);
-        vector<IAssetDefinition*> getAssetDefinitionsVector();
-        vector<IAssetDefinition*> getAssetDefinitionsVector(AssetType type);
+        void removeAssetDefinition(AssetDefinition* assetDef);
+        vector<AssetDefinition*> getAssetDefinitionsVector();
+        vector<AssetDefinition*> getAssetDefinitionsVector(AssetType type);
         SceneDefinition* createNewSceneDefinition();
-        IAssetDefinition* createNewAssetDefinition(AssetType type);
-        map<AssetType,vector<IAssetDefinition*>> getAssetDefinitionsMap();
+        AssetDefinition* createNewAssetDefinition(AssetType type);
+        map<AssetType,vector<AssetDefinition*>> getAssetDefinitionsMap();
 
         json getJson() override;
 
@@ -93,21 +93,23 @@ namespace Dream
 
         long getSceneDefinitionIndex(SceneDefinition*);
         SceneDefinition* getSceneDefinitionAtIndex(int index);
-        long getAssetDefinitionIndex(AssetType, IAssetDefinition*);
+        long getAssetDefinitionIndex(AssetType, AssetDefinition*);
         long getAssetDefinitionIndex(AssetType, string);
-        IAssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
+        AssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);
         void regroupAssetDefinitions();
 
         map<AssetType, vector<string>>& getAssetDefinitionGroups();
 
+        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
+
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
-        IAssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
+        AssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
         map<AssetType,vector<string>> mAssetDefinitionGroups;
     };
 }

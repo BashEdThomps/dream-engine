@@ -30,13 +30,13 @@ using nlohmann::json;
 
 namespace Dream
 {
-    class IDefinition : public DreamObject
+    class Definition : public DreamObject
     {
     protected:
         json mJson;
     public:
-        IDefinition(json data);
-        virtual ~IDefinition();
+        Definition(json data);
+        virtual ~Definition();
 
         virtual json getJson();
         virtual void showStatus() = 0;

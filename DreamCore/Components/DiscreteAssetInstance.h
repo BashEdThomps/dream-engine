@@ -1,6 +1,4 @@
 /*
- * AnimationInstance
- *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -14,23 +12,26 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #pragma once
-
-#include "AnimationDefinition.h"
-#include "AnimationKeyframe.h"
-#include "../DiscreteAssetInstance.h"
+#include "AssetInstance.h"
 
 namespace Dream
 {
-    class AnimationInstance : public DiscreteAssetInstance
-    {
+    class SceneObjectRuntime;
 
+    class DiscreteAssetInstance : public AssetInstance
+    {
     public:
-        AnimationInstance(AnimationDefinition*, SceneObjectRuntime*);
-        ~AnimationInstance() override;
-        bool load() override;
-    private:
-        vector<AnimationKeyframe> mKeyframes;
+        DiscreteAssetInstance(AssetDefinition* def, SceneObjectRuntime* runtime);
+        ~DiscreteAssetInstance() override;
+
+        SceneObjectRuntime* getSceneObjectRuntime();
+        string getAssetFilePath(string fmt = "") override;
+        string getAssetDirectoryPath() override;
+
+    protected:
+        SceneObjectRuntime* mSceneObjectRuntime;
+
     };
+
 }

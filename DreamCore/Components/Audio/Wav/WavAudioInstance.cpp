@@ -20,7 +20,6 @@
 
 namespace Dream
 {
-
     WavAudioInstance::WavAudioInstance
     (
         AudioComponent* comp,
@@ -41,11 +40,10 @@ namespace Dream
 
     bool
     WavAudioInstance::load
-    (string projectPath)
+    ()
     {
         auto log = getLog();
-        string absPath = projectPath + mDefinition->getAssetPath();
-        setAbsolutePath(absPath);
+        string absPath = getAssetFilePath();
         log->debug("Loading wav file from {}", absPath);
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
@@ -119,7 +117,6 @@ namespace Dream
             );
         }
         fclose(wavFile);
-        //loadSpectrumAnalyser();
         return true;
     }
 
@@ -135,4 +132,4 @@ namespace Dream
         return fileSize;
     }
 
-} // End of Dream
+}

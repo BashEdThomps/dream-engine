@@ -7,10 +7,10 @@
 
 namespace Dream
 {
-    class IDefinition;
-    class IRuntime;
+    class Definition;
+    class Runtime;
     class CompoundChildDefinition;
-    class IAssetDefinition;
+    class AssetDefinition;
 }
 
 using namespace glm;
@@ -23,8 +23,8 @@ namespace DreamTool
     struct PropertiesTarget
     {
         PropertyType type;
-        IDefinition* definition;
-        IRuntime* runtime;
+        Definition* definition;
+        Runtime* runtime;
     };
 
     class PropertiesWindow : public ImGuiWidget
@@ -34,10 +34,10 @@ namespace DreamTool
         ~PropertiesWindow() override;
 
         void draw() override;
-        void pushPropertyTarget(PropertyType, IDefinition*, IRuntime*);
+        void pushPropertyTarget(PropertyType, Definition*, Runtime*);
         void popPropertyTarget();
         void clearPropertyTargets();
-        void removeFromHistory(IDefinition* def);
+        void removeFromHistory(Definition* def);
 
     protected:
         void drawImGizmo();
@@ -62,17 +62,17 @@ namespace DreamTool
         void drawParticleEmitterAssetProperties();
         void drawTextureAssetProperties();
 
-        void setRuntime(IRuntime* runt);
-        void setDefinition(IDefinition* def);
+        void setRuntime(Runtime* runt);
+        void setDefinition(Definition* def);
         void setPropertyType(PropertyType t);
         void clear();
         void drawPhysicsImGizmo(CompoundChildDefinition);
-        void replaceRuntimeInstances(IAssetDefinition* assetDef);
+        void replaceRuntimeInstances(AssetDefinition* assetDef);
     private:
         vector<PropertiesTarget> mHistory;
         PropertyType mType;
-        IDefinition* mDefinition;
-        IRuntime* mRuntime;
+        Definition* mDefinition;
+        Runtime* mRuntime;
         ImVec2 mImageSize;
         ImVec2 mBigEditorSize;
         bool mGizmoUseSnap;

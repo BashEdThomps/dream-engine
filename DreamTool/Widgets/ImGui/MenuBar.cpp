@@ -45,7 +45,7 @@ namespace DreamTool
         bool showPleaseDestroyScenesDialog = false;
         bool modelBatchImportClicked = false;
 
-        auto pRuntime = mState->project->getProjectRuntime();
+        bool hasProject = mState->project != nullptr;
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -53,18 +53,21 @@ namespace DreamTool
             {
                 newButtonClicked = ImGui::MenuItem("New");
                 openButtonClicked = ImGui::MenuItem("Open");
-                if(ImGui::MenuItem("Save"))
+                if (hasProject)
                 {
-                    ProjectDirectory pDir(mState->project);
-                    if(pDir.saveProject())
+                    if(ImGui::MenuItem("Save"))
                     {
-                        setMessageString("Saved Successfully");
+                        if(mState->projectDirectory.saveProject())
+                        {
+                            setMessageString("Saved Successfully");
+                        }
                     }
-                }
-                ImGui::Separator();
-                if(ImGui::MenuItem("Close"))
-                {
-
+                    ImGui::Separator();
+                    if(ImGui::MenuItem("Close"))
+                    {
+                        mState->closeProject();
+                        hasProject = false;
+                    }
                 }
                 ImGui::Separator();
                 showQuitDialog = ImGui::MenuItem("Quit");
@@ -74,215 +77,228 @@ namespace DreamTool
             if (ImGui::BeginMenu("View"))
             {
                 bool showProjectBrowser = mState->projectBrowser.getVisible();
-                if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
+                if (hasProject)
                 {
-                    mState->projectBrowser.setVisible(showProjectBrowser);
-                }
+                    if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
+                    {
+                        mState->projectBrowser.setVisible(showProjectBrowser);
+                    }
 
-                bool showPropertiesWindow = mState->propertiesWindow.getVisible();
-                if(ImGui::Checkbox("Properties Window",&showPropertiesWindow))
-                {
-                   mState->propertiesWindow.setVisible(showPropertiesWindow);
-                }
+                    bool showPropertiesWindow = mState->propertiesWindow.getVisible();
+                    if(ImGui::Checkbox("Properties Window",&showPropertiesWindow))
+                    {
+                        mState->propertiesWindow.setVisible(showPropertiesWindow);
+                    }
 
-                bool showSceneStatesWindow = mState->sceneStateWindow.getVisible();
-                if (ImGui::Checkbox("Scene States",&showSceneStatesWindow))
-                {
-                   mState->sceneStateWindow.setVisible(showSceneStatesWindow);
-                }
+                    bool showSceneStatesWindow = mState->sceneStateWindow.getVisible();
+                    if (ImGui::Checkbox("Scene States",&showSceneStatesWindow))
+                    {
+                        mState->sceneStateWindow.setVisible(showSceneStatesWindow);
+                    }
 
-                bool showGridPropsWindow = mState->gridPropertiesWindow.getVisible();
-                if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
-                {
-                   mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
+                    bool showGridPropsWindow = mState->gridPropertiesWindow.getVisible();
+                    if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
+                    {
+                        mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
+                    }
                 }
-
 
                 ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
 
                 ImGui::EndMenu();
             }
 
-            if (ImGui::BeginMenu("Scene"))
+            if (hasProject)
             {
-                vector<string> sceneNames;
 
-                ProjectDefinition* projDef = nullptr;
-                if (mState->project)
+                auto pRuntime = mState->project->getRuntime();
+
+                if (ImGui::BeginMenu("Scene"))
                 {
-                    projDef = mState->project->getProjectDefinition();
-                    if (projDef)
+                    vector<string> sceneNames;
+
+                    ProjectDefinition* projDef = nullptr;
+                    if (mState->project)
                     {
-                        auto scenesVector = projDef->getSceneDefinitionsVector();
-                        for (auto scene : scenesVector)
+                        projDef = mState->project->getDefinition();
+                        if (projDef)
                         {
-                            sceneNames.push_back(scene->getName());
+                            auto scenesVector = projDef->getSceneDefinitionsVector();
+                            for (auto scene : scenesVector)
+                            {
+                                sceneNames.push_back(scene->getName());
+                            }
                         }
                     }
-                }
 
-                int sceneToLoadIndex = -1;
-                if (StringCombo("Set Scene \"To Load\"", &sceneToLoadIndex, sceneNames, sceneNames.size()))
-                {
-                    auto selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
-                    if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
+                    int sceneToLoadIndex = -1;
+                    if (StringCombo("Set Scene \"To Load\"", &sceneToLoadIndex, sceneNames, sceneNames.size()))
                     {
-                        auto newSceneRT = new SceneRuntime(selectedSceneDef,pRuntime);
-                        newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
-                        pRuntime->addSceneRuntime(newSceneRT);
-                        setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                        auto selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
+                        if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
+                        {
+                            auto newSceneRT = new SceneRuntime(selectedSceneDef,pRuntime);
+                            newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
+                            pRuntime->addSceneRuntime(newSceneRT);
+                            setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                        }
                     }
-                }
 
-                vector<string> runtimeNames;
-                if (pRuntime)
-                {
-                    for (auto s : pRuntime->getSceneRuntimeVector())
-                    {
-                        // Show only loaded scenes
-                        runtimeNames.push_back(s->getName());
-                    }
-                }
-
-                int sceneActiveIndex = -1;
-                if (StringCombo("Set Scene \"Active\"", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
-                {
+                    vector<string> runtimeNames;
                     if (pRuntime)
                     {
-                        auto rt = pRuntime->getSceneRuntimeVector().at(sceneActiveIndex);
-                        if (rt)
+                        for (auto s : pRuntime->getSceneRuntimeVector())
                         {
-                            pRuntime->setSceneRuntimeActive(rt->getUuid());
-                            setMessageString("Activated Scene: "+rt->getName());
+                            // Show only loaded scenes
+                            runtimeNames.push_back(s->getName());
                         }
                     }
+
+                    int sceneActiveIndex = -1;
+                    if (StringCombo("Set Scene \"Active\"", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
+                    {
+                        if (pRuntime)
+                        {
+                            auto rt = pRuntime->getSceneRuntimeVector().at(sceneActiveIndex);
+                            if (rt)
+                            {
+                                pRuntime->setSceneRuntimeActive(rt->getUuid());
+                                setMessageString("Activated Scene: "+rt->getName());
+                            }
+                        }
+                    }
+
+                    int sceneToDestroyIndex = -1;
+                    if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
+                    {
+                        mState->propertiesWindow.clearPropertyTargets();
+                        if (pRuntime)
+                        {
+                            auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);
+                            if (rt)
+                            {
+                                rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
+                                setMessageString("Destroyed Scene: "+rt->getName());
+                            }
+                            mState->selectionHighlighter.clearSelection();
+                        }
+                    }
+
+                    ImGui::EndMenu();
                 }
 
-                int sceneToDestroyIndex = -1;
-                if (StringCombo("Set Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
+                if(ImGui::BeginMenu("Components"))
                 {
-                    mState->propertiesWindow.clearPropertyTargets();
+                    if (ImGui::BeginMenu("Input"))
+                    {
+                        DTState::InputTarget mode = mState->inputTarget;
+                        if (ImGui::RadioButton("To Editor",mode == DTState::InputTarget::EDITOR))
+                        {
+                            mState->inputTarget = DTState::InputTarget::EDITOR;
+                        }
+
+                        if (ImGui::RadioButton("To Scene", mode == DTState::InputTarget::SCENE))
+                        {
+                            mState->inputTarget = DTState::InputTarget::SCENE;
+                        }
+                        ImGui::EndMenu();
+                    }
+
+                    float volume = 1.0f;
+                    auto rt = mState->project->getRuntime();
+                    auto audioComp = rt->getAudioComponent();
+                    if (audioComp)
+                    {
+                        volume = audioComp->getVolume();
+                    }
+
+                    if(ImGui::SliderFloat("Volume",&volume,0.0f,1.0f))
+                    {
+                        if (audioComp)
+                        {
+                            audioComp->setVolume(volume);
+                        }
+                    }
+
+                    bool scripting = false;
                     if (pRuntime)
                     {
-                        auto rt = pRuntime->getSceneRuntimeVector().at(sceneToDestroyIndex);
-                        if (rt)
-                        {
-                            rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
-                            setMessageString("Destroyed Scene: "+rt->getName());
-                        }
-                        mState->selectionHighlighter.clearSelection();
+                        scripting = pRuntime->getScriptingEnabled();
                     }
+                    if(ImGui::Checkbox("Scripting",&scripting))
+                    {
+                        if(pRuntime)
+                        {
+                            pRuntime->setScriptingEnabled(scripting);
+                        }
+                    }
+
+                    if (ImGui::MenuItem("Clear Caches"))
+                    {
+                        if (pRuntime && !pRuntime->hasLoadedScenes())
+                        {
+                            pRuntime->clearAllCaches();
+                        }
+                        else
+                        {
+                            showPleaseDestroyScenesDialog = true;
+                        }
+                    }
+
+                    ImGui::EndMenu();
                 }
 
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("Components"))
-            {
-                if (ImGui::BeginMenu("Input"))
+                if (ImGui::BeginMenu("Tools"))
                 {
-                    DTState::InputTarget mode = mState->inputTarget;
-                    if (ImGui::RadioButton("To Editor",mode == DTState::InputTarget::EDITOR))
+                    if (ImGui::MenuItem("Model Batch Importer"))
                     {
-                        mState->inputTarget = DTState::InputTarget::EDITOR;
+                        modelBatchImportClicked = true;
                     }
-
-                    if (ImGui::RadioButton("To Scene", mode == DTState::InputTarget::SCENE))
+                    if(ImGui::MenuItem("Clean Up Assets Directory"))
                     {
-                        mState->inputTarget = DTState::InputTarget::SCENE;
+                        mState->projectDirectory.cleanupAssetsDirectory();
                     }
                     ImGui::EndMenu();
                 }
 
-                float volume = 1.0f;
-                auto rt = mState->project->getProjectRuntime();
-                auto audioComp = rt->getAudioComponent();
-                if (audioComp)
-                {
-                    volume = audioComp->getVolume();
-                }
-
-                if(ImGui::SliderFloat("Volume",&volume,0.0f,1.0f))
-                {
-                    if (audioComp)
-                    {
-                        audioComp->setVolume(volume);
-                    }
-                }
-
-                bool scripting = false;
-                if (pRuntime)
-                {
-                    scripting = pRuntime->getScriptingEnabled();
-                }
-                if(ImGui::Checkbox("Scripting",&scripting))
-                {
-                    if(pRuntime)
-                    {
-                        pRuntime->setScriptingEnabled(scripting);
-                    }
-                }
-
-                if (ImGui::MenuItem("Clear Caches"))
-                {
-                    if (pRuntime && !pRuntime->hasLoadedScenes())
-                    {
-                        pRuntime->clearAllCaches();
-                    }
-                    else
-                    {
-                        showPleaseDestroyScenesDialog = true;
-                    }
-                }
-
-                ImGui::EndMenu();
-            }
-
-            if (ImGui::BeginMenu("Tools"))
-            {
-                if (ImGui::MenuItem("Model Batch Importer"))
-                {
-                   modelBatchImportClicked = true;
-                }
-                if(ImGui::MenuItem("Clean Up Assets Directory"))
-                {
-                    ProjectDirectory pDir(mState->project);
-                    pDir.cleanupAssetsDirectory();
-                }
-                ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("Debug"))
             {
-                bool showRenderingPipeline = mState->renderPipelineWindow.getVisible();
-                if (ImGui::Checkbox("Rendering Pipeline",&showRenderingPipeline))
+                if (hasProject)
                 {
-                    mState->renderPipelineWindow.setVisible(showRenderingPipeline);
-                }
-
-                bool showJoystickDebug = mState->gamepadStateWindow.getVisible();
-                if (ImGui::Checkbox("Joystick State",&showJoystickDebug))
-                {
-                    mState->gamepadStateWindow.setVisible(showJoystickDebug);
-                }
-                auto showLuaDebug = mState->luaDebugWindow.getVisible();
-                if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
-                {
-                    mState->luaDebugWindow.setVisible(showLuaDebug);
-                }
-
-                if (pRuntime)
-                {
-                    auto active = pRuntime->getActiveSceneRuntime();
-                    auto physicsDebug = active ? active->getPhysicsDebug() : false;
-                    if (ImGui::Checkbox("Physics Debug",&physicsDebug))
+                    bool showRenderingPipeline = mState->renderPipelineWindow.getVisible();
+                    if (ImGui::Checkbox("Rendering Pipeline",&showRenderingPipeline))
                     {
-                       if (active)
-                       {
-                           active->setPhysicsDebug(physicsDebug);
-                           dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
-                       }
+                        mState->renderPipelineWindow.setVisible(showRenderingPipeline);
                     }
+
+                    bool showJoystickDebug = mState->gamepadStateWindow.getVisible();
+                    if (ImGui::Checkbox("Joystick State",&showJoystickDebug))
+                    {
+                        mState->gamepadStateWindow.setVisible(showJoystickDebug);
+                    }
+                    auto showLuaDebug = mState->luaDebugWindow.getVisible();
+                    if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
+                    {
+                        mState->luaDebugWindow.setVisible(showLuaDebug);
+                    }
+
+                    auto pRuntime = mState->project->getRuntime();
+
+                    if (pRuntime)
+                    {
+                        auto active = pRuntime->getActiveSceneRuntime();
+                        auto physicsDebug = active ? active->getPhysicsDebug() : false;
+                        if (ImGui::Checkbox("Physics Debug",&physicsDebug))
+                        {
+                            if (active)
+                            {
+                                active->setPhysicsDebug(physicsDebug);
+                            dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
+                        }
+                    }
+                }
                 }
 
                 if(ImGui::BeginMenu("Engine Logging"))
@@ -330,13 +346,13 @@ namespace DreamTool
 
             static char msgBuf[128] = {0};
             snprintf(
-                msgBuf,
-                128,
-                "%s | Input to %s | %.3d fps",
-                mMessageString.c_str(),
-                (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"),
-                static_cast<int>(mFPS)
-            );
+                        msgBuf,
+                        128,
+                        "%s | Input to %s | %.3d fps",
+                        mMessageString.c_str(),
+                        (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"),
+                        static_cast<int>(mFPS)
+                        );
 
             auto maxX = ImGui::GetWindowContentRegionMax().x;
             ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);
@@ -348,15 +364,10 @@ namespace DreamTool
 
         // New Project
         static ImGuiFs::Dialog newDlg;
-        newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
-        if (strlen(newDlg.getChosenPath())>0)
+        const char* newProjectPath = newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
+        if (strlen(newProjectPath)>0)
         {
-            mState->lastDirectory = newDlg.getChosenPath();
-            /*
-                auto path = newDlg.getChosenPath();
-                ProjectDirectoryModel dirModel();
-                mState->project->clear();
-            */
+           mState->newProject(newProjectPath);
         }
 
         // Open Project
@@ -366,16 +377,7 @@ namespace DreamTool
         if (strlen(chosenPath) > 0)
         {
             auto projectDir = openDlg.getChosenPath();
-            mState->lastDirectory = projectDir;
-            log->error("Opening project {}",projectDir);
-            if(mState->project->openFromDirectory(projectDir))
-            {
-                mState->project->createProjectRuntime();
-            }
-            else
-            {
-                openProjectFailed = true;
-            }
+            openProjectFailed = !mState->openProject(projectDir);
         }
 
         if (openProjectFailed)
@@ -399,7 +401,7 @@ namespace DreamTool
 
         if (showPleaseDestroyScenesDialog)
         {
-           ImGui::OpenPopup("Loaded Scenes");
+            ImGui::OpenPopup("Loaded Scenes");
         }
 
         static ImGuiFs::Dialog modelBatchImportDlg;
@@ -454,13 +456,13 @@ namespace DreamTool
             appendLabel << ")";
             if (ImGui::Checkbox(appendLabel.str().c_str(),&appendDirName))
             {
-               mState->modelDefinitionBatchImporter.setAppendDirectoryName(appendDirName);
+                mState->modelDefinitionBatchImporter.setAppendDirectoryName(appendDirName);
             }
 
             auto replace = mState->modelDefinitionBatchImporter.getReplaceExisting();
             if(ImGui::Checkbox("Replace Existing",&replace))
             {
-               mState->modelDefinitionBatchImporter.setReplaceExisting(replace);
+                mState->modelDefinitionBatchImporter.setReplaceExisting(replace);
             }
             if(ImGui::Button("Cancel"))
             {
@@ -474,7 +476,7 @@ namespace DreamTool
                 ImGui::CloseCurrentPopup();
             }
 
-           ImGui::EndPopup();
+            ImGui::EndPopup();
         }
 
         if (mState->modelDefinitionBatchImporter.hasResults())
@@ -492,10 +494,10 @@ namespace DreamTool
             ImGui::NextColumn();
             for (auto result : mState->modelDefinitionBatchImporter.getImportResults())
             {
-               ImGui::Text("%s",result.definition->getName().c_str());
-               ImGui::NextColumn();
-               ImGui::Text("%s",ModelDefinitionBatchImporter::resultString(result.result).c_str());
-               ImGui::NextColumn();
+                ImGui::Text("%s",result.definition->getName().c_str());
+                ImGui::NextColumn();
+                ImGui::Text("%s",ModelDefinitionBatchImporter::resultString(result.result).c_str());
+                ImGui::NextColumn();
             }
             ImGui::Columns(1);
             ImGui::Separator();
@@ -504,18 +506,18 @@ namespace DreamTool
                 mState->modelDefinitionBatchImporter.clear();
                 ImGui::CloseCurrentPopup();
             }
-           ImGui::EndPopup();
+            ImGui::EndPopup();
         }
 
         if(ImGui::BeginPopupModal("Loaded Scenes", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text
-            (
-                "There are one or more Loaded Scenes.\n"
-                "\n"
-                "Please destroy them before clearing Caches.\n"
-                "\n"
-            );
+                    (
+                        "There are one or more Loaded Scenes.\n"
+                        "\n"
+                        "Please destroy them before clearing Caches.\n"
+                        "\n"
+                        );
             ImGui::Separator();
 
             if (ImGui::Button("OK##clearCachesDialog", ImVec2(-1, 0)))

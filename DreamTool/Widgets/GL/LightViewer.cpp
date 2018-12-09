@@ -30,10 +30,10 @@ namespace DreamTool
     void LightViewer::draw()
     {
         checkGLError();
-        vector<IAssetInstance*> lightInstances;
+        vector<AssetInstance*> lightInstances;
         if (mState->project)
         {
-            auto pRuntime = mState->project->getProjectRuntime();
+            auto pRuntime = mState->project->getRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();

@@ -17,11 +17,11 @@
  */
 #pragma once
 
-#include "../../IAssetDefinition.h"
+#include "../../AssetDefinition.h"
 
 namespace Dream
 {
-    class FontDefinition : public IAssetDefinition
+    class FontDefinition : public AssetDefinition
     {
     public:
         FontDefinition(ProjectDefinition* pd, json js);

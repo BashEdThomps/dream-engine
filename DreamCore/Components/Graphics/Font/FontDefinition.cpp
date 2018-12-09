@@ -22,7 +22,7 @@ namespace Dream
 {
     FontDefinition::FontDefinition
     (ProjectDefinition* pd, json js)
-        :IAssetDefinition(pd,js)
+        :AssetDefinition(pd,js)
     {
     }
 }

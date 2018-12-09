@@ -23,7 +23,7 @@ namespace Dream
 {
     LightDefinition::LightDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js) {}
+        : AssetDefinition(pd,js) {}
 
     LightDefinition::~LightDefinition(){}
 

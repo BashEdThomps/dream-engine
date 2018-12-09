@@ -18,11 +18,11 @@
 #pragma once
 
 #include "PathInstance.h"
-#include "../IComponent.h"
+#include "../Component.h"
 
 namespace Dream
 {
-    class PathComponent : public IComponent
+    class PathComponent : public Component
     {
     public:
         PathComponent();

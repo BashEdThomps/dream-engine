@@ -1,5 +1,5 @@
 /*
-* IAssetDefinition
+* AssetDefinition
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
 
 #include <string>
 #include  <sstream>
-#include "IAssetDefinition.h"
+#include "AssetDefinition.h"
 
 using std::cout;
 using std::endl;
 
 namespace Dream
 {
-    IAssetDefinition::IAssetDefinition
+    AssetDefinition::AssetDefinition
     (ProjectDefinition* parent, json jsonDef)
-        : IDefinition(jsonDef),
+        : Definition(jsonDef),
           mProjectDefinition(parent)
     {
         setLogClassName("AssetDefinition");
@@ -34,7 +34,7 @@ namespace Dream
         log->trace("Constructing {}", getNameAndUuidString());
     }
 
-    IAssetDefinition::~IAssetDefinition
+    AssetDefinition::~AssetDefinition
     ()
     {
         auto log = getLog();
@@ -42,21 +42,21 @@ namespace Dream
     }
 
     AssetType
-    IAssetDefinition::getAssetType
+    AssetDefinition::getAssetType
     ()
     {
         return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
     }
 
     void
-    IAssetDefinition::setType
+    AssetDefinition::setType
     (string type)
     {
         mJson[Constants::ASSET_TYPE] = type;
     }
 
     string
-    IAssetDefinition::getType
+    AssetDefinition::getType
     ()
     {
         if (mJson[Constants::ASSET_TYPE].is_null())
@@ -67,14 +67,14 @@ namespace Dream
     }
 
     void
-    IAssetDefinition::setFormat
+    AssetDefinition::setFormat
     (string format)
     {
         mJson[Constants::ASSET_FORMAT] = format;
     }
 
     string
-    IAssetDefinition::getFormat
+    AssetDefinition::getFormat
     ()
     {
         if (mJson[Constants::ASSET_FORMAT].is_null())
@@ -86,82 +86,82 @@ namespace Dream
     }
 
     bool
-    IAssetDefinition::isTypeLight
+    AssetDefinition::isTypeLight
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_LIGHT) == 0;
     }
 
-    bool IAssetDefinition::isTypeMaterial()
+    bool AssetDefinition::isTypeMaterial()
     {
        return getType().compare(Constants::ASSET_TYPE_MATERIAL) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeFont
+    AssetDefinition::isTypeFont
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_FONT) == 0;
     }
 
     bool
-    IAssetDefinition::isTypePhysicsObject
+    AssetDefinition::isTypePhysicsObject
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_PHYSICS_OBJECT) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeTexture
+    AssetDefinition::isTypeTexture
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_TEXTURE) == 0;
     }
 
     bool
-    IAssetDefinition::isTypePath
+    AssetDefinition::isTypePath
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_PATH) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeParticleEmitter
+    AssetDefinition::isTypeParticleEmitter
     ()
     {
        return getType().compare(Constants::ASSET_TYPE_PARTICLE_EMITTER) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeAudio
+    AssetDefinition::isTypeAudio
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_AUDIO) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeModel
+    AssetDefinition::isTypeModel
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_MODEL) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeScript
+    AssetDefinition::isTypeScript
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_SCRIPT) == 0;
     }
 
     bool
-    IAssetDefinition::isTypeShader
+    AssetDefinition::isTypeShader
     ()
     {
         return getType().compare(Constants::ASSET_TYPE_SHADER) == 0;
     }
 
     string
-    IAssetDefinition::getAssetTypeDirectory
+    AssetDefinition::getAssetTypeDirectory
     ()
     {
         if (isTypeAudio())
@@ -226,7 +226,7 @@ namespace Dream
     }
 
     string
-    IAssetDefinition::getAssetPath
+    AssetDefinition::getAssetPath
     ()
     {
         stringstream pathStream;
@@ -238,7 +238,7 @@ namespace Dream
     }
 
     string
-    IAssetDefinition::getGroup
+    AssetDefinition::getGroup
     ()
     {
         if (mJson[Constants::ASSET_ATTR_GROUP].is_null())
@@ -249,7 +249,7 @@ namespace Dream
     }
 
     void
-    IAssetDefinition::setGroup
+    AssetDefinition::setGroup
     (string group)
     {
         mJson[Constants::ASSET_ATTR_GROUP] = group;
@@ -257,7 +257,7 @@ namespace Dream
 
 
     void
-    IAssetDefinition::showStatus
+    AssetDefinition::showStatus
     ()
     {
         auto log = getLog();
@@ -265,7 +265,7 @@ namespace Dream
     }
 
     ProjectDefinition*
-    IAssetDefinition::getProject
+    AssetDefinition::getProject
     ()
     {
         return mProjectDefinition;

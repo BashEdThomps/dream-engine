@@ -20,7 +20,7 @@
 #include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectInstance.h"
 #include <btBulletDynamicsCommon.h>
-#include "../IComponent.h"
+#include "../Component.h"
 #include "../Transform.h"
 #include "../Event.h"
 #include "../Time.h"
@@ -32,7 +32,7 @@ namespace Dream
 {
     PhysicsComponent::PhysicsComponent
     ()
-        : IComponent(),
+        : Component(),
           mCharacter(nullptr),
           mDebug(false)
     {
@@ -170,8 +170,14 @@ namespace Dream
     PhysicsComponent::updateComponent
     (SceneRuntime* sr)
     {
+        auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
             beginUpdate();
-            auto log = getLog();
             log->debug( "Update Called" );
 
             // Setup Physics

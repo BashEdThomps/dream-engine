@@ -16,26 +16,26 @@
  * this file belongs to.
  */
 
-#include "IDefinition.h"
+#include "Definition.h"
 
 namespace Dream
 {
-    IDefinition::IDefinition
+    Definition::Definition
     (json data)
         : // Init list
-          DreamObject("IDefinition"),
+          DreamObject("Definition"),
           mJson(data)
     {
 
     }
 
-    IDefinition::~IDefinition
+    Definition::~Definition
     ()
     {
     }
 
     json
-    IDefinition::getJson
+    Definition::getJson
     ()
     {
         return mJson;
@@ -43,7 +43,7 @@ namespace Dream
 
 
     bool
-    IDefinition::hasUuid
+    Definition::hasUuid
     (string uuid)
     {
         string s = mJson[Constants::UUID];
@@ -51,7 +51,7 @@ namespace Dream
     }
 
     string
-    IDefinition::getUuid
+    Definition::getUuid
     ()
     {
         if (mJson[Constants::UUID].is_null())
@@ -62,7 +62,7 @@ namespace Dream
     }
 
     string
-    IDefinition::getName
+    Definition::getName
     ()
     {
         if (mJson[Constants::NAME].is_null())
@@ -73,7 +73,7 @@ namespace Dream
     }
 
     bool
-    IDefinition::hasName
+    Definition::hasName
     (string uuid)
     {
         string s = mJson[Constants::NAME];
@@ -81,20 +81,20 @@ namespace Dream
     }
 
     string
-    IDefinition::getNameAndUuidString
+    Definition::getNameAndUuidString
     ()
     {
         return "[" + getName() + " : " + getUuid() + "]";
     }
 
     void
-    IDefinition::setName(string name)
+    Definition::setName(string name)
     {
         mJson[Constants::NAME] = name;
     }
 
     void
-    IDefinition::setUuid(string uuid)
+    Definition::setUuid(string uuid)
     {
         mJson[Constants::UUID] = uuid;
     }

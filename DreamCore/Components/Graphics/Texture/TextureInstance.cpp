@@ -5,8 +5,8 @@
 namespace Dream
 {
     TextureInstance::TextureInstance
-    (TextureDefinition* def)
-        : IAssetInstance (def,nullptr),
+    (TextureDefinition* def, ProjectRuntime* rt)
+        : SharedAssetInstance (def,rt),
           mGLID(0),
           mPath(""),
           mWidth(0),
@@ -89,12 +89,10 @@ namespace Dream
         return this->mGLID == other.mGLID && this->mPath.compare(other.mPath) == 0;
     }
 
-
     bool
     TextureInstance::load
-    (string projectPath)
+    ()
     {
         return false;
     }
-
 }

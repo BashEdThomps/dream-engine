@@ -21,7 +21,7 @@ namespace Dream
 {
     InputComponent::InputComponent
     (bool useKeyboard, bool useMouse, bool useJoystick)
-        : IComponent (),
+        : Component (),
           mUseKeyboard(useKeyboard),
           mUseMouse(useMouse),
           mUseJoystick(useJoystick),
@@ -53,6 +53,12 @@ namespace Dream
     (SceneRuntime* sRunt)
     {
         auto log = getLog();
+        if (!mEnabled)
+        {
+            log->warn("Update Disabled");
+            return;
+        }
+
         beginUpdate();
         mLastKeyboardState = mKeyboardState;
         mLastMouseState = mMouseState;

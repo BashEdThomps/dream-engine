@@ -21,7 +21,7 @@ namespace Dream
 {
     ShaderDefinition::ShaderDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
 
     }

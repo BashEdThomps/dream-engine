@@ -36,7 +36,7 @@ namespace Dream
         PhysicsComponent* comp,
         ModelCache* modelCache,
         SceneObjectRuntime* transform)
-        : IAssetInstance(definition,transform),
+        : DiscreteAssetInstance(definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
          mRigidBody(nullptr),
@@ -94,11 +94,11 @@ namespace Dream
 
     bool
     PhysicsObjectInstance::load
-    (string projectPath)
+    ()
     {
         auto log = getLog();
         auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
-        mCollisionShape = createCollisionShape(pod,projectPath);
+        mCollisionShape = createCollisionShape(pod);
         if (!mCollisionShape)
         {
             log->error( "Unable to create collision shape" );
@@ -144,7 +144,7 @@ namespace Dream
 
     btCollisionShape*
     PhysicsObjectInstance::createCollisionShape
-    (PhysicsObjectDefinition* pod, string projectPath)
+    (PhysicsObjectDefinition* pod)
     {
         auto log = getLog();
         string format = pod->getFormat();
@@ -239,7 +239,7 @@ namespace Dream
             for (CompoundChildDefinition child : pod->getCompoundChildren())
             {
                 auto def = getAssetDefinitionByUuid(child.uuid);
-                btCollisionShape *shape = createCollisionShape(def,projectPath);
+                btCollisionShape *shape = createCollisionShape(def);
                 if (shape)
                 {
                     compound->addChildShape(child.transform.getBtTransform(),shape);

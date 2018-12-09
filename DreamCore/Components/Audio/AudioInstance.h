@@ -19,7 +19,7 @@
 #include <vector>
 #include <deque>
 #include "AudioStatus.h"
-#include "../IAssetInstance.h"
+#include "../DiscreteAssetInstance.h"
 #include "../Event.h"
 
 #ifdef __APPLE__
@@ -32,15 +32,14 @@
 
 #include <glm/glm.hpp>
 
-using std::vector;
-using std::deque;
+using namespace std;
 
 namespace Dream
 {
     class AudioDefinition;
     class AudioComponent;
 
-    class AudioInstance : public IAssetInstance
+    class AudioInstance : public DiscreteAssetInstance
     {
     protected:
         bool mLooping;

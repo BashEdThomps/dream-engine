@@ -18,14 +18,14 @@
 
 #pragma once
 
-#include "../../ICache.h"
+#include "../../Cache.h"
 
 namespace Dream
 {
     class ShaderCache;
     class TextureCache;
 
-    class MaterialCache : public ICache
+    class MaterialCache : public Cache
     {
         ShaderCache* mShaderCache;
         TextureCache* mTextureCache;
@@ -34,7 +34,7 @@ namespace Dream
         ~MaterialCache() override;
 
     protected:
-        IAssetInstance* loadInstance(IAssetDefinition* def) override;
+        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
     };
 
 } // End Dream

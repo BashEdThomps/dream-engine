@@ -27,7 +27,7 @@ extern "C"
 
 #include "ScriptInstance.h"
 #include "ScriptCache.h"
-#include "../IComponent.h"
+#include "../Component.h"
 #include "../../Project/ProjectDirectory.h"
 
 namespace Dream
@@ -45,7 +45,7 @@ namespace Dream
         virtual void onPrint(string) = 0;
     };
 
-    class ScriptComponent : public IComponent
+    class ScriptComponent : public Component
     {
     public: // Methods
 
@@ -68,7 +68,6 @@ namespace Dream
         const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
         ProjectRuntime* mProjectRuntime;
-        ProjectDirectory mProjectDirectory;
 
         // API Exposure Methods ======================================================
         void exposePathComponent();
@@ -93,7 +92,7 @@ namespace Dream
         void exposeTime();
         void exposeTransform();
         void exposeGLM();
-        void exposeIDefinition();
+        void exposeDefinition();
         void exposeNanoVG();
 
     }; // End of LuaComponent

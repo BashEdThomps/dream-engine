@@ -18,13 +18,13 @@
 
 #pragma once
 
-#include "../IAssetDefinition.h"
+#include "../AssetDefinition.h"
 #include "../../deps/tinyspline/tinysplinecpp.h"
 
 namespace Dream
 {
 
-    class PathDefinition : public IAssetDefinition
+    class PathDefinition : public AssetDefinition
     {
     public:
         PathDefinition(ProjectDefinition*, json);

@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "IComponent.h"
+#include "Component.h"
 #include "Time.h"
 
 namespace Dream
 {
 
-    IComponent::IComponent
-    () : DreamObject("IComponent")
+    Component::Component
+    () : DreamObject("Component"),
+        mEnabled(true)
     {
 
     }
 
-
-    IComponent::~IComponent
+    Component::~Component
     ()
     {
 
@@ -36,14 +36,14 @@ namespace Dream
 
 
     void
-    IComponent::setTime
+    Component::setTime
     (Time* time)
     {
         mTime = time;
     }
 
     void
-    IComponent::beginUpdate
+    Component::beginUpdate
     ()
     {
         auto log = getLog();
@@ -53,7 +53,7 @@ namespace Dream
     }
 
     void
-    IComponent::endUpdate
+    Component::endUpdate
     ()
     {
         auto log = getLog();
@@ -63,21 +63,31 @@ namespace Dream
     }
 
     void
-    IComponent::setBusy
+    Component::setBusy
     (bool complete)
     {
        mBusy = complete;
     }
 
     bool
-    IComponent::isBusy
+    Component::isBusy
     ()
     {
        return mBusy;
     }
 
+    bool Component::getEnabled() const
+    {
+        return mEnabled;
+    }
+
+    void Component::setEnabled(bool enabled)
+    {
+        mEnabled = enabled;
+    }
+
     long long
-    IComponent::getUpdateBeginTime
+    Component::getUpdateBeginTime
     ()
     const
     {
@@ -85,7 +95,7 @@ namespace Dream
     }
 
     long long
-    IComponent::getUpdateTime
+    Component::getUpdateTime
     ()
     const
     {
@@ -93,7 +103,7 @@ namespace Dream
     }
 
     long long
-    IComponent::getYieldedTime
+    Component::getYieldedTime
     ()
     const
     {
@@ -101,7 +111,7 @@ namespace Dream
     }
 
     long long
-    IComponent::getUpdateEndTime
+    Component::getUpdateEndTime
     ()
     const
     {

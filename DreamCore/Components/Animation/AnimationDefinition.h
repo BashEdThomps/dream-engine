@@ -18,12 +18,12 @@
 
 #pragma once
 
-#include "../IAssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace Dream
 {
     class AnimationKeyframe;
-    class AnimationDefinition : public IAssetDefinition
+    class AnimationDefinition : public AssetDefinition
     {
     public:
         AnimationDefinition(ProjectDefinition*, json);

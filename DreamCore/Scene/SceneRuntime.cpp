@@ -41,7 +41,7 @@ namespace Dream
     (
             SceneDefinition* sd,
             ProjectRuntime* project
-            ) : IRuntime(sd),
+            ) : Runtime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
@@ -363,7 +363,10 @@ namespace Dream
         {
             log->error("Unable to load Input Handler Script {}",inputScriptUuid);
         }
-        mInputScript->registerInputScript();
+        else
+        {
+            mInputScript->registerInputScript();
+        }
 
         auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
         mNanoVGScript = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(nvgScriptUuid));
@@ -371,7 +374,10 @@ namespace Dream
         {
             log->error("Unable to load NanoVG Script {}",nvgScriptUuid);
         }
-        mNanoVGScript->registerNanoVGScript();
+        else
+        {
+            mNanoVGScript->registerNanoVGScript();
+        }
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
@@ -461,10 +467,10 @@ namespace Dream
         return mMaxDrawDistance;
     }
 
-    vector<IAssetInstance*>
+    vector<AssetInstance*>
     SceneRuntime::getAssetInstances(AssetType t)
     {
-        vector<IAssetInstance*> instances;
+        vector<AssetInstance*> instances;
         if (mRootSceneObjectRuntime)
         {
             mRootSceneObjectRuntime->applyToAll
@@ -473,7 +479,7 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        IAssetInstance* inst = currentRuntime->getAssetInstance(t);
+                        AssetInstance* inst = currentRuntime->getAssetInstance(t);
                         if (inst)
                         {
                             instances.push_back(inst);
@@ -487,7 +493,7 @@ namespace Dream
     }
 
     vector<SceneObjectRuntime*>
-    SceneRuntime::getSceneObjectsWithInstanceOf(IAssetDefinition* def)
+    SceneRuntime::getSceneObjectsWithInstanceOf(AssetDefinition* def)
     {
         vector<SceneObjectRuntime*> runtimes;
         if (mRootSceneObjectRuntime)
@@ -498,7 +504,7 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        IAssetInstance* inst = currentRuntime->getAssetInstance(def->getAssetType());
+                        AssetInstance* inst = currentRuntime->getAssetInstance(def->getAssetType());
                         if (inst && inst->getUuid().compare(def->getUuid()) == 0)
                         {
                             runtimes.push_back(currentRuntime);

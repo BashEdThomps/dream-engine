@@ -41,7 +41,7 @@ namespace Dream
         );
         ~WavAudioInstance() override;
         long getFileSize(FILE* inFile);
-        bool load(string) override;
-    }; // End WavAudioInstance
+        bool load() override;
+    };
 
-} // End of Dream
+}

@@ -31,7 +31,7 @@ namespace Dream
     (
         PathDefinition* definition,
         SceneObjectRuntime* runtime
-    ) : IAssetInstance(definition,runtime),
+    ) : DiscreteAssetInstance(definition,runtime),
           mWrapPath(true),
           mCurrentIndex(0),
           mUStep(0.05)
@@ -52,12 +52,12 @@ namespace Dream
     void PathInstance::recalculate
     ()
     {
-        load("");
+        load();
     }
 
     bool
     PathInstance::load
-    (string)
+    ()
     {
         auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
         auto log = getLog();
@@ -303,4 +303,4 @@ namespace Dream
     const int PathInstance::SPLINE_DIMENSIONS = 3;
     const int PathInstance::SPLINE_DEGREES = 3;
 
-} // End of Dream
+}

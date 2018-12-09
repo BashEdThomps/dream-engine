@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../../ICache.h"
+#include "../../Cache.h"
 
 namespace Dream
 {
@@ -26,7 +26,7 @@ namespace Dream
     class ModelDefinition;
     class ProjectRuntime;
 
-    class ModelCache : public ICache
+    class ModelCache : public Cache
     {
     public:
         ModelCache(ProjectRuntime*, ShaderCache*, MaterialCache*);
@@ -34,6 +34,6 @@ namespace Dream
     protected:
         ShaderCache* mShaderCacheHandle;
         MaterialCache* mMaterialCacheHandle;
-        IAssetInstance* loadInstance(IAssetDefinition* def) override;
+        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
     };
 }

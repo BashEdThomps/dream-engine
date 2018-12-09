@@ -22,7 +22,7 @@ namespace Dream
 {
     AudioDefinition::AudioDefinition
     (ProjectDefinition* pd, json js)
-        : IAssetDefinition(pd,js)
+        : AssetDefinition(pd,js)
     {
 
     }

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../IComponent.h"
+#include "../Component.h"
 
 #include <string>
 
@@ -27,7 +27,7 @@ using std::string;
 namespace Dream
 {
 
-    class IWindowComponent : public IComponent
+    class IWindowComponent : public Component
     {
     public:
       IWindowComponent();

@@ -65,29 +65,32 @@ namespace DreamTool
     PropertiesWindow::draw
     ()
     {
-        ImGui::Begin("Properties",&mVisible);
-        if(ImGui::Button("<- Back"))
+        if (mState->project)
         {
-            popPropertyTarget();
+            ImGui::Begin("Properties",&mVisible);
+            if(ImGui::Button("<- Back"))
+            {
+                popPropertyTarget();
+            }
+            switch (mType)
+            {
+                case PropertyType::None:
+                    break;
+                case PropertyType::Project:
+                    drawProjectProperties();
+                    break;
+                case PropertyType::Scene:
+                    drawSceneProperties();
+                    break;
+                case PropertyType::SceneObject:
+                    drawSceneObjectProperties();
+                    break;
+                case PropertyType::Asset:
+                    drawAssetProperties();
+                    break;
+            }
+            ImGui::End();
         }
-        switch (mType)
-        {
-            case PropertyType::None:
-                break;
-            case PropertyType::Project:
-                drawProjectProperties();
-                break;
-            case PropertyType::Scene:
-                drawSceneProperties();
-                break;
-            case PropertyType::SceneObject:
-                drawSceneObjectProperties();
-                break;
-            case PropertyType::Asset:
-                drawAssetProperties();
-                break;
-        }
-        ImGui::End();
     }
 
     bool
@@ -152,7 +155,7 @@ namespace DreamTool
         }
 
         auto sDef = dynamic_cast<SceneDefinition*>(mDefinition);
-        auto pDef = mState->project->getProjectDefinition();
+        auto pDef = mState->project->getDefinition();
 
         if(ImGui::BeginPopupModal("Confirm Delete Scene"))
         {
@@ -185,7 +188,7 @@ namespace DreamTool
 
     void
     PropertiesWindow::pushPropertyTarget
-    (PropertyType type, IDefinition* def, IRuntime* runt)
+    (PropertyType type, Definition* def, Runtime* runt)
     {
         // Remove old
         auto itr = std::find_if(
@@ -211,7 +214,7 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::removeFromHistory(IDefinition* def)
+    PropertiesWindow::removeFromHistory(Definition* def)
     {
         auto itr = mHistory.end();
         for (itr = mHistory.begin(); itr != mHistory.end(); itr++)
@@ -274,14 +277,14 @@ namespace DreamTool
 
     void
     PropertiesWindow::setDefinition
-    (IDefinition* def)
+    (Definition* def)
     {
         mDefinition = def;
     }
 
     void
     PropertiesWindow::setRuntime
-    (IRuntime* runt)
+    (Runtime* runt)
     {
         mRuntime = runt;
     }
@@ -319,7 +322,7 @@ namespace DreamTool
             pushPropertyTarget
                     (
                         DreamTool::Scene,
-                        mState->project->getProjectDefinition()->createNewSceneDefinition(),
+                        mState->project->getDefinition()->createNewSceneDefinition(),
                         nullptr
                         );
             return;
@@ -623,11 +626,11 @@ namespace DreamTool
             auto spShaderDef = pDef->getAssetDefinitionByUuid(spShaderUuid);
             int shadowShaderIndex = pDef->getAssetDefinitionIndex(AssetType::SHADER,spShaderDef);
 
-            auto shaderList = mState->project->getProjectDefinition()->getAssetNamesVector(AssetType::SHADER);
+            auto shaderList = mState->project->getDefinition()->getAssetNamesVector(AssetType::SHADER);
 
             if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
             {
-                auto selectedShader = mState->project->getProjectDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, lightingShaderIndex);
+                auto selectedShader = mState->project->getDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, lightingShaderIndex);
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setLightingPassShader(uuid);
@@ -637,7 +640,7 @@ namespace DreamTool
 
             if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
             {
-                auto selectedShader = mState->project->getProjectDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, shadowShaderIndex);
+                auto selectedShader = mState->project->getDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, shadowShaderIndex);
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
@@ -647,8 +650,8 @@ namespace DreamTool
 
         if (ImGui::CollapsingHeader("Scripting"))
         {
-            auto pDef=mState->project->getProjectDefinition();
-            vector<string> scriptAssets = mState->project->getProjectDefinition()->getAssetNamesVector(AssetType::SCRIPT);
+            auto pDef=mState->project->getDefinition();
+            vector<string> scriptAssets = mState->project->getDefinition()->getAssetNamesVector(AssetType::SCRIPT);
 
             string inputScriptUuid = sceneDef->getInputScript();
             auto inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
@@ -717,7 +720,7 @@ namespace DreamTool
     PropertiesWindow::drawSceneObjectProperties
     ()
     {
-        auto projDef = mState->project->getProjectDefinition();
+        auto projDef = mState->project->getDefinition();
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto log = getLog();
@@ -1214,7 +1217,7 @@ namespace DreamTool
             ImGui::Columns(1);
         }
 
-        auto pRunt = mState->project->getProjectRuntime();
+        auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
             auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
@@ -1270,7 +1273,7 @@ namespace DreamTool
 
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
-        auto pRunt = mState->project->getProjectRuntime();
+        auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
             auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
@@ -1304,7 +1307,7 @@ namespace DreamTool
     PropertiesWindow::drawAssetProperties
     ()
     {
-        auto assetDef = dynamic_cast<IAssetDefinition*>(mDefinition);
+        auto assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
         if (assetDef == nullptr)
         {
             return;
@@ -1313,9 +1316,8 @@ namespace DreamTool
         ImGui::SameLine();
         if(ImGui::Button("Delete Asset"))
         {
-            ProjectDirectory dir(mState->project);
-            dir.removeAssetDirectory(assetDef);
-            auto projDef = mState->project->getProjectDefinition();
+            mState->projectDirectory.removeAssetDirectory(assetDef);
+            auto projDef = mState->project->getDefinition();
             projDef->removeAssetDefinition(assetDef);
             removeFromHistory(mDefinition);
             mDefinition = nullptr;
@@ -1377,7 +1379,7 @@ namespace DreamTool
                 break;
         }
 
-        auto pRunt = mState->project->getProjectRuntime();
+        auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
             auto activeScene = pRunt->getActiveSceneRuntime();
@@ -1415,8 +1417,7 @@ namespace DreamTool
             mState->lastDirectory = audioFile.getDirectory();
             log->error("Setting last directory {}",mState->lastDirectory);
             auto audioData = audioFile.readBinary();
-            ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(audioDef,audioData);
+            mState->projectDirectory.writeAssetData(audioDef,audioData);
             audioDef->setName(audioFile.nameWithoutExtension());
         }
 
@@ -1424,8 +1425,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            ProjectDirectory projectDir(mState->project);
-            projectDir.removeAssetDirectory(audioDef);
+            mState->projectDirectory.removeAssetDirectory(audioDef);
         }
     }
 
@@ -1446,8 +1446,7 @@ namespace DreamTool
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
-            ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(def,data);
+            mState->projectDirectory.writeAssetData(def,data);
             def->setName(file.nameWithoutExtension());
         }
 
@@ -1455,8 +1454,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            ProjectDirectory projectDir(mState->project);
-            projectDir.removeAssetDirectory(def);
+            mState->projectDirectory.removeAssetDirectory(def);
         }
     }
 
@@ -1559,8 +1557,8 @@ namespace DreamTool
     PropertiesWindow::drawMaterialAssetProperties
     ()
     {
-        auto projDef = mState->project->getProjectDefinition();
-        auto projRunt = mState->project->getProjectRuntime();
+        auto projDef = mState->project->getDefinition();
+        auto projRunt = mState->project->getRuntime();
         auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
         int shaderIndex = 0;
         vector<string> shaderList;
@@ -1889,8 +1887,7 @@ namespace DreamTool
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
-            ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(def,data);
+            mState->projectDirectory.writeAssetData(def,data);
             def->setName(file.nameWithoutExtension());
         }
 
@@ -1907,22 +1904,20 @@ namespace DreamTool
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
-            ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(def,data,file.nameWithExtension());
+            mState->projectDirectory.writeAssetData(def,data,file.nameWithExtension());
         }
 
         ImGui::SameLine();
 
         if(ImGui::Button("Remove File(s)"))
         {
-            ProjectDirectory projectDir(mState->project);
-            projectDir.removeAssetDirectory(def);
+            mState->projectDirectory.removeAssetDirectory(def);
         }
 
         // Material List --------------------------------------------------------
 
         vector<string> modelMaterialNames;
-        auto projRunt = mState->project->getProjectRuntime();
+        auto projRunt = mState->project->getRuntime();
         if (projRunt)
         {
             auto modelCache = projRunt->getModelCache();
@@ -1946,7 +1941,7 @@ namespace DreamTool
         ImGui::NextColumn();
 
         vector<string> materialAssetNames;
-        auto projDef =  mState->project->getProjectDefinition();
+        auto projDef =  mState->project->getDefinition();
         if (projDef)
         {
             materialAssetNames = projDef->getAssetNamesVector(AssetType::MATERIAL);
@@ -2067,16 +2062,16 @@ namespace DreamTool
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
-            auto projDef = mState->project->getProjectDefinition();
+            auto projDef = mState->project->getDefinition();
 
             string selectedModelAssetUuid = pod->getCollisionModel();
-            IAssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
+            AssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
             int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedModelAssetDef);
             vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
 
             if(StringCombo("Model",&selectedModelAssetIndex,modelAssets,modelAssets.size()))
             {
-                IAssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
+                AssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
                 pod->setCollisionModel(newlySelected->getUuid());
             modified = true;
             }
@@ -2100,7 +2095,7 @@ namespace DreamTool
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
         {
             ImGui::Columns(2);
-            auto pDef = mState->project->getProjectDefinition();
+            auto pDef = mState->project->getDefinition();
             if (pDef)
             {
                 auto shapeNames = pDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
@@ -2184,7 +2179,7 @@ namespace DreamTool
     {
         auto log = getLog();
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
-        auto projRunt = mState->project->getProjectRuntime();
+        auto projRunt = mState->project->getRuntime();
         ShaderInstance* shaderInst = nullptr;
         if (projRunt)
         {
@@ -2224,7 +2219,7 @@ namespace DreamTool
     {
         void* textureId = nullptr;
         auto textureDef = dynamic_cast<TextureDefinition*>(mDefinition);
-        auto projRunt = mState->project->getProjectRuntime();
+        auto projRunt = mState->project->getRuntime();
         if (projRunt)
         {
             auto txCache = projRunt->getTextureCache();
@@ -2246,8 +2241,7 @@ namespace DreamTool
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
-            ProjectDirectory projectDir(mState->project);
-            projectDir.writeAssetData(textureDef,data);
+            mState->projectDirectory.writeAssetData(textureDef,data);
             textureDef->setName(file.nameWithoutExtension());
         }
 
@@ -2255,8 +2249,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            ProjectDirectory projectDir(mState->project);
-            projectDir.removeAssetDirectory(textureDef);
+            mState->projectDirectory.removeAssetDirectory(textureDef);
         }
 
         ImGui::Columns(1);
@@ -2281,9 +2274,9 @@ namespace DreamTool
 
     void
     PropertiesWindow::replaceRuntimeInstances
-    (IAssetDefinition* assetDef)
+    (AssetDefinition* assetDef)
     {
-        auto pRunt = mState->project->getProjectRuntime();
+        auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();
