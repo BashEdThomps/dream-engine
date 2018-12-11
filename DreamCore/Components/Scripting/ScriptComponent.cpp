@@ -33,7 +33,7 @@
 #include "../Input/InputComponent.h"
 #include "../Physics/PhysicsComponent.h"
 #include "../Physics/PhysicsObjectInstance.h"
-#include "../Window/IWindowComponent.h"
+#include "../Window/WindowComponent.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
@@ -435,11 +435,11 @@ namespace Dream
     {
         debugRegisteringClass("WindowComponent");
         sol::state_view stateView(State);
-        stateView.new_usertype<IWindowComponent>
+        stateView.new_usertype<WindowComponent>
         (
             "IWindowComponent",
-            "getWidth",&IWindowComponent::getWidth,
-            "getHeight",&IWindowComponent::getHeight
+            "getWidth",&WindowComponent::getWidth,
+            "getHeight",&WindowComponent::getHeight
         );
         stateView[COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
     }

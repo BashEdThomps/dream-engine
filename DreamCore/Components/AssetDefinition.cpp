@@ -161,83 +161,6 @@ namespace Dream
     }
 
     string
-    AssetDefinition::getAssetTypeDirectory
-    ()
-    {
-        if (isTypeAudio())
-        {
-            return Constants::ASSET_TYPE_AUDIO;
-        }
-
-        else if (isTypeFont())
-        {
-            return Constants::ASSET_TYPE_FONT;
-        }
-
-        else if (isTypeLight())
-        {
-            return Constants::ASSET_TYPE_LIGHT;
-        }
-
-        else if (isTypeMaterial())
-        {
-            return Constants::ASSET_TYPE_MATERIAL;
-        }
-
-        else if (isTypeModel())
-        {
-            return Constants::ASSET_TYPE_MODEL;
-        }
-
-        else if (isTypeParticleEmitter())
-        {
-            return Constants::ASSET_TYPE_PARTICLE_EMITTER;
-        }
-
-        else if (isTypePath())
-        {
-            return Constants::ASSET_TYPE_PATH;
-        }
-
-        else if (isTypePhysicsObject())
-        {
-            return Constants::ASSET_TYPE_PHYSICS_OBJECT;
-        }
-
-        else if (isTypeScript())
-        {
-            return Constants::ASSET_TYPE_SCRIPT;
-        }
-
-        else if (isTypeShader())
-        {
-            return Constants::ASSET_TYPE_SHADER;
-        }
-
-        else if (isTypeTexture())
-        {
-            return Constants::ASSET_TYPE_TEXTURE;
-        }
-
-        else
-        {
-            return "Type Not Found";
-        }
-    }
-
-    string
-    AssetDefinition::getAssetPath
-    ()
-    {
-        stringstream pathStream;
-        pathStream << Constants::DIR_PATH_SEP
-                   << getAssetTypeDirectory() << Constants::DIR_PATH_SEP
-                   << getUuid() << Constants::DIR_PATH_SEP
-                   << getFormat();
-        return pathStream.str();
-    }
-
-    string
     AssetDefinition::getGroup
     ()
     {
@@ -255,14 +178,6 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_GROUP] = group;
     }
 
-
-    void
-    AssetDefinition::showStatus
-    ()
-    {
-        auto log = getLog();
-        log->debug( mJson.dump(1) );
-    }
 
     ProjectDefinition*
     AssetDefinition::getProject

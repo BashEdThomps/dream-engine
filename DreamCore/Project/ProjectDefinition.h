@@ -59,7 +59,6 @@ namespace Dream
 
         void loadChildDefinitions();
 
-        void showStatus() override;
         size_t countAssetDefinitions();
         AssetDefinition* getAssetDefinitionByUuid(string uuid);
         AssetDefinition* getAssetDefinitionByName(string name);

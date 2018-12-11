@@ -70,10 +70,7 @@ namespace Dream
 
     void
     ShaderCache::drawGeometryPass
-    (
-        Camera* camera,
-        mat4 projectionMatrix
-    )
+    (Camera* camera)
     {
         for (auto instance : mInstances)
         {
@@ -81,7 +78,7 @@ namespace Dream
             if (shader->countMaterials() == 0) continue;
             shader->use();
             shader->setViewMatrix(camera->getViewMatrix());
-            shader->setProjectionMatrix(projectionMatrix);
+            shader->setProjectionMatrix(camera->getProjectionMatrix());
             shader->setViewerPosition(camera->getTranslation());
             shader->drawGeometryPass(camera);
         }

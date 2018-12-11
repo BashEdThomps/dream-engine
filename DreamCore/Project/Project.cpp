@@ -27,7 +27,7 @@
 #include "../Components/Time.h"
 #include "../Components/Transform.h"
 #include "../Components/AssetInstance.h"
-#include "../Components/Window/IWindowComponent.h"
+#include "../Components/Window/WindowComponent.h"
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
@@ -144,7 +144,7 @@ namespace Dream
 
     void
     Project::setWindowComponent
-    (IWindowComponent* windowComponent)
+    (WindowComponent* windowComponent)
     {
         mWindowComponent = windowComponent;
     }

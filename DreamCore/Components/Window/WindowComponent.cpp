@@ -15,12 +15,12 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "IWindowComponent.h"
+#include "WindowComponent.h"
 
 namespace Dream
 {
 
-    IWindowComponent::IWindowComponent
+    WindowComponent::WindowComponent
     ()
         : Component(),
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
@@ -32,77 +32,77 @@ namespace Dream
     {
     }
 
-    IWindowComponent::~IWindowComponent
+    WindowComponent::~WindowComponent
     ()
     {
 
     }
 
     void
-    IWindowComponent::setWidth
+    WindowComponent::setWidth
     (int width)
     {
         mWidth = width;
     }
 
     void
-    IWindowComponent::setHeight
+    WindowComponent::setHeight
     (int height)
     {
         mHeight = height;
     }
 
     int
-    IWindowComponent::getWidth
+    WindowComponent::getWidth
     ()
     {
         return mWidth;
     }
 
     int
-    IWindowComponent::getHeight
+    WindowComponent::getHeight
     ()
     {
         return mHeight;
     }
 
     void
-    IWindowComponent::setName
+    WindowComponent::setName
     (string name)
     {
         mName = name;
     }
 
     string
-    IWindowComponent::getName
+    WindowComponent::getName
     ()
     {
         return mName;
     }
 
     void
-    IWindowComponent::close
+    WindowComponent::close
     ()
     {
         mShouldClose = true;
     }
 
     bool
-    IWindowComponent::shouldClose
+    WindowComponent::shouldClose
     ()
     {
         return mShouldClose;
     }
 
     void
-    IWindowComponent::setShouldClose
+    WindowComponent::setShouldClose
     (bool close)
     {
         mShouldClose = close;
     }
 
     bool
-    IWindowComponent::sizeHasChanged
+    WindowComponent::sizeHasChanged
     ()
     {
         bool temp = mSizeHasChanged;
@@ -110,12 +110,12 @@ namespace Dream
         return temp;
     }
 
-    double IWindowComponent::getMouseX()
+    double WindowComponent::getMouseX()
     {
         return mMouseX;
     }
 
-    double IWindowComponent::getMouseY()
+    double WindowComponent::getMouseY()
     {
        return mMouseY;
     }

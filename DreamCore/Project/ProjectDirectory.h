@@ -27,7 +27,7 @@ namespace Dream
         string getAssetAbsolutePath(AssetDefinition*);
         string getAssetAbsolutePath(AssetDefinition*, string format);
         string getAssetDirectoryPath(AssetDefinition*);
-        string getAssetTypeDirectory(AssetType type);
+        string getAssetTypeDirectory(AssetType type, string base = "");
 
         bool removeAssetDirectory(AssetDefinition*);
 
@@ -43,6 +43,11 @@ namespace Dream
         Project* openFromDirectory(string directory);
         bool     saveProject();
         void     closeProject();
+
+    protected:
+        string findProjectFileInDirectory(string dir);
+        bool directoryContainsProject(string dir);
+        bool findAssetDirectories(string dir);
 
     private:
         Project* mProject;

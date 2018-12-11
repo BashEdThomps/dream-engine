@@ -42,8 +42,6 @@ namespace Dream
         SceneDefinition(ProjectDefinition* project, json data);
         ~SceneDefinition() override;
 
-        void showStatus() override;
-
         void loadRootSceneObjectDefinition();
 
         void setCameraMovementSpeed(float speed);

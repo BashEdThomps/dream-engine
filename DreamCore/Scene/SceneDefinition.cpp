@@ -48,14 +48,6 @@ namespace Dream
     }
 
     void
-    SceneDefinition::showStatus
-    ()
-    {
-        auto log = getLog();
-        log->debug( mJson.dump(1) );
-    }
-
-    void
     SceneDefinition::loadRootSceneObjectDefinition
     ()
     {

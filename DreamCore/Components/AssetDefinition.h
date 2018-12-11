@@ -1,6 +1,4 @@
 /*
-* Dream::AssetDefinition
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -14,6 +12,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #pragma once
 
 #include "../Common/Definition.h"
@@ -25,25 +24,25 @@ namespace Dream
 {
     class ProjectDefinition;
 
+    /**
+     * @brief Base class used to define an Asset's initial properties.
+     */
     class AssetDefinition : public Definition
     {
 
     public:
-        AssetDefinition(ProjectDefinition*, json);
+        AssetDefinition(ProjectDefinition* project, json data);
         AssetType getAssetType();
 
         virtual ~AssetDefinition();
 
         ProjectDefinition* getProject();
-        void showStatus();
 
         void setType(string);
         string getType();
 
         void setFormat(string);
         string getFormat();
-
-        string getAssetTypeDirectory();
 
         bool isTypeAudio();
         bool isTypeFont();
@@ -56,11 +55,6 @@ namespace Dream
         bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
         bool isTypeTexture();
-
-        string getAssetPath();
-
-        void setProjectPath(string);
-        string getProjectPath();
 
         string getGroup();
         void setGroup(string group);

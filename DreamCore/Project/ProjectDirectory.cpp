@@ -227,10 +227,10 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetTypeDirectory
-    (AssetType type)
+    (AssetType type, string base)
     {
         stringstream ss;
-        ss << mPath
+        ss << (base.empty() ? mPath : base)
            << Constants::DIR_PATH_SEP
            << Constants::getAssetTypeStringFromTypeEnum(type);
         return ss.str();
@@ -300,6 +300,11 @@ namespace Dream
             closeProject();
         }
 
+        if (directoryContainsProject(projectDir))
+        {
+            return nullptr;
+        }
+
         mProject = new Project(this);
         mProject->setDefinition(ProjectDefinition::createNewProjectDefinition());
         mPath = projectDir;
@@ -355,21 +360,8 @@ namespace Dream
     (string directory)
     {
         auto log = getLog();
-        Directory dir(directory);
-        vector<string> directoryContents;
-        directoryContents = dir.list();
 
-        string projectFileName;
-
-        for (string filename : directoryContents)
-        {
-            size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
-            if (dotJsonIndex != string::npos)
-            {
-                projectFileName = filename.substr(0,dotJsonIndex);
-                log->debug( "Project: openFromDirectory - Found project file ",projectFileName );
-            }
-        }
+        string projectFileName = findProjectFileInDirectory(directory);
 
         if (projectFileName.size() == 0)
         {
@@ -396,6 +388,59 @@ namespace Dream
             delete mProject;
             mProject = nullptr;
         }
+    }
+
+    string
+    ProjectDirectory::findProjectFileInDirectory
+    (string directory)
+    {
+        auto log = getLog();
+        Directory dir(directory);
+        vector<string> directoryContents;
+        directoryContents = dir.list();
+
+        string projectFileName;
+
+        for (string filename : directoryContents)
+        {
+            size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
+            if (dotJsonIndex != string::npos)
+            {
+                projectFileName = filename.substr(0,dotJsonIndex);
+                log->debug( "Found project file ",projectFileName );
+                return projectFileName;
+            }
+        }
+        return "";
+    }
+
+    bool
+    ProjectDirectory::directoryContainsProject
+    (string dir)
+    {
+        bool hasJsonFile = !findProjectFileInDirectory(dir).empty();
+        bool hasAssetDirectories = findAssetDirectories(dir);
+        return hasJsonFile || hasAssetDirectories;
+    }
+
+    bool
+    ProjectDirectory::findAssetDirectories
+    (string dir)
+    {
+        auto log = getLog();
+        auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
+        for (auto typePair : assetTypes)
+        {
+            auto type = typePair.first;
+            string assetDir = getAssetTypeDirectory(type,dir);
+            log->error("Checking for {}",assetDir);
+            if (!Directory(assetDir).exists())
+            {
+                return false;
+            }
+        }
+        return true;
+
     }
 
     Project*

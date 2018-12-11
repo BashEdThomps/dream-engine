@@ -37,7 +37,7 @@ namespace Dream
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
         void logShaders();
-        void drawGeometryPass(Camera*, mat4);
+        void drawGeometryPass(Camera*);
         void drawShadowPass(mat4, ShaderInstance*);
 
         // Cache interface

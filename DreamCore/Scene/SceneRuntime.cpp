@@ -43,6 +43,7 @@ namespace Dream
             ProjectRuntime* project
             ) : Runtime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
+        mCamera(Camera(this)),
         mClearColour({0,0,0,0}),
         mAmbientColour({0,0,0}),
         mProjectRuntime(project),

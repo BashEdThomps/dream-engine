@@ -24,17 +24,44 @@ using namespace spdlog;
 
 namespace Dream
 {
+    /**
+     * @brief The base class for objects in Dream. This class provides access to
+     * Constants and logging functionality to any DreamObject.
+     */
     class DreamObject
     {
     public:
+        /**
+         * @param classname Logging class name.
+         */
         DreamObject(string classname);
+
+        /**
+         * @brief Default destructor.
+         */
         virtual ~DreamObject();
 
-        void setLogClassName(string);
+        /**
+         * @brief Override the currently defined class name used during logging.
+         * @param className The new class name to log with.
+         */
+        void setLogClassName(string className);
+
+        /**
+         * @return Get the class name used for logging.
+         */
         string getClassName();
 
     protected:
+        /**
+         * @return Get the instance of the class's logger. Instances are shared
+         * between objects with the same _CLASSNAME_.
+         */
         shared_ptr<logger> getLog() const;
+
+        /**
+         * @brief Name to use during logging.
+         */
         string  _CLASSNAME_;
     };
 }

@@ -41,7 +41,7 @@ namespace DreamTool
     }
 
     DTWindowComponent::DTWindowComponent
-    () : IWindowComponent(),
+    () : WindowComponent(),
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {

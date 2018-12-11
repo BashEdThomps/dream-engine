@@ -36,7 +36,7 @@ namespace Dream
     class AudioComponent;
     class InputComponent;
     class GraphicsComponent;
-    class IWindowComponent;
+    class WindowComponent;
     class PhysicsComponent;
     class ScriptComponent;
     class NanoVGComponent;
@@ -73,7 +73,7 @@ namespace Dream
         PhysicsComponent* mPhysicsComponent;
         PathComponent* mPathComponent;
         ScriptComponent* mScriptComponent;
-        IWindowComponent* mWindowComponent;
+        WindowComponent* mWindowComponent;
 
         // Caches
         TextureCache* mTextureCache;
@@ -88,7 +88,7 @@ namespace Dream
     public: // Public Functions
         ProjectRuntime(
             Project* parentProject,
-            IWindowComponent* wc = nullptr);
+            WindowComponent* wc = nullptr);
         ~ProjectRuntime() override;
 
         void setDone(bool);
@@ -102,7 +102,7 @@ namespace Dream
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
         NanoVGComponent* getNanoVGComponent();
-        IWindowComponent* getWindowComponent();
+        WindowComponent* getWindowComponent();
         ScriptComponent* getScriptComponent();
         Project* getProject();
         InputComponent* getInputComponent();

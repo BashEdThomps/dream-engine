@@ -14,65 +14,23 @@
 */
 
 #include "Camera.h"
+
+#include "../Window/WindowComponent.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
-
-
-    SceneObjectRuntime* Camera::getFocusedSceneObject() const
-    {
-        return mFocusedSceneObject;
-    }
-
-    float Camera::getFocusPitch() const
-    {
-        return mFocusPitch;
-    }
-
-    void Camera::setFocusPitch(float focusPitch)
-    {
-        mFocusPitch = focusPitch;
-    }
-
-    float Camera::getFocusYaw() const
-    {
-        return mFocusYaw;
-    }
-
-    void Camera::setFocusYaw(float focusYaw)
-    {
-        mFocusYaw = focusYaw;
-    }
-
-    float Camera::getFocusRadius() const
-    {
-        return mFocusRadius;
-    }
-
-    void Camera::setFocusRadius(float focusRadius)
-    {
-        mFocusRadius = focusRadius;
-    }
-
-    float Camera::getFocusElevation() const
-    {
-        return mFocusElevation;
-    }
-
-    void Camera::setFocusElevation(float focusElevation)
-    {
-        mFocusElevation = focusElevation;
-    }
-
     Camera::Camera
-    (vec3 translation, vec3 up, float yaw, float pitch)
+    (SceneRuntime* parent)
         : DreamObject("Camera"),
-          mTranslation(translation),
+          mSceneRuntime(parent),
+          mTranslation(vec3(0.0f, 0.0f, 0.0f)),
           mFront(vec3(0.0f, 0.0f, -1.0f)),
-          mWorldUp(up),
-          mYaw(yaw),
-          mPitch(pitch),
+          mWorldUp(vec3(0.0f, 1.0f, 0.0f)),
+          mYaw(0.0f),
+          mPitch(0.0f),
           mMovementSpeed(Constants::CAMERA_SPEED),
           mFrustum(Frustum(this)),
           mFocusedSceneObject(nullptr),
@@ -80,7 +38,11 @@ namespace Dream
           mFocusYaw(0.0f),
           mFocusRadius(10.0f),
           mFocusElevation(0.0f),
-          mFocusTranslation(vec3(0.0f))
+          mFocusTranslation(vec3(0.0f)),
+          mProjectionMatrix(mat4(1.0f)),
+          mMinimumDraw(1.0f),
+          mMaximumDraw(3000.0f),
+          mMeshCullDistance(2500.0f)
     {
     }
 
@@ -118,20 +80,33 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            return lookAt(
-                        mFocusTranslation,
-                        mFocusedSceneObject->getTransform().decomposeMatrix().translation,
-                        mUp
-                        );
+            return lookAt(mFocusTranslation,mFocusedSceneObject->getTransform().decomposeMatrix().translation,mUp);
         }
         else
         {
-            return lookAt(
-                        mTranslation,
-                        mTranslation+mFront,
-                        mUp
-                        );
+            return lookAt(mTranslation,mTranslation+mFront, mUp);
         }
+    }
+
+    void
+    Camera::update
+    ()
+    {
+        mMeshCullDistance = mSceneRuntime->getMeshCullDistance();
+        mMinimumDraw = mSceneRuntime->getMinDrawDistance();
+        mMaximumDraw = mSceneRuntime->getMaxDrawDistance();
+        auto wc = mSceneRuntime->getProjectRuntime()->getWindowComponent();
+        int windowWidth  = wc->getWidth();
+        int windowHeight = wc->getHeight();
+        updateProjectionMatrix(static_cast<float>(windowWidth),static_cast<float>(windowHeight));
+        updateCameraVectors();
+    }
+
+    void
+    Camera::updateProjectionMatrix
+    (float w, float h)
+    {
+       mProjectionMatrix = perspective(Constants::CAMERA_ZOOM, w/h,mMinimumDraw,mMaximumDraw);
     }
 
     vec3
@@ -375,6 +350,96 @@ namespace Dream
     (SceneObjectRuntime* rt)
     {
         mFocusedSceneObject = rt;
+    }
+
+    SceneObjectRuntime* Camera::getFocusedSceneObject() const
+    {
+        return mFocusedSceneObject;
+    }
+
+    float Camera::getFocusPitch() const
+    {
+        return mFocusPitch;
+    }
+
+    void Camera::setFocusPitch(float focusPitch)
+    {
+        mFocusPitch = focusPitch;
+    }
+
+    float Camera::getFocusYaw() const
+    {
+        return mFocusYaw;
+    }
+
+    void Camera::setFocusYaw(float focusYaw)
+    {
+        mFocusYaw = focusYaw;
+    }
+
+    float Camera::getFocusRadius() const
+    {
+        return mFocusRadius;
+    }
+
+    void Camera::setFocusRadius(float focusRadius)
+    {
+        mFocusRadius = focusRadius;
+    }
+
+    float Camera::getFocusElevation() const
+    {
+        return mFocusElevation;
+    }
+
+    void
+    Camera::setFocusElevation
+    (float focusElevation)
+    {
+        mFocusElevation = focusElevation;
+    }
+
+    float
+    Camera::getMinimumDraw
+    () const
+    {
+        return mMinimumDraw;
+    }
+
+    float
+    Camera::getMaximumDraw
+    () const
+    {
+        return mMaximumDraw;
+    }
+
+    void
+    Camera::setMinimumDraw
+    (float minimumDraw)
+    {
+        mMinimumDraw = minimumDraw;
+    }
+
+    void
+    Camera::setMaximumDraw
+    (float maximumDraw)
+    {
+        mMaximumDraw = maximumDraw;
+    }
+
+    float
+    Camera::getMeshCullDistance
+    ()
+    const
+    {
+        return mMeshCullDistance;
+    }
+
+    void
+    Camera::setMeshCullDistance
+    (float meshCullDistance)
+    {
+        mMeshCullDistance = meshCullDistance;
     }
 
 } // End of Dream

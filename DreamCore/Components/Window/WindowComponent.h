@@ -27,11 +27,11 @@ using std::string;
 namespace Dream
 {
 
-    class IWindowComponent : public Component
+    class WindowComponent : public Component
     {
     public:
-      IWindowComponent();
-      virtual ~IWindowComponent();
+      WindowComponent();
+      virtual ~WindowComponent();
 
       bool init() = 0;
       void updateComponent(SceneRuntime*) = 0;

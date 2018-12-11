@@ -30,6 +30,11 @@
 namespace Dream
 {
 
+    void SceneObjectDefinition::setParentSceneObject(SceneObjectDefinition* parentSceneObject)
+    {
+        mParentSceneObject = parentSceneObject;
+    }
+
     SceneObjectDefinition::SceneObjectDefinition
     (
             SceneObjectDefinition* parent,
@@ -61,13 +66,19 @@ namespace Dream
         deleteChildSceneObjectDefinitions();
     }
 
-    int SceneObjectDefinition::getChildCount()
+    int
+    SceneObjectDefinition::getChildCount
+    ()
+    const
     {
+        /*
         if (mJson[Constants::SCENE_OBJECT_CHILDREN].is_null())
         {
             return 0;
         }
         return mJson[Constants::SCENE_OBJECT_CHILDREN].size();
+        */
+        return mChildDefinitions.size();
     }
 
     Transform
@@ -79,7 +90,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::setTransform
-    (Transform tform)
+    (const Transform& tform)
     {
         mJson[Constants::TRANSFORM] = tform.getJson();
     }
@@ -122,14 +133,6 @@ namespace Dream
     }
 
     void
-    SceneObjectDefinition::showStatus
-    ()
-    {
-        auto log = getLog();
-        log->debug( mJson.dump(1) );
-    }
-
-    void
     SceneObjectDefinition::loadChildSceneObjectDefinitions
     (bool randomUuid)
     {
@@ -161,7 +164,7 @@ namespace Dream
        mChildDefinitions.clear();
     }
 
-    vector<SceneObjectDefinition*>
+    vector<SceneObjectDefinition*>&
     SceneObjectDefinition::getChildDefinitionsList
     ()
     {
@@ -176,8 +179,16 @@ namespace Dream
     }
 
     void
-    SceneObjectDefinition::removeChildDefinition
+    SceneObjectDefinition::adoptChildDefinition
     (SceneObjectDefinition* child)
+    {
+        child->setParentSceneObject(this);
+        mChildDefinitions.push_back(child);
+    }
+
+    void
+    SceneObjectDefinition::removeChildDefinition
+    (SceneObjectDefinition* child, bool andDelete)
     {
         auto log = getLog();
         auto iter = begin(mChildDefinitions);
@@ -192,7 +203,14 @@ namespace Dream
                     child->getNameAndUuidString(),
                     getNameAndUuidString()
                 );
-                delete (*iter);
+                if (andDelete)
+                {
+                    delete (*iter);
+                }
+                else
+                {
+                    (*iter)->setParentSceneObject(nullptr);
+                }
                 mChildDefinitions.erase(iter);
                 return;
             }

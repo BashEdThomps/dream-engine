@@ -356,6 +356,13 @@ namespace DreamTool
             menuBar.setMessageString(ss.str());
             return true;
         }
+        else
+        {
+            stringstream ss;
+            ss  << "Project already exists in this directory!";
+            menuBar.setMessageString(ss.str());
+
+        }
         return false;
     }
 }

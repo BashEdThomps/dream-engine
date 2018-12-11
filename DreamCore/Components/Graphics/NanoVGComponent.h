@@ -26,13 +26,13 @@ typedef struct NVGcontext NVGcontext;
 
 namespace Dream
 {
-    class IWindowComponent;
+    class WindowComponent;
     class SceneRuntime;
 
     class NanoVGComponent : public Component
     {
     public:
-        NanoVGComponent(IWindowComponent* windowComponentHandle);
+        NanoVGComponent(WindowComponent* windowComponentHandle);
         ~NanoVGComponent() override;
 
         // Begin drawing a new frame
@@ -512,6 +512,6 @@ namespace Dream
 
     protected:
             NVGcontext* mContext;
-            IWindowComponent* mWindowComponentHandle;
+            WindowComponent* mWindowComponentHandle;
     };
 }

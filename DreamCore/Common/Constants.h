@@ -1,10 +1,4 @@
 /*
- * Constants
- *
- * Created: 01/12/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -15,6 +9,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 
 #pragma once
 
@@ -28,6 +23,9 @@ using namespace std;
 
 namespace Dream
 {
+    /**
+     * @brief AssetType enum describing the types of Asset available in Dream.
+     */
     enum AssetType
     {
         ANIMATION,
@@ -45,10 +43,20 @@ namespace Dream
         NONE
     };
 
+    /**
+     * @brief Constants that are used throughout Dream.
+     */
     class Constants
     {
     public:
         // Debug ================================================================
+        /**
+         * @brief Used to check for OpenGL Runtime Errors. This will display the
+         * file and line from which the error was detected. This function should
+         * not be called directly. Instead use the macro checkGLError.
+         *
+         * @return True if an error was detected.
+         */
         static bool checkGLError_(string,int);
 
 #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)

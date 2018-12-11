@@ -36,16 +36,16 @@ namespace DreamTool
             auto pRuntime = mState->project->getRuntime();
             if (pRuntime)
             {
-                auto gfx = pRuntime->getGraphicsComponent();
-                if (gfx)
+                auto sRunt = pRuntime->getActiveSceneRuntime();
+                if (sRunt)
                 {
-                    mProjectionMatrix = gfx->getProjectionMatrix();
-                }
-                auto activeSR = pRuntime->getActiveSceneRuntime();
-                if (activeSR)
-                {
-                    lightInstances = activeSR->getAssetInstances(AssetType::LIGHT);
-                    mViewMatrix = activeSR->getCamera()->getViewMatrix();
+                    lightInstances = sRunt->getAssetInstances(AssetType::LIGHT);
+                    auto cam = sRunt->getCamera();
+                    if (cam)
+                    {
+                        mProjectionMatrix = cam->getProjectionMatrix();
+                        mViewMatrix = cam->getViewMatrix();
+                    }
                 }
             }
         }

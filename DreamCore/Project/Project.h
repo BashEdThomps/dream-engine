@@ -35,7 +35,7 @@ namespace Dream
     class ProjectRuntime;
     class ProjectDefinition;
     class AssetDefinition;
-    class IWindowComponent;
+    class WindowComponent;
     class ProjectDirectory;
 
     class Project :
@@ -46,7 +46,7 @@ namespace Dream
         ProjectDirectory* mDirectory;
         ProjectDefinition* mDefinition;
         ProjectRuntime* mRuntime;
-        IWindowComponent* mWindowComponent;
+        WindowComponent* mWindowComponent;
 
         // Public Methods
     public:
@@ -63,7 +63,7 @@ namespace Dream
         bool hasProjectDefinition();
 
         AssetDefinition* getAssetDefinitionByUuid(string uuid);
-        void setWindowComponent(IWindowComponent* windowComponent);
+        void setWindowComponent(WindowComponent* windowComponent);
 
         ProjectDirectory* getDirectory() const;
     };

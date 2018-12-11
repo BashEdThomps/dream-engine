@@ -5,12 +5,20 @@
 namespace Dream
 {
     class SceneObjectDefinition;
+    class Definition;
 }
 
-using Dream::SceneObjectDefinition;
+using namespace Dream;
 
 namespace DreamTool
 {
+    struct SceneObjectDragSource
+    {
+       SceneObjectDefinition* parentDef = nullptr;
+       SceneObjectDefinition* objectDef = nullptr;
+    };
+
+
     class ProjectBrowser : public ImGuiWidget
     {
     public:
@@ -21,9 +29,10 @@ namespace DreamTool
     private:
         void drawAssetTree();
         void drawProjectTree();
-        void addSceneObject(int treeId, SceneObjectDefinition* def);
+        void addSceneObject(SceneObjectDefinition* def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
-
+        vector<Definition*> mSelectedNodes;
+        SceneObjectDragSource mDragDropSource;
     };
 }

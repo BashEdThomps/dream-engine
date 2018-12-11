@@ -57,6 +57,7 @@ find_path( GLFW_INCLUDE_DIR
         "${GLFW_X11_INCLUDE_DIRS}"
         /opt/graphics/OpenGL/include
         /opt/graphics/OpenGL/contrib/libglfw
+        /opt/local/include
         /usr/local/include
         /usr/include/GL
         /usr/include
@@ -81,6 +82,7 @@ find_path( GLFW_INCLUDE_DIR
         "${GLFW_X11_INCLUDE_DIRS}"
         /opt/graphics/OpenGL/include
         /opt/graphics/OpenGL/contrib/libglfw
+        /opt/local/include
         /usr/local/include
         /usr/include/GL
         /usr/include
@@ -102,6 +104,7 @@ if (WIN32)
                 /usr/lib
                 /usr/lib/w32api
                 /usr/local/lib
+                /opt/lib
                 "${GLFW_X11_LIB_DIRS}"
             DOC
                 "The GLFW library"
@@ -142,6 +145,7 @@ else ()
                 "$ENV{GLFW_LOCATION}/lib/cocoa"
             PATHS
                 /usr/local/lib
+                /opt/local/lib
         )
         set(GLFW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
         set(GLFW_corevideo_LIBRARY "-framework CoreVideo" CACHE STRING "CoreVideo framework for OSX")
@@ -194,6 +198,7 @@ else ()
                 /usr/local/lib
                 /usr/local/lib/${CMAKE_LIBRARY_ARCHITECTURE}
                 /usr/openwin/lib
+                /opt/local
                 "${GLFW_X11_LIB_DIRS}"
             DOC
                 "The GLFW library"

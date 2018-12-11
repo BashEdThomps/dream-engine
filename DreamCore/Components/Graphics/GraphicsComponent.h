@@ -1,6 +1,4 @@
 /*
-* GraphicsComponent
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +31,7 @@ typedef unsigned int GLuint;
 namespace Dream
 {
     class ShaderCache;
-    class IWindowComponent;
+    class WindowComponent;
     class ModelInstance;
     class ShaderInstance;
     class LightInstance;
@@ -45,15 +43,16 @@ namespace Dream
     class ShaderCache;
     class ShaderInstance;
 
-    class GraphicsComponent : public Component
+    /**
+     * @brief Responsible for managing Dream's graphics pipeline.
+     */
+    class GraphicsComponent
+            : public Component
     {
     private:
-        mat4 mProjectionMatrix;
-        float mMinimumDraw;
-        float mMaximumDraw;
-        float mMeshCullDistance;
+
         vector<LightInstance*> mLightQueue;
-        IWindowComponent* mWindowComponent;
+        WindowComponent* mWindowComponent;
         ShaderCache* mShaderCacheHandle;
         // Geom
         GLuint mGeometryPassFB;
@@ -79,7 +78,7 @@ namespace Dream
         const int SHADOW_HEIGHT = 2048;
 
     public:
-        GraphicsComponent(IWindowComponent*);
+        GraphicsComponent(WindowComponent*);
         ~GraphicsComponent() override;
 
         bool init() override;
@@ -99,27 +98,22 @@ namespace Dream
         void freeShadowBuffers();
         void renderShadowPass(SceneRuntime*);
 
-        mat4 getProjectionMatrix();
         void onWindowDimensionsChanged();
         void handleResize();
-        float getMeshCullDistance() const;
-        void setMeshCullDistance(float meshCullDistance);
-        void setMinimumDraw(float minimumDraw);
-        void setMaximumDraw(float maximumDraw);
+
         void setShaderCache(ShaderCache* cache);
+
         ShaderInstance* getLightingShader() const;
         void setLightingShader(ShaderInstance* lightingShader);
 
-        float getMinimumDraw() const;
-        float getMaximumDraw() const;
         ShaderInstance* getShadowPassShader() const;
         void setShadowPassShader(ShaderInstance* shadowPassShader);
+
         GLuint getGeometryPassPositionBuffer() const;
         GLuint getGeometryPassAlbedoBuffer() const;
-        void setGeometryPassAlbedoBuffer(const GLuint& geometryPassAlbedoBuffer);
         GLuint getGeometryPassNormalBuffer() const;
         GLuint getGeometryPassDepthBuffer() const;
         GLuint getShadowPassDepthBuffer() const;
         GLuint getGeometryPassIgnoreBuffer() const;
-    }; // End of GraphicsComponent
-} // End of Dream
+    };
+}

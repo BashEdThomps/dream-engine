@@ -49,7 +49,7 @@ namespace Dream
 
         ~SceneObjectDefinition() override;
 
-        int getChildCount();
+        int getChildCount() const;
 
         void setHasInputFocus(bool focus);
         bool getHasInputFocus();
@@ -58,19 +58,19 @@ namespace Dream
         bool getHasCameraFocus();
 
         Transform getTransform();
-        void setTransform(Transform tform);
+        void setTransform(const Transform& tform);
 
-        void showStatus() override;
-
-        vector<SceneObjectDefinition*> getChildDefinitionsList();
+        vector<SceneObjectDefinition*>& getChildDefinitionsList();
+        void adoptChildDefinition(SceneObjectDefinition* child);
         void addChildDefinition(SceneObjectDefinition* child);
-        void removeChildDefinition(SceneObjectDefinition* child);
+        void removeChildDefinition(SceneObjectDefinition* child, bool andDelete = true);
         SceneObjectDefinition* createNewChildDefinition(json* def = nullptr);
 
         SceneDefinition* getSceneDefinition();
         json getJson() override;
 
         SceneObjectDefinition* getParentSceneObject() const;
+        void setParentSceneObject(SceneObjectDefinition* parentSceneObject);
         SceneObjectDefinition* duplicate();
 
         bool getAlwaysDraw();
@@ -89,6 +89,7 @@ namespace Dream
         string getAssetDefinition(AssetType type);
         void setAssetDefinition(AssetType type, string uuid);
         map<AssetType, string> getAssetDefinitionsMap();
+
 
     private:
         void deleteChildSceneObjectDefinitions();

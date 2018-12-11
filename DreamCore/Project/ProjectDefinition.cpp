@@ -57,14 +57,6 @@ namespace Dream
     }
 
     void
-    ProjectDefinition::showStatus
-    ()
-    {
-        auto log = getLog();
-        log->debug(mJson.dump(1));
-    }
-
-    void
     ProjectDefinition::setStartupSceneUuid
     (string sceneUuid)
     {

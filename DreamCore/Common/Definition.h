@@ -30,25 +30,63 @@ using nlohmann::json;
 
 namespace Dream
 {
+    /**
+     * @brief Definition is an abstract class that provides naming, id-ing and
+     * json serialization functionality.
+     */
     class Definition : public DreamObject
     {
     protected:
+        /**
+         * @brief Internal JSON structure that defines the object.
+         */
         json mJson;
     public:
+        /**
+         * @brief Default constructor.
+         * @param data Set the internal mJson variable to this data.
+         */
         Definition(json data);
         virtual ~Definition();
 
+        /**
+         * @brief Get the current json object describing this object
+         * @return JSON data object.
+         */
         virtual json getJson();
-        virtual void showStatus() = 0;
 
+        /**
+         * @param name Name to compare.
+         * @return True if this Definition has the given name.
+         */
         bool hasName(string name);
+        /**
+         * @return The Definition's name.
+         */
         string getName();
+        /**
+         * @param name The name to give the Definition.
+         */
         void setName(string name);
 
+        /**
+         * @param uuid uuid to compare.
+         * @return True if this Definition has the give uuid.
+         */
         bool hasUuid(string uuid);
+        /**
+         * @return The Definition's uuid.
+         */
         string getUuid();
+        /**
+         * @param uuid Uuid to give the Definition;
+         */
         void setUuid(string uuid);
 
+        /**
+         * @return A combined name and uuid string in the following format:
+         * "[ NAME : UUID ]"
+         */
         string getNameAndUuidString();
     };
 }

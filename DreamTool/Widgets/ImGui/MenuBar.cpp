@@ -365,9 +365,13 @@ namespace DreamTool
         // New Project
         static ImGuiFs::Dialog newDlg;
         const char* newProjectPath = newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
+        bool newProjectFailed = false;
         if (strlen(newProjectPath)>0)
         {
-           mState->newProject(newProjectPath);
+           if (!mState->newProject(newProjectPath))
+           {
+               newProjectFailed = true;
+           }
         }
 
         // Open Project

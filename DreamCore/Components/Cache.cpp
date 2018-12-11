@@ -22,7 +22,7 @@ namespace Dream
        clear();
     }
 
-    std::string
+    string
     Cache::getAbsolutePath
     (AssetDefinition* def)
     {
@@ -70,7 +70,7 @@ namespace Dream
 
     SharedAssetInstance*
     Cache::getInstance
-    (std::string id)
+    (string id)
     {
        if (id.empty())
        {

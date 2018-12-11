@@ -47,29 +47,26 @@ namespace Dream
 
     class ScriptComponent : public Component
     {
-    public: // Methods
+    public:
 
         static vector<LuaPrintListener*> PrintListeners;
         static void AddPrintListener(LuaPrintListener* listener);
+        static lua_State* State;
 
         ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
-       ~ScriptComponent();
+       ~ScriptComponent() override;
 
-        bool init();
-        void updateComponent(SceneRuntime*);
-        bool updateNanoVG();
-        bool loadScript(SceneObjectRuntime*);
-        bool createScript(SceneObjectRuntime*, ScriptInstance*);
-        void exposeAPI();
-        void debugRegisteringClass(string);
+        bool init() override;
+        void updateComponent(SceneRuntime*) override;
 
-        static lua_State* State;
     private:
         const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
         ProjectRuntime* mProjectRuntime;
 
         // API Exposure Methods ======================================================
+        void debugRegisteringClass(string classname);
+        void exposeAPI();
         void exposePathComponent();
         void exposePathInstance();
         void exposeModelInstance();

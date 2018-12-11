@@ -49,7 +49,7 @@
 #include "Shader/ShaderCache.h"
 #include "../Transform.h"
 #include "../Time.h"
-#include "../Window/IWindowComponent.h"
+#include "../Window/WindowComponent.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
@@ -60,12 +60,8 @@ using namespace glm;
 namespace Dream
 {
     GraphicsComponent::GraphicsComponent
-    (IWindowComponent* windowComponent)
+    (WindowComponent* windowComponent)
         : Component(),
-          mProjectionMatrix(mat4(1.0f)),
-          mMinimumDraw(1.0f),
-          mMaximumDraw(3000.0f),
-          mMeshCullDistance(2500.0f),
           mWindowComponent(windowComponent),
           mShaderCacheHandle(nullptr),
 
@@ -152,28 +148,13 @@ namespace Dream
         }
 
         glViewport(0, 0, windowWidth, windowHeight);
-        checkGLError();
 
-        // Perspective Projection Matrix
-        mProjectionMatrix = perspective
-        (
-            Constants::CAMERA_ZOOM,
-            static_cast<float>(windowWidth)/static_cast<float>(windowHeight),
-            mMinimumDraw,
-            mMaximumDraw
-        );
         checkGLError();
 
         freeGeometryBuffers();
         setupGeometryBuffers();
 
-        log->debug
-        (
-            "Window dimensions changed: width: {}, height: {} min draw: {}, max draw {}",
-            windowWidth, windowHeight,
-            mMinimumDraw,
-            mMaximumDraw
-        );
+        log->debug("Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
     }
 
     void
@@ -189,11 +170,7 @@ namespace Dream
 
         beginUpdate();
         log->debug("GraphicsComponrnt: updateComponent() Called" );
-        setMeshCullDistance(sr->getMeshCullDistance());
-        setMinimumDraw(sr->getMinDrawDistance());
-        setMaximumDraw(sr->getMaxDrawDistance());
-        sr->getCamera()->setProjectionMatrix(mProjectionMatrix);
-        sr->getCamera()->updateCameraVectors();
+
         mLightingPassShader = sr->getLightingPassShader();
         mShadowPassShader = sr->getShadowPassShader();
         updateLightQueue(sr);
@@ -260,11 +237,7 @@ namespace Dream
 
         if (mShaderCacheHandle != nullptr)
         {
-            mShaderCacheHandle->drawGeometryPass
-            (
-                sr->getCamera(),
-                mProjectionMatrix
-            );
+            mShaderCacheHandle->drawGeometryPass(sr->getCamera());
         }
 
     }
@@ -709,28 +682,6 @@ namespace Dream
 
     // Accessors ================================================================
 
-    float
-    GraphicsComponent::getMeshCullDistance
-    ()
-    const
-    {
-        return mMeshCullDistance;
-    }
-
-    void
-    GraphicsComponent::setMeshCullDistance
-    (float meshCullDistance)
-    {
-        mMeshCullDistance = meshCullDistance;
-    }
-
-    mat4
-    GraphicsComponent::getProjectionMatrix
-    ()
-    {
-        return mProjectionMatrix;
-    }
-
     void
     GraphicsComponent::addToLightQueue
     (LightInstance* lightInstance)
@@ -743,20 +694,6 @@ namespace Dream
     ()
     {
         mLightQueue.clear();
-    }
-
-    void
-    GraphicsComponent::setMinimumDraw
-    (float minimumDraw)
-    {
-        mMinimumDraw = minimumDraw;
-    }
-
-    void
-    GraphicsComponent::setMaximumDraw
-    (float maximumDraw)
-    {
-        mMaximumDraw = maximumDraw;
     }
 
     void
@@ -781,57 +718,58 @@ namespace Dream
         mLightingPassShader = lightingShader;
     }
 
-    float GraphicsComponent::getMinimumDraw() const
-    {
-        return mMinimumDraw;
-    }
-
-    float GraphicsComponent::getMaximumDraw() const
-    {
-        return mMaximumDraw;
-    }
-
-    ShaderInstance* GraphicsComponent::getShadowPassShader() const
+    ShaderInstance*
+    GraphicsComponent::getShadowPassShader
+    () const
     {
         return mShadowPassShader;
     }
 
-    void GraphicsComponent::setShadowPassShader(ShaderInstance* shadowPassShader)
+    void
+    GraphicsComponent::setShadowPassShader
+    (ShaderInstance* shadowPassShader)
     {
         mShadowPassShader = shadowPassShader;
     }
 
-    GLuint GraphicsComponent::getGeometryPassPositionBuffer() const
+    GLuint
+    GraphicsComponent::getGeometryPassPositionBuffer
+    () const
     {
         return mGeometryPassPositionBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassAlbedoBuffer() const
+    GLuint
+    GraphicsComponent::getGeometryPassAlbedoBuffer
+    () const
     {
         return mGeometryPassAlbedoBuffer;
     }
 
-    void GraphicsComponent::setGeometryPassAlbedoBuffer(const GLuint& geometryPassAlbedoBuffer)
-    {
-        mGeometryPassAlbedoBuffer = geometryPassAlbedoBuffer;
-    }
-
-    GLuint GraphicsComponent::getGeometryPassNormalBuffer() const
+    GLuint
+    GraphicsComponent::getGeometryPassNormalBuffer
+    () const
     {
         return mGeometryPassNormalBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassDepthBuffer() const
+    GLuint
+    GraphicsComponent::getGeometryPassDepthBuffer
+    () const
     {
         return mGeometryPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getShadowPassDepthBuffer() const
+    GLuint
+    GraphicsComponent::getShadowPassDepthBuffer
+    () const
     {
         return mShadowPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassIgnoreBuffer() const
+    GLuint
+    GraphicsComponent::getGeometryPassIgnoreBuffer
+    () const
     {
         return mGeometryPassIgnoreBuffer;
     }

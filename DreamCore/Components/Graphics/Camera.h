@@ -34,13 +34,18 @@
 #include "../Transform.h"
 #include "Frustum.h"
 
-using glm::vec3;
-using glm::mat4;
+using namespace glm;
 
 namespace Dream
 {
+    class SceneRuntime;
     class SceneObjectRuntime;
-    class Camera : public DreamObject
+
+    /**
+     * @brief Implements a Camera in 3D Space.
+     */
+    class Camera
+        : public DreamObject
     {
     private:
         // Camera Attributes
@@ -53,7 +58,7 @@ namespace Dream
         float mYaw;
         float mPitch;
         // Camera options
-            float mMovementSpeed;
+        float mMovementSpeed;
         mat4 mProjectionMatrix;
         Frustum mFrustum;
         // Focus on SO
@@ -62,20 +67,17 @@ namespace Dream
         float mFocusYaw;
         float mFocusRadius;
         float mFocusElevation;
-        vec3 mFocusTranslation;
+        vec3  mFocusTranslation;
+        float mMinimumDraw;
+        float mMaximumDraw;
+        float mMeshCullDistance;
+        SceneRuntime* mSceneRuntime;
     public:
-        // Constructor with vectors
-        Camera
-        (
-            vec3  position = vec3(0.0f, 0.0f, 0.0f),
-            vec3  up       = vec3(0.0f, 1.0f, 0.0f),
-            float yaw      = 0,
-            float pitch    = 0
-        );
-
-        // Constructor with scalar values
+        Camera(SceneRuntime* parent);
         ~Camera();
+
         mat4 getViewMatrix();
+        void update();
         void updateCameraVectors();
         void setTranslation(vec3);
         void setTranslation(float,float,float);
@@ -125,6 +127,16 @@ namespace Dream
         float getFocusElevation() const;
         void setFocusElevation(float focusElevation);
 
+        float getMeshCullDistance() const;
+        void setMeshCullDistance(float meshCullDistance);
+
+        float getMinimumDraw() const;
+        void setMinimumDraw(float minimumDraw);
+
+        float getMaximumDraw() const;
+        void setMaximumDraw(float maximumDraw);
+
+        void updateProjectionMatrix(float w, float h);
     private:
         void setFocusTranslationFromTarget(vec3 target);
     }; // End of Camera

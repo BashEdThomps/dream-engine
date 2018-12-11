@@ -37,7 +37,7 @@
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Model/ModelMesh.h"
 #include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Window/IWindowComponent.h"
+#include "../Components/Window/WindowComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
 
 #include "../Components/Graphics/Model/ModelCache.h"
@@ -51,7 +51,7 @@ namespace Dream
     ProjectRuntime::ProjectRuntime
     (
             Project* project,
-            IWindowComponent* windowComponent)
+            WindowComponent* windowComponent)
         : Runtime(project->getDefinition()),
           mDone(false),
           mTime(nullptr),
@@ -94,7 +94,7 @@ namespace Dream
         deleteCaches();
     }
 
-    IWindowComponent*
+    WindowComponent*
     ProjectRuntime::getWindowComponent
     ()
     {
@@ -494,6 +494,7 @@ namespace Dream
         mPathComponent->updateComponent(sr);
         mAnimationComponent->updateComponent(sr);
         mAudioComponent->updateComponent(sr);
+        sr->getCamera()->update();
         mGraphicsComponent->updateComponent(sr);
         return true;
     }

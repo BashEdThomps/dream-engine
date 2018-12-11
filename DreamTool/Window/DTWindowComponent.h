@@ -27,7 +27,7 @@
 #include "../deps/ImGui/imgui.h"
 #include "../deps/ImGui/imgui_impl_glfw.h"
 #include "../deps/ImGui/imgui_impl_opengl3.h"
-#include "../../DreamCore/Components/Window/IWindowComponent.h"
+#include "../../DreamCore/Components/Window/WindowComponent.h"
 
 using namespace std;
 using namespace Dream;
@@ -37,7 +37,7 @@ namespace DreamTool
     class GLWidget;
     class ImGuiWidget;
     class DTWindowComponent
-            : public IWindowComponent
+            : public WindowComponent
     {
     public:
         DTWindowComponent();

@@ -1123,7 +1123,6 @@ namespace DreamTool
         }
         else
         {
-            log->error("No Matrix");
             return;
         }
 
@@ -1220,7 +1219,6 @@ namespace DreamTool
         auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
-            auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
             auto sRunt = pRunt->getActiveSceneRuntime();
             if (sRunt)
             {
@@ -1228,6 +1226,7 @@ namespace DreamTool
                 if (cam)
                 {
                     auto view = cam->getViewMatrix();
+                    auto proj = cam->getProjectionMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     ImGuizmo::Manipulate
@@ -1276,13 +1275,13 @@ namespace DreamTool
         auto pRunt = mState->project->getRuntime();
         if (pRunt)
         {
-            auto proj = pRunt->getGraphicsComponent()->getProjectionMatrix();
             auto sRunt = pRunt->getActiveSceneRuntime();
             if (sRunt)
             {
                 auto cam = sRunt->getCamera();
                 if (cam)
                 {
+                    auto proj = cam->getProjectionMatrix();
                     auto view = cam->getViewMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);

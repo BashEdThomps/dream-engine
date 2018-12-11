@@ -15,7 +15,7 @@
 
 
 #include "NanoVGComponent.h"
-#include "../Window/IWindowComponent.h"
+#include "../Window/WindowComponent.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../Scripting/ScriptInstance.h"
 
@@ -38,7 +38,7 @@ extern "C" {
 namespace Dream
 {
 
-    NanoVGComponent::NanoVGComponent(IWindowComponent* windowComponentHandle)
+    NanoVGComponent::NanoVGComponent(WindowComponent* windowComponentHandle)
         : Component (),
           mWindowComponentHandle(windowComponentHandle)
     {
@@ -578,13 +578,13 @@ namespace Dream
         return nvgTextGlyphPositions(mContext,x,y,string,end,positions,maxPositions);
     }
 
-    void NanoVGComponent::NanoVGComponent::TextMetrics
+    void NanoVGComponent::TextMetrics
     (float* ascender, float* descender, float* lineh)
     {
         nvgTextMetrics(mContext,ascender,descender,lineh);
     }
 
-    int NanoVGComponent::NanoVGComponent::TextBreakLines
+    int NanoVGComponent::TextBreakLines
     (const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows)
     {
         return nvgTextBreakLines(mContext,string,end,breakRowWidth,rows,maxRows);
