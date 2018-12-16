@@ -62,58 +62,58 @@
  * be added into a Scene, such as a 3D Model, Audio Clip, Spline Path, etc.
  * (full list below).
  * * \link Dream::AssetDefinition \endlink
- * * \link Dream::AssetInstance \endlink
+ * * \link Dream::AssetRuntime \endlink
  *
  * \subsubsection Asset Definitions
  * AssetDefinition objects are used to define an Asset's initial properties.
  * They are defined once at the Project level and can be reused multiple times
- * within a Screen to create AssetInstance objects. These AssetInstances are
+ * within a Screen to create AssetRuntime objects. These AssetRuntimes are
  * then assigned to SceneObjects within a Scene. AssetDefinition objects are
  * defined at the Project level so that they can be shared by SceneObjects.
  *
  * These are the types of Asset available in Dream.
  * * Animation
  *      * \link Dream::AnimationDefinition \endlink
- *      * \link Dream::AnimationInstance \endlink
+ *      * \link Dream::AnimationRuntime \endlink
  *
  * * Audio
  *      * \link Dream::AudioDefinition \endlink
- *      * \link Dream::AudioInstance \endlink
+ *      * \link Dream::AudioRuntime \endlink
  *
  * * Font (A non-instanced Asset. Used by NanoVG)
  *      * \link Dream::FontDefinition \endlink
  *
  * * Light
  *      * \link Dream::LightDefinition \endlink
- *      * \link Dream::LightInstance \endlink
+ *      * \link Dream::LightRuntime \endlink
  *
  * * Model
  *      * \link Dream::ModelDefinition \endlink
- *      * \link Dream::ModelInstance \endlink
+ *      * \link Dream::ModelRuntime \endlink
  *
  * * Particle Emitter
  *      * \link Dream::ParticleEmitterDefinition \endlink
- *      * \link Dream::ParticleEmitterInstance \endlink
+ *      * \link Dream::ParticleEmitterRuntime \endlink
  *
  * * Path
  *      * \link Dream::PathDefinition \endlink
- *      * \link Dream::PathInstance \endlink
+ *      * \link Dream::PathRuntime \endlink
  *
  * * Physics Object
  *      * \link Dream::PhysicsObjectDefinition \endlink
- *      * \link Dream::PhysicsObjectInstance \endlink
+ *      * \link Dream::PhysicsObjectRuntime \endlink
  *
  * * Script
  *      * \link Dream::ScriptDefinition \endlink
- *      * \link Dream::ScriptInstance \endlink
+ *      * \link Dream::ScriptRuntime \endlink
  *
  * * Shader
  *      * \link Dream::ShaderDefinition \endlink
- *      * \link Dream::ShaderInstance \endlink
+ *      * \link Dream::ShaderRuntime \endlink
  *
  * * Texture
  *      * \link Dream::TextureDefinition \endlink
- *      * \link Dream::TextureInstance \endlink
+ *      * \link Dream::TextureRuntime \endlink
  *
  * \section Build Dependencies
  * Dream uses the following libraries.
@@ -122,7 +122,7 @@
  * * Bullet
  * * GLM
  * * GLEW
- * * GLFW
+ * * GLFW (For Frontends/DreamTool)
  * * Nlohmann JSON
  * * Lua 5.3
  * * OggVorbis

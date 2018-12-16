@@ -5,7 +5,7 @@
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Project/ProjectDirectory.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
 
 namespace DreamTool
@@ -37,12 +37,12 @@ namespace DreamTool
             ImGui::Begin("Shader Editor",&mVisible);
             auto log = getLog();
             auto projRunt = mState->project->getRuntime();
-            ShaderInstance* shaderInst = nullptr;
+            ShaderRuntime* shaderInst = nullptr;
             {
                 auto scriptCache = projRunt->getShaderCache();
                 if (scriptCache)
                 {
-                    shaderInst = dynamic_cast<ShaderInstance*>(scriptCache->getInstance(mShaderDefinition));
+                    shaderInst = dynamic_cast<ShaderRuntime*>(scriptCache->getInstance(mShaderDefinition));
                 }
             }
 
@@ -50,21 +50,26 @@ namespace DreamTool
             {
                 if(shaderInst)
                 {
-                    bool success = false;
+                    bool vertSuccess = false;
+                    bool fragSuccess = false;
                     auto currentVertexText = mVertexEditor.GetText();
                     shaderInst->setVertexSource(currentVertexText);
                     string vSource = shaderInst->getVertexSource();
                     vector<char> vData(vSource.begin(),vSource.end());
-                    success = mState->projectDirectory.writeAssetData(mShaderDefinition,vData,Constants::SHADER_VERTEX_FILE_NAME);
+                    vertSuccess = mState->projectDirectory.writeAssetData(mShaderDefinition,vData,Constants::SHADER_VERTEX_FILE_NAME);
 
                     auto currentFragmentText = mFragmentEditor.GetText();
                     shaderInst->setFragmentSource(currentFragmentText);
                     string fSource = shaderInst->getFragmentSource();
                     vector<char> data(fSource.begin(),fSource.end());
-                    success = success || mState->projectDirectory.writeAssetData(mShaderDefinition,data,Constants::SHADER_FRAGMENT_FILE_NAME);
-                    if (success)
+                    fragSuccess = mState->projectDirectory.writeAssetData(mShaderDefinition,data,Constants::SHADER_FRAGMENT_FILE_NAME);
+                    if (vertSuccess && fragSuccess)
                     {
                         mState->menuBar.setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
+                    }
+                    else
+                    {
+                        mState->menuBar.setMessageString("Error saving Shader"+shaderInst->getNameAndUuidString());
                     }
 
                 }
@@ -158,13 +163,13 @@ namespace DreamTool
     {
         mShaderDefinition = scriptDefinition;
         auto projRunt = mState->project->getRuntime();
-        ShaderInstance* scriptInst = nullptr;
+        ShaderRuntime* scriptInst = nullptr;
         if (projRunt)
         {
             auto scriptCache = projRunt->getShaderCache();
             if (scriptCache)
             {
-                scriptInst = dynamic_cast<ShaderInstance*>(scriptCache->getInstance(mShaderDefinition));
+                scriptInst = dynamic_cast<ShaderRuntime*>(scriptCache->getInstance(mShaderDefinition));
                 if (scriptInst)
                 {
                     mVertexEditor.SetReadOnly(false);

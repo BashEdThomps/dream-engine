@@ -293,7 +293,7 @@ namespace Dream
         glUseProgram(mShaderProgram);
 
         glBindVertexArray(mVAO);
-        ShaderInstance::CurrentShaderProgram = mShaderProgram;
+        ShaderRuntime::CurrentShaderProgram = mShaderProgram;
 
         // Set the projection matrix
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");

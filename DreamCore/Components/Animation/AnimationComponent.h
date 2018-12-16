@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "AnimationInstance.h"
+#include "AnimationRuntime.h"
 #include "../Component.h"
 
 namespace Dream

@@ -18,7 +18,7 @@
 #include "Grid.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
 using namespace Dream;
 namespace DreamTool
@@ -385,10 +385,10 @@ namespace DreamTool
 
         // Vertex Array
         glBindVertexArray(mVao);
-        ShaderInstance::CurrentVAO = mVao;
+        ShaderRuntime::CurrentVAO = mVao;
         checkGLError();
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderInstance::CurrentVBO = mVbo;
+        ShaderRuntime::CurrentVBO = mVbo;
         checkGLError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
         checkGLError();

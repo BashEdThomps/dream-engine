@@ -41,11 +41,11 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include "Camera.h"
-#include "Light/LightInstance.h"
-#include "Model/ModelInstance.h"
+#include "Light/LightRuntime.h"
+#include "Model/ModelRuntime.h"
 #include "Model/ModelMesh.h"
 #include "Material/MaterialCache.h"
-#include "Shader/ShaderInstance.h"
+#include "Shader/ShaderRuntime.h"
 #include "Shader/ShaderCache.h"
 #include "../Transform.h"
 #include "../Time.h"
@@ -256,19 +256,19 @@ namespace Dream
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,0);
-        ShaderInstance::CurrentTexture0 = 0;
+        ShaderRuntime::CurrentTexture0 = 0;
 
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderInstance::CurrentTexture1 = 0;
+        ShaderRuntime::CurrentTexture1 = 0;
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderInstance::CurrentTexture2 =0;
+        ShaderRuntime::CurrentTexture2 =0;
 
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderInstance::CurrentTexture3 = 0;
+        ShaderRuntime::CurrentTexture3 = 0;
 
         // - position color buffer
         if (mGeometryPassPositionBuffer != 0)
@@ -461,23 +461,23 @@ namespace Dream
         // Setup source textures
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
-        ShaderInstance::CurrentTexture0 = mGeometryPassPositionBuffer;
+        ShaderRuntime::CurrentTexture0 = mGeometryPassPositionBuffer;
 
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
-        ShaderInstance::CurrentTexture1 = mGeometryPassNormalBuffer;
+        ShaderRuntime::CurrentTexture1 = mGeometryPassNormalBuffer;
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
-        ShaderInstance::CurrentTexture2 = mGeometryPassAlbedoBuffer;
+        ShaderRuntime::CurrentTexture2 = mGeometryPassAlbedoBuffer;
 
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
-        ShaderInstance::CurrentTexture3 = mShadowPassDepthBuffer;
+        ShaderRuntime::CurrentTexture3 = mShadowPassDepthBuffer;
 
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
-        ShaderInstance::CurrentTexture4 = mGeometryPassIgnoreBuffer;
+        ShaderRuntime::CurrentTexture4 = mGeometryPassIgnoreBuffer;
 
         GLuint pos, norm, alb, shadow, ignore;
         pos = 0;
@@ -534,7 +534,7 @@ namespace Dream
                     // Lights
                     if (object->hasLightInstance())
                     {
-                        LightInstance* light = object->getLightInstance();
+                        LightRuntime* light = object->getLightInstance();
                         log->debug("Adding light instance to queue {}",light->getNameAndUuidString());
                         addToLightQueue(light);
                         if (light->getType() == LightType::LT_DIRECTIONAL)
@@ -684,7 +684,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (LightInstance* lightInstance)
+    (LightRuntime* lightInstance)
     {
         mLightQueue.push_back(lightInstance);
     }
@@ -703,7 +703,7 @@ namespace Dream
         mShaderCacheHandle = cache;
     }
 
-    ShaderInstance*
+    ShaderRuntime*
     GraphicsComponent::getLightingShader
     ()
     const
@@ -713,12 +713,12 @@ namespace Dream
 
     void
     GraphicsComponent::setLightingShader
-    (ShaderInstance* lightingShader)
+    (ShaderRuntime* lightingShader)
     {
         mLightingPassShader = lightingShader;
     }
 
-    ShaderInstance*
+    ShaderRuntime*
     GraphicsComponent::getShadowPassShader
     () const
     {
@@ -727,7 +727,7 @@ namespace Dream
 
     void
     GraphicsComponent::setShadowPassShader
-    (ShaderInstance* shadowPassShader)
+    (ShaderRuntime* shadowPassShader)
     {
         mShadowPassShader = shadowPassShader;
     }

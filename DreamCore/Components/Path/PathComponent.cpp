@@ -73,7 +73,7 @@ namespace Dream
                     {
                         if (currentSceneObject->hasPathInstance())
                         {
-                            PathInstance* animInstance = currentSceneObject->getPathInstance();
+                            PathRuntime* animInstance = currentSceneObject->getPathInstance();
                             // TODO: Fix dis
                         }
                         return nullptr;

@@ -36,11 +36,11 @@ namespace Dream
     class ProjectRuntime;
     class SceneObject;
     class SceneDefinition;
-    class AssetInstance;
+    class AssetRuntime;
     class AssetDefinition;
     class SceneObjectRuntime;
-    class ShaderInstance;
-    class ScriptInstance;
+    class ShaderRuntime;
+    class ScriptRuntime;
 
     class SceneRuntime : public Runtime
     {
@@ -51,17 +51,22 @@ namespace Dream
         ProjectRuntime* mProjectRuntime;
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
-        ShaderInstance* mLightingPassShader;
-        ShaderInstance* mShadowPassShader;
-        ScriptInstance* mInputScript;
-        ScriptInstance* mNanoVGScript;
+        ShaderRuntime* mLightingPassShader;
+        ShaderRuntime* mShadowPassShader;
+        ScriptRuntime* mInputScript;
+        ScriptRuntime* mNanoVGScript;
         Camera mCamera;
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
+        /*
+        float mLogicCullDistance;
+        vector<SceneObjectRuntime*> mInMeshRange;
+        vector<SceneObjectRuntime*> mInLogicRange;
+        */
 
     public:
-        SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent );
+        SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
         ~SceneRuntime() override;
 
         Camera* getCamera();
@@ -97,12 +102,11 @@ namespace Dream
         SceneObjectRuntime* getSceneObjectRuntimeByUuid(string);
 
         int countSceneObjectRuntimes();
+        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
 
         ProjectRuntime* getProjectRuntime();
 
         void showScenegraph();
-
-        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
 
         void collectGarbage() override;
 
@@ -111,22 +115,25 @@ namespace Dream
         bool getPhysicsDebug();
         void setPhysicsDebug(bool physicsDebug);
 
-        ShaderInstance* getLightingPassShader() const;
-        void setLightingPassShader(ShaderInstance* lightingShader);
+        ShaderRuntime* getLightingPassShader() const;
+        void setLightingPassShader(ShaderRuntime* lightingShader);
+
+        ShaderRuntime* getShadowPassShader() const;
+        void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
         void setMeshCullDistance(float);
         float getMeshCullDistance();
 
         void setMinDrawDistance(float);
         void setMaxDrawDistance(float);
+
         float getMinDrawDistance() const;
         float getMaxDrawDistance() const;
 
-        vector<AssetInstance*> getAssetInstances(AssetType);
+        vector<AssetRuntime*> getAssetInstances(AssetType);
         vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(AssetDefinition* def);
-        ShaderInstance* getShadowPassShader() const;
-        void setShadowPassShader(ShaderInstance* shadowPassShader);
-        ScriptInstance* getInputScript() const;
-        ScriptInstance* getNanoVGScript() const;
+
+        ScriptRuntime* getInputScript() const;
+        ScriptRuntime* getNanoVGScript() const;
     };
-} // End of Dream
+}

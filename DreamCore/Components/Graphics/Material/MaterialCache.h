@@ -34,7 +34,7 @@ namespace Dream
         ~MaterialCache() override;
 
     protected:
-        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
     };
 
 } // End Dream

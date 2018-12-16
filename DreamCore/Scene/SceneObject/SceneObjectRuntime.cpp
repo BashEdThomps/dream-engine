@@ -1,10 +1,4 @@
 /*
- * SceneObjectRuntime.cpp
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -21,16 +15,16 @@
 #include "SceneObjectDefinition.h"
 #include "../SceneRuntime.h"
 #include "../../Components/Event.h"
-#include "../../Components/Path/PathInstance.h"
+#include "../../Components/Path/PathRuntime.h"
 #include "../../Components/Animation/AnimationDefinition.h"
-#include "../../Components/Animation/AnimationInstance.h"
-#include "../../Components/Audio/AudioInstance.h"
+#include "../../Components/Animation/AnimationRuntime.h"
+#include "../../Components/Audio/AudioRuntime.h"
 #include "../../Components/Audio/AudioComponent.h"
-#include "../../Components/Graphics/Model/ModelInstance.h"
+#include "../../Components/Graphics/Model/ModelRuntime.h"
 #include "../../Components/Graphics/Model/ModelCache.h"
-#include "../../Components/Graphics/Light/LightInstance.h"
-#include "../../Components/Graphics/ParticleEmitter/ParticleEmitterInstance.h"
-#include "../../Components/Physics/PhysicsObjectInstance.h"
+#include "../../Components/Graphics/Light/LightRuntime.h"
+#include "../../Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
+#include "../../Components/Physics/PhysicsObjectRuntime.h"
 #include "../../Components/Physics/PhysicsComponent.h"
 #include "../../Components/AssetDefinition.h"
 #include "../../Components/Audio/AudioDefinition.h"
@@ -42,7 +36,7 @@
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptComponent.h"
-#include "../../Components/Scripting/ScriptInstance.h"
+#include "../../Components/Scripting/ScriptRuntime.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -203,56 +197,56 @@ namespace Dream
         }
     }
 
-    AnimationInstance*
+    AnimationRuntime*
     SceneObjectRuntime::getAnimationInstance
     ()
     {
         return mAnimationInstance;
     }
 
-    PathInstance*
+    PathRuntime*
     SceneObjectRuntime::getPathInstance
     ()
     {
         return mPathInstance;
     }
 
-    AudioInstance*
+    AudioRuntime*
     SceneObjectRuntime::getAudioInstance
     ()
     {
         return mAudioInstance;
     }
 
-    ModelInstance*
+    ModelRuntime*
     SceneObjectRuntime::getModelInstance
     ()
     {
         return mModelInstance;
     }
 
-    ScriptInstance*
+    ScriptRuntime*
     SceneObjectRuntime::getScriptInstance
     ()
     {
         return mScriptInstance;
     }
 
-    LightInstance*
+    LightRuntime*
     SceneObjectRuntime::getLightInstance
     ()
     {
         return mLightInstance;
     }
 
-    ParticleEmitterInstance*
+    ParticleEmitterRuntime*
     SceneObjectRuntime::getParticleEmitterInstance
     ()
     {
        return mParticleEmitterInstance;
     }
 
-    AssetInstance*
+    AssetRuntime*
     SceneObjectRuntime::getAssetInstance
     (AssetType type)
     {
@@ -332,7 +326,7 @@ namespace Dream
         mAlwaysDraw = alwaysDraw;
     }
 
-    PhysicsObjectInstance*
+    PhysicsObjectRuntime*
     SceneObjectRuntime::getPhysicsObjectInstance
     ()
     {
@@ -576,13 +570,13 @@ namespace Dream
         removePhysicsObjectInstance();
         auto log = getLog();
         log->trace( "Creating Physics Object Asset Instance." );
-        mPhysicsObjectInstance = new PhysicsObjectInstance(
+        mPhysicsObjectInstance = new PhysicsObjectRuntime(
             definition,
             mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
             mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
             this
         );
-        return mPhysicsObjectInstance->load();
+        return mPhysicsObjectInstance->useDefinition();
     }
 
     bool
@@ -592,8 +586,8 @@ namespace Dream
         auto log = getLog();
         log->trace( "Creating ParticleEmitter asset instance." );
         removeParticleEmitterInstance();
-        mParticleEmitterInstance = new ParticleEmitterInstance(definition,this);
-        return mParticleEmitterInstance->load();
+        mParticleEmitterInstance = new ParticleEmitterRuntime(definition,this);
+        return mParticleEmitterInstance->useDefinition();
     }
 
     bool
@@ -603,8 +597,8 @@ namespace Dream
         auto log = getLog();
         log->trace( "Creating Animation asset instance." );
         removeAnimationInstance();
-        mAnimationInstance = new AnimationInstance(definition,this);
-        return mAnimationInstance->load();
+        mAnimationInstance = new AnimationRuntime(definition,this);
+        return mAnimationInstance->useDefinition();
     }
 
     bool
@@ -614,8 +608,8 @@ namespace Dream
         auto log = getLog();
         log->trace( "Creating Path asset instance." );
         removePathInstance();
-        mPathInstance = new PathInstance(definition,this);
-        return mPathInstance->load();
+        mPathInstance = new PathRuntime(definition,this);
+        return mPathInstance->useDefinition();
     }
 
     bool
@@ -629,7 +623,7 @@ namespace Dream
             removeAudioInstance();
             log->trace( "Creating Audio asset instance." );
             mAudioInstance = audioComp->newAudioInstance(definition,this);
-            return mAudioInstance->load();
+            return mAudioInstance->useDefinition();
         }
         else
         {
@@ -648,7 +642,7 @@ namespace Dream
         auto cache = mSceneRuntimeHandle->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
-            mModelInstance = dynamic_cast<ModelInstance*>(cache->getInstance(definition));
+            mModelInstance = dynamic_cast<ModelRuntime*>(cache->getInstance(definition));
             if (mModelInstance != nullptr)
             {
                 mModelInstance->addInstance(this);
@@ -672,7 +666,7 @@ namespace Dream
         auto scriptCache = (mSceneRuntimeHandle->getProjectRuntime()->getScriptCache());
         if (scriptCache)
         {
-            mScriptInstance = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(definition));
+            mScriptInstance = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(definition));
             if (mScriptInstance != nullptr)
             {
                 mScriptInstance->addInstance(this);
@@ -695,8 +689,8 @@ namespace Dream
         auto log = getLog();
         removeLightInstance();
         log->trace( "Creating Light Asset instance." );
-        mLightInstance = new LightInstance(definition,this);
-        return mLightInstance->load();
+        mLightInstance = new LightRuntime(definition,this);
+        return mLightInstance->useDefinition();
     }
 
     bool
@@ -865,22 +859,30 @@ namespace Dream
         mHasCameraFocus = cf;
     }
 
-    bool SceneObjectRuntime::getDeleted() const
+    bool
+    SceneObjectRuntime::getDeleted
+    () const
     {
         return mDeleted;
     }
 
-    void SceneObjectRuntime::setDeleted(bool deleted)
+    void
+    SceneObjectRuntime::setDeleted
+    (bool deleted)
     {
         mDeleted = deleted;
     }
 
-    bool SceneObjectRuntime::getHidden() const
+    bool
+    SceneObjectRuntime::getHidden
+    () const
     {
         return mHidden;
     }
 
-    void SceneObjectRuntime::setHidden(bool hidden)
+    void
+    SceneObjectRuntime::setHidden
+    (bool hidden)
     {
         mHidden = hidden;
     }
@@ -932,5 +934,13 @@ namespace Dream
     (BoundingBox boundingBox)
     {
         mBoundingBox = boundingBox;
+    }
+
+
+    float
+    SceneObjectRuntime::distanceFrom
+    (SceneObjectRuntime* other)
+    {
+        return mTransform.distanceFrom(other->getTransform());
     }
 }

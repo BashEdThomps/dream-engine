@@ -18,7 +18,7 @@
 
 #include "../../Utilities/File.h"
 #include "ScriptDefinition.h"
-#include "ScriptInstance.h"
+#include "ScriptRuntime.h"
 
 namespace Dream
 {
@@ -39,7 +39,7 @@ namespace Dream
         log->trace("Destructing");
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     ScriptCache::loadInstance
     (AssetDefinition* def)
     {
@@ -51,7 +51,7 @@ namespace Dream
                 return inst;
             }
         }
-        auto newScript = new ScriptInstance(scriptDef,mProjectRuntime);
+        auto newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());

@@ -32,16 +32,16 @@ namespace Dream
 {
     class ShaderCache;
     class WindowComponent;
-    class ModelInstance;
-    class ShaderInstance;
-    class LightInstance;
+    class ModelRuntime;
+    class ShaderRuntime;
+    class LightRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
     class Texture;
     class ModelMesh;
-    class MaterialInstance;
+    class MaterialRuntime;
     class ShaderCache;
-    class ShaderInstance;
+    class ShaderRuntime;
 
     /**
      * @brief Responsible for managing Dream's graphics pipeline.
@@ -51,7 +51,7 @@ namespace Dream
     {
     private:
 
-        vector<LightInstance*> mLightQueue;
+        vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCacheHandle;
         // Geom
@@ -64,13 +64,13 @@ namespace Dream
 
         // Shadow
         SceneObjectRuntime* mShadowLight;
-        ShaderInstance* mShadowPassShader;
+        ShaderRuntime* mShadowPassShader;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
         mat4 mShadowMatrix;
 
         // Lighting
-        ShaderInstance* mLightingPassShader;
+        ShaderRuntime* mLightingPassShader;
         GLuint mScreenQuadVAO;
         GLuint mScreenQuadVBO;
 
@@ -84,7 +84,7 @@ namespace Dream
         bool init() override;
         void updateComponent(SceneRuntime*) override;
 
-        void addToLightQueue(LightInstance*);
+        void addToLightQueue(LightRuntime*);
         void clearLightQueue();
         void updateLightQueue(SceneRuntime*);
         bool setupScreenQuad();
@@ -103,11 +103,11 @@ namespace Dream
 
         void setShaderCache(ShaderCache* cache);
 
-        ShaderInstance* getLightingShader() const;
-        void setLightingShader(ShaderInstance* lightingShader);
+        ShaderRuntime* getLightingShader() const;
+        void setLightingShader(ShaderRuntime* lightingShader);
 
-        ShaderInstance* getShadowPassShader() const;
-        void setShadowPassShader(ShaderInstance* shadowPassShader);
+        ShaderRuntime* getShadowPassShader() const;
+        void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
         GLuint getGeometryPassPositionBuffer() const;
         GLuint getGeometryPassAlbedoBuffer() const;

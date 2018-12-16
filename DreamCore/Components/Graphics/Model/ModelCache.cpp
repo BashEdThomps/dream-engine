@@ -17,7 +17,7 @@
  */
 
 #include "ModelCache.h"
-#include "ModelInstance.h"
+#include "ModelRuntime.h"
 #include "ModelDefinition.h"
 #include "../../../Project/ProjectRuntime.h"
 
@@ -41,15 +41,23 @@ namespace Dream
         log->debug("Destructing" );
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     ModelCache::loadInstance
     (AssetDefinition* def)
     {
         auto log = getLog();
         log->debug("Loading {} from disk",  def->getUuid());
-        auto model = new ModelInstance(mShaderCacheHandle, mMaterialCacheHandle,def,mProjectRuntime);
-        model->load();
-        mInstances.push_back(model);
+        auto model = new ModelRuntime(mShaderCacheHandle, mMaterialCacheHandle,def,mProjectRuntime);
+        if (model->useDefinition())
+        {
+            mInstances.push_back(model);
+        }
+        else
+        {
+            log->error("Unable to create runtime for model {}", def->getNameAndUuidString());
+            delete model;
+            model = nullptr;
+        }
         return model;
     }
 }

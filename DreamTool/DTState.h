@@ -75,7 +75,7 @@ namespace DreamTool
         double LastTime = glfwGetTime();
         double CurrentTime = glfwGetTime();
         double Frames = 0;
-        InputTarget inputTarget=SCENE;
+        InputTarget inputTarget=EDITOR;
         string lastDirectory;
 
         DTState(int _argc, char** _argv);

@@ -34,6 +34,6 @@ namespace Dream
     protected:
         ShaderCache* mShaderCacheHandle;
         MaterialCache* mMaterialCacheHandle;
-        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
     };
 }

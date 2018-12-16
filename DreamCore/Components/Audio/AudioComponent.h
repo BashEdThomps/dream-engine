@@ -37,7 +37,7 @@ using std::vector;
 
 namespace Dream
 {
-    class AudioInstance;
+    class AudioRuntime;
     class AudioDefinition;
     class SceneObjectRuntime;
 
@@ -45,10 +45,10 @@ namespace Dream
     {
 
     private:
-        vector<AudioInstance*> mPlayQueue;
-        vector<AudioInstance*> mPauseQueue;
-        vector<AudioInstance*> mStopQueue;
-        vector<AudioInstance*> mUpdateQueue;
+        vector<AudioRuntime*> mPlayQueue;
+        vector<AudioRuntime*> mPauseQueue;
+        vector<AudioRuntime*> mStopQueue;
+        vector<AudioRuntime*> mUpdateQueue;
         vector<ALuint> mSources;
         vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
@@ -63,17 +63,17 @@ namespace Dream
         void setSourcePosision(ALuint, glm::vec3);
         void setListenerPosition(glm::vec3);
 
-        void pushToPlayQueue(AudioInstance*);
-        void pushToPauseQueue(AudioInstance*);
-        void pushToStopQueue(AudioInstance*);
-        void pushToUpdateQueue(AudioInstance*);
+        void pushToPlayQueue(AudioRuntime*);
+        void pushToPauseQueue(AudioRuntime*);
+        void pushToStopQueue(AudioRuntime*);
+        void pushToUpdateQueue(AudioRuntime*);
 
-        AudioStatus getAudioStatus(AudioInstance*) const;
+        AudioStatus getAudioStatus(AudioRuntime*) const;
 
         ALint getSampleOffset(ALuint) const;
-        ALint getSampleOffset(AudioInstance*) const;
-        vector<char> getAudioBuffer(AudioInstance*, size_t, size_t) const;
-        AudioInstance* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
+        ALint getSampleOffset(AudioRuntime*) const;
+        vector<char> getAudioBuffer(AudioRuntime*, size_t, size_t) const;
+        AudioRuntime* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         void setVolume(float);
         float getVolume();
 

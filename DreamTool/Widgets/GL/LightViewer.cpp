@@ -6,7 +6,7 @@
 #include "../../../DreamCore/Scene/SceneRuntime.h"
 #include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
 namespace DreamTool
 {
@@ -30,7 +30,7 @@ namespace DreamTool
     void LightViewer::draw()
     {
         checkGLError();
-        vector<AssetInstance*> lightInstances;
+        vector<AssetRuntime*> lightInstances;
         if (mState->project)
         {
             auto pRuntime = mState->project->getRuntime();
@@ -62,16 +62,16 @@ namespace DreamTool
 
             // Enable shader program
             glUseProgram(mShaderProgram);
-            ShaderInstance::CurrentShaderProgram = mShaderProgram;
+            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
             checkGLError();
 
             // Vertex Array
             glBindVertexArray(mVao);
-            ShaderInstance::CurrentVAO = mVao;
+            ShaderRuntime::CurrentVAO = mVao;
             checkGLError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderInstance::CurrentVBO = mVbo;
+            ShaderRuntime::CurrentVBO = mVbo;
             checkGLError();
 
             //glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
@@ -107,7 +107,7 @@ namespace DreamTool
 
             for (auto inst : lightInstances)
             {
-                auto light = dynamic_cast<LightInstance*>(inst);
+                auto light = dynamic_cast<LightRuntime*>(inst);
                 mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();
                 vec3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
@@ -151,11 +151,11 @@ namespace DreamTool
        GLWidget::init();
        // Vertex Array
        glBindVertexArray(mVao);
-       ShaderInstance::CurrentVAO = mVao;
+       ShaderRuntime::CurrentVAO = mVao;
        checkGLError();
 
        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-       ShaderInstance::CurrentVBO = mVbo;
+       ShaderRuntime::CurrentVBO = mVbo;
        checkGLError();
 
        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);

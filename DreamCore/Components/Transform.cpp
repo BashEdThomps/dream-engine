@@ -95,6 +95,13 @@ namespace Dream
         return j;
     }
 
+    float
+    Transform::distanceFrom
+    (const Transform& other)
+    {
+       return glm::distance(decomposeMatrix().translation, other.decomposeMatrix().translation);
+    }
+
     // Matrix ===================================================================
 
     void
@@ -121,6 +128,7 @@ namespace Dream
     MatrixDecomposition
     Transform::decomposeMatrix
     ()
+    const
     {
         MatrixDecomposition decomp;
         glm::decompose(mMatrix, decomp.scale, decomp.rotation, decomp.translation, decomp.skew, decomp.perspective);
@@ -142,7 +150,15 @@ namespace Dream
     Transform::translate
     (vec3 tx)
     {
-       mMatrix = glm::translate(mMatrix,tx);
+        mMatrix = glm::translate(mMatrix,tx);
+    }
+
+    void
+    Transform::preTranslate
+    (vec3 translation)
+    {
+        mat4 mat = glm::translate(mat4(1.0f), translation);
+        mMatrix = mat*mMatrix;
     }
 
 } // End of Dream

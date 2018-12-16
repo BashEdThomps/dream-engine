@@ -1,10 +1,4 @@
 /*
- * SceneRuntime.cpp
- *
- * Created: 15 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -29,7 +23,7 @@
 
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
+#include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Graphics/Camera.h"
 
 #include "../Components/Physics/PhysicsComponent.h"
@@ -345,9 +339,9 @@ namespace Dream
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
         auto shaderUuid = sceneDefinition->getLightingPassShader();
-        mLightingPassShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
+        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
         shaderUuid = sceneDefinition->getShadowPassShader();
-        mShadowPassShader = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderUuid));
+        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
         if (mLightingPassShader == nullptr)
         {
             log->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
@@ -359,7 +353,7 @@ namespace Dream
         // Scripts
         auto scriptCache = mProjectRuntime->getScriptCache();
         auto inputScriptUuid = sceneDefinition->getInputScript();
-        mInputScript = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(inputScriptUuid));
+        mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(inputScriptUuid));
         if (!mInputScript)
         {
             log->error("Unable to load Input Handler Script {}",inputScriptUuid);
@@ -370,7 +364,7 @@ namespace Dream
         }
 
         auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
-        mNanoVGScript = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(nvgScriptUuid));
+        mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(nvgScriptUuid));
         if (!mNanoVGScript)
         {
             log->error("Unable to load NanoVG Script {}",nvgScriptUuid);
@@ -423,7 +417,7 @@ namespace Dream
         }
     }
 
-    ShaderInstance*
+    ShaderRuntime*
     SceneRuntime::getLightingPassShader
     () const
     {
@@ -432,7 +426,7 @@ namespace Dream
 
     void
     SceneRuntime::setLightingPassShader
-    (ShaderInstance* lightingShader)
+    (ShaderRuntime* lightingShader)
     {
         mLightingPassShader = lightingShader;
     }
@@ -468,10 +462,10 @@ namespace Dream
         return mMaxDrawDistance;
     }
 
-    vector<AssetInstance*>
+    vector<AssetRuntime*>
     SceneRuntime::getAssetInstances(AssetType t)
     {
-        vector<AssetInstance*> instances;
+        vector<AssetRuntime*> instances;
         if (mRootSceneObjectRuntime)
         {
             mRootSceneObjectRuntime->applyToAll
@@ -480,7 +474,7 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        AssetInstance* inst = currentRuntime->getAssetInstance(t);
+                        AssetRuntime* inst = currentRuntime->getAssetInstance(t);
                         if (inst)
                         {
                             instances.push_back(inst);
@@ -505,7 +499,7 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        AssetInstance* inst = currentRuntime->getAssetInstance(def->getAssetType());
+                        AssetRuntime* inst = currentRuntime->getAssetInstance(def->getAssetType());
                         if (inst && inst->getUuid().compare(def->getUuid()) == 0)
                         {
                             runtimes.push_back(currentRuntime);
@@ -533,7 +527,7 @@ namespace Dream
         return &mCamera;
     }
 
-    ShaderInstance*
+    ShaderRuntime*
     SceneRuntime::getShadowPassShader
     ()
     const
@@ -543,12 +537,12 @@ namespace Dream
 
     void
     SceneRuntime::setShadowPassShader
-    (ShaderInstance* shadowPassShader)
+    (ShaderRuntime* shadowPassShader)
     {
         mShadowPassShader = shadowPassShader;
     }
 
-    ScriptInstance*
+    ScriptRuntime*
     SceneRuntime::getInputScript
     ()
     const
@@ -556,7 +550,7 @@ namespace Dream
         return mInputScript;
     }
 
-    ScriptInstance*
+    ScriptRuntime*
     SceneRuntime::getNanoVGScript
     ()
     const

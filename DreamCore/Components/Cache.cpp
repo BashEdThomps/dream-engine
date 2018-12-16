@@ -3,7 +3,7 @@
 #include "../Project/Project.h"
 #include "../Project/ProjectDirectory.h"
 #include "../Project/ProjectRuntime.h"
-#include "SharedAssetInstance.h"
+#include "SharedAssetRuntime.h"
 #include "AssetDefinition.h"
 
 namespace Dream
@@ -50,7 +50,7 @@ namespace Dream
         return mProjectRuntime->getAssetDefinitionByUuid(uuid);
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     Cache::getInstance
     (AssetDefinition* def)
     {
@@ -68,7 +68,7 @@ namespace Dream
        return loadInstance(def);
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     Cache::getInstance
     (string id)
     {
@@ -86,7 +86,7 @@ namespace Dream
        return loadInstance(getAssetDefinitionByUuid(id));
     }
 
-    vector<SharedAssetInstance*>&
+    vector<SharedAssetRuntime*>&
     Cache::getInstanceVector
     ()
     {

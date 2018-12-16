@@ -8,6 +8,8 @@ namespace Dream
     class Definition;
 }
 
+#define buf_sz 128
+
 using namespace Dream;
 
 namespace DreamTool

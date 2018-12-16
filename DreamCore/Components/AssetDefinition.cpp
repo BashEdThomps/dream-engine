@@ -86,6 +86,13 @@ namespace Dream
     }
 
     bool
+    AssetDefinition::isTypeAnimation
+    ()
+    {
+        return getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0;
+    }
+
+    bool
     AssetDefinition::isTypeLight
     ()
     {

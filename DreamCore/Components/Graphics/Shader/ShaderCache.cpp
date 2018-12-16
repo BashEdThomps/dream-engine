@@ -17,7 +17,7 @@
  */
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
-#include "ShaderInstance.h"
+#include "ShaderRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 #include "../Camera.h"
 
@@ -39,14 +39,14 @@ namespace Dream
         log->trace( "Destructing" );
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     ShaderCache::loadInstance
     (AssetDefinition* def)
     {
         auto log = getLog();
-        auto shaderInstance = new ShaderInstance(dynamic_cast<ShaderDefinition*>(def), mProjectRuntime);
+        auto shaderInstance = new ShaderRuntime(dynamic_cast<ShaderDefinition*>(def), mProjectRuntime);
 
-        if (!shaderInstance->load())
+        if (!shaderInstance->useDefinition())
         {
             log->error("Error while loading shader {}", def->getUuid());
         }
@@ -62,7 +62,7 @@ namespace Dream
         log->debug("Contents of shader cache");
         for (auto instance : mInstances)
         {
-            auto shader = dynamic_cast<ShaderInstance*>(instance);
+            auto shader = dynamic_cast<ShaderRuntime*>(instance);
             log->debug("{}",shader->getNameAndUuidString());
             shader->logMaterials();
         }
@@ -74,7 +74,7 @@ namespace Dream
     {
         for (auto instance : mInstances)
         {
-            auto shader = dynamic_cast<ShaderInstance*>(instance);
+            auto shader = dynamic_cast<ShaderRuntime*>(instance);
             if (shader->countMaterials() == 0) continue;
             shader->use();
             shader->setViewMatrix(camera->getViewMatrix());
@@ -87,7 +87,7 @@ namespace Dream
     void
     ShaderCache::drawShadowPass
     (
-        mat4 matrix, ShaderInstance* shader
+        mat4 matrix, ShaderRuntime* shader
     )
     {
         shader->use();
@@ -95,7 +95,7 @@ namespace Dream
         glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
         for (auto instance : mInstances)
         {
-            auto s = dynamic_cast<ShaderInstance*>(instance);
+            auto s = dynamic_cast<ShaderRuntime*>(instance);
             s->drawShadowPass(shader);
         }
     }

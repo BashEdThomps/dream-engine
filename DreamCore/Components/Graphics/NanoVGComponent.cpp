@@ -17,7 +17,7 @@
 #include "NanoVGComponent.h"
 #include "../Window/WindowComponent.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../Scripting/ScriptInstance.h"
+#include "../Scripting/ScriptRuntime.h"
 
 #ifdef WIN32
 #include <windows.h>

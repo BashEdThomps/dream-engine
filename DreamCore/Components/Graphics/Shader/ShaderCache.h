@@ -20,16 +20,16 @@
 
 #include <glm/mat4x4.hpp>
 #include "../../Cache.h"
-#include "../Light/LightInstance.h"
+#include "../Light/LightRuntime.h"
 
 using namespace std;
 using namespace glm;
 
 namespace Dream
 {
-    class LightInstance;
+    class LightRuntime;
     class Camera;
-    class ShaderInstance;
+    class ShaderRuntime;
 
     class ShaderCache : public Cache
     {
@@ -38,10 +38,10 @@ namespace Dream
         ~ShaderCache() override;
         void logShaders();
         void drawGeometryPass(Camera*);
-        void drawShadowPass(mat4, ShaderInstance*);
+        void drawShadowPass(mat4, ShaderRuntime*);
 
         // Cache interface
     protected:
-        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
     };
 }

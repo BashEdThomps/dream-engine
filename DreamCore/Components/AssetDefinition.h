@@ -31,19 +31,42 @@ namespace Dream
     {
 
     public:
+        /**
+         * @brief Default Constructur
+         * @param project ProjectDefinition that owns this AssetDefinition
+         * @param data JSON object from which to construct the AssetDefinition
+         */
         AssetDefinition(ProjectDefinition* project, json data);
-        AssetType getAssetType();
-
         virtual ~AssetDefinition();
 
+        /**
+         * @return Returns the Dream::AssetType of the AssetDefinition
+         * @see Dream::AssetType
+         */
+        AssetType getAssetType();
+
+        /**
+         * @return Get the pointer to the parant ProjectDefinition
+         */
         ProjectDefinition* getProject();
 
+        /**
+         * @brief Set the type from a string
+         */
         void setType(string);
+
+        /**
+         * @return Get the type as a string
+         */
         string getType();
 
         void setFormat(string);
         string getFormat();
 
+        string getGroup();
+        void setGroup(string group);
+
+        bool isTypeAnimation();
         bool isTypeAudio();
         bool isTypeFont();
         bool isTypeLight();
@@ -55,13 +78,8 @@ namespace Dream
         bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
         bool isTypeTexture();
-
-        string getGroup();
-        void setGroup(string group);
-
     protected:
         ProjectDefinition* mProjectDefinition;
 
-    }; // End of AssetDefinition
-
-} // End of Dream
+    };
+}

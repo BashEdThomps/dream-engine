@@ -32,28 +32,28 @@
 #include <sstream>
 #include <vector>
 
-#include "../Material/MaterialInstance.h"
-#include "../Shader/ShaderInstance.h"
+#include "../Material/MaterialRuntime.h"
+#include "../Shader/ShaderRuntime.h"
 #include "../Vertex.h"
-#include "../Texture/TextureInstance.h"
+#include "../Texture/TextureRuntime.h"
 #include "../../../Common/DreamObject.h"
 #include <glm/glm.hpp>
-#include "../Light/LightInstance.h"
+#include "../Light/LightRuntime.h"
 
 namespace Dream
 {
-    class ModelInstance;
-    class MaterialInstance;
-    class TextureInstance;
-    class ShaderInstance;
+    class ModelRuntime;
+    class MaterialRuntime;
+    class TextureRuntime;
+    class ShaderRuntime;
     class SceneObjectRuntime;
     class Camera;
 
     class ModelMesh : public DreamObject
     {
     private:
-        ModelInstance* mParent;
-        MaterialInstance* mMaterial;
+        ModelRuntime* mParent;
+        MaterialRuntime* mMaterial;
         string  mName;
         GLuint mVAO;
         GLuint mVBO;
@@ -70,11 +70,11 @@ namespace Dream
 
         ModelMesh
         (
-            ModelInstance* parent,
+            ModelRuntime* parent,
             string name,
             vector<Vertex> vertexArray,
             vector<GLuint> indexArray,
-            MaterialInstance* material
+            MaterialRuntime* material
         );
 
         ~ModelMesh();
@@ -83,13 +83,13 @@ namespace Dream
         void logInstances();
         void addInstance(SceneObjectRuntime* runt);
         void removeInstance(SceneObjectRuntime* runt);
-        MaterialInstance* getMaterial();
+        MaterialRuntime* getMaterial();
         string getName() const;
         void setName(const string& name);
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
         GLuint getVAO() const;
-        void drawGeometryPassInstances(Camera* camera, ShaderInstance* shader);
-        void drawShadowPassInstances(ShaderInstance* shader);
+        void drawGeometryPassInstances(Camera* camera, ShaderRuntime* shader);
+        void drawShadowPassInstances(ShaderRuntime* shader);
     };
 }

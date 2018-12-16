@@ -26,7 +26,7 @@
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btIDebugDraw.h>
 
-#include "../Graphics/Shader/ShaderInstance.h"
+#include "../Graphics/Shader/ShaderRuntime.h"
 
 using namespace std;
 

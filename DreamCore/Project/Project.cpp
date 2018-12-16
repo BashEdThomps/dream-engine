@@ -26,7 +26,7 @@
 #include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform.h"
-#include "../Components/AssetInstance.h"
+#include "../Components/AssetRuntime.h"
 #include "../Components/Window/WindowComponent.h"
 
 #include "../Scene/SceneRuntime.h"

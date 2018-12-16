@@ -18,7 +18,7 @@
 #include "PhysicsComponent.h"
 #include <iostream>
 #include "PhysicsDebugDrawer.h"
-#include "PhysicsObjectInstance.h"
+#include "PhysicsObjectRuntime.h"
 #include <btBulletDynamicsCommon.h>
 #include "../Component.h"
 #include "../Transform.h"
@@ -222,7 +222,7 @@ namespace Dream
 
     void
     PhysicsComponent::removePhysicsObjectInstance
-    (PhysicsObjectInstance* obj)
+    (PhysicsObjectRuntime* obj)
     {
         removeRigidBody(obj->getRigidBody());
     }
@@ -245,7 +245,7 @@ namespace Dream
 
     void
     PhysicsComponent::addPhysicsObjectInstance
-    (PhysicsObjectInstance* physicsObjejct)
+    (PhysicsObjectRuntime* physicsObjejct)
     {
         auto rb = physicsObjejct->getRigidBody();
         addRigidBody(rb);
@@ -504,7 +504,7 @@ namespace Dream
 
     void
     PhysicsComponent::setCharacter
-    (PhysicsObjectInstance* character)
+    (PhysicsObjectRuntime* character)
     {
         mCharacter=character;
     }

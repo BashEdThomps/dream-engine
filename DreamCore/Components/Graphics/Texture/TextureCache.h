@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-    class TextureInstance;
+    class TextureRuntime;
     class TextureDefinition;
 
     class TextureCache : public Cache
@@ -15,6 +15,6 @@ namespace Dream
         void clear() override;
         void flushRawTextureImageData();
     protected:
-        SharedAssetInstance* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
     };
 }

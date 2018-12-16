@@ -1,6 +1,4 @@
 /*
-* AudioComponent
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -26,8 +24,8 @@
 #include <iostream>
 
 #include "AudioComponent.h"
-#include "Wav/WavAudioInstance.h"
-#include "Ogg/OggAudioInstance.h"
+#include "Wav/WavAudioRuntime.h"
+#include "Ogg/OggAudioRuntime.h"
 
 #include "AudioDefinition.h"
 #include "../Time.h"
@@ -258,7 +256,7 @@ namespace Dream
 
     void
     AudioComponent::pushToPlayQueue
-    (AudioInstance* audioAsset)
+    (AudioRuntime* audioAsset)
     {
         auto log = getLog();
         if (find(mPlayQueue.begin(),mPlayQueue.end(), audioAsset) == mPlayQueue.end())
@@ -305,7 +303,7 @@ namespace Dream
 
     void
     AudioComponent::pushToPauseQueue
-    (AudioInstance* audioAsset)
+    (AudioRuntime* audioAsset)
     {
         auto log = getLog();
         if (find(mPauseQueue.begin(),mPauseQueue.end(), audioAsset) == mPauseQueue.end())
@@ -317,7 +315,7 @@ namespace Dream
 
     void
     AudioComponent::pushToStopQueue
-    (AudioInstance* asset)
+    (AudioRuntime* asset)
     {
         auto log = getLog();
         if (find(mStopQueue.begin(),mStopQueue.end(), asset) == mStopQueue.end())
@@ -329,7 +327,7 @@ namespace Dream
 
     void
     AudioComponent::pushToUpdateQueue
-    (AudioInstance* ai)
+    (AudioRuntime* ai)
     {
         if (find(mUpdateQueue.begin(), mUpdateQueue.end(), ai) == mUpdateQueue.end())
         {
@@ -360,7 +358,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Updating Play Queue");
-        for (AudioInstance* audioAsset : mPlayQueue)
+        for (AudioRuntime* audioAsset : mPlayQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -386,7 +384,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Updating Pause Queue");
-        for (AudioInstance* audioAsset : mPauseQueue)
+        for (AudioRuntime* audioAsset : mPauseQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -412,7 +410,7 @@ namespace Dream
         auto log = getLog();
         log->debug("Updating Stop Queue");
 
-        for (AudioInstance* audioAsset : mStopQueue)
+        for (AudioRuntime* audioAsset : mStopQueue)
         {
             if (audioAsset == nullptr)
             {
@@ -435,7 +433,7 @@ namespace Dream
     AudioComponent::updateInstances
     ()
     {
-       for (AudioInstance* ai : mUpdateQueue)
+       for (AudioRuntime* ai : mUpdateQueue)
        {
           ai->updateMarkers();
        }
@@ -454,7 +452,7 @@ namespace Dream
 
     ALint
     AudioComponent::getSampleOffset
-    (AudioInstance* audioAsset )
+    (AudioRuntime* audioAsset )
     const
     {
         if (audioAsset == nullptr)
@@ -466,7 +464,7 @@ namespace Dream
 
     vector<char>
     AudioComponent::getAudioBuffer
-    (AudioInstance* audioAsset, size_t offset, size_t length)
+    (AudioRuntime* audioAsset, size_t offset, size_t length)
     const
     {
         vector<char> retval = vector<char>(length);
@@ -484,7 +482,7 @@ namespace Dream
 
     AudioStatus
     AudioComponent::getAudioStatus
-    (AudioInstance* audioAsset)
+    (AudioRuntime* audioAsset)
     const
     {
         auto log = getLog();
@@ -509,7 +507,7 @@ namespace Dream
         }
     }
 
-    AudioInstance*
+    AudioRuntime*
     AudioComponent::newAudioInstance
     (AudioDefinition* definition, SceneObjectRuntime* rt)
     {
@@ -522,11 +520,11 @@ namespace Dream
 
         if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-            return new WavAudioInstance(this, definition,rt);
+            return new WavAudioRuntime(this, definition,rt);
         }
         else if (definition->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-            return new OggAudioInstance(this, definition,rt);
+            return new OggAudioRuntime(this, definition,rt);
         }
 
         log->error("Error, unrecognised audio format {}", definition->getFormat());

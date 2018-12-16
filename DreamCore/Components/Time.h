@@ -25,22 +25,77 @@ using std::chrono::duration;
 
 namespace Dream
 {
+    /**
+     * @brief Manages time/temperal features for Dream. All times use
+     * std::high_resolution_clock and are reported in fractions of a second.
+     * e.g. 0.34s, 2.38s etc...
+     */
     class Time : public DreamObject
     {
     private:
+        /**
+         * @brief Current time
+         */
         time_point<high_resolution_clock> mCurrentTime;
+        /**
+         * @brief Time of last frame
+         */
         time_point<high_resolution_clock> mLastTime;
+        /**
+         * @brief Delta of Current Time and Last Frame Time
+         */
         duration<double> mTimeDelta;
     public:
+        /**
+         * @brief Default Constructor
+         */
         Time();
+
+        /**
+          @brief Default Destructor
+        */
         ~Time();
+
+        /**
+         * @return Gets the time that the current frame begain
+         */
         double getCurrentFrameTime();
+
+        /**
+         * @return Get the time that the last frame began
+         */
         double getLastFrameTime();
+
+        /**
+         * @return Get the delta between this frame and the last
+         */
         double getFrameTimeDelta();
+
+        /**
+         * @brief Scale the value passed by the amount of time that has passed
+         * between frames. Used to get frame-independant timings
+         */
         double scaleValueByFrameTime(double value);
+
+        /**
+         * @brief Update the current and last frame time values.
+         */
         void updateFrameTime();
+
+        /**
+         * @brief Print Debug information about the Time object's state.
+         */
         void show();
+
+        /**
+         * @return Get the time at the point of function call. Different from
+         * @see getCurrentFrameTime
+         */
         double now();
+
+        /**
+         * @return Get the time at the point of function call (in long long format)
+         */
         long long nowLL();
     };
 

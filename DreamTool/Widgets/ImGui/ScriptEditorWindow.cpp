@@ -34,12 +34,12 @@ namespace DreamTool
             ImGui::Begin("Script Editor",&mVisible);
             auto log = getLog();
             auto projRunt = mState->project->getRuntime();
-            ScriptInstance* scriptInst = nullptr;
+            ScriptRuntime* scriptInst = nullptr;
             {
                 auto scriptCache = projRunt->getScriptCache();
                 if (scriptCache)
                 {
-                    scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(mScriptDefinition));
+                    scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(mScriptDefinition));
                 }
             }
 
@@ -127,13 +127,13 @@ namespace DreamTool
     {
         mScriptDefinition = scriptDefinition;
         auto projRunt = mState->project->getRuntime();
-        ScriptInstance* scriptInst = nullptr;
+        ScriptRuntime* scriptInst = nullptr;
         if (projRunt)
         {
             auto scriptCache = projRunt->getScriptCache();
             if (scriptCache)
             {
-                scriptInst = dynamic_cast<ScriptInstance*>(scriptCache->getInstance(mScriptDefinition));
+                scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(mScriptDefinition));
                 if (scriptInst)
                 {
                     mTextEditor.SetReadOnly(false);

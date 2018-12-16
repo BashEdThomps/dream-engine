@@ -3,7 +3,7 @@
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
 
 namespace DreamTool
@@ -63,16 +63,16 @@ namespace DreamTool
 
             // Enable shader program
             glUseProgram(mShaderProgram);
-            ShaderInstance::CurrentShaderProgram = mShaderProgram;
+            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
             checkGLError();
 
             // Vertex Array
             glBindVertexArray(mVao);
-            ShaderInstance::CurrentVAO = mVao;
+            ShaderRuntime::CurrentVAO = mVao;
             checkGLError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderInstance::CurrentVBO = mVbo;
+            ShaderRuntime::CurrentVBO = mVbo;
             checkGLError();
 
             checkGLError();
@@ -131,10 +131,10 @@ namespace DreamTool
         GLWidget::init();
         // Vertex Array
         glBindVertexArray(mVao);
-        ShaderInstance::CurrentVAO = mVao;
+        ShaderRuntime::CurrentVAO = mVao;
         checkGLError();
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderInstance::CurrentVBO = mVbo;
+        ShaderRuntime::CurrentVBO = mVbo;
         checkGLError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
         checkGLError();

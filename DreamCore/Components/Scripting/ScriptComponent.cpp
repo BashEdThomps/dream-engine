@@ -15,24 +15,24 @@
  */
 
 #include "ScriptComponent.h"
-#include "ScriptInstance.h"
+#include "ScriptRuntime.h"
 #include "../../Project/Project.h"
 #include "../Event.h"
 #include "../Transform.h"
 #include "../Time.h"
 #include "../Path/PathComponent.h"
-#include "../Path/PathInstance.h"
+#include "../Path/PathRuntime.h"
 #include "../Audio/AudioComponent.h"
-#include "../Audio/AudioInstance.h"
-#include "../Graphics/Model/ModelInstance.h"
+#include "../Audio/AudioRuntime.h"
+#include "../Graphics/Model/ModelRuntime.h"
 #include "../Graphics/Camera.h"
 #include "../Graphics/GraphicsComponent.h"
 #include "../Graphics/NanoVGComponent.h"
-#include "../Graphics/Light/LightInstance.h"
-#include "../Graphics/Shader/ShaderInstance.h"
+#include "../Graphics/Light/LightRuntime.h"
+#include "../Graphics/Shader/ShaderRuntime.h"
 #include "../Input/InputComponent.h"
 #include "../Physics/PhysicsComponent.h"
-#include "../Physics/PhysicsObjectInstance.h"
+#include "../Physics/PhysicsObjectRuntime.h"
 #include "../Window/WindowComponent.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
@@ -141,7 +141,7 @@ namespace Dream
 
         for (auto inst : mScriptCache->getInstanceVector())
         {
-            auto scriptObj = dynamic_cast<ScriptInstance*>(inst);
+            auto scriptObj = dynamic_cast<ScriptRuntime*>(inst);
             scriptObj->executeOnInit();
             scriptObj->executeOnEvent();
             scriptObj->executeOnUpdate();
@@ -230,13 +230,13 @@ namespace Dream
     {
         debugRegisteringClass("PathInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<PathInstance>("PathInstance",
-            "generate",&PathInstance::generate,
-            "getSplinePoints",&PathInstance::getSplinePoints,
-            "getSplinePoint",&PathInstance::getSplinePoint,
-            "getUStep",&PathInstance::getUStep,
-            "setUStep",&PathInstance::setUStep,
-            "stepPath",&PathInstance::stepPath
+        stateView.new_usertype<PathRuntime>("PathInstance",
+            "generate",&PathRuntime::generate,
+            "getSplinePoints",&PathRuntime::getSplinePoints,
+            "getSplinePoint",&PathRuntime::getSplinePoint,
+            "getUStep",&PathRuntime::getUStep,
+            "setUStep",&PathRuntime::setUStep,
+            "stepPath",&PathRuntime::stepPath
         );
     }
 
@@ -256,7 +256,7 @@ namespace Dream
     {
         debugRegisteringClass("LightInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<LightInstance>("LightInstance");
+        stateView.new_usertype<LightRuntime>("LightInstance");
     }
 
     void
@@ -265,9 +265,9 @@ namespace Dream
     {
         debugRegisteringClass("ShaderInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<ShaderInstance>("ShaderInstance",
-            "getUuid", &ShaderInstance::getUuid,
-            "addUniform",&ShaderInstance::addUniform
+        stateView.new_usertype<ShaderRuntime>("ShaderInstance",
+            "getUuid", &ShaderRuntime::getUuid,
+            "addUniform",&ShaderRuntime::addUniform
 
         );
 
@@ -309,24 +309,24 @@ namespace Dream
     {
         debugRegisteringClass("PhysicsObjectInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<PhysicsObjectInstance>("PhysicsObjectInstance",
-            "getUuid", &PhysicsObjectInstance::getUuid,
-            "getMass", &PhysicsObjectInstance::getMass,
-            "setMass", &PhysicsObjectInstance::setMass,
-            "getLinearVelocity", &PhysicsObjectInstance::getLinearVelocity,
-            "setLinearVelocity", &PhysicsObjectInstance::setLinearVelocity,
-            "setLinearFactor", &PhysicsObjectInstance::setLinearFactor,
-            "setAngularFactor", &PhysicsObjectInstance::setAngularFactor,
-            "setAngularVelocity", &PhysicsObjectInstance::setAngularVelocity,
-            "getRestitution", &PhysicsObjectInstance::getRestitution,
-            "setRestitution", &PhysicsObjectInstance::setRestitution,
-            "getFriction", &PhysicsObjectInstance::getFriction,
-            "setFriction", &PhysicsObjectInstance::setFriction,
-            "clearForces",&PhysicsObjectInstance::clearForces,
-            "getCenterOfMassPosition",&PhysicsObjectInstance::getCenterOfMassPosition,
+        stateView.new_usertype<PhysicsObjectRuntime>("PhysicsObjectInstance",
+            "getUuid", &PhysicsObjectRuntime::getUuid,
+            "getMass", &PhysicsObjectRuntime::getMass,
+            "setMass", &PhysicsObjectRuntime::setMass,
+            "getLinearVelocity", &PhysicsObjectRuntime::getLinearVelocity,
+            "setLinearVelocity", &PhysicsObjectRuntime::setLinearVelocity,
+            "setLinearFactor", &PhysicsObjectRuntime::setLinearFactor,
+            "setAngularFactor", &PhysicsObjectRuntime::setAngularFactor,
+            "setAngularVelocity", &PhysicsObjectRuntime::setAngularVelocity,
+            "getRestitution", &PhysicsObjectRuntime::getRestitution,
+            "setRestitution", &PhysicsObjectRuntime::setRestitution,
+            "getFriction", &PhysicsObjectRuntime::getFriction,
+            "setFriction", &PhysicsObjectRuntime::setFriction,
+            "clearForces",&PhysicsObjectRuntime::clearForces,
+            "getCenterOfMassPosition",&PhysicsObjectRuntime::getCenterOfMassPosition,
             "setCenterOfMassTransform",
-            static_cast<void (PhysicsObjectInstance::*)(const mat4&)>
-            (&PhysicsObjectInstance::setCenterOfMassTransform)
+            static_cast<void (PhysicsObjectRuntime::*)(const mat4&)>
+            (&PhysicsObjectRuntime::setCenterOfMassTransform)
         );
     }
 
@@ -411,7 +411,7 @@ namespace Dream
     {
         debugRegisteringClass("ModelInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<ModelInstance>("ModelInstance");
+        stateView.new_usertype<ModelRuntime>("ModelInstance");
     }
 
     void
@@ -648,13 +648,13 @@ namespace Dream
     {
         debugRegisteringClass("AudioInstance");
         sol::state_view stateView(State);
-        stateView.new_usertype<AudioInstance>
+        stateView.new_usertype<AudioRuntime>
         (
             "AudioInstance",
-            "getStatus",&AudioInstance::getStatus,
-            "play",&AudioInstance::play,
-            "pause",&AudioInstance::pause,
-            "stop",&AudioInstance::stop
+            "getStatus",&AudioRuntime::getStatus,
+            "play",&AudioRuntime::play,
+            "pause",&AudioRuntime::pause,
+            "stop",&AudioRuntime::stop
 
         );
 

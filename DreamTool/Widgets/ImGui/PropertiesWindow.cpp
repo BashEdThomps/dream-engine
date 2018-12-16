@@ -23,21 +23,21 @@
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
 #include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelInstance.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Model/ModelCache.h"
 #include "../../../DreamCore/Components/Graphics/Light/LightDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Light/LightInstance.h"
+#include "../../../DreamCore/Components/Graphics/Light/LightRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Material/MaterialDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Material/MaterialInstance.h"
-#include "../../../DreamCore/Components/Graphics/Texture/TextureInstance.h"
+#include "../../../DreamCore/Components/Graphics/Material/MaterialRuntime.h"
+#include "../../../DreamCore/Components/Graphics/Texture/TextureRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Texture/TextureDefinition.h"
 #include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
 #include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
-#include "../../../DreamCore/Components/Scripting/ScriptInstance.h"
+#include "../../../DreamCore/Components/Scripting/ScriptRuntime.h"
 
 namespace DreamTool
 {
@@ -214,7 +214,8 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::removeFromHistory(Definition* def)
+    PropertiesWindow::removeFromHistory
+    (Definition* def)
     {
         auto itr = mHistory.end();
         for (itr = mHistory.begin(); itr != mHistory.end(); itr++)
@@ -245,7 +246,9 @@ namespace DreamTool
         log->error("Popped target {}",mHistory.size());
     }
 
-    void PropertiesWindow::clearPropertyTargets()
+    void
+    PropertiesWindow::clearPropertyTargets
+    ()
     {
         mHistory.clear();
         setPropertyType(PropertyType::None);
@@ -1128,6 +1131,7 @@ namespace DreamTool
 
         static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+        static bool withChildren = false;
 
         if(ImGui::CollapsingHeader("Transform"))
         {
@@ -1158,6 +1162,8 @@ namespace DreamTool
 
             ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
+            ImGui::Separator();
+            ImGui::Checkbox("With Children",&withChildren);
             ImGui::Separator();
 
             ImGui::Checkbox("Snap to Grid", &mGizmoUseSnap);
@@ -1201,6 +1207,23 @@ namespace DreamTool
                 if (soDef && soRunt)
                 {
                     soDef->setTransform(soRunt->getTransform());
+
+                    if (withChildren)
+                    {
+                        soRunt->applyToAll
+                        (
+                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                            [&](SceneObjectRuntime* rt)
+                            {
+                                if (rt != soRunt)
+                                {
+                                    auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                    d->setTransform(rt->getTransform());
+                                }
+                                return static_cast<SceneObjectRuntime*>(nullptr);
+                            }
+                        ));
+                    }
                 }
             }
             ImGui::NextColumn();
@@ -1209,6 +1232,23 @@ namespace DreamTool
                 if (soDef && soRunt)
                 {
                     soRunt->setTransform(soDef->getTransform());
+                    if (withChildren)
+                    {
+                        soRunt->applyToAll
+                        (
+                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                            [&](SceneObjectRuntime* rt)
+                            {
+                                if (rt != soRunt)
+                                {
+                                    auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                    rt->setTransform(d->getTransform());
+                                }
+                                return static_cast<SceneObjectRuntime*>(nullptr);
+                            }
+                        ));
+                    }
+
                 }
 
             }
@@ -1229,6 +1269,9 @@ namespace DreamTool
                     auto proj = cam->getProjectionMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+                    //ImGuizmo::DrawCube(glm::value_ptr(view),glm::value_ptr(proj),matrix);
+                    //ImGuizmo::DrawGrid(glm::value_ptr(view),glm::value_ptr(proj),matrix,1.0f);
+                    mat4 delta(1.0f);
                     ImGuizmo::Manipulate
                     (
                         glm::value_ptr(view),
@@ -1236,9 +1279,26 @@ namespace DreamTool
                         mCurrentGizmoOperation,
                         mCurrentGizmoMode,
                         matrix,
-                        nullptr,
+                        value_ptr(delta),
                         mGizmoUseSnap ? &mGizmoSnap.x : nullptr
                     );
+
+                    if (soRunt && withChildren)
+                    {
+                        vec3 tx = vec3(delta[3]);
+                        soRunt->applyToAll
+                        (
+                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                            [&](SceneObjectRuntime* rt)
+                            {
+                                if (rt != soRunt)
+                                {
+                                    rt->getTransform().preTranslate(tx);
+                                }
+                                return static_cast<SceneObjectRuntime*>(nullptr);
+                            }
+                        ));
+                    }
                 }
             }
         }
@@ -1729,7 +1789,7 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(diffuseDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(txDef));
+                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
                 if (txInstance)
                 {
                     diffuseTxId = (void*)(intptr_t)txInstance->getGLID();
@@ -1742,7 +1802,7 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(specularDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(txDef));
+                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
                 if (txInstance)
                 {
                     specularTxId = (void*)(intptr_t)txInstance->getGLID();
@@ -1755,7 +1815,7 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(normalDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(txDef));
+                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
                 if (txInstance)
                 {
                     normalTxId = (void*)(intptr_t)txInstance->getGLID();
@@ -1768,7 +1828,7 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(displacementDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(txDef));
+                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
                 if (txInstance)
                 {
                     displacementTxId = (void*)(intptr_t)txInstance->getGLID();
@@ -1922,7 +1982,7 @@ namespace DreamTool
             auto modelCache = projRunt->getModelCache();
             if (modelCache)
             {
-                auto modelInstance = dynamic_cast<ModelInstance*>(modelCache->getInstance(def));
+                auto modelInstance = dynamic_cast<ModelRuntime*>(modelCache->getInstance(def));
                 if (modelInstance)
                 {
                     modelMaterialNames = modelInstance->getMaterialNames();
@@ -2179,13 +2239,13 @@ namespace DreamTool
         auto log = getLog();
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
         auto projRunt = mState->project->getRuntime();
-        ShaderInstance* shaderInst = nullptr;
+        ShaderRuntime* shaderInst = nullptr;
         if (projRunt)
         {
             auto shaderCache = projRunt->getShaderCache();
             if (shaderCache)
             {
-                shaderInst = dynamic_cast<ShaderInstance*>(shaderCache->getInstance(shaderDef));
+                shaderInst = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderDef));
             }
         }
         ImGui::PushItemWidth(-1);
@@ -2222,7 +2282,7 @@ namespace DreamTool
         if (projRunt)
         {
             auto txCache = projRunt->getTextureCache();
-            auto txInstance = dynamic_cast<TextureInstance*>(txCache->getInstance(textureDef));
+            auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(textureDef));
             if (txInstance)
             {
                 textureId = (void*)(intptr_t)txInstance->getGLID();

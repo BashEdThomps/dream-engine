@@ -3,7 +3,7 @@
 #include "../DreamCore/Project/Project.h"
 #include "../DreamCore/Project/ProjectDefinition.h"
 #include "../DreamCore/Project/ProjectRuntime.h"
-#include "../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 #include "../DreamCore/Components/Input/InputComponent.h"
 
 using namespace Dream;
@@ -110,7 +110,7 @@ namespace DreamTool
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            ShaderInstance::InvalidateState();
+            ShaderRuntime::InvalidateState();
             windowComponent.drawGLWidgets();
             windowComponent.drawImGui();
             if (ImGui::IsKeyPressed(GLFW_KEY_TAB,false))

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "PathInstance.h"
+#include "PathRuntime.h"
 #include "../Component.h"
 
 namespace Dream

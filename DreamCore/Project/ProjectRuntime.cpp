@@ -43,7 +43,7 @@
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
-#include "../Components/Graphics/Shader/ShaderInstance.h"
+#include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Graphics/Texture/TextureCache.h"
 
 namespace Dream
@@ -519,7 +519,7 @@ namespace Dream
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
         mNanoVGComponent->render(sr);
-        ShaderInstance::InvalidateState();
+        ShaderRuntime::InvalidateState();
         mPhysicsComponent->drawDebug();
         log->trace("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
     }

@@ -106,7 +106,7 @@ namespace Dream
          * @brief Decompose the matrix into it's constituent parts.
          * @see MatrixDecomposition
          */
-        MatrixDecomposition decomposeMatrix();
+        MatrixDecomposition decomposeMatrix() const;
 
         /**
          * @brief Regenerate the matrix from it's constituent parts.
@@ -122,10 +122,24 @@ namespace Dream
         void translate(vec3 translation);
 
         /**
+         * @brief Translate to this position first, then apply the underlyinng
+         * matrix.
+         * @param translation Amount to translate the matrix by.
+         */
+        void preTranslate(vec3 translation);
+
+
+        /**
          * @brief Get the JSON serialised representation of this object's
          * matrix.
          */
         json getJson() const;
+
+        /**
+         * @param other Other transform
+         * @return Distance between this and other Transform
+         */
+        float distanceFrom(const Transform& other);
     };
 
-} // End of Dream
+}

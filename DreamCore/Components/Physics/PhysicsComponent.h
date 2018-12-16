@@ -41,7 +41,7 @@ class btPersistentManifold;
 namespace Dream
 {
     class PhysicsDebugDrawer;
-    class PhysicsObjectInstance;
+    class PhysicsObjectRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
     class Camera;
@@ -57,7 +57,7 @@ namespace Dream
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
         btVector3 mGravity;
-        PhysicsObjectInstance* mCharacter;
+        PhysicsObjectRuntime* mCharacter;
         bool mDebug;
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
         bool recoverFromPenetration(btPersistentManifold* );
@@ -72,11 +72,11 @@ namespace Dream
         bool getDebug();
         bool init() override;
         void updateComponent(SceneRuntime* sr) override;
-        void addPhysicsObjectInstance(PhysicsObjectInstance*);
-        void setCharacter(PhysicsObjectInstance*);
+        void addPhysicsObjectInstance(PhysicsObjectRuntime*);
+        void setCharacter(PhysicsObjectRuntime*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectInstance(PhysicsObjectInstance*);
+        void removePhysicsObjectInstance(PhysicsObjectRuntime*);
         void setCamera(Camera* cam);
         void checkContactManifolds(SceneRuntime* scene);
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);

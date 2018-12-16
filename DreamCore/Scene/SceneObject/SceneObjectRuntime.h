@@ -36,14 +36,14 @@ namespace Dream
     class SceneObject;
     class Scene;
     class Event;
-    class AnimationInstance;
-    class AudioInstance;
-    class PathInstance;
-    class ModelInstance;
-    class LightInstance;
-    class PhysicsObjectInstance;
-    class ScriptInstance;
-    class ParticleEmitterInstance;
+    class AnimationRuntime;
+    class AudioRuntime;
+    class PathRuntime;
+    class ModelRuntime;
+    class LightRuntime;
+    class PhysicsObjectRuntime;
+    class ScriptRuntime;
+    class ParticleEmitterRuntime;
     class SceneRuntime;
     class SceneObjectDefinition;
     class AssetDefinition;
@@ -55,7 +55,7 @@ namespace Dream
     class PhysicsObjectDefinition;
     class ScriptDefinition;
     class ParticleEmitterDefinition;
-    class AssetInstance;
+    class AssetRuntime;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -78,15 +78,15 @@ namespace Dream
         bool createParticleEmitterInstance(ParticleEmitterDefinition*);
         bool createLightInstance(LightDefinition*);
 
-        AnimationInstance* getAnimationInstance();
-        PathInstance*  getPathInstance();
-        AudioInstance* getAudioInstance();
-        ModelInstance* getModelInstance();
-        ScriptInstance* getScriptInstance();
-        PhysicsObjectInstance* getPhysicsObjectInstance();
-        LightInstance* getLightInstance();
-        ParticleEmitterInstance* getParticleEmitterInstance();
-        AssetInstance* getAssetInstance(AssetType);
+        AnimationRuntime* getAnimationInstance();
+        PathRuntime*  getPathInstance();
+        AudioRuntime* getAudioInstance();
+        ModelRuntime* getModelInstance();
+        ScriptRuntime* getScriptInstance();
+        PhysicsObjectRuntime* getPhysicsObjectInstance();
+        LightRuntime* getLightInstance();
+        ParticleEmitterRuntime* getParticleEmitterInstance();
+        AssetRuntime* getAssetInstance(AssetType);
 
         bool hasAnimationInstance();
         bool hasPathInstance();
@@ -152,6 +152,7 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
         void setBoundingBox(BoundingBox boundingBox);
+        float distanceFrom(SceneObjectRuntime* other);
 
 
     protected:
@@ -159,14 +160,14 @@ namespace Dream
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
     private:
-        AnimationInstance* mAnimationInstance;
-        AudioInstance* mAudioInstance;
-        LightInstance* mLightInstance;
-        ParticleEmitterInstance* mParticleEmitterInstance;
-        PathInstance* mPathInstance;
-        PhysicsObjectInstance* mPhysicsObjectInstance;
-        ScriptInstance* mScriptInstance;
-        ModelInstance* mModelInstance;
+        AnimationRuntime* mAnimationInstance;
+        AudioRuntime* mAudioInstance;
+        LightRuntime* mLightInstance;
+        ParticleEmitterRuntime* mParticleEmitterInstance;
+        PathRuntime* mPathInstance;
+        PhysicsObjectRuntime* mPhysicsObjectInstance;
+        ScriptRuntime* mScriptInstance;
+        ModelRuntime* mModelInstance;
         Transform mTransform;
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;

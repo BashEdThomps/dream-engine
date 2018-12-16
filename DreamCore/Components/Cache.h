@@ -8,7 +8,7 @@ using namespace std;
 namespace Dream
 {
     class ProjectRuntime;
-    class SharedAssetInstance;
+    class SharedAssetRuntime;
     class AssetDefinition;
 
     /**
@@ -41,7 +41,7 @@ namespace Dream
          * @param definition The AssetDefinition for the AssetInstance you wish
          * to instanciate.
          */
-        SharedAssetInstance* getInstance(AssetDefinition* definition);
+        SharedAssetRuntime* getInstance(AssetDefinition* definition);
 
         /**
          * @return SharedAssetInstance object specified by the given
@@ -51,13 +51,13 @@ namespace Dream
          * @param uuid definition The AssetDefinition for the AssetInstance you wish
          * to instanciate.
          */
-        SharedAssetInstance* getInstance(string uuid);
+        SharedAssetRuntime* getInstance(string uuid);
 
         /**
          * @return Reference to the vector of SharedAssetInstances managed by
          * this Cache.
          */
-        vector<SharedAssetInstance*>& getInstanceVector();
+        vector<SharedAssetRuntime*>& getInstanceVector();
 
         /**
          * @return std::string of the absolute path to the AssetDefinition's
@@ -79,7 +79,7 @@ namespace Dream
          * @param definition AssetDefinition of Asset you wish to load
          * @return A SharedAssetInstance or nullptr if unsuccesssful.
          */
-        virtual SharedAssetInstance* loadInstance(AssetDefinition* definition) = 0;
+        virtual SharedAssetRuntime* loadInstance(AssetDefinition* definition) = 0;
 
         /**
          * @param uuid of the AssetDefinition to be retreived.
@@ -91,7 +91,7 @@ namespace Dream
         /**
          * @brief Vector of SharedAssetInstances managed by this Cache.
          */
-        vector<SharedAssetInstance*> mInstances;
+        vector<SharedAssetRuntime*> mInstances;
 
         /**
          * @brief Pointer to the ProjectRuntime that instanciated this Cache.

@@ -25,7 +25,7 @@ extern "C"
     #include <lauxlib.h>
 }
 
-#include "ScriptInstance.h"
+#include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "../Component.h"
 #include "../../Project/ProjectDirectory.h"

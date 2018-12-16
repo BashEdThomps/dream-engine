@@ -11,7 +11,7 @@
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderInstance.h"
+#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
 
 namespace DreamTool
@@ -64,14 +64,14 @@ namespace DreamTool
         glGenVertexArrays(1,&mVao);
         checkGLError();
         glBindVertexArray(mVao);
-        ShaderInstance::CurrentVAO = mVao;
+        ShaderRuntime::CurrentVAO = mVao;
         checkGLError();
 
         glGenBuffers(1,&mVbo);
         checkGLError();
 
         glBindBuffer(GL_ARRAY_BUFFER,mVbo);
-        ShaderInstance::CurrentVBO = mVbo;
+        ShaderRuntime::CurrentVBO = mVbo;
 
         // Vertex Positions
         glEnableVertexAttribArray(0);
@@ -147,16 +147,16 @@ namespace DreamTool
             glEnable(GL_DEPTH_TEST);
             // Enable shader program
             glUseProgram(mShaderProgram);
-            ShaderInstance::CurrentShaderProgram = mShaderProgram;
+            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
             checkGLError();
 
             // Vertex Array
             glBindVertexArray(mVao);
-            ShaderInstance::CurrentVAO = mVao;
+            ShaderRuntime::CurrentVAO = mVao;
             checkGLError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderInstance::CurrentVBO = mVbo;
+            ShaderRuntime::CurrentVBO = mVbo;
             checkGLError();
 
             // Set the projection matrix

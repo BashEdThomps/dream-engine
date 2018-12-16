@@ -16,8 +16,8 @@
 
 #include "ModelMesh.h"
 
-#include "ModelInstance.h"
-#include "../Shader/ShaderInstance.h"
+#include "ModelRuntime.h"
+#include "../Shader/ShaderRuntime.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../Camera.h"
 
@@ -25,11 +25,11 @@ namespace Dream
 {
 
     ModelMesh::ModelMesh
-    (ModelInstance* parent,
+    (ModelRuntime* parent,
         string name,
         vector<Vertex> vertices,
         vector<GLuint> indices,
-        MaterialInstance* material
+        MaterialRuntime* material
     ) : DreamObject("ModelMesh"),
         mParent(parent),
         mMaterial(material),
@@ -160,7 +160,7 @@ namespace Dream
        }
     }
 
-    MaterialInstance*
+    MaterialRuntime*
     ModelMesh::getMaterial
     ()
     {
@@ -179,7 +179,7 @@ namespace Dream
 
     void
     ModelMesh::drawGeometryPassInstances
-    (Camera* camera, ShaderInstance* shader)
+    (Camera* camera, ShaderRuntime* shader)
     {
         auto log = getLog();
         mInstancesInFrustum.clear();
@@ -207,7 +207,7 @@ namespace Dream
 
     void
     ModelMesh::drawShadowPassInstances
-    (ShaderInstance* shader)
+    (ShaderRuntime* shader)
     {
         auto log = getLog();
         if (mInstances.empty())

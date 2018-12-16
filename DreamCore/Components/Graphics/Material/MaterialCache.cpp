@@ -18,15 +18,15 @@
 
 #include "MaterialCache.h"
 #include "MaterialDefinition.h"
-#include "MaterialInstance.h"
+#include "MaterialRuntime.h"
 
 #include "../../../Project/Project.h"
 #include "../../../Project/ProjectDirectory.h"
 
 #include "../Texture/TextureDefinition.h"
-#include "../Texture/TextureInstance.h"
+#include "../Texture/TextureRuntime.h"
 #include "../Texture/TextureCache.h"
-#include "../Shader/ShaderInstance.h"
+#include "../Shader/ShaderRuntime.h"
 #include "../Shader/ShaderCache.h"
 #include "../.././../Project/ProjectRuntime.h"
 
@@ -50,7 +50,7 @@ namespace Dream
         log->trace( "Destructing" );
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     MaterialCache::loadInstance
     (AssetDefinition* def)
     {
@@ -61,7 +61,7 @@ namespace Dream
             return nullptr;
         }
         auto matDef = dynamic_cast<MaterialDefinition*>(def);
-        auto shader = dynamic_cast<ShaderInstance*>(mShaderCache->getInstance(matDef->getShader()));
+        auto shader = dynamic_cast<ShaderRuntime*>(mShaderCache->getInstance(matDef->getShader()));
 
         if (shader == nullptr)
         {
@@ -69,12 +69,12 @@ namespace Dream
             return nullptr;
         }
 
-        auto material = new MaterialInstance(matDef,mProjectRuntime);
-        auto diffuse = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
-        auto specular = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
-        auto normal = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getNormalTexture()));
-        auto displacement = dynamic_cast<TextureInstance*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
-        material->load();
+        auto material = new MaterialRuntime(matDef,mProjectRuntime);
+        auto diffuse = dynamic_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
+        auto specular = dynamic_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
+        auto normal = dynamic_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getNormalTexture()));
+        auto displacement = dynamic_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
+        material->useDefinition();
 
         material->setDiffuseTexture(diffuse);
         material->setSpecularTexture(specular);

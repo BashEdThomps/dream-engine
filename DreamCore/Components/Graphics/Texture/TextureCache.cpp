@@ -1,9 +1,9 @@
 #include "TextureCache.h"
 #include "TextureDefinition.h"
-#include "TextureInstance.h"
+#include "TextureRuntime.h"
 #include "../../../deps/soil/SOIL.h"
 #include "../../../Utilities/File.h"
-#include "../../SharedAssetInstance.h"
+#include "../../SharedAssetRuntime.h"
 
 namespace Dream
 {
@@ -19,7 +19,7 @@ namespace Dream
         flushRawTextureImageData();
     }
 
-    SharedAssetInstance*
+    SharedAssetRuntime*
     TextureCache::loadInstance
     (AssetDefinition* def)
     {
@@ -42,7 +42,7 @@ namespace Dream
         log->debug("Loading texture: {}",filename);
         for (auto* instance : mInstances)
         {
-            auto nextTexture = dynamic_cast<TextureInstance*>(instance);
+            auto nextTexture = dynamic_cast<TextureRuntime*>(instance);
             if (nextTexture->getPath().compare(filename) == 0)
             {
                 log->debug("Found cached texture by filename");
@@ -60,7 +60,7 @@ namespace Dream
 
         for (auto* instance : mInstances)
         {
-            auto nextTexture = dynamic_cast<TextureInstance*>(instance);
+            auto nextTexture = dynamic_cast<TextureRuntime*>(instance);
             if (nextTexture->getWidth() == width &&
                 nextTexture->getHeight() == height &&
                 nextTexture->getChannels() == channels)
@@ -100,7 +100,7 @@ namespace Dream
 
         checkGLError();
 
-        auto texture = new TextureInstance(textureDef,mProjectRuntime);
+        auto texture = new TextureRuntime(textureDef,mProjectRuntime);
         texture->setPath(filename);
         texture->setGLID(textureID);
         texture->setWidth(width);
@@ -117,7 +117,7 @@ namespace Dream
     {
        for (auto instance : mInstances)
        {
-           auto t = dynamic_cast<TextureInstance*>(instance);
+           auto t = dynamic_cast<TextureRuntime*>(instance);
            if (t->getImage() != nullptr)
            {
                SOIL_free_image_data(t->getImage());
