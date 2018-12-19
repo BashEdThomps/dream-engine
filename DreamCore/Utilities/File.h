@@ -47,6 +47,7 @@ namespace Dream
         bool exists();
         string nameWithExtension();
         string nameWithoutExtension();
+        string extension();
 
     }; // End of FileReader
 

@@ -63,7 +63,7 @@ namespace Dream
     (WindowComponent* windowComponent)
         : Component(),
           mWindowComponent(windowComponent),
-          mShaderCacheHandle(nullptr),
+          mShaderCache(nullptr),
 
           mGeometryPassFB(0),
           mGeometryPassPositionBuffer(0),
@@ -235,9 +235,9 @@ namespace Dream
             return;
         }
 
-        if (mShaderCacheHandle != nullptr)
+        if (mShaderCache != nullptr)
         {
-            mShaderCacheHandle->drawGeometryPass(sr->getCamera());
+            mShaderCache->drawGeometryPass(sr->getCamera());
         }
 
     }
@@ -650,9 +650,9 @@ namespace Dream
         );
         mShadowMatrix = lightProjection*lightView;
         glDisable( GL_CULL_FACE );
-        if (mShaderCacheHandle != nullptr)
+        if (mShaderCache != nullptr)
         {
-            mShaderCacheHandle->drawShadowPass
+            mShaderCache->drawShadowPass
             (
                 mShadowMatrix,
                 mShadowPassShader
@@ -700,7 +700,7 @@ namespace Dream
     GraphicsComponent::setShaderCache
     (ShaderCache* cache)
     {
-        mShaderCacheHandle = cache;
+        mShaderCache = cache;
     }
 
     ShaderRuntime*

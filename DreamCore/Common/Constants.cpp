@@ -1,10 +1,4 @@
 /*
- * Log.cpp
- *
- * Created: 05/04/2017 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -15,8 +9,6 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-
-
 
 #include "Constants.h"
 
@@ -216,10 +208,10 @@ namespace Dream
     const string Constants::TRANSFORM = "transform";
     const string Constants::TRANSFORM_MATRIX = "matrix";
     // Generic ==================================================================
+    const string Constants::W = "w";
     const string Constants::X = "x";
     const string Constants::Y = "y";
     const string Constants::Z = "z";
-    const string Constants::W = "w";
     const unsigned int Constants::X_INDEX = 0;
     const unsigned int Constants::Y_INDEX = 1;
     const unsigned int Constants::Z_INDEX = 2;
@@ -359,10 +351,14 @@ namespace Dream
     const string Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD = "repeat_period";
 
     // Animation / Keyframe ====================================================
-    const string Constants::KEYFRAME_VALUE  = "value";
-    const string Constants::KEYFRAME_VALUES = "values";
-    const string Constants::KEYFRAME_TIME   = "time";
-    const string Constants::KEYFRAME_TARGET = "target";
+    const string Constants::KEYFRAME_ID = "kf_id";
+    const string Constants::KEYFRAME_TRANSLATION = "translation";
+    const string Constants::KEYFRAME_ROTATION = "rotation";
+    const string Constants::KEYFRAME_SCALE = "scale";
+    const string Constants::KEYFRAME_TIME = "time";
+    const string Constants::KEYFRAME_DURATION = "duration";
+    const string Constants::KEYFRAME_LOOPING = "looping";
+    const string Constants::KEYFRAME_EASING_TYPE = "easing_type";
 
     // Window ===================================================================
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;
@@ -908,6 +904,6 @@ namespace Dream
         DREAM_PATH_TYPE_CLAMPED
     };
 
-} // End of Dream
+}
 
 

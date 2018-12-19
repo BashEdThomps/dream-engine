@@ -44,6 +44,7 @@ namespace DreamTool
         bool openButtonClicked = false;
         bool showPleaseDestroyScenesDialog = false;
         bool modelBatchImportClicked = false;
+        bool assetCleanupClicked = false;
 
         bool hasProject = mState->project != nullptr;
 
@@ -110,7 +111,6 @@ namespace DreamTool
 
             if (hasProject)
             {
-
                 auto pRuntime = mState->project->getRuntime();
 
                 if (ImGui::BeginMenu("Scene"))
@@ -254,13 +254,13 @@ namespace DreamTool
                     {
                         modelBatchImportClicked = true;
                     }
+
                     if(ImGui::MenuItem("Clean Up Assets Directory"))
                     {
-                        mState->projectDirectory.cleanupAssetsDirectory();
+                        assetCleanupClicked = true;
                     }
                     ImGui::EndMenu();
                 }
-
             }
 
             if (ImGui::BeginMenu("Debug"))
@@ -406,6 +406,11 @@ namespace DreamTool
         if (showPleaseDestroyScenesDialog)
         {
             ImGui::OpenPopup("Loaded Scenes");
+        }
+
+        if (assetCleanupClicked)
+        {
+           ImGui::OpenPopup("Asset Cleanup");
         }
 
         static ImGuiFs::Dialog modelBatchImportDlg;
@@ -557,6 +562,31 @@ namespace DreamTool
             }
 
             ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
+        if(ImGui::BeginPopupModal("Asset Cleanup",nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Directories Removed");
+            ImGui::Separator();
+            auto subdirsRemoved = mState->projectDirectory.cleanupAssetsDirectory();
+            if (subdirsRemoved.empty())
+            {
+                ImGui::Text("None to remove.");
+            }
+            else
+            {
+                for (string str : subdirsRemoved)
+                {
+                    ImGui::Text("%s",str.c_str());
+                }
+            }
+            ImGui::Separator();
+            if(ImGui::Button("OK"))
+            {
+                subdirsRemoved.clear();
+                ImGui::CloseCurrentPopup();
+            }
             ImGui::EndPopup();
         }
     }

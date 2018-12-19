@@ -1,6 +1,4 @@
 /*
-* AnimationComponent
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +20,7 @@
 
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 #include "../../Utilities/String.h"
 
 namespace Dream
@@ -73,6 +72,8 @@ namespace Dream
                     {
                         if (currentSceneObject->hasAnimationInstance())
                         {
+                            auto anim = currentSceneObject->getAnimationInstance();
+                            anim->stepAnimation(mTime->getFrameTimeDelta());
                         }
                         return nullptr;
                     }
@@ -81,4 +82,4 @@ namespace Dream
         }
         endUpdate();
     }
-} // End of Dream
+}

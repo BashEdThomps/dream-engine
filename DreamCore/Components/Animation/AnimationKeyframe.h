@@ -1,45 +1,54 @@
 #pragma once
 
-#include "../../Common/DreamObject.h"
 #include <glm/vec3.hpp>
+#include "../../Common/DreamObject.h"
 #include "../../deps/json/json.hpp"
+#include "AnimationEasing.h"
 
 using namespace nlohmann;
 using namespace glm;
 
 namespace Dream
 {
-    enum KeyframeTarget
-    {
-        TransformTranslation = 0,
-        TransformRotation,
-        TransformScale,
-    };
-
     class AnimationKeyframe : public DreamObject
     {
     public:
-        AnimationKeyframe();
+        AnimationKeyframe(int id);
         ~AnimationKeyframe() override;
 
-        void setValue(KeyframeTarget,vec3);
-        vec3 getValue(KeyframeTarget);
+        double getTime() const;
+        void setTime(double time);
 
-        long getTime() const;
-        void setTime(long time);
+        vec3 getTranslation() const;
+        void setTranslation(const vec3& translation);
+
+        vec3 getRotation() const;
+        void setRotation(const vec3& rotation);
+
+        vec3 getScale() const;
+        void setScale(const vec3& scale);
 
         void fromJson(json js);
         json toJson();
 
-        bool operator>  (const AnimationKeyframe &other);
-        bool operator<= (const AnimationKeyframe &other);
-        bool operator<  (const AnimationKeyframe &other);
-        bool operator>= (const AnimationKeyframe &other);
-        bool operator== (const AnimationKeyframe &other);
+        int getID() const;
+        void setID(int iD);
+
+        bool operator>  (const AnimationKeyframe &other) const;
+        bool operator<= (const AnimationKeyframe &other) const;
+        bool operator<  (const AnimationKeyframe &other) const;
+        bool operator>= (const AnimationKeyframe &other) const;
+        bool operator== (const AnimationKeyframe &other) const;
+
+        AnimationEasing::Type getEasingType();
+        void setEasingType(AnimationEasing::Type type);
 
     private:
-        map<KeyframeTarget,vec3> mValues;
-        long mTime;
+        int mID;
+        double mTime;
+        vec3 mTranslation;
+        vec3 mRotation;
+        vec3 mScale;
+        AnimationEasing::Type mEasingType;
     };
-
 }

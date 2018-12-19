@@ -42,7 +42,7 @@ namespace Dream
          mRigidBody(nullptr),
          mRigidBodyConstructionInfo(nullptr),
          mInPhysicsWorld(false),
-         mPhysicsComponentHandle(comp),
+         mPhysicsComponent(comp),
          mModelCache(modelCache)
     {
         setLogClassName("PhysicsObjectInstance");
@@ -461,11 +461,11 @@ namespace Dream
     PhysicsObjectRuntime::setMass
     (float mass)
     {
-        mPhysicsComponentHandle->removeRigidBody(mRigidBody);
+        mPhysicsComponent->removeRigidBody(mRigidBody);
         btVector3 inertia(0.0f,0.0f,0.0f);
         mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
         mRigidBody->setMassProps(mass,inertia);
-        mPhysicsComponentHandle->addRigidBody(mRigidBody);
+        mPhysicsComponent->addRigidBody(mRigidBody);
     }
 
     void

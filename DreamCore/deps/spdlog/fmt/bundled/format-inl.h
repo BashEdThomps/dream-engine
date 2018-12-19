@@ -109,13 +109,13 @@ int safe_strerror(
     // A noop assignment operator to avoid bogus warnings.
     void operator=(const dispatcher &) {}
 
-    // Handle the result of XSI-compliant version of strerror_r.
+    //  the result of XSI-compliant version of strerror_r.
     int handle(int result) {
       // glibc versions before 2.13 return result in errno.
       return result == -1 ? errno : result;
     }
 
-    // Handle the result of GNU-specific version of strerror_r.
+    //  the result of GNU-specific version of strerror_r.
     int handle(char *message) {
       // If the buffer is full then the message is probably truncated.
       if (message == buffer_ && strlen(buffer_) == buffer_size_ - 1)
@@ -124,7 +124,7 @@ int safe_strerror(
       return 0;
     }
 
-    // Handle the case when strerror_r is not available.
+    //  the case when strerror_r is not available.
     int handle(internal::null<>) {
       return fallback(strerror_s(buffer_, buffer_size_, error_code_));
     }
@@ -390,7 +390,7 @@ class fp {
   // Normalizes the value converted from double and multiplied by (1 << SHIFT).
   template <int SHIFT = 0>
   void normalize() {
-    // Handle subnormals.
+    //  subnormals.
     auto shifted_implicit_bit = implicit_bit << SHIFT;
     while ((f & shifted_implicit_bit) == 0) {
       f <<= 1;

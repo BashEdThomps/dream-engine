@@ -818,8 +818,8 @@ FMT_CONSTEXPR typename internal::result_of<Visitor(int)>::type
 
 // Parsing context consisting of a format string range being parsed and an
 // argument counter for automatic indexing.
-template <typename Char, typename ErrorHandler = internal::error_handler>
-class basic_parse_context : private ErrorHandler {
+template <typename Char, typename Errorr = internal::error_handler>
+class basic_parse_context : private Errorr {
  private:
   basic_string_view<Char> format_str_;
   int next_arg_id_;
@@ -829,8 +829,8 @@ class basic_parse_context : private ErrorHandler {
   typedef typename basic_string_view<Char>::iterator iterator;
 
   explicit FMT_CONSTEXPR basic_parse_context(
-      basic_string_view<Char> format_str, ErrorHandler eh = ErrorHandler())
-    : ErrorHandler(eh), format_str_(format_str), next_arg_id_(0) {}
+      basic_string_view<Char> format_str, Errorr eh = Errorr())
+    : Errorr(eh), format_str_(format_str), next_arg_id_(0) {}
 
   // Returns an iterator to the beginning of the format string range being
   // parsed.
@@ -860,10 +860,10 @@ class basic_parse_context : private ErrorHandler {
   void check_arg_id(basic_string_view<Char>) {}
 
   FMT_CONSTEXPR void on_error(const char *message) {
-    ErrorHandler::on_error(message);
+    Errorr::on_error(message);
   }
 
-  FMT_CONSTEXPR ErrorHandler error_handler() const { return *this; }
+  FMT_CONSTEXPR Errorr error_handler() const { return *this; }
 };
 
 typedef basic_parse_context<char> parse_context;

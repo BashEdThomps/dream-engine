@@ -167,8 +167,6 @@ namespace Dream
        return mMaterial;
     }
 
-
-
     GLuint
     ModelMesh::getVAO
     ()
@@ -228,6 +226,4 @@ namespace Dream
     long ModelMesh::InstancesDrawn = 0;
     long ModelMesh::ShadowDrawCalls = 0;
     long ModelMesh::ShadowInstancesDrawn = 0;
-
-
-} // End of Dream
+}

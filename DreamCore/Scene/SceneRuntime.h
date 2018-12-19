@@ -1,10 +1,4 @@
 /*
- * SceneRuntime.h
- *
- * Created: 15 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -59,11 +53,6 @@ namespace Dream
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
-        /*
-        float mLogicCullDistance;
-        vector<SceneObjectRuntime*> mInMeshRange;
-        vector<SceneObjectRuntime*> mInLogicRange;
-        */
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
@@ -135,5 +124,11 @@ namespace Dream
 
         ScriptRuntime* getInputScript() const;
         ScriptRuntime* getNanoVGScript() const;
+
+        /**
+         * @return Gets the nearest SceneObject to the Camera's position excluding
+         * the SceneObject the Camera is focused on.
+         */
+        SceneObjectRuntime* getNearestToCamera();
     };
 }

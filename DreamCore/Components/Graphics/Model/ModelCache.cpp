@@ -26,8 +26,8 @@ namespace Dream
     ModelCache::ModelCache
     (ProjectRuntime* rt, ShaderCache* shaderCache, MaterialCache* matCache)
         : Cache(rt),
-          mShaderCacheHandle(shaderCache),
-          mMaterialCacheHandle(matCache)
+          mShaderCache(shaderCache),
+          mMaterialCache(matCache)
     {
         setLogClassName("ModelCache");
         auto log = getLog();
@@ -47,7 +47,7 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Loading {} from disk",  def->getUuid());
-        auto model = new ModelRuntime(mShaderCacheHandle, mMaterialCacheHandle,def,mProjectRuntime);
+        auto model = new ModelRuntime(mShaderCache, mMaterialCache,def,mProjectRuntime);
         if (model->useDefinition())
         {
             mInstances.push_back(model);

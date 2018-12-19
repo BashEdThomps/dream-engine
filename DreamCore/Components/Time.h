@@ -75,7 +75,7 @@ namespace Dream
          * @brief Scale the value passed by the amount of time that has passed
          * between frames. Used to get frame-independant timings
          */
-        double scaleValueByFrameTime(double value);
+        double perSecond(double value);
 
         /**
          * @brief Update the current and last frame time values.

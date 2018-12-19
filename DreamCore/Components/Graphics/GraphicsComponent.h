@@ -53,7 +53,7 @@ namespace Dream
 
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
-        ShaderCache* mShaderCacheHandle;
+        ShaderCache* mShaderCache;
         // Geom
         GLuint mGeometryPassFB;
         GLuint mGeometryPassPositionBuffer;

@@ -171,4 +171,20 @@ namespace Dream
         log->trace("Got file name without extension {}",nameOnly);
         return nameOnly;
     }
+
+    string
+    File::extension
+    ()
+    {
+        auto log = getLog();
+        auto name = nameWithExtension();
+        auto extStart = name.find_last_of(".");
+        if (extStart != string::npos)
+        {
+            auto ext = name.substr(extStart+1);
+            log->trace("Got file extension {}",ext);
+            return ext;
+        }
+        return "";
+    }
 } // End of Dream

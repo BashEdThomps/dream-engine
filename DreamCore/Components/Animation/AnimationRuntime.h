@@ -18,17 +18,51 @@
 #include "AnimationDefinition.h"
 #include "AnimationKeyframe.h"
 #include "../DiscreteAssetRuntime.h"
+#include "../../deps/tweeny/tweeny.h"
+
+using namespace tweeny;
 
 namespace Dream
 {
     class AnimationRuntime : public DiscreteAssetRuntime
     {
-
     public:
         AnimationRuntime(AnimationDefinition*, SceneObjectRuntime*);
         ~AnimationRuntime() override;
         bool useDefinition() override;
+
+        void orderByTime();
+        void stepAnimation(double time);
+
+        unsigned int getCurrentTime() const;
+        void setCurrentTime(unsigned int currentTime);
+
+        unsigned int getDuration() const;
+        void setDuration(unsigned int duration);
+
+        bool getLooping() const;
+        void setLooping(bool looping);
+
+        void createTweens();
+
     private:
+        void applyEasing(tweeny::tween<float>& twn, AnimationEasing::Type easing);
         vector<AnimationKeyframe> mKeyframes;
+        unsigned int mCurrentTime;
+        unsigned int mDuration;
+        bool mLooping;
+
+        tween<float> mTweenTranslationX;
+        tween<float> mTweenTranslationY;
+        tween<float> mTweenTranslationZ;
+
+        tween<float> mTweenRotationX;
+        tween<float> mTweenRotationY;
+        tween<float> mTweenRotationZ;
+
+        tween<float> mTweenScaleX;
+        tween<float> mTweenScaleY;
+        tween<float> mTweenScaleZ;
     };
+
 }

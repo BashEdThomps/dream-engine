@@ -66,13 +66,13 @@ NVGLUframebuffer* nvgluCreateFramebuffer(NVGcontext* ctx, int w, int h, int imag
 	fb->image = nvgCreateImageRGBA(ctx, w, h, imageFlags | NVG_IMAGE_FLIPY | NVG_IMAGE_PREMULTIPLIED, NULL);
 
 #if defined NANOVG_GL2
-	fb->texture = nvglImageHandleGL2(ctx, fb->image);
+	fb->texture = nvglImageGL2(ctx, fb->image);
 #elif defined NANOVG_GL3
-	fb->texture = nvglImageHandleGL3(ctx, fb->image);
+	fb->texture = nvglImageGL3(ctx, fb->image);
 #elif defined NANOVG_GLES2
-	fb->texture = nvglImageHandleGLES2(ctx, fb->image);
+	fb->texture = nvglImageGLES2(ctx, fb->image);
 #elif defined NANOVG_GLES3
-	fb->texture = nvglImageHandleGLES3(ctx, fb->image);
+	fb->texture = nvglImageGLES3(ctx, fb->image);
 #endif
 
 	fb->ctx = ctx;

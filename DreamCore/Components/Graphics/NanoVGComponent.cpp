@@ -38,9 +38,9 @@ extern "C" {
 namespace Dream
 {
 
-    NanoVGComponent::NanoVGComponent(WindowComponent* windowComponentHandle)
+    NanoVGComponent::NanoVGComponent(WindowComponent* windowComponent)
         : Component (),
-          mWindowComponentHandle(windowComponentHandle)
+          mWindowComponent(windowComponent)
     {
         setLogClassName("NanoVGComponent");
         auto log = getLog();
@@ -93,7 +93,7 @@ namespace Dream
 
     void NanoVGComponent::BeginFrame()
     {
-        BeginFrame(mWindowComponentHandle->getWidth(), mWindowComponentHandle->getHeight(), 1.0f);
+        BeginFrame(mWindowComponent->getWidth(), mWindowComponent->getHeight(), 1.0f);
     }
 
     void NanoVGComponent::BeginFrame(float windowWidth, float windowHeight, float devicePixelRatio)

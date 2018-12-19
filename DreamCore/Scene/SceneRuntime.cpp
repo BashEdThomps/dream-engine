@@ -356,7 +356,7 @@ namespace Dream
         mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(inputScriptUuid));
         if (!mInputScript)
         {
-            log->error("Unable to load Input Handler Script {}",inputScriptUuid);
+            log->error("Unable to load Input r Script {}",inputScriptUuid);
         }
         else
         {
@@ -558,4 +558,40 @@ namespace Dream
         return mNanoVGScript;
     }
 
-} // End of Dream
+    SceneObjectRuntime*
+    SceneRuntime::getNearestToCamera
+    ()
+    {
+        if (!mRootSceneObjectRuntime)
+        {
+            return nullptr;
+        }
+
+        float distance = std::numeric_limits<float>::max();
+        vec3 camTrans = mCamera.getTranslation();
+        SceneObjectRuntime* nearest = mRootSceneObjectRuntime;
+        SceneObjectRuntime* focused = mCamera.getFocusedSceneObject();
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* next)
+                {
+                    if (next == focused)
+                    {
+                        return nullptr;
+                    }
+                    float nextDistance = next->distanceFrom(camTrans);
+                    if (nextDistance < distance)
+                    {
+                        distance = nextDistance;
+                        nearest = next;
+                    }
+                   return nullptr;
+                }
+            )
+        );
+        return nearest;
+    }
+}

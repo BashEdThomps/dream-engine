@@ -22,7 +22,7 @@ namespace sinks {
  * Windows color console sink. Uses WriteConsoleA to write to the console with
  * colors
  */
-template<typename OutHandle, typename ConsoleMutex>
+template<typename Out, typename ConsoleMutex>
 class wincolor_sink : public sink
 {
 public:
@@ -34,7 +34,7 @@ public:
     const WORD YELLOW = FOREGROUND_RED | FOREGROUND_GREEN;
 
     wincolor_sink()
-        : out_handle_(OutHandle::handle())
+        : out_handle_(Out::handle())
         , mutex_(ConsoleMutex::mutex())
     {
         colors_[level::trace] = WHITE;

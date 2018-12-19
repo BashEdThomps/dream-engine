@@ -34,9 +34,7 @@
 #include "ModelDefinition.h"
 
 #include "../Material/MaterialRuntime.h"
-#include <memory>
 
-using std::numeric_limits;
 using ::Assimp::Importer;
 
 namespace Dream
@@ -50,7 +48,8 @@ namespace Dream
     )
         : SharedAssetRuntime(definition,runtime),
           mMaterialCache(texCache),
-          mShaderCache(shaderCache)
+          mShaderCache(shaderCache),
+          mGlobalInverseTransform(mat4(1.0f))
     {
         setLogClassName("ModelInstance");
         auto log = getLog();
@@ -97,7 +96,8 @@ namespace Dream
             return false;
         }
 
-        mDirectory = getAssetDirectoryPath(); //path.substr(0, path.find_last_of('/'));
+        mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
+        mDirectory = getAssetDirectoryPath();
         mBoundingBox.setToLimits();
         processNode(scene->mRootNode, scene);
         mLoaded = true;
@@ -108,7 +108,9 @@ namespace Dream
     ModelRuntime::processNode
     (aiNode* node, const aiScene* scene)
     {
+        processAnimationData(node);
         // Process all the node's meshes (if any)
+        aiMatrix4x4 rootTx = node->mTransformation;
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -130,7 +132,6 @@ namespace Dream
     ModelRuntime::processVertexData
     (aiMesh* mesh)
     {
-
         vector<Vertex>  vertices;
         for(GLuint i = 0; i < mesh->mNumVertices; i++)
         {
@@ -155,6 +156,10 @@ namespace Dream
                 vertex.Normal.x = mesh->mNormals[i].x;
                 vertex.Normal.y = mesh->mNormals[i].y;
                 vertex.Normal.z = mesh->mNormals[i].z;
+            }
+            else
+            {
+                vertex.Normal = glm::vec3(0.0f);
             }
 
             if (mesh->mTangents)
@@ -212,11 +217,30 @@ namespace Dream
         return indices;
     }
 
+    void
+    ModelRuntime::processBoneData
+    (aiMesh* mesh)
+    {
+       for (unsigned int i = 0; i < mesh->mNumBones; i++)
+       {
+          aiBone* nextBone = mesh->mBones[i];
+          string name(mesh->mBones[i]->mName.data);
+          mBones.insert(pair<string,Bone>(name,Bone()));
+       }
+    }
+
+    void
+    ModelRuntime::processAnimationData
+    (aiNode* node)
+    {
+    }
+
     ModelMesh*
     ModelRuntime::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
         auto log = getLog();
+        processBoneData(mesh);
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
@@ -236,19 +260,16 @@ namespace Dream
             if (material == nullptr)
             {
                 log->error(
-                    "No material for mesh {} in model {}. Cannot create mesh with null material.",
-                    mesh->mName.C_Str(),
-                    getNameAndUuidString()
+                    "No material for mesh {} in model {}."
+                    " Cannot create mesh with null material.",
+                    mesh->mName.C_Str(), getNameAndUuidString()
                 );
                 return nullptr;
             }
             log->debug( "Using Material {}" , material->getName());
             auto aMesh = new ModelMesh
             (
-                this,
-                string(mesh->mName.C_Str()),
-                vertices,
-                indices,
+                this, string(mesh->mName.C_Str()), vertices, indices,
                 material
             );
             material->addMesh(aMesh);
@@ -268,20 +289,6 @@ namespace Dream
     ()
     {
         return mBoundingBox;
-    }
-
-    void
-    ModelRuntime::setModelMatrix
-    (glm::mat4 modelMatrix)
-    {
-        mModelMatrix = modelMatrix;
-    }
-
-    glm::mat4
-    ModelRuntime::getModelMatrix
-    ()
-    {
-        return mModelMatrix;
     }
 
     void
@@ -399,4 +406,40 @@ namespace Dream
 
         mBoundingBox.maxDimension = maxBound;
     }
+
+    map<string,Bone>&
+    ModelRuntime::getBones
+    ()
+    {
+       return mBones;
+    }
+
+    map<string,ModelAnimation>&
+    ModelRuntime::getAnimations
+    ()
+    {
+        return mAnimations;
+    }
+
+    mat4 ModelRuntime::getGlobalInverseTransform() const
+    {
+        return mGlobalInverseTransform;
+    }
+
+    void ModelRuntime::setGlobalInverseTransform(const mat4& globalInverseTransform)
+    {
+        mGlobalInverseTransform = globalInverseTransform;
+    }
+
+    glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
+    (const aiMatrix4x4& from)
+    {
+        glm::mat4 to;
+        to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
+        to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
+        to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
+        to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
+        return to;
+    }
+
 } // End of Dream

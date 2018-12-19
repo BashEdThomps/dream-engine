@@ -31,14 +31,15 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <glm/glm.hpp>
 
 #include "../Material/MaterialRuntime.h"
 #include "../Shader/ShaderRuntime.h"
 #include "../Vertex.h"
 #include "../Texture/TextureRuntime.h"
 #include "../../../Common/DreamObject.h"
-#include <glm/glm.hpp>
 #include "../Light/LightRuntime.h"
+#include "ModelBone.h"
 
 namespace Dream
 {
@@ -54,14 +55,15 @@ namespace Dream
     private:
         ModelRuntime* mParent;
         MaterialRuntime* mMaterial;
-        string  mName;
+        string mName;
         GLuint mVAO;
         GLuint mVBO;
         GLuint mIBO;
-        vector<Vertex>  mVertices;
+        vector<Vertex> mVertices;
         vector<GLuint> mIndices;
         vector<SceneObjectRuntime*> mInstances;
         vector<SceneObjectRuntime*> mInstancesInFrustum;
+
     public:
         static long DrawCalls;
         static long InstancesDrawn;
@@ -70,11 +72,8 @@ namespace Dream
 
         ModelMesh
         (
-            ModelRuntime* parent,
-            string name,
-            vector<Vertex> vertexArray,
-            vector<GLuint> indexArray,
-            MaterialRuntime* material
+            ModelRuntime* parent, string name, vector<Vertex> vertexArray,
+            vector<GLuint> indexArray, MaterialRuntime* material
         );
 
         ~ModelMesh();

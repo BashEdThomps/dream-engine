@@ -106,14 +106,14 @@ namespace Dream
          * @brief Decompose the matrix into it's constituent parts.
          * @see MatrixDecomposition
          */
-        MatrixDecomposition decomposeMatrix() const;
+        MatrixDecomposition decomposeMatrix(bool conjugate = false) const;
 
         /**
          * @brief Regenerate the matrix from it's constituent parts.
          * @param decomp Previously decomposed matrix data.
          * @see MatrixDecomposition
          */
-        void recomposeMatrix(MatrixDecomposition decomp);
+        void recomposeMatrix(MatrixDecomposition decomp, bool conjugate = false);
 
         /**
          * @brief Translate the underlying matrix by the given amount.

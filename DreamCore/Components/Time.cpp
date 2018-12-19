@@ -89,7 +89,7 @@ namespace Dream
     }
 
     double
-    Time::scaleValueByFrameTime
+    Time::perSecond
     (double value)
     {
         return value*getFrameTimeDelta();

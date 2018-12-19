@@ -36,7 +36,8 @@
 
 #include "../../SharedAssetRuntime.h"
 #include "../../../Scene/SceneObject/BoundingBox.h"
-
+#include "ModelBone.h"
+#include "ModelAnimation.h"
 
 struct aiScene;
 struct aiMaterial;
@@ -44,7 +45,6 @@ struct aiNode;
 struct aiMesh;
 using namespace glm;
 using namespace Assimp;
-
 
 namespace Dream
 {
@@ -74,14 +74,17 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
 
-        void setModelMatrix(mat4);
-        mat4 getModelMatrix();
-
         void addInstance(SceneObjectRuntime*);
         void removeInstance(SceneObjectRuntime*);
 
         vector<string> getMaterialNames();
         vector<ModelMesh*> getMeshes() const;
+
+        map<string, Bone>& getBones();
+        map<string, ModelAnimation>& getAnimations();
+
+        mat4 getGlobalInverseTransform() const;
+        void setGlobalInverseTransform(const mat4& globalInverseTransform);
 
     private:
         // Variables
@@ -92,6 +95,9 @@ namespace Dream
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
         vector<string> mMaterialNames;
+        map<string,Bone> mBones;
+        map<string,ModelAnimation> mAnimations;
+        mat4 mGlobalInverseTransform;
 
         // Methods
         void updateBoundingBox(aiMesh* mesh);
@@ -101,6 +107,9 @@ namespace Dream
         ModelMesh* processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-    };
+        void processBoneData(aiMesh* mesh);
+        void processAnimationData(aiNode* mesh);
 
+        glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
+    };
 }

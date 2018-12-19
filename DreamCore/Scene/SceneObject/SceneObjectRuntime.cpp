@@ -62,8 +62,8 @@ namespace Dream
         mPhysicsObjectInstance(nullptr),
         mScriptInstance(nullptr),
         mModelInstance(nullptr),
-        mSceneRuntimeHandle(sr),
-        mParentRuntimeHandle(nullptr),
+        mSceneRuntime(sr),
+        mParentRuntime(nullptr),
         mBoundingBox(),
         mHasInputFocus(false),
         mHasCameraFocus(false),
@@ -172,7 +172,7 @@ namespace Dream
     {
         if (hasPhysicsObjectInstance())
         {
-            auto physicsComp = mSceneRuntimeHandle
+            auto physicsComp = mSceneRuntime
                 ->getProjectRuntime()
                 ->getPhysicsComponent();
            if (physicsComp != nullptr)
@@ -509,7 +509,7 @@ namespace Dream
     (string uuid)
     {
         auto log = getLog();
-        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
+        auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
             log->error("Project is not found");
@@ -529,7 +529,7 @@ namespace Dream
     {
         auto log = getLog();
         log->info("REPLACING asset instance from uuid {}", uuid);
-        auto project = mSceneRuntimeHandle->getProjectRuntime()->getProject();
+        auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
             log->error("Project is not found");
@@ -572,8 +572,8 @@ namespace Dream
         log->trace( "Creating Physics Object Asset Instance." );
         mPhysicsObjectInstance = new PhysicsObjectRuntime(
             definition,
-            mSceneRuntimeHandle->getProjectRuntime()->getPhysicsComponent(),
-            mSceneRuntimeHandle->getProjectRuntime()->getModelCache(),
+            mSceneRuntime->getProjectRuntime()->getPhysicsComponent(),
+            mSceneRuntime->getProjectRuntime()->getModelCache(),
             this
         );
         return mPhysicsObjectInstance->useDefinition();
@@ -617,7 +617,7 @@ namespace Dream
     (AudioDefinition* definition)
     {
         auto log = getLog();
-        auto audioComp = mSceneRuntimeHandle->getProjectRuntime()->getAudioComponent();
+        auto audioComp = mSceneRuntime->getProjectRuntime()->getAudioComponent();
         if (audioComp != nullptr)
         {
             removeAudioInstance();
@@ -639,7 +639,7 @@ namespace Dream
         auto log = getLog();
         removeModelInstance();
         log->info("Creating Model asset instance.");
-        auto cache = mSceneRuntimeHandle->getProjectRuntime()->getModelCache();
+        auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
             mModelInstance = dynamic_cast<ModelRuntime*>(cache->getInstance(definition));
@@ -663,7 +663,7 @@ namespace Dream
         auto log = getLog();
         removeScriptInstance();
         log->trace("Creating Script asset instance.");
-        auto scriptCache = (mSceneRuntimeHandle->getProjectRuntime()->getScriptCache());
+        auto scriptCache = (mSceneRuntime->getProjectRuntime()->getScriptCache());
         if (scriptCache)
         {
             mScriptInstance = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(definition));
@@ -784,21 +784,21 @@ namespace Dream
     SceneObjectRuntime::setParentRuntime
     (SceneObjectRuntime* parent)
     {
-        mParentRuntimeHandle = parent;
+        mParentRuntime = parent;
     }
 
     SceneObjectRuntime*
     SceneObjectRuntime::getParentRuntime
     ()
     {
-        return mParentRuntimeHandle;
+        return mParentRuntime;
     }
 
     SceneRuntime*
     SceneObjectRuntime::getSceneRuntime
     ()
     {
-        return mSceneRuntimeHandle;
+        return mSceneRuntime;
     }
 
     SceneObjectDefinition*
@@ -906,7 +906,7 @@ namespace Dream
     (SceneObjectDefinition* def)
     {
         auto log = getLog();
-        SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntimeHandle);
+        SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntime);
         child->setParentRuntime(this);
         if (!child->useDefinition())
         {
@@ -942,5 +942,24 @@ namespace Dream
     (SceneObjectRuntime* other)
     {
         return mTransform.distanceFrom(other->getTransform());
+    }
+
+    float
+    SceneObjectRuntime::distanceFrom
+    (vec3 other)
+    {
+        return glm::distance(mTransform.decomposeMatrix().translation,other);
+    }
+
+    bool
+    SceneObjectRuntime::inFrustum
+    ()
+    {
+        auto cam = mSceneRuntime->getCamera();
+        if (cam)
+        {
+           return cam->inFrustum(this);
+        }
+        return false;
     }
 }

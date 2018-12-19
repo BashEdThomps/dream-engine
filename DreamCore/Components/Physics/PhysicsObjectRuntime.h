@@ -45,7 +45,7 @@ namespace Dream
         btRigidBody *mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
         bool mInPhysicsWorld;
-        PhysicsComponent* mPhysicsComponentHandle;
+        PhysicsComponent* mPhysicsComponent;
         ModelCache* mModelCache;
 
         PhysicsObjectDefinition* getAssetDefinitionByUuid(string);

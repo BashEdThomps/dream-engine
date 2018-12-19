@@ -32,7 +32,7 @@ struct console_stdout
 #ifdef _WIN32
     static HANDLE handle()
     {
-        return ::GetStdHandle(STD_OUTPUT_HANDLE);
+        return ::GetStd(STD_OUTPUT_HANDLE);
     }
 #endif
 };
@@ -46,7 +46,7 @@ struct console_stderr
 #ifdef _WIN32
     static HANDLE handle()
     {
-        return ::GetStdHandle(STD_ERROR_HANDLE);
+        return ::GetStd(STD_ERROR_HANDLE);
     }
 #endif
 };

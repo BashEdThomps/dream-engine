@@ -397,7 +397,7 @@ namespace Dream
             "getCurrentFrameTime",&Time::getCurrentFrameTime,
             "getLastFrameTime",&Time::getLastFrameTime,
             "getFrameTimeDelta",&Time::getFrameTimeDelta,
-            "scaleValueByFrameTime",&Time::scaleValueByFrameTime,
+            "perSecond",&Time::perSecond,
             "now",&Time::now,
             "nowLL",&Time::nowLL
         );

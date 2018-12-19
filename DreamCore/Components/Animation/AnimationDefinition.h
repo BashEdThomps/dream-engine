@@ -28,10 +28,22 @@ namespace Dream
     public:
         AnimationDefinition(ProjectDefinition*, json);
         ~AnimationDefinition() override;
+
         vector<AnimationKeyframe> getKeyframes();
+
         void addKeyframe(AnimationKeyframe kf);
+        void updateKeyframe(AnimationKeyframe kf);
         void removeKeyframe(AnimationKeyframe kf);
+
+        bool getLooping();
+        void setLooping(bool looping);
+
+        unsigned int getDuration();
+        void setDuration(unsigned int duration);
+
+        int nextKeyframeID();
+
+        int getEasingType();
+        void setEasingType(int easingType);
     };
-
-
 }

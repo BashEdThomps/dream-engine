@@ -244,16 +244,17 @@ namespace Dream
         return dir.create();
     }
 
-    void
+    vector<string>
     ProjectDirectory::cleanupAssetsDirectory
     ()
     {
+        vector<string> retval;
         auto log = getLog();
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
             log->error("Cannot cleanup, no project definition");
-            return;
+            return retval;
         }
 
         for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
@@ -279,6 +280,7 @@ namespace Dream
                         {
                             log->error("Definition {} does not exist, removing...",name);
                             subdir.deleteDirectory();
+                            retval.push_back(name);
                         }
                     }
                 }
@@ -289,6 +291,7 @@ namespace Dream
                 log->error("No Directory {}",path);
             }
         }
+        return retval;
     }
 
     Project*

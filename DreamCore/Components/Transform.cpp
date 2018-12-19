@@ -127,21 +127,31 @@ namespace Dream
 
     MatrixDecomposition
     Transform::decomposeMatrix
-    ()
+    (bool conjugate)
     const
     {
         MatrixDecomposition decomp;
         glm::decompose(mMatrix, decomp.scale, decomp.rotation, decomp.translation, decomp.skew, decomp.perspective);
-        //decomp.rotation = glm::conjugate(decomp.rotation);
+        if (conjugate)
+        {
+            decomp.rotation = glm::conjugate(decomp.rotation);
+        }
         return decomp;
     }
 
     void
     Transform::recomposeMatrix
-    (MatrixDecomposition decomp)
+    (MatrixDecomposition decomp,bool conjugate)
     {
         mMatrix = mat4(1.0f);
-        mMatrix = mat4_cast(decomp.rotation)*mMatrix;
+        if (conjugate)
+        {
+            mMatrix = mat4_cast(glm::conjugate(decomp.rotation))*mMatrix;
+        }
+        else
+        {
+            mMatrix = mat4_cast(decomp.rotation)*mMatrix;
+        }
         mMatrix = glm::translate(mMatrix,decomp.translation);
         mMatrix = glm::scale(mMatrix,decomp.scale);
     }

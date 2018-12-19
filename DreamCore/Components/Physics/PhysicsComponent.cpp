@@ -508,5 +508,4 @@ namespace Dream
     {
         mCharacter=character;
     }
-
-}// End of Dream
+}

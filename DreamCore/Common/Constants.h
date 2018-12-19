@@ -352,10 +352,14 @@ namespace Dream
         const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
 
         // Animation/Keyframe ===================================================
-        const static string KEYFRAME_VALUE;
-        const static string KEYFRAME_VALUES;
+        const static string KEYFRAME_ID;
         const static string KEYFRAME_TIME;
-        const static string KEYFRAME_TARGET;
+        const static string KEYFRAME_TRANSLATION;
+        const static string KEYFRAME_ROTATION;
+        const static string KEYFRAME_SCALE;
+        const static string KEYFRAME_DURATION;
+        const static string KEYFRAME_LOOPING;
+        const static string KEYFRAME_EASING_TYPE;
 
         // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;

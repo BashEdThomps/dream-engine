@@ -1,10 +1,4 @@
 /*
- * SceneObjectRuntime.h
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -27,7 +21,6 @@
 
 using std::vector;
 using std::function;
-
 using nlohmann::json;
 using glm::vec3;
 
@@ -152,7 +145,10 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
         void setBoundingBox(BoundingBox boundingBox);
+
         float distanceFrom(SceneObjectRuntime* other);
+        float distanceFrom(vec3 other);
+        bool inFrustum();
 
 
     protected:
@@ -172,8 +168,8 @@ namespace Dream
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;
-        SceneRuntime* mSceneRuntimeHandle;
-        SceneObjectRuntime* mParentRuntimeHandle;
+        SceneRuntime* mSceneRuntime;
+        SceneObjectRuntime* mParentRuntime;
         BoundingBox mBoundingBox;
         bool mHasInputFocus;
         bool mHasCameraFocus;

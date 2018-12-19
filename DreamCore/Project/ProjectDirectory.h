@@ -50,7 +50,7 @@ namespace Dream
         bool assetTypeDirectoryExists(AssetType type);
 
         bool createAssetTypeDirectory(AssetType type);
-        void cleanupAssetsDirectory();
+        vector<string> cleanupAssetsDirectory();
 
         Project* newProject(string projectDir);
         Project* openFromFileReader(string directory, File &fileReader);
