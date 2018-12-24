@@ -81,18 +81,15 @@ namespace DreamTool
             int sdTreeID = 0;
             for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
             {
-                bool sceneNodeOpen = ImGui::TreeNodeEx(
-                    (void*)(intptr_t)++sdTreeID,
-                    node_flags,
-                    sDef->getName().c_str(),
-                    0
-                );
+                bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,
+                    node_flags, sDef->getName().c_str(), 0);
 
                 if (ImGui::IsItemClicked())
                 {
                     log->trace("Scene Clicked {}", sDef->getName());
                     auto pRunt = mState->project->getRuntime();
                     SceneRuntime* sRunt = nullptr;
+
                     if (pRunt)
                     {
                         sRunt = pRunt->getActiveSceneRuntime();
@@ -123,12 +120,12 @@ namespace DreamTool
     }
 
     void
-    ProjectBrowser::
-    addSceneObject
+    ProjectBrowser::addSceneObject
     (SceneObjectDefinition* def)
     {
         int treeId = 0;
         auto log = getLog();
+
         if (def != nullptr)
         {
             auto projRunt = mState->project->getRuntime();
@@ -145,12 +142,15 @@ namespace DreamTool
 
             bool isSelected = find(mSelectedNodes.begin(), mSelectedNodes.end(), def) != mSelectedNodes.end();
 
-            bool nodeOpen = ImGui::TreeNodeEx(
-               (void*)(intptr_t)treeId,
+            stringstream nameStr;
+            if (def->getIsTemplate())
+            {
+               nameStr << "[Template] ";
+            }
+            nameStr << def->getName();
+            bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeId,
                flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
-               def->getName().c_str(),
-               0
-            );
+               nameStr.str().c_str(), 0);
 
             // SceneObject Context Menu
             bool deleteClicked = false;
@@ -216,7 +216,7 @@ namespace DreamTool
                     def->addChildDefinition(newDef);
                     if (soRunt)
                     {
-                        soRunt->createChildRuntime(newDef);
+                        soRunt->createAndAddChildRuntime(newDef);
                     }
                 }
                 mSelectedNodes.clear();
@@ -251,11 +251,8 @@ namespace DreamTool
                 mDragDropSource.objectDef = def;
                 mDragDropSource.parentDef = def->getParentSceneObject();
 
-                ImGui::SetDragDropPayload(
-                    Constants::SCENE_OBJECT.c_str(),
-                    &mDragDropSource,
-                    sizeof(SceneObjectDragSource*)
-                );
+                ImGui::SetDragDropPayload( Constants::SCENE_OBJECT.c_str(),
+                    &mDragDropSource, sizeof(SceneObjectDragSource*));
                 ImGui::Text("Reparent %s",def->getName().c_str());
                 ImGui::EndDragDropSource();
             }
@@ -278,7 +275,7 @@ namespace DreamTool
 
                     if (soRunt)
                     {
-                        soRunt->createChildRuntime(mDragDropSource.objectDef);
+                        soRunt->createAndAddChildRuntime(mDragDropSource.objectDef);
 
                         // get old parent runtime and remove children that were reparented
                         auto oldParent = sRunt->getSceneObjectRuntimeByUuid(mDragDropSource.parentDef->getUuid());
@@ -314,7 +311,8 @@ namespace DreamTool
         }
     }
 
-    void ProjectBrowser::drawAssetTree
+    void
+    ProjectBrowser::drawAssetTree
     ()
     {
         auto log = getLog();

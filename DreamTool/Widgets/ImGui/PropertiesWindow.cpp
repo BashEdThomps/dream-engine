@@ -501,6 +501,7 @@ namespace DreamTool
                 }
 
             }
+
             float camSpeed = sceneDef->getCameraMovementSpeed();
             if(ImGui::DragFloat("Camera Speed",&camSpeed))
             {
@@ -512,6 +513,21 @@ namespace DreamTool
                 {
                     auto cam = sceneRuntime->getCamera();
                     cam->setMovementSpeed(camSpeed);
+                }
+            }
+
+            if(ImGui::Button("Capture Camera Transform"))
+            {
+                if (sceneDef)
+                {
+                    sceneDef->setCameraTranslationX(cameraTranslation[0]);
+                    sceneDef->setCameraTranslationY(cameraTranslation[1]);
+                    sceneDef->setCameraTranslationZ(cameraTranslation[2]);
+
+                    sceneDef->setCameraPitch(radians(cameraRotation[0]));
+                    sceneDef->setCameraYaw(radians(cameraRotation[1]));
+
+                    sceneDef->setCameraMovementSpeed(camSpeed);
                 }
             }
 
@@ -767,7 +783,7 @@ namespace DreamTool
             SceneObjectRuntime* newRt = nullptr;
             if (soRuntime)
             {
-                newRt = soRuntime->createChildRuntime(newChildDef);
+                newRt = soRuntime->createAndAddChildRuntime(newChildDef);
                 newRt->getTransform().setMatrix(cursorTx);
             }
             pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
@@ -782,7 +798,7 @@ namespace DreamTool
                 SceneObjectRuntime* newRt = nullptr;
                 if (soRuntime)
                 {
-                    newRt = soRuntime->createChildRuntime(dup);
+                    newRt = soRuntime->createAndAddChildRuntime(dup);
                 }
                 pushPropertyTarget(PropertyType::SceneObject,dup,newRt);
             }
@@ -792,13 +808,6 @@ namespace DreamTool
         ImGui::Separator();
 
         ImGui::Columns(2);
-        bool hasFocus = soDef->getHasInputFocus();
-        if (ImGui::Checkbox("Has Input Focus", &hasFocus))
-        {
-            if (soDef) soDef->setHasInputFocus(hasFocus);
-            if (soRuntime) soRuntime->setHasInputFocus(hasFocus);
-        }
-        ImGui::NextColumn();
 
         if (ImGui::Button("Set Camera Focus"))
         {
@@ -836,8 +845,48 @@ namespace DreamTool
             if(soDef) soDef->setHidden(hidden);
             if(soRuntime) soRuntime->setHidden(hidden);
         }
+        ImGui::NextColumn();
+
+        bool isTemplate = soDef->getIsTemplate();
+        if(ImGui::Checkbox("Template", &isTemplate))
+        {
+            if(soDef) soDef->setIsTemplate(isTemplate);
+        }
 
         ImGui::Columns(1);
+
+        if (soRuntime && soRuntime->hasAnimationInstance())
+        {
+            auto animation = soRuntime->getAnimationInstance();
+            if (ImGui::CollapsingHeader("Animation"))
+            {
+                if (ImGui::Button("Run"))
+                {
+                    animation->run();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Pause"))
+                {
+                    animation->pause();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Reset"))
+                {
+                    animation->reset();
+                }
+
+                ImGui::PushItemWidth(-1);
+                int animProg = animation->getCurrentTime();
+                int duration = animation->getDuration();
+                if(ImGui::SliderInt("#AnimationProgress", &animProg,0,duration,"%dms"))
+                {
+                    animation->setCurrentTime(animProg);
+                    animation->seekAll(animProg);
+                }
+                ImGui::PopItemWidth();
+
+            }
+        }
 
         drawImGizmo();
 
@@ -1281,6 +1330,7 @@ namespace DreamTool
                     }
                 }
             }
+
             ImGui::NextColumn();
             if(ImGui::Button("Restore Initial"))
             {
@@ -1514,6 +1564,142 @@ namespace DreamTool
     }
 
     void
+    PropertiesWindow::drawAnimationAssetProperties
+    ()
+    {
+        auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
+
+        int duration = animDef->getDuration();
+        if (ImGui::InputInt("Duration (ms)",&duration))
+        {
+           animDef->setDuration(duration);
+        }
+
+        ImGui::Columns(2);
+
+        bool looping = animDef->getLooping();
+        if (ImGui::Checkbox("Looping",&looping))
+        {
+            animDef->setLooping(looping);
+        }
+
+        ImGui::NextColumn();
+
+        if (ImGui::Button("Add Keyframe"))
+        {
+            animDef->addKeyframe(AnimationKeyframe(animDef->nextKeyframeID()));
+        }
+
+        ImGui::Separator();
+
+        ImGui::Columns(6);
+        // Table Header
+        ImGui::Text("Remove");
+        ImGui::NextColumn();
+
+        ImGui::Text("Time (ms)");
+        ImGui::NextColumn();
+
+        ImGui::Text("Translation");
+        ImGui::NextColumn();
+
+        ImGui::Text("Rotation");
+        ImGui::NextColumn();
+
+        ImGui::Text("Scale");
+        ImGui::NextColumn();
+
+        ImGui::Text("Easing");
+        ImGui::NextColumn();
+
+        ImGui::Separator();
+
+        for (auto& kf : animDef->getKeyframes())
+        {
+            ImGui::PushID(kf.getID());
+
+            // Remove
+            if (ImGui::Button("-##remove"))
+            {
+                animDef->removeKeyframe(kf);
+            }
+            ImGui::SameLine();
+            ImGui::Text("(%d)",kf.getID());
+            ImGui::NextColumn();
+
+            // Time
+            int time = kf.getTime();
+            ImGui::PushItemWidth(-1);
+            if(ImGui::InputInt("##time",&time))
+            {
+                kf.setTime(time);
+                animDef->updateKeyframe(kf);
+            }
+            ImGui::PopItemWidth();
+            ImGui::NextColumn();
+
+            // Tx
+            vec3 vTx = kf.getTranslation();
+            float tx[3] = {vTx.x, vTx.y, vTx.z};
+            ImGui::PushItemWidth(-1);
+            if (ImGui::InputFloat3("##translation",&tx[0]))
+            {
+                vTx.x = tx[0];
+                vTx.y = tx[1];
+                vTx.z = tx[2];
+                kf.setTranslation(vTx);
+                animDef->updateKeyframe(kf);
+            }
+            ImGui::PopItemWidth();
+            ImGui::NextColumn();
+
+            // Rx
+            vec3 vRx = kf.getRotation();
+            float rx[3] = {degrees(vRx.x), degrees(vRx.y), degrees(vRx.z)};
+            ImGui::PushItemWidth(-1);
+            if (ImGui::InputFloat3("##rotation",&rx[0]))
+            {
+                vRx.x = radians(rx[0]);
+                vRx.y = radians(rx[1]);
+                vRx.z = radians(rx[2]);
+                kf.setRotation(vRx);
+                animDef->updateKeyframe(kf);
+            }
+            ImGui::PopItemWidth();
+            ImGui::NextColumn();
+
+            // Scale
+            vec3 vScale = kf.getScale();
+            float scale[3] = {vScale.x, vScale.y, vScale.z};
+            ImGui::PushItemWidth(-1);
+            if (ImGui::InputFloat3("##scale",&scale[0]))
+            {
+                vScale.x = scale[0];
+                vScale.y = scale[1];
+                vScale.z = scale[2];
+                kf.setScale(vScale);
+                animDef->updateKeyframe(kf);
+            }
+            ImGui::PopItemWidth();
+            ImGui::NextColumn();
+
+            // Easing
+            auto easingTypes = AnimationEasing::EasingNames;
+            int currentEasingType = kf.getEasingType();
+            if (StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
+            {
+               kf.setEasingType(static_cast<AnimationEasing::Type>(currentEasingType));
+               animDef->updateKeyframe(kf);
+            }
+
+            ImGui::NextColumn();
+            ImGui::Separator();
+            ImGui::PopID();
+        }
+        ImGui::Columns(1);
+    }
+
+    void
     PropertiesWindow::drawAudioAssetProperties
     ()
     {
@@ -1541,6 +1727,28 @@ namespace DreamTool
         {
             mState->projectDirectory.removeAssetDirectory(audioDef);
         }
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Play"))
+        {
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Pause"))
+        {
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Stop"))
+        {
+        }
+
+        ImGui::PushItemWidth(-1);
+        int audioProg = 0;
+        int duration = 0;
+        if(ImGui::SliderInt("#AudioProgress", &audioProg,0,duration,"%d"))
+        {
+        }
+        ImGui::PopItemWidth();
     }
 
     void
@@ -2001,7 +2209,7 @@ namespace DreamTool
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
-            def->setFormat(file.extension());
+            def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file.extension());
             def->setName(file.nameWithoutExtension());
             mState->projectDirectory.writeAssetData(def,data);
         }
@@ -2330,142 +2538,6 @@ namespace DreamTool
     PropertiesWindow::drawPathAssetProperties
     ()
     {}
-
-    void
-    PropertiesWindow::drawAnimationAssetProperties
-    ()
-    {
-        auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
-
-        int duration = animDef->getDuration();
-        if (ImGui::InputInt("Duration (ms)",&duration))
-        {
-           animDef->setDuration(duration);
-        }
-
-        ImGui::Columns(2);
-
-        bool looping = animDef->getLooping();
-        if (ImGui::Checkbox("Looping",&looping))
-        {
-            animDef->setLooping(looping);
-        }
-
-        ImGui::NextColumn();
-
-        if (ImGui::Button("Add Keyframe"))
-        {
-            animDef->addKeyframe(AnimationKeyframe(animDef->nextKeyframeID()));
-        }
-
-        ImGui::Separator();
-
-        ImGui::Columns(6);
-        // Table Header
-        ImGui::Text("Remove");
-        ImGui::NextColumn();
-
-        ImGui::Text("Time (ms)");
-        ImGui::NextColumn();
-
-        ImGui::Text("Translation");
-        ImGui::NextColumn();
-
-        ImGui::Text("Rotation");
-        ImGui::NextColumn();
-
-        ImGui::Text("Scale");
-        ImGui::NextColumn();
-
-        ImGui::Text("Easing");
-        ImGui::NextColumn();
-
-        ImGui::Separator();
-
-        for (auto& kf : animDef->getKeyframes())
-        {
-            ImGui::PushID(kf.getID());
-
-            // Remove
-            if (ImGui::Button("-##remove"))
-            {
-                animDef->removeKeyframe(kf);
-            }
-            ImGui::SameLine();
-            ImGui::Text("(%d)",kf.getID());
-            ImGui::NextColumn();
-
-            // Time
-            int time = kf.getTime();
-            ImGui::PushItemWidth(-1);
-            if(ImGui::InputInt("##time",&time))
-            {
-                kf.setTime(time);
-                animDef->updateKeyframe(kf);
-            }
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-
-            // Tx
-            vec3 vTx = kf.getTranslation();
-            float tx[3] = {vTx.x, vTx.y, vTx.z};
-            ImGui::PushItemWidth(-1);
-            if (ImGui::InputFloat3("##translation",&tx[0]))
-            {
-                vTx.x = tx[0];
-                vTx.y = tx[1];
-                vTx.z = tx[2];
-                kf.setTranslation(vTx);
-                animDef->updateKeyframe(kf);
-            }
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-
-            // Rx
-            vec3 vRx = kf.getRotation();
-            float rx[3] = {degrees(vRx.x), degrees(vRx.y), degrees(vRx.z)};
-            ImGui::PushItemWidth(-1);
-            if (ImGui::InputFloat3("##rotation",&rx[0]))
-            {
-                vRx.x = radians(rx[0]);
-                vRx.y = radians(rx[1]);
-                vRx.z = radians(rx[2]);
-                kf.setRotation(vRx);
-                animDef->updateKeyframe(kf);
-            }
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-
-            // Scale
-            vec3 vScale = kf.getScale();
-            float scale[3] = {vScale.x, vScale.y, vScale.z};
-            ImGui::PushItemWidth(-1);
-            if (ImGui::InputFloat3("##scale",&scale[0]))
-            {
-                vScale.x = scale[0];
-                vScale.y = scale[1];
-                vScale.z = scale[2];
-                kf.setScale(vScale);
-                animDef->updateKeyframe(kf);
-            }
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-
-            // Easing
-            auto easingTypes = AnimationEasing::EasingNames;
-            int currentEasingType = kf.getEasingType();
-            if (StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
-            {
-               kf.setEasingType(static_cast<AnimationEasing::Type>(currentEasingType));
-               animDef->updateKeyframe(kf);
-            }
-
-            ImGui::NextColumn();
-            ImGui::Separator();
-            ImGui::PopID();
-        }
-        ImGui::Columns(1);
-    }
 
     void
     PropertiesWindow::drawParticleEmitterAssetProperties

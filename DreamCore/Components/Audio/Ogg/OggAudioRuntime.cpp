@@ -23,18 +23,10 @@
 namespace Dream
 {
     OggAudioRuntime::OggAudioRuntime
-    (AudioComponent* comp,
-     AudioDefinition* definition,
-     SceneObjectRuntime* parent)
-        : AudioRuntime(comp, definition,parent)
+    (AudioDefinition* def, ProjectRuntime* project)
+        : AudioRuntime(def,project)
     {
         setLogClassName("OggAudioInstance");
-    }
-
-    OggAudioRuntime::~OggAudioRuntime
-    ()
-    {
-
     }
 
     bool
@@ -107,9 +99,10 @@ namespace Dream
 
         // Clean up!
         ov_clear(&oggFile);
-        //loadSpectrumAnalyser();
-        return true;
+
+        return loadIntoAL();
     }
+
 } // End of Dream
 
 

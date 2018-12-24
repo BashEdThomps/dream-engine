@@ -1,10 +1,4 @@
 /*
- * Transform3D.cpp
- *
- * Created: 22/11/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -35,12 +29,25 @@ namespace Dream
     ()
         : DreamObject("Transform"),
           mMatrix(1.0f)
-    {}
+    {
+        auto log = getLog();
+        log->trace("Constructing");
+    }
+
+    Transform::Transform(const Transform& other)
+        :DreamObject ("Transform")
+    {
+        auto log = getLog();
+        log->trace("Constructing Copy");
+        mMatrix = other.mMatrix;
+    }
 
     Transform::Transform
     (mat4 mtx)
         : DreamObject("Transform")
     {
+        auto log = getLog();
+        log->trace("Constructing from matrix");
         setMatrix(mtx);
     }
 
@@ -48,6 +55,8 @@ namespace Dream
     (json jsonTransform)
         : DreamObject("Transform")
     {
+        auto log = getLog();
+        log->trace("Constructing from json");
         if (!jsonTransform[Constants::TRANSFORM_MATRIX].is_null())
         {
             float mtxFloat[16] = {0.0f};

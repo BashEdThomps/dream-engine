@@ -62,16 +62,16 @@ namespace Dream
         SceneState getState();
         void setState(SceneState state);
 
-        vector<float> getGravity();
-        void setGravity(vector<float> gravity);
+        const vector<float> getGravity();
+        void setGravity(const vector<float>& gravity);
 
-        vector<float> getClearColour();
-        void setClearColour(vector<float> clearColour);
+        const vector<float>& getClearColour();
+        void setClearColour(const vector<float>& clearColour);
 
-        vector<float> getAmbientColour();
-        void setAmbientColour(vector<float> ambientColour);
+        const vector<float>& getAmbientColour();
+        void setAmbientColour(const vector<float>& ambientColour);
 
-        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
+        const vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
@@ -87,8 +87,8 @@ namespace Dream
         void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObject);
         SceneObjectRuntime* getRootSceneObjectRuntime();
 
-        SceneObjectRuntime* getSceneObjectRuntimeByName(string);
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(string);
+        SceneObjectRuntime* getSceneObjectRuntimeByName(const string& name);
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(const string& uuid);
 
         int countSceneObjectRuntimes();
         int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
@@ -99,7 +99,7 @@ namespace Dream
 
         void collectGarbage() override;
 
-        void setAssetDefinitionUuidLoadQueue(vector<string> loadQueue);
+        void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
         bool getPhysicsDebug();
         void setPhysicsDebug(bool physicsDebug);
@@ -111,16 +111,17 @@ namespace Dream
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
         void setMeshCullDistance(float);
-        float getMeshCullDistance();
-
-        void setMinDrawDistance(float);
-        void setMaxDrawDistance(float);
+        float getMeshCullDistance() const;
 
         float getMinDrawDistance() const;
-        float getMaxDrawDistance() const;
+        void setMinDrawDistance(float);
 
-        vector<AssetRuntime*> getAssetInstances(AssetType);
-        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(AssetDefinition* def);
+        float getMaxDrawDistance() const;
+        void setMaxDrawDistance(float);
+
+
+        vector<AssetRuntime*> getAssetInstances(AssetType) const;
+        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(AssetDefinition* def) const;
 
         ScriptRuntime* getInputScript() const;
         ScriptRuntime* getNanoVGScript() const;

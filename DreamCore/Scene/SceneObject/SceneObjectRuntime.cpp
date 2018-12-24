@@ -18,6 +18,7 @@
 #include "../../Components/Path/PathRuntime.h"
 #include "../../Components/Animation/AnimationDefinition.h"
 #include "../../Components/Animation/AnimationRuntime.h"
+#include "../../Components/Audio/AudioCache.h"
 #include "../../Components/Audio/AudioRuntime.h"
 #include "../../Components/Audio/AudioComponent.h"
 #include "../../Components/Graphics/Model/ModelRuntime.h"
@@ -65,7 +66,6 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mBoundingBox(),
-        mHasInputFocus(false),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -345,22 +345,8 @@ namespace Dream
     {
         auto log = getLog();
         auto definedTransform = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
+        mInitialTransform = Transform(definedTransform);
         mTransform = Transform(definedTransform);
-    }
-
-    bool
-    SceneObjectRuntime::getHasInputFocus
-    ()
-    const
-    {
-        return mHasInputFocus;
-    }
-
-    void
-    SceneObjectRuntime::setHasInputFocus
-    (bool focus)
-    {
-        mHasInputFocus = focus;
     }
 
     bool
@@ -373,7 +359,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::addEvent
-    (Event event)
+    (const Event& event)
     {
         auto log = getLog();
         log->trace
@@ -506,7 +492,7 @@ namespace Dream
 
     AssetDefinition*
     SceneObjectRuntime::getAssetDefinitionByUuid
-    (string uuid)
+    (const string& uuid)
     {
         auto log = getLog();
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
@@ -525,7 +511,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::replaceAssetUuid
-    (AssetType type, string uuid)
+    (AssetType type, const string& uuid)
     {
         auto log = getLog();
         log->info("REPLACING asset instance from uuid {}", uuid);
@@ -617,13 +603,11 @@ namespace Dream
     (AudioDefinition* definition)
     {
         auto log = getLog();
-        auto audioComp = mSceneRuntime->getProjectRuntime()->getAudioComponent();
-        if (audioComp != nullptr)
+        auto cache = mSceneRuntime->getProjectRuntime()->getAudioCache();
+        if (cache != nullptr)
         {
-            removeAudioInstance();
-            log->trace( "Creating Audio asset instance." );
-            mAudioInstance = audioComp->newAudioInstance(definition,this);
-            return mAudioInstance->useDefinition();
+            mAudioInstance = dynamic_cast<AudioRuntime*>(cache->getInstance(definition));
+            return mAudioInstance != nullptr;
         }
         else
         {
@@ -695,7 +679,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::applyToAll
-    (function<bool(SceneObjectRuntime*)> funk)
+    (const function<bool(SceneObjectRuntime*)>& fn)
     {
         auto log = getLog();
         log->trace(
@@ -704,13 +688,13 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        bool retval = funk(this);
+        bool retval = fn(this);
 
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if (*it)
             {
-                retval = retval || (*it)->applyToAll(funk);
+                retval = retval || (*it)->applyToAll(fn);
             }
         }
         return retval;
@@ -718,7 +702,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneObjectRuntime::applyToAll
-    (function<SceneObjectRuntime*(SceneObjectRuntime*)> funk)
+    (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
     {
         auto log = getLog();
         log->trace(
@@ -727,7 +711,7 @@ namespace Dream
             mChildRuntimes.size()
         );
 
-        SceneObjectRuntime* retval = funk(this);
+        SceneObjectRuntime* retval = fn(this);
 
         if (retval != nullptr)
         {
@@ -738,7 +722,7 @@ namespace Dream
         {
             if ((*it) != nullptr)
             {
-                retval = (*it)->applyToAll(funk);
+                retval = (*it)->applyToAll(fn);
                 if (retval != nullptr)
                 {
                     return retval;
@@ -750,7 +734,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneObjectRuntime::getChildRuntimeByUuid
-    (string uuid)
+    (const string& uuid)
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -817,7 +801,6 @@ namespace Dream
         setName(def->getName());
         setUuid(def->getUuid());
         setHasCameraFocus(def->getHasCameraFocus());
-        setHasInputFocus(def->getHasInputFocus());
         setHidden(def->getHidden());
         initTransform();
         setAssetDefinitionsMap(def->getAssetDefinitionsMap());
@@ -830,10 +813,19 @@ namespace Dream
     SceneObjectRuntime::loadChildrenFromDefinition
     (SceneObjectDefinition* definition)
     {
+        auto log = getLog();
         vector<SceneObjectDefinition*> definitions = definition->getChildDefinitionsList();
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
-            createChildRuntime(*it);
+            auto sor = (*it);
+            if (!sor->getIsTemplate())
+            {
+                createAndAddChildRuntime(*it);
+            }
+            else
+            {
+                log->debug("Skipping Template Object: {}",sor->getNameAndUuidString());
+            }
         }
         return true;
     }
@@ -843,6 +835,65 @@ namespace Dream
     (const Transform& transform)
     {
         mTransform = transform;
+    }
+
+    void
+    SceneObjectRuntime::translateWithChildren
+    (const vec3& translation)
+    {
+        applyToAll(
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+            [&](SceneObjectRuntime* rt)
+            {
+                rt->getTransform().translate(translation);
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        ));
+    }
+
+    void
+    SceneObjectRuntime::preTranslateWithChildren
+    (const vec3& translation)
+    {
+        applyToAll(
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+            [&](SceneObjectRuntime* rt)
+            {
+                rt->getTransform().preTranslate(translation);
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        ));
+    }
+
+    Transform&
+    SceneObjectRuntime::getInitialTransform
+    ()
+    {
+       return mInitialTransform;
+    }
+
+    void
+    SceneObjectRuntime::translateOffsetInitialWithChildren
+    (const vec3& translation)
+    {
+        applyToAll(
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+            [&](SceneObjectRuntime* rt)
+            {
+                auto& initial = rt->getInitialTransform().getMatrix();
+                mat4 mat = glm::translate(mat4(1.0f),translation)*initial;
+                rt->getTransform().setMatrix(mat);
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        ));
+    }
+
+
+    void
+    SceneObjectRuntime::transformOffsetInitial
+    (const mat4& matrix)
+    {
+        mTransform.setMatrix(mTransform.getMatrix()*mInitialTransform.getMatrix());
     }
 
     bool
@@ -902,7 +953,7 @@ namespace Dream
     }
 
     SceneObjectRuntime*
-    SceneObjectRuntime::createChildRuntime
+    SceneObjectRuntime::createAndAddChildRuntime
     (SceneObjectDefinition* def)
     {
         auto log = getLog();
@@ -931,11 +982,10 @@ namespace Dream
 
     void
     SceneObjectRuntime::setBoundingBox
-    (BoundingBox boundingBox)
+    (const BoundingBox& boundingBox)
     {
         mBoundingBox = boundingBox;
     }
-
 
     float
     SceneObjectRuntime::distanceFrom
@@ -946,19 +996,56 @@ namespace Dream
 
     float
     SceneObjectRuntime::distanceFrom
-    (vec3 other)
+    (const vec3& other)
     {
         return glm::distance(mTransform.decomposeMatrix().translation,other);
     }
 
     bool
-    SceneObjectRuntime::inFrustum
+    SceneObjectRuntime::visibleInFrustum
     ()
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
         {
-           return cam->inFrustum(this);
+           return cam->visibleInFrustum(this);
+        }
+        return false;
+    }
+
+    bool
+    SceneObjectRuntime::containedInFrustum
+    ()
+    {
+        auto cam = mSceneRuntime->getCamera();
+        if (cam)
+        {
+           return cam->containedInFrustum(this);
+        }
+        return false;
+    }
+
+    bool
+    SceneObjectRuntime::containedInFrustumAfterTransform
+    (const mat4& tx)
+    {
+        auto cam = mSceneRuntime->getCamera();
+        if (cam)
+        {
+           return cam->containedInFrustumAfterTransform(this,tx);
+        }
+        return false;
+
+    }
+
+    bool
+    SceneObjectRuntime::exceedsFrustumPlaneAtTranslation
+    (Frustum::Plane plane, const vec3& tx)
+    {
+        auto cam = mSceneRuntime->getCamera();
+        if (cam)
+        {
+            return cam->exceedsFrustumPlaneAtTranslation(plane,this,tx);
         }
         return false;
     }

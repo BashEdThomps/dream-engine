@@ -246,7 +246,12 @@ namespace Dream
     GraphicsComponent::freeGeometryBuffers
     ()
     {
-        mWindowComponent->bindDefaultFrameBuffer();
+        /*
+        if (mWindowComponent)
+        {
+            mWindowComponent->bindDefaultFrameBuffer();
+        }
+        */
 
         if (mGeometryPassFB != 0)
         {
@@ -665,7 +670,7 @@ namespace Dream
     GraphicsComponent::freeShadowBuffers
     ()
     {
-        mWindowComponent->bindDefaultFrameBuffer();
+        //mWindowComponent->bindDefaultFrameBuffer();
 
         if (mShadowPassFB != 0)
         {

@@ -315,17 +315,53 @@ namespace Dream
     }
 
     bool
-    Camera::inFrustum
+    Camera::containedInFrustum
     (SceneObjectRuntime* sor)
     {
         return mFrustum.testIntersection(
-                    sor->getTransform().getMatrix(),
-                    sor->getBoundingBox()
-                    ) != Frustum::TEST_OUTSIDE;
+            sor->getTransform().getMatrix(),
+            sor->getBoundingBox()
+        ) == Frustum::TEST_INSIDE;
     }
 
     bool
-    Camera::inFrustum
+    Camera::containedInFrustum
+    (const BoundingBox& bb)
+    {
+        const static mat4 tx(1.0f);
+        return mFrustum.testIntersection(tx,bb) == Frustum::TEST_INSIDE;
+    }
+
+    bool
+    Camera::exceedsFrustumPlaneAtTranslation
+    (Frustum::Plane plane, SceneObjectRuntime* sor, const vec3& tx)
+    {
+        return mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox()) != Frustum::TEST_INSIDE;
+    }
+
+    bool
+    Camera::containedInFrustumAfterTransform
+    (SceneObjectRuntime* sor, const mat4& tx)
+    {
+        return mFrustum.testIntersection(
+            sor->getTransform().getMatrix() * tx,
+            sor->getBoundingBox()
+         ) != Frustum::TEST_OUTSIDE;
+
+    }
+
+    bool
+    Camera::visibleInFrustum
+    (SceneObjectRuntime* sor)
+    {
+        return mFrustum.testIntersection(
+            sor->getTransform().getMatrix(),
+            sor->getBoundingBox()
+         ) != Frustum::TEST_OUTSIDE;
+    }
+
+    bool
+    Camera::visibleInFrustum
     (const BoundingBox& bb)
     {
         const static mat4 tx(1.0f);

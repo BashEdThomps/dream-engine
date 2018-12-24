@@ -16,6 +16,7 @@
 
 #include <glm/vec3.hpp>
 #include "BoundingBox.h"
+#include "../../Components/Graphics/Frustum.h"
 #include "../../Common/Runtime.h"
 #include "../../Components/Transform.h"
 
@@ -91,33 +92,33 @@ namespace Dream
 
         Transform& getTransform();
         void setTransform(const Transform& transform);
-
-        bool getHasInputFocus() const;
-        void setHasInputFocus(bool);
+        void translateWithChildren(const vec3& translation);
+        void preTranslateWithChildren(const vec3& translation);
+        void transformOffsetInitial(const mat4& matrix);
 
         bool getHasCameraFocus() const;
         void setHasCameraFocus(bool);
 
         bool hasEvents() const;
-        void addEvent(Event);
+        void addEvent(const Event& event);
         const vector<Event>& getEventQueue() const;
         void clearEventQueue();
 
-        SceneObjectRuntime* getChildRuntimeByUuid(string);
+        SceneObjectRuntime* getChildRuntimeByUuid(const string& uuid);
 
         int countAllChildren();
         size_t countChildren();
         void addChildRuntime(SceneObjectRuntime*);
         void removeChildRuntime(SceneObjectRuntime*);
-        SceneObjectRuntime* createChildRuntime(SceneObjectDefinition*);
+        SceneObjectRuntime* createAndAddChildRuntime(SceneObjectDefinition*);
         vector<SceneObjectRuntime*> getChildRuntimes();
         bool isChildOf(SceneObjectRuntime*);
 
         bool isParentOf(SceneObjectRuntime* child);
         void setParentRuntime(SceneObjectRuntime* parent);
         SceneObjectRuntime* getParentRuntime();
-        SceneObjectRuntime* applyToAll(function<SceneObjectRuntime*(SceneObjectRuntime*)>);
-        bool applyToAll(function<bool(SceneObjectRuntime*)>);
+        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
+        bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
 
         bool useDefinition() override;
 
@@ -136,20 +137,25 @@ namespace Dream
         void removePhysicsObjectInstance();
         void removeParticleEmitterInstance();
 
-        bool replaceAssetUuid(AssetType type, string uuid);
-        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        bool replaceAssetUuid(AssetType type, const string& uuid);
+        AssetDefinition* getAssetDefinitionByUuid(const string& uuid);
         void setAssetDefinitionsMap(map<AssetType,string> loadQueue);
         map<AssetType, string> getAssetDefinitionsMap();
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
         BoundingBox& getBoundingBox();
-        void setBoundingBox(BoundingBox boundingBox);
+        void setBoundingBox(const BoundingBox& boundingBox);
 
         float distanceFrom(SceneObjectRuntime* other);
-        float distanceFrom(vec3 other);
-        bool inFrustum();
+        float distanceFrom(const vec3& other);
+        bool visibleInFrustum();
+        bool containedInFrustum();
+        bool containedInFrustumAfterTransform(const mat4& tx);
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
+        void translateOffsetInitialWithChildren(const vec3& translation);
+        Transform& getInitialTransform();
 
     protected:
         void initTransform();
@@ -164,6 +170,7 @@ namespace Dream
         PhysicsObjectRuntime* mPhysicsObjectInstance;
         ScriptRuntime* mScriptInstance;
         ModelRuntime* mModelInstance;
+        Transform mInitialTransform;
         Transform mTransform;
         vector<Event> mEventQueue;
         map<AssetType,string> mAssetDefinitions;
@@ -171,7 +178,6 @@ namespace Dream
         SceneRuntime* mSceneRuntime;
         SceneObjectRuntime* mParentRuntime;
         BoundingBox mBoundingBox;
-        bool mHasInputFocus;
         bool mHasCameraFocus;
         bool mDeleted;
         bool mHidden;

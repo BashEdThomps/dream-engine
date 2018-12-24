@@ -1,4 +1,10 @@
 /*
+ * GLFWWindowComponent.cpp
+ *
+ * Created: 11 2017 by Ashley
+ *
+ * Copyright 2017 Octronic. All rights reserved.
+ *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -10,13 +16,11 @@
  * this file belongs to.
  */
 
-
-#define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
 #include "GLFWWindowComponent.h"
-#include "../../DreamCore/Scene/SceneRuntime.h"
 
-using namespace Dream;
+using Dream::Constants;
+using Dream::SceneRuntime;
+using Dream::SceneState;
 
 static bool WindowSizeChanged = false;
 
@@ -24,18 +28,19 @@ namespace DreamGLFW
 {
     void
     FramebufferSizeCallback
-    (GLFWwindow*, int, int)
+    (GLFWwindow* windows98, int w, int h)
     {
         WindowSizeChanged = true;
     }
 
     GLFWWindowComponent::GLFWWindowComponent
-    () : WindowComponent(),
-         mDPIScaleX(1.0f),
-         mDPIScaleY(1.0f)
+    () : IWindowComponent()
     {
-        setLogClassName("GLFWWindowComponent");
-        auto log = getLog();
+        auto log = spdlog::get("GLFWWindowComponent");
+        if (log == nullptr)
+        {
+            log = spdlog::stdout_color_mt("GLFWWindowComponent");
+        }
         log->info("Constructing" );
         mName = "Dream";
     }
@@ -43,17 +48,10 @@ namespace DreamGLFW
     GLFWWindowComponent::~GLFWWindowComponent
     ()
     {
-        auto log = getLog();
+        auto log = spdlog::get("GLFWWindowComponent");
         log->info("Destructing" );
         glfwTerminate();
         mWindow = nullptr;
-    }
-
-    GLFWwindow*
-    GLFWWindowComponent::getGlfwWindow
-    ()
-    {
-       return mWindow;
     }
 
     bool
@@ -78,14 +76,13 @@ namespace DreamGLFW
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
-        checkGLError();
     }
 
     bool
     GLFWWindowComponent::initGLFW
     ()
     {
-        auto log = getLog();
+        auto log = spdlog::get("GLFWWindowComponent");
         log->debug("Initialising GLFW");
 
         /* Initialize the library */
@@ -97,18 +94,23 @@ namespace DreamGLFW
 
         /* Create a windowed mode window and its OpenGL context */
 #ifdef WIN32
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #endif
         mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), nullptr,nullptr);
 
         if (mWindow == nullptr)
         {
+
             log->error("FAILED @ Make Window");
             glfwTerminate();
             return false;
@@ -116,10 +118,7 @@ namespace DreamGLFW
 
         // Resize callback
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
-        glfwSwapInterval(0);
-        //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
-        glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        log->debug("Queried Framebuffer size as {}x{}",mWidth,mHeight);
+        glfwSwapInterval(1);
         return true;
     }
 
@@ -127,26 +126,11 @@ namespace DreamGLFW
     GLFWWindowComponent::initGL
     ()
     {
-        auto log = getLog();
+        auto log = spdlog::get("GLFWWindowComponent");
         log->debug("Initialising GLFW::OpenGL");
+        /* Make the window's context current */
         glfwMakeContextCurrent(mWindow);
 
-        glewExperimental = GL_TRUE;
-        GLenum glewInitResult = glewInit();
-
-        if (glewInitResult != GLEW_OK)
-        {
-            log->error("GLEW failed to initialise");
-            return false;
-        }
-
-        checkGLError();
-
-        log->debug(
-            "OpenGL Version {}, Shader Version {}",
-            glGetString(GL_VERSION),
-            glGetString(GL_SHADING_LANGUAGE_VERSION)
-        );
         return true;
     }
 
@@ -154,18 +138,16 @@ namespace DreamGLFW
     GLFWWindowComponent::updateComponent
     (SceneRuntime* sr)
     {
-        auto log = getLog();
-
-        glfwPollEvents();
+        auto log = spdlog::get("GLFWWindowComponent");
+        if (sr == nullptr)
+        {
+            log->error("No active scene runtime");
+            return;
+        }
 
         if(glfwWindowShouldClose(mWindow))
         {
-            if (sr != nullptr)
-            {
-                sr->setState(Dream::SCENE_STATE_TO_DESTROY);
-            }
-            setShouldClose(true);
-            log->error("Window should close");
+           sr->setState(Dream::SCENE_STATE_TO_DESTROY);
         }
 
         if (WindowSizeChanged)
@@ -173,26 +155,25 @@ namespace DreamGLFW
             getCurrentDimensions();
             WindowSizeChanged = false;
         }
+
     }
 
-    void
-    GLFWWindowComponent::getCurrentDimensions
-    ()
+    void GLFWWindowComponent::getCurrentDimensions()
     {
-        auto log = getLog();
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        log->error("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
+        cout << "Framebuffer Size Changed: " << mWidth << "," << mHeight << endl;
         mSizeHasChanged = true;
     }
 
-    void
-    GLFWWindowComponent::swapBuffers
-    ()
+    void GLFWWindowComponent::swapBuffers()
     {
         if (mWindow != nullptr)
         {
             glfwSwapBuffers(mWindow);
         }
+
+        glfwPollEvents();
     }
-}
+
+} // End of Dream
 

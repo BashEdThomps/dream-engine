@@ -14,26 +14,28 @@
 */
 
 
-#include "AudioRuntime.h"
+#ifdef __APPLE__
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
+#else
+    #include <AL/al.h>
+    #include <AL/alc.h>
+#endif
 
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "AudioRuntime.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
 
 namespace Dream
 {
     AudioRuntime::AudioRuntime
-    (AudioComponent* component,
-     AudioDefinition* definition,
-     SceneObjectRuntime* rt)
-        : DiscreteAssetRuntime(definition, rt),
-          mAudioComponent(component),
+    (AudioDefinition* def, ProjectRuntime* project)
+        : SharedAssetRuntime(def,project),
           mStartTime(-1),
           mLastSampleOffset(0),
           mChannels(-1)
     {
         setLogClassName("AudioInstance");
-        setStatus(UNKNOWN);
         setLooping(false);
         setBuffer(0);
         setSource(0);
@@ -42,11 +44,8 @@ namespace Dream
 
     AudioRuntime::~AudioRuntime()
     {
-       if (mAudioComponent != nullptr)
-       {
-          mAudioComponent->deleteBuffers(1,mBuffer);
-          mAudioComponent->deleteSources(1,mSource);
-       }
+          alDeleteBuffers(1,&mBuffer);
+          alDeleteSources(1,&mSource);
     }
 
     void
@@ -123,44 +122,27 @@ namespace Dream
     AudioRuntime::play
     ()
     {
-        if (mAudioComponent != nullptr)
-        {
-            mAudioComponent->pushToPlayQueue(this);
-        }
-    }
-
-    void
-    AudioRuntime::pause
-    ()
-    {
-        if (mAudioComponent != nullptr)
-        {
-            mAudioComponent->pushToPauseQueue(this);
-        }
+        auto log = getLog();
+        log->debug(  "Playing source {}" , mSource);
+        alSourcePlay(mSource);
     }
 
     void
     AudioRuntime::stop
     ()
     {
-        if (mAudioComponent != nullptr)
-        {
-            mAudioComponent->pushToStopQueue(this);
-        }
+        auto log = getLog();
+        log->debug(  "Stopping source {}" , mSource);
+        alSourceStop(mSource);
     }
 
     void
-    AudioRuntime::setStatus
-    (AudioStatus status)
-    {
-        mStatus = status;
-    }
-
-    AudioStatus
-    AudioRuntime::getStatus
+    AudioRuntime::pause
     ()
     {
-        return mStatus;
+        auto log = getLog();
+        log->debug(  "Pausing source {}" , mSource);
+        alSourcePause(mSource);
     }
 
     void
@@ -181,6 +163,10 @@ namespace Dream
     AudioRuntime::generateEventList
     ()
     {
+        // TODO = Rethink, SharedAssetInstance has no SceneObjectRuntime to send
+        // Events to :thinking:
+
+        /*
         auto ad = dynamic_cast<AudioDefinition*>(mDefinition);
         auto nMarkers = ad->countMarkers();
 
@@ -234,12 +220,14 @@ namespace Dream
         {
             mAudioComponent->pushToUpdateQueue(this);
         }
+        */
     }
 
     void
     AudioRuntime::updateMarkers
     ()
     {
+        /*
         auto log = getLog();
         auto currentSample = mAudioComponent->getSampleOffset(mSource);
         // has just looped, restore cached events
@@ -264,20 +252,134 @@ namespace Dream
             }
         }
         mLastSampleOffset = currentSample;
+        */
     }
 
-    long long AudioRuntime::getStartTime() const
+    long
+    long AudioRuntime::getStartTime
+    ()
+    const
     {
         return mStartTime;
     }
 
-    void AudioRuntime::setStartTime(long long startTime)
+    void
+    AudioRuntime::setStartTime
+    (long long startTime)
     {
         mStartTime = startTime;
     }
 
-    int AudioRuntime::getChannels() const
+    int
+    AudioRuntime::getChannels
+    ()
+    const
     {
         return mChannels;
+    }
+
+    AudioStatus
+    AudioRuntime::getState
+    ()
+    {
+        auto log = getLog();
+
+        int state;
+        alGetSourcei(mSource, AL_SOURCE_STATE, &state);
+        switch (state)
+        {
+            case AL_STOPPED:
+                return STOPPED;
+            case AL_PLAYING:
+                return PLAYING;
+            case AL_PAUSED:
+                return PAUSED;
+            default:
+                log->error("Unknown Audio State for {} " , getNameAndUuidString());
+                return UNKNOWN;
+        }
+    }
+
+    vector<char>
+    AudioRuntime::getAudioBuffer
+    (size_t offset, size_t length)
+    const
+    {
+        vector<char> retval = vector<char>(length);
+        vector<char> audioData = getAudioDataBuffer();
+        char* dataBegin = &audioData[offset];
+        retval.insert(retval.begin(), dataBegin, dataBegin+length);
+        return retval;
+    }
+
+    ALint
+    AudioRuntime::getSampleOffset
+    ()
+    const
+    {
+        ALint sampleOffset;
+        alGetSourcei(mSource, AL_SAMPLE_OFFSET, &sampleOffset);
+        return sampleOffset;
+    }
+
+    ALuint
+    AudioRuntime::generateSource
+    ()
+    {
+        alGetError();
+        alGenSources(1, &mSource);
+        ALenum error = alGetError();
+        if ( error != AL_NO_ERROR )
+        {
+            mSource = static_cast<ALuint>(-1);
+        }
+        return mSource;
+    }
+
+    ALuint
+    AudioRuntime::generateBuffer
+    ()
+    {
+        alGetError();
+        alGenBuffers(1, &mBuffer);
+        ALenum error = alGetError();
+        if ( error != AL_NO_ERROR )
+        {
+            mBuffer = static_cast<ALuint>(-1);
+        }
+        return mBuffer;
+    }
+
+    bool
+    AudioRuntime::loadIntoAL
+    ()
+    {
+        auto log = getLog();
+        log->error("Loading Into AL {}",getNameAndUuidString());
+
+        if (mSource == 0 && mBuffer == 0)
+        {
+            generateBuffer();
+            generateSource();
+
+            if (mAudioDataBuffer.empty())
+            {
+                log->error("Unable to load audio data: Empty Buffer");
+                return false;
+            }
+
+            alBufferData(mBuffer, mFormat, &mAudioDataBuffer[0], static_cast<ALsizei>(mAudioDataBuffer.size()), mFrequency);
+            alSourcei(mSource, AL_BUFFER, static_cast<ALint>(mBuffer));
+
+            alSourcei(mSource, AL_LOOPING, mLooping ? 1 : 0 );
+        }
+        else
+        {
+            log->error("Unable to load audio, source or buffer is empty");
+            return false;
+        }
+
+        log->debug("Pushed audio asset to play queue");
+        return true;
     }
 } // End of Dream

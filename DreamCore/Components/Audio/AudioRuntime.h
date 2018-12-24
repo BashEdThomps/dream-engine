@@ -18,7 +18,7 @@
 #include <vector>
 #include <deque>
 #include "AudioStatus.h"
-#include "../DiscreteAssetRuntime.h"
+#include "../SharedAssetRuntime.h"
 #include "../Event.h"
 
 #ifdef __APPLE__
@@ -41,7 +41,7 @@ namespace Dream
     /**
      * @brief AudioRuntime data for an OpenAL based Audio Clip.
      */
-    class AudioRuntime : public DiscreteAssetRuntime
+    class AudioRuntime : public SharedAssetRuntime
     {
     protected:
         bool mLooping;
@@ -50,8 +50,6 @@ namespace Dream
         vector<char> mAudioDataBuffer;
         ALuint mSource;
         ALuint mBuffer;
-        AudioStatus mStatus;
-        AudioComponent* mAudioComponent;
         long long mStartTime;
         int mLastSampleOffset;
         int mChannels;
@@ -59,18 +57,24 @@ namespace Dream
         deque<Event> mMarkerEventsCache;
 
         void generateEventList();
+        ALuint generateSource();
+        ALuint generateBuffer();
+        bool loadIntoAL();
+
     public:
-        AudioRuntime(AudioComponent* comp, AudioDefinition*, SceneObjectRuntime*);
+
+        AudioRuntime(AudioDefinition* def, ProjectRuntime* project);
         ~AudioRuntime() override;
+
         void setLooping(bool);
         bool isLooping() const ;
 
         vector<ALchar> getAudioDataBuffer()const ;
+
         ALsizei getFrequency()const ;
         ALenum  getFormat()const ;
-        AudioStatus getStatus() ;
-        void setStatus(AudioStatus);
-        void   setBuffer(ALuint buffer);
+
+        void setBuffer(ALuint buffer);
         ALuint getBuffer()const ;
 
         void setSource(ALuint source);
@@ -83,9 +87,15 @@ namespace Dream
         void setSourcePosision(glm::vec3 pos);
         long long getStartTime() const;
         void setStartTime(long long startTime);
-        void setVolume(float volume);
-        int getChannels() const;
-        void updateMarkers();
-    };
 
-} // End of Dream
+        void setVolume(float volume);
+
+        int getChannels() const;
+
+        void updateMarkers();
+        AudioStatus getState();
+
+        ALint getSampleOffset() const;
+        vector<char> getAudioBuffer(size_t offset, size_t length) const;
+    };
+}

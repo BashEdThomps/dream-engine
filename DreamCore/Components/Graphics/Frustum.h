@@ -33,6 +33,7 @@ namespace Dream
         ~Frustum();
         void updatePlanes();
         Frustum::TestResult testIntersection(const mat4& modelMatrix, const BoundingBox& box) const;
+        Frustum::TestResult testIntersectionWithPlane(Plane plane, const vec3& modelMatrix, const BoundingBox& box) const;
 
     protected:
         vec4 mPlanes[6];

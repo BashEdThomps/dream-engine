@@ -20,9 +20,6 @@
 #include "../AudioRuntime.h"
 #include "WavHeader.h"
 
-using std::string;
-using nlohmann::json;
-
 namespace Dream
 {
     class WavAudioRuntime : public AudioRuntime
@@ -30,9 +27,10 @@ namespace Dream
 
     private:
         WavHeader mWavHeader;
+
     public:
-        WavAudioRuntime(AudioComponent*, AudioDefinition*, SceneObjectRuntime*);
-        ~WavAudioRuntime() override;
+        WavAudioRuntime(AudioDefinition*, ProjectRuntime*);
+
         long getFileSize(FILE* inFile);
         bool useDefinition() override;
     };

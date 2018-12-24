@@ -1,8 +1,4 @@
 /*
- * LuaComponent
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -212,6 +208,25 @@ namespace Dream
             "LEFT",     Constants::CAMERA_MOVEMENT_LEFT,
             "RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT
         );
+
+        stateView.new_enum
+        (
+            "FrustumPlane",
+            "Back",Frustum::Plane::PLANE_BACK,
+            "Front",Frustum::Plane::PLANE_FRONT,
+            "Right",Frustum::Plane::PLANE_RIGHT,
+            "Left",Frustum::Plane::PLANE_LEFT,
+            "Top",Frustum::Plane::PLANE_TOP,
+            "Bottom",Frustum::Plane::PLANE_BOTTOM
+        );
+
+        stateView.new_enum
+        (
+            "FrustumTestResult",
+            "Inside",Frustum::TestResult::TEST_INSIDE,
+            "Outside",Frustum::TestResult::TEST_OUTSIDE,
+            "Intersect",Frustum::TestResult::TEST_INTERSECT
+        );
     }
 
     void
@@ -358,7 +373,14 @@ namespace Dream
             "getHidden",&SceneObjectRuntime::getHidden,
             "setHidden",&SceneObjectRuntime::setHidden,
             "addEvent",&SceneObjectRuntime::addEvent,
-            "replaceAssetUuid",&SceneObjectRuntime::replaceAssetUuid
+            "replaceAssetUuid",&SceneObjectRuntime::replaceAssetUuid,
+            "translateWithChildren",&SceneObjectRuntime::translateWithChildren,
+            "preTranslateWithChildren",&SceneObjectRuntime::preTranslateWithChildren,
+            "transformOffsetInitial",&SceneObjectRuntime::transformOffsetInitial,
+            "translateOffsetInitialWithChildren",&SceneObjectRuntime::translateOffsetInitialWithChildren,
+            "containedInFrustum",&SceneObjectRuntime::containedInFrustum,
+            "containedInFrustumAfterTransform",&SceneObjectRuntime::containedInFrustum,
+            "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation
         );
     }
 
@@ -371,9 +393,11 @@ namespace Dream
         stateView.new_usertype<Transform>("Transform",
             // Translation ===========================================================
             "getMatrix",&Transform::getMatrix,
-            "setMatrix",&Transform::getMatrix,
+            "setMatrix",&Transform::setMatrix,
             "decomposeMatrix",&Transform::decomposeMatrix,
-            "recomposeMatrix",&Transform::recomposeMatrix
+            "recomposeMatrix",&Transform::recomposeMatrix,
+            "translate",&Transform::translate,
+            "preTranslate",&Transform::preTranslate
         );
 
         stateView.new_usertype<MatrixDecomposition>
@@ -651,7 +675,7 @@ namespace Dream
         stateView.new_usertype<AudioRuntime>
         (
             "AudioInstance",
-            "getStatus",&AudioRuntime::getStatus,
+            "getState",&AudioRuntime::getState,
             "play",&AudioRuntime::play,
             "pause",&AudioRuntime::pause,
             "stop",&AudioRuntime::stop
@@ -660,7 +684,7 @@ namespace Dream
 
         stateView.new_enum
         (
-            "AudioStatus",
+            "AudioState",
             "PLAYING", AudioStatus::PLAYING,
             "PAUSED",  AudioStatus::PAUSED,
             "STOPPED", AudioStatus::STOPPED
@@ -803,7 +827,8 @@ namespace Dream
         stateView.new_usertype<SceneRuntime>
         (
             "SceneRuntime",
-            "getCamera",&SceneRuntime::getCamera
+            "getCamera",&SceneRuntime::getCamera,
+            "getSceneObjectByUuid",&SceneRuntime::getSceneObjectRuntimeByUuid
         );
     }
 
@@ -852,7 +877,7 @@ namespace Dream
 
         stateView.new_usertype<glm::mat4>(
             "mat4",
-            sol::constructors<glm::mat4(), glm::mat4(float)>(),
+            sol::constructors<glm::mat4(), glm::mat4(float), glm::mat4(glm::mat4)>(),
             sol::meta_function::multiplication, mat4MultiplicationOverloads
         );
 

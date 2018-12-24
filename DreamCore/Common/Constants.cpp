@@ -197,11 +197,10 @@ namespace Dream
     const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
     const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
     const string Constants::SCENE_OBJECT_CHILDREN = "children";
-    const string Constants::SCENE_OBJECT_HAS_INPUT_FOCUS = "input_focus";
     const string Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS = "camera_focus";
     const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
     const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
-    const string Constants::SCENE_OBJECT_STATIC = "static";
+    const string Constants::SCENE_OBJECT_TEMPLATE = "template";
     const string Constants::SCENE_OBJECT_HIDDEN = "hidden";
 
     // Transform ================================================================

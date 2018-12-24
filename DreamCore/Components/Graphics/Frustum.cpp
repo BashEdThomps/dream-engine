@@ -77,6 +77,7 @@ namespace Dream
             mPlanes[i] = glm::normalize( mPlanes[i] );
         }
     }
+
     // check whether an AABB intersects the frustum
     Frustum::TestResult
     Frustum::testIntersection
@@ -100,4 +101,25 @@ namespace Dream
         }
         return result;
     }
+
+    // check whether an AABB intersects the frustum
+    Frustum::TestResult
+    Frustum::testIntersectionWithPlane
+    (Plane plane, const vec3& modelPos, const BoundingBox& box)
+    const
+    {
+        TestResult result = TEST_INSIDE;
+        const float pos = mPlanes[plane].w;
+        const vec3 normal = vec3(mPlanes[plane]);
+        if(glm::dot(normal, box.getPositiveVertex(modelPos, normal))+pos < 0.0f)
+        {
+            return TEST_OUTSIDE;
+        }
+        if(glm::dot(normal, box.getNegativeVertex(modelPos, normal))+pos < 0.0f)
+        {
+            result = TEST_INTERSECT;
+        }
+        return result;
+    }
+
 }

@@ -162,7 +162,7 @@ namespace DreamTool
                             auto rt = pRuntime->getSceneRuntimeVector().at(sceneActiveIndex);
                             if (rt)
                             {
-                                pRuntime->setSceneRuntimeActive(rt->getUuid());
+                                pRuntime->setSceneRuntimeAsActive(rt->getUuid());
                                 setMessageString("Activated Scene: "+rt->getName());
                             }
                         }

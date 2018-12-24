@@ -64,6 +64,13 @@ namespace Dream
          */
         Transform();
 
+
+        /**
+         * @brief Copy Constructor
+         * @param other
+         */
+        Transform(const Transform& other);
+
         /**
          * @brief Construct using the passed matrix data
          * @param fromMatrix data
@@ -111,6 +118,7 @@ namespace Dream
         /**
          * @brief Regenerate the matrix from it's constituent parts.
          * @param decomp Previously decomposed matrix data.
+         * @param conjugate Conjugate the rotation matrix during decomposition.
          * @see MatrixDecomposition
          */
         void recomposeMatrix(MatrixDecomposition decomp, bool conjugate = false);

@@ -3,9 +3,9 @@ cmake_minimum_required (VERSION 2.8.0)
 project (Dream C CXX)
 
 set(DREAM_BUILD_CORE ON)
-set(DREAM_BUILD_GLFW OFF)
+set(DREAM_BUILD_GLFW ON)
 set(DREAM_BUILD_TOOL ON)
-set(DREAM_BUILD_DOC  ON)
+set(DREAM_BUILD_DOC  OFF)
 
 set(CMAKE_MODULE_PATH "${Dream_SOURCE_DIR}/CMakeModules")
 message("Using modules path: " ${CMAKE_MODULE_PATH})

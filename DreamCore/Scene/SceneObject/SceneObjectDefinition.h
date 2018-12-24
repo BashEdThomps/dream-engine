@@ -51,9 +51,6 @@ namespace Dream
 
         int getChildCount() const;
 
-        void setHasInputFocus(bool focus);
-        bool getHasInputFocus();
-
         void setHasCameraFocus(bool fc);
         bool getHasCameraFocus();
 
@@ -76,8 +73,8 @@ namespace Dream
         bool getAlwaysDraw();
         void setAlwaysDraw(bool alwaysDraw);
 
-        void setStatic(bool d);
-        bool getStatic();
+        void setIsTemplate(bool d);
+        bool getIsTemplate();
 
         void loadChildSceneObjectDefinitions(bool randomUuid = false);
         void setHidden(bool d);

@@ -184,7 +184,7 @@ namespace Dream
         for (size_t i=0; i<mInstances.size();i++)
         {
             auto sor = mInstances.at(i);
-            if(camera->inFrustum(sor))
+            if(camera->visibleInFrustum(sor))
             {
                 mInstancesInFrustum.push_back(sor);
             }

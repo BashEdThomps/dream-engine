@@ -15,18 +15,15 @@
 
 #pragma once
 
-#include <string>
 #include "../AudioRuntime.h"
-
-using namespace std;
 
 namespace Dream
 {
     class OggAudioRuntime : public AudioRuntime
     {
     public:
-        OggAudioRuntime(AudioComponent*,AudioDefinition*,SceneObjectRuntime*);
-        ~OggAudioRuntime() override;
+        OggAudioRuntime(AudioDefinition* def, ProjectRuntime* project);
+
         bool useDefinition() override;
     };
 }

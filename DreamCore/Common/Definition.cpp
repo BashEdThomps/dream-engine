@@ -35,10 +35,9 @@ namespace Dream
         return mJson;
     }
 
-
     bool
     Definition::hasUuid
-    (string uuid)
+    (const string& uuid)
     {
         string s = mJson[Constants::UUID];
         return s.compare(uuid) == 0;
@@ -68,7 +67,7 @@ namespace Dream
 
     bool
     Definition::hasName
-    (string uuid)
+    (const string& uuid)
     {
         string s = mJson[Constants::NAME];
         return s.compare(uuid) == 0;
@@ -82,13 +81,15 @@ namespace Dream
     }
 
     void
-    Definition::setName(string name)
+    Definition::setName
+    (const string& name)
     {
         mJson[Constants::NAME] = name;
     }
 
     void
-    Definition::setUuid(string uuid)
+    Definition::setUuid
+    (const string& uuid)
     {
         mJson[Constants::UUID] = uuid;
     }

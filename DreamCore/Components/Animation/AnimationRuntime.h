@@ -43,7 +43,15 @@ namespace Dream
         bool getLooping() const;
         void setLooping(bool looping);
 
+        bool mRunning;
         void createTweens();
+        void run();
+        void pause();
+        void reset();
+        void seekAll(unsigned int pos);
+
+        bool getRunning() const;
+        void setRunning(bool running);
 
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::Type easing);

@@ -1,6 +1,4 @@
 /*
- * WavAudioInstance
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,21 +19,11 @@
 namespace Dream
 {
     WavAudioRuntime::WavAudioRuntime
-    (
-        AudioComponent* comp,
-        AudioDefinition* definition,
-        SceneObjectRuntime* transform
-    ) : AudioRuntime(comp, definition, transform)
-
+    (AudioDefinition* definition, ProjectRuntime* project)
+        : AudioRuntime(definition, project)
     {
-        setLogClassName("WavAudioInstance") ;
-        return;
-    }
-
-    WavAudioRuntime::~WavAudioRuntime
-    ()
-    {
-        return;
+        setLogClassName("WavAudioInstance");
+        getLog()->error("Constructing");
     }
 
     bool
@@ -117,7 +105,7 @@ namespace Dream
             );
         }
         fclose(wavFile);
-        return true;
+        return loadIntoAL();
     }
 
     // find the file size
@@ -131,5 +119,4 @@ namespace Dream
         fseek(inFile, 0, SEEK_SET);
         return fileSize;
     }
-
 }

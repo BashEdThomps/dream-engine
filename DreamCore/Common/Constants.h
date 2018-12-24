@@ -194,11 +194,10 @@ namespace Dream
         const static string SCENE_OBJECT_ROOT_NAME;
         const static string SCENE_OBJECT_DEFAULT_NAME;
         const static string SCENE_OBJECT_CHILDREN;
-        const static string SCENE_OBJECT_HAS_INPUT_FOCUS;
         const static string SCENE_OBJECT_HAS_CAMERA_FOCUS;
         const static string SCENE_OBJECT_ASSET_INSTANCES;
         const static string SCENE_OBJECT_ALWAYS_DRAW;
-        const static string SCENE_OBJECT_STATIC;
+        const static string SCENE_OBJECT_TEMPLATE;
         const static string SCENE_OBJECT_HIDDEN;
 
         // Transform ============================================================

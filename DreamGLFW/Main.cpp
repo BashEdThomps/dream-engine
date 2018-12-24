@@ -1,114 +1,223 @@
+/*
+ * This file may be distributed under the terms of GNU Public License version
+ * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
+ * license should have been included with this file, or the project in which
+ * this file belongs to. You may also find the details of GPL v3 at:
+ * http://www.gnu.org/licenses/gpl-3.0.txt
+ *
+ * If you have any questions regarding the use of this file, feel free to
+ * contact the author of this file, or the owner of the project in which
+ * this file belongs to.
+ */
+
+#define GL_SILENCE_DEPRECATION
+
 #include <iostream>
 #include <thread>
 #include <memory>
+#include <sstream>
+
+#include "../DreamCore/deps/spdlog/spdlog.h"
+#include "../DreamCore/deps/spdlog/sinks/stdout_color_sinks.h"
+
+#include "../DreamCore/Scene/SceneRuntime.h"
+#include "../DreamCore/Project/ProjectDirectory.h"
+#include "../DreamCore/Project/ProjectDefinition.h"
+#include "../DreamCore/Project/ProjectRuntime.h"
+#include "../DreamCore/Project/Project.h"
 #include "Window/GLFWWindowComponent.h"
-#include <DreamCore.h>
 
 #define MINIMUM_ARGUMENTS 3
 
-using std::shared_ptr;
-using std::unique_ptr;
-using Dream::Constants;
-using Dream::Project;
-using Dream::SceneState;
-using Dream::SceneDefinition;
-using Dream::ArgumentParser;
-using Dream::ProjectRuntime;
-using Dream::ProjectDefinition;
-using DreamGLFW::GLFWWindowComponent;
+#ifdef WIN32
+#include <GL/glew.h>
+#endif
 
-void showUsage(const char** argv)
-{
-    cout << "Usage:" << endl
-         << argv[0] << endl
-         << "\t" << Constants::PROJECT_DIRECTORY_ARG << " <path/to/dream/project>" << endl
-         << "\t" << Constants::PROJECT_UUID_ARG      << " <project_uuid>" << endl;
-}
+using namespace std;
+using namespace Dream;
+using namespace DreamGLFW;
 
-int main(int argc, const char** argv)
+
+shared_ptr<spdlog::logger> _log = spdlog::stdout_color_mt("Main");
+
+void run(int,char**);
+Project* openProject(string);
+void handleSceneInput(SceneRuntime*);
+
+bool MainLoopDone = false;
+ProjectDirectory projectDirectory;
+GLFWWindowComponent windowComponent;
+
+int
+main
+(int argc,char** argv)
 {
     spdlog::set_level(spdlog::level::trace);
-    //spdlog::set_pattern("[%H:%M:%S][%t][%n][%l] %v");
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
 
-    auto log = spdlog::stdout_color_mt("Main");
 
-    GLFWWindowComponent windowComponent;
-    Project project(&windowComponent);
-
-    log->trace("Starting...");
-
-    if (argc < MINIMUM_ARGUMENTS)
+    if(argc < 2)
     {
-        log->error("Minimum Number of Arguments Were Not Found.");
-        showUsage(argv);
+        _log->error("No Project Argument.");
         return 1;
     }
 
-    ArgumentParser parser(argc,argv);
+    spdlog::set_level(spdlog::level::off);
+    run(argc,argv);
 
-    bool loaded = project.openFromArgumentParser(parser);
 
-    if (!loaded)
+    return 0;
+}
+
+Project*
+openProject
+(string dir)
+{
+    _log->debug("Opening project {}",dir);
+    auto project = projectDirectory.openFromDirectory(dir);
+    if(project)
     {
-        log->error("Failed to Load Project.");
-        return 1;
+        project->setWindowComponent(&windowComponent);
+        project->createProjectRuntime();
+        return project;
+    }
+    return nullptr;
+}
+
+void
+run
+(int argc, char** argv)
+{
+    _log->trace("Starting...");
+
+    if(!windowComponent.init())
+    {
+        _log->error("Could not initialise window component");
+        return;
     }
 
-    log->info("√ Definition Loading Complete... Creating Runtime");
+    Project* project = openProject(argv[1]);
+    ProjectRuntime* projectRuntime = nullptr;
+    ProjectDefinition* projectDefinition = nullptr;
+    SceneDefinition* startupSceneDefinition = nullptr;
+    SceneRuntime* activeSceneRuntime = nullptr;
 
-
-    ProjectRuntime* pr = project.createProjectRuntime();
-
-    if (pr == nullptr)
+    if (project)
     {
-        log->error("Unable to load project runtime");
-        return 1;
-    }
+        projectRuntime = project->getRuntime();
+        projectDefinition = project->getDefinition();
 
-    ProjectDefinition* pd = project.getProjectDefinition();
-
-    if (pd == nullptr)
-    {
-        log->error("Could not load project definition");
-        return 1;
-    }
-
-    SceneDefinition* startupSceneDefinition  = pd->getStartupSceneDefinition();
-
-    if (startupSceneDefinition == nullptr)
-    {
-        log->error("Error, could not find startup scene definition");
-        return 1;
-    }
-
-    log->info("Using Startup Scene {}", startupSceneDefinition->getNameAndUuidString());
-    auto sr = new SceneRuntime(startupSceneDefinition,pr);
-
-    spdlog::set_level(spdlog::level::err);
-
-     // Run the project
-    unsigned int frames = 0;
-    double time = glfwGetTime();
-    double one_sec = 1.0;
-    while(sr->getState() != SceneState::SCENE_STATE_TO_DESTROY)
-    {
-        pr->updateAll();
-
-        windowComponent.swapBuffers();
-        if (glfwGetTime() > time + one_sec)
+        if (projectDefinition)
         {
-            cout << "FPS: " <<  frames << endl;
-            frames = 0;
-            time = glfwGetTime();
+            startupSceneDefinition = projectDefinition->getStartupSceneDefinition();
+        }
+
+        if (startupSceneDefinition && projectRuntime)
+        {
+            activeSceneRuntime = new SceneRuntime(startupSceneDefinition,projectRuntime);
+            if(activeSceneRuntime->useDefinition())
+            {
+                projectRuntime->addSceneRuntime(activeSceneRuntime);
+                projectRuntime->setSceneRuntimeAsActive(activeSceneRuntime->getUuid());
+            }
+            else
+            {
+                _log->error("Unable to use startup scene runtime");
+                delete activeSceneRuntime;
+                activeSceneRuntime = nullptr;
+            }
+        }
+    }
+
+    // Run the project
+    while (!MainLoopDone)
+    {
+        if (windowComponent.shouldClose())
+        {
+            MainLoopDone = true;
+        }
+
+        if(activeSceneRuntime)
+        {
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            handleSceneInput(activeSceneRuntime);
+            projectRuntime->updateAll();
+            windowComponent.swapBuffers();
         }
         else
         {
-            frames++;
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            windowComponent.updateComponent(nullptr);
         }
     }
 
     spdlog::set_level(spdlog::level::trace);
-    log->info("Run is done. Performing stack-based clean up");
-    return 0;
+    _log->info("Run is done. Cleaning up");
+
+    if (activeSceneRuntime)
+    {
+        projectRuntime->destructSceneRuntime(activeSceneRuntime);
+    }
+}
+
+void
+handleSceneInput
+(SceneRuntime* sRunt)
+{
+    /*
+    auto pRunt = project->getRuntime();
+    if (pRunt)
+    {
+        auto inputComp = pRunt->getInputComponent();
+        if (inputComp)
+        {
+            MouseState& ms = inputComp->getMouseState();
+            KeyboardState& ks = inputComp->getKeyboardState();
+            JoystickState& js = inputComp->getJoystickState();
+
+            // Mouse
+            memcpy(ms.ButtonsDown, io.MouseDown, sizeof(bool)*5);
+            ms.PosX = io.MousePos.x;
+            ms.PosY = io.MousePos.y;
+            ms.ScrollX = io.MouseWheelH;
+            ms.ScrollY = io.MouseWheel;
+
+            // Keys
+            memcpy(ks.KeysDown, io.KeysDown, sizeof(bool)*512);
+
+            // Joystick
+            for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
+            {
+
+                if (glfwJoystickPresent(id))
+                {
+                    js.Name = glfwGetJoystickName(id);
+                    int numAxis, numButtons;
+                    const float* axisData = glfwGetJoystickAxes(id,&numAxis);
+                    const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
+                    if (axisData != nullptr)
+                    {
+                        js.AxisCount = numAxis;
+                        memcpy(&js.AxisData[0],axisData,sizeof(float)*numAxis);
+                    }
+                    else
+                    {
+                        js.AxisCount = 0;
+                    }
+                    if (buttonData != nullptr)
+                    {
+                        js.ButtonCount = numButtons;
+                        memcpy(&js.ButtonData[0],buttonData,sizeof(unsigned char)*numButtons);
+                    }
+                    else
+                    {
+                        js.ButtonCount = 0;
+                    }
+                }
+            }
+        }
+    }
+    */
 }

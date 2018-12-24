@@ -1,4 +1,10 @@
 /*
+ * GLFWWindowComponent.h
+ *
+ * Created: 11 2017 by Ashley
+ *
+ * Copyright 2017 Octronic. All rights reserved.
+ *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -12,38 +18,33 @@
 
 #pragma once
 
-#include <vector>
-
-// Maintain include order for GL
+#include <DreamCore.h>
 #include <GLFW/glfw3.h>
-#include "../../DreamCore/Components/Window/WindowComponent.h"
+#include <memory>
 
-using namespace std;
-using namespace Dream;
+using std::unique_ptr;
+using Dream::IWindowComponent;
+using Dream::SceneRuntime;
 
 namespace DreamGLFW
 {
-    class GLWidget;
-    class GLFWWindowComponent
-        : public WindowComponent
+    class GLFWWindowComponent : public IWindowComponent
     {
     public:
         GLFWWindowComponent();
         ~GLFWWindowComponent() override;
 
-        GLFWwindow* getGlfwWindow();
-        void updateComponent(SceneRuntime* sr) override;
+        void updateComponent(SceneRuntime*) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
         void bindDefaultFrameBuffer() override;
-        void drawImGui();
-        void drawGLWidgets();
 
     private:
         bool initGLFW();
         bool initGL();
         GLFWwindow* mWindow;
-        float mDPIScaleX, mDPIScaleY;
-    };
-}
+
+    }; // End of GLFWWindowComponent
+
+} // End of Dream

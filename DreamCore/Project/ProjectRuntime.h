@@ -1,10 +1,4 @@
 /*
- * ProjectRuntime.h
- *
- * Created: 05 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -43,6 +37,7 @@ namespace Dream
     class Transform;
     class SceneRuntime;
     class SceneDefinition;
+    class AudioCache;
     class MaterialCache;
     class TextureCache;
     class ScriptCache;
@@ -76,6 +71,7 @@ namespace Dream
         WindowComponent* mWindowComponent;
 
         // Caches
+        AudioCache* mAudioCache;
         TextureCache* mTextureCache;
         MaterialCache* mMaterialCache;
         ModelCache* mModelCache;
@@ -84,11 +80,10 @@ namespace Dream
         bool mScriptingEnabled;
 
         vector<SceneRuntime*> mSceneRuntimeVector;
+        vector<SceneRuntime*> mSceneRuntimesToRemove;
 
     public: // Public Functions
-        ProjectRuntime(
-            Project* parentProject,
-            WindowComponent* wc = nullptr);
+        ProjectRuntime(Project* parentProject, WindowComponent* wc = nullptr);
         ~ProjectRuntime() override;
 
         void setDone(bool);
@@ -97,15 +92,16 @@ namespace Dream
         Time* getTime();
 
         AnimationComponent* getAnimationComponent();
-        PathComponent* getPathComponent();
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
         NanoVGComponent* getNanoVGComponent();
+        PathComponent* getPathComponent();
         WindowComponent* getWindowComponent();
         ScriptComponent* getScriptComponent();
-        Project* getProject();
         InputComponent* getInputComponent();
+
+        Project* getProject();
 
         bool initComponents();
 
@@ -128,6 +124,7 @@ namespace Dream
 
         bool useDefinition() override;
 
+        AudioCache* getAudioCache();
         ShaderCache* getShaderCache();
         MaterialCache* getMaterialCache();
         ModelCache* getModelCache();
@@ -146,7 +143,7 @@ namespace Dream
 
         void addSceneRuntime(SceneRuntime*);
         void removeSceneRuntime(SceneRuntime*);
-        void setSceneRuntimeActive(string uuid);
+        void setSceneRuntimeAsActive(string uuid);
         vector<SceneRuntime*> getSceneRuntimeVector();
         bool hasSceneRuntime(string uuid);
         bool hasLoadedScenes();

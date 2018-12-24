@@ -106,8 +106,13 @@ namespace Dream
         float getPitch() const;
         void setPitch(float pitch);
 
-        bool inFrustum(SceneObjectRuntime*);
-        bool inFrustum(const BoundingBox&);
+        bool containedInFrustum(SceneObjectRuntime*);
+        bool containedInFrustum(const BoundingBox&);
+        bool containedInFrustumAfterTransform(SceneObjectRuntime*,const mat4& tx);
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const vec3& tx);
+
+        bool visibleInFrustum(SceneObjectRuntime*);
+        bool visibleInFrustum(const BoundingBox&);
 
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);

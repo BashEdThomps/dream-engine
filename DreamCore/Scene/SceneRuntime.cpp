@@ -32,10 +32,8 @@
 namespace Dream
 {
     SceneRuntime::SceneRuntime
-    (
-            SceneDefinition* sd,
-            ProjectRuntime* project
-            ) : Runtime(sd),
+    (SceneDefinition* sd, ProjectRuntime* project)
+        : Runtime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mCamera(Camera(this)),
         mClearColour({0,0,0,0}),
@@ -92,8 +90,7 @@ namespace Dream
     SceneRuntime::setState
     (SceneState state)
     {
-        if (state >= mState ||
-            (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
+        if (state >= mState || (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
         {
             mState = state;
         }
@@ -103,7 +100,7 @@ namespace Dream
         }
     }
 
-    vector<float>
+    const vector<float>
     SceneRuntime::getGravity
     ()
     {
@@ -116,7 +113,7 @@ namespace Dream
 
     void
     SceneRuntime::setGravity
-    (vector<float> gravity)
+    (const vector<float>& gravity)
     {
         if (mProjectRuntime)
         {
@@ -124,7 +121,7 @@ namespace Dream
         }
     }
 
-    vector<float>
+    const vector<float>&
     SceneRuntime::getClearColour
     ()
     {
@@ -133,12 +130,12 @@ namespace Dream
 
     void
     SceneRuntime::setClearColour
-    (vector<float> clearColour)
+    (const vector<float>& clearColour)
     {
         mClearColour = clearColour;
     }
 
-    vector<float>
+    const vector<float>&
     SceneRuntime::getAmbientColour
     ()
     {
@@ -147,14 +144,14 @@ namespace Dream
 
     void
     SceneRuntime::setAmbientColour
-    (vector<float> ambientColour)
+    (const vector<float>& ambientColour)
     {
         mAmbientColour = ambientColour;
     }
 
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByUuid
-    (string uuid)
+    (const string& uuid)
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -183,7 +180,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByName
-    (string name)
+    (const string& name)
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -350,6 +347,7 @@ namespace Dream
         {
             log->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
+
         // Scripts
         auto scriptCache = mProjectRuntime->getScriptCache();
         auto inputScriptUuid = sceneDefinition->getInputScript();
@@ -374,6 +372,9 @@ namespace Dream
             mNanoVGScript->registerNanoVGScript();
         }
 
+         // Physics
+        mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
+
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();
         auto sor = new SceneObjectRuntime(sod,this);
@@ -385,8 +386,7 @@ namespace Dream
             return false;
         }
 
-        // Physics
-        mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
+
         setRootSceneObjectRuntime(sor);
         setState(SceneState::SCENE_STATE_LOADED);
         mProjectRuntime->getShaderCache()->logShaders();
@@ -441,6 +441,7 @@ namespace Dream
     float
     SceneRuntime::getMeshCullDistance
     ()
+    const
     {
         return mMeshCullDistance;
     }
@@ -452,18 +453,26 @@ namespace Dream
         mMinDrawDistance = f;
     }
 
-    float SceneRuntime::getMinDrawDistance() const
+    float
+    SceneRuntime::getMinDrawDistance
+    ()
+    const
     {
         return mMinDrawDistance;
     }
 
-    float SceneRuntime::getMaxDrawDistance() const
+    float
+    SceneRuntime::getMaxDrawDistance
+    ()
+    const
     {
         return mMaxDrawDistance;
     }
 
     vector<AssetRuntime*>
-    SceneRuntime::getAssetInstances(AssetType t)
+    SceneRuntime::getAssetInstances
+    (AssetType t)
+    const
     {
         vector<AssetRuntime*> instances;
         if (mRootSceneObjectRuntime)
@@ -488,7 +497,9 @@ namespace Dream
     }
 
     vector<SceneObjectRuntime*>
-    SceneRuntime::getSceneObjectsWithInstanceOf(AssetDefinition* def)
+    SceneRuntime::getSceneObjectsWithInstanceOf
+    (AssetDefinition* def)
+    const
     {
         vector<SceneObjectRuntime*> runtimes;
         if (mRootSceneObjectRuntime)

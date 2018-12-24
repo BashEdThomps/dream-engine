@@ -36,7 +36,8 @@ namespace Dream
     ) : DiscreteAssetRuntime(definition,runtime),
         mCurrentTime(0.0),
         mDuration(1.0),
-        mLooping(false)
+        mLooping(false),
+        mRunning(false)
     {
         setLogClassName("AnimationRuntime");
         auto log = getLog();
@@ -69,39 +70,25 @@ namespace Dream
     {
         // x1000 to get seconds to ms
         auto log = getLog();
-        if (mLooping)
+        auto timeInMs = static_cast<unsigned int>((deltaTime*1000));
+        if (mRunning)
         {
-            mCurrentTime = (mCurrentTime + static_cast<unsigned int>((deltaTime*1000))) % mDuration;
+            log->error("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
+            if (mLooping)
+            {
+                mCurrentTime = (mCurrentTime + timeInMs) % mDuration;
+            }
+            else
+            {
+                mCurrentTime += timeInMs;
+            }
+            seekAll(mCurrentTime);
         }
-        else
-        {
-            mCurrentTime += static_cast<unsigned int>((deltaTime*1000));
-        }
-        log->error("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
-
-        vec3 newTx, newRx, newSx;
-        newTx.x = mTweenTranslationX.seek(mCurrentTime);
-        newTx.y = mTweenTranslationY.seek(mCurrentTime);
-        newTx.z = mTweenTranslationZ.seek(mCurrentTime);
-
-        newRx.x = mTweenRotationX.seek(mCurrentTime);
-        newRx.y = mTweenRotationY.seek(mCurrentTime);
-        newRx.z = mTweenRotationZ.seek(mCurrentTime);
-
-        newSx.x = mTweenScaleX.seek(mCurrentTime);
-        newSx.y = mTweenScaleY.seek(mCurrentTime);
-        newSx.z = mTweenScaleZ.seek(mCurrentTime);
-
-        log->error("New Translation {},{},{}", newTx.x, newTx.y, newTx.z);
-
-        mat4 matrix = mat4(1.0f);
-        matrix = glm::translate(matrix,newTx);
-        matrix = matrix*mat4_cast(quat(newRx));
-        matrix = glm::scale(matrix,newSx);
-        mSceneObjectRuntime->getTransform().setMatrix(matrix);
     }
 
-    unsigned int AnimationRuntime::getCurrentTime()
+    unsigned int
+    AnimationRuntime::getCurrentTime
+    ()
     const
     {
         return mCurrentTime;
@@ -142,6 +129,21 @@ namespace Dream
     (bool looping)
     {
         mLooping = looping;
+    }
+
+    bool
+    AnimationRuntime::getRunning
+    ()
+    const
+    {
+        return mRunning;
+    }
+
+    void
+    AnimationRuntime::setRunning
+    (bool running)
+    {
+        mRunning = running;
     }
 
     void
@@ -231,6 +233,55 @@ namespace Dream
             mTweenScaleZ.to(sx.z).during(duringTime);
             applyEasing(mTweenScaleZ,easing);
         }
+    }
+
+    void
+    AnimationRuntime::run
+    ()
+    {
+        mRunning = true;
+    }
+
+    void
+    AnimationRuntime::pause
+    ()
+    {
+        mRunning = !mRunning;
+    }
+
+    void
+    AnimationRuntime::reset
+    ()
+    {
+        mCurrentTime = 0;
+        seekAll(0);
+    }
+
+    void
+    AnimationRuntime::seekAll
+    (unsigned int pos)
+    {
+        auto log = getLog();
+        log->trace("Seeing to {}",pos);
+        vec3 newTx, newRx, newSx;
+        newTx.x = mTweenTranslationX.seek(pos);
+        newTx.y = mTweenTranslationY.seek(pos);
+        newTx.z = mTweenTranslationZ.seek(pos);
+
+        newRx.x = mTweenRotationX.seek(pos);
+        newRx.y = mTweenRotationY.seek(pos);
+        newRx.z = mTweenRotationZ.seek(pos);
+
+        newSx.x = mTweenScaleX.seek(pos);
+        newSx.y = mTweenScaleY.seek(pos);
+        newSx.z = mTweenScaleZ.seek(pos);
+
+        mat4 matrix = mat4(1.0f);
+        matrix = glm::translate(matrix,newTx);
+        matrix = matrix*mat4_cast(quat(newRx));
+        matrix = glm::scale(matrix,newSx);
+        mSceneObjectRuntime->getTransform().setMatrix(matrix);
+
     }
 
     void

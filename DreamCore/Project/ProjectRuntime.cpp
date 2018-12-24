@@ -9,6 +9,7 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "ProjectRuntime.h"
 
 #include "Project.h"
@@ -24,6 +25,7 @@
 #include "../Components/Transform.h"
 #include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
+#include "../Components/Audio/AudioCache.h"
 #include "../Components/Input/InputComponent.h"
 #include "../Components/Animation/AnimationComponent.h"
 
@@ -43,9 +45,7 @@
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
-    (
-            Project* project,
-            WindowComponent* windowComponent)
+    (Project* project, WindowComponent* windowComponent)
         : Runtime(project->getDefinition()),
           mDone(false),
           mTime(nullptr),
@@ -59,6 +59,7 @@ namespace Dream
           mPathComponent(nullptr),
           mScriptComponent(nullptr),
           mWindowComponent(windowComponent),
+          mAudioCache(nullptr),
           mTextureCache(nullptr),
           mMaterialCache(nullptr),
           mModelCache(nullptr),
@@ -314,6 +315,7 @@ namespace Dream
     ()
     {
         getLog()->trace("initialising caches");
+        mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
         mShaderCache  = new ShaderCache(this);
         mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
@@ -322,8 +324,16 @@ namespace Dream
         return true;
     }
 
-    void ProjectRuntime::deleteCaches()
+    void
+    ProjectRuntime::deleteCaches
+    ()
     {
+        if (mAudioCache != nullptr)
+        {
+            delete mAudioCache;
+            mAudioCache = nullptr;
+        }
+
         if (mModelCache != nullptr)
         {
             delete mModelCache;
@@ -356,7 +366,9 @@ namespace Dream
 
     }
 
-    void ProjectRuntime::deleteComponents()
+    void
+    ProjectRuntime::deleteComponents
+    ()
     {
         if (mAnimationComponent != nullptr)
         {
@@ -572,14 +584,25 @@ namespace Dream
         rt->collectGarbage();
     }
 
-    void ProjectRuntime::collectGarbage(){}
+    void
+    ProjectRuntime::collectGarbage
+    ()
+    {
+        for (auto rt : mSceneRuntimesToRemove)
+        {
+           auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
+           if (itr != mSceneRuntimeVector.end())
+           {
+               mSceneRuntimeVector.erase(itr);
+           }
+        }
+    }
 
     void
     ProjectRuntime::updateAll
     ()
     {
         auto log = getLog();
-        vector<SceneRuntime*> toRemove;
         for (auto rt : mSceneRuntimeVector)
         {
             log->trace("UpdateAll on {}",rt->getNameAndUuidString());
@@ -600,19 +623,12 @@ namespace Dream
                     destructSceneRuntime(rt);
                     break;
                 case SceneState::SCENE_STATE_DESTROYED:
-                    toRemove.push_back(rt);
+                    mSceneRuntimesToRemove.push_back(rt);
                     break;
             }
         }
 
-        for (auto rt : toRemove)
-        {
-           auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
-           if (itr != mSceneRuntimeVector.end())
-           {
-               mSceneRuntimeVector.erase(itr);
-           }
-        }
+        collectGarbage();
     }
 
     SceneRuntime*
@@ -645,7 +661,7 @@ namespace Dream
     }
 
     void
-    ProjectRuntime::setSceneRuntimeActive
+    ProjectRuntime::setSceneRuntimeAsActive
     (string uuid)
     {
        int nRuntimes = mSceneRuntimeVector.size();
@@ -700,7 +716,7 @@ namespace Dream
     (SceneRuntime* rt)
     {
         auto log = getLog();
-        log->debug( "Constructing Scene Runtime" );
+        log->debug("Constructing Scene Runtime");
         return rt->useDefinition();
     }
 
@@ -722,9 +738,24 @@ namespace Dream
     ProjectRuntime::useDefinition
     ()
     {
-        if (!initCaches()) return false;
-        if (!initComponents()) return false;
+        if (!initCaches())
+        {
+            return false;
+        }
+
+        if (!initComponents())
+        {
+            return false;
+        }
+
         return true;
+    }
+
+    AudioCache*
+    ProjectRuntime::getAudioCache
+    ()
+    {
+       return mAudioCache;
     }
 
     ShaderCache*
@@ -777,6 +808,7 @@ namespace Dream
     ProjectRuntime::clearAllCaches
     ()
     {
+        if (mAudioCache    != nullptr) mAudioCache->clear();
         if (mModelCache    != nullptr) mModelCache->clear();
         if (mShaderCache   != nullptr) mShaderCache->clear();
         if (mMaterialCache != nullptr) mMaterialCache->clear();
@@ -784,12 +816,17 @@ namespace Dream
         if (mScriptCache   != nullptr) mScriptCache->clear();
     }
 
-    bool ProjectRuntime::getScriptingEnabled() const
+    bool
+    ProjectRuntime::getScriptingEnabled
+    ()
+    const
     {
         return mScriptingEnabled;
     }
 
-    void ProjectRuntime::setScriptingEnabled(bool en)
+    void
+    ProjectRuntime::setScriptingEnabled
+    (bool en)
     {
         mScriptingEnabled = en;
     }

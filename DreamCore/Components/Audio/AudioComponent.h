@@ -1,6 +1,4 @@
 /*
-* Dream::Plugnis::Audio::Open::AudioComponent
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -39,18 +37,12 @@ namespace Dream
 {
     class AudioRuntime;
     class AudioDefinition;
-    class SceneObjectRuntime;
 
     class AudioComponent : public Component
     {
 
     private:
-        vector<AudioRuntime*> mPlayQueue;
-        vector<AudioRuntime*> mPauseQueue;
-        vector<AudioRuntime*> mStopQueue;
         vector<AudioRuntime*> mUpdateQueue;
-        vector<ALuint> mSources;
-        vector<ALuint> mBuffers;
         ALCdevice*  mDevice;
         ALCcontext* mContext;
 
@@ -60,45 +52,15 @@ namespace Dream
         bool init() override;
         void updateComponent(SceneRuntime*) override;
 
-        void setSourcePosision(ALuint, glm::vec3);
         void setListenerPosition(glm::vec3);
 
-        void pushToPlayQueue(AudioRuntime*);
-        void pushToPauseQueue(AudioRuntime*);
-        void pushToStopQueue(AudioRuntime*);
         void pushToUpdateQueue(AudioRuntime*);
 
-        AudioStatus getAudioStatus(AudioRuntime*) const;
-
-        ALint getSampleOffset(ALuint) const;
-        ALint getSampleOffset(AudioRuntime*) const;
-        vector<char> getAudioBuffer(AudioRuntime*, size_t, size_t) const;
-        AudioRuntime* newAudioInstance(AudioDefinition*,SceneObjectRuntime*);
         void setVolume(float);
         float getVolume();
 
-        void deleteBuffers(int, ALuint);
-        void deleteSources(int, ALuint);
-
-
     protected:
-        ALuint generateBuffers(size_t);
-        ALuint generateSources(size_t);
-
-        void playSource(ALuint);
-        void stopSource(ALuint);
-        void pauseSource(ALuint);
-
-        void updatePlayQueue();
-        void updatePauseQueue();
-        void updateStopQueue();
         void updateInstances();
-
-        void deleteAllSources();
-        void deleteAllBuffers();
-
-        void removeBufferFromComponent(ALuint);
-        void removeSourceFromComponent(ALuint);
 
     }; // End of AudioComponent
 

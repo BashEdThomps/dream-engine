@@ -30,10 +30,7 @@
 namespace Dream
 {
 
-    void SceneObjectDefinition::setParentSceneObject(SceneObjectDefinition* parentSceneObject)
-    {
-        mParentSceneObject = parentSceneObject;
-    }
+
 
     SceneObjectDefinition::SceneObjectDefinition
     (
@@ -93,25 +90,6 @@ namespace Dream
     (const Transform& tform)
     {
         mJson[Constants::TRANSFORM] = tform.getJson();
-    }
-
-    void
-    SceneObjectDefinition::setHasInputFocus
-    (bool focus)
-    {
-        mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS] = focus;
-    }
-
-    bool
-    SceneObjectDefinition::getHasInputFocus
-    ()
-    {
-        if (mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS].is_null())
-        {
-            mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS] = false;
-        }
-
-        return mJson[Constants::SCENE_OBJECT_HAS_INPUT_FOCUS];
     }
 
     void
@@ -289,18 +267,18 @@ namespace Dream
         mJson[Constants::SCENE_OBJECT_ALWAYS_DRAW] = alwaysDraw;
     }
 
-    void SceneObjectDefinition::setStatic(bool d)
+    void SceneObjectDefinition::setIsTemplate(bool d)
     {
-        mJson[Constants::SCENE_OBJECT_STATIC] = d;
+        mJson[Constants::SCENE_OBJECT_TEMPLATE] = d;
     }
 
-    bool SceneObjectDefinition::getStatic()
+    bool SceneObjectDefinition::getIsTemplate()
     {
-        if (mJson[Constants::SCENE_OBJECT_STATIC].is_null())
+        if (mJson[Constants::SCENE_OBJECT_TEMPLATE].is_null())
         {
-            mJson[Constants::SCENE_OBJECT_STATIC] = false;
+            mJson[Constants::SCENE_OBJECT_TEMPLATE] = false;
         }
-        return mJson[Constants::SCENE_OBJECT_STATIC];
+        return mJson[Constants::SCENE_OBJECT_TEMPLATE];
     }
 
     void SceneObjectDefinition::setHidden(bool d)
@@ -442,5 +420,12 @@ namespace Dream
     SceneObjectDefinition::setEmptyAssetsObject()
     {
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES] = json::object();
+    }
+
+    void
+    SceneObjectDefinition::setParentSceneObject
+    (SceneObjectDefinition* parentSceneObject)
+    {
+        mParentSceneObject = parentSceneObject;
     }
 }

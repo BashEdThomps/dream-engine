@@ -59,7 +59,7 @@ namespace Dream
          * @param name Name to compare.
          * @return True if this Definition has the given name.
          */
-        bool hasName(string name);
+        bool hasName(const string& name);
         /**
          * @return The Definition's name.
          */
@@ -67,13 +67,13 @@ namespace Dream
         /**
          * @param name The name to give the Definition.
          */
-        void setName(string name);
+        void setName(const string& name);
 
         /**
          * @param uuid uuid to compare.
          * @return True if this Definition has the give uuid.
          */
-        bool hasUuid(string uuid);
+        bool hasUuid(const string& uuid);
         /**
          * @return The Definition's uuid.
          */
@@ -81,7 +81,7 @@ namespace Dream
         /**
          * @param uuid Uuid to give the Definition;
          */
-        void setUuid(string uuid);
+        void setUuid(const string& uuid);
 
         /**
          * @return A combined name and uuid string in the following format:

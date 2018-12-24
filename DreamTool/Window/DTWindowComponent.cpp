@@ -208,8 +208,6 @@ namespace DreamTool
             getCurrentDimensions();
             WindowSizeChanged = false;
         }
-
-
     }
 
     void DTWindowComponent::getCurrentDimensions()
