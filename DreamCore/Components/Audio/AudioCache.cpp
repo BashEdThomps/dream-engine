@@ -42,16 +42,20 @@ namespace Dream
         if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
             asset = new WavAudioRuntime(aDef,mProjectRuntime);
-            asset->useDefinition();
         }
         else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
             asset = new OggAudioRuntime(aDef,mProjectRuntime);
-            asset->useDefinition();
         }
         else
         {
             log->error("Error, unrecognised audio format {}", def->getFormat());
+        }
+
+        if (asset)
+        {
+            asset->useDefinition();
+            mInstances.push_back(asset);
         }
 
         return asset;

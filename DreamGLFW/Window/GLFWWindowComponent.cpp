@@ -18,15 +18,43 @@
 
 using namespace Dream;
 
-static bool WindowSizeChanged = false;
-
 namespace DreamGLFW
 {
     void
     FramebufferSizeCallback
     (GLFWwindow*, int, int)
     {
-        WindowSizeChanged = true;
+        GLFWWindowComponent::WindowSizeChanged = true;
+    }
+
+    void
+    KeyboardInputCallback
+    (GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        GLFWWindowComponent::KeysDown[key] = action == GLFW_PRESS || action == GLFW_REPEAT;
+    }
+
+    void
+    MouseButtonCallback
+    (GLFWwindow* window, int button, int action, int mods)
+    {
+       GLFWWindowComponent::MouseButtonsDown[button] = action == GLFW_PRESS;
+    }
+
+    void
+    CursorPositionCallback
+    (GLFWwindow* window, double xpos, double ypos)
+    {
+        GLFWWindowComponent::MousePosX = xpos;
+        GLFWWindowComponent::MousePosY = ypos;
+    }
+
+    void
+    MouseWheelCallback
+    (GLFWwindow* , double xoff, double yoff)
+    {
+        GLFWWindowComponent::MouseWheelH = xoff;
+        GLFWWindowComponent::MouseWheel = yoff;
     }
 
     GLFWWindowComponent::GLFWWindowComponent
@@ -114,8 +142,13 @@ namespace DreamGLFW
             return false;
         }
 
-        // Resize callback
+        // Register Callbacks
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
+        glfwSetKeyCallback(mWindow, KeyboardInputCallback);
+        glfwSetMouseButtonCallback(mWindow, MouseButtonCallback);
+        glfwSetCursorPosCallback(mWindow,CursorPositionCallback);
+        glfwSetScrollCallback(mWindow,MouseWheelCallback);
+
         glfwSwapInterval(0);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
@@ -194,5 +227,14 @@ namespace DreamGLFW
             glfwSwapBuffers(mWindow);
         }
     }
+
+    bool GLFWWindowComponent::WindowSizeChanged = false;
+    bool GLFWWindowComponent::MouseButtonsDown[5] = {false};
+    float GLFWWindowComponent::MousePosX = 0.0f;
+    float GLFWWindowComponent::MousePosY = 0.0f;
+    float GLFWWindowComponent::MouseWheel = 0.0f;
+    float GLFWWindowComponent::MouseWheelH = 0.0f;
+    bool GLFWWindowComponent::KeysDown[512] = {false};
+
 }
 

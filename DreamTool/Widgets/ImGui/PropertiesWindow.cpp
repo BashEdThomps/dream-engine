@@ -23,6 +23,8 @@
 #include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
 #include "../../../DreamCore/Components/Animation/AnimationRuntime.h"
 
+#include "../../../DreamCore/Components/Audio/AudioCache.h"
+#include "../../../DreamCore/Components/Audio/AudioRuntime.h"
 #include "../../../DreamCore/Components/Audio/AudioDefinition.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
@@ -1721,7 +1723,17 @@ namespace DreamTool
             audioDef->setName(audioFile.nameWithoutExtension());
         }
 
+        auto projRunt = mState->project->getRuntime();
+        AudioRuntime* audioRunt = nullptr;
+        if (projRunt)
+        {
+            auto audioCache = projRunt->getAudioCache();
+            audioRunt = dynamic_cast<AudioRuntime*>(audioCache->getInstance(audioDef));
+        }
+
+
         ImGui::SameLine();
+
 
         if(ImGui::Button("Remove File"))
         {
@@ -1732,21 +1744,34 @@ namespace DreamTool
 
         if (ImGui::Button("Play"))
         {
+            if (audioRunt)
+            {
+                audioRunt->play();
+            }
         }
         ImGui::SameLine();
         if (ImGui::Button("Pause"))
         {
+            if (audioRunt)
+            {
+                audioRunt->pause();
+            }
         }
         ImGui::SameLine();
         if (ImGui::Button("Stop"))
         {
+            if (audioRunt)
+            {
+                audioRunt->stop();
+            }
         }
 
         ImGui::PushItemWidth(-1);
-        int audioProg = 0;
-        int duration = 0;
+        int audioProg = audioRunt->getSampleOffset();
+        int duration = audioRunt->getDurationInSamples();
         if(ImGui::SliderInt("#AudioProgress", &audioProg,0,duration,"%d"))
         {
+            audioRunt->setSampleOffset(audioProg);
         }
         ImGui::PopItemWidth();
     }
@@ -2549,6 +2574,7 @@ namespace DreamTool
     ()
     {
         void* textureId = nullptr;
+
         auto textureDef = dynamic_cast<TextureDefinition*>(mDefinition);
         auto projRunt = mState->project->getRuntime();
         if (projRunt)

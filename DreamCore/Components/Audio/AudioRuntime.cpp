@@ -33,7 +33,8 @@ namespace Dream
         : SharedAssetRuntime(def,project),
           mStartTime(-1),
           mLastSampleOffset(0),
-          mChannels(-1)
+          mChannels(-1),
+          mDurationInSamples(-1)
     {
         setLogClassName("AudioInstance");
         setLooping(false);
@@ -312,6 +313,25 @@ namespace Dream
         return retval;
     }
 
+    int
+    AudioRuntime::getDurationInSamples
+    ()
+    {
+        if (mDurationInSamples < 0)
+        {
+            ALint sizeInBytes;
+            ALint channels;
+            ALint bits;
+
+            alGetBufferi(mBuffer, AL_SIZE, &sizeInBytes);
+            alGetBufferi(mBuffer, AL_CHANNELS, &channels);
+            alGetBufferi(mBuffer, AL_BITS, &bits);
+
+            mDurationInSamples = sizeInBytes * 8 / (channels * bits);
+        }
+        return mDurationInSamples;
+    }
+
     ALint
     AudioRuntime::getSampleOffset
     ()
@@ -320,6 +340,13 @@ namespace Dream
         ALint sampleOffset;
         alGetSourcei(mSource, AL_SAMPLE_OFFSET, &sampleOffset);
         return sampleOffset;
+    }
+
+    void
+    AudioRuntime::setSampleOffset
+    (ALint offset)
+    {
+        alSourcei(mSource,AL_SAMPLE_OFFSET, offset);
     }
 
     ALuint

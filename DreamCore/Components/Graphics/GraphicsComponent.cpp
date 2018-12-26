@@ -585,7 +585,7 @@ namespace Dream
        glTexImage2D
        (
             GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-            SHADOW_WIDTH, SHADOW_HEIGHT, 0,
+            SHADOW_SIZE, SHADOW_SIZE, 0,
             GL_DEPTH_COMPONENT,GL_FLOAT,nullptr
        );
 
@@ -630,38 +630,30 @@ namespace Dream
             return;
         }
 
-        log->debug
-        (
-           "\n\n"
-           "==> Running Shadow Render Pass"
-           "\n"
-        );
+        log->debug("\n\n==> Running Shadow Render Pass\n");
 
-        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
         glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // Setup Uniforms
-        static float near_plane = 1.0f;
-        static float far_plane = 1000.0f;
+        static float near_plane = 0.1f;
+        static float far_plane = 100.0f;
         static float sz = 100.0f;
-        glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
+
+        static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
         mat4 lightMat = mShadowLight->getTransform().getMatrix();
         mat4 lightView = glm::lookAt
         (
             vec3(lightMat[3]), // Light Pos
-            vec3(glm::translate(lightMat,vec3(0,0,-100))[3]),//vec3(0.0f),  // Centre
+            vec3(glm::translate(lightMat,vec3(0,0,-100))[3]),//vec3(0.0f),  // target
             vec3(0.0f,1.0f,0.0f) // Up
         );
         mShadowMatrix = lightProjection*lightView;
         glDisable( GL_CULL_FACE );
         if (mShaderCache != nullptr)
         {
-            mShaderCache->drawShadowPass
-            (
-                mShadowMatrix,
-                mShadowPassShader
-            );
+            mShaderCache->drawShadowPass(mShadowMatrix, mShadowPassShader);
         }
         glEnable( GL_CULL_FACE );
     }

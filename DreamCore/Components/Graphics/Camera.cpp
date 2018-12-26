@@ -336,7 +336,8 @@ namespace Dream
     Camera::exceedsFrustumPlaneAtTranslation
     (Frustum::Plane plane, SceneObjectRuntime* sor, const vec3& tx)
     {
-        return mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox()) != Frustum::TEST_INSIDE;
+        auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
+        return  result == Frustum::TEST_OUTSIDE;
     }
 
     bool

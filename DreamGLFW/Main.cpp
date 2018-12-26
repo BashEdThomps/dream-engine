@@ -21,6 +21,7 @@
 #include "../DreamCore/deps/spdlog/sinks/stdout_color_sinks.h"
 
 #include "../DreamCore/Scene/SceneRuntime.h"
+#include "../DreamCore/Components/Input/InputComponent.h"
 #include "../DreamCore/Project/ProjectDirectory.h"
 #include "../DreamCore/Project/ProjectDefinition.h"
 #include "../DreamCore/Project/ProjectRuntime.h"
@@ -37,16 +38,12 @@ using namespace std;
 using namespace Dream;
 using namespace DreamGLFW;
 
-
 shared_ptr<spdlog::logger> _log = spdlog::stdout_color_mt("Main");
 
 void run(int,char**);
-Project* openProject(string);
-void handleSceneInput(SceneRuntime*);
+Project* openProject(ProjectDirectory&, string, WindowComponent&);
+void handleSceneInput(Project*);
 
-bool MainLoopDone = false;
-ProjectDirectory projectDirectory;
-GLFWWindowComponent windowComponent;
 
 int
 main
@@ -54,7 +51,6 @@ main
 {
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
-
 
     if(argc < 2)
     {
@@ -65,13 +61,12 @@ main
     spdlog::set_level(spdlog::level::off);
     run(argc,argv);
 
-
     return 0;
 }
 
 Project*
 openProject
-(string dir)
+(ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
 {
     _log->debug("Opening project {}",dir);
     auto project = projectDirectory.openFromDirectory(dir);
@@ -88,6 +83,14 @@ void
 run
 (int argc, char** argv)
 {
+    bool MainLoopDone = false;
+    ProjectDirectory projectDirectory;
+    GLFWWindowComponent windowComponent;
+    ProjectRuntime* projectRuntime = nullptr;
+    ProjectDefinition* projectDefinition = nullptr;
+    SceneDefinition* startupSceneDefinition = nullptr;
+    SceneRuntime* activeSceneRuntime = nullptr;
+
     _log->trace("Starting...");
 
     if(!windowComponent.init())
@@ -96,11 +99,7 @@ run
         return;
     }
 
-    Project* project = openProject(argv[1]);
-    ProjectRuntime* projectRuntime = nullptr;
-    ProjectDefinition* projectDefinition = nullptr;
-    SceneDefinition* startupSceneDefinition = nullptr;
-    SceneRuntime* activeSceneRuntime = nullptr;
+    Project* project = openProject(projectDirectory, argv[1], windowComponent);
 
     if (project)
     {
@@ -141,7 +140,7 @@ run
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            handleSceneInput(activeSceneRuntime);
+            handleSceneInput(project);
             projectRuntime->updateAll();
             windowComponent.swapBuffers();
         }
@@ -164,9 +163,8 @@ run
 
 void
 handleSceneInput
-(SceneRuntime* sRunt)
+(Project* project)
 {
-    /*
     auto pRunt = project->getRuntime();
     if (pRunt)
     {
@@ -178,14 +176,13 @@ handleSceneInput
             JoystickState& js = inputComp->getJoystickState();
 
             // Mouse
-            memcpy(ms.ButtonsDown, io.MouseDown, sizeof(bool)*5);
-            ms.PosX = io.MousePos.x;
-            ms.PosY = io.MousePos.y;
-            ms.ScrollX = io.MouseWheelH;
-            ms.ScrollY = io.MouseWheel;
+            memcpy(ms.ButtonsDown, GLFWWindowComponent::MouseButtonsDown, sizeof(bool)*5);
+            ms.PosX = GLFWWindowComponent::MousePosX;
+            ms.PosY = GLFWWindowComponent::MousePosY;
+            ms.ScrollX = GLFWWindowComponent::MouseWheelH;
+            ms.ScrollY = GLFWWindowComponent::MouseWheel;
 
-            // Keys
-            memcpy(ks.KeysDown, io.KeysDown, sizeof(bool)*512);
+            memcpy(ks.KeysDown, GLFWWindowComponent::KeysDown, sizeof(bool)*512);
 
             // Joystick
             for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
@@ -219,5 +216,4 @@ handleSceneInput
             }
         }
     }
-    */
 }

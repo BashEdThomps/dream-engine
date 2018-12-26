@@ -40,6 +40,14 @@ namespace DreamGLFW
         void drawImGui();
         void drawGLWidgets();
 
+        static bool WindowSizeChanged;
+        static bool MouseButtonsDown[5];
+        static float MousePosX;
+        static float MousePosY;
+        static float MouseWheel;
+        static float MouseWheelH;
+        static bool KeysDown[512];
+
     private:
         bool initGLFW();
         bool initGL();

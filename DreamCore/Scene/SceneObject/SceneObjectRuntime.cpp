@@ -116,11 +116,13 @@ namespace Dream
     SceneObjectRuntime::removeAudioInstance
     ()
     {
+        /*
         if (mAudioInstance != nullptr)
         {
             delete mAudioInstance;
             mAudioInstance = nullptr;
         }
+        */
     }
 
     void

@@ -55,6 +55,7 @@ namespace Dream
         int mChannels;
         deque<Event> mMarkerEvents;
         deque<Event> mMarkerEventsCache;
+        ALint mDurationInSamples;
 
         void generateEventList();
         ALuint generateSource();
@@ -96,6 +97,9 @@ namespace Dream
         AudioStatus getState();
 
         ALint getSampleOffset() const;
+        void setSampleOffset(ALint offset);
+
         vector<char> getAudioBuffer(size_t offset, size_t length) const;
+        int getDurationInSamples();
     };
 }
