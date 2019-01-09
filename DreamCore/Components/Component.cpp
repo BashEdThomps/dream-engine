@@ -46,8 +46,10 @@ namespace Dream
     Component::beginUpdate
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Updating Component");
+#endif
         mUpdateBeginTime = mTime->nowLL();
         setBusy(true);
     }
@@ -56,10 +58,12 @@ namespace Dream
     Component::endUpdate
     ()
     {
-        auto log = getLog();
         mUpdateEndTime =  mTime->nowLL();
         setBusy(false);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Update Complete in {}",getUpdateTime());
+#endif
     }
 
     void

@@ -58,7 +58,9 @@ namespace DreamTool
           mGizmoUseSnap(true),
           mGizmoSnap(1.0f,1.0f,1.0f)
     {
+#ifdef DREAM_LOG
         setLogClassName("Properties Window");
+#endif
     }
 
     PropertiesWindow::~PropertiesWindow
@@ -212,8 +214,10 @@ namespace DreamTool
         }
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
+#ifdef DREAM_LOG
         auto log = getLog();
         log->error("Pushed target {}",mHistory.size());
+#endif
         setPropertyType(type);
         setDefinition(def);
         setRuntime(runt);
@@ -247,9 +251,11 @@ namespace DreamTool
         setPropertyType(last.type);
         setDefinition(last.definition);
         setRuntime(last.runtime);
+#ifdef DREAM_LOG
         auto log = getLog();
-        mHistory.pop_back();
         log->error("Popped target {}",mHistory.size());
+#endif
+        mHistory.pop_back();
     }
 
     void
@@ -411,7 +417,9 @@ namespace DreamTool
     PropertiesWindow::drawSceneProperties
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
@@ -671,7 +679,10 @@ namespace DreamTool
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setLightingPassShader(uuid);
+
+#ifdef DREAM_LOG
                 log->error("Switched lighting pass shader to {} {}", name, uuid);
+#endif
             }
 
 
@@ -681,7 +692,9 @@ namespace DreamTool
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
+#ifdef DREAM_LOG
                 log->error("Switched shadow pass shader to {} {}", name, uuid);
+#endif
             }
         }
 
@@ -760,7 +773,9 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         if (soDef == nullptr)
         {
@@ -1221,7 +1236,10 @@ namespace DreamTool
     PropertiesWindow::drawImGizmo
     ()
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         float *matrix = nullptr;
         auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
@@ -1415,7 +1433,10 @@ namespace DreamTool
     PropertiesWindow::drawPhysicsImGizmo
     (CompoundChildDefinition ccd)
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         float* matrix = ccd.transform.getMatrixFloatPointer();
 
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -1705,7 +1726,9 @@ namespace DreamTool
     PropertiesWindow::drawAudioAssetProperties
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         bool selectAudioFile = ImGui::Button("Audio File...");
         auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
 
@@ -1714,10 +1737,16 @@ namespace DreamTool
         if (strlen(chosenPath) > 0)
         {
             auto audioFilePath = openDlg.getChosenPath();
+
+#ifdef DREAM_LOG
             log->error("Opening Audio File {}",audioFilePath);
+#endif
             File audioFile(audioFilePath);
             mState->lastDirectory = audioFile.getDirectory();
+
+#ifdef DREAM_LOG
             log->error("Setting last directory {}",mState->lastDirectory);
+#endif
             auto audioData = audioFile.readBinary();
             mState->projectDirectory.writeAssetData(audioDef,audioData);
             audioDef->setName(audioFile.nameWithoutExtension());
@@ -1780,7 +1809,10 @@ namespace DreamTool
     PropertiesWindow::drawFontAssetProperties
     ()
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         bool selectFile = ImGui::Button("Font File...");
         auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
@@ -1789,7 +1821,10 @@ namespace DreamTool
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
+
+#ifdef DREAM_LOG
             log->error("Opening Font File {}",filePath);
+#endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
@@ -2221,7 +2256,9 @@ namespace DreamTool
     PropertiesWindow::drawModelAssetProperties
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto def = dynamic_cast<ModelDefinition*>(mDefinition);
 
         bool selectFile = ImGui::Button("Model File...");
@@ -2230,7 +2267,9 @@ namespace DreamTool
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
+#ifdef DREAM_LOG
             log->error("Opening Model File {}",filePath);
+#endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
@@ -2248,7 +2287,10 @@ namespace DreamTool
         if (strlen(chosenAdditionalFilePath) > 0)
         {
             auto filePath = openAdditionalFileDlg.getChosenPath();
+
+#ifdef DREAM_LOG
             log->error("Opening Additional Model File {}",filePath);
+#endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
@@ -2321,7 +2363,10 @@ namespace DreamTool
             {
                 auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
+
+#ifdef DREAM_LOG
                 log->error("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
+#endif
             }
             ImGui::PopItemWidth();
             ImGui::NextColumn();
@@ -2522,7 +2567,9 @@ namespace DreamTool
     PropertiesWindow::drawScriptProperties
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
 
         ImGui::PushItemWidth(-1);
@@ -2538,7 +2585,9 @@ namespace DreamTool
     PropertiesWindow::drawShaderAssetProperties
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
         auto projRunt = mState->project->getRuntime();
         ShaderRuntime* shaderInst = nullptr;
@@ -2587,14 +2636,18 @@ namespace DreamTool
             }
         }
 
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         bool selectFile = ImGui::Button("Texture File...");
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".png","Select Texture File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
+#ifdef DREAM_LOG
             log->error("Opening Texture File {}",filePath);
+#endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();

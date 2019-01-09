@@ -16,7 +16,7 @@ namespace DreamTool
         ~LuaDebugWindow() override;
 
         void draw() override;
-        void onPrint(string) override;
+        void onPrint(const string&) override;
     private:
         ImGuiTextBuffer mLogBuffer;
     };

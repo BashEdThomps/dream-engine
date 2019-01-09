@@ -36,8 +36,10 @@ namespace Dream
     File::~File
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "FileReader: Destroying reader for {}" , mPath );
+#endif
     }
 
     string File::getDirectory()
@@ -126,12 +128,16 @@ namespace Dream
     File::deleteFile
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Deleting file {}",mPath);
+#endif
         if(remove(mPath.c_str()) != 0)
         {
+#ifdef DREAM_LOG
             log->error("Error deleting file {}",mPath );
             perror("File check error");
+#endif
             return false;
         }
         return true;
@@ -147,7 +153,9 @@ namespace Dream
             fclose(file);
             return true;
         }
+#ifdef DREAM_LOG
         perror("File check error");
+#endif
         return false;
     }
 
@@ -155,20 +163,25 @@ namespace Dream
     File::nameWithExtension
     ()
     {
-        auto log = getLog();
+
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->trace("Got file name with extension {}",fileName);
+#endif
         return fileName;
     }
 
     string File::nameWithoutExtension()
     {
-        auto log = getLog();
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         auto nameOnly = name.substr(0,extStart);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->trace("Got file name without extension {}",nameOnly);
+#endif
         return nameOnly;
     }
 
@@ -176,13 +189,15 @@ namespace Dream
     File::extension
     ()
     {
-        auto log = getLog();
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         if (extStart != string::npos)
         {
             auto ext = name.substr(extStart+1);
+#ifdef DREAM_LOG
+            auto log = getLog();
             log->trace("Got file extension {}",ext);
+#endif
             return ext;
         }
         return "";

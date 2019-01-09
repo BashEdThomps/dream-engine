@@ -46,16 +46,20 @@ namespace Dream
         mMaxDrawDistance(1000.0f),
         mMeshCullDistance(1000.0f)
     {
+#ifdef DREAM_LOG
         setLogClassName("SceneRuntime");
         auto log = getLog();
         log->trace( "Constructing " );
+#endif
     }
 
     SceneRuntime::~SceneRuntime
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing");
+#endif
         if (mState != SCENE_STATE_DESTROYED)
         {
             destroyRuntime();
@@ -66,7 +70,9 @@ namespace Dream
     SceneRuntime::destroyRuntime
     ()
     {
+#ifdef DREAM_LOG
         getLog()->critical("Destroying runtime {}",getNameAndUuidString());
+#endif
 
         if (mRootSceneObjectRuntime != nullptr)
         {
@@ -96,7 +102,9 @@ namespace Dream
         }
         else
         {
+#ifdef DREAM_LOG
             getLog()->error("Cannot switch scene state from {} to {}",mState,state);
+#endif
         }
     }
 
@@ -230,6 +238,7 @@ namespace Dream
         return count;
     }
 
+#ifdef DREAM_LOG
     void
     SceneRuntime::showScenegraph
     ()
@@ -254,6 +263,7 @@ namespace Dream
             )
         );
     }
+#endif
 
     void
     SceneRuntime::setRootSceneObjectRuntime
@@ -273,13 +283,16 @@ namespace Dream
     SceneRuntime::collectGarbage
     ()
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Collecting Garbage {}" , getNameAndUuidString() );
+#endif
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (
-                [&](SceneObjectRuntime* runt)
+                [=](SceneObjectRuntime* runt)
                 {
                     runt->collectGarbage();
                     return static_cast<SceneObjectRuntime*>(nullptr);
@@ -306,16 +319,22 @@ namespace Dream
     SceneRuntime::useDefinition
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
         {
+#ifdef DREAM_LOG
             log->error("SceneDefinition is null");
+#endif
             return false;
         }
 
+#ifdef DREAM_LOG
         log->debug( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
+#endif
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinition->getName());
@@ -339,14 +358,18 @@ namespace Dream
         mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
         shaderUuid = sceneDefinition->getShadowPassShader();
         mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
+
+#ifdef DREAM_LOG
         if (mLightingPassShader == nullptr)
         {
             log->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
+
         if (mShadowPassShader == nullptr)
         {
             log->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
+#endif
 
         // Scripts
         auto scriptCache = mProjectRuntime->getScriptCache();
@@ -354,7 +377,9 @@ namespace Dream
         mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(inputScriptUuid));
         if (!mInputScript)
         {
+#ifdef DREAM_LOG
             log->error("Unable to load Input r Script {}",inputScriptUuid);
+#endif
         }
         else
         {
@@ -365,7 +390,9 @@ namespace Dream
         mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(nvgScriptUuid));
         if (!mNanoVGScript)
         {
+#ifdef DREAM_LOG
             log->error("Unable to load NanoVG Script {}",nvgScriptUuid);
+#endif
         }
         else
         {
@@ -380,7 +407,9 @@ namespace Dream
         auto sor = new SceneObjectRuntime(sod,this);
         if (!sor->useDefinition())
         {
+#ifdef DREAM_LOG
             log->error("Error using scene object runtime definition");
+#endif
             delete sor;
             sor = nullptr;
             return false;
@@ -389,7 +418,10 @@ namespace Dream
 
         setRootSceneObjectRuntime(sor);
         setState(SceneState::SCENE_STATE_LOADED);
+#ifdef DREAM_LOG
         mProjectRuntime->getShaderCache()->logShaders();
+#endif
+
         auto focused = getSceneObjectRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
         mCamera.setFocusedSceneObejct(focused);
 

@@ -6,20 +6,23 @@ namespace DreamTool
     PreferencesModel::PreferencesModel
     () : DreamObject("PreferencesModel")
     {
+#ifdef DREAM_LOG
         getLog()->trace("Constructing");
+#endif
     }
 
     PreferencesModel::~PreferencesModel
     ()
     {
+#ifdef DREAM_LOG
         getLog()->trace("Destructing");
+#endif
     }
 
     bool
     PreferencesModel::load
     (string projectPath)
     {
-        auto log = getLog();
         mProjectPath = projectPath;
         File f(getAbsolutePath());
         if (f.exists())

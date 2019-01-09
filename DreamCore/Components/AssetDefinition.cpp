@@ -29,16 +29,21 @@ namespace Dream
         : Definition(jsonDef),
           mProjectDefinition(parent)
     {
+#ifdef DREAM_DEBUG
         setLogClassName("AssetDefinition");
         auto log = getLog();
         log->trace("Constructing {}", getNameAndUuidString());
+#endif
     }
 
     AssetDefinition::~AssetDefinition
     ()
     {
+
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace("Destructing {}", getNameAndUuidString());
+#endif
     }
 
     AssetType

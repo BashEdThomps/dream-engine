@@ -17,8 +17,10 @@
 #include <memory>
 #include <sstream>
 
+#ifdef DREAM_LOG
 #include "../DreamCore/deps/spdlog/spdlog.h"
 #include "../DreamCore/deps/spdlog/sinks/stdout_color_sinks.h"
+#endif
 
 #include "../DreamCore/Scene/SceneRuntime.h"
 #include "../DreamCore/Components/Input/InputComponent.h"
@@ -38,7 +40,9 @@ using namespace std;
 using namespace Dream;
 using namespace DreamGLFW;
 
+#ifdef DREAM_LOG
 shared_ptr<spdlog::logger> _log = spdlog::stdout_color_mt("Main");
+#endif
 
 void run(int,char**);
 Project* openProject(ProjectDirectory&, string, WindowComponent&);
@@ -49,16 +53,19 @@ int
 main
 (int argc,char** argv)
 {
+#ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
+#endif
 
     if(argc < 2)
     {
+#ifdef DREAM_LOG
         _log->error("No Project Argument.");
+#endif
         return 1;
     }
 
-    spdlog::set_level(spdlog::level::off);
     run(argc,argv);
 
     return 0;
@@ -68,7 +75,9 @@ Project*
 openProject
 (ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
 {
+#ifdef DREAM_LOG
     _log->debug("Opening project {}",dir);
+#endif
     auto project = projectDirectory.openFromDirectory(dir);
     if(project)
     {
@@ -91,11 +100,15 @@ run
     SceneDefinition* startupSceneDefinition = nullptr;
     SceneRuntime* activeSceneRuntime = nullptr;
 
+#ifdef DREAM_LOG
     _log->trace("Starting...");
+#endif
 
     if(!windowComponent.init())
     {
+#ifdef DREAM_LOG
         _log->error("Could not initialise window component");
+#endif
         return;
     }
 
@@ -121,7 +134,9 @@ run
             }
             else
             {
+#ifdef DREAM_LOG
                 _log->error("Unable to use startup scene runtime");
+#endif
                 delete activeSceneRuntime;
                 activeSceneRuntime = nullptr;
             }
@@ -150,10 +165,13 @@ run
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             windowComponent.updateComponent(nullptr);
         }
+
+        //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
     }
 
-    spdlog::set_level(spdlog::level::trace);
+#ifdef DREAM_LOG
     _log->info("Run is done. Cleaning up");
+#endif
 
     if (activeSceneRuntime)
     {
@@ -217,3 +235,4 @@ handleSceneInput
         }
     }
 }
+

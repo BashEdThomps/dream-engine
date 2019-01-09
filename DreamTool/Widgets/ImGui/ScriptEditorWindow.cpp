@@ -14,7 +14,10 @@ namespace DreamTool
         : ImGuiWidget (state),
           mScriptDefinition(nullptr)
     {
+
+#ifdef DREAM_LOG
         setLogClassName("ScriptEditorWidget");
+#endif
         mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
     }
 
@@ -32,7 +35,10 @@ namespace DreamTool
         {
 
             ImGui::Begin("Script Editor",&mVisible);
+
+#ifdef DREAM_LOG
             auto log = getLog();
+#endif
             auto projRunt = mState->project->getRuntime();
             ScriptRuntime* scriptInst = nullptr;
             {
@@ -96,7 +102,10 @@ namespace DreamTool
                 {
                     if (currentTemplateIndex < 0)
                     {
+
+#ifdef DREAM_LOG
                         log->error("Cannot load Script template at index {}",currentTemplateIndex);
+#endif
                     }
                     else
                     {
@@ -109,7 +118,9 @@ namespace DreamTool
                         }
                         else
                         {
+#ifdef DREAM_LOG
                             log->error("Cannot set from template, script instance is null");
+#endif
                         }
                     }
                     ImGui::CloseCurrentPopup();

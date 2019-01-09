@@ -20,7 +20,9 @@
 #include "Constants.h"
 
 using namespace std;
-using namespace spdlog;
+#ifdef DREAM_LOG
+    using namespace spdlog;
+#endif
 
 namespace Dream
 {
@@ -34,34 +36,76 @@ namespace Dream
         /**
          * @param classname Logging class name.
          */
-        DreamObject(string classname);
+        DreamObject
+        (const string& classname)
+#ifdef DREAM_LOG
+            : _CLASSNAME_(classname)
+#endif
+        {}
 
         /**
          * @brief Default destructor.
          */
-        virtual ~DreamObject();
+        virtual ~DreamObject
+        ()
+        {}
 
+#ifdef DREAM_LOG
         /**
          * @brief Override the currently defined class name used during logging.
          * @param className The new class name to log with.
          */
-        void setLogClassName(string className);
+        inline void
+        setLogClassName
+        (const string& name)
+        {
+            _CLASSNAME_ = name;
+
+        }
 
         /**
          * @return Get the class name used for logging.
          */
-        string getClassName();
+        inline
+        string
+        getClassName
+        ()
+        const
+        {
+            return _CLASSNAME_;
+        }
 
     protected:
         /**
          * @return Get the instance of the class's logger. Instances are shared
          * between objects with the same _CLASSNAME_.
          */
-        shared_ptr<logger> getLog() const;
+        inline
+        std::shared_ptr<spdlog::logger>
+        getLog
+        ()
+        {
+            try
+            {
+                auto log = spdlog::get(_CLASSNAME_);
+                if (log == nullptr)
+                {
+                    log = spdlog::stdout_color_st(_CLASSNAME_);
+                }
+                return log;
+            }
+            catch (spdlog::spdlog_ex ex)
+            {
+                cerr << "********** Exception getting log for " << _CLASSNAME_ <<" **********"
+                     << endl << ex.what() << endl;
+                return nullptr;
+            }
+        }
 
         /**
          * @brief Name to use during logging.
          */
         string  _CLASSNAME_;
+#endif
     };
 }

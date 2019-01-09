@@ -21,70 +21,97 @@ namespace Dream
     ()
     {
         glDeleteTextures(1,&mGLID);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
     }
 
-    string TextureRuntime::getPath() const
+    string
+    TextureRuntime::getPath
+    () const
     {
         return mPath;
     }
 
-    void TextureRuntime::setPath(const string& path)
+    void
+    TextureRuntime::setPath
+    (const string& path)
     {
         mPath = path;
     }
 
-    int TextureRuntime::getWidth() const
+    int
+    TextureRuntime::getWidth
+    () const
     {
         return mWidth;
     }
 
-    void TextureRuntime::setWidth(int width)
+    void
+    TextureRuntime::setWidth
+    (int width)
     {
         mWidth = width;
     }
 
-    int TextureRuntime::getHeight() const
+    int
+    TextureRuntime::getHeight
+    () const
     {
         return mHeight;
     }
 
-    void TextureRuntime::setHeight(int height)
+    void
+    TextureRuntime::setHeight
+    (int height)
     {
         mHeight = height;
     }
 
-    int TextureRuntime::getChannels() const
+    int
+    TextureRuntime::getChannels
+    () const
     {
         return mChannels;
     }
 
-    void TextureRuntime::setChannels(int channels)
+    void
+    TextureRuntime::setChannels
+    (int channels)
     {
         mChannels = channels;
     }
 
-    unsigned char* TextureRuntime::getImage() const
+    unsigned char*
+    TextureRuntime::getImage
+    () const
     {
         return mImage;
     }
 
-    void TextureRuntime::setImage(unsigned char* image)
+    void
+    TextureRuntime::setImage
+    (unsigned char* image)
     {
         mImage = image;
     }
 
-    GLuint TextureRuntime::getGLID() const
+    GLuint
+    TextureRuntime::getGLID
+    () const
     {
         return mGLID;
     }
 
-    void TextureRuntime::setGLID(const GLuint& gLID)
+    void
+    TextureRuntime::setGLID
+    (const GLuint& gLID)
     {
         mGLID = gLID;
     }
 
-    bool TextureRuntime::operator==(const TextureRuntime& other)
+    bool
+    TextureRuntime::operator==(const TextureRuntime& other)
     {
         return this->mGLID == other.mGLID && this->mPath.compare(other.mPath) == 0;
     }

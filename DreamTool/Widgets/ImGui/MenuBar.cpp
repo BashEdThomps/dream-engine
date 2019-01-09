@@ -25,7 +25,9 @@ namespace DreamTool
         : ImGuiWidget(def),
           mFPS(0)
     {
+#ifdef DREAM_LOG
         setLogClassName("MenuBar");
+#endif
     }
 
     MenuBar::~MenuBar
@@ -37,7 +39,9 @@ namespace DreamTool
     MenuBar::draw
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         bool showQuitDialog = false;
         bool newButtonClicked = false;
@@ -301,6 +305,7 @@ namespace DreamTool
                 }
                 }
 
+#ifdef DREAM_LOG
                 if(ImGui::BeginMenu("Engine Logging"))
                 {
                     static spdlog::level::level_enum mode = spdlog::level::off;
@@ -341,6 +346,7 @@ namespace DreamTool
                     }
                     ImGui::EndMenu();
                 }
+#endif
                 ImGui::EndMenu();
             }
 

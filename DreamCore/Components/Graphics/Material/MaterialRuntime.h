@@ -43,8 +43,11 @@ namespace Dream
         size_t countMeshes();
 
         bool operator==(MaterialRuntime& other);
+
+#ifdef DREAM_LOG
         void debug();
         void logMeshes();
+#endif
         void drawGeometryPass(Camera*);
         void drawShadowPass(ShaderRuntime* shader);
 

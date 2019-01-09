@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream C CXX)
 
+set(DREAM_LOG OFF)
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
 set(DREAM_BUILD_TOOL ON)
@@ -53,6 +54,11 @@ endif()
 if(UNIX)
     message("Building for a *nix OS")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=4096 --std=c++14")
+endif()
+
+if (DREAM_LOG)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDREAM_LOG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDREAM_LOG")
 endif()
 
 # DreamCore Library

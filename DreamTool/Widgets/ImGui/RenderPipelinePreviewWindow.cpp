@@ -12,7 +12,9 @@ namespace DreamTool
     (DTState* state)
         :ImGuiWidget(state,false)
     {
+#ifdef DREAM_LOG
         setLogClassName("RenderPipelinePreviewWidget");
+#endif
     }
 
     RenderPipelinePreviewWindow::~RenderPipelinePreviewWindow

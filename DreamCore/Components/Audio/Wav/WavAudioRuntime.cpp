@@ -22,29 +22,39 @@ namespace Dream
     (AudioDefinition* definition, ProjectRuntime* project)
         : AudioRuntime(definition, project)
     {
+#ifdef DREAM_LOG
         setLogClassName("WavAudioInstance");
         getLog()->error("Constructing");
+#endif
     }
 
     bool
     WavAudioRuntime::useDefinition
     ()
     {
-        auto log = getLog();
         string absPath = getAssetFilePath();
+
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Loading wav file from {}", absPath);
+#endif
+
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
         if (wavFile == nullptr)
         {
+#ifdef DREAM_LOG
             log->error("Unable to open wave file: {}", absPath);
+#endif
             return false;
         }
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
+#ifdef DREAM_LOG
         log->debug("Header Read {} bytes" ,bytesRead);
+#endif
         if (bytesRead > 0)
         {
             //Read the data
@@ -67,13 +77,16 @@ namespace Dream
                 mFormat = AL_FORMAT_STEREO16;
             }
 
-            setLooping(dynamic_cast<AudioDefinition*>(mDefinition)->getLoop());
+            setLooping(static_cast<AudioDefinition*>(mDefinition)->getLoop());
 
+#ifdef DREAM_LOG
             log->debug("Read {} bytes", mAudioDataBuffer.size());
+#endif
             delete [] buffer;
             buffer = NULL;
             filelength = getFileSize(wavFile);
 
+#ifdef DREAM_LOG
             log->debug(
                 "Status...\n"
                 "\tFile size is: {} bytes\n"
@@ -103,6 +116,7 @@ namespace Dream
                   mWavHeader.BlockAlign,
                   mWavHeader.Subchunk2ID[0], mWavHeader.Subchunk2ID[1], mWavHeader.Subchunk2ID[2], mWavHeader.Subchunk2ID[3]
             );
+#endif
         }
         fclose(wavFile);
         return loadIntoAL();

@@ -30,16 +30,20 @@ namespace Dream
         : Definition(data),
           mProjectDefinition(projectDefinition)
     {
+#ifdef DREAM_DEBUG
         setLogClassName("SceneDefinition");
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString() );
+#endif
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
+#endif
         if (mRootSceneObjectDefinition != nullptr)
         {
             delete mRootSceneObjectDefinition;
@@ -52,10 +56,12 @@ namespace Dream
     ()
     {
         json rsoJson = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
-        auto log = getLog();
         if (rsoJson.is_null())
         {
+#ifdef DREAM_DEBUG
+            auto log = getLog();
             log->error( "No root SceneObject found!!" );
+#endif
             return;
         }
 
@@ -117,6 +123,28 @@ namespace Dream
             mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
         }
         return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
+    }
+
+    void
+    SceneDefinition::addTemplate
+    (SceneObjectDefinition* _template)
+    {
+        mTemplates.push_back(_template);
+    }
+
+
+    SceneObjectDefinition*
+    SceneDefinition::getTemplateByUuid
+    (string uuid)
+    {
+        for (SceneObjectDefinition* next : mTemplates)
+        {
+            if (next->getUuid().compare(uuid) == 0)
+            {
+                return next;
+            }
+        }
+        return nullptr;
     }
 
     string
@@ -617,6 +645,4 @@ namespace Dream
     {
        mJson[Constants::SCENE_NANOVG_SCRIPT] = shader;
     }
-
-
 }

@@ -11,7 +11,9 @@ namespace Dream
     (ProjectRuntime* parent)
         : Cache(parent)
     {
+#ifdef DREAM_DEBUG
        setLogClassName("AudioCache");
+#endif
     }
 
     AudioCache::~AudioCache
@@ -35,8 +37,10 @@ namespace Dream
     AudioCache::loadInstance
     (AssetDefinition* def)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
-        auto aDef = dynamic_cast<AudioDefinition*>(def);
+#endif
+        auto aDef = static_cast<AudioDefinition*>(def);
         SharedAssetRuntime* asset = nullptr;
 
         if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
@@ -47,10 +51,12 @@ namespace Dream
         {
             asset = new OggAudioRuntime(aDef,mProjectRuntime);
         }
+#ifdef DREAM_DEBUG
         else
         {
             log->error("Error, unrecognised audio format {}", def->getFormat());
         }
+#endif
 
         if (asset)
         {

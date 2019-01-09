@@ -62,17 +62,21 @@ namespace DreamGLFW
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
+#ifdef DREAM_LOG
         setLogClassName("GLFWWindowComponent");
         auto log = getLog();
         log->info("Constructing" );
+#endif
         mName = "Dream";
     }
 
     GLFWWindowComponent::~GLFWWindowComponent
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->info("Destructing" );
+#endif
         glfwTerminate();
         mWindow = nullptr;
     }
@@ -106,20 +110,26 @@ namespace DreamGLFW
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
     }
 
     bool
     GLFWWindowComponent::initGLFW
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Initialising GLFW");
+#endif
 
         /* Initialize the library */
         if (!glfwInit())
         {
+#ifdef DREAM_LOG
             log->error("FAILED @ Initialising GLFW");
+#endif
             return false;
         }
 
@@ -137,7 +147,9 @@ namespace DreamGLFW
 
         if (mWindow == nullptr)
         {
+#ifdef DREAM_LOG
             log->error("FAILED @ Make Window");
+#endif
             glfwTerminate();
             return false;
         }
@@ -152,7 +164,9 @@ namespace DreamGLFW
         glfwSwapInterval(0);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
+#ifdef DREAM_LOG
         log->debug("Queried Framebuffer size as {}x{}",mWidth,mHeight);
+#endif
         return true;
     }
 
@@ -160,8 +174,10 @@ namespace DreamGLFW
     GLFWWindowComponent::initGL
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Initialising GLFW::OpenGL");
+#endif
         glfwMakeContextCurrent(mWindow);
 
         glewExperimental = GL_TRUE;
@@ -169,10 +185,13 @@ namespace DreamGLFW
 
         if (glewInitResult != GLEW_OK)
         {
+#ifdef DREAM_LOG
             log->error("GLEW failed to initialise");
+#endif
             return false;
         }
 
+#ifdef DREAM_LOG
         checkGLError();
 
         log->debug(
@@ -180,6 +199,7 @@ namespace DreamGLFW
             glGetString(GL_VERSION),
             glGetString(GL_SHADING_LANGUAGE_VERSION)
         );
+#endif
         return true;
     }
 
@@ -187,7 +207,9 @@ namespace DreamGLFW
     GLFWWindowComponent::updateComponent
     (SceneRuntime* sr)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         glfwPollEvents();
 
@@ -198,7 +220,9 @@ namespace DreamGLFW
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
+#ifdef DREAM_LOG
             log->error("Window should close");
+#endif
         }
 
         if (WindowSizeChanged)
@@ -212,9 +236,11 @@ namespace DreamGLFW
     GLFWWindowComponent::getCurrentDimensions
     ()
     {
-        auto log = getLog();
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->error("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
+#endif
         mSizeHasChanged = true;
     }
 
@@ -228,13 +254,26 @@ namespace DreamGLFW
         }
     }
 
-    bool GLFWWindowComponent::WindowSizeChanged = false;
-    bool GLFWWindowComponent::MouseButtonsDown[5] = {false};
+    int
+    GLFWWindowComponent::FPS
+    ()
+    {
+        LastTime = CurrentTime;
+        CurrentTime = glfwGetTime();
+        Frames = 1.0/(CurrentTime-LastTime);
+        return Frames;
+    }
+
+    bool  GLFWWindowComponent::WindowSizeChanged = false;
+    bool  GLFWWindowComponent::MouseButtonsDown[5] = {false};
     float GLFWWindowComponent::MousePosX = 0.0f;
     float GLFWWindowComponent::MousePosY = 0.0f;
     float GLFWWindowComponent::MouseWheel = 0.0f;
     float GLFWWindowComponent::MouseWheelH = 0.0f;
-    bool GLFWWindowComponent::KeysDown[512] = {false};
+    bool  GLFWWindowComponent::KeysDown[512] = {false};
+    float GLFWWindowComponent::LastTime = 0;
+    float GLFWWindowComponent::CurrentTime = 0;
+    int   GLFWWindowComponent::Frames = 0;
 
 }
 

@@ -38,7 +38,7 @@
 #include "../../deps/sol2/sol.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-using std::ostringstream;
+using std::stringstream;
 using std::exception;
 using std::cout;
 using std::cerr;
@@ -75,15 +75,19 @@ namespace Dream
           mScriptCache(cache),
           mProjectRuntime(runtime)
     {
+        #ifdef DREAM_LOG
         setLogClassName("LuaComponent");
         auto log = getLog();
         log->trace( "Constructing Object" );
+        #endif
     }
 
     ScriptComponent::~ScriptComponent
     ()
     {
+        #ifdef DREAM_LOG
         getLog()->trace("Destroying Object");
+        #endif
 
         if (State != nullptr)
         {
@@ -96,8 +100,10 @@ namespace Dream
     ScriptComponent::init
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Initialising LuaComponent" );
+        #endif
         State = luaL_newstate();
         sol::state_view sView(State);
         sView.open_libraries(
@@ -116,7 +122,9 @@ namespace Dream
         luaL_setfuncs(State, printlib, 0);
         lua_pop(State, 1);
 
+        #ifdef DREAM_LOG
         log->debug( "Got a sol state" );
+        #endif
         exposeAPI();
         return true;
     }
@@ -125,19 +133,26 @@ namespace Dream
     ScriptComponent::updateComponent
     (SceneRuntime*)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
         if (!mEnabled)
         {
+
+            #ifdef DREAM_LOG
             log->warn("Update Disabled");
+            #endif
             return;
         }
 
         beginUpdate();
+        #ifdef DREAM_LOG
         log->debug( "Update Called" );
+        #endif
 
         for (auto inst : mScriptCache->getInstanceVector())
         {
-            auto scriptObj = dynamic_cast<ScriptRuntime*>(inst);
+            auto scriptObj = static_cast<ScriptRuntime*>(inst);
             scriptObj->executeOnInit();
             scriptObj->executeOnEvent();
             scriptObj->executeOnUpdate();
@@ -377,10 +392,12 @@ namespace Dream
             "translateWithChildren",&SceneObjectRuntime::translateWithChildren,
             "preTranslateWithChildren",&SceneObjectRuntime::preTranslateWithChildren,
             "transformOffsetInitial",&SceneObjectRuntime::transformOffsetInitial,
+            "translateOffsetInitial",&SceneObjectRuntime::translateOffsetInitial,
             "translateOffsetInitialWithChildren",&SceneObjectRuntime::translateOffsetInitialWithChildren,
             "containedInFrustum",&SceneObjectRuntime::containedInFrustum,
             "containedInFrustumAfterTransform",&SceneObjectRuntime::containedInFrustum,
-            "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation
+            "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation,
+            "addChildFromTemplateUuid",&SceneObjectRuntime::addChildFromTemplateUuid
         );
     }
 
@@ -450,7 +467,7 @@ namespace Dream
             "getType",&Event::getType,
             "getString",&Event::getString,
             "setString",&Event::setString
-                                      );
+        );
     }
 
     void
@@ -934,10 +951,12 @@ namespace Dream
 
     void
     ScriptComponent::debugRegisteringClass
-    (string className)
+    (const string& className)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Registering Class {}",  className );
+        #endif
     }
 
     void

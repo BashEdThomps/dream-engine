@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
 #include "../../Components/Graphics/Frustum.h"
 #include "../../Common/Runtime.h"
@@ -54,7 +55,7 @@ namespace Dream
     class SceneObjectRuntime : public Runtime
     {
     public:
-        SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr);
+        SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr, bool randomUuid = false);
         ~SceneObjectRuntime() override;
 
         void collectGarbage() override;
@@ -95,6 +96,7 @@ namespace Dream
         void translateWithChildren(const vec3& translation);
         void preTranslateWithChildren(const vec3& translation);
         void transformOffsetInitial(const mat4& matrix);
+        void translateOffsetInitial(const vec3& tx);
 
         bool getHasCameraFocus() const;
         void setHasCameraFocus(bool);
@@ -105,7 +107,7 @@ namespace Dream
         void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeByUuid(const string& uuid);
-
+        SceneObjectRuntime* addChildFromTemplateUuid(string uuid);
         int countAllChildren();
         size_t countChildren();
         void addChildRuntime(SceneObjectRuntime*);
@@ -117,8 +119,59 @@ namespace Dream
         bool isParentOf(SceneObjectRuntime* child);
         void setParentRuntime(SceneObjectRuntime* parent);
         SceneObjectRuntime* getParentRuntime();
-        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
-        bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
+
+        inline bool
+        applyToAll
+        (const function<bool(SceneObjectRuntime*)>& fn)
+        {
+#ifdef DREAM_LOG
+            auto log = getLog();
+            log->trace("{}::applyToAll(bool) applying to {} children",
+            getNameAndUuidString(),mChildRuntimes.size());
+#endif
+
+            bool retval = fn(this);
+
+            for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+            {
+                if (*it)
+                {
+                    retval = retval || (*it)->applyToAll(fn);
+                }
+            }
+            return retval;
+        }
+
+        inline SceneObjectRuntime*
+        applyToAll
+        (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
+        {
+#ifdef DREAM_LOG
+            auto log = getLog();
+            log->trace("{}::applyToAll(void*) applying to {} children",
+            getNameAndUuidString(), mChildRuntimes.size());
+#endif
+
+            SceneObjectRuntime* retval = fn(this);
+
+            if (retval != nullptr)
+            {
+                return retval;
+            }
+
+            for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+            {
+                if ((*it) != nullptr)
+                {
+                    retval = (*it)->applyToAll(fn);
+                    if (retval != nullptr)
+                    {
+                        return retval;
+                    }
+                }
+            }
+            return nullptr;
+        }
 
         bool useDefinition() override;
 
@@ -154,7 +207,21 @@ namespace Dream
         bool containedInFrustumAfterTransform(const mat4& tx);
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
-        void translateOffsetInitialWithChildren(const vec3& translation);
+        inline void
+        translateOffsetInitialWithChildren
+        (const vec3& translation)
+        {
+            static mat4 ident(1.0f);
+            applyToAll
+            (function<SceneObjectRuntime*(SceneObjectRuntime*)>([=](SceneObjectRuntime* rt)
+            {
+                auto& initial = rt->getInitialTransform().getMatrix();
+                rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+            ));
+        }
+
         Transform& getInitialTransform();
 
     protected:
@@ -182,5 +249,6 @@ namespace Dream
         bool mDeleted;
         bool mHidden;
         bool mAlwaysDraw;
+        bool mRandomUuid;
     };
 }

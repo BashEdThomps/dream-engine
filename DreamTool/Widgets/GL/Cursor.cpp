@@ -13,8 +13,10 @@ namespace DreamTool
           mStepMajor(false),
           mOrientation(mat4(1.0f))
     {
+#ifdef DREAM_LOG
         setLogClassName("Cursor");
         getLog()->trace("Constructing");
+#endif
         for (auto index : ModelIndices)
         {
             mVertexBuffer.push_back(ModelVertices.at(index));
@@ -23,14 +25,18 @@ namespace DreamTool
 
     Cursor::~Cursor()
     {
+#ifdef DREAM_LOG
         getLog()->trace("Destructing");
+#endif
     }
 
     void
     Cursor::draw
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         if (mState->project)
         {
@@ -64,63 +70,90 @@ namespace DreamTool
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
+#ifdef DREAM_LOG
             checkGLError();
+#endif
+
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
+#ifdef DREAM_LOG
             checkGLError();
+#endif
             if (mProjectionUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for projection");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             // Set the view matrix
+#ifdef DREAM_LOG
             checkGLError();
+#endif
             if (mViewUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for view");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             // Set the projection matrix
             if (mModelUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for model");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             // Draw
             glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
             // Revert State
 #ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
-            checkGLError();
+    #ifdef DREAM_LOG
+                checkGLError();
+    #endif
 #endif
             glDisable(GL_BLEND);
         }
@@ -132,14 +165,22 @@ namespace DreamTool
         // Vertex Array
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindVertexArray(0);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
     }
 
     void

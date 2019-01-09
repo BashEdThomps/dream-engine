@@ -27,33 +27,39 @@ namespace Dream
     (ProjectRuntime* rt)
         : Cache(rt)
     {
+#ifdef DREAM_LOG
         setLogClassName("ShaderCache");
         auto log = getLog();
         log->trace( "Constructing" );
+#endif
     }
 
     ShaderCache::~ShaderCache
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destructing" );
+#endif
     }
 
     SharedAssetRuntime*
     ShaderCache::loadInstance
     (AssetDefinition* def)
     {
-        auto log = getLog();
-        auto shaderInstance = new ShaderRuntime(dynamic_cast<ShaderDefinition*>(def), mProjectRuntime);
+        auto shaderInstance = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
 
         if (!shaderInstance->useDefinition())
         {
-            log->error("Error while loading shader {}", def->getUuid());
+#ifdef DREAM_LOG
+            getLog()->error("Error while loading shader {}", def->getUuid());
+#endif
         }
         mInstances.push_back(shaderInstance);
         return shaderInstance;
     }
 
+#ifdef DREAM_LOG
     void
     ShaderCache::logShaders
     ()
@@ -62,11 +68,12 @@ namespace Dream
         log->debug("Contents of shader cache");
         for (auto instance : mInstances)
         {
-            auto shader = dynamic_cast<ShaderRuntime*>(instance);
+            auto shader = static_cast<ShaderRuntime*>(instance);
             log->debug("{}",shader->getNameAndUuidString());
             shader->logMaterials();
         }
     }
+#endif
 
     void
     ShaderCache::drawGeometryPass
@@ -74,7 +81,7 @@ namespace Dream
     {
         for (auto instance : mInstances)
         {
-            auto shader = dynamic_cast<ShaderRuntime*>(instance);
+            auto shader = static_cast<ShaderRuntime*>(instance);
             if (shader->countMaterials() == 0) continue;
             shader->use();
             shader->setViewMatrix(camera->getViewMatrix());
@@ -86,16 +93,14 @@ namespace Dream
 
     void
     ShaderCache::drawShadowPass
-    (
-        mat4 matrix, ShaderRuntime* shader
-    )
+    (mat4 matrix, ShaderRuntime* shader)
     {
         shader->use();
         auto lsUniform = shader->getUniformLocation("lightSpaceMatrix");
         glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
         for (auto instance : mInstances)
         {
-            auto s = dynamic_cast<ShaderRuntime*>(instance);
+            auto s = static_cast<ShaderRuntime*>(instance);
             s->drawShadowPass(shader);
         }
     }

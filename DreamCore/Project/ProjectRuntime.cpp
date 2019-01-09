@@ -67,16 +67,20 @@ namespace Dream
           mScriptCache(nullptr),
           mScriptingEnabled(true)
     {
+#ifdef DREAM_DEBUG
         setLogClassName("ProjectRuntime");
         auto log = getLog();
         log->debug( "Constructing" );
+#endif
     }
 
     ProjectRuntime::~ProjectRuntime
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug( "Destructing" );
+#endif
 
         deleteComponents();
 
@@ -114,8 +118,10 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug( "Initialising Components..." );
+#endif
 
         mTime = new Time();
 
@@ -164,7 +170,9 @@ namespace Dream
             return false;
         }
 
+#ifdef DREAM_DEBUG
         log->debug( "Successfuly created Components." );
+#endif
 
         return true;
     }
@@ -173,10 +181,14 @@ namespace Dream
     ProjectRuntime::initWindowComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         if (!mWindowComponent)
         {
+#ifdef DREAM_DEBUG
             log->critical("Window component is null");
+#endif
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
@@ -188,11 +200,15 @@ namespace Dream
     ProjectRuntime::initAudioComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mAudioComponent = new AudioComponent();
         if (!mAudioComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise AudioComponent." );
+#endif
             return false;
         }
         return true;
@@ -200,19 +216,23 @@ namespace Dream
 
     bool ProjectRuntime::initInputComponent()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         mInputComponent =
-        new InputComponent
-        (
-            projectDef->getCaptureKeyboard(),
-            projectDef->getCaptureMouse(),
-            projectDef->getCaptureJoystick()
-        );
+                new InputComponent
+                (
+                    projectDef->getCaptureKeyboard(),
+                    projectDef->getCaptureMouse(),
+                    projectDef->getCaptureJoystick()
+                    );
 
         if (!mInputComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise InputComponent." );
+#endif
             return false;
         }
         return true;
@@ -222,12 +242,16 @@ namespace Dream
     ProjectRuntime::initPhysicsComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mPhysicsComponent = new PhysicsComponent();
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise PhysicsComponent." );
+#endif
             return false;
         }
         return true;
@@ -237,13 +261,17 @@ namespace Dream
     ProjectRuntime::initGraphicsComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mGraphicsComponent = new GraphicsComponent(mWindowComponent);
         mGraphicsComponent->setTime(mTime);
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise Graphics Component." );
+#endif
             return false;
         }
         return true;
@@ -253,12 +281,16 @@ namespace Dream
     ProjectRuntime::initNanoVGComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mNanoVGComponent = new NanoVGComponent(mWindowComponent);
         mNanoVGComponent->setTime(mTime);
         if (!mNanoVGComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise Graphics Component." );
+#endif
             return false;
         }
         return true;
@@ -268,12 +300,16 @@ namespace Dream
     ProjectRuntime::initPathComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mPathComponent = new PathComponent();
         mPathComponent->setTime(mTime);
         if (!mPathComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise Path Component." );
+#endif
             return false;
         }
         return true;
@@ -284,12 +320,16 @@ namespace Dream
     ProjectRuntime::initAnimationComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mAnimationComponent = new AnimationComponent();
         mAnimationComponent->setTime(mTime);
         if (!mAnimationComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise Animation Component." );
+#endif
             return false;
         }
         return true;
@@ -300,11 +340,15 @@ namespace Dream
     ProjectRuntime::initScriptComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         mScriptComponent = new ScriptComponent(this,mScriptCache);
         if(!mScriptComponent->init())
         {
+#ifdef DREAM_DEBUG
             log->error( "Unable to initialise Script Engine." );
+#endif
             return false;
         }
         return true;
@@ -314,7 +358,9 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
+#ifdef DREAM_DEBUG
         getLog()->trace("initialising caches");
+#endif
         mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
         mShaderCache  = new ShaderCache(this);
@@ -465,7 +511,7 @@ namespace Dream
     ProjectRuntime::getNanoVGComponent
     ()
     {
-       return mNanoVGComponent;
+        return mNanoVGComponent;
     }
 
     ScriptComponent*
@@ -479,15 +525,17 @@ namespace Dream
     ProjectRuntime::updateLogic
     (SceneRuntime* sr)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
 
         log->debug(
-            "\n"
-            "====================\n"
-            "Update Logic called @ {}\n"
-            "====================",
-             mTime->nowLL()
-        );
+                    "\n"
+                    "====================\n"
+                    "Update Logic called @ {}\n"
+                    "====================",
+                    mTime->nowLL()
+                    );
+#endif
 
         // Inputs
         mTime->updateFrameTime();
@@ -512,14 +560,16 @@ namespace Dream
     ProjectRuntime::updateGraphics
     (SceneRuntime* sr)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug(
-            "\n"
-            "====================\n"
-            "Update Graphics called @ {}\n"
-            "====================",
-            mTime->nowLL()
-        );
+                    "\n"
+                    "====================\n"
+                    "Update Graphics called @ {}\n"
+                    "====================",
+                    mTime->nowLL()
+                    );
+#endif
         // Draw 3D/PhysicsDebug/2D
         ModelMesh::DrawCalls = 0;
         ModelMesh::InstancesDrawn = 0;
@@ -530,57 +580,62 @@ namespace Dream
         mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->drawDebug();
+
+#ifdef DREAM_DEBUG
         log->trace("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
+#endif
     }
 
     int
     ProjectRuntime::getWindowWidth
     ()
     {
-       if (mWindowComponent != nullptr)
-       {
-           return mWindowComponent->getWidth();
-       }
-       return 0;
+        if (mWindowComponent != nullptr)
+        {
+            return mWindowComponent->getWidth();
+        }
+        return 0;
     }
 
     void
     ProjectRuntime::setWindowWidth
     (int w)
     {
-       if (mWindowComponent != nullptr)
-       {
-           mWindowComponent->setWidth(w);
-       }
+        if (mWindowComponent != nullptr)
+        {
+            mWindowComponent->setWidth(w);
+        }
     }
 
     int
     ProjectRuntime::getWindowHeight
     ()
     {
-       if (mWindowComponent != nullptr)
-       {
-           return mWindowComponent->getHeight();
-       }
-       return 0;
+        if (mWindowComponent != nullptr)
+        {
+            return mWindowComponent->getHeight();
+        }
+        return 0;
     }
 
     void
     ProjectRuntime::setWindowHeight
     (int h)
     {
-       if (mWindowComponent != nullptr)
-       {
+        if (mWindowComponent != nullptr)
+        {
             mWindowComponent->setHeight(h);
-       }
+        }
     }
 
     void
     ProjectRuntime::collectGarbage
     (SceneRuntime* rt)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug("CollectGarbage Called @ {}", mTime->nowLL());
+#endif
         rt->collectGarbage();
     }
 
@@ -590,11 +645,11 @@ namespace Dream
     {
         for (auto rt : mSceneRuntimesToRemove)
         {
-           auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
-           if (itr != mSceneRuntimeVector.end())
-           {
-               mSceneRuntimeVector.erase(itr);
-           }
+            auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
+            if (itr != mSceneRuntimeVector.end())
+            {
+                mSceneRuntimeVector.erase(itr);
+            }
         }
     }
 
@@ -602,10 +657,14 @@ namespace Dream
     ProjectRuntime::updateAll
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         for (auto rt : mSceneRuntimeVector)
         {
+#ifdef DREAM_DEBUG
             log->trace("UpdateAll on {}",rt->getNameAndUuidString());
+#endif
             switch (rt->getState())
             {
                 case SceneState::SCENE_STATE_TO_LOAD:
@@ -635,15 +694,15 @@ namespace Dream
     ProjectRuntime::getActiveSceneRuntime
     ()
     {
-       int nRuntimes = mSceneRuntimeVector.size();
-       for (int i=0;i<nRuntimes;i++)
-       {
-           if (mSceneRuntimeVector.at(i)->getState() == SceneState::SCENE_STATE_ACTIVE)
-           {
-               return mSceneRuntimeVector.at(i);
-           }
-       }
-       return nullptr;
+        int nRuntimes = mSceneRuntimeVector.size();
+        for (int i=0;i<nRuntimes;i++)
+        {
+            if (mSceneRuntimeVector.at(i)->getState() == SceneState::SCENE_STATE_ACTIVE)
+            {
+                return mSceneRuntimeVector.at(i);
+            }
+        }
+        return nullptr;
     }
 
     SceneRuntime*
@@ -664,29 +723,29 @@ namespace Dream
     ProjectRuntime::setSceneRuntimeAsActive
     (string uuid)
     {
-       int nRuntimes = mSceneRuntimeVector.size();
-       for (int i=0;i<nRuntimes;i++)
-       {
-           auto srt = mSceneRuntimeVector.at(i);
-           if (srt->getUuid().compare(uuid) == 0)
-           {
-               srt->setState(SceneState::SCENE_STATE_ACTIVE);
-           }
-           else
-           {
-               if (srt->getState() == SceneState::SCENE_STATE_ACTIVE)
-               {
+        int nRuntimes = mSceneRuntimeVector.size();
+        for (int i=0;i<nRuntimes;i++)
+        {
+            auto srt = mSceneRuntimeVector.at(i);
+            if (srt->getUuid().compare(uuid) == 0)
+            {
+                srt->setState(SceneState::SCENE_STATE_ACTIVE);
+            }
+            else
+            {
+                if (srt->getState() == SceneState::SCENE_STATE_ACTIVE)
+                {
                     srt->setState(SceneState::SCENE_STATE_LOADED);
-               }
-           }
-       }
+                }
+            }
+        }
     }
 
     vector<SceneRuntime*>
     ProjectRuntime::getSceneRuntimeVector
     ()
     {
-       return mSceneRuntimeVector;
+        return mSceneRuntimeVector;
     }
 
     void
@@ -715,8 +774,10 @@ namespace Dream
     ProjectRuntime::constructSceneRuntime
     (SceneRuntime* rt)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug("Constructing Scene Runtime");
+#endif
         return rt->useDefinition();
     }
 
@@ -731,7 +792,7 @@ namespace Dream
     ProjectRuntime::getInputComponent
     ()
     {
-       return mInputComponent;
+        return mInputComponent;
     }
 
     bool
@@ -755,7 +816,7 @@ namespace Dream
     ProjectRuntime::getAudioCache
     ()
     {
-       return mAudioCache;
+        return mAudioCache;
     }
 
     ShaderCache*
@@ -790,7 +851,7 @@ namespace Dream
     ProjectRuntime::getScriptCache
     ()
     {
-       return mScriptCache;
+        return mScriptCache;
     }
 
     void
@@ -875,7 +936,7 @@ namespace Dream
                 srt->getState() >= SceneState::SCENE_STATE_LOADED
                 &&
                 srt->getState() < SceneState::SCENE_STATE_DESTROYED
-            )
+                )
             {
                 return true;
             }

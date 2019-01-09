@@ -37,16 +37,20 @@ namespace Dream
         mVertices(vertices),
         mIndices(indices)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing Mesh for {}", parent->getName());
+#endif
         init();
     }
 
     ModelMesh::~ModelMesh
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
+#endif
     }
 
     string
@@ -127,6 +131,7 @@ namespace Dream
         glBindVertexArray(0);
     }
 
+#ifdef DREAM_LOG
     void
     ModelMesh::logInstances
     ()
@@ -137,13 +142,15 @@ namespace Dream
            log->debug("\t\t\tInstance for {}", instance->getNameAndUuidString());
        }
     }
+#endif
 
     void
     ModelMesh::addInstance
     (SceneObjectRuntime* runt)
     {
-        auto log = getLog();
-        log->debug("Adding instance of mesh for {}", runt->getNameAndUuidString());
+#ifdef DREAM_LOG
+        getLog()->debug("Adding instance of mesh for {}", runt->getNameAndUuidString());
+#endif
         mInstances.push_back(runt);
     }
 
@@ -151,8 +158,10 @@ namespace Dream
     ModelMesh::removeInstance
     (SceneObjectRuntime* runt)
     {
+#ifdef DREAM_LOG
        auto log = getLog();
        log->debug("Removing instance of mesh for {}", runt->getNameAndUuidString());
+#endif
        auto itr = find (mInstances.begin(), mInstances.end(), runt);
        if (itr != mInstances.end())
        {
@@ -179,7 +188,9 @@ namespace Dream
     ModelMesh::drawGeometryPassInstances
     (Camera* camera, ShaderRuntime* shader)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         mInstancesInFrustum.clear();
         for (size_t i=0; i<mInstances.size();i++)
         {
@@ -191,10 +202,14 @@ namespace Dream
         }
         if (mInstancesInFrustum.empty())
         {
+#ifdef DREAM_LOG
             log->debug("(Geometry) No instances of {} in Frustum", getName());
+#endif
             return;
         }
+#ifdef DREAM_LOG
         log->trace("(Geometry) Drawing {} instances of mesh {} for Geometry pass", mInstances.size(), getName());
+#endif
         shader->bindVertexArray(mVAO);
         shader->bindInstances(mInstancesInFrustum);
         auto size = static_cast<GLsizei>(mInstancesInFrustum.size());
@@ -207,13 +222,19 @@ namespace Dream
     ModelMesh::drawShadowPassInstances
     (ShaderRuntime* shader)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         if (mInstances.empty())
         {
+#ifdef DREAM_LOG
             log->debug("(Shadow) No instances of {} in Frustum", getName());
+#endif
             return;
         }
+#ifdef DREAM_LOG
         log->trace("(Shadow) Drawing {} instances of mesh {}", mInstances.size(), getName());
+#endif
         shader->bindVertexArray(mVAO);
         shader->bindInstances(mInstances);
         auto size = static_cast<GLsizei>(mInstances.size());

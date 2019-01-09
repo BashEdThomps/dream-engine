@@ -46,12 +46,16 @@ namespace Dream
     ProjectDirectory::createBaseDirectory
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Creating project directory {}",mPath);
+#endif
         Directory d(mPath);
         if(!d.create())
         {
+        #ifdef DREAM_LOG
             log->error("Unable to create project directory {}",mPath);
+#endif
             return false;
         }
         return true;
@@ -61,14 +65,16 @@ namespace Dream
     ProjectDirectory::createAllAssetDirectories
     ()
     {
-        auto log = getLog();
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (auto typePair : assetTypes)
         {
             auto type = typePair.first;
             if (!createAssetTypeDirectory(type))
             {
+                #ifdef DREAM_LOG
+                auto log = getLog();
                 log->error("Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
+                #endif
                 return false;
             }
         }
@@ -88,32 +94,42 @@ namespace Dream
     ProjectDirectory::writeAssetData
     (AssetDefinition* assetDef, vector<char> data, string format)
     {
-        auto log = getLog();
         auto dataPath = getAssetDirectoryPath(assetDef);
+        #ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Writing asset data to {}",dataPath);
+        #endif
 
         //Check target directory exists
         Directory dir(dataPath);
         if (!dir.exists())
         {
+        #ifdef DREAM_LOG
             log->debug("Asset path does not exist {}",dataPath);
+#endif
             auto assetTypeEnum = Constants::getAssetTypeEnumFromString(assetDef->getType());
             if (!assetTypeDirectoryExists(assetTypeEnum))
             {
                 if(!createAssetTypeDirectory(assetTypeEnum))
                 {
+        #ifdef DREAM_LOG
                     log->error("Unable to create asset type directory");
+#endif
                     return false;
                 }
             }
             if(!dir.create())
             {
+        #ifdef DREAM_LOG
                 log->error("Unable to create asset path {}",dataPath);
+#endif
                 return false;
             }
         }
         auto path = getAssetAbsolutePath(assetDef,format);
+        #ifdef DREAM_LOG
         log->debug("Copying asset to {}",path);
+#endif
         auto file = File(path);
         return file.writeBinary(data);
     }
@@ -181,9 +197,11 @@ namespace Dream
     ProjectDirectory::removeAssetDirectory
     (Dream::AssetDefinition* ad)
     {
-        auto log = getLog();
         auto path = getAssetDirectoryPath(ad);
+        #ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Removing asset directory {}",path);
+        #endif
         Directory d(path);
         return d.deleteDirectory();
     }
@@ -240,7 +258,9 @@ namespace Dream
     {
         string assetTypeDirPath = getAssetTypeDirectory(type);
         Directory dir(assetTypeDirPath);
+        #ifdef DREAM_LOG
         getLog()->debug("Creating asset dir {}", assetTypeDirPath);
+        #endif
         return dir.create();
     }
 
@@ -248,12 +268,16 @@ namespace Dream
     ProjectDirectory::cleanupAssetsDirectory
     ()
     {
-        vector<string> retval;
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
+        vector<string> retval;
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
+            #ifdef DREAM_LOG
             log->error("Cannot cleanup, no project definition");
+            #endif
             return retval;
         }
 
@@ -266,7 +290,9 @@ namespace Dream
             if (assetDir.exists())
             {
                 auto subdirs = assetDir.listSubdirectories();
+                #ifdef DREAM_LOG
                 log->error("Cleaning up {} containing {} definitions", path, subdirs.size());
+                #endif
                 int deletedCount=0;
                 for (auto subdirPath : subdirs)
                 {
@@ -274,21 +300,29 @@ namespace Dream
                     if (subdir.exists())
                     {
                         auto name = subdir.getName();
+                        #ifdef DREAM_LOG
                         log->error("Checking subdir {} has definition",name);
+                        #endif
                         auto def = pDef->getAssetDefinitionByUuid(name);
                         if (!def)
                         {
+                            #ifdef DREAM_LOG
                             log->error("Definition {} does not exist, removing...",name);
+                            #endif
                             subdir.deleteDirectory();
                             retval.push_back(name);
                         }
                     }
                 }
+                #ifdef DREAM_LOG
                 log->error("Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+                #endif
             }
             else
             {
+                #ifdef DREAM_LOG
                 log->error("No Directory {}",path);
+                #endif
             }
         }
         return retval;
@@ -327,14 +361,18 @@ namespace Dream
     ProjectDirectory::openFromFileReader
     (string projectPath, File &reader)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Loading project from FileReader", reader.getPath());
+        #endif
 
         string projectJsonStr = reader.readString();
 
         if (projectJsonStr.empty())
         {
+            #ifdef DREAM_LOG
             log->error("Loading Failed. Project Content is Empty");
+            #endif
             return nullptr;
         }
 
@@ -345,12 +383,16 @@ namespace Dream
         }
         catch (json::parse_error ex)
         {
+            #ifdef DREAM_LOG
             log->error("Exception while parsing project file: {}",ex.what());
+            #endif
             return nullptr;
         }
 
         mPath = projectPath;
+        #ifdef DREAM_LOG
         log->debug("Project path is: {}", mPath);
+        #endif
         mProject = new Project(this);
         auto pDef = new ProjectDefinition(projectJson);
         mProject->setDefinition(pDef);
@@ -362,17 +404,23 @@ namespace Dream
     ProjectDirectory::openFromDirectory
     (string directory)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
 
         string projectFileName = findProjectFileInDirectory(directory);
 
         if (projectFileName.size() == 0)
         {
+            #ifdef DREAM_LOG
             log->error( "Project: Error {} is not a valid project directory!", directory  );
+            #endif
             return nullptr;
         }
 
+        #ifdef DREAM_LOG
         log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
+        #endif
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
 
@@ -397,7 +445,9 @@ namespace Dream
     ProjectDirectory::findProjectFileInDirectory
     (string directory)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
         Directory dir(directory);
         vector<string> directoryContents;
         directoryContents = dir.list();
@@ -410,7 +460,9 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
+                #ifdef DREAM_LOG
                 log->debug( "Found project file ",projectFileName );
+                #endif
                 return projectFileName;
             }
         }
@@ -430,13 +482,17 @@ namespace Dream
     ProjectDirectory::findAssetDirectories
     (string dir)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (auto typePair : assetTypes)
         {
             auto type = typePair.first;
             string assetDir = getAssetTypeDirectory(type,dir);
+            #ifdef DREAM_LOG
             log->error("Checking for {}",assetDir);
+            #endif
             if (!Directory(assetDir).exists())
             {
                 return false;
@@ -450,8 +506,10 @@ namespace Dream
     ProjectDirectory::openFromArgumentParser
     (ArgumentParser &parser)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Project: Loading from ArgumentParser" );
+        #endif
         File projectFileReader(parser.getProjectFilePath());
         return openFromFileReader(parser.getProjectPath(), projectFileReader);
     }

@@ -12,7 +12,9 @@ namespace Dream
         : AssetRuntime(def),
           mProjectRuntime(runtime)
     {
+        #ifdef DREAM_LOG
         setLogClassName("SharedAssetInstance");
+        #endif
     }
 
     SharedAssetRuntime::~SharedAssetRuntime()
@@ -26,7 +28,7 @@ namespace Dream
         auto pDir = mProjectRuntime
                 ->getProject()
                 ->getDirectory();
-        return pDir->getAssetAbsolutePath(dynamic_cast<AssetDefinition*>(mDefinition),fmt);
+        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
 
     }
 
@@ -36,7 +38,7 @@ namespace Dream
         auto pDir = mProjectRuntime
                 ->getProject()
                 ->getDirectory();
-        return pDir->getAssetDirectoryPath(dynamic_cast<AssetDefinition*>(mDefinition));
+        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
 
     }
 }

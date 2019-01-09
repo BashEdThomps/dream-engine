@@ -1,10 +1,4 @@
 /*
- * SceneObjectDefinition.cpp
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -29,9 +23,6 @@
 
 namespace Dream
 {
-
-
-
     SceneObjectDefinition::SceneObjectDefinition
     (
             SceneObjectDefinition* parent,
@@ -44,13 +35,17 @@ namespace Dream
           mSceneDefinition(sceneDefinition)
     {
 
+#ifdef DREAM_DEBUG
         setLogClassName("SceneObjectDefinition");
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
+#endif
         if (randomUuid)
         {
             mJson[Constants::UUID] = Uuid::generateUuid();
+#ifdef DREAM_DEBUG
             log->trace( "With new UUID",getNameAndUuidString());
+#endif
         }
         mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
     }
@@ -58,8 +53,10 @@ namespace Dream
     SceneObjectDefinition::~SceneObjectDefinition
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
+#endif
         deleteChildSceneObjectDefinitions();
     }
 
@@ -68,13 +65,6 @@ namespace Dream
     ()
     const
     {
-        /*
-        if (mJson[Constants::SCENE_OBJECT_CHILDREN].is_null())
-        {
-            return 0;
-        }
-        return mJson[Constants::SCENE_OBJECT_CHILDREN].size();
-        */
         return mChildDefinitions.size();
     }
 
@@ -133,7 +123,9 @@ namespace Dream
         }
     }
 
-    void SceneObjectDefinition::deleteChildSceneObjectDefinitions()
+    void
+    SceneObjectDefinition::deleteChildSceneObjectDefinitions
+    ()
     {
        for (auto child : mChildDefinitions)
        {
@@ -168,19 +160,23 @@ namespace Dream
     SceneObjectDefinition::removeChildDefinition
     (SceneObjectDefinition* child, bool andDelete)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         auto iter = begin(mChildDefinitions);
         auto endPos = end(mChildDefinitions);
         while (iter != endPos)
         {
             if ((*iter) == child)
             {
+#ifdef DREAM_DEBUG
                 log->debug
                 (
                     "Found child to {} remove from {}",
                     child->getNameAndUuidString(),
                     getNameAndUuidString()
                 );
+#endif
                 if (andDelete)
                 {
                     delete (*iter);
@@ -200,14 +196,18 @@ namespace Dream
     SceneObjectDefinition::createNewChildDefinition
     (json* fromJson)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug("Creating new child scene object");
+#endif
 
         json defJson;
 
         if (fromJson == nullptr)
         {
+#ifdef DREAM_DEBUG
             log->debug("from scratch");
+#endif
             defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
 
             Transform transform;
@@ -215,7 +215,9 @@ namespace Dream
         }
         else
         {
+#ifdef DREAM_DEBUG
             log->debug("from template copy");
+#endif
             defJson = json::parse(fromJson->dump());
         }
 
@@ -307,11 +309,15 @@ namespace Dream
     SceneObjectDefinition*
     SceneObjectDefinition::duplicate()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         // Nothing to assign duplicate to
         if (mParentSceneObject == nullptr)
         {
+#ifdef DREAM_DEBUG
             log->error("Cannot Duplicate. No parent to assign duplicate to");
+#endif
             return nullptr;
         }
 
@@ -367,7 +373,9 @@ namespace Dream
         setAssetDefinition(type,asset->getUuid());
     }
 
-    void SceneObjectDefinition::setAssetDefinition(AssetType type, string uuid)
+    void
+    SceneObjectDefinition::setAssetDefinition
+    (AssetType type, string uuid)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
@@ -399,9 +407,11 @@ namespace Dream
     SceneObjectDefinition::getAssetDefinition
     (AssetType type)
     {
-        auto log = getLog();
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->trace("Getting definition {} of in {}",typeStr, getNameAndUuidString());
+#endif
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
             mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
         {
@@ -409,10 +419,14 @@ namespace Dream
         }
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
         {
+#ifdef DREAM_LOG
             log->trace("No Instance");
+#endif
             return "";
         }
+#ifdef DREAM_LOG
         log->trace("Found Instance");
+#endif
         return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
     }
 

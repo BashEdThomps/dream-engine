@@ -82,10 +82,12 @@ namespace Dream
          */
         void updateFrameTime();
 
+        #ifdef DREAM_LOG
         /**
          * @brief Print Debug information about the Time object's state.
          */
         void show();
+        #endif
 
         /**
          * @return Get the time at the point of function call. Different from

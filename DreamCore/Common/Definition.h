@@ -1,10 +1,4 @@
 /*
- * Definition.h
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -41,52 +35,109 @@ namespace Dream
          * @brief Internal JSON structure that defines the object.
          */
         json mJson;
+
     public:
         /**
          * @brief Default constructor.
          * @param data Set the internal mJson variable to this data.
          */
-        Definition(json data);
-        virtual ~Definition();
+        inline Definition
+        (json data) : DreamObject("Definition"), mJson(data) {}
+
+        virtual inline ~Definition() {}
 
         /**
          * @brief Get the current json object describing this object
          * @return JSON data object.
          */
-        virtual json getJson();
+        virtual inline json
+        getJson
+        ()
+        {
+            return mJson;
+        }
 
         /**
          * @param name Name to compare.
          * @return True if this Definition has the given name.
          */
-        bool hasName(const string& name);
+        inline bool
+        hasName
+        (const string& uuid)
+        {
+            string s = mJson[Constants::NAME];
+            return s.compare(uuid) == 0;
+        }
+
         /**
          * @return The Definition's name.
          */
-        string getName();
+        inline string
+        getName
+        ()
+        {
+            if (mJson[Constants::NAME].is_null())
+            {
+                mJson[Constants::NAME] = "";
+            }
+            return mJson[Constants::NAME];
+        }
+
         /**
          * @param name The name to give the Definition.
          */
-        void setName(const string& name);
+        inline void
+        setName
+        (const string& name)
+        {
+            mJson[Constants::NAME] = name;
+        }
 
         /**
          * @param uuid uuid to compare.
          * @return True if this Definition has the give uuid.
          */
-        bool hasUuid(const string& uuid);
+        inline bool
+        hasUuid
+        (const string& uuid)
+        {
+            string s = mJson[Constants::UUID];
+            return s.compare(uuid) == 0;
+        }
+
         /**
          * @return The Definition's uuid.
          */
-        string getUuid();
+        inline string
+        getUuid
+        ()
+        {
+            if (mJson[Constants::UUID].is_null())
+            {
+                mJson[Constants::UUID] = "";
+            }
+            return mJson[Constants::UUID];
+        }
+
         /**
          * @param uuid Uuid to give the Definition;
          */
-        void setUuid(const string& uuid);
+        inline void
+        setUuid
+        (const string& uuid)
+        {
+            mJson[Constants::UUID] = uuid;
+        }
 
         /**
          * @return A combined name and uuid string in the following format:
          * "[ NAME : UUID ]"
          */
-        string getNameAndUuidString();
+        inline string
+        getNameAndUuidString
+        ()
+        {
+            return "[" + getName() + " : " + getUuid() + "]";
+        }
     };
 }

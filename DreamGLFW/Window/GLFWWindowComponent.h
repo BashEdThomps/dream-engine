@@ -48,6 +48,12 @@ namespace DreamGLFW
         static float MouseWheelH;
         static bool KeysDown[512];
 
+        static float LastTime;
+        static float CurrentTime;
+        static int Frames;
+
+        static int FPS();
+
     private:
         bool initGLFW();
         bool initGL();

@@ -28,7 +28,9 @@ namespace DreamTool
     ProjectBrowser::~ProjectBrowser
     ()
     {
+#ifdef DREAM_LOG
         setLogClassName("ProjectBrowser");
+#endif
     }
 
     void
@@ -49,7 +51,10 @@ namespace DreamTool
     ProjectBrowser::drawProjectTree
     ()
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         // Project Tree
         auto projDef = mState->project->getDefinition();
         ImGui::Text("Scenegraph");
@@ -67,7 +72,10 @@ namespace DreamTool
 
         if (ImGui::IsItemClicked())
         {
+
+#ifdef DREAM_LOG
             log->trace("Project clicked {}", projDef->getName());
+#endif
             mState->propertiesWindow.pushPropertyTarget
             (
                 Project,
@@ -86,7 +94,9 @@ namespace DreamTool
 
                 if (ImGui::IsItemClicked())
                 {
+#ifdef DREAM_LOG
                     log->trace("Scene Clicked {}", sDef->getName());
+#endif
                     auto pRunt = mState->project->getRuntime();
                     SceneRuntime* sRunt = nullptr;
 
@@ -99,7 +109,9 @@ namespace DreamTool
                     {
                         if (sRunt->getUuid().compare(sDef->getUuid()) != 0)
                         {
+#ifdef DREAM_LOG
                             log->trace("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
+#endif
                             sRunt = nullptr;
                         }
                     }
@@ -124,7 +136,9 @@ namespace DreamTool
     (SceneObjectDefinition* def)
     {
         int treeId = 0;
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
 
         if (def != nullptr)
         {
@@ -241,7 +255,9 @@ namespace DreamTool
                 {
                     mState->selectionHighlighter.setSelectedSceneObject(soRunt);
                 }
+#ifdef DREAM_LOG
                 log->trace("SceneObject Clicked {}",def->getName());
+#endif
                 mState->propertiesWindow.pushPropertyTarget(SceneObject, def, soRunt);
             }
 
@@ -263,12 +279,14 @@ namespace DreamTool
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::SCENE_OBJECT.c_str()))
                 {
                     IM_ASSERT(payload->DataSize == sizeof(SceneObjectDragSource*));
+#ifdef DREAM_LOG
                     log->trace
                     (
                         "Definition {} was dropped onto {}",
                         mDragDropSource.objectDef->getNameAndUuidString(),
                         def->getNameAndUuidString()
                     );
+#endif
 
                     mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef,false);
                     def->adoptChildDefinition(mDragDropSource.objectDef);
@@ -315,7 +333,9 @@ namespace DreamTool
     ProjectBrowser::drawAssetTree
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto projDef = mState->project->getDefinition();
         ImGui::Text("Assets");
         ImGui::Separator();
@@ -386,7 +406,9 @@ namespace DreamTool
                                 {
                                     if (ImGui::IsItemClicked())
                                     {
+#ifdef DREAM_LOG
                                         log->error("Asset Definition Clicked {}", asset->getName());
+#endif
                                         mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
                                     }
                                     ImGui::TreePop();

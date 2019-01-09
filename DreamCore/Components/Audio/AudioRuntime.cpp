@@ -36,7 +36,9 @@ namespace Dream
           mChannels(-1),
           mDurationInSamples(-1)
     {
+#ifdef DREAM_DEBUG
         setLogClassName("AudioInstance");
+#endif
         setLooping(false);
         setBuffer(0);
         setSource(0);
@@ -123,8 +125,10 @@ namespace Dream
     AudioRuntime::play
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug(  "Playing source {}" , mSource);
+#endif
         alSourcePlay(mSource);
     }
 
@@ -132,8 +136,10 @@ namespace Dream
     AudioRuntime::stop
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug(  "Stopping source {}" , mSource);
+#endif
         alSourceStop(mSource);
     }
 
@@ -141,8 +147,10 @@ namespace Dream
     AudioRuntime::pause
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug(  "Pausing source {}" , mSource);
+#endif
         alSourcePause(mSource);
     }
 
@@ -168,7 +176,7 @@ namespace Dream
         // Events to :thinking:
 
         /*
-        auto ad = dynamic_cast<AudioDefinition*>(mDefinition);
+        auto ad = static_cast<AudioDefinition*>(mDefinition);
         auto nMarkers = ad->countMarkers();
 
         if (nMarkers == 0)
@@ -283,8 +291,6 @@ namespace Dream
     AudioRuntime::getState
     ()
     {
-        auto log = getLog();
-
         int state;
         alGetSourcei(mSource, AL_SOURCE_STATE, &state);
         switch (state)
@@ -296,7 +302,9 @@ namespace Dream
             case AL_PAUSED:
                 return PAUSED;
             default:
-                log->error("Unknown Audio State for {} " , getNameAndUuidString());
+#if DREAM_LOG
+                getLog()->error("Unknown Audio State for {} " , getNameAndUuidString());
+#endif
                 return UNKNOWN;
         }
     }
@@ -317,7 +325,7 @@ namespace Dream
     AudioRuntime::getDurationInSamples
     ()
     {
-        if (mDurationInSamples < 0)
+        if (mDurationInSamples < 0 && mBuffer != 0)
         {
             ALint sizeInBytes;
             ALint channels;
@@ -381,8 +389,10 @@ namespace Dream
     AudioRuntime::loadIntoAL
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->error("Loading Into AL {}",getNameAndUuidString());
+#endif
 
         if (mSource == 0 && mBuffer == 0)
         {
@@ -391,7 +401,9 @@ namespace Dream
 
             if (mAudioDataBuffer.empty())
             {
+#ifdef DREAM_LOG
                 log->error("Unable to load audio data: Empty Buffer");
+#endif
                 return false;
             }
 
@@ -402,11 +414,15 @@ namespace Dream
         }
         else
         {
+#ifdef DREAM_LOG
             log->error("Unable to load audio, source or buffer is empty");
+#endif
             return false;
         }
 
+#ifdef DREAM_LOG
         log->debug("Pushed audio asset to play queue");
+#endif
         return true;
     }
 } // End of Dream

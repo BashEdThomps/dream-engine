@@ -31,14 +31,18 @@ namespace Dream
         : Component()
 
     {
+#ifdef DREAM_LOG
         setLogClassName("PathComponent");
+#endif
     }
 
 
     PathComponent::~PathComponent
     ()
     {
+#ifdef DREAM_LOG
         getLog()->debug("Destroying Object");
+#endif
     }
 
 
@@ -46,7 +50,9 @@ namespace Dream
     PathComponent::init
     ()
     {
+#ifdef DREAM_LOG
         getLog()->debug("Initialisation Done");
+#endif
         return true;
     }
 
@@ -55,10 +61,12 @@ namespace Dream
     PathComponent::updateComponent
     (SceneRuntime* sr)
     {
-        auto log = getLog();
         if (!mEnabled)
         {
+#ifdef DREAM_LOG
+            auto log = getLog();
             log->warn("Update Disabled");
+#endif
             return;
         }
 

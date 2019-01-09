@@ -21,23 +21,28 @@ namespace DreamTool
           mZColour(vec3(0.0f, 0.0f, 1.0f)),
           mOutlineOnly(true)
     {
+#ifdef DREAM_LOG
         setLogClassName("SelectionHighlighterWidget");
         getLog()->trace("Constructing");
+#endif
     }
 
     SelectionHighlighter::~SelectionHighlighter
     ()
     {
+#ifdef DREAM_LOG
         getLog()->trace("Destructing");
+#endif
     }
 
     void
     SelectionHighlighter::setSelectedSceneObject
     (SceneObjectRuntime* selected)
     {
-        auto log = getLog();
         mSelectedSceneObjectRuntime = selected;
-        log->error("SelectedSceneObject changed to {}",mSelectedSceneObjectRuntime->getNameAndUuidString());
+#ifdef DREAM_LOG
+        getLog()->error("SelectedSceneObject changed to {}",mSelectedSceneObjectRuntime->getNameAndUuidString());
+#endif
         updateGeometry();
     }
 
@@ -50,16 +55,20 @@ namespace DreamTool
     SelectionHighlighter::updateGeometry
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->error("Updating");
+#endif
         if (mSelectedSceneObjectRuntime == nullptr)
         {
             return;
         }
 
         BoundingBox bounds = mSelectedSceneObjectRuntime->getBoundingBox();
+#ifdef DREAM_LOG
         log->error("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
         log->error("Maximum Bounds {},{},{}",bounds.maximum.x ,bounds.maximum.y, bounds.maximum.z);
+#endif
 
         mVertexBuffer.clear();
         // Top Quad
@@ -196,19 +205,27 @@ namespace DreamTool
          // Buffer Data
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindVertexArray(0);
     }
 
     void SelectionHighlighter::draw()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         checkGLError();
+#endif
 
         if (!mSelectedSceneObjectRuntime)
         {
@@ -247,58 +264,78 @@ namespace DreamTool
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
+#ifdef DREAM_LOG
             checkGLError();
-
-            checkGLError();
+#endif
             if (mProjectionUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for projection");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             // Set the view matrix
+#ifdef DREAM_LOG
             checkGLError();
+#endif
             if (mViewUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for view");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             mModelMatrix = mSelectedSceneObjectRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {
+#ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for model");
+#endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+#ifdef DREAM_LOG
                 checkGLError();
+#endif
             }
 
             // Draw
             glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 
             // Revert State
 #ifndef __APPLE__

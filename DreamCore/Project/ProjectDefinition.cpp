@@ -36,17 +36,21 @@ namespace Dream
         : Definition(data)
 
     {
+        #ifdef DREAM_LOG
         setLogClassName("ProjectDefinition");
         auto log = getLog();
         log->trace("Constructing {}", getNameAndUuidString());
+        #endif
     }
 
 
     ProjectDefinition::~ProjectDefinition
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing {}", getNameAndUuidString());
+        #endif
         deleteSceneDefinitions();
         deleteAssetDefinitions();
     }
@@ -133,8 +137,10 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Loading AssetDefinitions from JSON");
+        #endif
 
         for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -147,8 +153,10 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Loading ScenesDefinitions from JSON");
+        #endif
 
         for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -161,7 +169,6 @@ namespace Dream
     ProjectDefinition::createAssetDefinitionInstance
     (json assetDefinitionJs)
     {
-        auto log = getLog();
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
         switch (type)
@@ -191,7 +198,10 @@ namespace Dream
             case TEXTURE:
                 return new TextureDefinition(this, assetDefinitionJs);
             case NONE:
+                #ifdef DREAM_LOG
+                auto log = getLog();
                 log->error("Unable to create Asset Definition. Unknown Type");
+                #endif
                 break;
         }
         return nullptr;
@@ -219,23 +229,27 @@ namespace Dream
     ProjectDefinition::removeAssetDefinition
     (AssetDefinition* assetDefinition)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug(
                     "Removing AssetDefinition {} from {}",
                     assetDefinition->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
+        #endif
         auto iter = begin(mAssetDefinitions);
         auto endPos = end(mAssetDefinitions);
         while (iter != endPos)
         {
             if ((*iter) == assetDefinition)
             {
+                #ifdef DREAM_LOG
                 log->debug(
                             "Found AssetDefinition to {} remove from {}",
                             assetDefinition->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
+                #endif
                 mAssetDefinitions.erase(iter);
                 return;
             }
@@ -338,12 +352,14 @@ namespace Dream
     ProjectDefinition::removeSceneDefinition
     (SceneDefinition* sceneDef)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug(
                     "Removing SceneDefinition {} from {}",
                     sceneDef->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
+        #endif
 
         auto iter = begin(mSceneDefinitions);
         auto endPos = end(mSceneDefinitions);
@@ -351,11 +367,13 @@ namespace Dream
         {
             if ((*iter) == sceneDef)
             {
+                #ifdef DREAM_LOG
                 log->debug(
                             "Found scene to {} remove from {}",
                             sceneDef->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
+                #endif
                 delete (*iter);
                 mSceneDefinitions.erase(iter);
                 return;
@@ -412,13 +430,13 @@ namespace Dream
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
-        auto log = getLog();
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
-        {
-            log->debug("Creating new AssetDefinition with default Format {}", defaultFormat);
-        }
+        #ifdef DREAM_LOG
+        auto log = getLog();
+        log->debug("Creating new AssetDefinition with default Format {}", defaultFormat);
+        #endif
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
@@ -434,9 +452,11 @@ namespace Dream
     ProjectDefinition::getStartupSceneDefinition
     ()
     {
-        auto log = getLog();
         string startupScene = getStartupSceneUuid();
+        #ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Finding startup scene {}", startupScene);
+        #endif
         return getSceneDefinitionByUuid(startupScene);
     }
 

@@ -26,16 +26,20 @@ namespace Dream
     (AudioDefinition* def, ProjectRuntime* project)
         : AudioRuntime(def,project)
     {
+#ifdef DREAM_LOG
         setLogClassName("OggAudioInstance");
+#endif
     }
 
     bool
     OggAudioRuntime::useDefinition
     ()
     {
-        auto log = getLog();
         auto absPath = getAssetFilePath();
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->debug("Loading Instance: {}", absPath);
+#endif
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -47,7 +51,9 @@ namespace Dream
         FILE *file = fopen(absPath.c_str(), "rb");
         if (file == nullptr)
         {
+#ifdef DREAM_LOG
             log->error("Cannot open {} for reading", absPath);
+#endif
             return false;
         }
 
@@ -55,7 +61,9 @@ namespace Dream
         OggVorbis_File oggFile;
         if (ov_open(file, &oggFile, nullptr, 0) != 0)
         {
+#ifdef DREAM_LOG
             log->error("Error opening {} for decoding");
+#endif
             return false;
         }
 
@@ -75,7 +83,7 @@ namespace Dream
             mFormat = AL_FORMAT_STEREO16;
         }
 
-        setLooping(dynamic_cast<AudioDefinition*>(mDefinition)->getLoop());
+        setLooping(static_cast<AudioDefinition*>(mDefinition)->getLoop());
 
         // The frequency of the sampling rate
         mFrequency = oggInfo->rate;
@@ -89,7 +97,9 @@ namespace Dream
             if (bytes < 0)
             {
                 ov_clear(&oggFile);
+#ifdef DREAM_LOG
                 log->error("Error decoding {}", absPath);
+#endif
                 return false;
             }
             // Append to end of buffer

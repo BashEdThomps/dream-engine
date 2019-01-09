@@ -6,6 +6,7 @@
 #include <direct.h>
 #else
 #include <dirent.h>
+#include <unistd.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,7 +34,6 @@ namespace Dream
     Directory::list
     (string regexStr)
     {
-        auto log=getLog();
         auto usingRegex = !regexStr.empty();
         vector<string> directoryContents;
         DIR *dir;
@@ -65,7 +65,9 @@ namespace Dream
         }
         else
         {
-            log->error( "Unable to open directory {}", mPath );
+#ifdef DREAM_LOG
+            getLog()->error( "Unable to open directory {}", mPath );
+#endif
             return directoryContents;
         }
         return directoryContents;
@@ -75,7 +77,6 @@ namespace Dream
     Directory::listSubdirectories
     (string regexStr)
     {
-        auto log=getLog();
         auto usingRegex = !regexStr.empty();
         vector<string> directoryContents;
         DIR *dir;
@@ -115,7 +116,9 @@ namespace Dream
         }
         else
         {
-            log->error( "Unable to open directory {}", mPath );
+#ifdef DREAM_LOG
+            getLog()->error( "Unable to open directory {}", mPath );
+#endif
             return directoryContents;
         }
         return directoryContents;
@@ -172,8 +175,10 @@ namespace Dream
 
     bool Directory::deleteDirectory()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Deleting directory {}",mPath);
+#endif
         auto files = list();
         for (auto file : files)
         {
@@ -197,7 +202,9 @@ namespace Dream
         }
         if (rmdir(mPath.c_str()) != 0)
         {
+#ifdef DREAM_LOG
             log->error("Unable to delete directory {}",mPath);
+#endif
             return false;
         }
         return true;
@@ -214,19 +221,20 @@ namespace Dream
 
     bool Directory::isDirectory()
     {
-        auto log = getLog();
         bool result = false;
         struct stat sb;
         if (stat(mPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
         {
             result = true;
         }
-        log->error
+#ifdef DREAM_LOG
+        getLog()->error
         (
            "{} Directory {}",
            result? "Is a" : "Not a",
            mPath
         );
+#endif
         return result;
     }
 }

@@ -37,16 +37,20 @@ namespace Dream
     ()
         : Component()
     {
+#ifdef DREAM_DEBUG
         setLogClassName("AudioComponent");
         auto log = getLog();
         log->trace("Constructing");
+#endif
     }
 
     AudioComponent::~AudioComponent
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace("Destructing");
+#endif
 
         alcMakeContextCurrent(nullptr);
 
@@ -67,8 +71,10 @@ namespace Dream
     AudioComponent::init
     ()
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->debug("Initialising...");
+#endif
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
@@ -98,11 +104,13 @@ namespace Dream
     AudioComponent::updateComponent
     (SceneRuntime*)
     {
-        auto log = getLog();
 
         if (!mEnabled)
         {
+#ifdef DREAM_DEBUG
+            auto log = getLog();
             log->warn("Update Disabled");
+#endif
             return;
         }
 

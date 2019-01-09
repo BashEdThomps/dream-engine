@@ -11,7 +11,9 @@ namespace DreamTool
     (DTState* state, bool visible)
         : ImGuiWidget (state,visible)
     {
+#ifdef DREAM_LOG
         setLogClassName("GamepadStateWindow");
+#endif
     }
 
     GamepadStateWindow::~GamepadStateWindow

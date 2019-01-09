@@ -30,14 +30,18 @@ namespace Dream
         : Component()
 
     {
+#ifdef DREAM_DEBUG
         setLogClassName("AnimationComponent");
+#endif
     }
 
 
     AnimationComponent::~AnimationComponent
     ()
     {
+#ifdef DREAM_DEBUG
         getLog()->debug("Destroying Object");
+#endif
     }
 
 
@@ -45,7 +49,9 @@ namespace Dream
     AnimationComponent::init
     ()
     {
+#ifdef DREAM_DEBUG
         getLog()->debug("Initialisation Done");
+#endif
         return true;
     }
 
@@ -54,10 +60,15 @@ namespace Dream
     AnimationComponent::updateComponent
     (SceneRuntime* sr)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         if (!mEnabled)
         {
+
+#ifdef DREAM_DEBUG
             log->warn("Update Disabled");
+#endif
             return;
         }
 

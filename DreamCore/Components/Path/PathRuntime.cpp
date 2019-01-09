@@ -36,17 +36,21 @@ namespace Dream
           mCurrentIndex(0),
           mUStep(0.05)
     {
+#ifdef DREAM_LOG
         setLogClassName("PathInstance");
         auto log = getLog();
         log->trace("Constructing Object");
+#endif
 
     }
 
     PathRuntime::~PathRuntime
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destroying Object");
+#endif
     }
 
     void PathRuntime::recalculate
@@ -59,7 +63,8 @@ namespace Dream
     PathRuntime::useDefinition
     ()
     {
-        auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
+        auto animDef = static_cast<PathDefinition*>(mDefinition);
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug(
             "Loading {} spline with {} control points for {} ",
@@ -67,10 +72,13 @@ namespace Dream
             animDef->numberOfControlPoints(),
             getNameAndUuidString()
         );
+#endif
 
         if (animDef->numberOfControlPoints() < 2)
         {
+#ifdef DREAM_LOG
             log->warn("Skipping curve, not enough control points");
+#endif
             mLoaded = true;
             return true;
         }
@@ -81,10 +89,12 @@ namespace Dream
         {
             generate();
         }
+#ifdef DREAM_LOG
         else
         {
             log->error("Not enough control points to generate spline");
         }
+#endif
 
         mLoaded = true;
         return mLoaded;
@@ -95,8 +105,10 @@ namespace Dream
     PathRuntime::generate
     ()
     {
-        auto animDef = dynamic_cast<PathDefinition*>(mDefinition);
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
+        auto animDef = static_cast<PathDefinition*>(mDefinition);
         auto splineType = animDef->getSplineTypeEnum();
 
         tsBSpline spline, derivative;
@@ -153,8 +165,10 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
+#ifdef DREAM_LOG
                 log->debug("Generating with u={}",u);
                 log->debug("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
+#endif
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
                 {
@@ -190,7 +204,9 @@ namespace Dream
 
         }
 
+#ifdef DREAM_LOG
         log->debug("Finished Loading spline for {}",getNameAndUuidString());
+#endif
     }
 
     vector<pair<vec3, vec3> > PathRuntime::getSplineDerivatives() const
@@ -220,7 +236,6 @@ namespace Dream
 
     Transform PathRuntime::stepPath()
     {
-        auto log = getLog();
         Transform retval;
 
         if (mSplinePoints.empty())
@@ -250,11 +265,14 @@ namespace Dream
         auto rot = mat4_cast(thisOrient);
         retval.setMatrix(mat*rot);
         vec3 ang = eulerAngles(thisOrient);
+#ifdef DREAM_LOG
+        auto log = getLog();
         log->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),
             thisPoint.x, thisPoint.y, thisPoint.z,
             ang.x, ang.y, ang.z
         );
+#endif
         return retval;
 
     }
@@ -290,7 +308,6 @@ namespace Dream
 
     quat PathRuntime::getHeading(vec3 point, vec3 t1, vec3 t2)
     {
-        auto log = getLog();
         glm::mat4 mtx = glm::lookAt(t1,t2,vec3(0,1,0));
         quat q = quat(mtx);
         q.x = -q.x;

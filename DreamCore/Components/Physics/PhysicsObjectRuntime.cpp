@@ -45,37 +45,40 @@ namespace Dream
          mPhysicsComponent(comp),
          mModelCache(modelCache)
     {
+        #ifdef DREAM_LOG
         setLogClassName("PhysicsObjectInstance");
         auto log = getLog();
         log->trace( "Constructing" );
+        #endif
         return;
     }
 
     PhysicsObjectRuntime::~PhysicsObjectRuntime
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destroying" );
+        #endif
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
         if (mRigidBody != nullptr)
         {
-            //delete mRigidBody;
+            delete mRigidBody;
             mRigidBody = nullptr;
         }
 
         if (mMotionState != nullptr)
         {
-            //delete mMotionState;
+            delete mMotionState;
             mMotionState = nullptr;
         }
 
         if (mCollisionShape != nullptr)
         {
-            //delete mCollisionShape;
+            delete mCollisionShape;
             mCollisionShape = nullptr;
-
         }
 
         if (mRigidBodyConstructionInfo != nullptr)
@@ -92,16 +95,21 @@ namespace Dream
         return mCollisionShape;
     }
 
+    // This has a leak when reusing Physics Object Shapes
     bool
     PhysicsObjectRuntime::useDefinition
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
-        auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
+        #endif
+        auto pod = static_cast<PhysicsObjectDefinition*>(mDefinition);
         mCollisionShape = createCollisionShape(pod);
         if (!mCollisionShape)
         {
+            #ifdef DREAM_LOG
             log->error( "Unable to create collision shape" );
+            #endif
             return false;
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
@@ -146,7 +154,6 @@ namespace Dream
     PhysicsObjectRuntime::createCollisionShape
     (PhysicsObjectDefinition* pod)
     {
-        auto log = getLog();
         string format = pod->getFormat();
         btCollisionShape *collisionShape = nullptr;
 
@@ -200,13 +207,13 @@ namespace Dream
             if (sceneRt)
             {
                 auto modelUuid = pod->getCollisionModel();
-                auto pDef = dynamic_cast<ProjectDefinition*>(sceneRt->getProjectRuntime()->getDefinition());
+                auto pDef = static_cast<ProjectDefinition*>(sceneRt->getProjectRuntime()->getDefinition());
                 if (pDef)
                 {
                     auto modelDef = pDef->getAssetDefinitionByUuid(modelUuid);
                     if (modelDef)
                     {
-                        auto model = dynamic_cast<ModelRuntime*>(mModelCache->getInstance(modelDef));
+                        auto model = static_cast<ModelRuntime*>(mModelCache->getInstance(modelDef));
                         if (model)
                         {
                             collisionShape = createTriangleMeshShape(model);
@@ -404,8 +411,8 @@ namespace Dream
     (string uuid)
     {
         // TODO why from def?
-        auto proj = dynamic_cast<AssetDefinition*>(mDefinition)->getProject();
-        return dynamic_cast<PhysicsObjectDefinition*>(proj->getAssetDefinitionByUuid(uuid));
+        auto proj = static_cast<AssetDefinition*>(mDefinition)->getProject();
+        return static_cast<PhysicsObjectDefinition*>(proj->getAssetDefinitionByUuid(uuid));
     }
 
     void

@@ -30,8 +30,10 @@ namespace Dream
     PhysicsDebugDrawer::PhysicsDebugDrawer
     () : DreamObject ("PhysicsDebugDrawer")
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Constructing Object" );
+        #endif
 
         mDebugMode = DBG_DrawAabb;
         mShaderProgram = 0;
@@ -40,8 +42,10 @@ namespace Dream
     PhysicsDebugDrawer::~PhysicsDebugDrawer
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Destroying Object" );
+        #endif
     }
 
     void
@@ -83,7 +87,9 @@ namespace Dream
     PhysicsDebugDrawer::initShader
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
+        #endif
         string mVertexShaderSource;
         string mFragmentShaderSource;
         GLuint mVertexShader = 0;
@@ -130,7 +136,10 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
+
+            #ifdef DREAM_LOG
             log->error("SHADER:VERTEX:COMPILATION_FAILED\n{}" , infoLog );
+            #endif
         }
 
         // Fragment Shader
@@ -144,7 +153,9 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
+            #ifdef DREAM_LOG
             log->error( "SHADER:FRAGMENT:COMPILATION_FAILED\n {}" , infoLog );
+            #endif
         }
 
         // Shader Program
@@ -158,7 +169,9 @@ namespace Dream
         if (!success)
         {
             glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
+            #ifdef DREAM_LOG
             log->error ("SHADER:PROGRAM:LINKING_FAILED\n {}" , infoLog );
+            #endif
         }
 
         // Delete the shaders as they're linked into our program now and no longer necessery
@@ -215,6 +228,7 @@ namespace Dream
     PhysicsDebugDrawer::drawLine
     (const btVector3& from,const btVector3& to,const btVector3& color)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace(
             "Queuing line from {} to {} with colour {}" ,
@@ -222,6 +236,7 @@ namespace Dream
             btVecToString(to),
             btVecToString(color)
         );
+        #endif
         drawLine(from,to,color,color);
     }
 
@@ -238,16 +253,20 @@ namespace Dream
     PhysicsDebugDrawer::drawSphere
     (const btVector3& p, btScalar radius, const btVector3& color)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Draw Sphere is not implemented" );
+        #endif
     }
 
     void
     PhysicsDebugDrawer::drawTriangle
     (const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Draw Triangle is not implemented" );
+        #endif
     }
 
     void
@@ -261,33 +280,41 @@ namespace Dream
     PhysicsDebugDrawer::draw3dText
     (const btVector3& location,const char* textString)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Draw 3DText is not implemented" );
+        #endif
     }
 
     void
     PhysicsDebugDrawer::reportErrorWarning
     (const char* warningString)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( warningString );
+        #endif
     }
 
     void
     PhysicsDebugDrawer::drawContactPoint
     (const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Draw Contact Point is not implemented" );
+        #endif
     }
 
     void
     PhysicsDebugDrawer::drawAll
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
-        preRender();
         log->debug( "Drawing {} lines" , mVertexBuffer.size()/2 );
+        #endif
+        preRender();
 
         // Enable shader program
         glUseProgram(mShaderProgram);
@@ -299,8 +326,10 @@ namespace Dream
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
         if (projUniform == -1)
         {
+            #ifdef DREAM_LOG
             log->error( "Unable to find Uniform Location for projection" );
             checkGLError();
+            #endif
             return;
         }
         else
@@ -313,8 +342,10 @@ namespace Dream
         GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
         if (viewUniform == -1)
         {
+            #ifdef DREAM_LOG
             log->error( "Unable to find Uniform Location for view" );
             checkGLError();
+            #endif
             return;
         }
         else
@@ -341,7 +372,10 @@ namespace Dream
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_DEPTH_TEST);
+
+        #ifdef DREAM_LOG
         checkGLError();
+        #endif
     }
 
     void
@@ -351,6 +385,8 @@ namespace Dream
         glDisable (GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_DEPTH_TEST);
+        #ifdef DREAM_LOG
         checkGLError();
+        #endif
     }
 } // End of Dream

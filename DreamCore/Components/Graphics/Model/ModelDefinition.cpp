@@ -25,8 +25,10 @@ namespace Dream
     (ProjectDefinition* pd, json js)
         : AssetDefinition(pd,js)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing {}", getNameAndUuidString());
+#endif
     }
 
     ModelDefinition::~ModelDefinition()
@@ -81,7 +83,10 @@ namespace Dream
     ModelDefinition::removeModelMaterial
     (string material)
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {
@@ -91,12 +96,16 @@ namespace Dream
                 string materialNameStr = materialName;
                 if (material.compare(materialNameStr) == 0)
                 {
+#ifdef DREAM_LOG
                     log->debug("Removing material form {} shader map {}",getName(),material);
+#endif
                     shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }
         }
+#ifdef DREAM_LOG
         log->error("Could not remove {} from {} shader map, object not found",getName(), material);
+#endif
     }
 
     void

@@ -48,13 +48,17 @@ namespace Dream
           mWindowComponent(nullptr),
           mDirectory(dir)
     {
+        #ifdef DREAM_LOG
         getLog()->trace("Constructing");
+        #endif
     }
 
     Project::~Project
     ()
     {
+        #ifdef DREAM_LOG
         getLog()->trace("Destructing");
+        #endif
 
         if (mRuntime != nullptr)
         {
@@ -73,12 +77,16 @@ namespace Dream
     Project::createProjectRuntime
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Creating project runtime for {}", mDefinition->getNameAndUuidString());
+        #endif
         mRuntime = new ProjectRuntime(this, mWindowComponent);
         if (!mRuntime->useDefinition())
         {
+            #ifdef DREAM_LOG
             log->critical("Failed to create project runtime");
+            #endif
             delete mRuntime;
             mRuntime = nullptr;
         }
@@ -96,8 +104,10 @@ namespace Dream
 
     void Project::resetProjectRuntime()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Resetting project runtime");
+        #endif
         delete mRuntime;
         mRuntime = nullptr;
     }

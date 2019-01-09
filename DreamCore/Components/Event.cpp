@@ -29,15 +29,19 @@ namespace Dream
     ) : DreamObject("Event"),
         mSender(sender)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Creating");
+#endif
         mData[Constants::EVENT_TYPE] = type;
     }
 
     Event::~Event()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destroying");
+#endif
     }
 
     SceneObjectRuntime*

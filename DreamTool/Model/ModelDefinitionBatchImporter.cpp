@@ -116,7 +116,9 @@ namespace DreamTool
     ModelDefinitionBatchImporter::findModels
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         mModelsFound.clear();
         if(mDirectory.exists())
         {
@@ -127,7 +129,9 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
+#ifdef DREAM_LOG
                    log->error("Found Valid Model {}", justName);
+#endif
                    mModelsFound.push_back(justName);
                 }
             }
@@ -156,19 +160,27 @@ namespace DreamTool
     ModelDefinitionBatchImporter::import
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         auto projDef = mState->project->getDefinition();
         if (!projDef)
         {
+#ifdef DREAM_LOG
             log->error("Import failed. No Project Definition");
+#endif
             return;
         }
+#ifdef DREAM_LOG
         log->error("Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
+#endif
         clearImportResults();
 
         if (!mModelsToImport)
         {
+#ifdef DREAM_LOG
             log->error("Model Parameters are not set");
+#endif
             return;
         }
 
@@ -191,7 +203,9 @@ namespace DreamTool
                    modelDef = existing;
                    if (!mReplaceExisting)
                    {
+#ifdef DREAM_LOG
                        log->error("Not set to replace models");
+#endif
                        mImportResults.push_back(ModelDefinitionBatchImportResult{modelDef,ModelImportResult::SKIPPED});
                        continue;
                    }
@@ -209,7 +223,9 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
+#ifdef DREAM_LOG
                     log->error("Copying asset data for {}", modelDef->getNameAndUuidString());
+#endif
                     mState->projectDirectory.writeAssetData(modelDef,objFile.readBinary());
                     mState->projectDirectory.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
                 }

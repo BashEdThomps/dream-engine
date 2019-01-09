@@ -25,8 +25,9 @@ namespace Dream
           mCount(count),
           mNeedsUpdate(true)
     {
-        auto log = getLog();
-        log->debug("Constructing uniform {}, count {}",mName,count);
+#ifdef DREAM_LOG
+        getLog()->debug("Constructing uniform {}, count {}",mName,count);
+#endif
         switch (type)
         {
             case Dream::INT1:
@@ -84,8 +85,10 @@ namespace Dream
 
     ShaderUniform::~ShaderUniform()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing {} {}", mName, mCount);
+#endif
         switch (mType)
         {
             case Dream::INT1:
@@ -226,23 +229,31 @@ namespace Dream
         }
     }
 
-    string ShaderUniform::getName() const
+    string
+    ShaderUniform::getName
+    () const
     {
         return mName;
     }
 
-    void ShaderUniform::setName(const string& name)
+    void
+    ShaderUniform::setName
+    (const string& name)
     {
         mName = name;
         setNeedsUpdate(true);
     }
 
-    UniformType ShaderUniform::getType() const
+    UniformType
+    ShaderUniform::getType
+    () const
     {
         return mType;
     }
 
-    void ShaderUniform::setType(const UniformType& type)
+    void
+    ShaderUniform::setType
+    (const UniformType& type)
     {
         mType = type;
         setNeedsUpdate(true);

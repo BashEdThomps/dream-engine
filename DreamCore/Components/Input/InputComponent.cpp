@@ -27,24 +27,30 @@ namespace Dream
           mUseJoystick(useJoystick),
           mJoystickMapping(JsPsxMapping)
     {
+#ifdef DREAM_LOG
         setLogClassName("InputComponent");
         auto log = getLog();
         log->trace("Constructing");
+#endif
     }
 
     InputComponent::~InputComponent
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing");
+#endif
     }
 
     bool
     InputComponent::init
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Initialising...");
+#endif
         return true;
     }
 
@@ -52,10 +58,11 @@ namespace Dream
     InputComponent::updateComponent
     (SceneRuntime* sRunt)
     {
-        auto log = getLog();
         if (!mEnabled)
         {
-            log->warn("Update Disabled");
+#ifdef DREAM_LOG
+            getLog()->warn("Update Disabled");
+#endif
             return;
         }
 

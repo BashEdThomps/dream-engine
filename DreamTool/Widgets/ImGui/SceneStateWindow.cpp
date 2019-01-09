@@ -12,7 +12,9 @@ namespace DreamTool
     (DTState* p)
         : ImGuiWidget(p,false)
     {
+#ifdef DREAM_LOG
         setLogClassName("SceneStateWindow");
+#endif
     }
 
     SceneStateWindow::~SceneStateWindow

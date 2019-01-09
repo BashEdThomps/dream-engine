@@ -17,6 +17,9 @@
 #include "ParticleEmitterRuntime.h"
 #include "ParticleEmitterDefinition.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/SceneRuntime.h"
+#include "../../../Project/ProjectRuntime.h"
+#include "../../Time.h"
 
 namespace Dream
 {
@@ -24,17 +27,37 @@ namespace Dream
     (
         ParticleEmitterDefinition* definition,
         SceneObjectRuntime* transform
-    ) : DiscreteAssetRuntime(definition,transform),
-        mColor(glm::vec3(0.0f,0.0f,0.0f)),
-        mIntensity(0.0f)
+    ) : DiscreteAssetRuntime(definition,transform)
     {
+#ifdef DREAM_LOG
         setLogClassName("ParticleEmitterInstance");
+        getLog()->trace("Constructing");
+#endif
+    }
+
+    void
+    ParticleEmitterRuntime::update
+    ()
+    {
+        // Update Velocity
+        auto time = mSceneObjectRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
+        for (Particle p : mParticles)
+        {
+            p.mVelocity.x += time->perSecond(p.mVelocity.x);
+            /*
+                update current velocity by velocity
+                increate lifetime
+                if lifetime > max life time then dead == true
+            */
+        }
     }
 
     ParticleEmitterRuntime::~ParticleEmitterRuntime
     ()
     {
-        getLog()->trace("Destroying Object" );
+#ifdef DREAM_LOG
+        getLog()->trace("Destroying");
+#endif
         return;
     }
 

@@ -15,6 +15,7 @@
 #include <string>
 
 #include "DreamObject.h"
+#include "Definition.h"
 
 using std::string;
 
@@ -44,29 +45,84 @@ namespace Dream
     public:
         /**
          * @brief Default Constructor
-         * @param definition Definition from which the Runtime was instanciated.
+         * @param def Definition from which the Runtime was instanciated.
          */
-        Runtime(Definition* definition);
+        Runtime
+        (Definition* def)
+            : DreamObject("Runtime"),
+              mDefinition(def),
+              mUuid(def->getUuid()),
+              mName(def->getName()) {}
+
         /**
          * @brief Default destructor.
          */
-        virtual ~Runtime();
+        virtual
+        ~Runtime
+        ()
+        {
+
+        }
 
         /**
          * @return The Runtime's UUID - same as it's Definition.
          */
-        string getUuid();
-        void setUuid(string uuid);
-        bool hasUuid(string uuid);
+        inline string
+        getUuid
+        ()
+        const
+        {
+            return mUuid;
+        }
+
+        inline void
+        setUuid
+        (const string& uuid)
+        {
+            mUuid = uuid;
+        }
+
+        inline bool
+        hasUuid
+        (string uuid)
+        const
+        {
+            return getUuid().compare(uuid) == 0;
+        }
 
         /**
          * @return The Runtime's Name - same as it's Definition.
          */
-        string getName();
-        void setName(string name);
-        bool hasName(string name);
+        inline string
+        getName
+        ()
+        const
+        {
+            return mName;
+        }
 
-        string getNameAndUuidString();
+        inline void
+        setName
+        (const string& name)
+        {
+            mName = name;
+        }
+
+        inline bool
+        hasName
+        (const string& name)
+        const
+        {
+            return getName().compare(name) == 0;
+        }
+
+        inline string
+        getNameAndUuidString
+        ()
+        const
+        {
+            return "[" + getName() + " : " + getUuid() + "]";
+        }
 
         /**
          * @brief Use information from the give Definition to create the Runtime
@@ -84,6 +140,11 @@ namespace Dream
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        Definition* getDefinition();
+        inline Definition*
+        getDefinition
+        ()
+        {
+            return mDefinition;
+        }
     };
 }

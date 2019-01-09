@@ -49,8 +49,10 @@ namespace Dream
     Camera::~Camera
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Destroying Object");
+#endif
         return;
     }
 
@@ -337,7 +339,7 @@ namespace Dream
     (Frustum::Plane plane, SceneObjectRuntime* sor, const vec3& tx)
     {
         auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
-        return  result == Frustum::TEST_OUTSIDE;
+        return result != Frustum::TEST_INSIDE;
     }
 
     bool

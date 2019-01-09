@@ -31,15 +31,19 @@ namespace Dream
           mDisplacementTexture(nullptr),
           mShader(nullptr)
     {
+#ifdef DREAM_LOG
         setLogClassName("MaterialRuntime");
         auto log = getLog();
         log->trace("Constructing");
+#endif
     }
 
     MaterialRuntime::~MaterialRuntime()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing");
+#endif
     }
 
     void
@@ -70,6 +74,7 @@ namespace Dream
         return getName().compare(other.getName()) == 0;
     }
 
+#ifdef DREAM_LOG
     void
     MaterialRuntime::debug
     ()
@@ -139,6 +144,7 @@ namespace Dream
             mesh->logInstances();
         }
     }
+#endif
 
     void
     MaterialRuntime::drawGeometryPass
@@ -164,7 +170,7 @@ namespace Dream
     MaterialRuntime::useDefinition
     ()
     {
-        auto matDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+        auto matDef = static_cast<MaterialDefinition*>(mDefinition);
         // Parameters
         mOpacity = matDef->getOpacity();
         mBumpScaling = matDef->getBumpScaling();

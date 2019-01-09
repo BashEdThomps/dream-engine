@@ -42,14 +42,17 @@ namespace Dream
     Time::updateFrameTime
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Time: Update Called" );
+        #endif
         mLastTime    = mCurrentTime;
         mCurrentTime = high_resolution_clock::now();
         mTimeDelta   = mCurrentTime-mLastTime;
         return;
     }
 
+    #ifdef DREAM_LOG
     void
     Time::show
     ()
@@ -66,6 +69,7 @@ namespace Dream
            getFrameTimeDelta()
         );
     }
+    #endif
 
     double
     Time::getCurrentFrameTime

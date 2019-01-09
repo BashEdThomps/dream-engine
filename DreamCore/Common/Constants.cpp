@@ -26,6 +26,7 @@ using namespace std;
 namespace Dream
 {
 
+#ifdef DREAM_LOG
     bool
     Constants::checkGLError_
     (string file, int line)
@@ -69,6 +70,7 @@ namespace Dream
         while(errorCode != 0);
         return wasError;
     }
+#endif
 
 
     // Misc =====================================================================
@@ -894,7 +896,9 @@ namespace Dream
         return "";
     }
 
+#ifdef DREAM_LOG
     shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
+#endif
 
     vector<string> Constants::DREAM_ANIMATION_SPLINE_TYPES
     {

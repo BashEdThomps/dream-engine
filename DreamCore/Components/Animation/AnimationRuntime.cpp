@@ -39,23 +39,28 @@ namespace Dream
         mLooping(false),
         mRunning(false)
     {
+#ifdef DREAM_DEBUG
         setLogClassName("AnimationRuntime");
         auto log = getLog();
         log->trace("Constructing Object");
+#endif
     }
 
     AnimationRuntime::~AnimationRuntime
     ()
     {
+
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace("Destroying Object");
+#endif
     }
 
     bool
     AnimationRuntime::useDefinition
     ()
     {
-        auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
+        auto animDef = static_cast<AnimationDefinition*>(mDefinition);
         mDuration = animDef->getDuration();
         mLooping = animDef->getLooping();
         mKeyframes = animDef->getKeyframes();
@@ -69,11 +74,17 @@ namespace Dream
     (double deltaTime)
     {
         // x1000 to get seconds to ms
+
+#ifdef DREAM_DEBUG
         auto log = getLog();
+#endif
         auto timeInMs = static_cast<unsigned int>((deltaTime*1000));
         if (mRunning)
         {
+
+#ifdef DREAM_DEBUG
             log->error("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
+#endif
             if (mLooping)
             {
                 mCurrentTime = (mCurrentTime + timeInMs) % mDuration;
@@ -261,8 +272,10 @@ namespace Dream
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
+#ifdef DREAM_DEBUG
         auto log = getLog();
         log->trace("Seeing to {}",pos);
+#endif
         vec3 newTx, newRx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
         newTx.y = mTweenTranslationY.seek(pos);

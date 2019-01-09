@@ -16,7 +16,9 @@ namespace DreamTool
         : ImGuiWidget (state),
           mShaderDefinition(nullptr)
     {
+#ifdef DREAM_LOG
         setLogClassName("ShaderEditorWidget");
+#endif
         mVertexEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
         mFragmentEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     }
@@ -35,7 +37,9 @@ namespace DreamTool
         {
 
             ImGui::Begin("Shader Editor",&mVisible);
+#ifdef DREAM_LOG
             auto log = getLog();
+#endif
             auto projRunt = mState->project->getRuntime();
             ShaderRuntime* shaderInst = nullptr;
             {
@@ -130,7 +134,9 @@ namespace DreamTool
                 {
                     if (currentTemplateIndex < 0)
                     {
+#ifdef DREAM_LOG
                         log->error("Cannot load template {}",currentTemplateIndex);
+#endif
                     }
                     else
                     {
@@ -144,7 +150,9 @@ namespace DreamTool
                         }
                         else
                         {
+#ifdef DREAM_LOG
                             log->error("Cannot set template, shader is null");
+#endif
                         }
                         currentTemplateIndex = -1;
                     }

@@ -18,17 +18,24 @@ int
 main
 (int argc,char** argv)
 {
+
+#ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
     auto log = spdlog::stdout_color_mt("Main");
     log->trace("Starting...");
+#endif
     DTState state(argc,argv);
     state.init();
 
+#ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::off);
+#endif
     state.run();
 
+#ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::trace);
     log->info("Run is done. Performing stack-based clean up");
+#endif
     return 0;
 }

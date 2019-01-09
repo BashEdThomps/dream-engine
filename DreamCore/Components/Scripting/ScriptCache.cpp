@@ -26,24 +26,27 @@ namespace Dream
     (ProjectRuntime* runtime)
         : Cache (runtime)
     {
+        #ifdef DREAM_LOG
         setLogClassName("ScriptCache");
         auto log = getLog();
         log->trace("Constructing");
-
+        #endif
     }
 
     ScriptCache::~ScriptCache
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing");
+        #endif
     }
 
     SharedAssetRuntime*
     ScriptCache::loadInstance
     (AssetDefinition* def)
     {
-        auto scriptDef = dynamic_cast<ScriptDefinition*>(def);
+        auto scriptDef = static_cast<ScriptDefinition*>(def);
         for (auto* inst: mInstances)
         {
             if (inst->getUuid().compare(scriptDef->getUuid()) == 0)

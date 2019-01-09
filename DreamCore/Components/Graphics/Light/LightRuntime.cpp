@@ -36,14 +36,18 @@ namespace Dream
         mType(LightType::LT_NONE)
 
     {
+#ifdef DREAM_LOG
         setLogClassName("LightInstance");
+#endif
     }
 
     LightRuntime::~LightRuntime
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Destroying Object" );
+#endif
     }
 
     vec3 LightRuntime::getAmbient() const
@@ -138,7 +142,7 @@ namespace Dream
 
     void LightRuntime::loadType()
     {
-        auto assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
+        auto assetDef = static_cast<AssetDefinition*>(mDefinition);
         if (assetDef->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
         {
             mType = LightType::LT_DIRECTIONAL;
@@ -202,8 +206,7 @@ namespace Dream
     LightRuntime::useDefinition
     ()
     {
-        auto log = getLog();
-        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
+        auto lightDef = static_cast<LightDefinition*>(mDefinition);
 
         mAmbient = lightDef->getAmbient();
         mDiffuse = lightDef->getDiffuse();

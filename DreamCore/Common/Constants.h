@@ -16,8 +16,11 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include "../deps/spdlog/spdlog.h"
-#include "../deps/spdlog/sinks/stdout_color_sinks.h"
+
+#ifdef DREAM_LOG
+    #include "../deps/spdlog/spdlog.h"
+    #include "../deps/spdlog/sinks/stdout_color_sinks.h"
+#endif
 
 using namespace std;
 
@@ -59,7 +62,9 @@ namespace Dream
          */
         static bool checkGLError_(string,int);
 
-#define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
+#ifdef DREAM_LOG
+    #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
+#endif
 
         // Misc =================================================================
         const static string DIR_PATH_SEP;
@@ -395,7 +400,9 @@ namespace Dream
         static string getAssetFormatStringFromReadableName(string format);
         static string getAssetFormatReadableNameFromString(string);
 
+#ifdef DREAM_LOG
         static shared_ptr<spdlog::logger> logger;
+#endif
     };
 }
 

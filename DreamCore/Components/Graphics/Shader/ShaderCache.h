@@ -1,10 +1,4 @@
 /*
- * ShaderCache.h
- *
- * Created: 16/12/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -36,7 +30,9 @@ namespace Dream
     public:
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
+#ifdef DREAM_LOG
         void logShaders();
+#endif
         void drawGeometryPass(Camera*);
         void drawShadowPass(mat4, ShaderRuntime*);
 

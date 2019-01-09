@@ -16,24 +16,47 @@
 
 #pragma once
 
+#include <deque>
 #include <glm/glm.hpp>
 
 #include "../../DiscreteAssetRuntime.h"
+#include "../../Transform.h"
 
 using namespace glm;
+using std::deque;
 
 namespace Dream
 {
+    struct Particle
+    {
+        vec3 mVelocity;
+        Transform mTransform;
+        float mLifetime;
+        float mElapsedTime;
+    };
+
     class ParticleEmitterDefinition;
     class ParticleEmitterRuntime : public DiscreteAssetRuntime
     {
-        vec3 mColor;
-        float mIntensity;
     public:
         ParticleEmitterRuntime(ParticleEmitterDefinition*, SceneObjectRuntime*);
         ~ParticleEmitterRuntime() override;
         bool useDefinition() override;
-        vec3 getColor();
-        float getIntensity();
+
+        Transform getTransform() const;
+        void setTransform(const Transform& transform);
+
+        float getLifetime() const;
+        void setLifetime(float lifetime);
+
+        float getElapsedTime() const;
+
+        void setElapsedTime(float elapsedTime);
+
+        bool isDead();
+        void update();
+    private:
+        deque<Particle> mParticles;
+
     };
 }

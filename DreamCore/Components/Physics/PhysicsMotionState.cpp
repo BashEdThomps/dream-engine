@@ -1,10 +1,4 @@
 /*
- * PhysicsMotionState.cpp
- *
- * Created: 25/12/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -35,23 +29,29 @@ namespace Dream
           DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Constructor called" );
+        #endif
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destroying Object" );
+        #endif
     }
 
     void
     PhysicsMotionState::setTransform
     (Transform& transform)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setTransform called" );
+        #endif
         mDreamTransform = transform;
     }
 
@@ -59,8 +59,6 @@ namespace Dream
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        auto log = getLog();
-        log->debug( "getWorldTransform called" );
         auto mtx = mDreamTransform.getMatrix();
         float mtxPtr[16];
         memcpy(mtxPtr,glm::value_ptr(mtx),sizeof(float)*16);
@@ -71,8 +69,11 @@ namespace Dream
     PhysicsMotionState::setWorldTransform
     (const btTransform &worldTrans)
     {
+
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setWorldTransform called" );
+        #endif
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
         mDreamTransform.setMatrix(glm::make_mat4(mtx));
@@ -82,8 +83,11 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
+
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setKinematicPos called" );
+        #endif
         setWorldTransform(trans);
     }
 } // End of Dream

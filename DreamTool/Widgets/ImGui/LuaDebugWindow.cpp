@@ -8,7 +8,9 @@ namespace DreamTool
         : ImGuiWidget(proj,false),
         LuaPrintListener()
     {
+#ifdef DREAM_LOG
         setLogClassName("LuaDebugWindow");
+#endif
     }
 
     LuaDebugWindow::~LuaDebugWindow
@@ -55,7 +57,7 @@ namespace DreamTool
 
     void
     LuaDebugWindow::onPrint
-    (string msg)
+    (const string& msg)
     {
         mLogBuffer.appendf("%s\n",msg.c_str());
     }

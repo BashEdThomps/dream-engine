@@ -31,12 +31,16 @@ namespace DreamTool
           argc(_argc),
           argv(_argv)
     {
+#ifdef DREAM_LOG
         getLog()->trace("Constructing");
+#endif
     }
 
     DTState::~DTState()
     {
+#ifdef DREAM_LOG
         getLog()->trace("Destructing");
+#endif
     }
 
     void DTState::init()
@@ -78,7 +82,9 @@ namespace DreamTool
 
     void DTState::run()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
+#endif
         if (argc > 1)
         {
             openProject(argv[1]);
@@ -320,8 +326,11 @@ namespace DreamTool
     (string dir)
     {
         closeProject();
+
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Opening project {}",dir);
+#endif
         lastDirectory = dir;
         project = projectDirectory.openFromDirectory(dir);
         if(project)
@@ -341,8 +350,10 @@ namespace DreamTool
     DTState::newProject
     (string dir)
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Creating Project {}",dir);
+#endif
         lastDirectory = dir;
         closeProject();
         project = projectDirectory.newProject(dir);

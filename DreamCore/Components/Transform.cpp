@@ -30,15 +30,19 @@ namespace Dream
         : DreamObject("Transform"),
           mMatrix(1.0f)
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing");
+        #endif
     }
 
     Transform::Transform(const Transform& other)
         :DreamObject ("Transform")
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing Copy");
+        #endif
         mMatrix = other.mMatrix;
     }
 
@@ -46,8 +50,10 @@ namespace Dream
     (mat4 mtx)
         : DreamObject("Transform")
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing from matrix");
+        #endif
         setMatrix(mtx);
     }
 
@@ -55,8 +61,10 @@ namespace Dream
     (json jsonTransform)
         : DreamObject("Transform")
     {
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing from json");
+        #endif
         if (!jsonTransform[Constants::TRANSFORM_MATRIX].is_null())
         {
             float mtxFloat[16] = {0.0f};

@@ -45,16 +45,22 @@ namespace DreamTool
           mMinorColour(minorColour)
 
     {
+
+#ifdef DREAM_LOG
         setLogClassName("Grid");
         auto log = getLog();
         log->debug("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
+#endif
     }
 
     Grid::~Grid
     ()
     {
+
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Destructing");
+#endif
     }
 
     void
@@ -69,8 +75,10 @@ namespace DreamTool
     Grid::initMajorGridData
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Init Major Data");
+#endif
         float halfSize = mSize/2.0f;
 
         // Major Grid
@@ -152,8 +160,10 @@ namespace DreamTool
     Grid::initMinorGridData
     ()
     {
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Init Minor Data");
+#endif
         float halfSize = (mSize/2.0f);
 
         // Major Grid
@@ -386,12 +396,18 @@ namespace DreamTool
         // Vertex Array
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
+#ifdef DREAM_LOG
         checkGLError();
+#endif
         glBindVertexArray(0);
     }
 }
