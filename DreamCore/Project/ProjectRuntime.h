@@ -135,17 +135,17 @@ namespace Dream
         void setScriptingEnabled(bool);
         bool hasActiveScene();
 
-        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
 
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, string uuid);
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, uint32_t uuid);
         SceneRuntime* getActiveSceneRuntime();
-        SceneRuntime* getSceneRuntimeByUuid(string uuid);
+        SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid);
 
         void addSceneRuntime(SceneRuntime*);
         void removeSceneRuntime(SceneRuntime*);
-        void setSceneRuntimeAsActive(string uuid);
+        void setSceneRuntimeAsActive(uint32_t uuid);
         vector<SceneRuntime*> getSceneRuntimeVector();
-        bool hasSceneRuntime(string uuid);
+        bool hasSceneRuntime(uint32_t uuid);
         bool hasLoadedScenes();
 
     private: // Member Functions

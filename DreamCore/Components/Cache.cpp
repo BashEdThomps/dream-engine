@@ -45,7 +45,7 @@ namespace Dream
 
     AssetDefinition*
     Cache::getAssetDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         return mProjectRuntime->getAssetDefinitionByUuid(uuid);
     }
@@ -60,7 +60,7 @@ namespace Dream
         }
        for (auto* instance : mInstances)
        {
-           if (instance->getUuid().compare(def->getUuid()) == 0)
+           if (instance->getUuid() == def->getUuid())
            {
                return instance;
            }
@@ -70,15 +70,15 @@ namespace Dream
 
     SharedAssetRuntime*
     Cache::getInstance
-    (string id)
+    (uint32_t id)
     {
-       if (id.empty())
+       if (id == 0)
        {
             return nullptr;
        }
        for (auto instance : mInstances)
        {
-           if (instance->getUuid().compare(id) == 0)
+           if (instance->getUuid() == id)
            {
                return instance;
            }

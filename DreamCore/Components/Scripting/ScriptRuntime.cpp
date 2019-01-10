@@ -80,7 +80,7 @@ namespace Dream
         bool error = false;
         if (target == mInstances.end())
         {
-            string id = sor->getUuid();
+            uint32_t id = sor->getUuid();
             #ifdef DREAM_LOG
             log->debug( "loadScript called for {}", id );
             log->debug( "calling scriptLoadFromString in lua for {}" , id );

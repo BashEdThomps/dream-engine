@@ -106,8 +106,8 @@ namespace Dream
         const vector<Event>& getEventQueue() const;
         void clearEventQueue();
 
-        SceneObjectRuntime* getChildRuntimeByUuid(const string& uuid);
-        SceneObjectRuntime* addChildFromTemplateUuid(string uuid);
+        SceneObjectRuntime* getChildRuntimeByUuid(uint32_t uuid);
+        SceneObjectRuntime* addChildFromTemplateUuid(uint32_t uuid);
         int countAllChildren();
         size_t countChildren();
         void addChildRuntime(SceneObjectRuntime*);
@@ -190,10 +190,10 @@ namespace Dream
         void removePhysicsObjectInstance();
         void removeParticleEmitterInstance();
 
-        bool replaceAssetUuid(AssetType type, const string& uuid);
-        AssetDefinition* getAssetDefinitionByUuid(const string& uuid);
-        void setAssetDefinitionsMap(map<AssetType,string> loadQueue);
-        map<AssetType, string> getAssetDefinitionsMap();
+        bool replaceAssetUuid(AssetType type, uint32_t uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
+        void setAssetDefinitionsMap(map<AssetType,uint32_t> loadQueue);
+        map<AssetType, uint32_t> getAssetDefinitionsMap();
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
@@ -240,7 +240,7 @@ namespace Dream
         Transform mInitialTransform;
         Transform mTransform;
         vector<Event> mEventQueue;
-        map<AssetType,string> mAssetDefinitions;
+        map<AssetType,uint32_t> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;
         SceneRuntime* mSceneRuntime;
         SceneObjectRuntime* mParentRuntime;

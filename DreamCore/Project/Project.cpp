@@ -135,7 +135,7 @@ namespace Dream
 
     AssetDefinition*
     Project::getAssetDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         if (mDefinition != nullptr)
         {

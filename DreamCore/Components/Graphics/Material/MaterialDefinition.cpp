@@ -33,86 +33,86 @@ namespace Dream
     }
 
     // Shader
-    string
+    uint32_t
     MaterialDefinition::getShader
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_null())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
     }
 
     void
     MaterialDefinition::setShader
-    (string val)
+    (uint32_t val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
     }
 
     // Textures
-    string
+    uint32_t
     MaterialDefinition::getDiffuseTexture
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_null())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
     }
 
     void
     MaterialDefinition::setDiffuseTexture
-    (string val)
+    (uint32_t val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
     }
 
-    string
+    uint32_t
     MaterialDefinition::getSpecularTexture
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_null())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
     }
 
     void
     MaterialDefinition::setSpecularTexture
-    (string val)
+    (uint32_t val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
     }
 
-    string
+    uint32_t
     MaterialDefinition::getNormalTexture
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_null())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
     }
 
     void
     MaterialDefinition::setNormalTexture
-    (string val)
+    (uint32_t val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
     }
 
-    string
+    uint32_t
     MaterialDefinition::getDisplacementTexture
     ()
     {
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_null())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = "";
+            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
 
@@ -120,9 +120,8 @@ namespace Dream
 
     void
     MaterialDefinition::setDisplacementTexture
-    (string val)
+    (uint32_t val)
     {
-
         mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
     }
 

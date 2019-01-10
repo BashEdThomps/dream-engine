@@ -707,11 +707,11 @@ namespace Dream
 
     SceneRuntime*
     ProjectRuntime::getSceneRuntimeByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         for (auto sr : mSceneRuntimeVector)
         {
-            if (sr->getUuid().compare(uuid) == 0)
+            if (sr->getUuid() == uuid)
             {
                 return sr;
             }
@@ -721,13 +721,13 @@ namespace Dream
 
     void
     ProjectRuntime::setSceneRuntimeAsActive
-    (string uuid)
+    (uint32_t uuid)
     {
         int nRuntimes = mSceneRuntimeVector.size();
         for (int i=0;i<nRuntimes;i++)
         {
             auto srt = mSceneRuntimeVector.at(i);
-            if (srt->getUuid().compare(uuid) == 0)
+            if (srt->getUuid() == uuid)
             {
                 srt->setState(SceneState::SCENE_STATE_ACTIVE);
             }
@@ -894,7 +894,7 @@ namespace Dream
 
     AssetDefinition*
     ProjectRuntime::getAssetDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         if (mProject != nullptr)
         {
@@ -905,7 +905,7 @@ namespace Dream
 
     SceneObjectRuntime*
     ProjectRuntime::getSceneObjectRuntimeByUuid
-    (SceneRuntime* rt, string uuid)
+    (SceneRuntime* rt, uint32_t uuid)
     {
         if (rt == nullptr)
         {
@@ -947,11 +947,11 @@ namespace Dream
 
     bool
     ProjectRuntime::hasSceneRuntime
-    (string uuid)
+    (uint32_t uuid)
     {
         for (auto srt : mSceneRuntimeVector)
         {
-            if (srt->getUuid().compare(uuid) == 0) return true;
+            if (srt->getUuid() == uuid) return true;
         }
         return false;
     }

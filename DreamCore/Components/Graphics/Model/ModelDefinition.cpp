@@ -45,7 +45,7 @@ namespace Dream
 
     bool // Indicates whether a new insertion was made
     ModelDefinition::addModelMaterial
-    (string material, string shader)
+    (string material, uint32_t shader)
     {
         if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
@@ -115,7 +115,7 @@ namespace Dream
         mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
     }
 
-    string
+    uint32_t
     ModelDefinition::getDreamMaterialForModelMaterial
     (string mat)
     {
@@ -128,10 +128,14 @@ namespace Dream
                 string materialNameStr = materialName;
                 if (mat.compare(materialNameStr) == 0)
                 {
+                    if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
+                    {
+                        nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
+                    }
                     return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 }
             }
         }
-        return "";
+        return 0;
     }
 }

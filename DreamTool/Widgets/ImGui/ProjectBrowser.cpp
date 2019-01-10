@@ -107,7 +107,7 @@ namespace DreamTool
 
                     if (sRunt != nullptr)
                     {
-                        if (sRunt->getUuid().compare(sDef->getUuid()) != 0)
+                        if (sRunt->getUuid() == sDef->getUuid())
                         {
 #ifdef DREAM_LOG
                             log->trace("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
@@ -152,7 +152,7 @@ namespace DreamTool
             }
 
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
-            ImGui::PushID(def->getUuid().c_str());
+            ImGui::PushID(def->getUuid());
 
             bool isSelected = find(mSelectedNodes.begin(), mSelectedNodes.end(), def) != mSelectedNodes.end();
 

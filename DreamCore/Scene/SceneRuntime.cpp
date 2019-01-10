@@ -159,7 +159,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByUuid
-    (const string& uuid)
+    (uint32_t uuid)
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -543,7 +543,7 @@ namespace Dream
                     [&](SceneObjectRuntime* currentRuntime)
                     {
                         AssetRuntime* inst = currentRuntime->getAssetInstance(def->getAssetType());
-                        if (inst && inst->getUuid().compare(def->getUuid()) == 0)
+                        if (inst && inst->getUuid() == def->getUuid())
                         {
                             runtimes.push_back(currentRuntime);
                         }

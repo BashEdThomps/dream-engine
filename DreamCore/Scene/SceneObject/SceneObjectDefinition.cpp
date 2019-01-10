@@ -357,7 +357,7 @@ namespace Dream
     (AssetType type)
     {
         auto asset = getAssetDefinition(type);
-        if (asset.empty())
+        if (asset == 0)
         {
             return -1;
         }
@@ -375,7 +375,7 @@ namespace Dream
 
     void
     SceneObjectDefinition::setAssetDefinition
-    (AssetType type, string uuid)
+    (AssetType type, uint32_t uuid)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
@@ -386,24 +386,24 @@ namespace Dream
         mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr] = uuid;
     }
 
-    map<AssetType, string>
+    map<AssetType, uint32_t>
     SceneObjectDefinition::getAssetDefinitionsMap
     ()
     {
-        map<AssetType, string> assetsMap;
+        map<AssetType, uint32_t> assetsMap;
         for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             AssetType type = typePair.first;
-            string uuid = getAssetDefinition(type);
-            if (!uuid.empty())
+            uint32_t uuid = getAssetDefinition(type);
+            if (uuid != 0)
             {
-                assetsMap.insert(pair<AssetType,string>(type, uuid));
+                assetsMap.insert(pair<AssetType,uint32_t>(type, uuid));
             }
         }
         return assetsMap;
     }
 
-    string
+    uint32_t
     SceneObjectDefinition::getAssetDefinition
     (AssetType type)
     {
@@ -417,12 +417,12 @@ namespace Dream
         {
             setEmptyAssetsObject();
         }
-        if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_null())
+        if (!mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_number())
         {
 #ifdef DREAM_LOG
             log->trace("No Instance");
 #endif
-            return "";
+            return 0;
         }
 #ifdef DREAM_LOG
         log->trace("Found Instance");

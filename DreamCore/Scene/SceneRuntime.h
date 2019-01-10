@@ -88,7 +88,7 @@ namespace Dream
         SceneObjectRuntime* getRootSceneObjectRuntime();
 
         SceneObjectRuntime* getSceneObjectRuntimeByName(const string& name);
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(const string& uuid);
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(uint32_t uuid);
 
         int countSceneObjectRuntimes();
         int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);

@@ -1,10 +1,4 @@
 /*
- * ModelDefinition.h
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -27,10 +21,10 @@ namespace Dream
         ~ModelDefinition() override;
         bool isFormatAssimp();
 
-        bool addModelMaterial(string material, string shader);
+        bool addModelMaterial(string material, uint32_t shader);
         json* getModelMaterials();
         void removeModelMaterial(string material);
         void clearModelMaterialList();
-        string getDreamMaterialForModelMaterial(string mat);
+        uint32_t getDreamMaterialForModelMaterial(string mat);
     };
 }

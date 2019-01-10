@@ -313,12 +313,12 @@ namespace Dream
 
     void
     SceneObjectRuntime::setAssetDefinitionsMap
-    (map<AssetType,string> assetMap)
+    (map<AssetType,uint32_t> assetMap)
     {
         mAssetDefinitions = assetMap;
     }
 
-    map<AssetType,string>
+    map<AssetType,uint32_t>
     SceneObjectRuntime::getAssetDefinitionsMap
     ()
     {
@@ -514,7 +514,7 @@ namespace Dream
 
     AssetDefinition*
     SceneObjectRuntime::getAssetDefinitionByUuid
-    (const string& uuid)
+    (uint32_t uuid)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
@@ -539,7 +539,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::replaceAssetUuid
-    (AssetType type, const string& uuid)
+    (AssetType type, uint32_t uuid)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
@@ -735,7 +735,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneObjectRuntime::getChildRuntimeByUuid
-    (const string& uuid)
+    (uint32_t uuid)
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -973,7 +973,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneObjectRuntime::addChildFromTemplateUuid
-    (string uuid)
+    (uint32_t uuid)
     {
 #ifdef DREAM_LOG
         auto log = getLog();

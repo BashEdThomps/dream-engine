@@ -41,8 +41,8 @@ namespace Dream
         string getDescription();
         void setDescription(string description);
 
-        string getStartupSceneUuid();
-        void setStartupSceneUuid(string sceneUuid);
+        uint32_t getStartupSceneUuid();
+        void setStartupSceneUuid(uint32_t sceneUuid);
         SceneDefinition* getStartupSceneDefinition();
 
         int getWindowWidth();
@@ -54,12 +54,12 @@ namespace Dream
         void loadChildDefinitions();
 
         size_t countAssetDefinitions();
-        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
         AssetDefinition* getAssetDefinitionByName(string name);
 
         size_t countScenesDefinitions();
-        SceneDefinition* getSceneDefinitionByUuid(string uuid);
-        SceneDefinition* getSceneDefinitionByName(string uuid);
+        SceneDefinition* getSceneDefinitionByUuid(uint32_t uuid);
+        SceneDefinition* getSceneDefinitionByName(string name);
         vector<SceneDefinition*> getSceneDefinitionsVector();
         void removeSceneDefinition(SceneDefinition* sceneDef);
 
@@ -87,7 +87,7 @@ namespace Dream
         long getSceneDefinitionIndex(SceneDefinition*);
         SceneDefinition* getSceneDefinitionAtIndex(int index);
         long getAssetDefinitionIndex(AssetType, AssetDefinition*);
-        long getAssetDefinitionIndex(AssetType, string);
+        long getAssetDefinitionIndex(AssetType, uint32_t);
         AssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);

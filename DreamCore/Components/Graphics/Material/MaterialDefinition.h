@@ -1,10 +1,4 @@
 /*
- * MaterialDefinition.h
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -35,21 +29,21 @@ namespace Dream
         ~MaterialDefinition() override;
 
         // Shader
-        string getShader();
-        void setShader(string);
+        uint32_t getShader();
+        void setShader(uint32_t);
 
         // Textures
-        string getDiffuseTexture();
-        void setDiffuseTexture(string);
+        uint32_t getDiffuseTexture();
+        void setDiffuseTexture(uint32_t);
 
-        string getSpecularTexture();
-        void setSpecularTexture(string);
+        uint32_t getSpecularTexture();
+        void setSpecularTexture(uint32_t);
 
-        string getNormalTexture();
-        void setNormalTexture(string);
+        uint32_t getNormalTexture();
+        void setNormalTexture(uint32_t);
 
-        string getDisplacementTexture();
-        void setDisplacementTexture(string);
+        uint32_t getDisplacementTexture();
+        void setDisplacementTexture(uint32_t);
 
         // Colour
         RGB getDiffuseColour();

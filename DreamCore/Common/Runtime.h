@@ -37,7 +37,7 @@ namespace Dream
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
-        string mUuid;
+        uint32_t mUuid;
         /**
          * @brief Name of this Runtime, given by it's Definition.
          */
@@ -67,7 +67,7 @@ namespace Dream
         /**
          * @return The Runtime's UUID - same as it's Definition.
          */
-        inline string
+        inline uint32_t
         getUuid
         ()
         const
@@ -77,17 +77,17 @@ namespace Dream
 
         inline void
         setUuid
-        (const string& uuid)
+        (uint32_t uuid)
         {
             mUuid = uuid;
         }
 
         inline bool
         hasUuid
-        (string uuid)
+        (uint32_t uuid)
         const
         {
-            return getUuid().compare(uuid) == 0;
+            return mUuid == uuid;
         }
 
         /**
@@ -121,7 +121,9 @@ namespace Dream
         ()
         const
         {
-            return "[" + getName() + " : " + getUuid() + "]";
+            stringstream ss;
+            ss << "[" << getName() << " : " << getUuid() << "]";
+            return ss.str();
         }
 
         /**

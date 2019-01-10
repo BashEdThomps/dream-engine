@@ -26,7 +26,7 @@ namespace Dream
     class Uuid
     {
     public:
-        static string generateUuid();
+        static uint32_t generateUuid();
     }; // End of Uuid
 
 }  // End of Dream

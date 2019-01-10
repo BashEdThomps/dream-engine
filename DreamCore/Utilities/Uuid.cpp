@@ -1,6 +1,4 @@
 /*
-* UUID
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -24,21 +22,14 @@ using namespace std::chrono;
 
 namespace Dream
 {
-    string Uuid::generateUuid()
+    uint32_t Uuid::generateUuid()
     {
         srand(static_cast<unsigned int>(high_resolution_clock::now().time_since_epoch().count()));
-        size_t bufSize = sizeof(char)*20;
-        char* buffer = static_cast<char*>(malloc(bufSize));
-        snprintf(
-            buffer, bufSize,
-            "%02x%02x-%02x%02x-%02x%02x-%02x%02x",
-            rand()%255, rand()%255,
-            rand()%255, rand()%255,
-            rand()%255, rand()%255,
-            rand()%255, rand()%255
-        );
-        string retval = string(buffer);
-        free(buffer);
+        uint32_t retval = 0;
+        while (retval == 0)
+        {
+           retval = static_cast<uint32_t>(rand());
+        }
         return retval;
     }
 

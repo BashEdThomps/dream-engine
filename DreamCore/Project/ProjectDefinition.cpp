@@ -57,15 +57,17 @@ namespace Dream
 
     void
     ProjectDefinition::setStartupSceneUuid
-    (string sceneUuid)
+    (uint32_t sceneUuid)
     {
         mJson[Constants::PROJECT_STARTUP_SCENE] = sceneUuid;
     }
 
-    string
-    ProjectDefinition::getStartupSceneUuid
-    ()
+    uint32_t ProjectDefinition::getStartupSceneUuid()
     {
+        if (!mJson[Constants::PROJECT_STARTUP_SCENE].is_number())
+        {
+            mJson[Constants::PROJECT_STARTUP_SCENE] = 0;
+        }
         return mJson[Constants::PROJECT_STARTUP_SCENE];
     }
 
@@ -266,7 +268,7 @@ namespace Dream
 
     AssetDefinition*
     ProjectDefinition::getAssetDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
@@ -324,7 +326,7 @@ namespace Dream
 
     SceneDefinition*
     ProjectDefinition::getSceneDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
@@ -452,7 +454,7 @@ namespace Dream
     ProjectDefinition::getStartupSceneDefinition
     ()
     {
-        string startupScene = getStartupSceneUuid();
+        uint32_t startupScene = getStartupSceneUuid();
         #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Finding startup scene {}", startupScene);
@@ -616,12 +618,12 @@ namespace Dream
 
     long
     ProjectDefinition::getAssetDefinitionIndex
-    (AssetType type, string uuid)
+    (AssetType type, uint32_t uuid)
     {
         vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         for (int i = 0; i < defs.size(); i++)
         {
-            if (defs.at(i)->getUuid().compare(uuid) == 0) return i;
+            if (defs.at(i)->getUuid() == uuid) return i;
         }
         return -1;
     }

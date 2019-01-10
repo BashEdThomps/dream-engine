@@ -408,7 +408,7 @@ namespace Dream
 
     PhysicsObjectDefinition*
     PhysicsObjectRuntime::getAssetDefinitionByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         // TODO why from def?
         auto proj = static_cast<AssetDefinition*>(mDefinition)->getProject();

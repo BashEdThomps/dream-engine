@@ -582,9 +582,9 @@ namespace DreamTool
             }
             else
             {
-                for (string str : subdirsRemoved)
+                for (uint32_t sdir : subdirsRemoved)
                 {
-                    ImGui::Text("%s",str.c_str());
+                    ImGui::Text("%d",sdir);
                 }
             }
             ImGui::Separator();

@@ -49,7 +49,7 @@ namespace Dream
         auto scriptDef = static_cast<ScriptDefinition*>(def);
         for (auto* inst: mInstances)
         {
-            if (inst->getUuid().compare(scriptDef->getUuid()) == 0)
+            if (inst->getUuid() == scriptDef->getUuid())
             {
                 return inst;
             }

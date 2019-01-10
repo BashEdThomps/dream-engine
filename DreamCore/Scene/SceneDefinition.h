@@ -49,7 +49,7 @@ namespace Dream
         float getMeshCullDistance();
 
         void addTemplate(SceneObjectDefinition* _template);
-        SceneObjectDefinition* getTemplateByUuid(string uuid);
+        SceneObjectDefinition* getTemplateByUuid(uint32_t uuid);
 
         void setMinDrawDistance(float mdd);
         float getMinDrawDistance();
@@ -105,19 +105,19 @@ namespace Dream
         void setCameraYaw(float yaw);
         float getCameraYaw();
 
-        string getCameraFocusedOn();
-        void setCameraFocusedOn(string focus);
+        uint32_t getCameraFocusedOn();
+        void setCameraFocusedOn(uint32_t focus);
 
-        string getLightingPassShader();
-        void setLightingPassShader(string shader);
+        uint32_t getLightingPassShader();
+        void setLightingPassShader(uint32_t shader);
 
-        string getShadowPassShader();
-        void setShadowPassShader(string shader);
+        uint32_t getShadowPassShader();
+        void setShadowPassShader(uint32_t shader);
 
-        string getInputScript();
-        void setInputScript(string shader);
+        uint32_t getInputScript();
+        void setInputScript(uint32_t shader);
 
-        string getNanoVGScript();
-        void setNanoVGScript(string shader);
+        uint32_t getNanoVGScript();
+        void setNanoVGScript(uint32_t shader);
     };
 }

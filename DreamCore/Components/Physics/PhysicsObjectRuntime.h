@@ -48,7 +48,7 @@ namespace Dream
         PhysicsComponent* mPhysicsComponent;
         ModelCache* mModelCache;
 
-        PhysicsObjectDefinition* getAssetDefinitionByUuid(string);
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(uint32_t);
         btCollisionShape* createTriangleMeshShape(ModelRuntime*);
 
     public:

@@ -1,10 +1,4 @@
 /*
- * SceneObjectDefinition.h
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -83,9 +77,9 @@ namespace Dream
         int getSelectedAssetIndex(AssetType type);
         void setSelectedAssetIndex(AssetType type, int index);
 
-        string getAssetDefinition(AssetType type);
-        void setAssetDefinition(AssetType type, string uuid);
-        map<AssetType, string> getAssetDefinitionsMap();
+        uint32_t getAssetDefinition(AssetType type);
+        void setAssetDefinition(AssetType type, uint32_t uuid);
+        map<AssetType, uint32_t> getAssetDefinitionsMap();
 
 
     private:

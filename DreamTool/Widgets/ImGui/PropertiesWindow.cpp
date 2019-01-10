@@ -281,11 +281,10 @@ namespace DreamTool
                 mDefinition->setName(nameBuf);
             }
 
-            char idBuf[128] = {0};
-            strncpy(&idBuf[0],mDefinition->getUuid().c_str(),mDefinition->getUuid().size());
-            if(ImGui::InputText("ID", idBuf, IM_ARRAYSIZE(idBuf)))
+            int id = mDefinition->getUuid();
+            if(ImGui::InputInt("ID", &id))
             {
-                mDefinition->setUuid(idBuf);
+                mDefinition->setUuid(id);
             }
         }
     }
@@ -553,7 +552,7 @@ namespace DreamTool
             }
             if (ImGui::Button("Clear Focus"))
             {
-                sceneDef->setCameraFocusedOn("");
+                sceneDef->setCameraFocusedOn(0);
                 if (sceneRuntime)
                 {
                     auto cam = sceneRuntime->getCamera();
@@ -703,7 +702,7 @@ namespace DreamTool
             auto pDef=mState->project->getDefinition();
             vector<string> scriptAssets = mState->project->getDefinition()->getAssetNamesVector(AssetType::SCRIPT);
 
-            string inputScriptUuid = sceneDef->getInputScript();
+            uint32_t inputScriptUuid = sceneDef->getInputScript();
             auto inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
             int inputScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,inputScriptDef);
             if (StringCombo("Input Script",&inputScriptIndex,scriptAssets,scriptAssets.size()))
@@ -713,7 +712,7 @@ namespace DreamTool
                 sceneDef->setInputScript(uuid);
             }
 
-            string nvgScriptUuid = sceneDef->getNanoVGScript();
+            uint32_t nvgScriptUuid = sceneDef->getNanoVGScript();
             auto nvgScriptDef = pDef->getAssetDefinitionByUuid(nvgScriptUuid);
             int nvgScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,nvgScriptDef);
             if (StringCombo("NanoVG Script",&nvgScriptIndex,scriptAssets,scriptAssets.size()))
@@ -915,7 +914,7 @@ namespace DreamTool
             vector<string> animationAssets = projDef->getAssetNamesVector(AssetType::ANIMATION);
             if(ImGui::Button("-##Animation"))
             {
-                soDef->setAssetDefinition(AssetType::ANIMATION,"");
+                soDef->setAssetDefinition(AssetType::ANIMATION,0);
                 if (soRuntime)
                 {
                     soRuntime->removeAnimationInstance();
@@ -954,7 +953,7 @@ namespace DreamTool
             vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::AUDIO);
             if(ImGui::Button("-##Audio"))
             {
-                soDef->setAssetDefinition(AssetType::AUDIO,"");
+                soDef->setAssetDefinition(AssetType::AUDIO,0);
                 if (soRuntime)
                 {
                     soRuntime->removeAudioInstance();
@@ -994,7 +993,7 @@ namespace DreamTool
 
             if(ImGui::Button("-##Light"))
             {
-                soDef->setAssetDefinition(AssetType::LIGHT,"");
+                soDef->setAssetDefinition(AssetType::LIGHT,0);
                 if (soRuntime)
                 {
                     soRuntime->removeLightInstance();
@@ -1036,7 +1035,7 @@ namespace DreamTool
 
             if(ImGui::Button("-##Model"))
             {
-                soDef->setAssetDefinition(AssetType::MODEL,"");
+                soDef->setAssetDefinition(AssetType::MODEL,0);
                 if (soRuntime)
                 {
                     soRuntime->removeModelInstance();
@@ -1117,7 +1116,7 @@ namespace DreamTool
             vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
             if(ImGui::Button("-##Path"))
             {
-                soDef->setAssetDefinition(AssetType::PATH,"");
+                soDef->setAssetDefinition(AssetType::PATH,0);
                 if (soRuntime)
                 {
                     soRuntime->removePathInstance();
@@ -1155,7 +1154,7 @@ namespace DreamTool
             vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
             if(ImGui::Button("-##PhysicsObject"))
             {
-                soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,"");
+                soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,0);
                 if (soRuntime)
                 {
                     soRuntime->removePhysicsObjectInstance();
@@ -1195,7 +1194,7 @@ namespace DreamTool
             vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::SCRIPT);
             if(ImGui::Button("-##Script"))
             {
-                soDef->setAssetDefinition(AssetType::SCRIPT,"");
+                soDef->setAssetDefinition(AssetType::SCRIPT,0);
                 if (soRuntime)
                 {
                     soRuntime->removeScriptInstance();
@@ -2095,10 +2094,10 @@ namespace DreamTool
 
         ImGui::Separator();
 
-        string diffuseUuid = materialDef->getDiffuseTexture();
-        string specularUuid = materialDef->getSpecularTexture();
-        string normalUuid = materialDef->getNormalTexture();
-        string displacementUuid = materialDef->getDisplacementTexture();
+        uint32_t diffuseUuid = materialDef->getDiffuseTexture();
+        uint32_t specularUuid = materialDef->getSpecularTexture();
+        uint32_t normalUuid = materialDef->getNormalTexture();
+        uint32_t displacementUuid = materialDef->getDisplacementTexture();
         void* diffuseTxId = nullptr;
         void* normalTxId = nullptr;
         void* specularTxId = nullptr;
@@ -2470,7 +2469,7 @@ namespace DreamTool
         {
             auto projDef = mState->project->getDefinition();
 
-            string selectedModelAssetUuid = pod->getCollisionModel();
+            uint32_t selectedModelAssetUuid = pod->getCollisionModel();
             AssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
             int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedModelAssetDef);
             vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
@@ -2531,7 +2530,7 @@ namespace DreamTool
                 ImGui::Separator();
 
                 auto shapes = pod->getCompoundChildren();
-                static string selectedToTransform = "";
+                static uint32_t selectedToTransform = 0;
                 for (auto shape : shapes)
                 {
                    auto shapeDef = pDef->getAssetDefinitionByUuid(shape.uuid);
@@ -2540,8 +2539,8 @@ namespace DreamTool
                    {
                        continue;
                    }
-                   ImGui::PushID(shape.uuid.c_str());
-                   ImGui::SetNextTreeNodeOpen(selectedToTransform.compare(shape.uuid) == 0);
+                   ImGui::PushID(shape.uuid);
+                   ImGui::SetNextTreeNodeOpen(selectedToTransform == shape.uuid);
                    if (ImGui::CollapsingHeader(shapeDef->getName().c_str()))
                    {
                         selectedToTransform = shape.uuid;

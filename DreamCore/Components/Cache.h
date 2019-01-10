@@ -51,7 +51,7 @@ namespace Dream
          * @param uuid definition The AssetDefinition for the AssetInstance you wish
          * to instanciate.
          */
-        SharedAssetRuntime* getInstance(string uuid);
+        SharedAssetRuntime* getInstance(uint32_t uuid);
 
         /**
          * @return Reference to the vector of SharedAssetInstances managed by
@@ -86,7 +86,7 @@ namespace Dream
          * @return AssetDefinition specified by uuid, or nullptr if none is
          * found.
          */
-        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
 
         /**
          * @brief Vector of SharedAssetInstances managed by this Cache.

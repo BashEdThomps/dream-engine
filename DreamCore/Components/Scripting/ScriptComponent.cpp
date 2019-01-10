@@ -190,8 +190,7 @@ namespace Dream
         stateView.new_usertype<ProjectDirectory>
         (
             "ProjectDirectory",
-            "getAssetPath",static_cast<string (ProjectDirectory::*)(string)>
-                    (&ProjectDirectory::getAssetAbsolutePath)
+            "getAssetPath",static_cast<string (ProjectDirectory::*)(uint32_t)>(&ProjectDirectory::getAssetAbsolutePath)
         );
 
         stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();

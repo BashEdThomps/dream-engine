@@ -136,7 +136,7 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (string uuid)
+    (uint32_t uuid)
     {
         auto assetDef = mProject->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDef)
@@ -264,14 +264,14 @@ namespace Dream
         return dir.create();
     }
 
-    vector<string>
+    vector<uint32_t>
     ProjectDirectory::cleanupAssetsDirectory
     ()
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
-        vector<string> retval;
+        vector<uint32_t> retval;
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
@@ -299,7 +299,7 @@ namespace Dream
                     Directory subdir(subdirPath);
                     if (subdir.exists())
                     {
-                        auto name = subdir.getName();
+                        uint32_t name = static_cast<uint32_t>(std::stoi(subdir.getName()));
                         #ifdef DREAM_LOG
                         log->error("Checking subdir {} has definition",name);
                         #endif

@@ -38,7 +38,7 @@ namespace Dream
         vector<char> readAssetData(AssetDefinition*, string format = "");
         bool writeAssetData(AssetDefinition*, vector<char>, string format = "");
 
-        string getAssetAbsolutePath(string);
+        string getAssetAbsolutePath(uint32_t);
         string getAssetAbsolutePath(AssetDefinition*);
         string getAssetAbsolutePath(AssetDefinition*, string format);
         string getAssetDirectoryPath(AssetDefinition*);
@@ -50,7 +50,7 @@ namespace Dream
         bool assetTypeDirectoryExists(AssetType type);
 
         bool createAssetTypeDirectory(AssetType type);
-        vector<string> cleanupAssetsDirectory();
+        vector<uint32_t> cleanupAssetsDirectory();
 
         Project* newProject(string projectDir);
         Project* openFromFileReader(string directory, File &fileReader);

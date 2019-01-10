@@ -60,7 +60,7 @@ namespace Dream
         void setDefinition(ProjectDefinition* definition);
         bool hasProjectDefinition();
 
-        AssetDefinition* getAssetDefinitionByUuid(string uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
         void setWindowComponent(WindowComponent* windowComponent);
 
         ProjectDirectory* getDirectory() const;

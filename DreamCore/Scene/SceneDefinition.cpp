@@ -135,11 +135,11 @@ namespace Dream
 
     SceneObjectDefinition*
     SceneDefinition::getTemplateByUuid
-    (string uuid)
+    (uint32_t uuid)
     {
         for (SceneObjectDefinition* next : mTemplates)
         {
-            if (next->getUuid().compare(uuid) == 0)
+            if (next->getUuid() == uuid)
             {
                 return next;
             }
@@ -553,11 +553,13 @@ namespace Dream
        return  mJson[Constants::SCENE_CAMERA_YAW];
     }
 
-    string SceneDefinition::getCameraFocusedOn()
+    uint32_t
+    SceneDefinition::getCameraFocusedOn
+    ()
     {
-        if (mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_null())
+       if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
        {
-           mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = "";
+           mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
        }
        return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
 
@@ -565,18 +567,18 @@ namespace Dream
 
     void
     SceneDefinition::setCameraFocusedOn
-    (string focusedOn)
+    (uint32_t focusedOn)
     {
         mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
     }
 
-    string
+    uint32_t
     SceneDefinition::getLightingPassShader
     ()
     {
-       if (mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_null())
+       if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
        {
-           mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = "";
+           mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
        }
        return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
 
@@ -584,18 +586,18 @@ namespace Dream
 
     void
     SceneDefinition::setLightingPassShader
-    (string shader)
+    (uint32_t shader)
     {
        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
     }
 
-    string
+    uint32_t
     SceneDefinition::getShadowPassShader
     ()
     {
-       if (mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_null())
+       if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
        {
-           mJson[Constants::SCENE_SHADOW_PASS_SHADER] = "";
+           mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
        }
        return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
 
@@ -603,18 +605,18 @@ namespace Dream
 
     void
     SceneDefinition::setShadowPassShader
-    (string shader)
+    (uint32_t shader)
     {
        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
 
-   string
+    uint32_t
     SceneDefinition::getInputScript
     ()
     {
-       if (mJson[Constants::SCENE_INPUT_SCRIPT].is_null())
+       if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
        {
-           mJson[Constants::SCENE_INPUT_SCRIPT] = "";
+           mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
        }
        return  mJson[Constants::SCENE_INPUT_SCRIPT];
 
@@ -622,18 +624,18 @@ namespace Dream
 
     void
     SceneDefinition::setInputScript
-    (string shader)
+    (uint32_t shader)
     {
        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
     }
 
-        string
+    uint32_t
     SceneDefinition::getNanoVGScript
     ()
     {
-       if (mJson[Constants::SCENE_NANOVG_SCRIPT].is_null())
+       if (!mJson[Constants::SCENE_NANOVG_SCRIPT].is_number())
        {
-           mJson[Constants::SCENE_NANOVG_SCRIPT] = "";
+           mJson[Constants::SCENE_NANOVG_SCRIPT] = 0;
        }
        return  mJson[Constants::SCENE_NANOVG_SCRIPT];
 
@@ -641,7 +643,7 @@ namespace Dream
 
     void
     SceneDefinition::setNanoVGScript
-    (string shader)
+    (uint32_t shader)
     {
        mJson[Constants::SCENE_NANOVG_SCRIPT] = shader;
     }

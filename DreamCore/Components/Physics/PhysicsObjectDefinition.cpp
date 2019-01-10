@@ -1,10 +1,4 @@
 /*
- * PhysicsObjectDefinition.cpp
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -37,7 +31,7 @@ namespace Dream
     PhysicsObjectDefinition::getMass
     ()
     {
-        if (mJson[Constants::ASSET_ATTR_MASS].is_null())
+        if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
         {
             mJson[Constants::ASSET_ATTR_MASS] = 0;
         }
@@ -55,7 +49,7 @@ namespace Dream
     PhysicsObjectDefinition::getMargin
     ()
     {
-        if (mJson[Constants::ASSET_ATTR_MARGIN].is_null())
+        if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
         {
             mJson[Constants::ASSET_ATTR_MARGIN] = 0;
         }
@@ -383,8 +377,8 @@ namespace Dream
             iter++
        )
        {
-            string jsUuid = (*iter)[Constants::UUID];
-            if (def.uuid.compare(jsUuid) == 0)
+            uint32_t jsUuid = (*iter)[Constants::UUID];
+            if (def.uuid == jsUuid)
             {
                (*iter)[Constants::TRANSFORM] = def.transform.getJson();
                 return;
@@ -423,13 +417,13 @@ namespace Dream
         }
     }
 
-    string
+    uint32_t
     PhysicsObjectDefinition::getCollisionModel
     ()
     {
-        if (mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_null())
+        if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
         {
-            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = "";
+            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
         }
 
         return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
@@ -437,7 +431,7 @@ namespace Dream
 
     void
     PhysicsObjectDefinition::setCollisionModel
-    (string modelUuid)
+    (uint32_t modelUuid)
     {
         mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }

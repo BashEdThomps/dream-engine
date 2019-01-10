@@ -12,15 +12,14 @@
 
 #pragma once
 
+#include <sstream>
 #include "../deps/json/json.hpp"
-
-#include <string>
-
 #include "../Components/Transform.h"
+#include "../Utilities/Uuid.h"
 #include "DreamObject.h"
 
-using std::string;
 using nlohmann::json;
+using std::stringstream;
 
 namespace Dream
 {
@@ -42,7 +41,13 @@ namespace Dream
          * @param data Set the internal mJson variable to this data.
          */
         inline Definition
-        (json data) : DreamObject("Definition"), mJson(data) {}
+        (json data) : DreamObject("Definition"), mJson(data)
+        {
+            if (mJson[Constants::UUID].is_string())
+            {
+               mJson[Constants::UUID] = Uuid::generateUuid();
+            }
+        }
 
         virtual inline ~Definition() {}
 
@@ -63,10 +68,10 @@ namespace Dream
          */
         inline bool
         hasName
-        (const string& uuid)
+        (const string& name)
         {
             string s = mJson[Constants::NAME];
-            return s.compare(uuid) == 0;
+            return s.compare(name) == 0;
         }
 
         /**
@@ -99,22 +104,22 @@ namespace Dream
          */
         inline bool
         hasUuid
-        (const string& uuid)
+        (uint32_t uuid)
         {
-            string s = mJson[Constants::UUID];
-            return s.compare(uuid) == 0;
+            uint32_t s = mJson[Constants::UUID];
+            return s == uuid;
         }
 
         /**
          * @return The Definition's uuid.
          */
-        inline string
+        inline uint32
         getUuid
         ()
         {
             if (mJson[Constants::UUID].is_null())
             {
-                mJson[Constants::UUID] = "";
+                mJson[Constants::UUID] = Uuid::generateUuid();
             }
             return mJson[Constants::UUID];
         }
@@ -124,7 +129,7 @@ namespace Dream
          */
         inline void
         setUuid
-        (const string& uuid)
+        (uint32 uuid)
         {
             mJson[Constants::UUID] = uuid;
         }
@@ -137,7 +142,9 @@ namespace Dream
         getNameAndUuidString
         ()
         {
-            return "[" + getName() + " : " + getUuid() + "]";
+            stringstream ss;
+            ss << "[" << getName() << " : " << getUuid() << "]";
+            return ss.str();
         }
     };
 }
