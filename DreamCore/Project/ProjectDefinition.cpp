@@ -25,6 +25,7 @@
 #include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Path/PathDefinition.h"
+#include "../Components/Scroller/ScrollerDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Scripting/ScriptDefinition.h"
 #include "../Utilities/Uuid.h"
@@ -195,6 +196,8 @@ namespace Dream
                 return new PhysicsObjectDefinition(this, assetDefinitionJs);
             case SCRIPT:
                 return new ScriptDefinition(this, assetDefinitionJs);
+            case SCROLLER:
+                return new ScrollerDefinition(this,assetDefinitionJs);
             case SHADER:
                 return new ShaderDefinition(this, assetDefinitionJs);
             case TEXTURE:
@@ -209,7 +212,7 @@ namespace Dream
         return nullptr;
     }
 
-    map<AssetType, vector<string>>&
+    map<AssetType, vector<string> > &
     ProjectDefinition::getAssetDefinitionGroups
     ()
     {
@@ -481,12 +484,12 @@ namespace Dream
         return mJson;
     }
 
-    map<AssetType, vector<AssetDefinition*>>
+    map<AssetType, vector<AssetDefinition*> >
     ProjectDefinition::getAssetDefinitionsMap
     ()
     {
         vector<AssetDefinition*> ads = getAssetDefinitionsVector();
-        map<AssetType, vector<AssetDefinition*>> handlesMap;
+        map<AssetType, vector<AssetDefinition*> > handlesMap;
 
         auto begins = begin(ads);
         auto ends = end(ads);
@@ -656,7 +659,7 @@ namespace Dream
         for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             mAssetDefinitionGroups.insert(
-                pair<AssetType,vector<string>>(
+                pair<AssetType,vector<string> >(
                     typePair.first,
                     vector<string>()
                 )

@@ -78,6 +78,9 @@ namespace Dream
         bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
         bool isTypeTexture();
+
+        json wrapVec3(const vec3&);
+        vec3 unwrapVec3(const json&);
     protected:
         ProjectDefinition* mProjectDefinition;
 

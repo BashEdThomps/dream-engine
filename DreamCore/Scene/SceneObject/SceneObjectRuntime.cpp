@@ -39,6 +39,9 @@
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptComponent.h"
 #include "../../Components/Scripting/ScriptRuntime.h"
+#include "../../Components/Scroller/ScrollerComponent.h"
+#include "../../Components/Scroller/ScrollerDefinition.h"
+#include "../../Components/Scroller/ScrollerRuntime.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -67,7 +70,9 @@ namespace Dream
         mModelInstance(nullptr),
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
-        mBoundingBox(),
+        mBoundingBox
+
+        (),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -1090,5 +1095,80 @@ namespace Dream
             return cam->exceedsFrustumPlaneAtTranslation(plane,this,tx);
         }
         return false;
+    }
+
+    bool
+    SceneObjectRuntime::hasScrollerInstance
+    ()
+    {
+        return mScrollerInstance != nullptr;
+    }
+
+    bool
+    SceneObjectRuntime::applyToAll
+    (const function<bool(SceneObjectRuntime*)>& fn)
+    {
+#ifdef DREAM_LOG
+        auto log = getLog();
+        log->trace("{}::applyToAll(bool) applying to {} children",
+        getNameAndUuidString(),mChildRuntimes.size());
+#endif
+
+        bool retval = fn(this);
+
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if (*it)
+            {
+                retval = retval || (*it)->applyToAll(fn);
+            }
+        }
+        return retval;
+    }
+
+    SceneObjectRuntime*
+    SceneObjectRuntime::applyToAll
+    (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
+    {
+#ifdef DREAM_LOG
+        auto log = getLog();
+        log->trace("{}::applyToAll(void*) applying to {} children",
+        getNameAndUuidString(), mChildRuntimes.size());
+#endif
+
+        SceneObjectRuntime* retval = fn(this);
+
+        if (retval != nullptr)
+        {
+            return retval;
+        }
+
+        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+        {
+            if ((*it) != nullptr)
+            {
+                retval = (*it)->applyToAll(fn);
+                if (retval != nullptr)
+                {
+                    return retval;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    void
+    SceneObjectRuntime::translateOffsetInitialWithChildren
+    (const vec3& translation)
+    {
+        static mat4 ident(1.0f);
+        applyToAll
+        (function<SceneObjectRuntime*(SceneObjectRuntime*)>([=](SceneObjectRuntime* rt)
+        {
+            auto& initial = rt->getInitialTransform().getMatrix();
+            rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);
+            return static_cast<SceneObjectRuntime*>(nullptr);
+        }
+        ));
     }
 }

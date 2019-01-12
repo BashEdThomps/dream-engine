@@ -41,7 +41,13 @@
 #include "../../../DreamCore/Components/Graphics/Texture/TextureRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Texture/TextureDefinition.h"
 #include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
+#include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
+#include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
+
+#include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
+
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
+
 #include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
 #include "../../../DreamCore/Components/Scripting/ScriptRuntime.h"
 
@@ -1549,6 +1555,9 @@ namespace DreamTool
             case AssetType::SCRIPT:
                 drawScriptProperties();
                 break;
+            case AssetType::SCROLLER:
+                drawScrollerAssetProperties();
+                break;
             case AssetType::SHADER:
                 drawShaderAssetProperties();
                 break;
@@ -1941,6 +1950,7 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto projRunt = mState->project->getRuntime();
         auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+
         int shaderIndex = 0;
         vector<string> shaderList;
         if (projDef)
@@ -2615,7 +2625,94 @@ namespace DreamTool
     void
     PropertiesWindow::drawParticleEmitterAssetProperties
     ()
-    {}
+    {
+        auto* peDef = static_cast<ParticleEmitterDefinition*>(mDefinition);
+        auto projDef = mState->project->getDefinition();
+        auto projRunt = mState->project->getRuntime();
+
+        vector<string> textureNamesList;
+
+        if(projDef)
+        {
+            textureNamesList = projDef->getAssetNamesVector(AssetType::TEXTURE);
+        }
+
+        uint32_t particleTextureId = peDef->getTexture();
+        auto textureDefinition = projDef->getAssetDefinitionByUuid(particleTextureId);
+        int particleTextureListIndex = projDef->getAssetDefinitionIndex(AssetType::TEXTURE,textureDefinition);
+
+        // Particle Texture
+        if(StringCombo("Texture",&particleTextureListIndex,textureNamesList,textureNamesList.size()))
+        {
+            if (projDef)
+            {
+                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, particleTextureListIndex);
+                if (txDef)
+                {
+                    auto uuid = txDef->getUuid();
+                    peDef->setTexture(uuid);
+                }
+            }
+        }
+
+        void* previewTexture = 0;
+
+        if (textureDefinition)
+        {
+            auto txDef = dynamic_cast<TextureDefinition*>(textureDefinition);
+            auto txCache = projRunt->getTextureCache();
+            auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
+            if (txInstance)
+            {
+                previewTexture = (void*)(intptr_t)txInstance->getGLID();
+            }
+        }
+
+        ImGui::Image(previewTexture, mImageSize);
+        ImGui::Separator();
+
+        // Area
+        vec3 area = peDef->getArea();
+        if (ImGui::DragFloat3("Spawn Area",glm::value_ptr(area)))
+        {
+            peDef->setArea(area);
+        }
+
+        // Particle Size
+        vec2 size = peDef->getParticleSize();
+        if (ImGui::DragFloat2("Particle Size", glm::value_ptr(size)))
+        {
+           peDef->setParticleSize(size);
+        }
+
+        // Velocity
+        float velocity = peDef->getVelocity();
+        if (ImGui::DragFloat("Velocity",&velocity))
+        {
+            peDef->setVelocity(velocity);
+        }
+
+        // Gravity
+        float gravity = peDef->getGravity();
+        if (ImGui::DragFloat("Gravity",&gravity))
+        {
+            peDef->setGravity(gravity);
+        }
+
+        // Particles Per Second
+        float pps = peDef->getParticlesPerSecond();
+        if (ImGui::DragFloat("Particles Per Second",&pps))
+        {
+            peDef->setParticlesPerSecond(pps);
+        }
+
+        // LifeTime
+        float lifetime = peDef->getParticleLifetime();
+        if(ImGui::DragFloat("Particle Lifetime",&lifetime))
+        {
+            peDef->setParticleLifetime(lifetime);
+        }
+    }
 
     void
     PropertiesWindow::drawTextureAssetProperties
@@ -2664,6 +2761,58 @@ namespace DreamTool
         ImGui::Columns(1);
         ImGui::Separator();
         ImGui::Image(textureId, mImageSize);
+    }
+
+    void
+    PropertiesWindow::drawScrollerAssetProperties
+    ()
+    {
+        ScrollerDefinition* scrDef = static_cast<ScrollerDefinition*>(mDefinition);
+
+       vec3 velocity = scrDef->getVelocity();
+       if (ImGui::DragFloat3("Velocity",glm::value_ptr(velocity)))
+       {
+          scrDef->setVelocity(velocity);
+       }
+
+       bool loop = scrDef->getLoop();
+       if (ImGui::Checkbox("Loop",&loop))
+       {
+           scrDef->setLoop(loop);
+       }
+
+       ImGui::Separator();
+
+       ImGui::Text("Scroller Items");
+       if(ImGui::Button("Add Item"))
+       {
+           scrDef->addItem(ScrollerItem());
+       }
+
+       ImGui::Columns(2);
+
+       vector<ScrollerItem> items = scrDef->getItemsArray();
+
+       int id = 0;
+       for (ScrollerItem item : items)
+       {
+           ImGui::PushID(id++);
+           ImGui::Separator();
+           vec3 offset = item.offset;
+           if (ImGui::DragFloat3("Offset",glm::value_ptr(offset)))
+           {
+              item.offset = offset;
+           }
+           ImGui::NextColumn();
+           if(ImGui::Button("Remove"))
+           {
+
+           }
+           ImGui::NextColumn();
+           ImGui::PopID();
+       }
+
+       ImGui::Columns(1);
     }
 
     int

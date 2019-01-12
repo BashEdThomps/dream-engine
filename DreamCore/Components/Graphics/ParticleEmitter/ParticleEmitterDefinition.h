@@ -1,10 +1,4 @@
 /*
- * ParticleEmitterDefinition.h
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -27,6 +21,30 @@ namespace Dream
     public:
         ParticleEmitterDefinition(ProjectDefinition* pd, json js);
         ~ParticleEmitterDefinition();
+
+        uint32_t getTexture();
+        void setTexture(uint32_t texture);
+
+        vec3 getArea();
+        void setArea(const vec3& area);
+
+        vec2 getParticleSize();
+        void setParticleSize(const vec2& size);
+
+        float getVelocity();
+        void setVelocity(float velocity);
+
+        float getGravity();
+        void setGravity(float gravity);
+
+        float getParticlesPerSecond();
+        void setParticlesPerSecond(float particlesPerSecond);
+
+        float getParticleLifetime();
+        void setParticleLifetime(float particleLifetime);
+    private:
+        void initSize();
+        void initArea();
     };
 
 }

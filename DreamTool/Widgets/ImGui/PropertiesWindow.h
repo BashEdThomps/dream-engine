@@ -61,6 +61,7 @@ namespace DreamTool
         void drawPathAssetProperties();
         void drawParticleEmitterAssetProperties();
         void drawTextureAssetProperties();
+        void drawScrollerAssetProperties();
 
         void setRuntime(Runtime* runt);
         void setDefinition(Definition* def);

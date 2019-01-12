@@ -43,6 +43,8 @@ namespace Dream
     class SceneObjectDefinition;
     class AssetDefinition;
     class PathDefinition;
+    class ScrollerRuntime;
+    class ScrollerDefinition;
     class AnimationDefinition;
     class AudioDefinition;
     class LightDefinition;
@@ -72,6 +74,7 @@ namespace Dream
         bool createPhysicsObjectInstance(PhysicsObjectDefinition*);
         bool createParticleEmitterInstance(ParticleEmitterDefinition*);
         bool createLightInstance(LightDefinition*);
+        bool createScrollerInstance(ScrollerDefinition*);
 
         AnimationRuntime* getAnimationInstance();
         PathRuntime*  getPathInstance();
@@ -81,6 +84,7 @@ namespace Dream
         PhysicsObjectRuntime* getPhysicsObjectInstance();
         LightRuntime* getLightInstance();
         ParticleEmitterRuntime* getParticleEmitterInstance();
+        ScrollerRuntime* getScrollerInstance();
         AssetRuntime* getAssetInstance(AssetType);
 
         bool hasAnimationInstance();
@@ -90,6 +94,7 @@ namespace Dream
         bool hasScriptInstance();
         bool hasPhysicsObjectInstance();
         bool hasLightInstance();
+        bool hasScrollerInstance();
 
         Transform& getTransform();
         void setTransform(const Transform& transform);
@@ -120,59 +125,6 @@ namespace Dream
         void setParentRuntime(SceneObjectRuntime* parent);
         SceneObjectRuntime* getParentRuntime();
 
-        inline bool
-        applyToAll
-        (const function<bool(SceneObjectRuntime*)>& fn)
-        {
-#ifdef DREAM_LOG
-            auto log = getLog();
-            log->trace("{}::applyToAll(bool) applying to {} children",
-            getNameAndUuidString(),mChildRuntimes.size());
-#endif
-
-            bool retval = fn(this);
-
-            for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
-            {
-                if (*it)
-                {
-                    retval = retval || (*it)->applyToAll(fn);
-                }
-            }
-            return retval;
-        }
-
-        inline SceneObjectRuntime*
-        applyToAll
-        (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
-        {
-#ifdef DREAM_LOG
-            auto log = getLog();
-            log->trace("{}::applyToAll(void*) applying to {} children",
-            getNameAndUuidString(), mChildRuntimes.size());
-#endif
-
-            SceneObjectRuntime* retval = fn(this);
-
-            if (retval != nullptr)
-            {
-                return retval;
-            }
-
-            for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
-            {
-                if ((*it) != nullptr)
-                {
-                    retval = (*it)->applyToAll(fn);
-                    if (retval != nullptr)
-                    {
-                        return retval;
-                    }
-                }
-            }
-            return nullptr;
-        }
-
         bool useDefinition() override;
 
         bool getDeleted() const;
@@ -189,6 +141,7 @@ namespace Dream
         void removeScriptInstance();
         void removePhysicsObjectInstance();
         void removeParticleEmitterInstance();
+        void removeScrollerInstance();
 
         bool replaceAssetUuid(AssetType type, uint32_t uuid);
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
@@ -207,22 +160,10 @@ namespace Dream
         bool containedInFrustumAfterTransform(const mat4& tx);
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
-        inline void
-        translateOffsetInitialWithChildren
-        (const vec3& translation)
-        {
-            static mat4 ident(1.0f);
-            applyToAll
-            (function<SceneObjectRuntime*(SceneObjectRuntime*)>([=](SceneObjectRuntime* rt)
-            {
-                auto& initial = rt->getInitialTransform().getMatrix();
-                rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);
-                return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-            ));
-        }
-
         Transform& getInitialTransform();
+        bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
+        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
+        void translateOffsetInitialWithChildren(const vec3& translation);
 
     protected:
         void initTransform();
@@ -237,6 +178,7 @@ namespace Dream
         PhysicsObjectRuntime* mPhysicsObjectInstance;
         ScriptRuntime* mScriptInstance;
         ModelRuntime* mModelInstance;
+        ScrollerRuntime* mScrollerInstance;
         Transform mInitialTransform;
         Transform mTransform;
         vector<Event> mEventQueue;

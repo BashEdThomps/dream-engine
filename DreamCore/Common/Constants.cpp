@@ -116,6 +116,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_MODEL = "model";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
+    const string Constants::ASSET_TYPE_SCROLLER = "scroller";
     const string Constants::ASSET_TYPE_SHADER = "shader";
 
     const string Constants::ASSET_TYPE_TEXTURE = "texture";
@@ -150,6 +151,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_MODEL_READABLE = "Model";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
     const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
+    const string Constants::ASSET_TYPE_SCROLLER_READABLE = "Scroller";
     const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
     const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
     const string Constants::ASSET_TYPE_TEXTURE_READABLE = "Texture";
@@ -330,6 +332,13 @@ namespace Dream
     const string Constants::LUA_INPUT_FUNCTION  = "onInput";
     const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
 
+    // Scroller ================================================================
+    const string Constants::SCROLLER_VELOCITY = "velocity";
+    const string Constants::SCROLLER_LOOP = "loop";
+    const string Constants::SCROLLER_ITEMS_ARRAY = "items";
+    const string Constants::SCROLLER_ITEM_INDEX = "index";
+    const string Constants::SCROLLER_ITEM_OFFSET = "offset";
+
     // Shader ===================================================================
     const string Constants::SHADER_FRAGMENT = ".frag";
     const string Constants::SHADER_VERTEX   = ".vert";
@@ -350,6 +359,15 @@ namespace Dream
     const string Constants::ASSET_ATTR_AUDIO_EM_NAME = "name";
     const string Constants::ASSET_ATTR_AUDIO_EM_REPEAT = "repeat";
     const string Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD = "repeat_period";
+
+    // Particle Emitter ========================================================
+    const string Constants::PARTICLE_EMITTER_TEXTURE = "texture";
+    const string Constants::PARTICLE_EMITTER_AREA = "area";
+    const string Constants::PARTICLE_EMITTER_SIZE = "size";
+    const string Constants::PARTICLE_EMITTER_VELOCITY = "velocity";
+    const string Constants::PARTICLE_EMITTER_GRAVITY = "gravity";
+    const string Constants::PARTICLE_EMITTER_PER_SECOND = "per_second";
+    const string Constants::PARTICLE_EMITTER_LIFETIME = "lifetime";
 
     // Animation / Keyframe ====================================================
     const string Constants::KEYFRAME_ID = "kf_id";
@@ -397,6 +415,7 @@ namespace Dream
         {AssetType::PATH,             ASSET_TYPE_PATH},
         {AssetType::PHYSICS_OBJECT,   ASSET_TYPE_PHYSICS_OBJECT},
         {AssetType::SCRIPT,           ASSET_TYPE_SCRIPT},
+        {AssetType::SCROLLER,         ASSET_TYPE_SCROLLER},
         {AssetType::SHADER,           ASSET_TYPE_SHADER},
         {AssetType::TEXTURE,          ASSET_TYPE_TEXTURE}
     };
@@ -413,6 +432,7 @@ namespace Dream
         ASSET_TYPE_PATH_READABLE,
         ASSET_TYPE_PHYSICS_OBJECT_READABLE,
         ASSET_TYPE_SCRIPT_READABLE,
+        ASSET_TYPE_SCROLLER_READABLE,
         ASSET_TYPE_SHADER_READABLE,
         ASSET_TYPE_TEXTURE_READABLE
     };
@@ -491,7 +511,13 @@ namespace Dream
         {
             AssetType::SCRIPT,
             {
-                ASSET_FORMAT_SCRIPT_LUA,
+                ASSET_FORMAT_SCRIPT_LUA
+            }
+        },
+        {
+            AssetType::SCROLLER,
+            {
+                ASSET_FORMAT_DREAM
             }
         },
         {
@@ -534,6 +560,8 @@ namespace Dream
                 return ASSET_TYPE_PHYSICS_OBJECT;
             case SCRIPT:
                 return ASSET_TYPE_SCRIPT;
+            case SCROLLER:
+                return ASSET_TYPE_SCROLLER;
             case SHADER:
                 return ASSET_TYPE_SHADER;
             case TEXTURE:
@@ -608,6 +636,12 @@ namespace Dream
             return SCRIPT;
         }
 
+        else if (type.compare(ASSET_TYPE_SCROLLER) == 0 ||
+                 type.compare(ASSET_TYPE_SCROLLER_READABLE) == 0)
+        {
+            return SCROLLER;
+        }
+
         else if (type.compare(ASSET_TYPE_SHADER) == 0 ||
                  type.compare(ASSET_TYPE_SHADER_READABLE) == 0)
         {
@@ -674,6 +708,11 @@ namespace Dream
         else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
         {
             return ASSET_TYPE_SCRIPT_READABLE;
+        }
+
+        else if (type.compare(ASSET_TYPE_SCROLLER) == 0)
+        {
+            return ASSET_TYPE_SCROLLER_READABLE;
         }
 
         else if (type.compare(ASSET_TYPE_SHADER) == 0)

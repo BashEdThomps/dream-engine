@@ -130,6 +130,28 @@ namespace Dream
         return getType().compare(Constants::ASSET_TYPE_TEXTURE) == 0;
     }
 
+    json
+    AssetDefinition::wrapVec3(const vec3& v)
+    {
+       json retval = json::object();
+       retval[Constants::X] = v.x;
+       retval[Constants::Y] = v.y;
+       retval[Constants::Z] = v.z;
+       return retval;
+    }
+
+    vec3
+    AssetDefinition::unwrapVec3
+    (const json& j)
+    {
+        return vec3
+        (
+            j[Constants::X],
+            j[Constants::Y],
+            j[Constants::Z]
+        );
+    }
+
     bool
     AssetDefinition::isTypePath
     ()

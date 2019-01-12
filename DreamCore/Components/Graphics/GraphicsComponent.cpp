@@ -762,8 +762,8 @@ namespace Dream
 
         // Setup Uniforms
         static float near_plane = 0.1f;
-        static float far_plane = 255.0f;
-        static float sz = 100.0f;
+        static float far_plane = 200.0f;
+        static float sz = 200.0f;
 
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
         /*
@@ -779,12 +779,12 @@ namespace Dream
         vec3 dirVec = dir.direction;
         mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
         mShadowMatrix = lightProjection*lightView;
-        glDisable( GL_CULL_FACE );
+        glCullFace(GL_FRONT);
         if (mShaderCache != nullptr)
         {
             mShaderCache->drawShadowPass(mShadowMatrix, mShadowPassShader);
         }
-        glEnable( GL_CULL_FACE );
+        glCullFace(GL_BACK);
     }
 
     void

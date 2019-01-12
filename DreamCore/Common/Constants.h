@@ -41,6 +41,7 @@ namespace Dream
         PATH,
         PHYSICS_OBJECT,
         SCRIPT,
+        SCROLLER,
         SHADER,
         TEXTURE,
         NONE
@@ -111,6 +112,7 @@ namespace Dream
         const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
+        const static string ASSET_TYPE_SCROLLER;
         const static string ASSET_TYPE_SHADER;
         const static string ASSET_TYPE_TEXTURE;
         const static string ASSET_TYPE_MATERIAL;
@@ -148,6 +150,7 @@ namespace Dream
         const static string ASSET_TYPE_MODEL_READABLE;
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         const static string ASSET_TYPE_SCRIPT_READABLE;
+        const static string ASSET_TYPE_SCROLLER_READABLE;
         const static string ASSET_TYPE_SHADER_READABLE;
         const static string ASSET_TYPE_TEXTURE_READABLE;
         const static string ASSET_TYPE_MATERIAL_READABLE;
@@ -172,7 +175,7 @@ namespace Dream
         const static string SCENE_NOTES;
         const static string SCENE_ROOT_SCENE_OBJECT;
         const static string SCENE_CAMERA_TRANSFORM;
-        const static string  SCENE_CAMERA_MOVEMENT_SPEED;
+        const static string SCENE_CAMERA_MOVEMENT_SPEED;
         const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
         const static string SCENE_MOVEMENT_SPEED;
         const static string SCENE_CLEAR_COLOUR;
@@ -247,6 +250,16 @@ namespace Dream
         const static string DREAM_PATH_TYPE_CLAMPED;
         const static string DREAM_PATH_TYPE_BEZIER;
         const static string ASSET_ATTR_STEP_SCALAR;
+
+        // Particle Emitter ========================================================
+        const static string PARTICLE_EMITTER_TEXTURE;
+        const static string PARTICLE_EMITTER_AREA;
+        const static string PARTICLE_EMITTER_SIZE;
+        const static string PARTICLE_EMITTER_VELOCITY;
+        const static string PARTICLE_EMITTER_GRAVITY;
+        const static string PARTICLE_EMITTER_PER_SECOND;
+        const static string PARTICLE_EMITTER_LIFETIME;
+
 
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
@@ -345,6 +358,13 @@ namespace Dream
         const static string LUA_INPUT_FUNCTION;
         const static string LUA_EVENT_FUNCTION;
 
+        // Scroller ============================================================
+        const static string SCROLLER_VELOCITY;
+        const static string SCROLLER_LOOP;
+        const static string SCROLLER_ITEMS_ARRAY;
+        const static string SCROLLER_ITEM_INDEX;
+        const static string SCROLLER_ITEM_OFFSET;
+
         // Audio =================================================================
         #define AUDIO_BUFFER_SIZE 32768
         const static string ASSET_ATTR_SPECTRUM_ANALYSER;
@@ -389,7 +409,7 @@ namespace Dream
         // Data Maps ============================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;
-        static map<AssetType,vector<string>> DREAM_ASSET_FORMATS_MAP;
+        static map<AssetType,vector<string> > DREAM_ASSET_FORMATS_MAP;
         static vector<string> DREAM_ANIMATION_SPLINE_TYPES;
 
         static string getAssetTypeStringFromTypeEnum(AssetType type);

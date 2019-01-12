@@ -23,9 +23,9 @@ using std::vector;
 namespace Dream
 {
     // Forward Declarations
-
     class Project;
     class PathComponent;
+    class ScrollerComponent;
     class AnimationComponent;
     class AudioComponent;
     class InputComponent;
@@ -69,6 +69,7 @@ namespace Dream
         PathComponent* mPathComponent;
         ScriptComponent* mScriptComponent;
         WindowComponent* mWindowComponent;
+        ScrollerComponent* mScrollerComponent;
 
         // Caches
         AudioCache* mAudioCache;
@@ -100,6 +101,7 @@ namespace Dream
         WindowComponent* getWindowComponent();
         ScriptComponent* getScriptComponent();
         InputComponent* getInputComponent();
+        ScrollerComponent* getScrollerComponent();
 
         Project* getProject();
 
@@ -158,6 +160,7 @@ namespace Dream
         bool initNanoVGComponent();
         bool initWindowComponent();
         bool initScriptComponent();
+        bool initScrollerComponent();
         bool initCaches();
 
         void deleteCaches();
