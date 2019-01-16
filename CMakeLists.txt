@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream C CXX)
 
-set(DREAM_LOG ON)
+set(DREAM_LOG OFF)
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
 set(DREAM_BUILD_TOOL ON)

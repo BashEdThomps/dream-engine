@@ -20,7 +20,7 @@
 
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/String.h"
+#include "ScrollerRuntime.h"
 
 namespace Dream
 {
@@ -76,9 +76,10 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentSceneObject)
                     {
-                        if (currentSceneObject->hasScrollerInstance())
+                        if (currentSceneObject->hasScrollerRuntime())
                         {
-                            // TODO: Fix dis
+                                ScrollerRuntime* scroller = currentSceneObject->getScrollerRuntime();
+                                scroller->update(sr);
                         }
                         return nullptr;
                     }

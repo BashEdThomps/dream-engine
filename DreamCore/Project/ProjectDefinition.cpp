@@ -169,7 +169,7 @@ namespace Dream
 
 
     AssetDefinition*
-    ProjectDefinition::createAssetDefinitionInstance
+    ProjectDefinition::createAssetDefinitionRuntime
     (json assetDefinitionJs)
     {
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
@@ -223,7 +223,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (json assetDefinitionJs)
     {
-        AssetDefinition* newDef = createAssetDefinitionInstance(assetDefinitionJs);
+        AssetDefinition* newDef = createAssetDefinitionRuntime(assetDefinitionJs);
         if (newDef != nullptr)
         {
             mAssetDefinitions.push_back(newDef);
@@ -447,7 +447,7 @@ namespace Dream
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-        AssetDefinition* ad = createAssetDefinitionInstance(assetDefinitionJson);
+        AssetDefinition* ad = createAssetDefinitionRuntime(assetDefinitionJson);
         mAssetDefinitions.push_back(ad);
 
         return ad;

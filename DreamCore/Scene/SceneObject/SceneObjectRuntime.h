@@ -65,36 +65,36 @@ namespace Dream
         SceneRuntime* getSceneRuntime();
         SceneObjectDefinition* getSceneObjectDefinition();
 
-        bool createAssetInstances();
-        bool createAnimationInstance(AnimationDefinition*);
-        bool createPathInstance(PathDefinition*);
-        bool createAudioInstance(AudioDefinition*);
-        bool createModelInstance(ModelDefinition*);
-        bool createScriptInstance(ScriptDefinition*);
-        bool createPhysicsObjectInstance(PhysicsObjectDefinition*);
-        bool createParticleEmitterInstance(ParticleEmitterDefinition*);
-        bool createLightInstance(LightDefinition*);
-        bool createScrollerInstance(ScrollerDefinition*);
+        bool createAssetRuntimes();
+        bool createAnimationRuntime(AnimationDefinition*);
+        bool createPathRuntime(PathDefinition*);
+        bool createAudioRuntime(AudioDefinition*);
+        bool createModelRuntime(ModelDefinition*);
+        bool createScriptRuntime(ScriptDefinition*);
+        bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
+        bool createParticleEmitterRuntime(ParticleEmitterDefinition*);
+        bool createLightRuntime(LightDefinition*);
+        bool createScrollerRuntime(ScrollerDefinition*);
 
-        AnimationRuntime* getAnimationInstance();
-        PathRuntime*  getPathInstance();
-        AudioRuntime* getAudioInstance();
-        ModelRuntime* getModelInstance();
-        ScriptRuntime* getScriptInstance();
-        PhysicsObjectRuntime* getPhysicsObjectInstance();
-        LightRuntime* getLightInstance();
-        ParticleEmitterRuntime* getParticleEmitterInstance();
-        ScrollerRuntime* getScrollerInstance();
-        AssetRuntime* getAssetInstance(AssetType);
+        AnimationRuntime* getAnimationRuntime();
+        PathRuntime*  getPathRuntime();
+        AudioRuntime* getAudioRuntime();
+        ModelRuntime* getModelRuntime();
+        ScriptRuntime* getScriptRuntime();
+        PhysicsObjectRuntime* getPhysicsObjectRuntime();
+        LightRuntime* getLightRuntime();
+        ParticleEmitterRuntime* getParticleEmitterRuntime();
+        ScrollerRuntime* getScrollerRuntime();
+        AssetRuntime* getAssetRuntime(AssetType);
 
-        bool hasAnimationInstance();
-        bool hasPathInstance();
-        bool hasAudioInstance();
-        bool hasModelInstance();
-        bool hasScriptInstance();
-        bool hasPhysicsObjectInstance();
-        bool hasLightInstance();
-        bool hasScrollerInstance();
+        bool hasAnimationRuntime();
+        bool hasPathRuntime();
+        bool hasAudioRuntime();
+        bool hasModelRuntime();
+        bool hasScriptRuntime();
+        bool hasPhysicsObjectRuntime();
+        bool hasLightRuntime();
+        bool hasScrollerRuntime();
 
         Transform& getTransform();
         void setTransform(const Transform& transform);
@@ -118,7 +118,7 @@ namespace Dream
         void addChildRuntime(SceneObjectRuntime*);
         void removeChildRuntime(SceneObjectRuntime*);
         SceneObjectRuntime* createAndAddChildRuntime(SceneObjectDefinition*);
-        vector<SceneObjectRuntime*> getChildRuntimes();
+        vector<SceneObjectRuntime*>& getChildRuntimes();
         bool isChildOf(SceneObjectRuntime*);
 
         bool isParentOf(SceneObjectRuntime* child);
@@ -133,15 +133,15 @@ namespace Dream
         bool getHidden() const;
         void setHidden(bool hidden);
 
-        void removeAnimationInstance();
-        void removeAudioInstance();
-        void removePathInstance();
-        void removeModelInstance();
-        void removeLightInstance();
-        void removeScriptInstance();
-        void removePhysicsObjectInstance();
-        void removeParticleEmitterInstance();
-        void removeScrollerInstance();
+        void removeAnimationRuntime();
+        void removeAudioRuntime();
+        void removePathRuntime();
+        void removeModelRuntime();
+        void removeLightRuntime();
+        void removeScriptRuntime();
+        void removePhysicsObjectRuntime();
+        void removeParticleEmitterRuntime();
+        void removeScrollerRuntime();
 
         bool replaceAssetUuid(AssetType type, uint32_t uuid);
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
@@ -164,21 +164,21 @@ namespace Dream
         bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
         SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
         void translateOffsetInitialWithChildren(const vec3& translation);
+        void initTransform();
 
     protected:
-        void initTransform();
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
     private:
-        AnimationRuntime* mAnimationInstance;
-        AudioRuntime* mAudioInstance;
-        LightRuntime* mLightInstance;
-        ParticleEmitterRuntime* mParticleEmitterInstance;
-        PathRuntime* mPathInstance;
-        PhysicsObjectRuntime* mPhysicsObjectInstance;
-        ScriptRuntime* mScriptInstance;
-        ModelRuntime* mModelInstance;
-        ScrollerRuntime* mScrollerInstance;
+        AnimationRuntime* mAnimationRuntime;
+        AudioRuntime* mAudioRuntime;
+        LightRuntime* mLightRuntime;
+        ParticleEmitterRuntime* mParticleEmitterRuntime;
+        PathRuntime* mPathRuntime;
+        PhysicsObjectRuntime* mPhysicsObjectRuntime;
+        ScriptRuntime* mScriptRuntime;
+        ModelRuntime* mModelRuntime;
+        ScrollerRuntime* mScrollerRuntime;
         Transform mInitialTransform;
         Transform mTransform;
         vector<Event> mEventQueue;

@@ -74,8 +74,8 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
 
-        void addInstance(SceneObjectRuntime*);
-        void removeInstance(SceneObjectRuntime*);
+        void addRuntime(SceneObjectRuntime*);
+        void removeRuntime(SceneObjectRuntime*);
 
         vector<string> getMaterialNames();
         vector<ModelMesh*> getMeshes() const;

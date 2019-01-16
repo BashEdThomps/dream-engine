@@ -102,7 +102,7 @@ namespace Dream
         void loadAssetDefinitions();
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
-        AssetDefinition* createAssetDefinitionInstance(json assetDefinitionJs);
+        AssetDefinition* createAssetDefinitionRuntime(json assetDefinitionJs);
         map<AssetType,vector<string>> mAssetDefinitionGroups;
     };
 }

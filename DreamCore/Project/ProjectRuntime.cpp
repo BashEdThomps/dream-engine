@@ -568,9 +568,9 @@ namespace Dream
         mTime->updateFrameTime();
         mInputComponent->updateComponent(sr);
         mPathComponent->updateComponent(sr);
+        mScrollerComponent->updateComponent(sr);
         mAnimationComponent->updateComponent(sr);
         // Processing
-        mScrollerComponent->updateComponent(sr);
         mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->updateComponent(sr);
         if (mScriptingEnabled)
@@ -600,7 +600,7 @@ namespace Dream
 #endif
         // Draw 3D/PhysicsDebug/2D
         ModelMesh::DrawCalls = 0;
-        ModelMesh::InstancesDrawn = 0;
+        ModelMesh::RuntimesDrawn = 0;
         mGraphicsComponent->handleResize();
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
@@ -610,7 +610,7 @@ namespace Dream
         mPhysicsComponent->drawDebug();
 
 #ifdef DREAM_LOG
-        log->trace("{} Instances in {} Draw Calls", ModelMesh::InstancesDrawn, ModelMesh::DrawCalls);
+        log->trace("{} Runtimes in {} Draw Calls", ModelMesh::RuntimesDrawn, ModelMesh::DrawCalls);
 #endif
     }
 

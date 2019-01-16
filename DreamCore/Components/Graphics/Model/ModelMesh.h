@@ -61,14 +61,14 @@ namespace Dream
         GLuint mIBO;
         vector<Vertex> mVertices;
         vector<GLuint> mIndices;
-        vector<SceneObjectRuntime*> mInstances;
-        vector<SceneObjectRuntime*> mInstancesInFrustum;
+        vector<SceneObjectRuntime*> mRuntimes;
+        vector<SceneObjectRuntime*> mRuntimesInFrustum;
 
     public:
         static long DrawCalls;
-        static long InstancesDrawn;
+        static long RuntimesDrawn;
         static long ShadowDrawCalls;
-        static long ShadowInstancesDrawn;
+        static long ShadowRuntimesDrawn;
 
         ModelMesh
         (
@@ -79,16 +79,16 @@ namespace Dream
         ~ModelMesh();
 
         void init();
-        void logInstances();
-        void addInstance(SceneObjectRuntime* runt);
-        void removeInstance(SceneObjectRuntime* runt);
+        void logRuntimes();
+        void addRuntime(SceneObjectRuntime* runt);
+        void removeRuntime(SceneObjectRuntime* runt);
         MaterialRuntime* getMaterial();
         string getName() const;
         void setName(const string& name);
         vector<Vertex> getVertices() const;
         vector<GLuint> getIndices() const;
         GLuint getVAO() const;
-        void drawGeometryPassInstances(Camera* camera, ShaderRuntime* shader);
-        void drawShadowPassInstances(ShaderRuntime* shader);
+        void drawGeometryPassRuntimes(Camera* camera, ShaderRuntime* shader);
+        void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
     };
 }

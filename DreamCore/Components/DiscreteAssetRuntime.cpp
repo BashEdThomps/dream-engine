@@ -33,7 +33,7 @@ namespace Dream
           mSceneObjectRuntime(runtime)
     {
 #ifdef DREAM_LOG
-        setLogClassName("DiscreteAssetInstance");
+        setLogClassName("DiscreteAssetRuntime");
 #endif
     }
 

@@ -1,4 +1,4 @@
-// Maintain include order for GL Defines
+// Maintain include order for GL Defined
 #include "PropertiesWindow.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -478,11 +478,11 @@ namespace DreamTool
                 {
                     auto cam = sceneRuntime->getCamera();
                     cam->setTranslation
-                    ({
-                         cameraTranslation[0],
-                         cameraTranslation[1],
-                         cameraTranslation[2]
-                    });
+                            ({
+                                 cameraTranslation[0],
+                                 cameraTranslation[1],
+                                 cameraTranslation[2]
+                             });
                 }
             }
 
@@ -877,9 +877,9 @@ namespace DreamTool
 
         ImGui::Columns(1);
 
-        if (soRuntime && soRuntime->hasAnimationInstance())
+        if (soRuntime && soRuntime->hasAnimationRuntime())
         {
-            auto animation = soRuntime->getAnimationInstance();
+            auto animation = soRuntime->getAnimationRuntime();
             if (ImGui::CollapsingHeader("Animation"))
             {
                 if (ImGui::Button("Run"))
@@ -923,7 +923,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::ANIMATION,0);
                 if (soRuntime)
                 {
-                    soRuntime->removeAnimationInstance();
+                    soRuntime->removeAnimationRuntime();
                 }
             }
             ImGui::SameLine();
@@ -962,7 +962,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::AUDIO,0);
                 if (soRuntime)
                 {
-                    soRuntime->removeAudioInstance();
+                    soRuntime->removeAudioRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1002,7 +1002,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::LIGHT,0);
                 if (soRuntime)
                 {
-                    soRuntime->removeLightInstance();
+                    soRuntime->removeLightRuntime();
                 }
 
             }
@@ -1044,7 +1044,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::MODEL,0);
                 if (soRuntime)
                 {
-                    soRuntime->removeModelInstance();
+                    soRuntime->removeModelRuntime();
                 }
 
             }
@@ -1086,7 +1086,7 @@ namespace DreamTool
                 soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
                 if (soRuntime)
                 {
-                    soRuntime->removeParticleEmitterInstance();
+                    soRuntime->removeParticleEmitterRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1125,7 +1125,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::PATH,0);
                 if (soRuntime)
                 {
-                    soRuntime->removePathInstance();
+                    soRuntime->removePathRuntime();
                 }
 
             }
@@ -1163,7 +1163,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,0);
                 if (soRuntime)
                 {
-                    soRuntime->removePhysicsObjectInstance();
+                    soRuntime->removePhysicsObjectRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1203,7 +1203,7 @@ namespace DreamTool
                 soDef->setAssetDefinition(AssetType::SCRIPT,0);
                 if (soRuntime)
                 {
-                    soRuntime->removeScriptInstance();
+                    soRuntime->removeScriptRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1231,6 +1231,46 @@ namespace DreamTool
                     if (selectedDef)
                     {
                         soRuntime->replaceAssetUuid(AssetType::SCRIPT, selectedDef->getUuid());
+                    }
+                }
+            }
+
+            // Scroller
+            int selectedScrollerAsset = soDef->getSelectedAssetIndex(AssetType::SCROLLER);
+            vector<string> scrollerAssets = projDef->getAssetNamesVector(AssetType::SCROLLER);
+            if(ImGui::Button("-##Scroller"))
+            {
+                soDef->setAssetDefinition(AssetType::SCROLLER,0);
+                if (soRuntime)
+                {
+                    soRuntime->removeScrollerRuntime();
+                }
+            }
+            ImGui::SameLine();
+
+            if(ImGui::Button(">##Scroller"))
+            {
+                if (selectedScrollerAsset < 0) return;
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCROLLER,selectedScrollerAsset);
+                pushPropertyTarget(
+                            PropertyType::Asset,
+                            asset,
+                            nullptr
+                            );
+                return;
+            }
+
+            ImGui::SameLine();
+
+            if(StringCombo("Scroller",&selectedScrollerAsset,scrollerAssets,scrollerAssets.size()))
+            {
+                soDef->setSelectedAssetIndex(AssetType::SCROLLER, selectedScrollerAsset);
+                if (soRuntime)
+                {
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::SCROLLER, selectedScrollerAsset);
+                    if (selectedDef)
+                    {
+                        soRuntime->replaceAssetUuid(AssetType::SCROLLER, selectedDef->getUuid());
                     }
                 }
             }
@@ -1340,18 +1380,18 @@ namespace DreamTool
                     if (withChildren)
                     {
                         soRunt->applyToAll
-                        (
-                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                            [&](SceneObjectRuntime* rt)
-                            {
-                                if (rt != soRunt)
-                                {
-                                    auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
-                                    d->setTransform(rt->getTransform());
-                                }
-                                return static_cast<SceneObjectRuntime*>(nullptr);
-                            }
-                        ));
+                                (
+                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                                        [&](SceneObjectRuntime* rt)
+                        {
+                                        if (rt != soRunt)
+                                        {
+                                            auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                            d->setTransform(rt->getTransform());
+                                        }
+                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                    }
+                                    ));
                     }
                 }
             }
@@ -1365,18 +1405,18 @@ namespace DreamTool
                     if (withChildren)
                     {
                         soRunt->applyToAll
-                        (
-                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                            [&](SceneObjectRuntime* rt)
-                            {
-                                if (rt != soRunt)
-                                {
-                                    auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
-                                    rt->setTransform(d->getTransform());
-                                }
-                                return static_cast<SceneObjectRuntime*>(nullptr);
-                            }
-                        ));
+                                (
+                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                                        [&](SceneObjectRuntime* rt)
+                        {
+                                        if (rt != soRunt)
+                                        {
+                                            auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                            rt->setTransform(d->getTransform());
+                                        }
+                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                    }
+                                    ));
                     }
 
                 }
@@ -1403,31 +1443,31 @@ namespace DreamTool
                     //ImGuizmo::DrawGrid(glm::value_ptr(view),glm::value_ptr(proj),matrix,1.0f);
                     mat4 delta(1.0f);
                     ImGuizmo::Manipulate
-                    (
-                        glm::value_ptr(view),
-                        glm::value_ptr(proj),
-                        mCurrentGizmoOperation,
-                        mCurrentGizmoMode,
-                        matrix,
-                        value_ptr(delta),
-                        mGizmoUseSnap ? &mGizmoSnap.x : nullptr
-                    );
+                            (
+                                glm::value_ptr(view),
+                                glm::value_ptr(proj),
+                                mCurrentGizmoOperation,
+                                mCurrentGizmoMode,
+                                matrix,
+                                value_ptr(delta),
+                                mGizmoUseSnap ? &mGizmoSnap.x : nullptr
+                                                );
 
                     if (soRunt && withChildren)
                     {
                         vec3 tx = vec3(delta[3]);
                         soRunt->applyToAll
-                        (
-                            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                            [&](SceneObjectRuntime* rt)
-                            {
-                                if (rt != soRunt)
-                                {
-                                    rt->getTransform().preTranslate(tx);
-                                }
-                                return static_cast<SceneObjectRuntime*>(nullptr);
-                            }
-                        ));
+                                (
+                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+                                        [&](SceneObjectRuntime* rt)
+                        {
+                                        if (rt != soRunt)
+                                        {
+                                            rt->getTransform().preTranslate(tx);
+                                        }
+                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                    }
+                                    ));
                     }
                 }
             }
@@ -1479,17 +1519,17 @@ namespace DreamTool
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     ImGuizmo::Manipulate
-                    (
-                        glm::value_ptr(view),
-                        glm::value_ptr(proj),
-                        currentGizmoOperation,
-                        currentGizmoMode,
-                        matrix,
-                        nullptr,
-                        mGizmoUseSnap ? &mGizmoSnap.x : nullptr
-                    );
+                            (
+                                glm::value_ptr(view),
+                                glm::value_ptr(proj),
+                                currentGizmoOperation,
+                                currentGizmoMode,
+                                matrix,
+                                nullptr,
+                                mGizmoUseSnap ? &mGizmoSnap.x : nullptr
+                                                );
                     ccd.parent->updateCompoundChildTransform(ccd);
-                    replaceRuntimeInstances(ccd.parent);
+                    replaceRuntimeRuntimes(ccd.parent);
                 }
             }
         }
@@ -1524,8 +1564,8 @@ namespace DreamTool
         strncpy(&groupStr[0], assetDef->getGroup().c_str(), assetDef->getGroup().size());
         if (ImGui::InputText("Group", &groupStr[0],128))
         {
-           assetDef->setGroup(groupStr);
-           assetDef->getProject()->regroupAssetDefinitions();
+            assetDef->setGroup(groupStr);
+            assetDef->getProject()->regroupAssetDefinitions();
         }
         ImGui::Separator();
         auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
@@ -1582,12 +1622,12 @@ namespace DreamTool
             {
                 ImGui::Separator();
                 ImGui::Columns(1);
-                if(ImGui::CollapsingHeader("Active Instances"))
+                if(ImGui::CollapsingHeader("Active Runtimes"))
                 {
-                    auto instances = activeScene->getSceneObjectsWithInstanceOf(assetDef);
-                    for (auto instance : instances)
+                    auto runtimes = activeScene->getSceneObjectsWithRuntimeOf(assetDef);
+                    for (auto runtime : runtimes)
                     {
-                        ImGui::Text("%s",instance->getNameAndUuidString().c_str());
+                        ImGui::Text("%s",runtime->getNameAndUuidString().c_str());
                     }
                 }
             }
@@ -1603,7 +1643,7 @@ namespace DreamTool
         int duration = animDef->getDuration();
         if (ImGui::InputInt("Duration (ms)",&duration))
         {
-           animDef->setDuration(duration);
+            animDef->setDuration(duration);
         }
 
         ImGui::Columns(2);
@@ -1719,8 +1759,8 @@ namespace DreamTool
             int currentEasingType = kf.getEasingType();
             if (StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
             {
-               kf.setEasingType(static_cast<AnimationEasing::Type>(currentEasingType));
-               animDef->updateKeyframe(kf);
+                kf.setEasingType(static_cast<AnimationEasing::Type>(currentEasingType));
+                animDef->updateKeyframe(kf);
             }
 
             ImGui::NextColumn();
@@ -1765,7 +1805,7 @@ namespace DreamTool
         if (projRunt)
         {
             auto audioCache = projRunt->getAudioCache();
-            audioRunt = dynamic_cast<AudioRuntime*>(audioCache->getInstance(audioDef));
+            audioRunt = dynamic_cast<AudioRuntime*>(audioCache->getRuntime(audioDef));
         }
 
 
@@ -2121,10 +2161,10 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(diffuseDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
-                if (txInstance)
+                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                if (txRuntime)
                 {
-                    diffuseTxId = (void*)(intptr_t)txInstance->getGLID();
+                    diffuseTxId = (void*)(intptr_t)txRuntime->getGLID();
                 }
             }
 
@@ -2134,10 +2174,10 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(specularDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
-                if (txInstance)
+                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                if (txRuntime)
                 {
-                    specularTxId = (void*)(intptr_t)txInstance->getGLID();
+                    specularTxId = (void*)(intptr_t)txRuntime->getGLID();
                 }
             }
 
@@ -2147,10 +2187,10 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(normalDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
-                if (txInstance)
+                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                if (txRuntime)
                 {
-                    normalTxId = (void*)(intptr_t)txInstance->getGLID();
+                    normalTxId = (void*)(intptr_t)txRuntime->getGLID();
                 }
             }
 
@@ -2160,10 +2200,10 @@ namespace DreamTool
             {
                 auto txDef = dynamic_cast<TextureDefinition*>(displacementDef);
                 auto txCache = projRunt->getTextureCache();
-                auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
-                if (txInstance)
+                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                if (txRuntime)
                 {
-                    displacementTxId = (void*)(intptr_t)txInstance->getGLID();
+                    displacementTxId = (void*)(intptr_t)txRuntime->getGLID();
                 }
             }
         }
@@ -2323,11 +2363,11 @@ namespace DreamTool
             auto modelCache = projRunt->getModelCache();
             if (modelCache)
             {
-                auto modelInstance = dynamic_cast<ModelRuntime*>(modelCache->getInstance(def));
-                if (modelInstance)
+                auto modelRuntime = dynamic_cast<ModelRuntime*>(modelCache->getRuntime(def));
+                if (modelRuntime)
                 {
-                    modelMaterialNames = modelInstance->getMaterialNames();
-                    bones = modelInstance->getBones();
+                    modelMaterialNames = modelRuntime->getMaterialNames();
+                    bones = modelRuntime->getBones();
                 }
             }
         }
@@ -2464,7 +2504,7 @@ namespace DreamTool
                 pod->setHalfExtentsX(halfExtents[0]);
                 pod->setHalfExtentsY(halfExtents[1]);
                 pod->setHalfExtentsZ(halfExtents[2]);
-            modified = true;
+                modified = true;
             }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
@@ -2488,7 +2528,7 @@ namespace DreamTool
             {
                 AssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
                 pod->setCollisionModel(newlySelected->getUuid());
-            modified = true;
+                modified = true;
             }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
@@ -2499,13 +2539,13 @@ namespace DreamTool
                 pod->getNormalZ()
             };
 
-           if (ImGui::InputFloat3("Plane Normal",&normal[0], 3))
-           {
+            if (ImGui::InputFloat3("Plane Normal",&normal[0], 3))
+            {
                 pod->setNormalX(normal[0]);
                 pod->setNormalY(normal[1]);
                 pod->setNormalZ(normal[2]);
                 modified = true;
-           }
+            }
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
         {
@@ -2524,13 +2564,13 @@ namespace DreamTool
                     {
                         auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,shapeNameIndex);
                         pod->addCompoundChild(
-                            CompoundChildDefinition
-                            {
+                                    CompoundChildDefinition
+                        {
                                         pod,
-                                Transform(),
-                                childDef->getUuid()
-                            }
-                        );
+                                        Transform(),
+                                        childDef->getUuid()
+                                    }
+                                    );
                     }
                     modified = true;
                 }
@@ -2543,16 +2583,16 @@ namespace DreamTool
                 static uint32_t selectedToTransform = 0;
                 for (auto shape : shapes)
                 {
-                   auto shapeDef = pDef->getAssetDefinitionByUuid(shape.uuid);
+                    auto shapeDef = pDef->getAssetDefinitionByUuid(shape.uuid);
 
-                   if (!shapeDef)
-                   {
-                       continue;
-                   }
-                   ImGui::PushID(shape.uuid);
-                   ImGui::SetNextTreeNodeOpen(selectedToTransform == shape.uuid);
-                   if (ImGui::CollapsingHeader(shapeDef->getName().c_str()))
-                   {
+                    if (!shapeDef)
+                    {
+                        continue;
+                    }
+                    ImGui::PushID(shape.uuid);
+                    ImGui::SetNextTreeNodeOpen(selectedToTransform == shape.uuid);
+                    if (ImGui::CollapsingHeader(shapeDef->getName().c_str()))
+                    {
                         selectedToTransform = shape.uuid;
                         drawPhysicsImGizmo(shape);
                         if(ImGui::Button("Remove Shape"))
@@ -2560,15 +2600,15 @@ namespace DreamTool
                             pod->removeCompoundChild(shape);
                             modified = true;
                         }
-                   }
-                   ImGui::PopID();
+                    }
+                    ImGui::PopID();
                 }
             }
         }
         if (modified)
         {
 
-            replaceRuntimeInstances(pod);
+            replaceRuntimeRuntimes(pod);
         }
     }
 
@@ -2605,7 +2645,7 @@ namespace DreamTool
             auto shaderCache = projRunt->getShaderCache();
             if (shaderCache)
             {
-                shaderInst = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderDef));
+                shaderInst = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderDef));
             }
         }
         ImGui::PushItemWidth(-1);
@@ -2661,10 +2701,10 @@ namespace DreamTool
         {
             auto txDef = dynamic_cast<TextureDefinition*>(textureDefinition);
             auto txCache = projRunt->getTextureCache();
-            auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(txDef));
-            if (txInstance)
+            auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+            if (txRuntime)
             {
-                previewTexture = (void*)(intptr_t)txInstance->getGLID();
+                previewTexture = (void*)(intptr_t)txRuntime->getGLID();
             }
         }
 
@@ -2682,7 +2722,7 @@ namespace DreamTool
         vec2 size = peDef->getParticleSize();
         if (ImGui::DragFloat2("Particle Size", glm::value_ptr(size)))
         {
-           peDef->setParticleSize(size);
+            peDef->setParticleSize(size);
         }
 
         // Velocity
@@ -2725,10 +2765,10 @@ namespace DreamTool
         if (projRunt)
         {
             auto txCache = projRunt->getTextureCache();
-            auto txInstance = dynamic_cast<TextureRuntime*>(txCache->getInstance(textureDef));
-            if (txInstance)
+            auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(textureDef));
+            if (txRuntime)
             {
-                textureId = (void*)(intptr_t)txInstance->getGLID();
+                textureId = (void*)(intptr_t)txRuntime->getGLID();
             }
         }
 
@@ -2768,51 +2808,149 @@ namespace DreamTool
     ()
     {
         ScrollerDefinition* scrDef = static_cast<ScrollerDefinition*>(mDefinition);
+        auto projDef = mState->project->getDefinition();
 
-       vec3 velocity = scrDef->getVelocity();
-       if (ImGui::DragFloat3("Velocity",glm::value_ptr(velocity)))
-       {
-          scrDef->setVelocity(velocity);
-       }
+        vec3 velocity = scrDef->getVelocity();
+        if (ImGui::DragFloat3("Velocity (units/s)",glm::value_ptr(velocity)))
+        {
+            scrDef->setVelocity(velocity);
+        }
 
-       bool loop = scrDef->getLoop();
-       if (ImGui::Checkbox("Loop",&loop))
-       {
-           scrDef->setLoop(loop);
-       }
+        ImGui::Separator();
+        ImGui::Text("Range");
 
-       ImGui::Separator();
+        vec3 rangeBegin = scrDef->getRangeBegin();
+        if (ImGui::DragFloat3("Begin",glm::value_ptr(rangeBegin)))
+        {
+            scrDef->setRangeBegin(rangeBegin);
+        }
 
-       ImGui::Text("Scroller Items");
-       if(ImGui::Button("Add Item"))
-       {
-           scrDef->addItem(ScrollerItem());
-       }
+        vec3 rangeEnd = scrDef->getRangeEnd();
+        if (ImGui::DragFloat3("End",glm::value_ptr(rangeEnd)))
+        {
+            scrDef->setRangeEnd(rangeEnd);
+        }
 
-       ImGui::Columns(2);
+        ImGui::Separator();
 
-       vector<ScrollerItem> items = scrDef->getItemsArray();
+        bool loop = scrDef->getLoop();
+        if (ImGui::Checkbox("Loop",&loop))
+        {
+            scrDef->setLoop(loop);
+        }
 
-       int id = 0;
-       for (ScrollerItem item : items)
-       {
-           ImGui::PushID(id++);
-           ImGui::Separator();
-           vec3 offset = item.offset;
-           if (ImGui::DragFloat3("Offset",glm::value_ptr(offset)))
-           {
-              item.offset = offset;
-           }
-           ImGui::NextColumn();
-           if(ImGui::Button("Remove"))
-           {
+        ImGui::Separator();
 
-           }
-           ImGui::NextColumn();
-           ImGui::PopID();
-       }
+        ImGui::Text("Scroller Items");
+        if(ImGui::Button("Add Item"))
+        {
+            ScrollerItem item;
+            item.index = scrDef->getNextItemIndex();
+            scrDef->addItem(item);
+        }
 
-       ImGui::Columns(1);
+        ImGui::Columns(4);
+
+        ImGui::Text("ID");
+        ImGui::NextColumn();
+        ImGui::Text("Reorder");
+        ImGui::NextColumn();
+        ImGui::Text("Model");
+        ImGui::NextColumn();
+        ImGui::Text("Origin");
+        ImGui::NextColumn();
+
+
+        vector<ScrollerItem> items = scrDef->getItemsArray();
+        vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
+
+        int id = 0;
+        for (ScrollerItem item : items)
+        {
+            bool updated = false;
+            bool removed = false;
+            bool movedForward = false;
+            bool movedBack = false;
+            bool copied = false;
+
+            ImGui::PushID(id++);
+            ImGui::Separator();
+
+            ImGui::Text("%d",item.index);
+            ImGui::NextColumn();
+
+            if(ImGui::Button("Up"))
+            {
+                movedBack = true;
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Down"))
+            {
+                movedForward = true;
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Copy"))
+            {
+                copied = true;
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Remove"))
+            {
+                removed = true;
+            }
+
+            ImGui::NextColumn();
+
+            uint32_t modelUuid = item.uuid;
+            AssetDefinition* selectedDef = projDef->getAssetDefinitionByUuid(modelUuid);
+            int modelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedDef);
+
+            ImGui::PushItemWidth(-1);
+            if(StringCombo("##Model",&modelAssetIndex,modelAssets,modelAssets.size()))
+            {
+                item.uuid = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, modelAssetIndex)->getUuid();
+                updated = true;
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::NextColumn();
+
+            vec3 origin = item.origin;
+            ImGui::PushItemWidth(-1);
+            if (ImGui::DragFloat3("##Origin",glm::value_ptr(origin)))
+            {
+                item.origin = origin;
+                updated = true;
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::NextColumn();
+
+            ImGui::PopID();
+
+            if (updated)
+            {
+               scrDef->updateScrollerItem(item);
+            }
+            else if (removed)
+            {
+                scrDef->removeScrollerItem(item);
+            }
+            else if (movedForward)
+            {
+                scrDef->moveScrollerItem(item,true);
+            }
+            else if (movedBack)
+            {
+                scrDef->moveScrollerItem(item,false);
+            }
+            else if (copied)
+            {
+                scrDef->copyScrollerItem(item);
+            }
+        }
+
+        ImGui::Columns(1);
     }
 
     int
@@ -2831,7 +2969,7 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::replaceRuntimeInstances
+    PropertiesWindow::replaceRuntimeRuntimes
     (AssetDefinition* assetDef)
     {
         auto pRunt = mState->project->getRuntime();
@@ -2840,7 +2978,7 @@ namespace DreamTool
             auto sRunt = pRunt->getActiveSceneRuntime();
             if (sRunt)
             {
-                auto runts = sRunt->getSceneObjectsWithInstanceOf(assetDef);
+                auto runts = sRunt->getSceneObjectsWithRuntimeOf(assetDef);
                 for (auto soRunt : runts)
                 {
                     soRunt->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());

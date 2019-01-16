@@ -39,9 +39,9 @@ namespace Dream
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
-        void addInstance(SceneObjectRuntime*);
-        void removeInstance(SceneObjectRuntime*);
-        vector<SceneObjectRuntime*> getInstanceVector();
+        void addRuntime(SceneObjectRuntime*);
+        void removeRuntime(SceneObjectRuntime*);
+        vector<SceneObjectRuntime*> getRuntimeVector();
         string& getSource();
         void setSource(string source);
 
@@ -55,7 +55,7 @@ namespace Dream
         void registerInputScript();
         void registerNanoVGScript();
     private:
-        vector<ScriptRuntimeState> mInstances;
+        vector<ScriptRuntimeState> mRuntimes;
         string mSource;
         bool mError;
     };

@@ -133,39 +133,39 @@ namespace Dream
 
 #ifdef DREAM_LOG
     void
-    ModelMesh::logInstances
+    ModelMesh::logRuntimes
     ()
     {
        auto log = getLog();
-       for (auto instance : mInstances)
+       for (auto Runtime : mRuntimes)
        {
-           log->debug("\t\t\tInstance for {}", instance->getNameAndUuidString());
+           log->debug("\t\t\tRuntime for {}", Runtime->getNameAndUuidString());
        }
     }
 #endif
 
     void
-    ModelMesh::addInstance
+    ModelMesh::addRuntime
     (SceneObjectRuntime* runt)
     {
 #ifdef DREAM_LOG
-        getLog()->debug("Adding instance of mesh for {}", runt->getNameAndUuidString());
+        getLog()->debug("Adding Runtime of mesh for {}", runt->getNameAndUuidString());
 #endif
-        mInstances.push_back(runt);
+        mRuntimes.push_back(runt);
     }
 
     void
-    ModelMesh::removeInstance
+    ModelMesh::removeRuntime
     (SceneObjectRuntime* runt)
     {
 #ifdef DREAM_LOG
        auto log = getLog();
-       log->debug("Removing instance of mesh for {}", runt->getNameAndUuidString());
+       log->debug("Removing Runtime of mesh for {}", runt->getNameAndUuidString());
 #endif
-       auto itr = find (mInstances.begin(), mInstances.end(), runt);
-       if (itr != mInstances.end())
+       auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
+       if (itr != mRuntimes.end())
        {
-           mInstances.erase(itr);
+           mRuntimes.erase(itr);
        }
     }
 
@@ -185,66 +185,66 @@ namespace Dream
     }
 
     void
-    ModelMesh::drawGeometryPassInstances
+    ModelMesh::drawGeometryPassRuntimes
     (Camera* camera, ShaderRuntime* shader)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
 #endif
-        mInstancesInFrustum.clear();
-        for (size_t i=0; i<mInstances.size();i++)
+        mRuntimesInFrustum.clear();
+        for (size_t i=0; i<mRuntimes.size();i++)
         {
-            auto sor = mInstances.at(i);
+            auto sor = mRuntimes.at(i);
             if(camera->visibleInFrustum(sor))
             {
-                mInstancesInFrustum.push_back(sor);
+                mRuntimesInFrustum.push_back(sor);
             }
         }
-        if (mInstancesInFrustum.empty())
+        if (mRuntimesInFrustum.empty())
         {
 #ifdef DREAM_LOG
-            log->debug("(Geometry) No instances of {} in Frustum", getName());
+            log->debug("(Geometry) No Runtimes of {} in Frustum", getName());
 #endif
             return;
         }
 #ifdef DREAM_LOG
-        log->trace("(Geometry) Drawing {} instances of mesh {} for Geometry pass", mInstances.size(), getName());
+        log->trace("(Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
 #endif
         shader->bindVertexArray(mVAO);
-        shader->bindInstances(mInstancesInFrustum);
-        auto size = static_cast<GLsizei>(mInstancesInFrustum.size());
-        InstancesDrawn += size;
+        shader->bindRuntimes(mRuntimesInFrustum);
+        auto size = static_cast<GLsizei>(mRuntimesInFrustum.size());
+        RuntimesDrawn += size;
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
         DrawCalls++;
     }
 
     void
-    ModelMesh::drawShadowPassInstances
-    (ShaderRuntime* shader)
+    ModelMesh::drawShadowPassRuntimes
+    (ShaderRuntime* shader, bool inFrustumOnly)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
 #endif
-        if (mInstances.empty())
+        if (mRuntimes.empty())
         {
 #ifdef DREAM_LOG
-            log->debug("(Shadow) No instances of {} in Frustum", getName());
+            log->debug("(Shadow) No Runtimes of {} in Frustum", getName());
 #endif
             return;
         }
 #ifdef DREAM_LOG
-        log->trace("(Shadow) Drawing {} instances of mesh {}", mInstances.size(), getName());
+        log->trace("(Shadow) Drawing {} Runtimes of mesh {}", mRuntimes.size(), getName());
 #endif
         shader->bindVertexArray(mVAO);
-        shader->bindInstances(mInstances);
-        auto size = static_cast<GLsizei>(mInstances.size());
-        ShadowInstancesDrawn += size;
+        shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
+        auto size = static_cast<GLsizei>(inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
+        ShadowRuntimesDrawn += size;
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
         ShadowDrawCalls++;
     }
 
     long ModelMesh::DrawCalls = 0;
-    long ModelMesh::InstancesDrawn = 0;
+    long ModelMesh::RuntimesDrawn = 0;
     long ModelMesh::ShadowDrawCalls = 0;
-    long ModelMesh::ShadowInstancesDrawn = 0;
+    long ModelMesh::ShadowRuntimesDrawn = 0;
 }

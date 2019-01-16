@@ -36,11 +36,11 @@ namespace Dream
     Cache::clear
     ()
     {
-        for (auto* instance : mInstances)
+        for (auto* Runtime : mRuntimes)
         {
-            delete instance;
+            delete Runtime;
         }
-        mInstances.clear();
+        mRuntimes.clear();
     }
 
     AssetDefinition*
@@ -51,45 +51,45 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    Cache::getInstance
+    Cache::getRuntime
     (AssetDefinition* def)
     {
         if (def == nullptr)
         {
             return nullptr;
         }
-       for (auto* instance : mInstances)
+       for (auto* Runtime : mRuntimes)
        {
-           if (instance->getUuid() == def->getUuid())
+           if (Runtime->getUuid() == def->getUuid())
            {
-               return instance;
+               return Runtime;
            }
        }
-       return loadInstance(def);
+       return loadRuntime(def);
     }
 
     SharedAssetRuntime*
-    Cache::getInstance
+    Cache::getRuntime
     (uint32_t id)
     {
        if (id == 0)
        {
             return nullptr;
        }
-       for (auto instance : mInstances)
+       for (auto Runtime : mRuntimes)
        {
-           if (instance->getUuid() == id)
+           if (Runtime->getUuid() == id)
            {
-               return instance;
+               return Runtime;
            }
        }
-       return loadInstance(getAssetDefinitionByUuid(id));
+       return loadRuntime(getAssetDefinitionByUuid(id));
     }
 
     vector<SharedAssetRuntime*>&
-    Cache::getInstanceVector
+    Cache::getRuntimeVector
     ()
     {
-       return mInstances;
+       return mRuntimes;
     }
 }

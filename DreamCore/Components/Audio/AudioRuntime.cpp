@@ -37,7 +37,7 @@ namespace Dream
           mDurationInSamples(-1)
     {
 #ifdef DREAM_DEBUG
-        setLogClassName("AudioInstance");
+        setLogClassName("AudioRuntime");
 #endif
         setLooping(false);
         setBuffer(0);
@@ -172,7 +172,7 @@ namespace Dream
     AudioRuntime::generateEventList
     ()
     {
-        // TODO = Rethink, SharedAssetInstance has no SceneObjectRuntime to send
+        // TODO = Rethink, SharedAssetRuntime has no SceneObjectRuntime to send
         // Events to :thinking:
 
         /*

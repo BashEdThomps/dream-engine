@@ -37,7 +37,7 @@ namespace Dream
           mUStep(0.05)
     {
 #ifdef DREAM_LOG
-        setLogClassName("PathInstance");
+        setLogClassName("PathRuntime");
         auto log = getLog();
         log->trace("Constructing Object");
 #endif

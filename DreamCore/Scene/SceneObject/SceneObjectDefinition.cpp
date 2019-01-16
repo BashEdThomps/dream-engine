@@ -420,12 +420,12 @@ namespace Dream
         if (!mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_number())
         {
 #ifdef DREAM_LOG
-            log->trace("No Instance");
+            log->trace("No Runtime");
 #endif
             return 0;
         }
 #ifdef DREAM_LOG
-        log->trace("Found Instance");
+        log->trace("Found Runtime");
 #endif
         return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
     }

@@ -13,7 +13,7 @@ namespace Dream
           mProjectRuntime(runtime)
     {
         #ifdef DREAM_LOG
-        setLogClassName("SharedAssetInstance");
+        setLogClassName("SharedAssetRuntime");
         #endif
     }
 

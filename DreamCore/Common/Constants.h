@@ -361,9 +361,11 @@ namespace Dream
         // Scroller ============================================================
         const static string SCROLLER_VELOCITY;
         const static string SCROLLER_LOOP;
+        const static string SCROLLER_RANGE_BEGIN;
+        const static string SCROLLER_RANGE_END;
         const static string SCROLLER_ITEMS_ARRAY;
         const static string SCROLLER_ITEM_INDEX;
-        const static string SCROLLER_ITEM_OFFSET;
+        const static string SCROLLER_ITEM_ORIGIN;
 
         // Audio =================================================================
         #define AUDIO_BUFFER_SIZE 32768

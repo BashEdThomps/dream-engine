@@ -30,7 +30,7 @@ namespace Dream
     ) : DiscreteAssetRuntime(definition,transform)
     {
 #ifdef DREAM_LOG
-        setLogClassName("ParticleEmitterInstance");
+        setLogClassName("ParticleEmitterRuntime");
         getLog()->trace("Constructing");
 #endif
     }

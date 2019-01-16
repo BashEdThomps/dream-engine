@@ -141,7 +141,7 @@ namespace Dream
         for (auto mesh : mUsedBy)
         {
             log->debug("\t\t{}", mesh->getName());
-            mesh->logInstances();
+            mesh->logRuntimes();
         }
     }
 #endif
@@ -152,7 +152,7 @@ namespace Dream
     {
        for (auto mesh : mUsedBy)
        {
-           mesh->drawGeometryPassInstances(camera, mShader);
+           mesh->drawGeometryPassRuntimes(camera, mShader);
        }
     }
 
@@ -162,7 +162,7 @@ namespace Dream
     {
        for (auto mesh : mUsedBy)
        {
-           mesh->drawShadowPassInstances(shader);
+           mesh->drawShadowPassRuntimes(shader);
        }
     }
 

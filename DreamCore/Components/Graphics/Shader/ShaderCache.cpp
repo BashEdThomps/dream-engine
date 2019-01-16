@@ -44,19 +44,19 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    ShaderCache::loadInstance
+    ShaderCache::loadRuntime
     (AssetDefinition* def)
     {
-        auto shaderInstance = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
+        auto shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
 
-        if (!shaderInstance->useDefinition())
+        if (!shaderRuntime->useDefinition())
         {
 #ifdef DREAM_LOG
             getLog()->error("Error while loading shader {}", def->getUuid());
 #endif
         }
-        mInstances.push_back(shaderInstance);
-        return shaderInstance;
+        mRuntimes.push_back(shaderRuntime);
+        return shaderRuntime;
     }
 
 #ifdef DREAM_LOG
@@ -66,9 +66,9 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Contents of shader cache");
-        for (auto instance : mInstances)
+        for (auto Runtime : mRuntimes)
         {
-            auto shader = static_cast<ShaderRuntime*>(instance);
+            auto shader = static_cast<ShaderRuntime*>(Runtime);
             log->debug("{}",shader->getNameAndUuidString());
             shader->logMaterials();
         }
@@ -79,9 +79,9 @@ namespace Dream
     ShaderCache::drawGeometryPass
     (Camera* camera)
     {
-        for (auto instance : mInstances)
+        for (auto Runtime : mRuntimes)
         {
-            auto shader = static_cast<ShaderRuntime*>(instance);
+            auto shader = static_cast<ShaderRuntime*>(Runtime);
             if (shader->countMaterials() == 0) continue;
             shader->use();
             shader->setViewMatrix(camera->getViewMatrix());
@@ -98,9 +98,9 @@ namespace Dream
         shader->use();
         auto lsUniform = shader->getUniformLocation("lightSpaceMatrix");
         glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
-        for (auto instance : mInstances)
+        for (auto Runtime : mRuntimes)
         {
-            auto s = static_cast<ShaderRuntime*>(instance);
+            auto s = static_cast<ShaderRuntime*>(Runtime);
             s->drawShadowPass(shader);
         }
     }

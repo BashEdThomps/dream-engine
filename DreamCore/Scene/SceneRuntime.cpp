@@ -292,7 +292,7 @@ namespace Dream
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
             (
-                [=](SceneObjectRuntime* runt)
+                [&](SceneObjectRuntime* runt)
                 {
                     runt->collectGarbage();
                     return static_cast<SceneObjectRuntime*>(nullptr);
@@ -355,9 +355,9 @@ namespace Dream
         // Load Lighting Shader
         auto shaderCache = mProjectRuntime->getShaderCache();
         auto shaderUuid = sceneDefinition->getLightingPassShader();
-        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
+        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderUuid));
         shaderUuid = sceneDefinition->getShadowPassShader();
-        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getInstance(shaderUuid));
+        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderUuid));
 
 #ifdef DREAM_LOG
         if (mLightingPassShader == nullptr)
@@ -374,7 +374,7 @@ namespace Dream
         // Scripts
         auto scriptCache = mProjectRuntime->getScriptCache();
         auto inputScriptUuid = sceneDefinition->getInputScript();
-        mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(inputScriptUuid));
+        mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
         if (!mInputScript)
         {
 #ifdef DREAM_LOG
@@ -387,7 +387,7 @@ namespace Dream
         }
 
         auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
-        mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(nvgScriptUuid));
+        mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(nvgScriptUuid));
         if (!mNanoVGScript)
         {
 #ifdef DREAM_LOG
@@ -502,11 +502,11 @@ namespace Dream
     }
 
     vector<AssetRuntime*>
-    SceneRuntime::getAssetInstances
+    SceneRuntime::getAssetRuntimes
     (AssetType t)
     const
     {
-        vector<AssetRuntime*> instances;
+        vector<AssetRuntime*> Runtimes;
         if (mRootSceneObjectRuntime)
         {
             mRootSceneObjectRuntime->applyToAll
@@ -515,21 +515,21 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        AssetRuntime* inst = currentRuntime->getAssetInstance(t);
+                        AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
                         if (inst)
                         {
-                            instances.push_back(inst);
+                            Runtimes.push_back(inst);
                         }
                         return static_cast<SceneObjectRuntime*>(nullptr);
                     }
                 )
             );
         }
-        return instances;
+        return Runtimes;
     }
 
     vector<SceneObjectRuntime*>
-    SceneRuntime::getSceneObjectsWithInstanceOf
+    SceneRuntime::getSceneObjectsWithRuntimeOf
     (AssetDefinition* def)
     const
     {
@@ -542,7 +542,7 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentRuntime)
                     {
-                        AssetRuntime* inst = currentRuntime->getAssetInstance(def->getAssetType());
+                        AssetRuntime* inst = currentRuntime->getAssetRuntime(def->getAssetType());
                         if (inst && inst->getUuid() == def->getUuid())
                         {
                             runtimes.push_back(currentRuntime);

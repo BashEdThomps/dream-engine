@@ -51,8 +51,8 @@ namespace Dream
         (Definition* def)
             : DreamObject("Runtime"),
               mDefinition(def),
-              mUuid(def->getUuid()),
-              mName(def->getName()) {}
+              mUuid(def == nullptr ? 0 : def->getUuid()),
+              mName(def == nullptr ? "" : def->getName()) {}
 
         /**
          * @brief Default destructor.

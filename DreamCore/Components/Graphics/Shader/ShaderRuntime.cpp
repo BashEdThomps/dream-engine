@@ -49,12 +49,12 @@ namespace Dream
           mFragmentSource("")
     {
 #ifdef DREAM_LOG
-        setLogClassName("ShaderInstance");
+        setLogClassName("ShaderRuntime");
         auto log = getLog();
         log->trace( "Constructing Object" );
 #endif
         mShaderProgram = 0;
-        mInstanceMatricies.reserve(MAX_INSTANCES);
+        mRuntimeMatricies.reserve(MAX_RuntimeS);
     }
 
     ShaderRuntime::~ShaderRuntime
@@ -102,7 +102,7 @@ namespace Dream
 
     /*
     bool
-    ShaderInstance::setInstanceModelMatricies
+    ShaderRuntime::setRuntimeModelMatricies
     (vector<mat4> value, string name)
     {
         auto log = getLog();
@@ -806,22 +806,22 @@ namespace Dream
     }
 
     void
-    ShaderRuntime::bindInstances
-    (vector<SceneObjectRuntime*> instances)
+    ShaderRuntime::bindRuntimes
+    (vector<SceneObjectRuntime*> Runtimes)
     {
         // TODO - Bind as single uniform or UBO?
-        for (size_t i=0; i<instances.size(); i++)
+        for (size_t i=0; i<Runtimes.size(); i++)
         {
-            if (i>=MAX_INSTANCES)
+            if (i>=MAX_RuntimeS)
             {
 
 #ifdef DREAM_LOG
-                getLog()->info("Maximum number of instances reached");
+                getLog()->info("Maximum number of Runtimes reached");
 #endif
                 break;
             }
-            auto instance = instances.at(i);
-            setModelMatrix(instance->getTransform().getMatrix(), "model["+std::to_string(i)+"]");
+            auto Runtime = Runtimes.at(i);
+            setModelMatrix(Runtime->getTransform().getMatrix(), "model["+std::to_string(i)+"]");
         }
     }
 
@@ -945,7 +945,7 @@ namespace Dream
     const char* ShaderRuntime::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
     const char* ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
     const unsigned int ShaderRuntime::MAX_LIGHTS = 10;
-    const size_t ShaderRuntime::MAX_INSTANCES = 100;
+    const size_t ShaderRuntime::MAX_RuntimeS = 100;
 
     GLuint ShaderRuntime::CurrentTexture0 = 0;
     GLuint ShaderRuntime::CurrentTexture1 = 0;

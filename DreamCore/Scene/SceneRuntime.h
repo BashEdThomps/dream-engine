@@ -76,7 +76,7 @@ namespace Dream
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
 
-        void createAllAssetInstances();
+        void createAllAssetRuntimes();
 
         bool useDefinition() override;
         void destroyRuntime();
@@ -120,8 +120,8 @@ namespace Dream
         void setMaxDrawDistance(float);
 
 
-        vector<AssetRuntime*> getAssetInstances(AssetType) const;
-        vector<SceneObjectRuntime*> getSceneObjectsWithInstanceOf(AssetDefinition* def) const;
+        vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
+        vector<SceneObjectRuntime*> getSceneObjectsWithRuntimeOf(AssetDefinition* def) const;
 
         ScriptRuntime* getInputScript() const;
         ScriptRuntime* getNanoVGScript() const;

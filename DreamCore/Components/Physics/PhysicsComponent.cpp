@@ -250,7 +250,7 @@ namespace Dream
     }
 
     void
-    PhysicsComponent::removePhysicsObjectInstance
+    PhysicsComponent::removePhysicsObjectRuntime
     (PhysicsObjectRuntime* obj)
     {
         removeRigidBody(obj->getRigidBody());
@@ -277,7 +277,7 @@ namespace Dream
     }
 
     void
-    PhysicsComponent::addPhysicsObjectInstance
+    PhysicsComponent::addPhysicsObjectRuntime
     (PhysicsObjectRuntime* physicsObjejct)
     {
         auto rb = physicsObjejct->getRigidBody();
@@ -305,15 +305,15 @@ namespace Dream
                 [&](SceneObjectRuntime* so)
                 {
                     // Has physics
-                    if (so->hasPhysicsObjectInstance())
+                    if (so->hasPhysicsObjectRuntime())
                     {
-                        auto physicsObject = so->getPhysicsObjectInstance();
+                        auto physicsObject = so->getPhysicsObjectRuntime();
                         if (!physicsObject->isInPhysicsWorld())
                         {
                             #ifdef DREAM_LOG
                             log->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
                             #endif
-                            addPhysicsObjectInstance(physicsObject);
+                            addPhysicsObjectRuntime(physicsObject);
                             physicsObject->setInPhysicsWorld(true);
                         }
                         else
@@ -434,11 +434,11 @@ namespace Dream
 
                     // Recover
 
-                    if (sObjA->getPhysicsObjectInstance() == mCharacter)
+                    if (sObjA->getPhysicsObjectRuntime() == mCharacter)
                     {
                        recoverCharacter(contactManifold);
                     }
-                    else if (sObjB->getPhysicsObjectInstance() == mCharacter)
+                    else if (sObjB->getPhysicsObjectRuntime() == mCharacter)
                     {
                        recoverCharacter(contactManifold);
                     }
@@ -470,9 +470,9 @@ namespace Dream
             (
                 [&](SceneObjectRuntime* next)
                 {
-                    if (next->hasPhysicsObjectInstance())
+                    if (next->hasPhysicsObjectRuntime())
                     {
-                        auto nextPO = next->getPhysicsObjectInstance();
+                        auto nextPO = next->getPhysicsObjectRuntime();
                         if (nextPO->getCollisionObject() == collObj)
                         {
                             return next;

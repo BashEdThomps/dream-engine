@@ -22,7 +22,7 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    TextureCache::loadInstance
+    TextureCache::loadRuntime
     (AssetDefinition* def)
     {
 #ifdef DREAM_LOG
@@ -50,9 +50,9 @@ namespace Dream
 #ifdef DREAM_LOG
         log->debug("Loading texture: {}",filename);
 #endif
-        for (auto* instance : mInstances)
+        for (auto* Runtime : mRuntimes)
         {
-            auto nextTexture = static_cast<TextureRuntime*>(instance);
+            auto nextTexture = static_cast<TextureRuntime*>(Runtime);
             if (nextTexture->getPath().compare(filename) == 0)
             {
 #ifdef DREAM_LOG
@@ -70,9 +70,9 @@ namespace Dream
 
         // Check image data against existing textures
 
-        for (auto* instance : mInstances)
+        for (auto* Runtime : mRuntimes)
         {
-            auto nextTexture = static_cast<TextureRuntime*>(instance);
+            auto nextTexture = static_cast<TextureRuntime*>(Runtime);
             if (nextTexture->getWidth() == width &&
                 nextTexture->getHeight() == height &&
                 nextTexture->getChannels() == channels)
@@ -129,7 +129,7 @@ namespace Dream
         texture->setHeight(height);
         texture->setChannels(channels);
         texture->setImage(image);
-        mInstances.push_back(texture);
+        mRuntimes.push_back(texture);
         return texture;
     }
 
@@ -137,9 +137,9 @@ namespace Dream
     TextureCache::flushRawTextureImageData
     ()
     {
-       for (auto instance : mInstances)
+       for (auto Runtime : mRuntimes)
        {
-           auto t = static_cast<TextureRuntime*>(instance);
+           auto t = static_cast<TextureRuntime*>(Runtime);
            if (t->getImage() != nullptr)
            {
                SOIL_free_image_data(t->getImage());
@@ -153,11 +153,11 @@ namespace Dream
     ()
     {
         flushRawTextureImageData();
-        for (auto* instance : mInstances)
+        for (auto* Runtime : mRuntimes)
         {
-            delete instance;
+            delete Runtime;
         }
-        mInstances.clear();
+        mRuntimes.clear();
     }
 }
 

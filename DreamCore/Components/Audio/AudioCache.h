@@ -12,6 +12,6 @@ namespace Dream
         void clear() override;
 
     protected:
-        SharedAssetRuntime* loadInstance(AssetDefinition* definition) override;
+        SharedAssetRuntime* loadRuntime(AssetDefinition* definition) override;
     };
 }

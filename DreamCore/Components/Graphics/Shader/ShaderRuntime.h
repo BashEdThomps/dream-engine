@@ -1,5 +1,5 @@
 /*
-* ShaderInstance
+* ShaderRuntime
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace Dream
         const static char* UNIFORM_POINT_LIGHT_COUNT;
         const static char* UNIFORM_SPOT_LIGHT_COUNT;
         const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
-        const static size_t MAX_INSTANCES;
+        const static size_t MAX_RuntimeS;
 
         unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
@@ -84,7 +84,7 @@ namespace Dream
 
         vector<shared_ptr<ShaderUniform>> mUniformVector;
         vector<MaterialRuntime*> mMaterials;
-        vector<mat4> mInstanceMatricies;
+        vector<mat4> mRuntimeMatricies;
         map<string,GLint> mUinformCache;
         GLuint mVertexShader;
         GLuint mFragmentShader;
@@ -133,7 +133,7 @@ namespace Dream
 
         void bindMaterial(MaterialRuntime* material);
         void bindLightQueue(vector<LightRuntime*> lightQueue);
-        void bindInstances(vector<SceneObjectRuntime*> instances);
+        void bindRuntimes(vector<SceneObjectRuntime*> Runtimes);
 
         void addMaterial(MaterialRuntime* material);
 

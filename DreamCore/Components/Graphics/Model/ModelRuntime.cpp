@@ -52,7 +52,7 @@ namespace Dream
           mGlobalInverseTransform(mat4(1.0f))
     {
 #ifdef DREAM_LOG
-        setLogClassName("ModelInstance");
+        setLogClassName("ModelRuntime");
         auto log = getLog();
         log->trace( "Constructing {}", definition->getNameAndUuidString() );
 #endif
@@ -267,7 +267,7 @@ namespace Dream
             auto materialName = string(name.C_Str());
             auto modelDef = static_cast<ModelDefinition*>(mDefinition);
             auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
-            auto material = static_cast<MaterialRuntime*>(mMaterialCache->getInstance(materialUuid));
+            auto material = static_cast<MaterialRuntime*>(mMaterialCache->getRuntime(materialUuid));
             if (material == nullptr)
             {
 #ifdef DREAM_LOG
@@ -311,22 +311,22 @@ namespace Dream
     }
 
     void
-    ModelRuntime::addInstance
+    ModelRuntime::addRuntime
     (SceneObjectRuntime* inst)
     {
         for (auto mesh : mMeshes)
         {
-            mesh->addInstance(inst);
+            mesh->addRuntime(inst);
         }
     }
 
     void
-    ModelRuntime::removeInstance
+    ModelRuntime::removeRuntime
     (SceneObjectRuntime* inst)
     {
         for (auto mesh : mMeshes)
         {
-            mesh->removeInstance(inst);
+            mesh->removeRuntime(inst);
         }
     }
 

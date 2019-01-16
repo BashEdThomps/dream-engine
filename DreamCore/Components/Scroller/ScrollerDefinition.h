@@ -18,9 +18,9 @@ namespace Dream
 {
     struct ScrollerItem
     {
-       unsigned int index;
-       uint32_t uuid;
-       vec3 offset;
+       unsigned int index = 0;
+       uint32_t uuid = 0;
+       vec3 origin = vec3(0.0f);
     };
 
     class ScrollerDefinition : public AssetDefinition
@@ -35,9 +35,22 @@ namespace Dream
         bool getLoop();
         void setLoop(bool loop);
 
+        vec3 getRangeBegin();
+        void setRangeBegin(vec3);
 
+        vec3 getRangeEnd();
+        void setRangeEnd(vec3);
+
+        void updateScrollerItem(const ScrollerItem& item);
+        void removeScrollerItem(const ScrollerItem& item);
         vector<ScrollerItem> getItemsArray();
         void addItem(const ScrollerItem& item);
+        unsigned int getNextItemIndex();
+
+        void moveScrollerItem(const ScrollerItem& item, bool forward);
+        void copyScrollerItem(const ScrollerItem& item);
+
+
     protected:
         json wrapScrollerItem(const ScrollerItem& item);
         ScrollerItem unwrapScrollerItem(const json& j);

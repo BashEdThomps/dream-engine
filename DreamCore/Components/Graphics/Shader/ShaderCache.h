@@ -38,6 +38,6 @@ namespace Dream
 
         // Cache interface
     protected:
-        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadRuntime(AssetDefinition* def) override;
     };
 }

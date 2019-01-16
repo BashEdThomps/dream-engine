@@ -2,8 +2,7 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project(DreamCore)
 
-file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp")
-file(GLOB_RECURSE INC_FILES "*.h" "*.hpp")
+file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp" "*.h" "*.hpp")
 
 find_package(ALUT REQUIRED)
 find_package(ASSIMP REQUIRED)

@@ -60,39 +60,42 @@ namespace Dream
         SceneRuntime* sr,
         bool randomUuid
     ):  Runtime(sd),
-        mAnimationInstance(nullptr),
-        mAudioInstance(nullptr),
-        mLightInstance(nullptr),
-        mParticleEmitterInstance(nullptr),
-        mPathInstance(nullptr),
-        mPhysicsObjectInstance(nullptr),
-        mScriptInstance(nullptr),
-        mModelInstance(nullptr),
+        mAnimationRuntime(nullptr),
+        mAudioRuntime(nullptr),
+        mLightRuntime(nullptr),
+        mParticleEmitterRuntime(nullptr),
+        mPathRuntime(nullptr),
+        mPhysicsObjectRuntime(nullptr),
+        mScriptRuntime(nullptr),
+        mModelRuntime(nullptr),
+        mScrollerRuntime(nullptr),
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
-        mBoundingBox
-
-        (),
+        mBoundingBox(),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
         mAlwaysDraw(false),
         mRandomUuid(randomUuid)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing Object" );
-#endif
+        #endif
+        if (mRandomUuid)
+        {
+            mUuid = Uuid::generateUuid();
+        }
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destroying Object" );
-#endif
+        #endif
 
         for (auto child : mChildRuntimes)
         {
@@ -103,185 +106,204 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
-        removeAnimationInstance();
-        removeAudioInstance();
-        removeLightInstance();
-        removeModelInstance();
-        removeParticleEmitterInstance();
-        removePathInstance();
-        removePhysicsObjectInstance();
-        removeScriptInstance();
+        removeScrollerRuntime();
+        removeAnimationRuntime();
+        removeAudioRuntime();
+        removeLightRuntime();
+        removeModelRuntime();
+        removeParticleEmitterRuntime();
+        removePathRuntime();
+        removePhysicsObjectRuntime();
+        removeScriptRuntime();
     }
 
     void
-    SceneObjectRuntime::removeAnimationInstance
+    SceneObjectRuntime::removeAnimationRuntime
     ()
     {
-        if (mAnimationInstance != nullptr)
+        if (mAnimationRuntime != nullptr)
         {
-            delete mAnimationInstance;
-            mAnimationInstance = nullptr;
+            delete mAnimationRuntime;
+            mAnimationRuntime = nullptr;
         }
     }
 
     void
-    SceneObjectRuntime::removeAudioInstance
+    SceneObjectRuntime::removeAudioRuntime
     ()
     {
         /*
-        if (mAudioInstance != nullptr)
+        if (mAudioRuntime != nullptr)
         {
-            delete mAudioInstance;
-            mAudioInstance = nullptr;
+            delete mAudioRuntime;
+            mAudioRuntime = nullptr;
         }
         */
     }
 
     void
-    SceneObjectRuntime::removePathInstance
+    SceneObjectRuntime::removePathRuntime
     ()
     {
-        if (mPathInstance != nullptr)
+        if (mPathRuntime != nullptr)
         {
-            delete mPathInstance;
-            mPathInstance = nullptr;
+            delete mPathRuntime;
+            mPathRuntime = nullptr;
         }
     }
 
     void
-    SceneObjectRuntime::removeModelInstance
+    SceneObjectRuntime::removeModelRuntime
     ()
     {
-        if (mModelInstance != nullptr)
+        if (mModelRuntime != nullptr)
         {
-            mModelInstance->removeInstance(this);
+            mModelRuntime->removeRuntime(this);
         }
     }
 
     void
-    SceneObjectRuntime::removeLightInstance
+    SceneObjectRuntime::removeLightRuntime
     ()
     {
-        if (mLightInstance != nullptr)
+        if (mLightRuntime != nullptr)
         {
-            delete mLightInstance;
-            mLightInstance = nullptr;
+            delete mLightRuntime;
+            mLightRuntime = nullptr;
         }
     }
 
     void
-    SceneObjectRuntime::removeScriptInstance
+    SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptInstance != nullptr)
+        if (mScriptRuntime != nullptr)
         {
-            mScriptInstance->removeInstance(this);
-            mScriptInstance = nullptr;
+            mScriptRuntime->removeRuntime(this);
+            mScriptRuntime = nullptr;
         }
     }
 
     void
-    SceneObjectRuntime::removePhysicsObjectInstance
+    SceneObjectRuntime::removePhysicsObjectRuntime
     ()
     {
-        if (hasPhysicsObjectInstance())
+        if (hasPhysicsObjectRuntime())
         {
             auto physicsComp = mSceneRuntime
                 ->getProjectRuntime()
                 ->getPhysicsComponent();
            if (physicsComp != nullptr)
            {
-                physicsComp->removePhysicsObjectInstance(getPhysicsObjectInstance());
+                physicsComp->removePhysicsObjectRuntime(getPhysicsObjectRuntime());
            }
         }
 
-        if (mPhysicsObjectInstance != nullptr)
+        if (mPhysicsObjectRuntime != nullptr)
         {
-            delete mPhysicsObjectInstance;
-            mPhysicsObjectInstance = nullptr;
+            delete mPhysicsObjectRuntime;
+            mPhysicsObjectRuntime = nullptr;
         }
     }
 
-    void SceneObjectRuntime::removeParticleEmitterInstance()
+    void SceneObjectRuntime::removeParticleEmitterRuntime()
     {
-        if (mParticleEmitterInstance != nullptr)
+        if (mParticleEmitterRuntime != nullptr)
         {
-            delete mParticleEmitterInstance;
-            mParticleEmitterInstance = nullptr;
+            delete mParticleEmitterRuntime;
+            mParticleEmitterRuntime = nullptr;
+        }
+    }
+
+    void SceneObjectRuntime::removeScrollerRuntime()
+    {
+        if (mScrollerRuntime != nullptr)
+        {
+            delete mScrollerRuntime;
+            mScrollerRuntime = nullptr;
         }
     }
 
     AnimationRuntime*
-    SceneObjectRuntime::getAnimationInstance
+    SceneObjectRuntime::getAnimationRuntime
     ()
     {
-        return mAnimationInstance;
+        return mAnimationRuntime;
     }
 
     PathRuntime*
-    SceneObjectRuntime::getPathInstance
+    SceneObjectRuntime::getPathRuntime
     ()
     {
-        return mPathInstance;
+        return mPathRuntime;
     }
 
     AudioRuntime*
-    SceneObjectRuntime::getAudioInstance
+    SceneObjectRuntime::getAudioRuntime
     ()
     {
-        return mAudioInstance;
+        return mAudioRuntime;
     }
 
     ModelRuntime*
-    SceneObjectRuntime::getModelInstance
+    SceneObjectRuntime::getModelRuntime
     ()
     {
-        return mModelInstance;
+        return mModelRuntime;
     }
 
     ScriptRuntime*
-    SceneObjectRuntime::getScriptInstance
+    SceneObjectRuntime::getScriptRuntime
     ()
     {
-        return mScriptInstance;
+        return mScriptRuntime;
     }
 
     LightRuntime*
-    SceneObjectRuntime::getLightInstance
+    SceneObjectRuntime::getLightRuntime
     ()
     {
-        return mLightInstance;
+        return mLightRuntime;
     }
 
     ParticleEmitterRuntime*
-    SceneObjectRuntime::getParticleEmitterInstance
+    SceneObjectRuntime::getParticleEmitterRuntime
     ()
     {
-       return mParticleEmitterInstance;
+       return mParticleEmitterRuntime;
+    }
+
+    ScrollerRuntime*
+    SceneObjectRuntime::getScrollerRuntime
+    ()
+    {
+        return mScrollerRuntime;
     }
 
     AssetRuntime*
-    SceneObjectRuntime::getAssetInstance
+    SceneObjectRuntime::getAssetRuntime
     (AssetType type)
     {
        switch (type)
        {
            case Dream::ANIMATION:
-               return getAnimationInstance();
+               return getAnimationRuntime();
            case Dream::PATH:
-               return getPathInstance();
+               return getPathRuntime();
            case Dream::AUDIO:
-               return getAudioInstance();
+               return getAudioRuntime();
            case Dream::LIGHT:
-               return getLightInstance();
+               return getLightRuntime();
            case Dream::MODEL:
-               return getModelInstance();
+               return getModelRuntime();
            case Dream::PHYSICS_OBJECT:
-               return getPhysicsObjectInstance();
+               return getPhysicsObjectRuntime();
            case Dream::SCRIPT:
-               return getScriptInstance();
+               return getScriptRuntime();
+           case Dream::SCROLLER:
+               return getScrollerRuntime();
            case Dream::PARTICLE_EMITTER:
-               return getParticleEmitterInstance();
+               return getParticleEmitterRuntime();
            default:
                break;
        }
@@ -289,31 +311,31 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasAnimationInstance
+    SceneObjectRuntime::hasAnimationRuntime
     ()
     {
-        return mAnimationInstance != nullptr;
+        return mAnimationRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::hasLightInstance
+    SceneObjectRuntime::hasLightRuntime
     ()
     {
-        return mLightInstance != nullptr;
+        return mLightRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::hasModelInstance
+    SceneObjectRuntime::hasModelRuntime
     ()
     {
-        return mModelInstance != nullptr;
+        return mModelRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::hasScriptInstance
+    SceneObjectRuntime::hasScriptRuntime
     ()
     {
-        return mScriptInstance != nullptr;
+        return mScriptRuntime != nullptr;
     }
 
     void
@@ -341,10 +363,10 @@ namespace Dream
     }
 
     PhysicsObjectRuntime*
-    SceneObjectRuntime::getPhysicsObjectInstance
+    SceneObjectRuntime::getPhysicsObjectRuntime
     ()
     {
-        return mPhysicsObjectInstance;
+        return mPhysicsObjectRuntime;
     }
 
     Transform&
@@ -357,9 +379,17 @@ namespace Dream
     void
     SceneObjectRuntime::initTransform()
     {
-        auto definedTransform = dynamic_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
-        mInitialTransform = Transform(definedTransform);
-        mTransform = Transform(definedTransform);
+        if (mDefinition)
+        {
+            auto definedTransform = static_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
+            mInitialTransform = Transform(definedTransform);
+            mTransform = Transform(definedTransform);
+        }
+        else
+        {
+            mInitialTransform = Transform();
+            mTransform = Transform();
+        }
     }
 
     bool
@@ -374,7 +404,7 @@ namespace Dream
     SceneObjectRuntime::addEvent
     (const Event& event)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace
         (
@@ -382,7 +412,7 @@ namespace Dream
             event.getSender()->getNameAndUuidString(),
             getNameAndUuidString()
         );
-#endif
+        #endif
         mEventQueue.push_back(event);
     }
 
@@ -396,19 +426,19 @@ namespace Dream
 
     void SceneObjectRuntime::clearEventQueue()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Clearing event queue");
-#endif
+        #endif
         mEventQueue.clear();
     }
 
     void SceneObjectRuntime::collectGarbage()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Collecting Garbage {}" ,getNameAndUuidString());
-#endif
+        #endif
 
         vector<SceneObjectRuntime*> toDelete;
 
@@ -422,9 +452,9 @@ namespace Dream
 
         for (auto child : toDelete)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->trace("Deleting child {}",child->getNameAndUuidString());
-#endif
+            #endif
             mChildRuntimes.erase
             (
                 find
@@ -439,72 +469,75 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasPhysicsObjectInstance
+    SceneObjectRuntime::hasPhysicsObjectRuntime
     ()
     {
-        return mPhysicsObjectInstance != nullptr;
+        return mPhysicsObjectRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::hasPathInstance
+    SceneObjectRuntime::hasPathRuntime
     ()
     {
-        return mPathInstance != nullptr;
+        return mPathRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::hasAudioInstance
+    SceneObjectRuntime::hasAudioRuntime
     ()
     {
-        return mAudioInstance != nullptr;
+        return mAudioRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::createAssetInstances
+    SceneObjectRuntime::createAssetRuntimes
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         for (auto assetPair : mAssetDefinitions)
         {
             AssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
             bool result = false;
             if (def == nullptr)
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Could not find asset definition {}", assetPair.second);
-#endif
+                #endif
                 continue;
             }
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->trace("Creating {}",def->getNameAndUuidString());
-#endif
+            #endif
             switch (assetPair.first)
             {
                 case AssetType::ANIMATION:
-                    result = createAnimationInstance(dynamic_cast<AnimationDefinition*>(def));
+                    result = createAnimationRuntime(static_cast<AnimationDefinition*>(def));
                     break;
                 case AssetType::AUDIO:
-                    result = createAudioInstance(dynamic_cast<AudioDefinition*>(def));
+                    result = createAudioRuntime(static_cast<AudioDefinition*>(def));
                     break;
                 case AssetType::LIGHT:
-                    result = createLightInstance(dynamic_cast<LightDefinition*>(def));
+                    result = createLightRuntime(static_cast<LightDefinition*>(def));
                     break;
                 case AssetType::MODEL:
-                    result = createModelInstance(dynamic_cast<ModelDefinition*>(def));
+                    result = createModelRuntime(static_cast<ModelDefinition*>(def));
                     break;
                 case AssetType::PARTICLE_EMITTER:
-                    result = createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
+                    result = createParticleEmitterRuntime(static_cast<ParticleEmitterDefinition*>(def));
                     break;
                 case AssetType::PATH:
-                    result = createPathInstance(dynamic_cast<PathDefinition*>(def));
+                    result = createPathRuntime(static_cast<PathDefinition*>(def));
                     break;
                 case AssetType::PHYSICS_OBJECT:
-                    result = createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
+                    result = createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
                     break;
                 case AssetType::SCRIPT:
-                    result = createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
+                    result = createScriptRuntime(static_cast<ScriptDefinition*>(def));
+                    break;
+                case AssetType::SCROLLER:
+                    result = createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
                     break;
                 default:
                     return false;
@@ -521,23 +554,23 @@ namespace Dream
     SceneObjectRuntime::getAssetDefinitionByUuid
     (uint32_t uuid)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("Project is not found");
-#endif
+            #endif
             return nullptr;
         }
         auto assetDefinition = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDefinition == nullptr)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("AssetDefinition not found");
-#endif
+            #endif
         }
         return assetDefinition;
     }
@@ -546,196 +579,211 @@ namespace Dream
     SceneObjectRuntime::replaceAssetUuid
     (AssetType type, uint32_t uuid)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->info("REPLACING asset instance from uuid {}", uuid);
-#endif
+        log->info("REPLACING asset Runtime from uuid {}", uuid);
+        #endif
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("Project is not found");
-#endif
+            #endif
             return false;
         }
         auto def = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (def == nullptr)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("AssetDefinition not found");
-#endif
+            #endif
         }
         switch (type)
         {
             case AssetType::ANIMATION:
-                return createAnimationInstance(dynamic_cast<AnimationDefinition*>(def));
+                return createAnimationRuntime(static_cast<AnimationDefinition*>(def));
             case AssetType::AUDIO:
-                return createAudioInstance(dynamic_cast<AudioDefinition*>(def));
+                return createAudioRuntime(static_cast<AudioDefinition*>(def));
             case AssetType::LIGHT:
-                return createLightInstance(dynamic_cast<LightDefinition*>(def));
+                return createLightRuntime(static_cast<LightDefinition*>(def));
             case AssetType::MODEL:
-                return createModelInstance(dynamic_cast<ModelDefinition*>(def));
+                return createModelRuntime(static_cast<ModelDefinition*>(def));
             case AssetType::PARTICLE_EMITTER:
-                return createParticleEmitterInstance(dynamic_cast<ParticleEmitterDefinition*>(def));
+                return createParticleEmitterRuntime(static_cast<ParticleEmitterDefinition*>(def));
             case AssetType::PATH:
-                return createPathInstance(dynamic_cast<PathDefinition*>(def));
+                return createPathRuntime(static_cast<PathDefinition*>(def));
             case AssetType::PHYSICS_OBJECT:
-                return createPhysicsObjectInstance(dynamic_cast<PhysicsObjectDefinition*>(def));
+                return createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
             case AssetType::SCRIPT:
-                return createScriptInstance(dynamic_cast<ScriptDefinition*>(def));
+                return createScriptRuntime(static_cast<ScriptDefinition*>(def));
+            case AssetType::SCROLLER:
+                return createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
             default:
                 return false;
         }
     }
 
     bool
-    SceneObjectRuntime::createPhysicsObjectInstance
+    SceneObjectRuntime::createPhysicsObjectRuntime
     (PhysicsObjectDefinition* definition)
     {
-        removePhysicsObjectInstance();
-#ifdef DREAM_LOG
+        removePhysicsObjectRuntime();
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace( "Creating Physics Object Asset Instance." );
-#endif
-        mPhysicsObjectInstance = new PhysicsObjectRuntime(
+        log->trace( "Creating Physics Object Asset Runtime." );
+        #endif
+        mPhysicsObjectRuntime = new PhysicsObjectRuntime(
             definition,
             mSceneRuntime->getProjectRuntime()->getPhysicsComponent(),
             mSceneRuntime->getProjectRuntime()->getModelCache(),
             this
         );
-        return mPhysicsObjectInstance->useDefinition();
+        return mPhysicsObjectRuntime->useDefinition();
     }
 
     bool
-    SceneObjectRuntime::createParticleEmitterInstance
+    SceneObjectRuntime::createParticleEmitterRuntime
     (ParticleEmitterDefinition* definition)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace( "Creating ParticleEmitter asset instance." );
-#endif
-        removeParticleEmitterInstance();
-        mParticleEmitterInstance = new ParticleEmitterRuntime(definition,this);
-        return mParticleEmitterInstance->useDefinition();
+        log->trace( "Creating ParticleEmitter asset Runtime." );
+        #endif
+        removeParticleEmitterRuntime();
+        mParticleEmitterRuntime = new ParticleEmitterRuntime(definition,this);
+        return mParticleEmitterRuntime->useDefinition();
     }
 
     bool
-    SceneObjectRuntime::createAnimationInstance
+    SceneObjectRuntime::createScrollerRuntime
+    (ScrollerDefinition* def)
+    {
+        #ifdef DREAM_LOG
+        auto log = getLog();
+        log->error("Creating Scroller asset Runtime.");
+        #endif
+        removeScrollerRuntime();
+        mScrollerRuntime = new ScrollerRuntime(def,this);
+        return mScrollerRuntime->useDefinition();
+    }
+
+    bool
+    SceneObjectRuntime::createAnimationRuntime
     (AnimationDefinition* definition)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace( "Creating Animation asset instance." );
-#endif
-        removeAnimationInstance();
-        mAnimationInstance = new AnimationRuntime(definition,this);
-        return mAnimationInstance->useDefinition();
+        log->trace( "Creating Animation asset Runtime." );
+        #endif
+        removeAnimationRuntime();
+        mAnimationRuntime = new AnimationRuntime(definition,this);
+        return mAnimationRuntime->useDefinition();
     }
 
     bool
-    SceneObjectRuntime::createPathInstance
+    SceneObjectRuntime::createPathRuntime
     (PathDefinition* definition)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace( "Creating Path asset instance." );
-#endif
-        removePathInstance();
-        mPathInstance = new PathRuntime(definition,this);
-        return mPathInstance->useDefinition();
+        log->trace( "Creating Path asset Runtime." );
+        #endif
+        removePathRuntime();
+        mPathRuntime = new PathRuntime(definition,this);
+        return mPathRuntime->useDefinition();
     }
 
     bool
-    SceneObjectRuntime::createAudioInstance
+    SceneObjectRuntime::createAudioRuntime
     (AudioDefinition* definition)
     {
         auto cache = mSceneRuntime->getProjectRuntime()->getAudioCache();
         if (cache != nullptr)
         {
-            mAudioInstance = dynamic_cast<AudioRuntime*>(cache->getInstance(definition));
-            return mAudioInstance != nullptr;
+            mAudioRuntime = static_cast<AudioRuntime*>(cache->getRuntime(definition));
+            return mAudioRuntime != nullptr;
         }
         else
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             auto log = getLog();
-            log->error("Cannot create AudioInstance. AudioComponent is nullptr");
-#endif
+            log->error("Cannot create AudioRuntime. AudioComponent is nullptr");
+            #endif
         }
         return false;
     }
 
     bool
-    SceneObjectRuntime::createModelInstance
+    SceneObjectRuntime::createModelRuntime
     (ModelDefinition* definition)
     {
-        removeModelInstance();
-#ifdef DREAM_LOG
+        removeModelRuntime();
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->info("Creating Model asset instance.");
-#endif
+        log->info("Creating Model asset Runtime.");
+        #endif
         auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
-            mModelInstance = dynamic_cast<ModelRuntime*>(cache->getInstance(definition));
-            if (mModelInstance != nullptr)
+            mModelRuntime = static_cast<ModelRuntime*>(cache->getRuntime(definition));
+            if (mModelRuntime != nullptr)
             {
-                mModelInstance->addInstance(this);
+                mModelRuntime->addRuntime(this);
             }
             else
             {
-#ifdef DREAM_LOG
-                log->error("Error getting model instance, cache returned nullptr");
-#endif
+                #ifdef DREAM_LOG
+                log->error("Error getting model Runtime, cache returned nullptr");
+                #endif
                 return false;
             }
         }
-        return mModelInstance != nullptr;
+        return mModelRuntime != nullptr;
     }
 
     bool
-    SceneObjectRuntime::createScriptInstance
+    SceneObjectRuntime::createScriptRuntime
     (ScriptDefinition* definition)
     {
-        removeScriptInstance();
-#ifdef DREAM_LOG
+        removeScriptRuntime();
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace("Creating Script asset instance.");
-#endif
+        log->trace("Creating Script asset Runtime.");
+        #endif
         auto scriptCache = (mSceneRuntime->getProjectRuntime()->getScriptCache());
         if (scriptCache)
         {
-            mScriptInstance = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(definition));
-            if (mScriptInstance != nullptr)
+            mScriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
+            if (mScriptRuntime != nullptr)
             {
-                mScriptInstance->addInstance(this);
+                mScriptRuntime->addRuntime(this);
                 return true;
             }
             else
             {
-#ifdef DREAM_LOG
-                log->error("Error getting script instance, cache returned nullptr");
-#endif
+                #ifdef DREAM_LOG
+                log->error("Error getting script Runtime, cache returned nullptr");
+                #endif
                 return false;
             }
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         log->error("Script cache is null");
-#endif
+        #endif
         return false;
     }
 
     bool
-    SceneObjectRuntime::createLightInstance
+    SceneObjectRuntime::createLightRuntime
     (LightDefinition* definition)
     {
-        removeLightInstance();
-#ifdef DREAM_LOG
+        removeLightRuntime();
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace( "Creating Light Asset instance." );
-#endif
-        mLightInstance = new LightRuntime(definition,this);
-        return mLightInstance->useDefinition();
+        log->trace( "Creating Light Asset Runtime." );
+        #endif
+        mLightRuntime = new LightRuntime(definition,this);
+        return mLightRuntime->useDefinition();
     }
 
     SceneObjectRuntime*
@@ -754,6 +802,13 @@ namespace Dream
             }
         }
         return nullptr;
+    }
+
+    vector<SceneObjectRuntime*>&
+    SceneObjectRuntime::getChildRuntimes
+    ()
+    {
+        return mChildRuntimes;
     }
 
     bool
@@ -794,43 +849,53 @@ namespace Dream
     SceneObjectDefinition*
     SceneObjectRuntime::getSceneObjectDefinition()
     {
-       return dynamic_cast<SceneObjectDefinition*>(getDefinition());
+       return static_cast<SceneObjectDefinition*>(getDefinition());
     }
 
     bool
     SceneObjectRuntime::useDefinition
     ()
     {
-        auto def = dynamic_cast<SceneObjectDefinition*>(mDefinition);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Using Definition {}", def->getNameAndUuidString());
-#endif
-        setName(def->getName());
-        setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
-        setHasCameraFocus(def->getHasCameraFocus());
-        setHidden(def->getHidden());
-        initTransform();
-        setAssetDefinitionsMap(def->getAssetDefinitionsMap());
-        if (!createAssetInstances()) return false;
-        if( !loadChildrenFromDefinition(def)) return false;
-        return true;
+        if (mDefinition)
+        {
+            auto def = static_cast<SceneObjectDefinition*>(mDefinition);
+            #ifdef DREAM_LOG
+            auto log = getLog();
+            log->trace( "Using Definition {}", def->getNameAndUuidString());
+            #endif
+            setName(def->getName());
+            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
+            setHasCameraFocus(def->getHasCameraFocus());
+            setHidden(def->getHidden());
+            initTransform();
+            setAssetDefinitionsMap(def->getAssetDefinitionsMap());
+            if (!createAssetRuntimes())
+            {
+                return false;
+            }
+            if( !loadChildrenFromDefinition(def))
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     bool
     SceneObjectRuntime::loadChildrenFromDefinition
     (SceneObjectDefinition* definition)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         vector<SceneObjectDefinition*> definitions = definition->getChildDefinitionsList();
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
             auto sod = (*it);
             if (sod->getIsTemplate())
             {
-               dynamic_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->addTemplate(sod);
+               static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->addTemplate(sod);
             }
             else
             {
@@ -881,9 +946,6 @@ namespace Dream
     {
        return mInitialTransform;
     }
-
-
-
 
     void
     SceneObjectRuntime::transformOffsetInitial
@@ -959,16 +1021,16 @@ namespace Dream
     SceneObjectRuntime::createAndAddChildRuntime
     (SceneObjectDefinition* def)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntime, mRandomUuid);
         child->setParentRuntime(this);
         if (!child->useDefinition())
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("Error creating child runtime");
-#endif
+            #endif
             delete child;
             return nullptr;
         }
@@ -980,39 +1042,39 @@ namespace Dream
     SceneObjectRuntime::addChildFromTemplateUuid
     (uint32_t uuid)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
-        auto sceneDef = dynamic_cast<SceneDefinition*>(mSceneRuntime->getDefinition());
+        #endif
+        auto sceneDef = static_cast<SceneDefinition*>(mSceneRuntime->getDefinition());
         auto def = sceneDef->getTemplateByUuid(uuid);
         if (def)
         {
             if (!def->getIsTemplate())
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("This SO is not a Template, too dangerous");
-#endif
+                #endif
                 return nullptr;
             }
             SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntime, true);
             child->setParentRuntime(this);
             if (!child->useDefinition())
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Error creating child runtime");
-#endif
+                #endif
                 delete child;
                 return nullptr;
             }
             addChildRuntime(child);
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("Successfully added child from template {}",def->getNameAndUuidString());
-#endif
+            #endif
             return child;
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         log->error("Cannt create child, definition not found");
-#endif
+        #endif
         return nullptr;
     }
 
@@ -1020,9 +1082,9 @@ namespace Dream
     SceneObjectRuntime::getBoundingBox
     ()
     {
-        if (mModelInstance != nullptr)
+        if (mModelRuntime != nullptr)
         {
-            return mModelInstance->getBoundingBox();
+            return mModelRuntime->getBoundingBox();
         }
         return mBoundingBox;
     }
@@ -1098,21 +1160,21 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasScrollerInstance
+    SceneObjectRuntime::hasScrollerRuntime
     ()
     {
-        return mScrollerInstance != nullptr;
+        return mScrollerRuntime != nullptr;
     }
 
     bool
     SceneObjectRuntime::applyToAll
     (const function<bool(SceneObjectRuntime*)>& fn)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("{}::applyToAll(bool) applying to {} children",
         getNameAndUuidString(),mChildRuntimes.size());
-#endif
+        #endif
 
         bool retval = fn(this);
 
@@ -1130,11 +1192,11 @@ namespace Dream
     SceneObjectRuntime::applyToAll
     (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("{}::applyToAll(void*) applying to {} children",
         getNameAndUuidString(), mChildRuntimes.size());
-#endif
+        #endif
 
         SceneObjectRuntime* retval = fn(this);
 
@@ -1163,7 +1225,7 @@ namespace Dream
     {
         static mat4 ident(1.0f);
         applyToAll
-        (function<SceneObjectRuntime*(SceneObjectRuntime*)>([=](SceneObjectRuntime* rt)
+        (function<SceneObjectRuntime*(SceneObjectRuntime*)>([&](SceneObjectRuntime* rt)
         {
             auto& initial = rt->getInitialTransform().getMatrix();
             rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);

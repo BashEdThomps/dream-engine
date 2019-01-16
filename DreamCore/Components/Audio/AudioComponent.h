@@ -60,7 +60,7 @@ namespace Dream
         float getVolume();
 
     protected:
-        void updateInstances();
+        void updateRuntimes();
 
     }; // End of AudioComponent
 

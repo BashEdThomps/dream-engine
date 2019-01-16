@@ -630,11 +630,11 @@ namespace Dream
                     }
 
                     // Lights
-                    if (object->hasLightInstance())
+                    if (object->hasLightRuntime())
                     {
-                        LightRuntime* light = object->getLightInstance();
+                        LightRuntime* light = object->getLightRuntime();
 #ifdef DREAM_LOG
-                        log->debug("Adding light instance to queue {}",light->getNameAndUuidString());
+                        log->debug("Adding light Runtime to queue {}",light->getNameAndUuidString());
 #endif
                         addToLightQueue(light);
                         if (light->getType() == LightType::LT_DIRECTIONAL)
@@ -761,29 +761,31 @@ namespace Dream
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // Setup Uniforms
-        static float near_plane = 0.1f;
-        static float far_plane = 200.0f;
-        static float sz = 200.0f;
+        static float near_plane = 1.0f;
+        static float far_plane = 300.0f;
+        static float sz = 100.0f;
 
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
-        /*
+
         mat4 lightMat = mShadowLight->getTransform().getMatrix();
         mat4 lightView = glm::lookAt
         (
             vec3(lightMat[3]), // Light Pos
-            vec3(glm::translate(lightMat,vec3(0,0,-100))[3]),//vec3(0.0f),  // target
+            vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
             vec3(0.0f,1.0f,0.0f) // Up
         );
-        */
-        DirLight dir = mShadowLight->getLightInstance()->getDirectionalLightData();
+
+        DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
         vec3 dirVec = dir.direction;
-        mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
+        //mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
         mShadowMatrix = lightProjection*lightView;
-        glCullFace(GL_FRONT);
+        //glCullFace(GL_FRONT);
+        glDisable(GL_CULL_FACE);
         if (mShaderCache != nullptr)
         {
             mShaderCache->drawShadowPass(mShadowMatrix, mShadowPassShader);
         }
+        glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
     }
 
@@ -814,9 +816,9 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (LightRuntime* lightInstance)
+    (LightRuntime* lightRuntime)
     {
-        mLightQueue.push_back(lightInstance);
+        mLightQueue.push_back(lightRuntime);
     }
 
     void

@@ -26,15 +26,15 @@ namespace Dream
     AudioCache::clear
     ()
     {
-        for (AssetRuntime* runt : mInstances)
+        for (AssetRuntime* runt : mRuntimes)
         {
             delete runt;
         }
-        mInstances.clear();
+        mRuntimes.clear();
     }
 
     SharedAssetRuntime*
-    AudioCache::loadInstance
+    AudioCache::loadRuntime
     (AssetDefinition* def)
     {
 #ifdef DREAM_DEBUG
@@ -61,7 +61,7 @@ namespace Dream
         if (asset)
         {
             asset->useDefinition();
-            mInstances.push_back(asset);
+            mRuntimes.push_back(asset);
         }
 
         return asset;

@@ -55,7 +55,7 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    MaterialCache::loadInstance
+    MaterialCache::loadRuntime
     (AssetDefinition* def)
     {
 #ifdef DREAM_LOG
@@ -70,7 +70,7 @@ namespace Dream
             return nullptr;
         }
         auto matDef = static_cast<MaterialDefinition*>(def);
-        auto shader = static_cast<ShaderRuntime*>(mShaderCache->getInstance(matDef->getShader()));
+        auto shader = static_cast<ShaderRuntime*>(mShaderCache->getRuntime(matDef->getShader()));
 
         if (shader == nullptr)
         {
@@ -81,10 +81,10 @@ namespace Dream
         }
 
         auto material = new MaterialRuntime(matDef,mProjectRuntime);
-        auto diffuse = static_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getDiffuseTexture()));
-        auto specular = static_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getSpecularTexture()));
-        auto normal = static_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getNormalTexture()));
-        auto displacement = static_cast<TextureRuntime*>(mTextureCache->getInstance(matDef->getDisplacementTexture()));
+        auto diffuse = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getDiffuseTexture()));
+        auto specular = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getSpecularTexture()));
+        auto normal = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getNormalTexture()));
+        auto displacement = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getDisplacementTexture()));
         material->useDefinition();
 
         material->setDiffuseTexture(diffuse);
@@ -93,7 +93,7 @@ namespace Dream
         material->setDisplacementTexture(displacement);
         material->setShader(shader);
         shader->addMaterial(material);
-        mInstances.push_back(material);
+        mRuntimes.push_back(material);
         return material;
     }
 } // End of Dream

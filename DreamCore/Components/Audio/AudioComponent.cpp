@@ -115,12 +115,12 @@ namespace Dream
         }
 
         beginUpdate();
-        updateInstances();
+        updateRuntimes();
         endUpdate();
     }
 
     void
-    AudioComponent::updateInstances
+    AudioComponent::updateRuntimes
     ()
     {
        for (AudioRuntime* ai : mUpdateQueue)

@@ -45,7 +45,7 @@ namespace DreamTool
                 auto scriptCache = projRunt->getScriptCache();
                 if (scriptCache)
                 {
-                    scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(mScriptDefinition));
+                    scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
                 }
             }
 
@@ -119,7 +119,7 @@ namespace DreamTool
                         else
                         {
 #ifdef DREAM_LOG
-                            log->error("Cannot set from template, script instance is null");
+                            log->error("Cannot set from template, script Runtime is null");
 #endif
                         }
                     }
@@ -144,7 +144,7 @@ namespace DreamTool
             auto scriptCache = projRunt->getScriptCache();
             if (scriptCache)
             {
-                scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getInstance(mScriptDefinition));
+                scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
                 if (scriptInst)
                 {
                     mTextEditor.SetReadOnly(false);

@@ -68,7 +68,7 @@ namespace DreamTool
         void setPropertyType(PropertyType t);
         void clear();
         void drawPhysicsImGizmo(CompoundChildDefinition);
-        void replaceRuntimeInstances(AssetDefinition* assetDef);
+        void replaceRuntimeRuntimes(AssetDefinition* assetDef);
     private:
         vector<PropertiesTarget> mHistory;
         PropertyType mType;

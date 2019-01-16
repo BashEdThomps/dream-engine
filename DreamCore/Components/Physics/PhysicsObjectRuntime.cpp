@@ -46,7 +46,7 @@ namespace Dream
          mModelCache(modelCache)
     {
         #ifdef DREAM_LOG
-        setLogClassName("PhysicsObjectInstance");
+        setLogClassName("PhysicsObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing" );
         #endif
@@ -213,7 +213,7 @@ namespace Dream
                     auto modelDef = pDef->getAssetDefinitionByUuid(modelUuid);
                     if (modelDef)
                     {
-                        auto model = static_cast<ModelRuntime*>(mModelCache->getInstance(modelDef));
+                        auto model = static_cast<ModelRuntime*>(mModelCache->getRuntime(modelDef));
                         if (model)
                         {
                             collisionShape = createTriangleMeshShape(model);

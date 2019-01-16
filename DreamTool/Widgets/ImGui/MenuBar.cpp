@@ -314,14 +314,16 @@ namespace DreamTool
                         mode = spdlog::level::off;
                         spdlog::set_level(mode);
                     }
-                    if (ImGui::RadioButton("Error", mode == spdlog::level::err))
-                    {
-                        mode = spdlog::level::err;
-                        spdlog::set_level(mode);
-                    }
+
                     if (ImGui::RadioButton("Critical", mode == spdlog::level::critical))
                     {
                         mode = spdlog::level::critical;
+                        spdlog::set_level(mode);
+                    }
+
+                    if (ImGui::RadioButton("Error", mode == spdlog::level::err))
+                    {
+                        mode = spdlog::level::err;
                         spdlog::set_level(mode);
                     }
                     if (ImGui::RadioButton("Warning", mode == spdlog::level::warn))

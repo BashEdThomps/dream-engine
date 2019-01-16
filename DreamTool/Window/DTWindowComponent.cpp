@@ -367,7 +367,7 @@ namespace DreamTool
         if (itr != end)
         {
 #ifdef DREAM_LOG
-            log->debug("Removig instance of {} from widgets", widget->getClassName());
+            log->debug("Removig Runtime of {} from widgets", widget->getClassName());
 #endif
             mImGuiWidgets.erase(itr);
         }
@@ -416,7 +416,7 @@ namespace DreamTool
         if (itr != end)
         {
 #ifdef DREAM_LOG
-            log->debug("Removig instance of {} from widgets", widget->getClassName());
+            log->debug("Removig Runtime of {} from widgets", widget->getClassName());
 #endif
             mGLWidgets.erase(itr);
         }

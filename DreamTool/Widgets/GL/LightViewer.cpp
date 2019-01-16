@@ -34,7 +34,7 @@ namespace DreamTool
 #ifdef DREAM_LOG
         checkGLError();
 #endif
-        vector<AssetRuntime*> lightInstances;
+        vector<AssetRuntime*> lightRuntimes;
         if (mState->project)
         {
             auto pRuntime = mState->project->getRuntime();
@@ -43,7 +43,7 @@ namespace DreamTool
                 auto sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    lightInstances = sRunt->getAssetInstances(AssetType::LIGHT);
+                    lightRuntimes = sRunt->getAssetRuntimes(AssetType::LIGHT);
                     auto cam = sRunt->getCamera();
                     if (cam)
                     {
@@ -129,7 +129,7 @@ namespace DreamTool
             }
 
 
-            for (auto inst : lightInstances)
+            for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
                 mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();

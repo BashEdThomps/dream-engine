@@ -150,7 +150,7 @@ namespace Dream
         log->debug( "Update Called" );
         #endif
 
-        for (auto inst : mScriptCache->getInstanceVector())
+        for (auto inst : mScriptCache->getRuntimeVector())
         {
             auto scriptObj = static_cast<ScriptRuntime*>(inst);
             scriptObj->executeOnInit();
@@ -254,12 +254,12 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposePathInstance
+    ScriptComponent::exposePathRuntime
     ()
     {
-        debugRegisteringClass("PathInstance");
+        debugRegisteringClass("PathRuntime");
         sol::state_view stateView(State);
-        stateView.new_usertype<PathRuntime>("PathInstance",
+        stateView.new_usertype<PathRuntime>("PathRuntime",
             "generate",&PathRuntime::generate,
             "getSplinePoints",&PathRuntime::getSplinePoints,
             "getSplinePoint",&PathRuntime::getSplinePoint,
@@ -280,21 +280,21 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeLightInstance
+    ScriptComponent::exposeLightRuntime
     ()
     {
-        debugRegisteringClass("LightInstance");
+        debugRegisteringClass("LightRuntime");
         sol::state_view stateView(State);
-        stateView.new_usertype<LightRuntime>("LightInstance");
+        stateView.new_usertype<LightRuntime>("LightRuntime");
     }
 
     void
-    ScriptComponent::exposeShaderInstance
+    ScriptComponent::exposeShaderRuntime
     ()
     {
-        debugRegisteringClass("ShaderInstance");
+        debugRegisteringClass("ShaderRuntime");
         sol::state_view stateView(State);
-        stateView.new_usertype<ShaderRuntime>("ShaderInstance",
+        stateView.new_usertype<ShaderRuntime>("ShaderRuntime",
             "getUuid", &ShaderRuntime::getUuid,
             "addUniform",&ShaderRuntime::addUniform
 
@@ -333,12 +333,12 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposePhysicsObjectInstance
+    ScriptComponent::exposePhysicsObjectRuntime
     ()
     {
-        debugRegisteringClass("PhysicsObjectInstance");
+        debugRegisteringClass("PhysicsObjectRuntime");
         sol::state_view stateView(State);
-        stateView.new_usertype<PhysicsObjectRuntime>("PhysicsObjectInstance",
+        stateView.new_usertype<PhysicsObjectRuntime>("PhysicsObjectRuntime",
             "getUuid", &PhysicsObjectRuntime::getUuid,
             "getMass", &PhysicsObjectRuntime::getMass,
             "setMass", &PhysicsObjectRuntime::setMass,
@@ -372,16 +372,16 @@ namespace Dream
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
             "getTransform",&SceneObjectRuntime::getTransform,
-            "getPath",&SceneObjectRuntime::getPathInstance,
-            "getAudio",&SceneObjectRuntime::getAudioInstance,
-            "getModel",&SceneObjectRuntime::getModelInstance,
-            "getLight",&SceneObjectRuntime::getLightInstance,
-            "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectInstance,
-            "hasPath",&SceneObjectRuntime::hasPathInstance,
-            "hasAudio",&SceneObjectRuntime::hasAudioInstance,
-            "hasModel",&SceneObjectRuntime::hasModelInstance,
-            "hasLight",&SceneObjectRuntime::hasLightInstance,
-            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectInstance,
+            "getPath",&SceneObjectRuntime::getPathRuntime,
+            "getAudio",&SceneObjectRuntime::getAudioRuntime,
+            "getModel",&SceneObjectRuntime::getModelRuntime,
+            "getLight",&SceneObjectRuntime::getLightRuntime,
+            "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectRuntime,
+            "hasPath",&SceneObjectRuntime::hasPathRuntime,
+            "hasAudio",&SceneObjectRuntime::hasAudioRuntime,
+            "hasModel",&SceneObjectRuntime::hasModelRuntime,
+            "hasLight",&SceneObjectRuntime::hasLightRuntime,
+            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectRuntime,
             "getDeleted",&SceneObjectRuntime::getDeleted,
             "setDeleted",&SceneObjectRuntime::setDeleted,
             "getHidden",&SceneObjectRuntime::getHidden,
@@ -446,12 +446,12 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeModelInstance
+    ScriptComponent::exposeModelRuntime
     ()
     {
-        debugRegisteringClass("ModelInstance");
+        debugRegisteringClass("ModelRuntime");
         sol::state_view stateView(State);
-        stateView.new_usertype<ModelRuntime>("ModelInstance");
+        stateView.new_usertype<ModelRuntime>("ModelRuntime");
     }
 
     void
@@ -676,21 +676,21 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeScriptInstance
+    ScriptComponent::exposeScriptRuntime
     ()
     {
         // TODO
     }
 
     void
-    ScriptComponent::exposeAudioInstance
+    ScriptComponent::exposeAudioRuntime
     ()
     {
-        debugRegisteringClass("AudioInstance");
+        debugRegisteringClass("AudioRuntime");
         sol::state_view stateView(State);
         stateView.new_usertype<AudioRuntime>
         (
-            "AudioInstance",
+            "AudioRuntime",
             "getState",&AudioRuntime::getState,
             "play",&AudioRuntime::play,
             "pause",&AudioRuntime::pause,
@@ -985,13 +985,13 @@ namespace Dream
         exposePhysicsComponent();
 
 
-        exposeAudioInstance();
-        exposeModelInstance();
-        exposeLightInstance();
-        exposeShaderInstance();
-        exposePathInstance();
-        exposeScriptInstance();
-        exposePhysicsObjectInstance();
+        exposeAudioRuntime();
+        exposeModelRuntime();
+        exposeLightRuntime();
+        exposeShaderRuntime();
+        exposePathRuntime();
+        exposeScriptRuntime();
+        exposePhysicsObjectRuntime();
     }
 
     vector<LuaPrintListener*> ScriptComponent::PrintListeners;

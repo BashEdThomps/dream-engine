@@ -46,7 +46,7 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    ModelCache::loadInstance
+    ModelCache::loadRuntime
     (AssetDefinition* def)
     {
 #ifdef DREAM_LOG
@@ -56,7 +56,7 @@ namespace Dream
         auto model = new ModelRuntime(mShaderCache, mMaterialCache,def,mProjectRuntime);
         if (model->useDefinition())
         {
-            mInstances.push_back(model);
+            mRuntimes.push_back(model);
         }
         else
         {

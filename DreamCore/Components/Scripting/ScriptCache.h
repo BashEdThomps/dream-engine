@@ -25,6 +25,6 @@ namespace Dream
         ScriptCache(ProjectRuntime* runtime);
         ~ScriptCache() override;
     protected:
-        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadRuntime(AssetDefinition* def) override;
     };
 }

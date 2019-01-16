@@ -335,9 +335,11 @@ namespace Dream
     // Scroller ================================================================
     const string Constants::SCROLLER_VELOCITY = "velocity";
     const string Constants::SCROLLER_LOOP = "loop";
+    const string Constants::SCROLLER_RANGE_BEGIN = "range_begin";
+    const string Constants::SCROLLER_RANGE_END = "range_end";
     const string Constants::SCROLLER_ITEMS_ARRAY = "items";
     const string Constants::SCROLLER_ITEM_INDEX = "index";
-    const string Constants::SCROLLER_ITEM_OFFSET = "offset";
+    const string Constants::SCROLLER_ITEM_ORIGIN = "origin";
 
     // Shader ===================================================================
     const string Constants::SHADER_FRAGMENT = ".frag";

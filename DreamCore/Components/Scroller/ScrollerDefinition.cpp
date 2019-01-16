@@ -38,7 +38,9 @@ namespace Dream
         mJson[Constants::SCROLLER_VELOCITY] = wrapVec3(vel);
     }
 
-    bool ScrollerDefinition::getLoop()
+    bool
+    ScrollerDefinition::getLoop
+    ()
     {
        if (!mJson[Constants::SCROLLER_LOOP].is_boolean())
        {
@@ -47,9 +49,77 @@ namespace Dream
        return mJson[Constants::SCROLLER_LOOP];
     }
 
-    void ScrollerDefinition::setLoop(bool loop)
+    void
+    ScrollerDefinition::setLoop
+    (bool loop)
     {
-       mJson[Constants::SCROLLER_LOOP] = loop;
+        mJson[Constants::SCROLLER_LOOP] = loop;
+    }
+
+    vec3 ScrollerDefinition::getRangeBegin()
+    {
+       if (!mJson[Constants::SCROLLER_RANGE_BEGIN].is_object())
+       {
+           setRangeBegin(vec3(0.0f));
+       }
+       return unwrapVec3(mJson[Constants::SCROLLER_RANGE_BEGIN]);
+
+    }
+
+    void ScrollerDefinition::setRangeBegin(vec3 range)
+    {
+       mJson[Constants::SCROLLER_RANGE_BEGIN] = wrapVec3(range);
+    }
+
+    vec3 ScrollerDefinition::getRangeEnd()
+    {
+        if (!mJson[Constants::SCROLLER_RANGE_END].is_object())
+       {
+           setRangeEnd(vec3(0.0f));
+       }
+       return unwrapVec3(mJson[Constants::SCROLLER_RANGE_END]);
+
+    }
+
+    void ScrollerDefinition::setRangeEnd(vec3 range)
+    {
+       mJson[Constants::SCROLLER_RANGE_END] = wrapVec3(range);
+    }
+
+    void
+    ScrollerDefinition::updateScrollerItem
+    (const ScrollerItem& item)
+    {
+        checkItemsArray();
+        auto iter =  mJson[Constants::SCROLLER_ITEMS_ARRAY].begin();
+        auto end = mJson[Constants::SCROLLER_ITEMS_ARRAY].end();
+        for (; iter != end; iter++)
+        {
+            if ((*iter)[Constants::SCROLLER_ITEM_INDEX] == item.index)
+            {
+                (*iter)[Constants::SCROLLER_ITEM_ORIGIN] = wrapVec3(item.origin);
+                (*iter)[Constants::UUID] = item.uuid;
+                return;
+            }
+        }
+    }
+
+    void
+    ScrollerDefinition::removeScrollerItem
+    (const ScrollerItem& item)
+    {
+        checkItemsArray();
+        auto iter =  mJson[Constants::SCROLLER_ITEMS_ARRAY].begin();
+        auto end = mJson[Constants::SCROLLER_ITEMS_ARRAY].end();
+        for (; iter != end; iter++)
+        {
+            if ((*iter)[Constants::SCROLLER_ITEM_INDEX] == item.index)
+            {
+                mJson[Constants::SCROLLER_ITEMS_ARRAY].erase(iter);
+                return;
+            }
+        }
+
     }
 
     ScrollerDefinition::~ScrollerDefinition()
@@ -63,7 +133,7 @@ namespace Dream
     {
        json j;
        j[Constants::SCROLLER_ITEM_INDEX] = item.index;
-       j[Constants::SCROLLER_ITEM_OFFSET] = wrapVec3(item.offset);
+       j[Constants::SCROLLER_ITEM_ORIGIN] = wrapVec3(item.origin);
        j[Constants::UUID] = item.uuid;
        return j;
     }
@@ -75,7 +145,7 @@ namespace Dream
         ScrollerItem i;
         i.index = j[Constants::SCROLLER_ITEM_INDEX];
         i.uuid = j[Constants::UUID];
-        i.offset = unwrapVec3(j[Constants::SCROLLER_ITEM_OFFSET]);
+        i.origin = unwrapVec3(j[Constants::SCROLLER_ITEM_ORIGIN]);
         return i;
     }
 
@@ -101,7 +171,83 @@ namespace Dream
         mJson[Constants::SCROLLER_ITEMS_ARRAY].push_back(wrapScrollerItem(item));
     }
 
+    unsigned int
+    ScrollerDefinition::getNextItemIndex
+    ()
+    {
+        checkItemsArray();
+        unsigned int index = 0;
+        for (const json& js : mJson[Constants::SCROLLER_ITEMS_ARRAY])
+        {
+            unsigned int nextIndex = js[Constants::SCROLLER_ITEM_INDEX];
+            if (nextIndex > index)
+            {
+                index = nextIndex;
+            }
+        }
+        index++;
+        return index;
+    }
 
+    void
+    ScrollerDefinition::moveScrollerItem
+    (const ScrollerItem& item, bool forward)
+    {
+        checkItemsArray();
+        auto begin = mJson[Constants::SCROLLER_ITEMS_ARRAY].begin();
+        auto end = mJson[Constants::SCROLLER_ITEMS_ARRAY].end();
+        auto target = std::find_if
+        (
+            begin,end,
+            [item]
+            (json& a)->bool
+            {
+                return a[Constants::SCROLLER_ITEM_INDEX]==item.index;
+            }
+        );
+
+        if (target != end)
+        {
+            if (forward && target+1 < end)
+            {
+                std::iter_swap(target,target+1);
+            }
+            else if (!forward && target-1 >= begin)
+            {
+               std::iter_swap(target,target-1);
+            }
+        }
+    }
+
+    void
+    ScrollerDefinition::copyScrollerItem
+    (const ScrollerItem& item)
+    {
+        checkItemsArray();
+        auto target = std::find_if
+        (
+            mJson[Constants::SCROLLER_ITEMS_ARRAY].begin(),
+            mJson[Constants::SCROLLER_ITEMS_ARRAY].end(),
+            [item]
+            (json& a)->bool
+            {
+                return a[Constants::SCROLLER_ITEM_INDEX]==item.index;
+            }
+        );
+
+        if (target != mJson[Constants::SCROLLER_ITEMS_ARRAY].end())
+        {
+            auto newItem = item;
+            newItem.index = getNextItemIndex();
+            if (target != mJson[Constants::SCROLLER_ITEMS_ARRAY].begin())
+            {
+                auto prev = (target-1);
+                vec3 delta = newItem.origin-unwrapScrollerItem(*prev).origin;
+                newItem.origin += delta;
+            }
+            mJson[Constants::SCROLLER_ITEMS_ARRAY].insert(target+1,wrapScrollerItem(newItem));
+        }
+    }
     void
     ScrollerDefinition::checkItemsArray
     ()

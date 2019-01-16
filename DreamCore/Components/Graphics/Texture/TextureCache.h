@@ -15,6 +15,6 @@ namespace Dream
         void clear() override;
         void flushRawTextureImageData();
     protected:
-        SharedAssetRuntime* loadInstance(AssetDefinition* def) override;
+        SharedAssetRuntime* loadRuntime(AssetDefinition* def) override;
     };
 }

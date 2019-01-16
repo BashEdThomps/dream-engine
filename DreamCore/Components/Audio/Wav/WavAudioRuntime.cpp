@@ -23,7 +23,7 @@ namespace Dream
         : AudioRuntime(definition, project)
     {
 #ifdef DREAM_LOG
-        setLogClassName("WavAudioInstance");
+        setLogClassName("WavAudioRuntime");
         getLog()->error("Constructing");
 #endif
     }

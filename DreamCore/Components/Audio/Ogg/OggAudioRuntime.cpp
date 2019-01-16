@@ -27,7 +27,7 @@ namespace Dream
         : AudioRuntime(def,project)
     {
 #ifdef DREAM_LOG
-        setLogClassName("OggAudioInstance");
+        setLogClassName("OggAudioRuntime");
 #endif
     }
 
@@ -38,7 +38,7 @@ namespace Dream
         auto absPath = getAssetFilePath();
 #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug("Loading Instance: {}", absPath);
+        log->debug("Loading Runtime: {}", absPath);
 #endif
 
         // 0 for Little-Endian, 1 for Big-Endian

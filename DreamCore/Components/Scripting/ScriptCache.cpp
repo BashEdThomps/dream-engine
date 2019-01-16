@@ -43,11 +43,11 @@ namespace Dream
     }
 
     SharedAssetRuntime*
-    ScriptCache::loadInstance
+    ScriptCache::loadRuntime
     (AssetDefinition* def)
     {
         auto scriptDef = static_cast<ScriptDefinition*>(def);
-        for (auto* inst: mInstances)
+        for (auto* inst: mRuntimes)
         {
             if (inst->getUuid() == scriptDef->getUuid())
             {
@@ -58,7 +58,7 @@ namespace Dream
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());
-        mInstances.push_back(newScript);
+        mRuntimes.push_back(newScript);
         return newScript;
     }
 }

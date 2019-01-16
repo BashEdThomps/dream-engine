@@ -20,20 +20,39 @@
 #include "ScrollerDefinition.h"
 #include "../DiscreteAssetRuntime.h"
 
-using namespace std;
-using namespace nlohmann;
-
 namespace Dream
 {
+    class SceneRuntime;
+
     class ScrollerRuntime : public DiscreteAssetRuntime
     {
+        enum Range
+        {
+            None,
+            PreRange,
+            InRange,
+            PostRange
+        };
 
     public:
         ScrollerRuntime(ScrollerDefinition*,SceneObjectRuntime*);
         ~ScrollerRuntime() override;
         bool useDefinition() override;
+        void update(SceneRuntime* sr);
+        void collectGarbage(SceneRuntime* sr);
+    protected:
+        SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);
+        bool removeChlidRuntime(const ScrollerItem& item);
+        void addAssets(SceneObjectRuntime* runt);
+        Range checkRange(SceneObjectRuntime* runt);
     private:
         vec3 mVelocity;
-        bool mRepeat;
+        vec3 mRangeBegin;
+        vec3 mRangeEnd;
+        vector<SceneObjectRuntime*> mPreRange;
+        vector<SceneObjectRuntime*> mInRange;
+        vector<SceneObjectRuntime*> mPostRange;
+        map<uint32_t,uint32_t> mAssetsMap;
+        bool mLoop;
     };
 }

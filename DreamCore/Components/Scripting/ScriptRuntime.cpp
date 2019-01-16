@@ -32,7 +32,7 @@ namespace Dream
           mError(false)
     {
         #ifdef DREAM_LOG
-        setLogClassName("ScriptInstance");
+        setLogClassName("ScriptRuntime");
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString());
         #endif
@@ -61,14 +61,14 @@ namespace Dream
     }
 
     void
-    ScriptRuntime::addInstance
+    ScriptRuntime::addRuntime
     (SceneObjectRuntime* sor)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
-        auto target = mInstances.end();
-        for (auto itr = mInstances.begin(); itr != mInstances.end(); itr++)
+        auto target = mRuntimes.end();
+        for (auto itr = mRuntimes.begin(); itr != mRuntimes.end(); itr++)
         {
             if ((*itr).runtime == sor)
             {
@@ -78,7 +78,7 @@ namespace Dream
         }
 
         bool error = false;
-        if (target == mInstances.end())
+        if (target == mRuntimes.end())
         {
             uint32_t id = sor->getUuid();
             #ifdef DREAM_LOG
@@ -127,17 +127,17 @@ namespace Dream
             pair.runtime = sor;
             pair.initialised = false;
             pair.error = error;
-            mInstances.push_back(pair);
+            mRuntimes.push_back(pair);
         }
     }
 
     void
-    ScriptRuntime::removeInstance
+    ScriptRuntime::removeRuntime
     (SceneObjectRuntime* sor)
     {
-        auto target = mInstances.end();
+        auto target = mRuntimes.end();
 
-        for (auto itr = mInstances.begin(); itr != mInstances.end(); itr++)
+        for (auto itr = mRuntimes.begin(); itr != mRuntimes.end(); itr++)
         {
             if ((*itr).runtime == sor)
             {
@@ -146,14 +146,14 @@ namespace Dream
             }
         }
 
-        if (target != mInstances.end())
+        if (target != mRuntimes.end())
         {
             sol::state_view stateView(ScriptComponent::State);
             stateView[sor->getUuid()] = sol::lua_nil;
             #ifdef DREAM_LOG
             getLog()->debug( "Removed script lua table for {}" , sor->getNameAndUuidString());
             #endif
-            mInstances.erase(target);
+            mRuntimes.erase(target);
         }
     }
 
@@ -181,7 +181,7 @@ namespace Dream
         auto log = getLog();
         #endif
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mInstances)
+        for (auto& sceneObject : mRuntimes)
         {
             if (sceneObject.error)
             {
@@ -225,7 +225,7 @@ namespace Dream
         auto log = getLog();
         #endif
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mInstances)
+        for (auto& sceneObject : mRuntimes)
         {
             if (sceneObject.error)
             {
@@ -297,7 +297,7 @@ namespace Dream
         auto log = getLog();
         #endif
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mInstances)
+        for (auto& sceneObject : mRuntimes)
         {
             if (sceneObject.error)
             {

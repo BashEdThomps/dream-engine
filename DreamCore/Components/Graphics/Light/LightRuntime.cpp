@@ -37,7 +37,7 @@ namespace Dream
 
     {
 #ifdef DREAM_LOG
-        setLogClassName("LightInstance");
+        setLogClassName("LightRuntime");
 #endif
     }
 

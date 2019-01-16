@@ -81,9 +81,9 @@ namespace Dream
                 (
                     [&](SceneObjectRuntime* currentSceneObject)
                     {
-                        if (currentSceneObject->hasAnimationInstance())
+                        if (currentSceneObject->hasAnimationRuntime())
                         {
-                            auto anim = currentSceneObject->getAnimationInstance();
+                            auto anim = currentSceneObject->getAnimationRuntime();
                             anim->stepAnimation(mTime->getFrameTimeDelta());
                         }
                         return nullptr;

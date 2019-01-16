@@ -46,7 +46,7 @@ namespace DreamTool
                 auto scriptCache = projRunt->getShaderCache();
                 if (scriptCache)
                 {
-                    shaderInst = dynamic_cast<ShaderRuntime*>(scriptCache->getInstance(mShaderDefinition));
+                    shaderInst = dynamic_cast<ShaderRuntime*>(scriptCache->getRuntime(mShaderDefinition));
                 }
             }
 
@@ -177,7 +177,7 @@ namespace DreamTool
             auto scriptCache = projRunt->getShaderCache();
             if (scriptCache)
             {
-                scriptInst = dynamic_cast<ShaderRuntime*>(scriptCache->getInstance(mShaderDefinition));
+                scriptInst = dynamic_cast<ShaderRuntime*>(scriptCache->getRuntime(mShaderDefinition));
                 if (scriptInst)
                 {
                     mVertexEditor.SetReadOnly(false);

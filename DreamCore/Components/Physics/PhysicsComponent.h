@@ -68,11 +68,11 @@ namespace Dream
         bool getDebug();
         bool init() override;
         void updateComponent(SceneRuntime* sr) override;
-        void addPhysicsObjectInstance(PhysicsObjectRuntime*);
+        void addPhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCharacter(PhysicsObjectRuntime*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectInstance(PhysicsObjectRuntime*);
+        void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCamera(Camera* cam);
         void checkContactManifolds(SceneRuntime* scene);
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);

@@ -62,8 +62,8 @@ namespace Dream
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
         void exposePathComponent();
-        void exposePathInstance();
-        void exposeModelInstance();
+        void exposePathRuntime();
+        void exposeModelRuntime();
         void exposeCamera();
         void exposeProjectRuntime();
         void exposeProjectDirectory();
@@ -72,12 +72,12 @@ namespace Dream
         void exposeGraphicsComponent();
         void exposeInputComponent();
         void exposeAudioComponent();
-        void exposeAudioInstance();
-        void exposeLightInstance();
-        void exposeScriptInstance();
+        void exposeAudioRuntime();
+        void exposeLightRuntime();
+        void exposeScriptRuntime();
         void exposePhysicsComponent();
-        void exposePhysicsObjectInstance();
-        void exposeShaderInstance();
+        void exposePhysicsObjectRuntime();
+        void exposeShaderRuntime();
         void exposeSceneRuntime();
         void exposeSceneObjectRuntime();
         void exposeTime();
