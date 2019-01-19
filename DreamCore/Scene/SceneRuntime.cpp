@@ -28,38 +28,38 @@
 
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
+#include "../Components/Time.h"
 
 namespace Dream
 {
     SceneRuntime::SceneRuntime
     (SceneDefinition* sd, ProjectRuntime* project)
         : Runtime(sd),
-        mState(SceneState::SCENE_STATE_TO_LOAD),
-        mCamera(Camera(this)),
-        mClearColour({0,0,0,0}),
-        mAmbientColour({0,0,0}),
+          mState(SceneState::SCENE_STATE_TO_LOAD),
+          mCamera(Camera(this)),
+          mClearColour(vec3(0.0f)),
         mProjectRuntime(project),
         mRootSceneObjectRuntime(nullptr),
         mInputScript(nullptr),
         mNanoVGScript(nullptr),
         mMinDrawDistance(0.1f),
         mMaxDrawDistance(1000.0f),
-        mMeshCullDistance(1000.0f)
+        mMeshCullDistance(1000.0f),
+        mSceneStartTime(0),
+        mSceneCurrentTime(0)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("SceneRuntime");
-        auto log = getLog();
-        log->trace( "Constructing " );
-#endif
+        getLog()->trace( "Constructing " );
+        #endif
     }
 
     SceneRuntime::~SceneRuntime
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
         if (mState != SCENE_STATE_DESTROYED)
         {
             destroyRuntime();
@@ -70,9 +70,9 @@ namespace Dream
     SceneRuntime::destroyRuntime
     ()
     {
-#ifdef DREAM_LOG
-        getLog()->critical("Destroying runtime {}",getNameAndUuidString());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Destroying runtime {}",getNameAndUuidString());
+        #endif
 
         if (mRootSceneObjectRuntime != nullptr)
         {
@@ -102,13 +102,13 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            getLog()->error("Cannot switch scene state from {} to {}",mState,state);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->warn("Cannot switch scene state from {} to {}",mState,state);
+            #endif
         }
     }
 
-    const vector<float>
+    vec3
     SceneRuntime::getGravity
     ()
     {
@@ -116,12 +116,12 @@ namespace Dream
         {
             return mProjectRuntime->getPhysicsComponent()->getGravity();
         }
-        return vector<float>{0.0f,0.0f,0.0f};
+        return vec3(0.0f);
     }
 
     void
     SceneRuntime::setGravity
-    (const vector<float>& gravity)
+    (const vec3& gravity)
     {
         if (mProjectRuntime)
         {
@@ -129,7 +129,7 @@ namespace Dream
         }
     }
 
-    const vector<float>&
+    vec3
     SceneRuntime::getClearColour
     ()
     {
@@ -138,23 +138,9 @@ namespace Dream
 
     void
     SceneRuntime::setClearColour
-    (const vector<float>& clearColour)
+    (const vec3& clearColour)
     {
         mClearColour = clearColour;
-    }
-
-    const vector<float>&
-    SceneRuntime::getAmbientColour
-    ()
-    {
-        return mAmbientColour;
-    }
-
-    void
-    SceneRuntime::setAmbientColour
-    (const vector<float>& ambientColour)
-    {
-        mAmbientColour = ambientColour;
     }
 
     SceneObjectRuntime*
@@ -238,15 +224,14 @@ namespace Dream
         return count;
     }
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     void
     SceneRuntime::showScenegraph
     ()
     {
-        auto log = getLog();
         if (!mRootSceneObjectRuntime)
         {
-            log->debug( "Scenegraph is empty (no root SceneObjectRuntime)" );
+            getLog()->debug( "Scenegraph is empty (no root SceneObjectRuntime)" );
             return;
         }
 
@@ -256,14 +241,14 @@ namespace Dream
             (
                 [&](SceneObjectRuntime*)
                 {
-                    log->debug("showScenegraph not implemented");
+                    getLog()->debug("showScenegraph not implemented");
                     //obj->showStatus();
                     return nullptr;
                 }
             )
         );
     }
-#endif
+    #endif
 
     void
     SceneRuntime::setRootSceneObjectRuntime
@@ -284,10 +269,9 @@ namespace Dream
     ()
     {
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Collecting Garbage {}" , getNameAndUuidString() );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Collecting Garbage {}" , getNameAndUuidString() );
+        #endif
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
@@ -319,27 +303,23 @@ namespace Dream
     SceneRuntime::useDefinition
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("SceneDefinition is null");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("SceneDefinition is null");
+            #endif
             return false;
         }
 
-#ifdef DREAM_LOG
-        log->debug( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
+        #endif
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinition->getName());
         setUuid(sceneDefinition->getUuid());
-        setAmbientColour(sceneDefinition->getAmbientColour());
         setClearColour(sceneDefinition->getClearColour());
 
         // Setup Camera
@@ -359,17 +339,17 @@ namespace Dream
         shaderUuid = sceneDefinition->getShadowPassShader();
         mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderUuid));
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         if (mLightingPassShader == nullptr)
         {
-            log->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            getLog()->error("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
 
         if (mShadowPassShader == nullptr)
         {
-            log->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            getLog()->error("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
-#endif
+        #endif
 
         // Scripts
         auto scriptCache = mProjectRuntime->getScriptCache();
@@ -377,9 +357,9 @@ namespace Dream
         mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
         if (!mInputScript)
         {
-#ifdef DREAM_LOG
-            log->error("Unable to load Input r Script {}",inputScriptUuid);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Unable to load Input r Script {}",inputScriptUuid);
+            #endif
         }
         else
         {
@@ -390,9 +370,9 @@ namespace Dream
         mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(nvgScriptUuid));
         if (!mNanoVGScript)
         {
-#ifdef DREAM_LOG
-            log->error("Unable to load NanoVG Script {}",nvgScriptUuid);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Unable to load NanoVG Script {}",nvgScriptUuid);
+            #endif
         }
         else
         {
@@ -407,9 +387,9 @@ namespace Dream
         auto sor = new SceneObjectRuntime(sod,this);
         if (!sor->useDefinition())
         {
-#ifdef DREAM_LOG
-            log->error("Error using scene object runtime definition");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Error using scene object runtime definition");
+            #endif
             delete sor;
             sor = nullptr;
             return false;
@@ -418,9 +398,9 @@ namespace Dream
 
         setRootSceneObjectRuntime(sor);
         setState(SceneState::SCENE_STATE_LOADED);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         mProjectRuntime->getShaderCache()->logShaders();
-#endif
+        #endif
 
         auto focused = getSceneObjectRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
         mCamera.setFocusedSceneObejct(focused);
@@ -636,5 +616,79 @@ namespace Dream
             )
         );
         return nearest;
+    }
+
+    double SceneRuntime::getSceneCurrentTime() const
+    {
+        return mSceneCurrentTime;
+    }
+
+    void SceneRuntime::setSceneCurrentTime(double sceneCurrentTime)
+    {
+        mSceneCurrentTime = sceneCurrentTime;
+    }
+
+    double SceneRuntime::getSceneStartTime() const
+    {
+        return mSceneStartTime;
+    }
+
+    void SceneRuntime::setSceneStartTime(double sceneStartTime)
+    {
+        mSceneStartTime = sceneStartTime;
+    }
+
+    void SceneRuntime::updateTime()
+    {
+       long frameTime = mProjectRuntime->getTime()->getCurrentFrameTime();
+       if (mSceneStartTime <= 0)
+       {
+           mSceneStartTime = frameTime;
+       }
+       mSceneCurrentTime = frameTime-mSceneStartTime;
+       updateDeferredSceneObjects();
+    }
+
+    void
+    SceneRuntime::updateDeferredSceneObjects
+    ()
+    {
+       long timeDelta = mProjectRuntime->getTime()->getFrameTimeDelta();
+
+       if (timeDelta > Time::DELTA_MAX)
+       {
+           return;
+       }
+
+       mRootSceneObjectRuntime->applyToAll
+       (
+            std::function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            (
+                [&](SceneObjectRuntime* runt)
+                {
+                    long deferredFor = runt->getDeferredFor();
+                    if (deferredFor > 0)
+                    {
+                        long deferral = deferredFor-timeDelta;
+                        #ifdef DREAM_LOG
+                        getLog()->critical("Reducing defferal by {} to {} for {}", timeDelta, deferral, runt->getNameAndUuidString());
+                        #endif
+                        runt->setDeferredFor(deferral);
+                        if (deferral < 0)
+                        {
+                            #ifdef DREAM_LOG
+                            getLog()->critical("Loading Deferred Runtime {}", runt->getNameAndUuidString());
+                            #endif
+                            runt->loadDeferred();
+                        }
+                    }
+                    else
+                    {
+                        runt->increaseLifetime(timeDelta);
+                    }
+                    return nullptr;
+                }
+            )
+       );
     }
 }

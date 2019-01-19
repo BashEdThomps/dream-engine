@@ -3,8 +3,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../../deps/ImGui/imguifilesystem.h"
-#include "../../deps/ImGui/ImGuizmo.h"
+#include "../../deps/ImFileSystem/imguifilesystem.h"
+#include "../../deps/ImGuizmo/ImGuizmo.h"
 #include "../../DTState.h"
 
 
@@ -648,25 +648,6 @@ namespace DreamTool
                 }
             }
 
-            auto ambientVec = sceneDef->getAmbientColour();
-            if (ImGui::ColorEdit3("Ambient Color", &ambientVec[0]))
-            {
-                if (sceneDef)
-                {
-                    sceneDef->setAmbientColourR(ambientVec[0]);
-                    sceneDef->setAmbientColourG(ambientVec[1]);
-                    sceneDef->setAmbientColourB(ambientVec[2]);
-                }
-                if (sceneRuntime)
-                {
-                    sceneRuntime->setAmbientColour({
-                                                       ambientVec[0],
-                                                       ambientVec[1],
-                                                       ambientVec[2]
-                                                   });
-                }
-            }
-
             auto pDef = sceneDef->getProjectDefinition();
             auto lpShaderUuid = sceneDef->getLightingPassShader();
             auto lpShaderDef = pDef->getAssetDefinitionByUuid(lpShaderUuid);
@@ -751,21 +732,6 @@ namespace DreamTool
                 if (sceneRuntime)
                 {
                     sceneRuntime->setGravity(gravityVec);
-                }
-            }
-        }
-
-        if (ImGui::CollapsingHeader("Misc"))
-        {
-            // Notes
-            char notesBuffer[512] = { 0 };
-            strncpy(notesBuffer, sceneDef->getNotes().c_str(), sceneDef->getNotes().size());
-
-            if (ImGui::InputTextMultiline("Notes", notesBuffer, 512))
-            {
-                if (sceneDef)
-                {
-                    sceneDef->setNotes(notesBuffer);
                 }
             }
         }
@@ -875,7 +841,25 @@ namespace DreamTool
             if(soDef) soDef->setIsTemplate(isTemplate);
         }
 
+
         ImGui::Columns(1);
+        ImGui::Separator();
+
+        ImGui::Text("Lifetime");
+
+        int deferred = soDef->getDeferred();
+        if(ImGui::InputInt("Deferred For (seconds)",&deferred))
+        {
+            soDef->setDeferred(deferred);
+        }
+
+        int dieAfter = soDef->getDieAfter();
+        if(ImGui::InputInt("Die After (seconds)",&dieAfter))
+        {
+            soDef->setDieAfter(dieAfter);
+        }
+
+        ImGui::Separator();
 
         if (soRuntime && soRuntime->hasAnimationRuntime())
         {
@@ -898,9 +882,9 @@ namespace DreamTool
                 }
 
                 ImGui::PushItemWidth(-1);
-                int animProg = animation->getCurrentTime();
-                int duration = animation->getDuration();
-                if(ImGui::SliderInt("#AnimationProgress", &animProg,0,duration,"%dms"))
+                float animProg = animation->getCurrentTime();
+                float duration = animation->getDuration();
+                if(ImGui::SliderFloat("#AnimationProgress", &animProg,0,duration,"%dms"))
                 {
                     animation->setCurrentTime(animProg);
                     animation->seekAll(animProg);
@@ -1557,6 +1541,14 @@ namespace DreamTool
             projDef->regroupAssetDefinitions();
             return;
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Duplicate"))
+        {
+            auto dup = assetDef->duplicate();
+            auto projDef = mState->project->getDefinition();
+            pushPropertyTarget(PropertyType::SceneObject,dup,nullptr);
+        }
+
 
         drawNameAndIdProperties();
         ImGui::Separator();
@@ -1640,18 +1632,12 @@ namespace DreamTool
     {
         auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
 
-        int duration = animDef->getDuration();
-        if (ImGui::InputInt("Duration (ms)",&duration))
-        {
-            animDef->setDuration(duration);
-        }
-
         ImGui::Columns(2);
 
-        bool looping = animDef->getLooping();
-        if (ImGui::Checkbox("Looping",&looping))
+        bool relative = animDef->getRelative();
+        if (ImGui::Checkbox("Relative to Origin",&relative))
         {
-            animDef->setLooping(looping);
+            animDef->setRelative(relative);
         }
 
         ImGui::NextColumn();

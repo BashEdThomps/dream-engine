@@ -40,8 +40,7 @@ namespace Dream
     {
     private:
         SceneState mState;
-        vector<float> mClearColour;
-        vector<float> mAmbientColour;
+        vec3 mClearColour;
         ProjectRuntime* mProjectRuntime;
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
@@ -50,6 +49,8 @@ namespace Dream
         ScriptRuntime* mInputScript;
         ScriptRuntime* mNanoVGScript;
         Camera mCamera;
+        double mSceneStartTime;
+        double mSceneCurrentTime;
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
@@ -62,14 +63,11 @@ namespace Dream
         SceneState getState();
         void setState(SceneState state);
 
-        const vector<float> getGravity();
-        void setGravity(const vector<float>& gravity);
+        vec3 getGravity();
+        void setGravity(const vec3& gravity);
 
-        const vector<float>& getClearColour();
-        void setClearColour(const vector<float>& clearColour);
-
-        const vector<float>& getAmbientColour();
-        void setAmbientColour(const vector<float>& ambientColour);
+        vec3 getClearColour();
+        void setClearColour(const vec3& clearColour);
 
         const vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
@@ -123,7 +121,13 @@ namespace Dream
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
         vector<SceneObjectRuntime*> getSceneObjectsWithRuntimeOf(AssetDefinition* def) const;
 
+        /**
+         * @return Gets the ScriptRuntime that handles Input
+         */
         ScriptRuntime* getInputScript() const;
+        /**
+         * @return Gets the ScriptRuntime that controls the NanoVG Overlay
+         */
         ScriptRuntime* getNanoVGScript() const;
 
         /**
@@ -131,5 +135,13 @@ namespace Dream
          * the SceneObject the Camera is focused on.
          */
         SceneObjectRuntime* getNearestToCamera();
+
+        double getSceneCurrentTime() const;
+        void setSceneCurrentTime(double sceneCurrentTime);
+
+        double getSceneStartTime() const;
+        void setSceneStartTime(double sceneStartTime);
+        void updateTime();
+        void updateDeferredSceneObjects();
     };
 }

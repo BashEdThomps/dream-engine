@@ -298,6 +298,14 @@ namespace Dream
     }
 
     void
+    ProjectDefinition::addAssetDefinition
+    (AssetDefinition* def)
+    {
+       mAssetDefinitions.push_back(def);
+       regroupAssetDefinitions();
+    }
+
+    void
     ProjectDefinition::loadSceneDefinition
     (json scene)
     {

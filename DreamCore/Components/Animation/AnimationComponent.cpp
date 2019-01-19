@@ -21,7 +21,6 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Project/ProjectRuntime.h"
-#include "../../Utilities/String.h"
 
 namespace Dream
 {
@@ -30,18 +29,18 @@ namespace Dream
         : Component()
 
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         setLogClassName("AnimationComponent");
-#endif
+        #endif
     }
 
 
     AnimationComponent::~AnimationComponent
     ()
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         getLog()->debug("Destroying Object");
-#endif
+        #endif
     }
 
 
@@ -49,9 +48,9 @@ namespace Dream
     AnimationComponent::init
     ()
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         getLog()->debug("Initialisation Done");
-#endif
+        #endif
         return true;
     }
 
@@ -60,15 +59,11 @@ namespace Dream
     AnimationComponent::updateComponent
     (SceneRuntime* sr)
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-#endif
         if (!mEnabled)
         {
-
-#ifdef DREAM_DEBUG
-            log->warn("Update Disabled");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->warn("Update Disabled");
+            #endif
             return;
         }
 

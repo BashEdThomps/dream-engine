@@ -22,7 +22,6 @@
 
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/String.h"
 
 namespace Dream
 {

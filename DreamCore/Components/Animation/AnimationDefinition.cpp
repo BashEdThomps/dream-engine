@@ -98,40 +98,22 @@ namespace Dream
         }
     }
 
-    unsigned int
-    AnimationDefinition::getDuration
-    ()
-    {
-        if (mJson[Constants::KEYFRAME_DURATION].is_null())
-        {
-            mJson[Constants::KEYFRAME_DURATION] = 0.0;
-        }
-        return mJson[Constants::KEYFRAME_DURATION];
-    }
-
-    void
-    AnimationDefinition::setDuration
-    (unsigned int duration)
-    {
-        mJson[Constants::KEYFRAME_DURATION] = duration;
-    }
-
     bool
-    AnimationDefinition::getLooping
+    AnimationDefinition::getRelative
     ()
     {
-        if (mJson[Constants::KEYFRAME_LOOPING].is_null())
+        if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
         {
-            mJson[Constants::KEYFRAME_LOOPING] = false;
+            mJson[Constants::ANIMATION_RELATIVE] = false;
         }
-        return mJson[Constants::KEYFRAME_LOOPING];
+        return mJson[Constants::ANIMATION_RELATIVE];
     }
 
     void
-    AnimationDefinition::setLooping
-    (bool looping)
+    AnimationDefinition::setRelative
+    (bool relative)
     {
-        mJson[Constants::KEYFRAME_LOOPING] = looping;
+       mJson[Constants::ANIMATION_RELATIVE] = relative;
     }
 
     int

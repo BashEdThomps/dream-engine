@@ -70,6 +70,12 @@ namespace Dream
         void setIsTemplate(bool d);
         bool getIsTemplate();
 
+        long getDeferred();
+        void setDeferred(long);
+
+        long getDieAfter();
+        void setDieAfter(long d);
+
         void loadChildSceneObjectDefinitions(bool randomUuid = false);
         void setHidden(bool d);
         bool getHidden();
@@ -80,7 +86,6 @@ namespace Dream
         uint32_t getAssetDefinition(AssetType type);
         void setAssetDefinition(AssetType type, uint32_t uuid);
         map<AssetType, uint32_t> getAssetDefinitionsMap();
-
 
     private:
         void deleteChildSceneObjectDefinitions();

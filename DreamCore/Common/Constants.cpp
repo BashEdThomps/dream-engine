@@ -206,6 +206,8 @@ namespace Dream
     const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
     const string Constants::SCENE_OBJECT_TEMPLATE = "template";
     const string Constants::SCENE_OBJECT_HIDDEN = "hidden";
+    const string Constants::SCENE_OBJECT_DEFERRED = "deferred";
+    const string Constants::SCENE_OBJECT_DIE_AFTER = "die_after";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
@@ -380,6 +382,7 @@ namespace Dream
     const string Constants::KEYFRAME_DURATION = "duration";
     const string Constants::KEYFRAME_LOOPING = "looping";
     const string Constants::KEYFRAME_EASING_TYPE = "easing_type";
+    const string Constants::ANIMATION_RELATIVE = "relative";
 
     // Window ===================================================================
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;

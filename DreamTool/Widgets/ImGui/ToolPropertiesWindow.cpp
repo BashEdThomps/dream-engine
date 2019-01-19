@@ -1,10 +1,10 @@
-#include "GridPropertiesWindow.h"
+#include "ToolPropertiesWindow.h"
 #include "../../DTState.h"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace DreamTool
 {
-    GridPropertiesWindow::GridPropertiesWindow
+    ToolPropertiesWindow::ToolPropertiesWindow
     (DTState* p)
         : ImGuiWidget(p,false)
     {
@@ -13,12 +13,12 @@ namespace DreamTool
 #endif
     }
 
-    GridPropertiesWindow::~GridPropertiesWindow()
+    ToolPropertiesWindow::~ToolPropertiesWindow()
     {
 
     }
 
-    void GridPropertiesWindow::draw()
+    void ToolPropertiesWindow::draw()
     {
         if (mState->project)
         {

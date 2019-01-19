@@ -7,7 +7,7 @@ namespace Dream
     (int id)
         : DreamObject("AnimationKeyframe"),
           mID(id),
-          mTime(0.0f),
+          mTime(0),
           mTranslation(vec3(0.0f)),
           mRotation(vec3(0.0f)),
           mEasingType(AnimationEasing::Type::EasingBounceInOut),
@@ -22,7 +22,7 @@ namespace Dream
 
     }
 
-    double
+    long
     AnimationKeyframe::getTime
     ()
     const
@@ -32,7 +32,7 @@ namespace Dream
 
     void
     AnimationKeyframe::setTime
-    (double time)
+    (long time)
     {
         mTime = time;
     }

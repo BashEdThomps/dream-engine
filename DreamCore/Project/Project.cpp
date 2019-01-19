@@ -34,7 +34,6 @@
 
 #include "../Utilities/ArgumentParser.h"
 #include "../Utilities/File.h"
-#include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
 #include "../Utilities/Directory.h"
 

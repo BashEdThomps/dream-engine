@@ -1,10 +1,4 @@
 /*
- * SceneDefinition.cpp
- *
- * Created: 16 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -15,12 +9,12 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "SceneDefinition.h"
 #include "SceneDefinition.h"
 #include "SceneObject/SceneObjectDefinition.h"
 #include "../Components/Transform.h"
 #include "../Project/ProjectDefinition.h"
-#include "../Utilities/String.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream
@@ -30,20 +24,20 @@ namespace Dream
         : Definition(data),
           mProjectDefinition(projectDefinition)
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         setLogClassName("SceneDefinition");
         auto log = getLog();
         log->trace( "Constructing {}", getNameAndUuidString() );
-#endif
+        #endif
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
-#endif
+        #endif
         if (mRootSceneObjectDefinition != nullptr)
         {
             delete mRootSceneObjectDefinition;
@@ -58,10 +52,10 @@ namespace Dream
         json rsoJson = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
         if (rsoJson.is_null())
         {
-#ifdef DREAM_DEBUG
+            #ifdef DREAM_LOG
             auto log = getLog();
             log->error( "No root SceneObject found!!" );
-#endif
+            #endif
             return;
         }
 
@@ -80,7 +74,6 @@ namespace Dream
     {
         mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
     }
-
 
     float
     SceneDefinition::getCameraMovementSpeed
@@ -147,24 +140,6 @@ namespace Dream
         return nullptr;
     }
 
-    string
-    SceneDefinition::getNotes
-    ()
-    {
-        if (mJson[Constants::SCENE_NOTES].is_null())
-        {
-            mJson[Constants::SCENE_NOTES] = "";
-        }
-        return mJson[Constants::SCENE_NOTES];
-    }
-
-    void
-    SceneDefinition::setNotes
-    (string notes)
-    {
-        mJson[Constants::SCENE_NOTES] = notes;
-    }
-
     vec3
     SceneDefinition::getCameraTranslation
     ()
@@ -173,85 +148,54 @@ namespace Dream
         {
            setCameraTranslation(vec3(0));
         }
-        return vec3(
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X],
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y],
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z]
-        );
+        return unwrapVec3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
     }
 
     void
     SceneDefinition::setCameraTranslation
-    (vec3 transform)
+    (const vec3& transform)
     {
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA_TRANSLATION] = json::object();
-        }
         // Translation
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = transform.x;
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = transform.y;
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = transform.z;
+        mJson[Constants::SCENE_CAMERA_TRANSLATION] = wrapVec3(transform);
     }
 
-    glm::vec3 SceneDefinition::getCameraLookAt()
+    vec3 SceneDefinition::getCameraLookAt()
     {
         if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
         {
            setCameraLookAt(vec3(0));
         }
-        return vec3(
-            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X],
-            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y],
-            mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z]
-        );
+        return unwrapVec3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
     }
 
-    void SceneDefinition::setCameraLookAt(glm::vec3 lookAt)
+    void
+    SceneDefinition::setCameraLookAt
+    (const vec3& lookAt)
     {
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA_LOOK_AT] = json::object();
-        }
-        // Translation
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = lookAt.x;
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Y] = lookAt.y;
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::Z] = lookAt.z;
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = wrapVec3(lookAt);
     }
 
-    vector<float>
+    vec3
     SceneDefinition::getGravity
     ()
     {
-        vector<float> gravity;
+        vec3 gravity;
 
         if (mJson[Constants::SCENE_GRAVITY].is_null())
         {
-            mJson[Constants::SCENE_GRAVITY][Constants::X] = 0.0f;
-            mJson[Constants::SCENE_GRAVITY][Constants::Y] = 0.0f;
-            mJson[Constants::SCENE_GRAVITY][Constants::Z] = 0.0f;
-
+            mJson[Constants::SCENE_GRAVITY] = wrapVec3(vec3(0.0f));
         }
 
-        gravity.push_back(mJson[Constants::SCENE_GRAVITY][Constants::X]);
-        gravity.push_back(mJson[Constants::SCENE_GRAVITY][Constants::Y]);
-        gravity.push_back(mJson[Constants::SCENE_GRAVITY][Constants::Z]);
+        gravity = unwrapVec3(mJson[Constants::SCENE_GRAVITY]);
 
         return gravity;
     }
 
     void
     SceneDefinition::setGravity
-    (vector<float> gravity)
+    (const vec3& gravity)
     {
-        if (mJson[Constants::SCENE_GRAVITY].is_null())
-        {
-            mJson[Constants::SCENE_GRAVITY] = {};
-        }
-
-        mJson[Constants::SCENE_GRAVITY][Constants::X] = gravity[Constants::X_INDEX];
-        mJson[Constants::SCENE_GRAVITY][Constants::Y] = gravity[Constants::Y_INDEX];
-        mJson[Constants::SCENE_GRAVITY][Constants::Z] = gravity[Constants::Z_INDEX] ;
+        mJson[Constants::SCENE_GRAVITY] = wrapVec3(gravity);
     }
 
     void
@@ -275,11 +219,11 @@ namespace Dream
         mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
     }
 
-    vector<float>
+    vec3
     SceneDefinition::getClearColour
     ()
     {
-        vector<float> colour;
+        vec3 colour;
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
@@ -289,25 +233,25 @@ namespace Dream
 
         }
 
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
-        colour.push_back(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
+        colour.x = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED];
+        colour.y = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN];
+        colour.z = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE];
 
         return colour;
     }
 
     void
     SceneDefinition::setClearColour
-    (vector<float> colour)
+    (const vec3& colour)
     {
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
             mJson[Constants::SCENE_CLEAR_COLOUR] = {};
         }
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour[Constants::RED_INDEX];
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour[Constants::GREEN_INDEX];
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour[Constants::BLUE_INDEX] ;
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour.r;
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour.g;
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour.b;
     }
 
     void
@@ -330,77 +274,6 @@ namespace Dream
     (float b)
     {
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
-    }
-
-    vector<float>
-    SceneDefinition::getAmbientColour
-    ()
-    {
-        vector<float> colour;
-
-        if (mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR].is_null() ||
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED].is_null())
-        {
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR] = {};
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED] = 1.0f;
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] = 1.0f;
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE] = 1.0f;
-            mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = 1.0f;
-        }
-
-        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED]);
-        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN]);
-        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]);
-        colour.push_back(mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA]);
-
-        return colour;
-    }
-
-    void
-    SceneDefinition::setAmbientColour
-    (vector<float> colour)
-    {
-        if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
-        {
-            mJson[Constants::SCENE_CLEAR_COLOUR] = {};
-        }
-
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED]   = colour[Constants::RED_INDEX];
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] = colour[Constants::GREEN_INDEX];
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE]  = colour[Constants::BLUE_INDEX] ;
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = colour[Constants::ALPHA_INDEX];
-    }
-
-    void
-    SceneDefinition::setAmbientColourR
-    (float r)
-    {
-
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::RED] = r;
-    }
-
-    void
-    SceneDefinition::setAmbientColourG
-    (float g)
-    {
-
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::GREEN] =g;
-    }
-
-    void
-    SceneDefinition::setAmbientColourB
-    (float b)
-    {
-
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::BLUE] = b;
-    }
-
-    void
-    SceneDefinition::setAmbientColourA
-    (float a)
-    {
-
-        mJson[Constants::SCENE_AMBIENT_LIGHT_COLOUR][Constants::ALPHA] = a;
     }
 
     SceneObjectDefinition*

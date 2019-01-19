@@ -34,14 +34,8 @@ namespace Dream
         void orderByTime();
         void stepAnimation(double time);
 
-        unsigned int getCurrentTime() const;
-        void setCurrentTime(unsigned int currentTime);
-
-        unsigned int getDuration() const;
-        void setDuration(unsigned int duration);
-
-        bool getLooping() const;
-        void setLooping(bool looping);
+        long getCurrentTime() const;
+        void setCurrentTime(long currentTime);
 
         bool mRunning;
         void createTweens();
@@ -49,6 +43,7 @@ namespace Dream
         void pause();
         void reset();
         void seekAll(unsigned int pos);
+        long getDuration() const;
 
         bool getRunning() const;
         void setRunning(bool running);
@@ -56,9 +51,11 @@ namespace Dream
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::Type easing);
         vector<AnimationKeyframe> mKeyframes;
-        unsigned int mCurrentTime;
-        unsigned int mDuration;
-        bool mLooping;
+        long mCurrentTime;
+        long mDuration;
+
+        bool mRelative;
+        mat4 mOriginalTransform;
 
         tween<float> mTweenTranslationX;
         tween<float> mTweenTranslationY;

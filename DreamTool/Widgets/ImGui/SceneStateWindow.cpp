@@ -27,20 +27,23 @@ namespace DreamTool
     SceneStateWindow::draw
     ()
     {
-        if (!mState->project)
+        if (mState->project)
         {
 
             ImGui::Begin("Scene States",&mVisible);
-            ImGui::Columns(2);
+            ImGui::Columns(3);
             ImGui::Text("Scene");
             ImGui::NextColumn();
             ImGui::Text("State");
             ImGui::NextColumn();
+            ImGui::Text("Time");
+            ImGui::NextColumn();
+
 
             auto pDef = mState->project->getDefinition();
             auto pRunt = mState->project->getRuntime();
 
-            if (pDef && pDef)
+            if (pDef)
             {
                 for (auto sceneDef : pDef->getSceneDefinitionsVector())
                 {
@@ -51,6 +54,7 @@ namespace DreamTool
                         auto srt = pRunt->getSceneRuntimeByUuid(sceneDef->getUuid());
 
                         string state;
+                        double time = 0.0;
                         if (srt == nullptr)
                         {
                             state = "Not Loaded";
@@ -75,14 +79,18 @@ namespace DreamTool
                                     state = "Destroyed";
                                     break;
                             }
+                            time = srt->getSceneCurrentTime();
                         }
                         ImGui::Text("%s",state.c_str());
+                        ImGui::NextColumn();
+                        ImGui::Text("%lf",time);
                     }
                     else
                     {
                         ImGui::Text("Not Loaded");
+                        ImGui::NextColumn();
+                        ImGui::Text("---");
                     }
-                    ImGui::NextColumn();
                 }
             }
 

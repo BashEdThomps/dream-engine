@@ -16,7 +16,7 @@ namespace DreamTool
     class ProjectBrowser;
     class PropertiesWindow;
     class SceneStateWindow;
-    class GridPropertiesWindow;
+    class ToolPropertiesWindow;
     class SelectionHighlighter;
 
     class MenuBar : public ImGuiWidget

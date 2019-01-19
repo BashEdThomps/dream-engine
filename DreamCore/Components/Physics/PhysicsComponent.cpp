@@ -26,7 +26,6 @@
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/String.h"
 
 namespace Dream
 {
@@ -127,29 +126,29 @@ namespace Dream
 
     void
     PhysicsComponent::setGravity
-    (vector<float> gravity)
+    (const vec3& gravity)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug("Setting Gravity" , String::floatVectorToString(gravity) );
+        log->debug("Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
 #endif
-        mGravity = btVector3(gravity[0],gravity[1],gravity[2]);
+        mGravity = btVector3(gravity.x, gravity.y, gravity.z);
         if (mDynamicsWorld != nullptr)
         {
             mDynamicsWorld->setGravity(mGravity);
         }
     }
 
-    vector<float>
+    vec3
     PhysicsComponent::getGravity
     ()
     {
         if (mDynamicsWorld != nullptr)
         {
             auto gv = mDynamicsWorld->getGravity();
-            return vector<float>{gv.x(),gv.y(),gv.z()};
+            return vec3(gv.x(),gv.y(),gv.z());
         }
-        return vector<float>{0.0f,0.0f,0.0f};
+        return vec3(0.0f);
     }
 
     bool
@@ -165,13 +164,9 @@ namespace Dream
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
         mSolver = new btSequentialImpulseConstraintSolver();
         mDynamicsWorld = new btDiscreteDynamicsWorld(
-                    mDispatcher,
-                    mBroadphase,
-                    mSolver,
-                    mCollisionConfiguration
-                    );
+            mDispatcher, mBroadphase, mSolver, mCollisionConfiguration
+        );
         mDynamicsWorld->setGravity(mGravity);
-
         mDebugDrawer = new PhysicsDebugDrawer();
         mDebugDrawer->init();
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
@@ -199,24 +194,22 @@ namespace Dream
         }
 
             beginUpdate();
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->debug( "Update Called" );
-#endif
+            #endif
 
             // Setup Physics
             setDebug(sr->getPhysicsDebug());
 
             populatePhysicsWorld(sr);
-            btScalar stepValue = 0.0;
             if (mTime == nullptr )
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("I don't have Time for this");
-#endif
+                #endif
                 return;
             }
-            stepValue = static_cast<btScalar>(mTime->getFrameTimeDelta());
-            mDynamicsWorld->stepSimulation(stepValue);
+            mDynamicsWorld->stepSimulation(mTime->getFrameTimeDelta()/1000.0);
             checkContactManifolds(sr);
 
 
@@ -232,21 +225,21 @@ namespace Dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "Adding Rigid Body to Dynamics World" );
-#endif
+        #endif
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->addRigidBody(rigidBody);
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         else
         {
             log->error("Unable to add rigid body to dynamics world, nullptr");
         }
         log->debug( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
-#endif
+        #endif
     }
 
     void

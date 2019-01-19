@@ -70,6 +70,14 @@ namespace Dream
         static long ShadowDrawCalls;
         static long ShadowRuntimesDrawn;
 
+        static void ClearCounters()
+        {
+            DrawCalls = 0;
+            RuntimesDrawn = 0;
+            ShadowDrawCalls = 0;
+            ShadowRuntimesDrawn = 0;
+        }
+
         ModelMesh
         (
             ModelRuntime* parent, string name, vector<Vertex> vertexArray,

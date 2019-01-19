@@ -76,7 +76,10 @@ namespace Dream
         mDeleted(false),
         mHidden(false),
         mAlwaysDraw(false),
-        mRandomUuid(randomUuid)
+        mRandomUuid(randomUuid),
+        mDeferredFor(0),
+        mObjectLifetime(0),
+        mDieAfter(0)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
@@ -660,7 +663,7 @@ namespace Dream
     {
         #ifdef DREAM_LOG
         auto log = getLog();
-        log->error("Creating Scroller asset Runtime.");
+        log->debug("Creating Scroller asset Runtime.");
         #endif
         removeScrollerRuntime();
         mScrollerRuntime = new ScrollerRuntime(def,this);
@@ -852,35 +855,6 @@ namespace Dream
        return static_cast<SceneObjectDefinition*>(getDefinition());
     }
 
-    bool
-    SceneObjectRuntime::useDefinition
-    ()
-    {
-        if (mDefinition)
-        {
-            auto def = static_cast<SceneObjectDefinition*>(mDefinition);
-            #ifdef DREAM_LOG
-            auto log = getLog();
-            log->trace( "Using Definition {}", def->getNameAndUuidString());
-            #endif
-            setName(def->getName());
-            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
-            setHasCameraFocus(def->getHasCameraFocus());
-            setHidden(def->getHidden());
-            initTransform();
-            setAssetDefinitionsMap(def->getAssetDefinitionsMap());
-            if (!createAssetRuntimes())
-            {
-                return false;
-            }
-            if( !loadChildrenFromDefinition(def))
-            {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
     bool
     SceneObjectRuntime::loadChildrenFromDefinition
@@ -916,14 +890,16 @@ namespace Dream
     SceneObjectRuntime::translateWithChildren
     (const vec3& translation)
     {
-        applyToAll(
+        applyToAll
+        (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-            [&](SceneObjectRuntime* rt)
-            {
-                rt->getTransform().translate(translation);
-                return static_cast<SceneObjectRuntime*>(nullptr);
-            }
-        ));
+                [&](SceneObjectRuntime* rt)
+                {
+                    rt->getTransform().translate(translation);
+                    return static_cast<SceneObjectRuntime*>(nullptr);
+                }
+            )
+        );
     }
 
     void
@@ -1077,6 +1053,51 @@ namespace Dream
         #endif
         return nullptr;
     }
+
+    bool
+    SceneObjectRuntime::useDefinition
+    ()
+    {
+        if (mDefinition)
+        {
+            auto def = static_cast<SceneObjectDefinition*>(mDefinition);
+            #ifdef DREAM_LOG
+            auto log = getLog();
+            log->trace( "Using Definition {}", def->getNameAndUuidString());
+            #endif
+            setName(def->getName());
+            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
+            setHasCameraFocus(def->getHasCameraFocus());
+            setHidden(def->getHidden());
+            initTransform();
+            setAssetDefinitionsMap(def->getAssetDefinitionsMap());
+            setDeferredFor(def->getDeferred());
+            setDieAfter(def->getDieAfter());
+            if (mDeferredFor == 0)
+            {
+                return loadDeferred();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    bool
+    SceneObjectRuntime::loadDeferred
+    ()
+    {
+        if (!createAssetRuntimes())
+        {
+            return false;
+        }
+        if(!loadChildrenFromDefinition(static_cast<SceneObjectDefinition*>(mDefinition)))
+        {
+            return false;
+        }
+        return true;
+    }
+
+
 
     BoundingBox&
     SceneObjectRuntime::getBoundingBox
@@ -1232,5 +1253,61 @@ namespace Dream
             return static_cast<SceneObjectRuntime*>(nullptr);
         }
         ));
+    }
+
+    long
+    SceneObjectRuntime::getDeferredFor
+    ()
+    const
+    {
+        return mDeferredFor;
+    }
+
+    void
+    SceneObjectRuntime::setDeferredFor
+    (long deferred)
+    {
+        mDeferredFor = deferred;
+    }
+
+    long
+    SceneObjectRuntime::getObjectLifetime
+    ()
+    const
+    {
+       return mObjectLifetime;
+    }
+
+    void
+    SceneObjectRuntime::setObjectLifetime
+    (long d)
+    {
+        mObjectLifetime = d;
+    }
+
+    void
+    SceneObjectRuntime::increaseLifetime
+    (long l)
+    {
+        mObjectLifetime += l;
+        if (mDieAfter > 0 && mObjectLifetime > mDieAfter)
+        {
+            setDeleted(true);
+        }
+    }
+
+    void
+    SceneObjectRuntime::setDieAfter
+    (long d)
+    {
+        mDieAfter = d;
+    }
+
+    long
+    SceneObjectRuntime::getDieAfter
+    ()
+    const
+    {
+        return mDieAfter;
     }
 }

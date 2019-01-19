@@ -17,7 +17,7 @@ namespace DreamTool
           projectBrowser(ProjectBrowser(this)),
           luaDebugWindow(LuaDebugWindow(this)),
           sceneStateWindow(SceneStateWindow(this)),
-          gridPropertiesWindow(GridPropertiesWindow(this)),
+          gridPropertiesWindow(ToolPropertiesWindow(this)),
           scriptEditorWindow(ScriptEditorWindow(this)),
           shaderEditorWindow(ShaderEditorWindow(this)),
           menuBar(MenuBar(this)),

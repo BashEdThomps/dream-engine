@@ -53,7 +53,7 @@ namespace Dream
     {
         #ifdef DREAM_LOG
         auto log = getLog();
-        log->error("Creating ScrollerRuntime Children for {}", mSceneObjectRuntime->getNameAndUuidString());
+        log->debug("Creating ScrollerRuntime Children for {}", mSceneObjectRuntime->getNameAndUuidString());
         #endif
         auto scrollerDef = static_cast<ScrollerDefinition*>(mDefinition);
         auto items = scrollerDef->getItemsArray();
@@ -156,6 +156,11 @@ namespace Dream
         #endif
 
         auto time = sr->getProjectRuntime()->getTime();
+        if (time->getFrameTimeDelta() > Time::DELTA_MAX)
+        {
+            return;
+        }
+
         vec3 delta
         (
            time->perSecond(mVelocity.x),

@@ -18,7 +18,6 @@
 
 #include "PathRuntime.h"
 
-#include "../../Utilities/String.h"
 #include "../../deps/tinyspline/tinyspline.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>

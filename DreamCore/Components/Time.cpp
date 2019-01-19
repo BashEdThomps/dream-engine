@@ -18,18 +18,13 @@
 
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
-
 namespace Dream
 {
     Time::Time
-    ()
-        : DreamObject ("Time")
+    () : DreamObject("Time")
     {
-        mCurrentTime = high_resolution_clock::now();
-        mLastTime = high_resolution_clock::now();
+        mCurrentFrameTime = 0;
+        mLastFrameTime = 0;
     }
 
     Time::~Time
@@ -43,12 +38,14 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Time: Update Called" );
+        getLog()->debug( "Time: Update Called" );
         #endif
-        mLastTime    = mCurrentTime;
-        mCurrentTime = high_resolution_clock::now();
-        mTimeDelta   = mCurrentTime-mLastTime;
+        mLastFrameTime = mCurrentFrameTime;
+        mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
+        (steady_clock::now().time_since_epoch()).count();
+        #ifdef DREAM_LOG
+        show();
+        #endif
         return;
     }
 
@@ -57,13 +54,9 @@ namespace Dream
     Time::show
     ()
     {
-        auto log = getLog();
-        log->debug
+        getLog()->critical
         (
-           "Time: "
-           "\tCurrent Time: {}"
-           "\t   Last Time: {}"
-           "\t  Time Delta: {}" ,
+           "Time: Current: {}, Last: {}, Delta: {}" ,
            getCurrentFrameTime(),
            getLastFrameTime(),
            getFrameTimeDelta()
@@ -71,44 +64,47 @@ namespace Dream
     }
     #endif
 
-    double
+    long
     Time::getCurrentFrameTime
     ()
     {
-        return mCurrentTime.time_since_epoch().count();
+        return mCurrentFrameTime;
     }
 
-    double
+    long
     Time::getLastFrameTime
     ()
     {
-        return mLastTime.time_since_epoch().count();
+        return mLastFrameTime;
     }
 
-    double
+    long
     Time::getFrameTimeDelta
     ()
     {
-        return mTimeDelta.count();
+        return mCurrentFrameTime - mLastFrameTime;
     }
 
     double
     Time::perSecond
     (double value)
     {
-        return value*getFrameTimeDelta();
+        double scalar = getFrameTimeDelta()/1000.0;
+        double ret = value*scalar;
+        #ifdef DREAM_LOG
+        getLog()->trace("Scaled by time {} to {} with {}",value,ret,scalar);
+        #endif
+        return ret;
     }
 
-    double
-    Time::now()
+    long
+    Time::getAbsoluteTime
+    ()
     {
-        return high_resolution_clock::now().time_since_epoch().count();
+        return std::chrono::duration_cast<std::chrono::milliseconds>
+        (steady_clock::now().time_since_epoch()).count();
     }
 
-    long long
-    Time::nowLL()
-    {
-        return high_resolution_clock::now().time_since_epoch().count();
-    }
+    const int Time::DELTA_MAX = 100;
 
 } // End of Dream

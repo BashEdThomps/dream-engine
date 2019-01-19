@@ -11,7 +11,7 @@
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/LuaDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
-#include "Widgets/ImGui/GridPropertiesWindow.h"
+#include "Widgets/ImGui/ToolPropertiesWindow.h"
 #include "Widgets/ImGui/ScriptEditorWindow.h"
 #include "Widgets/ImGui/ShaderEditorWindow.h"
 #include "Widgets/ImGui/RenderPipelinePreviewWindow.h"
@@ -52,7 +52,7 @@ namespace DreamTool
         ProjectBrowser projectBrowser;
         LuaDebugWindow luaDebugWindow;
         SceneStateWindow sceneStateWindow;
-        GridPropertiesWindow gridPropertiesWindow;
+        ToolPropertiesWindow gridPropertiesWindow;
         ScriptEditorWindow scriptEditorWindow;
         ShaderEditorWindow shaderEditorWindow;
         MenuBar menuBar;

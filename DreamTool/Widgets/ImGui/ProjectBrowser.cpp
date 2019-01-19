@@ -1,7 +1,7 @@
 
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
-#include "../../deps/ImGui/imguifilesystem.h"
+#include "../../deps/ImFileSystem/imguifilesystem.h"
 #include <sstream>
 #include "../../DTState.h"
 
@@ -156,11 +156,29 @@ namespace DreamTool
 
             bool isSelected = find(mSelectedNodes.begin(), mSelectedNodes.end(), def) != mSelectedNodes.end();
 
+            // Flags
             stringstream nameStr;
+            stringstream flagsStr;
             if (def->getIsTemplate())
             {
-               nameStr << "[Template] ";
+               flagsStr << "T";
             }
+            if (def->getDeferred() > 0.0)
+            {
+                flagsStr << "D";
+            }
+            if (def->getDieAfter() > 0.0)
+            {
+                flagsStr << "X";
+            }
+
+            if (flagsStr.str().size() > 0)
+            {
+                nameStr << "(";
+                nameStr << flagsStr.str();
+                nameStr << ") ";
+            }
+
             nameStr << def->getName();
             bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeId,
                flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),

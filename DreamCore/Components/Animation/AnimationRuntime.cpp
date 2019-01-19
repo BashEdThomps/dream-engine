@@ -20,7 +20,6 @@
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Project/ProjectRuntime.h"
-#include "../../Utilities/String.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -34,26 +33,23 @@ namespace Dream
         AnimationDefinition* definition,
         SceneObjectRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
-        mCurrentTime(0.0),
-        mDuration(1.0),
-        mLooping(false),
-        mRunning(false)
+        mCurrentTime(0),
+        mDuration(1),
+        mRunning(false),
+        mOriginalTransform(runtime->getTransform().getMatrix())
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         setLogClassName("AnimationRuntime");
-        auto log = getLog();
-        log->trace("Constructing Object");
-#endif
+        getLog()->trace("Constructing Object");
+        #endif
     }
 
     AnimationRuntime::~AnimationRuntime
     ()
     {
-
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->trace("Destroying Object");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destroying Object");
+        #endif
     }
 
     bool
@@ -61,9 +57,8 @@ namespace Dream
     ()
     {
         auto animDef = static_cast<AnimationDefinition*>(mDefinition);
-        mDuration = animDef->getDuration();
-        mLooping = animDef->getLooping();
         mKeyframes = animDef->getKeyframes();
+        mRelative = animDef->getRelative();
         createTweens();
         mLoaded = true;
         return mLoaded;
@@ -73,31 +68,23 @@ namespace Dream
     AnimationRuntime::stepAnimation
     (double deltaTime)
     {
-        // x1000 to get seconds to ms
 
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-#endif
-        auto timeInMs = static_cast<unsigned int>((deltaTime*1000));
         if (mRunning)
         {
-
-#ifdef DREAM_DEBUG
-            log->error("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
-#endif
-            if (mLooping)
+            #ifdef DREAM_LOG
+            getLog()->trace("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
+            #endif
+            mCurrentTime += deltaTime;
+            if (mCurrentTime > mDuration)
             {
-                mCurrentTime = (mCurrentTime + timeInMs) % mDuration;
-            }
-            else
-            {
-                mCurrentTime += timeInMs;
+                mCurrentTime = mDuration;
+                mRunning = false;
             }
             seekAll(mCurrentTime);
         }
     }
 
-    unsigned int
+    long
     AnimationRuntime::getCurrentTime
     ()
     const
@@ -107,39 +94,9 @@ namespace Dream
 
     void
     AnimationRuntime::setCurrentTime
-    (unsigned int currentTime)
+    (long currentTime)
     {
         mCurrentTime = currentTime;
-    }
-
-    unsigned int
-    AnimationRuntime::getDuration
-    ()
-    const
-    {
-        return mDuration;
-    }
-
-    void
-    AnimationRuntime::setDuration
-    (unsigned int duration)
-    {
-        mDuration = duration;
-    }
-
-    bool
-    AnimationRuntime::getLooping
-    ()
-    const
-    {
-        return mLooping;
-    }
-
-    void
-    AnimationRuntime::setLooping
-    (bool looping)
-    {
-        mLooping = looping;
     }
 
     bool
@@ -163,6 +120,8 @@ namespace Dream
     {
         orderByTime();
         int numKeyframes = mKeyframes.size();
+        mDuration = mKeyframes.at(numKeyframes-1).getTime();
+
         for (int i=0; i < numKeyframes; i++)
         {
             vec3 tx = mKeyframes.at(i).getTranslation();
@@ -186,9 +145,9 @@ namespace Dream
             }
             else
             {
-                auto lastFrameTime = mKeyframes.at(i-1).getTime();
-                auto thisFrameTime = mKeyframes.at(i).getTime();
-                unsigned int duringTime = thisFrameTime-lastFrameTime;
+                long lastFrameTime = mKeyframes.at(i-1).getTime();
+                long thisFrameTime = mKeyframes.at(i).getTime();
+                long duringTime = (thisFrameTime-lastFrameTime);
 
                 mTweenTranslationX.to(tx.x).during(duringTime);
                 applyEasing(mTweenTranslationX,easing);
@@ -211,38 +170,6 @@ namespace Dream
                 mTweenScaleZ.to(sx.z).during(duringTime);
                 applyEasing(mTweenScaleZ,easing);
             }
-        }
-
-        if (mLooping)
-        {
-            vec3 tx = mKeyframes.at(0).getTranslation();
-            vec3 rx = mKeyframes.at(0).getRotation();
-            vec3 sx = mKeyframes.at(0).getScale();
-
-            auto lastIndex = mKeyframes.size()-1;
-            auto duringTime = mDuration - mKeyframes.at(lastIndex).getTime();
-            AnimationEasing::Type easing = mKeyframes.at(lastIndex).getEasingType();
-
-            mTweenTranslationX.to(tx.x).during(duringTime);
-            applyEasing(mTweenTranslationX,easing);
-            mTweenTranslationY.to(tx.y).during(duringTime);
-            applyEasing(mTweenTranslationY,easing);
-            mTweenTranslationZ.to(tx.z).during(duringTime);
-            applyEasing(mTweenTranslationZ,easing);
-
-            mTweenRotationX.to(rx.x).during(duringTime);
-            applyEasing(mTweenRotationX,easing);
-            mTweenRotationY.to(rx.y).during(duringTime);
-            applyEasing(mTweenRotationY,easing);
-            mTweenRotationZ.to(rx.z).during(duringTime);
-            applyEasing(mTweenRotationZ,easing);
-
-            mTweenScaleX.to(sx.x).during(duringTime);
-            applyEasing(mTweenScaleX,easing);
-            mTweenScaleY.to(sx.y).during(duringTime);
-            applyEasing(mTweenScaleY,easing);
-            mTweenScaleZ.to(sx.z).during(duringTime);
-            applyEasing(mTweenScaleZ,easing);
         }
     }
 
@@ -272,10 +199,9 @@ namespace Dream
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->trace("Seeing to {}",pos);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Seeing to {}",pos);
+        #endif
         vec3 newTx, newRx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
         newTx.y = mTweenTranslationY.seek(pos);
@@ -289,12 +215,25 @@ namespace Dream
         newSx.y = mTweenScaleY.seek(pos);
         newSx.z = mTweenScaleZ.seek(pos);
 
-        mat4 matrix = mat4(1.0f);
-        matrix = glm::translate(matrix,newTx);
+        mat4 matrix(1.0f);
+        if (mRelative)
+        {
+            matrix = glm::translate(mOriginalTransform,newTx);
+        }
+        else
+        {
+           matrix = glm::translate(matrix,newTx);
+        }
         matrix = matrix*mat4_cast(quat(newRx));
         matrix = glm::scale(matrix,newSx);
         mSceneObjectRuntime->getTransform().setMatrix(matrix);
+    }
 
+    long
+    AnimationRuntime::getDuration
+    () const
+    {
+       return mDuration;
     }
 
     void

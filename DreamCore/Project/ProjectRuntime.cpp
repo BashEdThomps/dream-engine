@@ -554,18 +554,11 @@ namespace Dream
     {
 #ifdef DREAM_LOG
         auto log = getLog();
-
-        log->debug(
-                    "\n"
-                    "====================\n"
-                    "Update Logic called @ {}\n"
-                    "====================",
-                    mTime->nowLL()
-                    );
+        log->debug("\n====================\nUpdate Logic called @ {}\n====================",mTime->getAbsoluteTime());
 #endif
-
         // Inputs
         mTime->updateFrameTime();
+        sr->updateTime();
         mInputComponent->updateComponent(sr);
         mPathComponent->updateComponent(sr);
         mScrollerComponent->updateComponent(sr);
@@ -590,17 +583,10 @@ namespace Dream
     {
 #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug(
-                    "\n"
-                    "====================\n"
-                    "Update Graphics called @ {}\n"
-                    "====================",
-                    mTime->nowLL()
-                    );
+        log->debug("\n====================\nUpdate Graphics called @ {}\n====================",mTime->getAbsoluteTime());
 #endif
         // Draw 3D/PhysicsDebug/2D
-        ModelMesh::DrawCalls = 0;
-        ModelMesh::RuntimesDrawn = 0;
+        ModelMesh::ClearCounters();
         mGraphicsComponent->handleResize();
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
@@ -662,7 +648,7 @@ namespace Dream
     {
 #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug("CollectGarbage Called @ {}", mTime->nowLL());
+        log->debug("CollectGarbage Called @ {}", mTime->getAbsoluteTime());
 #endif
         rt->collectGarbage();
     }

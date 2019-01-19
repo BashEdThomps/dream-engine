@@ -56,6 +56,7 @@ namespace Dream
         size_t countAssetDefinitions();
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
         AssetDefinition* getAssetDefinitionByName(string name);
+        void addAssetDefinition(AssetDefinition* def);
 
         size_t countScenesDefinitions();
         SceneDefinition* getSceneDefinitionByUuid(uint32_t uuid);
@@ -93,7 +94,7 @@ namespace Dream
         vector<string> getAssetNamesVector(AssetType);
         void regroupAssetDefinitions();
 
-        map<AssetType, vector<string>>& getAssetDefinitionGroups();
+        map<AssetType, vector<string> >& getAssetDefinitionGroups();
 
         static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
 
@@ -103,6 +104,6 @@ namespace Dream
         void loadAssetDefinition(json assetDefinition);
         void loadSceneDefinition(json sceneDefinition);
         AssetDefinition* createAssetDefinitionRuntime(json assetDefinitionJs);
-        map<AssetType,vector<string>> mAssetDefinitionGroups;
+        map<AssetType,vector<string> > mAssetDefinitionGroups;
     };
 }

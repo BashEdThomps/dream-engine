@@ -5,7 +5,7 @@
 #include "SceneStateWindow.h"
 #include "../../DTState.h"
 #include "../../deps/ImGui/imgui_internal.h"
-#include "../../deps/ImGui/imguifilesystem.h"
+#include "../../deps/ImFileSystem/imguifilesystem.h"
 #include <sstream>
 
 #include "../../../DreamCore/Project/Project.h"
@@ -102,7 +102,7 @@ namespace DreamTool
                     }
 
                     bool showGridPropsWindow = mState->gridPropertiesWindow.getVisible();
-                    if (ImGui::Checkbox("Grid Properties",&showGridPropsWindow))
+                    if (ImGui::Checkbox("Tool Properties",&showGridPropsWindow))
                     {
                         mState->gridPropertiesWindow.setVisible(showGridPropsWindow);
                     }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "../../deps/ImGui/TextEditor.h"
+#include "../../deps/ImTextEditor/TextEditor.h"
 
 namespace Dream
 {

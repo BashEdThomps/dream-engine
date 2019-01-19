@@ -37,20 +37,18 @@ namespace Dream
     ()
         : Component()
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         setLogClassName("AudioComponent");
-        auto log = getLog();
-        log->trace("Constructing");
-#endif
+        getLog()->trace("Constructing");
+        #endif
     }
 
     AudioComponent::~AudioComponent
     ()
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->trace("Destructing");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
 
         alcMakeContextCurrent(nullptr);
 
@@ -71,14 +69,13 @@ namespace Dream
     AudioComponent::init
     ()
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->debug("Initialising...");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Initialising...");
+        #endif
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
-        vec3 position = {0.0f,0.0f,0.0f};
+        vec3 position(0.0f);
         setListenerPosition(position);
         return true;
     }
@@ -107,10 +104,9 @@ namespace Dream
 
         if (!mEnabled)
         {
-#ifdef DREAM_DEBUG
-            auto log = getLog();
-            log->warn("Update Disabled");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->warn("Update Disabled");
+            #endif
             return;
         }
 
@@ -142,5 +138,4 @@ namespace Dream
         alGetListenerf(AL_GAIN,&vol);
         return vol;
     }
-
 }

@@ -18,6 +18,7 @@
 #include "../Time.h"
 #include "../Path/PathComponent.h"
 #include "../Path/PathRuntime.h"
+#include "../Animation/AnimationRuntime.h"
 #include "../Audio/AudioComponent.h"
 #include "../Audio/AudioRuntime.h"
 #include "../Graphics/Model/ModelRuntime.h"
@@ -373,6 +374,7 @@ namespace Dream
             "setParent",&SceneObjectRuntime::setParentRuntime,
             "getTransform",&SceneObjectRuntime::getTransform,
             "getPath",&SceneObjectRuntime::getPathRuntime,
+            "getAnimation",&SceneObjectRuntime::getAnimationRuntime,
             "getAudio",&SceneObjectRuntime::getAudioRuntime,
             "getModel",&SceneObjectRuntime::getModelRuntime,
             "getLight",&SceneObjectRuntime::getLightRuntime,
@@ -437,9 +439,7 @@ namespace Dream
             "getCurrentFrameTime",&Time::getCurrentFrameTime,
             "getLastFrameTime",&Time::getLastFrameTime,
             "getFrameTimeDelta",&Time::getFrameTimeDelta,
-            "perSecond",&Time::perSecond,
-            "now",&Time::now,
-            "nowLL",&Time::nowLL
+            "perSecond",&Time::perSecond
         );
 
         stateView["Time"] = mProjectRuntime->getTime();
@@ -943,9 +943,23 @@ namespace Dream
     ScriptComponent::exposeDefinition
     ()
     {
+        debugRegisteringClass("Definitions");
         sol::state_view stateView(State);
         stateView.new_usertype<Definition>("Definition");
+    }
 
+    void
+    ScriptComponent::exposeAnimationRuntime
+    ()
+    {
+        debugRegisteringClass("AnimationRuntime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<AnimationRuntime>(
+            "AnimationRuntime",
+           "run",&AnimationRuntime::run,
+           "pause",&AnimationRuntime::pause,
+           "reset",&AnimationRuntime::reset
+        );
     }
 
     void
@@ -985,6 +999,7 @@ namespace Dream
         exposePhysicsComponent();
 
 
+        exposeAnimationRuntime();
         exposeAudioRuntime();
         exposeModelRuntime();
         exposeLightRuntime();

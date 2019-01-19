@@ -36,9 +36,9 @@ namespace Dream
           mChannels(-1),
           mDurationInSamples(-1)
     {
-#ifdef DREAM_DEBUG
+        #ifdef DREAM_LOG
         setLogClassName("AudioRuntime");
-#endif
+        #endif
         setLooping(false);
         setBuffer(0);
         setSource(0);
@@ -125,10 +125,9 @@ namespace Dream
     AudioRuntime::play
     ()
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->debug(  "Playing source {}" , mSource);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug(  "Playing source {}" , mSource);
+        #endif
         alSourcePlay(mSource);
     }
 
@@ -136,10 +135,9 @@ namespace Dream
     AudioRuntime::stop
     ()
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->debug(  "Stopping source {}" , mSource);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug(  "Stopping source {}" , mSource);
+        #endif
         alSourceStop(mSource);
     }
 
@@ -147,10 +145,9 @@ namespace Dream
     AudioRuntime::pause
     ()
     {
-#ifdef DREAM_DEBUG
-        auto log = getLog();
-        log->debug(  "Pausing source {}" , mSource);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug(  "Pausing source {}" , mSource);
+        #endif
         alSourcePause(mSource);
     }
 
@@ -189,14 +186,14 @@ namespace Dream
         for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
         {
             auto log = getLog();
-            log->trace("Generating events for marker {}", markerIndex);
+            getLog()->trace("Generating events for marker {}", markerIndex);
             auto markerStart = ad->getMarkerSampleIndex(markerIndex);
             auto count = ad->getMarkerRepeat(markerIndex);
             auto step = ad->getMarkerRepeatPeriod(markerIndex);
             auto markerName = ad->getMarkerName(markerIndex);
 
             auto next = markerStart;
-            log->trace("Marker {}'s is : ", markerIndex, next);
+            getLog()->trace("Marker {}'s is : ", markerIndex, next);
             Event e(mSceneObjectRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
@@ -206,7 +203,7 @@ namespace Dream
             {
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                log->trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
+                getLog()->trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
                 Event e(mSceneObjectRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
@@ -242,7 +239,7 @@ namespace Dream
         // has just looped, restore cached events
         if (mLooping && mLastSampleOffset > currentSample)
         {
-            log->debug("Just Looped");
+            getLog()->debug("Just Looped");
            mMarkerEvents = mMarkerEventsCache;
         }
 
@@ -302,9 +299,9 @@ namespace Dream
             case AL_PAUSED:
                 return PAUSED;
             default:
-#if DREAM_LOG
+                #if DREAM_LOG
                 getLog()->error("Unknown Audio State for {} " , getNameAndUuidString());
-#endif
+                #endif
                 return UNKNOWN;
         }
     }
@@ -389,10 +386,9 @@ namespace Dream
     AudioRuntime::loadIntoAL
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->error("Loading Into AL {}",getNameAndUuidString());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->error("Loading Into AL {}",getNameAndUuidString());
+        #endif
 
         if (mSource == 0 && mBuffer == 0)
         {
@@ -401,9 +397,9 @@ namespace Dream
 
             if (mAudioDataBuffer.empty())
             {
-#ifdef DREAM_LOG
-                log->error("Unable to load audio data: Empty Buffer");
-#endif
+                #ifdef DREAM_LOG
+                getLog()->error("Unable to load audio data: Empty Buffer");
+                #endif
                 return false;
             }
 
@@ -414,15 +410,15 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            log->error("Unable to load audio, source or buffer is empty");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Unable to load audio, source or buffer is empty");
+            #endif
             return false;
         }
 
-#ifdef DREAM_LOG
-        log->debug("Pushed audio asset to play queue");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Pushed audio asset to play queue");
+        #endif
         return true;
     }
 } // End of Dream

@@ -35,7 +35,7 @@ namespace Dream
           mSceneDefinition(sceneDefinition)
     {
 
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         setLogClassName("SceneObjectDefinition");
         auto log = getLog();
         log->trace( "Constructing {}",getNameAndUuidString());
@@ -43,7 +43,7 @@ namespace Dream
         if (randomUuid)
         {
             mJson[Constants::UUID] = Uuid::generateUuid();
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
             log->trace( "With new UUID",getNameAndUuidString());
 #endif
         }
@@ -53,7 +53,7 @@ namespace Dream
     SceneObjectDefinition::~SceneObjectDefinition
     ()
     {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
 #endif
@@ -160,7 +160,7 @@ namespace Dream
     SceneObjectDefinition::removeChildDefinition
     (SceneObjectDefinition* child, bool andDelete)
     {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         auto log = getLog();
 #endif
         auto iter = begin(mChildDefinitions);
@@ -169,7 +169,7 @@ namespace Dream
         {
             if ((*iter) == child)
             {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
                 log->debug
                 (
                     "Found child to {} remove from {}",
@@ -196,7 +196,7 @@ namespace Dream
     SceneObjectDefinition::createNewChildDefinition
     (json* fromJson)
     {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Creating new child scene object");
 #endif
@@ -205,7 +205,7 @@ namespace Dream
 
         if (fromJson == nullptr)
         {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
             log->debug("from scratch");
 #endif
             defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
@@ -215,7 +215,7 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
             log->debug("from template copy");
 #endif
             defJson = json::parse(fromJson->dump());
@@ -283,6 +283,43 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_TEMPLATE];
     }
 
+    long
+    SceneObjectDefinition::getDeferred
+    ()
+    {
+        if (!mJson[Constants::SCENE_OBJECT_DEFERRED].is_number())
+        {
+            mJson[Constants::SCENE_OBJECT_DEFERRED] = 0;
+        }
+        return mJson[Constants::SCENE_OBJECT_DEFERRED];
+    }
+
+    void
+    SceneObjectDefinition::setDeferred
+    (long d)
+    {
+        mJson[Constants::SCENE_OBJECT_DEFERRED] = d;
+    }
+
+    long
+    SceneObjectDefinition::getDieAfter
+    ()
+    {
+        if (!mJson[Constants::SCENE_OBJECT_DIE_AFTER].is_number())
+        {
+            mJson[Constants::SCENE_OBJECT_DIE_AFTER] = 0;
+        }
+        return mJson[Constants::SCENE_OBJECT_DIE_AFTER];
+    }
+
+    void
+    SceneObjectDefinition::setDieAfter
+    (long d)
+    {
+        mJson[Constants::SCENE_OBJECT_DIE_AFTER] = d;
+    }
+
+
     void SceneObjectDefinition::setHidden(bool d)
     {
         mJson[Constants::SCENE_OBJECT_HIDDEN] = d;
@@ -309,13 +346,13 @@ namespace Dream
     SceneObjectDefinition*
     SceneObjectDefinition::duplicate()
     {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         auto log = getLog();
 #endif
         // Nothing to assign duplicate to
         if (mParentSceneObject == nullptr)
         {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
             log->error("Cannot Duplicate. No parent to assign duplicate to");
 #endif
             return nullptr;

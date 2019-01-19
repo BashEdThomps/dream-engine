@@ -144,15 +144,15 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->info( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-#endif
+            #endif
             return false;
         }
         glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
         return true;
     }
 

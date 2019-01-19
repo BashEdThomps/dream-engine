@@ -86,8 +86,8 @@ namespace Dream
         disp = (mDisplacementTexture == nullptr ? 0 : mDisplacementTexture->getGLID());
 
         auto log = getLog();
-        log->debug(
-            "Material Parameters\n"
+        log->trace(
+            "Maerial Parameters\n"
             "Name....................{}\n"
             "Opacity.................{}\n"
             "BumpScaling.............{}\n"

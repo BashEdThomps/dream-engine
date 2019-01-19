@@ -13,7 +13,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include "../Common/Definition.h"
 #include "../Components/Transform.h"
 
@@ -57,33 +56,23 @@ namespace Dream
         void setMaxDrawDistance(float mdd);
         float getMaxDrawDistance();
 
-        string getNotes();
-        void setNotes(string notes);
-
         vec3 getCameraTranslation();
-        void setCameraTranslation(vec3 trans);
+        void setCameraTranslation(const vec3& trans);
 
         vec3 getCameraLookAt();
-        void setCameraLookAt(vec3 lookAt);
+        void setCameraLookAt(const vec3& lookAt);
 
-        vector<float> getGravity();
-        void setGravity(vector<float> gravity);
+        vec3 getGravity();
+        void setGravity(const vec3& gravity);
         void setGravityX(float);
         void setGravityY(float);
         void setGravityZ(float);
 
-        vector<float> getClearColour();
-        void setClearColour(vector<float> clearColour);
+        vec3 getClearColour();
+        void setClearColour(const vec3& clearColour);
         void setClearColourR(float);
         void setClearColourG(float);
         void setClearColourB(float);
-
-        vector<float> getAmbientColour();
-        void setAmbientColour(vector<float> ambientColour);
-        void setAmbientColourR(float);
-        void setAmbientColourG(float);
-        void setAmbientColourB(float);
-        void setAmbientColourA(float);
 
         SceneObjectDefinition* getRootSceneObjectDefinition();
         ProjectDefinition* getProjectDefinition();

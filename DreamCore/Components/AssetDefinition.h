@@ -66,6 +66,8 @@ namespace Dream
         string getGroup();
         void setGroup(string group);
 
+        AssetDefinition* duplicate();
+
         bool isTypeAnimation();
         bool isTypeAudio();
         bool isTypeFont();
@@ -79,9 +81,7 @@ namespace Dream
         bool isTypePhysicsObject();
         bool isTypeTexture();
 
-        json wrapVec3(const vec3&);
-        vec3 unwrapVec3(const json&);
-    protected:
+            protected:
         ProjectDefinition* mProjectDefinition;
 
     };

@@ -207,6 +207,8 @@ namespace Dream
         const static string SCENE_OBJECT_ALWAYS_DRAW;
         const static string SCENE_OBJECT_TEMPLATE;
         const static string SCENE_OBJECT_HIDDEN;
+        const static string SCENE_OBJECT_DEFERRED;
+        const static string SCENE_OBJECT_DIE_AFTER;
 
         // Transform ============================================================
         const static string TRANSFORM;
@@ -386,6 +388,7 @@ namespace Dream
         const static string KEYFRAME_DURATION;
         const static string KEYFRAME_LOOPING;
         const static string KEYFRAME_EASING_TYPE;
+        const static string ANIMATION_RELATIVE;
 
         // Window ===============================================================
         const static int DEFAULT_SCREEN_WIDTH;

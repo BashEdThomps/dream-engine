@@ -61,6 +61,7 @@ namespace Dream
         // API Exposure Methods ======================================================
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
+        void exposeAnimationRuntime();
         void exposePathComponent();
         void exposePathRuntime();
         void exposeModelRuntime();

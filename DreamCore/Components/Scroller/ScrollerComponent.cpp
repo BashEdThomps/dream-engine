@@ -28,18 +28,18 @@ namespace Dream
     ()
         : Component()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("ScrollerComponent");
-#endif
+        #endif
     }
 
 
     ScrollerComponent::~ScrollerComponent
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->debug("Destroying Object");
-#endif
+        #endif
     }
 
 
@@ -47,9 +47,9 @@ namespace Dream
     ScrollerComponent::init
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->debug("Initialisation Done");
-#endif
+        #endif
         return true;
     }
 
@@ -60,10 +60,10 @@ namespace Dream
     {
         if (!mEnabled)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             auto log = getLog();
             log->warn("Update Disabled");
-#endif
+            #endif
             return;
         }
 

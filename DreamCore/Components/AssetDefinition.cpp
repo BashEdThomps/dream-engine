@@ -1,6 +1,4 @@
 /*
-* AssetDefinition
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +16,8 @@
 #include <string>
 #include  <sstream>
 #include "AssetDefinition.h"
+#include <regex>
+#include "../Project/ProjectDefinition.h"
 
 using std::cout;
 using std::endl;
@@ -29,7 +29,7 @@ namespace Dream
         : Definition(jsonDef),
           mProjectDefinition(parent)
     {
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         setLogClassName("AssetDefinition");
         auto log = getLog();
         log->trace("Constructing {}", getNameAndUuidString());
@@ -40,7 +40,7 @@ namespace Dream
     ()
     {
 
-#ifdef DREAM_DEBUG
+#ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing {}", getNameAndUuidString());
 #endif
@@ -130,28 +130,6 @@ namespace Dream
         return getType().compare(Constants::ASSET_TYPE_TEXTURE) == 0;
     }
 
-    json
-    AssetDefinition::wrapVec3(const vec3& v)
-    {
-       json retval = json::object();
-       retval[Constants::X] = v.x;
-       retval[Constants::Y] = v.y;
-       retval[Constants::Z] = v.z;
-       return retval;
-    }
-
-    vec3
-    AssetDefinition::unwrapVec3
-    (const json& j)
-    {
-        return vec3
-        (
-            j[Constants::X],
-            j[Constants::Y],
-            j[Constants::Z]
-        );
-    }
-
     bool
     AssetDefinition::isTypePath
     ()
@@ -218,6 +196,40 @@ namespace Dream
     ()
     {
         return mProjectDefinition;
+    }
+
+    AssetDefinition*
+    AssetDefinition::duplicate
+    ()
+    {
+        auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
+        newAD->mJson = mJson;
+        newAD->setUuid(Uuid::generateUuid());
+        string name = newAD->getName();
+        regex numRegex("(\\d+)$");
+        cmatch match;
+        string resultStr;
+        auto num = -1;
+
+        if (regex_search(name.c_str(),match,numRegex))
+        {
+            resultStr = match[0].str();
+            num = atoi(resultStr.c_str());
+        }
+
+        if (num > -1)
+        {
+            num++;
+            name = name.substr(0,name.length()-resultStr.length());
+            name.append(std::to_string(num));
+            newAD->setName(name);
+        }
+        else
+        {
+            newAD->setName(getName()+".1");
+        }
+
+        return newAD;
     }
 
 } // End of Dream

@@ -3,6 +3,7 @@
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "../../../DreamCore/Components/Graphics/Model/ModelMesh.h"
 
 using namespace Dream;
 
@@ -37,6 +38,14 @@ namespace DreamTool
                 auto gfx = pRuntime->getGraphicsComponent();
                 if (gfx)
                 {
+                    if (ImGui::CollapsingHeader("Statistics"))
+                    {
+                        ImGui::Text("Geometry Runtimes Drawn: %ld", ModelMesh::RuntimesDrawn);
+                        ImGui::Text("Geometry Draw Calls: %ld", ModelMesh::DrawCalls);
+                        ImGui::Text("Shadow Runtimes Drawn: %ld", ModelMesh::ShadowRuntimesDrawn);
+                        ImGui::Text("Shadow Draw Calls: %ld", ModelMesh::ShadowDrawCalls);
+                    }
+
                     if (ImGui::CollapsingHeader("Geometry Pass"))
                     {
 

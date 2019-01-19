@@ -20,31 +20,30 @@
 #include "../Common/DreamObject.h"
 
 using std::chrono::time_point;
-using std::chrono::high_resolution_clock;
+using std::chrono::steady_clock;
 using std::chrono::duration;
+using std::chrono::seconds;
 
 namespace Dream
 {
     /**
-     * @brief Manages time/temperal features for Dream. All times use
-     * std::high_resolution_clock and are reported in fractions of a second.
+     * @brief Manages timinng features for Dream. All times use
+     * std::steady_clock and are reported in fractions of a second.
      * e.g. 0.34s, 2.38s etc...
      */
     class Time : public DreamObject
     {
+
     private:
         /**
          * @brief Current time
          */
-        time_point<high_resolution_clock> mCurrentTime;
+        long mCurrentFrameTime;
+
         /**
          * @brief Time of last frame
          */
-        time_point<high_resolution_clock> mLastTime;
-        /**
-         * @brief Delta of Current Time and Last Frame Time
-         */
-        duration<double> mTimeDelta;
+        long mLastFrameTime;
     public:
         /**
          * @brief Default Constructor
@@ -59,17 +58,17 @@ namespace Dream
         /**
          * @return Gets the time that the current frame begain
          */
-        double getCurrentFrameTime();
+        long getCurrentFrameTime();
 
         /**
          * @return Get the time that the last frame began
          */
-        double getLastFrameTime();
+        long getLastFrameTime();
 
         /**
          * @return Get the delta between this frame and the last
          */
-        double getFrameTimeDelta();
+        long getFrameTimeDelta();
 
         /**
          * @brief Scale the value passed by the amount of time that has passed
@@ -93,12 +92,9 @@ namespace Dream
          * @return Get the time at the point of function call. Different from
          * @see getCurrentFrameTime
          */
-        double now();
+        long getAbsoluteTime();
 
-        /**
-         * @return Get the time at the point of function call (in long long format)
-         */
-        long long nowLL();
+        const static int DELTA_MAX;
     };
 
 } // End of Dream

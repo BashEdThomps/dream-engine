@@ -16,8 +16,8 @@ namespace Dream
         AnimationKeyframe(int id);
         ~AnimationKeyframe() override;
 
-        double getTime() const;
-        void setTime(double time);
+        long getTime() const;
+        void setTime(long time);
 
         vec3 getTranslation() const;
         void setTranslation(const vec3& translation);
@@ -45,7 +45,7 @@ namespace Dream
 
     private:
         int mID;
-        double mTime;
+        long mTime;
         vec3 mTranslation;
         vec3 mRotation;
         vec3 mScale;

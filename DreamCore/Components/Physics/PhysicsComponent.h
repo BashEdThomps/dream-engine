@@ -15,14 +15,13 @@
 
 #pragma once
 
-#include <vector>
+#include <glm/vec3.hpp>
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 #include "../Component.h"
 
+using glm::vec3;
 using glm::mat4;
-using std::vector;
-using std::unique_ptr;
 
 class btDynamicsWorld;
 class btDefaultCollisionConfiguration;
@@ -62,8 +61,8 @@ namespace Dream
         PhysicsComponent();
         ~PhysicsComponent() override;
         void populatePhysicsWorld(SceneRuntime* scene);
-        void setGravity(vector<float>);
-        vector<float> getGravity();
+        void setGravity(const vec3&);
+        vec3 getGravity();
         void setDebug(bool);
         bool getDebug();
         bool init() override;

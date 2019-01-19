@@ -126,6 +126,7 @@ namespace Dream
         SceneObjectRuntime* getParentRuntime();
 
         bool useDefinition() override;
+        bool loadDeferred();
 
         bool getDeleted() const;
         void setDeleted(bool deleted);
@@ -166,7 +167,16 @@ namespace Dream
         void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
 
-    protected:
+        long getDeferredFor() const;
+        void setDeferredFor(long deferred);
+
+        long getObjectLifetime() const;
+        void setObjectLifetime(long l);
+        void increaseLifetime(long l);
+
+        long getDieAfter() const;
+        void setDieAfter(long);
+
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
     private:
@@ -192,5 +202,8 @@ namespace Dream
         bool mHidden;
         bool mAlwaysDraw;
         bool mRandomUuid;
+        long mDeferredFor;
+        long mObjectLifetime;
+        long mDieAfter;
     };
 }
