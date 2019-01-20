@@ -594,7 +594,6 @@ namespace Dream
         mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->drawDebug();
-
 #ifdef DREAM_LOG
         log->trace("{} Runtimes in {} Draw Calls", ModelMesh::RuntimesDrawn, ModelMesh::DrawCalls);
 #endif
