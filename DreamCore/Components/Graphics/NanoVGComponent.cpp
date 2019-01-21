@@ -18,6 +18,7 @@
 #include "../Window/WindowComponent.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../Scripting/ScriptRuntime.h"
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef WIN32
 #include <windows.h>
@@ -761,6 +762,13 @@ namespace Dream
         nvgTextBox(mContext,x,y,breakRowWidth,string,end);
     }
 
+    void
+    NanoVGComponent::TextBox
+    (float x, float y, float breakRowWidth, const char* string)
+    {
+        nvgTextBox(mContext,x,y,breakRowWidth,string,nullptr);
+    }
+
     float
     NanoVGComponent::TextBounds
     (float x, float y, const char* string, const char* end, float* bounds)
@@ -774,6 +782,16 @@ namespace Dream
     {
         nvgTextBoxBounds(mContext,x,y,breakRowWidth,string,end,bounds);
     }
+
+    vec4
+    NanoVGComponent::TextBoxBounds
+    (float x, float y, float breakRowWidth, const char* string)
+    {
+        vec4 bounds(0.0f);
+        nvgTextBoxBounds(mContext,x,y,breakRowWidth,string,nullptr,glm::value_ptr(bounds));
+        return bounds;
+    }
+
 
     int NanoVGComponent::TextGlyphPositions
     (float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions)

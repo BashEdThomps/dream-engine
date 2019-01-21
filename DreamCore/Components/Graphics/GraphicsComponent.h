@@ -74,7 +74,7 @@ namespace Dream
         GLuint mScreenQuadVAO;
         GLuint mScreenQuadVBO;
 
-        const int SHADOW_SIZE = 1538;
+        const int SHADOW_SIZE = 1024;
 
     public:
         GraphicsComponent(WindowComponent*);

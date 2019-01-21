@@ -138,7 +138,7 @@ namespace Dream
         }
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_MULTISAMPLE);
+        //glEnable(GL_MULTISAMPLE);
         #ifdef DREAM_LOG
         getLog()->debug("Initialisation Done.");
         #endif

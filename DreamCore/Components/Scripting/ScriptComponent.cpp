@@ -398,7 +398,9 @@ namespace Dream
             "containedInFrustum",&SceneObjectRuntime::containedInFrustum,
             "containedInFrustumAfterTransform",&SceneObjectRuntime::containedInFrustum,
             "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation,
-            "addChildFromTemplateUuid",&SceneObjectRuntime::addChildFromTemplateUuid
+            "addChildFromTemplateUuid",&SceneObjectRuntime::addChildFromTemplateUuid,
+           "getObjectLifetime",&SceneObjectRuntime::getObjectLifetime,
+            "getDieAfter",&SceneObjectRuntime::getDieAfter
         );
     }
 
@@ -461,11 +463,16 @@ namespace Dream
         debugRegisteringClass("Event");
         sol::state_view stateView(State);
         stateView.new_usertype<Event>("Event",
-            sol::constructors<Event(SceneObjectRuntime*,string)>(),
+            sol::constructors<Event(SceneObjectRuntime*)>(),
             "getSender",&Event::getSender,
-            "getType",&Event::getType,
-            "getString",&Event::getString,
-            "setString",&Event::setString
+            "getCollisionData",&Event::getCollisionData
+        );
+
+        stateView.new_usertype<CollisionData>(
+            "CollisionData",
+            "present",&CollisionData::present,
+            "impulse",&CollisionData::impulse,
+            "position",&CollisionData::position
         );
     }
 
@@ -824,9 +831,9 @@ namespace Dream
             "FontFaceId",&NanoVGComponent::FontFaceId,
             "FontFace",&NanoVGComponent::FontFace,
             "Text",static_cast<float (NanoVGComponent::*)(float,float,const char*)>(&NanoVGComponent::Text),
-            "TextBox",&NanoVGComponent::TextBox,
+            "TextBox",static_cast<void(NanoVGComponent::*)(float,float,float,const char*)>(&NanoVGComponent::TextBox),
             "TextBounds",&NanoVGComponent::TextBounds,
-            "TextBoxBounds",&NanoVGComponent::TextBoxBounds,
+            "TextBoxBounds",static_cast<vec4 (NanoVGComponent::*)(float, float, float, const char*)>(&NanoVGComponent::TextBoxBounds),
             "TextGlyphPositions",&NanoVGComponent::TextGlyphPositions,
             "TextMetrics",&NanoVGComponent::TextMetrics,
             "TextBreakLines",&NanoVGComponent::TextBreakLines
@@ -876,6 +883,15 @@ namespace Dream
             "y", &glm::vec3::y,
             "z", &glm::vec3::z
         );
+
+        stateView.new_usertype<glm::vec4>(
+            "vec4",
+            "x", &glm::vec4::x,
+            "y", &glm::vec4::y,
+            "z", &glm::vec4::z,
+            "w", &glm::vec4::w
+        );
+
         stateView.new_usertype<glm::quat>(
             "quat",
             sol::constructors<glm::quat(), glm::quat(float, float, float, float)>(),

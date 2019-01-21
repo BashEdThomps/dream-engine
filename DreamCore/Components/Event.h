@@ -1,10 +1,4 @@
 /*
- * Event
- *
- * Created: 18/12/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -19,45 +13,36 @@
 #pragma once
 
 #include <string>
-#include <map>
 
 #include "../Common/DreamObject.h"
-#include "../deps/json/json.hpp"
+#include <glm/vec3.hpp>
 
-using std::string;
-using std::map;
-using nlohmann::json;
+using glm::vec3;
 
 namespace Dream
 {
     class SceneObjectRuntime;
 
-    class Event
-            : public DreamObject
+    struct CollisionData
     {
+        bool present = false;
+        float impulse = 0.0;
+        vec3 position = vec3(0.0f);
+    };
 
+    class Event : public DreamObject
+    {
     private:
-      json mData;
-      SceneObjectRuntime* mSender;
+        SceneObjectRuntime* mSender;
+        CollisionData mCollisionData;
 
     public:
-      Event(SceneObjectRuntime*,string);
-      ~Event();
+        Event(SceneObjectRuntime*);
+        ~Event();
 
-      SceneObjectRuntime* getSender() const;
-      string getType() const;
+        SceneObjectRuntime* getSender() const;
 
-      void setString(string,string);
-      string getString(string) const;
-
-      void setJson(string, json);
-      json getJson(string) const;
-
-      string getData() const;
-
-      void setNumber(string name, double number);
-      double getNumber(string name);
-
-    }; // End of Event
-
-} // End of Dream
+        CollisionData getCollisionData() const;
+        void setCollisionData(const CollisionData& collisionData);
+    };
+}

@@ -1,6 +1,4 @@
 /*
-* PhysicsInterface
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -35,18 +33,17 @@ namespace Dream
           mCharacter(nullptr),
           mDebug(false)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("PhysicsComponent");
-#endif
+        #endif
     }
 
     PhysicsComponent::~PhysicsComponent
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Destroying Object" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Destroying Object" );
+        #endif
 
         int i;
 
@@ -71,24 +68,24 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-#ifdef DREAM_LOG
-                log->debug( "Deleting a motion state" );
-#endif
+                #ifdef DREAM_LOG
+                getLog()->debug( "Deleting a motion state" );
+                #endif
                 delete body->getMotionState();
             }
 
-#ifdef DREAM_LOG
-            log->debug( "Deleting a collision object" );
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug( "Deleting a collision object" );
+            #endif
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-#ifdef DREAM_LOG
-            log->debug( "Deleting Shape" );
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug( "Deleting Shape" );
+            #endif
             delete shape;
         }
 
@@ -128,10 +125,9 @@ namespace Dream
     PhysicsComponent::setGravity
     (const vec3& gravity)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
+        #endif
         mGravity = btVector3(gravity.x, gravity.y, gravity.z);
         if (mDynamicsWorld != nullptr)
         {
@@ -155,10 +151,9 @@ namespace Dream
     PhysicsComponent::init
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Initialising Component");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Initialising Component");
+        #endif
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -172,9 +167,9 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer);
 
-#ifdef DREAM_LOG
-        log->debug("Finished initialising PhysicsComponent");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Finished initialising PhysicsComponent");
+        #endif
         return true;
     }
 
@@ -182,20 +177,16 @@ namespace Dream
     PhysicsComponent::updateComponent
     (SceneRuntime* sr)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         if (!mEnabled)
         {
-#ifdef DREAM_LOG
-            log->warn("Update Disabled");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->warn("Update Disabled");
+            #endif
             return;
         }
-
             beginUpdate();
             #ifdef DREAM_LOG
-            log->debug( "Update Called" );
+            getLog()->debug( "Update Called" );
             #endif
 
             // Setup Physics
@@ -205,7 +196,7 @@ namespace Dream
             if (mTime == nullptr )
             {
                 #ifdef DREAM_LOG
-                log->error("I don't have Time for this");
+                getLog()->error("I don't have Time for this");
                 #endif
                 return;
             }
@@ -226,8 +217,7 @@ namespace Dream
     (btRigidBody *rigidBody)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Adding Rigid Body to Dynamics World" );
+        getLog()->debug( "Adding Rigid Body to Dynamics World" );
         #endif
         if (rigidBody != nullptr)
         {
@@ -236,9 +226,9 @@ namespace Dream
         #ifdef DREAM_LOG
         else
         {
-            log->error("Unable to add rigid body to dynamics world, nullptr");
+            getLog()->error("Unable to add rigid body to dynamics world, nullptr");
         }
-        log->debug( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
+        getLog()->debug( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
         #endif
     }
 
@@ -253,20 +243,19 @@ namespace Dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Removing Rigid Body from Dynamics World" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Removing Rigid Body from Dynamics World" );
+        #endif
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->removeRigidBody(rigidBody);
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         else
         {
-            log->error("Unable to remove rigidBody, nullptr");
+            getLog()->error("Unable to remove rigidBody, nullptr");
         }
-#endif
+        #endif
     }
 
     void
@@ -288,9 +277,6 @@ namespace Dream
     PhysicsComponent::populatePhysicsWorld
     (SceneRuntime* scene)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         scene->getRootSceneObjectRuntime()->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>
@@ -304,7 +290,7 @@ namespace Dream
                         if (!physicsObject->isInPhysicsWorld())
                         {
                             #ifdef DREAM_LOG
-                            log->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
+                            getLog()->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
                             #endif
                             addPhysicsObjectRuntime(physicsObject);
                             physicsObject->setInPhysicsWorld(true);
@@ -313,7 +299,7 @@ namespace Dream
                         {
 
                             #ifdef DREAM_LOG
-                            log->trace( "SceneObject {} is in the physics world",so->getNameAndUuidString());
+                            getLog()->trace( "SceneObject {} is in the physics world",so->getNameAndUuidString());
                             #endif
                         }
                     }
@@ -349,16 +335,15 @@ namespace Dream
     PhysicsComponent::checkContactManifolds
     (SceneRuntime* scene)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Checking contact manifolds");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Checking contact manifolds");
+        #endif
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
         {
-#ifdef DREAM_LOG
-            log->trace("Checking manifold {}",i);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->trace("Checking manifold {}",i);
+            #endif
             btPersistentManifold* contactManifold;
             contactManifold = mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
 
@@ -372,12 +357,12 @@ namespace Dream
 
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
-#ifdef DREAM_LOG
-                    log->debug("Contact Manifold Found. Sending Event");
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->debug("Contact Manifold Found. Sending Event");
+                    #endif
 
-                    Event aHitsB(sObjA,Constants::EVENT_TYPE_COLLISION);
-                    Event bHitsA(sObjB,Constants::EVENT_TYPE_COLLISION);
+                    Event aHitsB(sObjA);
+                    Event bHitsA(sObjB);
 
                     int numContacts = contactManifold->getNumContacts();
                     for (int j=0;j<numContacts;j++)
@@ -392,34 +377,21 @@ namespace Dream
                         auto ptB = pt.getPositionWorldOnB();
                         auto impulse = pt.getAppliedImpulse();
 
-                        json aHitsBData =
-                        {
-                            { "impulse", impulse },
+                        CollisionData aHitsBData;
+                        aHitsBData.present = true;
+                        aHitsBData.impulse = impulse;
+                        aHitsBData.position.x = ptB.x();
+                        aHitsBData.position.y = ptB.y();
+                        aHitsBData.position.z = ptB.z();
+                        aHitsB.setCollisionData(aHitsBData);
 
-                            { "pos",
-                              {
-                                {"x", ptB.x()},
-                                {"y", ptB.y()},
-                                {"z", ptB.z()},
-                              }
-                            }
-                        };
-                        aHitsB.setJson("physics",aHitsBData);
-
-                        json bHitsAData =
-                        {
-                            { "impulse", impulse },
-
-                            { "pos",
-                              {
-                                {"x", ptA.x()},
-                                {"y", ptA.y()},
-                                {"z", ptA.z()},
-                              }
-                            }
-                        };
-                        bHitsA.setJson("physics",bHitsAData);
-
+                        CollisionData bHitsAData;
+                        bHitsAData.present = true;
+                        bHitsAData.impulse = impulse;
+                        bHitsAData.position.x = ptA.x();
+                        bHitsAData.position.y = ptA.y();
+                        bHitsAData.position.z = ptA.z();
+                        bHitsA.setCollisionData(bHitsAData);
                      }
 
                     sObjB->addEvent(aHitsB);
@@ -439,16 +411,16 @@ namespace Dream
                 }
                 else
                 {
-#ifdef DREAM_LOG
-                    log->error("Contact Manifold Found but SceneObjects are nullptr");
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->error("Contact Manifold Found but SceneObjects are nullptr");
+                    #endif
                 }
             }
             else
             {
-#ifdef DREAM_LOG
-                log->error("Contact Manifold Found but Collision Objects are nullptr");
-#endif
+                #ifdef DREAM_LOG
+                getLog()->error("Contact Manifold Found but Collision Objects are nullptr");
+                #endif
             }
         }
     }
@@ -492,9 +464,6 @@ namespace Dream
     PhysicsComponent::recoverFromPenetration
     (btPersistentManifold* manifold)
     {
-#ifdef DREAM_LOG
-        static auto log = getLog();
-#endif
         bool penetration = false;
         auto body =  mCharacter->getRigidBody();
         auto currentPosition = body->getWorldTransform().getOrigin();
@@ -505,15 +474,15 @@ namespace Dream
             const btManifoldPoint& pt = manifold->getContactPoint(p);
             btScalar dist = pt.getDistance();
 
-#ifdef DREAM_LOG
-            log->trace("dist: {} dirSign: {} mpd: {}",dist,directionSign,maxPenDepth);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->trace("dist: {} dirSign: {} mpd: {}",dist,directionSign,maxPenDepth);
+            #endif
             if (dist < -maxPenDepth)
             {
 
-#ifdef DREAM_LOG
-                log->trace("recovered");
-#endif
+                #ifdef DREAM_LOG
+                getLog()->trace("recovered");
+                #endif
                 currentPosition += pt.m_normalWorldOnB * directionSign * dist * btScalar(0.2);
                 penetration = true;
             }

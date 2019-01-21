@@ -1851,7 +1851,7 @@ namespace DreamTool
         auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
         static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".ttf","Select Font File");
+        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".ttf;.otf","Select Font File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
