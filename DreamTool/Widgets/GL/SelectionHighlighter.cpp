@@ -1,5 +1,6 @@
 #include "SelectionHighlighter.h"
 #include "../../DTState.h"
+#include "../../../DreamCore/Common/Constants.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
@@ -252,12 +253,17 @@ namespace DreamTool
 
         if (!mVertexBuffer.empty())
         {
-#ifndef __APPLE__
+            #ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
             glLineWidth(3.0f);
+
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
+            #endif
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -341,7 +347,10 @@ namespace DreamTool
 #ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
+
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
 #endif
             glDisable(GL_BLEND);
         }

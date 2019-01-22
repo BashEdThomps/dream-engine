@@ -1,4 +1,9 @@
 // Maintain include order for GL Defined
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 #include "PropertiesWindow.h"
 
 #include <glm/gtc/type_ptr.hpp>

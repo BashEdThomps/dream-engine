@@ -22,6 +22,9 @@ extern "C" {
     #include "../../deps/nanovg/nanovg.h"
 }
 
+#ifdef CreateFont
+#undef CreateFont
+#endif
 
 using glm::vec4;
 typedef struct NVGcontext NVGcontext;

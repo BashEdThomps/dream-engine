@@ -12,11 +12,13 @@ find_package(OPENGL     REQUIRED)
 
 include_directories(
     ${DreamCore_INCLUDE_DIRS}
-    ${ASSIMP_INCLUDE_DIRS}
+    ${ASSIMP_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
+    ${OPENAL_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
 )
 

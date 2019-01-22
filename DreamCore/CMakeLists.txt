@@ -15,31 +15,18 @@ find_package(OPENGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 
-if (WIN32)
-    include_directories(
-            ${ALUT_INCLUDE_DIR}
-            ${ASSIMP_INCLUDE_DIRS}
-            ${BULLET_INCLUDE_DIR}
-            ${GLEW_INCLUDE_DIR}
-            ${GLM_INCLUDE_DIR}
-            ${LUA_INCLUDE_DIR}
-            ${OPENAL_INCLUDE_DIR}
-            ${OPENGL_INCLUDE_DIR}
-            ${VORBIS_INCLUDE_DIR}
-        )
-else()
-    include_directories(
-            ${ALUT_INCLUDE_DIR}
-            ${ASSIMP_INCLUDE_DIRS}
-            ${BULLET_INCLUDE_DIR}
-            ${GLEW_INCLUDE_DIR}
-            ${GLM_INCLUDE_DIR}
-            ${LUA_INCLUDE_DIR}
-            ${OPENAL_INCLUDE_DIR}
-            ${OPENGL_INCLUDE_DIR}
-            ${VORBIS_INCLUDE_DIR}
-        )
-endif()
+include_directories(
+    ${ALUT_INCLUDE_DIR}
+    ${ASSIMP_INCLUDE_DIR}
+    ${BULLET_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIR}
+    ${GLM_INCLUDE_DIR}
+    ${LUA_INCLUDE_DIR}
+    ${OPENAL_INCLUDE_DIR}
+    ${OPENGL_INCLUDE_DIR}
+    ${OGG_INCLUDE_DIR}
+    ${VORBIS_INCLUDE_DIR}
+)
 
 if (WIN32)
     add_library(

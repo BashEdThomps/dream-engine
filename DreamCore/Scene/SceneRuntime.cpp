@@ -30,6 +30,14 @@
 #include "../Components/Scripting/ScriptComponent.h"
 #include "../Components/Time.h"
 
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 namespace Dream
 {
     SceneRuntime::SceneRuntime

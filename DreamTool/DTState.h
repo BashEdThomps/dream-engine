@@ -1,6 +1,7 @@
 #pragma once
 
 #ifdef WIN32
+#include <Windows.h>
 #include <GL/glew.h>
 #endif
 #include "../DreamCore/Common/DreamObject.h"

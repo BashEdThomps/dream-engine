@@ -11,7 +11,10 @@
  */
 
 #define GL_SILENCE_DEPRECATION
-
+#ifdef WIN32
+#include <windows.h>
+#include <GL/glew.h>
+#endif
 #include <iostream>
 #include <thread>
 #include <memory>
@@ -32,9 +35,7 @@
 
 #define MINIMUM_ARGUMENTS 3
 
-#ifdef WIN32
-#include <GL/glew.h>
-#endif
+
 
 using namespace std;
 using namespace Dream;

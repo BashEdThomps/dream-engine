@@ -13,6 +13,8 @@
 
 #pragma once
 
+
+
 #include <iostream>
 #include <map>
 #include <vector>
@@ -53,6 +55,8 @@ namespace Dream
     class Constants
     {
     public:
+
+#ifdef DREAM_LOG
         // Debug ================================================================
         /**
          * @brief Used to check for OpenGL Runtime Errors. This will display the
@@ -63,7 +67,6 @@ namespace Dream
          */
         static bool checkGLError_(string,int);
 
-#ifdef DREAM_LOG
     #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
 #endif
 

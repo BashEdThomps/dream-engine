@@ -31,7 +31,9 @@
 #include <GL/glew.h>
 #include <GL/glu.h>
 #endif
-
+#ifdef CreateFont
+#undef CreateFont
+#endif
 #define NANOVG_GL3_IMPLEMENTATION
 extern "C" {
     #include "../../deps/nanovg/nanovg_gl.h"

@@ -113,7 +113,7 @@ namespace Dream
         /**
          * @return The Definition's uuid.
          */
-        inline uint32
+        inline uint32_t
         getUuid
         ()
         {
@@ -129,7 +129,7 @@ namespace Dream
          */
         inline void
         setUuid
-        (uint32 uuid)
+        (uint32_t uuid)
         {
             mJson[Constants::UUID] = uuid;
         }

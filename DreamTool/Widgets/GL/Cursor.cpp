@@ -1,5 +1,6 @@
 #include "Cursor.h"
 #include "../../DTState.h"
+#include "../../../DreamCore/Common/Constants.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
@@ -60,10 +61,14 @@ namespace DreamTool
         {
 #ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
             glLineWidth(3.0f);
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
+            #endif
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 

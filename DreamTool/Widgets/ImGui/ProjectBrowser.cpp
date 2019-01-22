@@ -1,4 +1,8 @@
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "../../deps/ImFileSystem/imguifilesystem.h"

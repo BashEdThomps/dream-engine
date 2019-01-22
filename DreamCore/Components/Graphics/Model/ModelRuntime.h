@@ -15,23 +15,25 @@
 
 #pragma once
 
-#ifdef WIN32
-#include <windows.h>
+#ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #include <OpenGL/gl3.h>
+    #include <assimp/Importer.hpp>
+    #include <assimp/material.h>
 #endif
 
-#ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
-#else
-#include <GL/glew.h>
-#include <GL/glu.h>
+#ifdef WIN32
+    #include <Windows.h>
+    #include <GL/glew.h>
+    #include <gl/GLU.h>
+    #include <assimp/Importer.hpp>
+    #include <assimp/material.h>
 #endif
 
 #include <vector>
 #include <string>
 #include <map>
-#include <assimp/Importer.hpp>
-#include <assimp/material.h>
+
 #include <glm/matrix.hpp>
 
 #include "../../SharedAssetRuntime.h"

@@ -1,6 +1,7 @@
 #include "LightViewer.h"
 #include "../../DTState.h"
 
+#include "../../../DreamCore/Common/Constants.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
@@ -61,9 +62,13 @@ namespace DreamTool
         {
 #ifndef __APPLE__
             glEnable(GL_LINE_SMOOTH);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
             glLineWidth(3.0f);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
 #endif
 
             // Enable shader program
@@ -175,7 +180,9 @@ namespace DreamTool
 #ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
 #endif
         }
     }

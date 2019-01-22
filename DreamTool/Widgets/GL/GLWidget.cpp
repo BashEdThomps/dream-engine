@@ -1,13 +1,7 @@
-//
-//  GLWidget.cpp
-//  DreamToolImGui
-//
-//  Created by Ashley Thompson on 24/10/2018.
-//
-
 #include "GLWidget.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../DTState.h"
+#include "../../../DreamCore/Common/Constants.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
@@ -186,7 +180,9 @@ namespace DreamTool
 
 #ifndef __APPLE__
             glLineWidth(3.0f);
+            #ifdef DREAM_LOG
             checkGLError();
+            #endif
 #endif
             glEnable(GL_DEPTH_TEST);
             // Enable shader program
@@ -281,7 +277,9 @@ namespace DreamTool
 #endif
 #ifndef __APPLE__
             glLineWidth(1.0f);
+#ifdef DREAM_LOG
             checkGLError();
+#endif
 #endif
         }
     }

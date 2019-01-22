@@ -18,6 +18,12 @@
 #include "AnimationDefinition.h"
 #include "AnimationKeyframe.h"
 #include "../DiscreteAssetRuntime.h"
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
 #include "../../deps/tweeny/tweeny.h"
 
 using namespace tweeny;

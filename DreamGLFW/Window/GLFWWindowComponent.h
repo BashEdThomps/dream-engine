@@ -12,9 +12,13 @@
 
 #pragma once
 
+// Maintain include order for GL
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 #include <vector>
 
-// Maintain include order for GL
 #include <GLFW/glfw3.h>
 #include "../../DreamCore/Components/Window/WindowComponent.h"
 

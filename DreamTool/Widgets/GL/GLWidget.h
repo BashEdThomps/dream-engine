@@ -10,8 +10,12 @@
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
     #include <OpenGL/gl3.h>
-#else
-    #include <GL/glu.h>
+#endif
+
+#ifdef WIN32
+    #include <Windows.h>
+    #include <gl/glew.h>
+    #include <gl/GLU.h>
 #endif
 
 #include "../DTWidget.h"
