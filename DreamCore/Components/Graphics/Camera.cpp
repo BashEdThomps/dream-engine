@@ -82,7 +82,11 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            return lookAt(mFocusTranslation,mFocusedSceneObject->getTransform().decomposeMatrix().translation,mUp);
+            return lookAt(
+                mFocusTranslation,
+                vec3(mFocusedSceneObject->getTransform().getMatrix()[3]),
+                mUp
+            );
         }
         else
         {
@@ -234,7 +238,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 tx = mFocusedSceneObject->getTransform().decomposeMatrix().translation;
+            vec3 tx = mFocusedSceneObject->getTransform().getMatrix()[3];
             setFocusTranslationFromTarget(tx);
             mFront = normalize(tx);
             mRight = normalize(cross(mFront, mWorldUp));
@@ -308,7 +312,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 objTx = mFocusedSceneObject->getTransform().decomposeMatrix().translation;
+            vec3 objTx = mFocusedSceneObject->getTransform().getMatrix()[3];
             float x = mFocusTranslation.x - objTx.x;
             float z = mFocusTranslation.z - objTx.z;
             return atan2(x,z);

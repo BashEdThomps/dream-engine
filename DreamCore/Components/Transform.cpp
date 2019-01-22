@@ -116,7 +116,7 @@ namespace Dream
     Transform::distanceFrom
     (const Transform& other)
     {
-       return glm::distance(decomposeMatrix().translation, other.decomposeMatrix().translation);
+       return glm::distance(mMatrix[3], other.mMatrix[3]);
     }
 
     // Matrix ===================================================================

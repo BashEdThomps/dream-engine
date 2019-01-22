@@ -88,7 +88,7 @@ namespace Dream
         //Range inRangeY = None;
         //Range inrangeZ = None;
 
-        vec3 tx = runt->getTransform().decomposeMatrix(false).translation;
+        vec3 tx = runt->getTransform().getMatrix()[3];
 
         // Range check is dependent on heading, determined by velocity.
 

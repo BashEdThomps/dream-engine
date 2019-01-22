@@ -1128,7 +1128,7 @@ namespace Dream
     SceneObjectRuntime::distanceFrom
     (const vec3& other)
     {
-        return glm::distance(mTransform.decomposeMatrix().translation,other);
+        return glm::distance(vec3(mTransform.getMatrix()[3]),other);
     }
 
     bool

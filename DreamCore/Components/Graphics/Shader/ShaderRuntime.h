@@ -66,7 +66,7 @@ namespace Dream
         const static char* UNIFORM_POINT_LIGHT_COUNT;
         const static char* UNIFORM_SPOT_LIGHT_COUNT;
         const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
-        const static size_t MAX_RuntimeS;
+        const static size_t MAX_RUNTIMES;
 
         unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
@@ -82,7 +82,7 @@ namespace Dream
         bool mNeedsRebind;
         GLint mMaterialLocation;
 
-        vector<shared_ptr<ShaderUniform>> mUniformVector;
+        vector<ShaderUniform*> mUniformVector;
         vector<MaterialRuntime*> mMaterials;
         vector<mat4> mRuntimeMatricies;
         map<string,GLint> mUinformCache;
@@ -107,6 +107,7 @@ namespace Dream
         static void InvalidateState();
 
         bool useDefinition() override;
+        void deleteUniforms();
 
         void use();
         void unbind();
@@ -114,26 +115,26 @@ namespace Dream
         int countMaterials();
 
         // MVP
-        bool setModelMatrix(mat4,string name = "model");
-        bool setViewMatrix(mat4,string name = "view");
-        bool setProjectionMatrix(mat4,string name = "projection");
+        bool setModelMatrix(const mat4&,const string& name = "model");
+        bool setViewMatrix(const mat4&,const string& name = "view");
+        bool setProjectionMatrix(const mat4&,const string& name = "projection");
 
         // Viewer
-        bool setViewerPosition(vec3, string name = "viewPos");
+        bool setViewerPosition(const vec3&, const string& name = "viewPos");
 
         void bindVertexArray(GLuint);
         void unbindVertexArray();
 
-        GLint getUniformLocation(string name);
+        GLint getUniformLocation(const string& name);
 
-        void addUniform(UniformType type, string name, int count, void* data);
+        void addUniform(UniformType type, const string& name, int count, void* data);
         void bindLight(LightRuntime* light);
 
         void syncUniforms();
 
         void bindMaterial(MaterialRuntime* material);
-        void bindLightQueue(vector<LightRuntime*> lightQueue);
-        void bindRuntimes(vector<SceneObjectRuntime*> Runtimes);
+        void bindLightQueue(const vector<LightRuntime*>& lightQueue);
+        void bindRuntimes(const vector<SceneObjectRuntime*>& Runtimes);
 
         void addMaterial(MaterialRuntime* material);
 
@@ -146,10 +147,10 @@ namespace Dream
         void setRecompile(bool recompile);
 
         string getVertexSource() const;
-        void setVertexSource(string vertexSource);
+        void setVertexSource(const string& vertexSource);
 
         string getFragmentSource() const;
-        void setFragmentSource(string fragmentSource);
+        void setFragmentSource(const string& fragmentSource);
 
     protected:
         bool compileVertex();

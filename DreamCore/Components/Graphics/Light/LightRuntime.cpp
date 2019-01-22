@@ -159,10 +159,10 @@ namespace Dream
 
     PointLight LightRuntime::getPointLightData()
     {
-        auto tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        vec3 tx = mSceneObjectRuntime->getTransform().getMatrix()[3];
         return PointLight
         {
-            tx.translation,
+            tx,
             mConstant,
             mLinear,
             mQuadratic,
@@ -174,7 +174,7 @@ namespace Dream
 
     SpotLight LightRuntime::getSpotLightData()
     {
-        auto tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
         return SpotLight
         {
             tx.translation,
@@ -192,7 +192,7 @@ namespace Dream
 
     DirLight LightRuntime::getDirectionalLightData()
     {
-        auto tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
         return DirLight
         {
             eulerAngles(tx.rotation),

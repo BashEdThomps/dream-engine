@@ -51,6 +51,7 @@ namespace Dream
     {
     private:
 
+        vector<LightRuntime*> mLastLightQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCache;
