@@ -6,6 +6,7 @@ namespace Dream
 {
     class TextureRuntime;
     class TextureDefinition;
+    class GraphicsComponent;
 
     class TextureCache : public Cache
     {

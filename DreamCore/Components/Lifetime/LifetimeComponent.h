@@ -13,44 +13,22 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AssetRuntime.h"
+#pragma once
 
-#include "AssetDefinition.h"
-#include "../Utilities/Uuid.h"
+#include "../Component.h"
 
 namespace Dream
 {
-    AssetRuntime::AssetRuntime
-    (AssetDefinition* definition)
-      : Runtime(definition),
-        mLoaded(false)
+    class LifetimeComponent : public Component
     {
-    }
+    public:
+        LifetimeComponent();
+        ~LifetimeComponent() override;
 
-    AssetRuntime::~AssetRuntime
-    ()
-    {
-    }
+        bool init() override;
+        void updateComponent(SceneRuntime*) override;
 
-    bool
-    AssetRuntime::getLoaded
-    ()
-    const
-    {
-        return mLoaded;
-    }
-
-    void
-    AssetRuntime::setLoaded
-    (bool loaded)
-    {
-        mLoaded = loaded;
-    }
-
-    void
-    AssetRuntime::collectGarbage
-    ()
-    {
-
-    }
+        void updateSceneRuntimeTime(SceneRuntime* sr);
+        void updateSceneObjectLifetimes(SceneRuntime* sr);
+    };
 }

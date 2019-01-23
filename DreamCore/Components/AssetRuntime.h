@@ -46,8 +46,8 @@ namespace Dream
         virtual string getAssetFilePath(string fmt = "") = 0;
         virtual string getAssetDirectoryPath() = 0;
 
-        bool getLoadedFlag();
-        void setLoadedFlag(bool);
+        bool getLoaded() const;
+        void setLoaded(bool);
         void collectGarbage() override;
     };
 }

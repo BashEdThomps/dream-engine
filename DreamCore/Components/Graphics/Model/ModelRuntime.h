@@ -60,16 +60,10 @@ namespace Dream
     class MaterialRuntime;
     class SceneObjectRuntime;
 
-    class ModelRuntime
-        : public SharedAssetRuntime
+    class ModelRuntime : public SharedAssetRuntime
     {
     public:
-        ModelRuntime(
-            ShaderCache*,
-            MaterialCache*,
-            AssetDefinition*,
-            ProjectRuntime*
-        );
+        ModelRuntime(ShaderCache*,MaterialCache*,AssetDefinition*,ProjectRuntime*);
 
         ~ModelRuntime() override;
         bool useDefinition() override;

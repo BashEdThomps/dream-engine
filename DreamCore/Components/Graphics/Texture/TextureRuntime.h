@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include "../../SharedAssetRuntime.h"
+#include "../GraphicsComponentTask.h"
 
 using namespace std;
 
@@ -34,6 +35,9 @@ namespace Dream
 {
     class TextureDefinition;
     class SceneObjectRuntime;
+    class Runtime;
+
+
 
     class TextureRuntime : public SharedAssetRuntime
     {
@@ -65,4 +69,6 @@ namespace Dream
         unsigned char* getImage() const;
         void setImage(unsigned char* image);
     };
+
+
 } // end of Dream

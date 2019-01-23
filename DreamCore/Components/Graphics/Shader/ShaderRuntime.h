@@ -57,17 +57,9 @@ namespace Dream
     class LightRuntime;
     class Camera;
 
-    class ShaderRuntime
-            : public SharedAssetRuntime
+    class ShaderRuntime : public SharedAssetRuntime
     {
     private:
-        const static unsigned int MAX_LIGHTS;
-        const static GLint UNIFORM_NOT_FOUND;
-        const static char* UNIFORM_POINT_LIGHT_COUNT;
-        const static char* UNIFORM_SPOT_LIGHT_COUNT;
-        const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
-        const static size_t MAX_RUNTIMES;
-
         unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
 
@@ -93,6 +85,13 @@ namespace Dream
         string mFragmentSource;
 
     public:
+        const static unsigned int MAX_LIGHTS;
+        const static GLint UNIFORM_NOT_FOUND;
+        const static char* UNIFORM_POINT_LIGHT_COUNT;
+        const static char* UNIFORM_SPOT_LIGHT_COUNT;
+        const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
+        const static size_t MAX_RUNTIMES;
+
         ShaderRuntime(ShaderDefinition*, ProjectRuntime*);
         ~ShaderRuntime() override;
 
@@ -111,7 +110,8 @@ namespace Dream
 
         void use();
         void unbind();
-        GLuint getShaderProgram();
+        GLuint getShaderProgram() const;
+        void setShaderProgram(GLuint sp);
         int countMaterials();
 
         // MVP
@@ -151,6 +151,21 @@ namespace Dream
 
         string getFragmentSource() const;
         void setFragmentSource(const string& fragmentSource);
+
+        GLuint getVertexShader() const;
+        void setVertexShader(const GLuint& vertexShader);
+
+        GLuint getFragmentShader() const;
+        void setFragmentShader(const GLuint& fragmentShader);
+
+        GLint getPointLightCountLocation() const;
+        void setPointLightCountLocation(const GLint& pointLightCountLocation);
+
+        GLint getSpotLightCountLocation() const;
+        void setSpotLightCountLocation(const GLint& spotLightCountLocation);
+
+        GLint getDirectionalLightCountLocation() const;
+        void setDirectionalLightCountLocation(const GLint& directionalLightCountLocation);
 
     protected:
         bool compileVertex();

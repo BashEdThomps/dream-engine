@@ -46,6 +46,7 @@ namespace Dream
     class ComponentThread;
     class AssetDefinition;
     class SceneObjectRuntime;
+    class LifetimeComponent;
 
     class Time;
 
@@ -70,6 +71,7 @@ namespace Dream
         ScriptComponent* mScriptComponent;
         WindowComponent* mWindowComponent;
         ScrollerComponent* mScrollerComponent;
+        LifetimeComponent* mLifetimeComponent;
 
         // Caches
         AudioCache* mAudioCache;
@@ -102,6 +104,7 @@ namespace Dream
         ScriptComponent* getScriptComponent();
         InputComponent* getInputComponent();
         ScrollerComponent* getScrollerComponent();
+        LifetimeComponent* getLifetimeComponent();
 
         Project* getProject();
 
@@ -161,6 +164,7 @@ namespace Dream
         bool initWindowComponent();
         bool initScriptComponent();
         bool initScrollerComponent();
+        bool initLifetimeComponent();
         bool initCaches();
 
         void deleteCaches();

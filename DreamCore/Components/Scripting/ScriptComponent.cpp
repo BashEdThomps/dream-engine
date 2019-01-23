@@ -354,9 +354,9 @@ namespace Dream
             "setFriction", &PhysicsObjectRuntime::setFriction,
             "clearForces",&PhysicsObjectRuntime::clearForces,
             "getCenterOfMassPosition",&PhysicsObjectRuntime::getCenterOfMassPosition,
-            "setCenterOfMassTransform",
-            static_cast<void (PhysicsObjectRuntime::*)(const mat4&)>
-            (&PhysicsObjectRuntime::setCenterOfMassTransform)
+            "setCenterOfMassTransform",static_cast<void (PhysicsObjectRuntime::*)(const mat4&)>(&PhysicsObjectRuntime::setCenterOfMassTransform),
+            "setKinematicObject",&PhysicsObjectRuntime::setKinematic,
+            "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter
         );
     }
 

@@ -78,25 +78,34 @@ namespace Dream
             ShadowRuntimesDrawn = 0;
         }
 
-        ModelMesh
-        (
-            ModelRuntime* parent, string name, vector<Vertex> vertexArray,
-            vector<GLuint> indexArray, MaterialRuntime* material
-        );
+        ModelMesh(ModelRuntime* parent, string name, vector<Vertex> vertexArray,
+            vector<GLuint> indexArray, MaterialRuntime* material);
 
         ~ModelMesh();
 
         void init();
+        #ifdef DREAM_LOG
         void logRuntimes();
+        #endif
         void addRuntime(SceneObjectRuntime* runt);
         void removeRuntime(SceneObjectRuntime* runt);
+
         MaterialRuntime* getMaterial();
+
         string getName() const;
         void setName(const string& name);
-        vector<Vertex> getVertices() const;
-        vector<GLuint> getIndices() const;
+
+        const vector<Vertex>& getVertices() const;
+        const vector<GLuint>& getIndices() const;
         GLuint getVAO() const;
+
         void drawGeometryPassRuntimes(Camera* camera, ShaderRuntime* shader);
         void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
+
+        void setVAO(const GLuint& vAO);
+        GLuint getVBO() const;
+        void setVBO(const GLuint& vBO);
+        GLuint getIBO() const;
+        void setIBO(const GLuint& iBO);
     };
 }

@@ -17,20 +17,45 @@
 #include "ModelMesh.h"
 
 #include "ModelRuntime.h"
-#include "../Shader/ShaderRuntime.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "ModelTasks.h"
 #include "../Camera.h"
+#include "../Shader/ShaderRuntime.h"
+#include "../GraphicsComponent.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
 
+    void ModelMesh::setVAO(const GLuint& vAO)
+    {
+        mVAO = vAO;
+    }
+
+    GLuint ModelMesh::getVBO() const
+    {
+        return mVBO;
+    }
+
+    void ModelMesh::setVBO(const GLuint& vBO)
+    {
+        mVBO = vBO;
+    }
+
+    GLuint ModelMesh::getIBO() const
+    {
+        return mIBO;
+    }
+
+    void ModelMesh::setIBO(const GLuint& iBO)
+    {
+        mIBO = iBO;
+    }
+
     ModelMesh::ModelMesh
-    (ModelRuntime* parent,
-        string name,
-        vector<Vertex> vertices,
-        vector<GLuint> indices,
-        MaterialRuntime* material
-    ) : DreamObject("ModelMesh"),
+    (ModelRuntime* parent, string name, vector<Vertex> vertices,
+     vector<GLuint> indices,MaterialRuntime* material)
+        : DreamObject("ModelMesh"),
         mParent(parent),
         mMaterial(material),
         mName(name),
@@ -67,14 +92,14 @@ namespace Dream
         mName = name;
     }
 
-    vector<Vertex>
+    const vector<Vertex> &
     ModelMesh::getVertices
     () const
     {
         return mVertices;
     }
 
-    vector<GLuint>
+    const vector<GLuint>&
     ModelMesh::getIndices
     () const
     {
@@ -85,6 +110,8 @@ namespace Dream
     ModelMesh::init
     ()
     {
+        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(new ModelInitMeshTask(this));
+        /*
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
         glGenBuffers(1, &mIBO);
@@ -129,6 +156,7 @@ namespace Dream
                     (GLvoid*)offsetof(Vertex, Bitangent)
                     );
         glBindVertexArray(0);
+        */
     }
 
 #ifdef DREAM_LOG

@@ -18,17 +18,20 @@
 
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
+#include "ShaderTasks.h"
+#include "../GraphicsComponent.h"
 #include "../Light/LightRuntime.h"
 #include "../Material/MaterialRuntime.h"
 #include "../Texture/TextureRuntime.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Utilities/File.h"
+#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Project/ProjectRuntime.h"
 
 using namespace glm;
 
 namespace Dream
 {
-    const GLint ShaderRuntime::UNIFORM_NOT_FOUND = -1;
+
 
     ShaderRuntime::ShaderRuntime
     (ShaderDefinition* definition, ProjectRuntime* rt)
@@ -52,7 +55,6 @@ namespace Dream
         setLogClassName("ShaderRuntime");
         getLog()->trace( "Constructing Object" );
         #endif
-        mShaderProgram = 0;
         mRuntimeMatricies.reserve(MAX_RUNTIMES);
     }
 
@@ -63,14 +65,25 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace( "Destroying Object" );
         #endif
+        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(this));
+        /*
         glDeleteProgram(mShaderProgram);
+        */
     }
 
     GLuint
     ShaderRuntime::getShaderProgram
     ()
+    const
     {
         return mShaderProgram;
+    }
+
+    void
+    ShaderRuntime::setShaderProgram
+    (GLuint sp)
+    {
+        mShaderProgram = sp;
     }
 
     int
@@ -125,9 +138,9 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->info( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-#endif
+            #endif
             return false;
         }
         glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
@@ -162,15 +175,15 @@ namespace Dream
 
         if (uCamPos == UNIFORM_NOT_FOUND)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->info( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
-#endif
+            #endif
             return false;
         }
         glUniform3fv(uCamPos,1,value_ptr(value));
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
         return true;
     }
 
@@ -178,13 +191,10 @@ namespace Dream
     ShaderRuntime::useDefinition
     ()
     {
-        bool compileV = compileVertex();
-        bool compileF = compileFragment();
-        if (compileV && compileF)
-        {
-            return linkProgram();
-        }
-        return false;
+        compileVertex();
+        compileFragment();
+        linkProgram();
+        return true;
     }
 
     bool
@@ -204,6 +214,8 @@ namespace Dream
         );
         #endif
         // 2. Compile shaders
+        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileVertexTask(this));
+        /*
         GLint success;
         GLchar infoLog[512];
         // Vertex Shader
@@ -223,6 +235,7 @@ namespace Dream
             mVertexShader = 0;
             return false;
         }
+        */
         return true;
    }
 
@@ -243,6 +256,8 @@ namespace Dream
         );
         #endif
         // 2. Compile shaders
+        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileFragmentTask(this));
+        /*
         GLint success;
         GLchar infoLog[512];
         // Fragment Shader
@@ -262,6 +277,7 @@ namespace Dream
             mFragmentShader = 0;
             return false;
         }
+        */
         return true;
    }
 
@@ -269,6 +285,8 @@ namespace Dream
    ShaderRuntime::linkProgram
    ()
    {
+        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderLinkTask(this));
+        /*
        if (mVertexShader != 0 && mFragmentShader != 0)
        {
            GLint success;
@@ -314,6 +332,7 @@ namespace Dream
             }
        }
 
+       */
         return mLoaded;
    }
 
@@ -929,6 +948,57 @@ namespace Dream
         mFragmentSource = fragmentSource;
     }
 
+    GLuint ShaderRuntime::getVertexShader() const
+    {
+        return mVertexShader;
+    }
+
+    void ShaderRuntime::setVertexShader(const GLuint& vertexShader)
+    {
+        mVertexShader = vertexShader;
+    }
+
+    GLuint ShaderRuntime::getFragmentShader() const
+    {
+        return mFragmentShader;
+    }
+
+    void ShaderRuntime::setFragmentShader(const GLuint& fragmentShader)
+    {
+        mFragmentShader = fragmentShader;
+    }
+
+    GLint ShaderRuntime::getPointLightCountLocation() const
+    {
+        return mPointLightCountLocation;
+    }
+
+    void ShaderRuntime::setPointLightCountLocation(const GLint& pointLightCountLocation)
+    {
+        mPointLightCountLocation = pointLightCountLocation;
+    }
+
+    GLint ShaderRuntime::getSpotLightCountLocation() const
+    {
+        return mSpotLightCountLocation;
+    }
+
+    void ShaderRuntime::setSpotLightCountLocation(const GLint& spotLightCountLocation)
+    {
+        mSpotLightCountLocation = spotLightCountLocation;
+    }
+
+    GLint ShaderRuntime::getDirectionalLightCountLocation() const
+    {
+        return mDirectionalLightCountLocation;
+    }
+
+    void ShaderRuntime::setDirectionalLightCountLocation(const GLint& directionalLightCountLocation)
+    {
+        mDirectionalLightCountLocation = directionalLightCountLocation;
+    }
+
+    const GLint ShaderRuntime::UNIFORM_NOT_FOUND = -1;
     const char* ShaderRuntime::UNIFORM_POINT_LIGHT_COUNT = "pointLightCount";
     const char* ShaderRuntime::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
     const char* ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
@@ -943,5 +1013,7 @@ namespace Dream
     GLuint ShaderRuntime::CurrentShaderProgram = 0;
     GLuint ShaderRuntime::CurrentVAO = 0;
     GLuint ShaderRuntime::CurrentVBO = 0;
+
+
 
 } // End of Dream

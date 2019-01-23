@@ -646,57 +646,5 @@ namespace Dream
         mSceneStartTime = sceneStartTime;
     }
 
-    void SceneRuntime::updateTime()
-    {
-       long frameTime = mProjectRuntime->getTime()->getCurrentFrameTime();
-       if (mSceneStartTime <= 0)
-       {
-           mSceneStartTime = frameTime;
-       }
-       mSceneCurrentTime = frameTime-mSceneStartTime;
-       updateDeferredSceneObjects();
-    }
 
-    void
-    SceneRuntime::updateDeferredSceneObjects
-    ()
-    {
-       long timeDelta = mProjectRuntime->getTime()->getFrameTimeDelta();
-
-       if (timeDelta > Time::DELTA_MAX)
-       {
-           return;
-       }
-
-       mRootSceneObjectRuntime->applyToAll
-       (
-            std::function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* runt)
-                {
-                    long deferredFor = runt->getDeferredFor();
-                    if (deferredFor > 0)
-                    {
-                        long deferral = deferredFor-timeDelta;
-                        #ifdef DREAM_LOG
-                        getLog()->critical("Reducing defferal by {} to {} for {}", timeDelta, deferral, runt->getNameAndUuidString());
-                        #endif
-                        runt->setDeferredFor(deferral);
-                        if (deferral < 0)
-                        {
-                            #ifdef DREAM_LOG
-                            getLog()->critical("Loading Deferred Runtime {}", runt->getNameAndUuidString());
-                            #endif
-                            runt->loadDeferred();
-                        }
-                    }
-                    else
-                    {
-                        runt->increaseLifetime(timeDelta);
-                    }
-                    return nullptr;
-                }
-            )
-       );
-    }
 }

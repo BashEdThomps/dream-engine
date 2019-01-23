@@ -21,6 +21,7 @@
 
 #include <glm/matrix.hpp>
 #include "../Component.h"
+#include "GraphicsComponentTask.h"
 
 using namespace std;
 using namespace glm;
@@ -51,7 +52,7 @@ namespace Dream
     {
     private:
 
-        vector<LightRuntime*> mLastLightQueue;
+        vector<GraphicsComponentTask*> mTaskQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCache;
@@ -115,5 +116,8 @@ namespace Dream
         GLuint getGeometryPassDepthBuffer() const;
         GLuint getShadowPassDepthBuffer() const;
         GLuint getGeometryPassIgnoreBuffer() const;
+
+        void pushTask(GraphicsComponentTask* t);
+        void executeTaskQueue();
     };
 }

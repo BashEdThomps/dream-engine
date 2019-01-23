@@ -550,11 +550,8 @@ namespace Dream
         glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
 
         mLightingPassShader->setViewerPosition(sr->getCamera()->getTranslation());
-        if (mLastLightQueue != mLightQueue)
-        {
-            mLightingPassShader->bindLightQueue(mLightQueue);
-            mLightingPassShader->syncUniforms();
-        }
+        mLightingPassShader->bindLightQueue(mLightQueue);
+        mLightingPassShader->syncUniforms();
 
         mLightingPassShader->bindVertexArray(mScreenQuadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -781,7 +778,6 @@ namespace Dream
     GraphicsComponent::clearLightQueue
     ()
     {
-        mLastLightQueue = mLightQueue;
         mLightQueue.clear();
     }
 
@@ -863,4 +859,22 @@ namespace Dream
         return mGeometryPassIgnoreBuffer;
     }
 
+    void
+    GraphicsComponent::pushTask
+    (GraphicsComponentTask* t)
+    {
+       mTaskQueue.push_back(t);
+    }
+
+    void
+    GraphicsComponent::executeTaskQueue
+    ()
+    {
+        for (GraphicsComponentTask* t : mTaskQueue)
+        {
+            t->execute();
+            delete t;
+        }
+        mTaskQueue.clear();
+    }
 } // End of Dream

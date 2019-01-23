@@ -1,9 +1,12 @@
 #include "TextureCache.h"
 #include "TextureDefinition.h"
 #include "TextureRuntime.h"
-#include "../../../deps/soil/SOIL.h"
-#include "../../../Utilities/File.h"
+#include "TextureTasks.h"
+#include "../GraphicsComponent.h"
 #include "../../SharedAssetRuntime.h"
+#include "../../../Utilities/File.h"
+#include "../../../Project/ProjectRuntime.h"
+#include "../../../deps/soil/SOIL.h"
 
 namespace Dream
 {
@@ -11,9 +14,9 @@ namespace Dream
     (ProjectRuntime* runtime)
         : Cache(runtime)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("TextureCache");
-#endif
+        #endif
     }
 
     TextureCache::~TextureCache()
@@ -92,10 +95,12 @@ namespace Dream
             }
         }
 
+
         #ifdef DREAM_LOG
         getLog()->debug("Didn't find cached texture matching {}",filename);
         getLog()->debug("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
         #endif
+        /*
         // Assign texture to ID
         GLuint textureID;
 
@@ -146,15 +151,19 @@ namespace Dream
         #ifdef DREAM_LOG
         checkGLError();
         #endif
+        */
 
         auto texture = new TextureRuntime(textureDef,mProjectRuntime);
         texture->setPath(filename);
-        texture->setGLID(textureID);
+        //texture->setGLID(textureID);
         texture->setWidth(width);
         texture->setHeight(height);
         texture->setChannels(channels);
         texture->setImage(image);
         mRuntimes.push_back(texture);
+
+        // Add Load Task
+        mProjectRuntime->getGraphicsComponent()->pushTask(new TextureCreationTask(texture));
         return texture;
     }
 
@@ -162,9 +171,9 @@ namespace Dream
     TextureCache::flushRawTextureImageData
     ()
     {
-       for (auto Runtime : mRuntimes)
+       for (auto runtime : mRuntimes)
        {
-           auto t = static_cast<TextureRuntime*>(Runtime);
+           auto t = static_cast<TextureRuntime*>(runtime);
            if (t->getImage() != nullptr)
            {
                SOIL_free_image_data(t->getImage());
@@ -178,9 +187,9 @@ namespace Dream
     ()
     {
         flushRawTextureImageData();
-        for (auto* Runtime : mRuntimes)
+        for (auto* runtime : mRuntimes)
         {
-            delete Runtime;
+            delete runtime;
         }
         mRuntimes.clear();
     }

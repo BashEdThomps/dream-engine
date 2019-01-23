@@ -128,18 +128,16 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
-        if (pod->getControllableCharacter())
-        {
-            mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
-            mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-            mRigidBody->setAngularFactor(btVector3(0,1,0));
-        }
 
-        if (pod->getKinematic())
-        {
-            mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
-            mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-        }
+       if (pod->getControllableCharacter())
+       {
+           setCameraControllableCharacter();
+       }
+
+       if (pod->getKinematic())
+       {
+           setKinematic(true);
+       }
 
         setRestitution(pod->getRestitution());
         setFriction(pod->getFriction());
@@ -148,6 +146,24 @@ namespace Dream
         mLoaded = (mRigidBody != nullptr);
 
         return mLoaded;
+    }
+
+     void
+     PhysicsObjectRuntime::setCameraControllableCharacter
+     ()
+     {
+        mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+        mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+        mRigidBody->setAngularFactor(btVector3(0,1,0));
+    }
+
+
+    void
+    PhysicsObjectRuntime::setKinematic
+    (bool setKenematic)
+    {
+        mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
+        mRigidBody->setActivationState(DISABLE_DEACTIVATION);
     }
 
     btCollisionShape*

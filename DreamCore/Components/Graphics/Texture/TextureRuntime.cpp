@@ -1,6 +1,9 @@
 #include "TextureRuntime.h"
 #include "TextureDefinition.h"
+#include "TextureTasks.h"
+#include "../GraphicsComponent.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -20,10 +23,11 @@ namespace Dream
     TextureRuntime::~TextureRuntime
     ()
     {
-        glDeleteTextures(1,&mGLID);
-#ifdef DREAM_LOG
+        //glDeleteTextures(1,&mGLID);
+        mProjectRuntime->getGraphicsComponent()->pushTask(new TextureDeletionTask(mGLID));
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
     }
 
     string

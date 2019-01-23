@@ -15,8 +15,9 @@ namespace Dream
         string getAssetFilePath(string fmt = "") override;
         string getAssetDirectoryPath() override;
 
+        ProjectRuntime* getProjectRuntime() const;
+
     protected:
         ProjectRuntime* mProjectRuntime;
-
     };
 }
