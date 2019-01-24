@@ -4,7 +4,7 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 //
 
-#include "null_mutex.h"
+#include "details/null_mutex.h"
 #include <cstdio>
 #include <mutex>
 
@@ -32,7 +32,7 @@ struct console_stdout
 #ifdef _WIN32
     static HANDLE handle()
     {
-        return ::GetStd(STD_OUTPUT_HANDLE);
+        return ::GetStdHandle(STD_OUTPUT_HANDLE);
     }
 #endif
 };
@@ -46,7 +46,7 @@ struct console_stderr
 #ifdef _WIN32
     static HANDLE handle()
     {
-        return ::GetStd(STD_ERROR_HANDLE);
+        return ::GetStdHandle(STD_ERROR_HANDLE);
     }
 #endif
 };

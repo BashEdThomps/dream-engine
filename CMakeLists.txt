@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream C CXX)
 
-set(DREAM_LOG OFF)
+set(DREAM_LOG ON)
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
 set(DREAM_BUILD_TOOL ON)
@@ -28,7 +28,7 @@ if (WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
   # BigObj is required by sol2
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT")
   message("MSVC Version: ${MSVC_VERSION} | Toolset: ${MSVC_TOOLSET_VERSION}")
 endif()
 
@@ -58,10 +58,14 @@ if(UNIX)
 endif()
 
 if (DREAM_LOG)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDREAM_LOG")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDREAM_LOG")
+    if(WIN32)
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDREAM_LOG")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDREAM_LOG")
+	else()
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /DDREAM_LOG")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DDREAM_LOG")
+	endif()
 endif()
-
 # DreamCore Library
 if (DREAM_BUILD_CORE)
     add_subdirectory (DreamCore)

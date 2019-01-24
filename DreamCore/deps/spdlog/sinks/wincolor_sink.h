@@ -5,10 +5,14 @@
 
 #pragma once
 
-#include "../common.h"
-#include "../details/console_globals.h"
-#include "../details/null_mutex.h"
-#include "sink.h"
+#ifndef SPDLOG_H
+#include "spdlog.h"
+#endif
+
+#include "common.h"
+#include "details/console_globals.h"
+#include "details/null_mutex.h"
+#include "sinks/sink.h"
 
 #include <memory>
 #include <mutex>
@@ -22,7 +26,7 @@ namespace sinks {
  * Windows color console sink. Uses WriteConsoleA to write to the console with
  * colors
  */
-template<typename Out, typename ConsoleMutex>
+template<typename OutHandle, typename ConsoleMutex>
 class wincolor_sink : public sink
 {
 public:
@@ -34,7 +38,7 @@ public:
     const WORD YELLOW = FOREGROUND_RED | FOREGROUND_GREEN;
 
     wincolor_sink()
-        : out_handle_(Out::handle())
+        : out_handle_(OutHandle::handle())
         , mutex_(ConsoleMutex::mutex())
     {
         colors_[level::trace] = WHITE;

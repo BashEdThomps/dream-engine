@@ -312,7 +312,7 @@ namespace Dream
         {
 
             #ifdef DREAM_LOG
-            getLog()->>error("Attempted to bind a null material, weird");
+            getLog()->error("Attempted to bind a null material, weird");
             #endif
             return;
         }
@@ -721,7 +721,7 @@ namespace Dream
         if (location == UNIFORM_NOT_FOUND)
         {
             #ifdef DREAM_LOG
-            getLog()->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            getLog()->warn( "Unable to find model matrix uinform model[0] in {}" , getNameAndUuidString()  );
             #endif
             return;
         }

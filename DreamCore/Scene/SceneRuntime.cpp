@@ -388,7 +388,7 @@ namespace Dream
         }
 
          // Physics
-        mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
+         mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
 
         // Create Root SceneObjectRuntime
         auto sod = sceneDefinition->getRootSceneObjectDefinition();

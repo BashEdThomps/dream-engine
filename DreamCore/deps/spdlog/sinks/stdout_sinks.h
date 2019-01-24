@@ -5,9 +5,12 @@
 
 #pragma once
 
-#include "spdlog/details/console_globals.h"
-#include "spdlog/details/null_mutex.h"
-#include "spdlog/spdlog.h"
+#ifndef SPDLOG_H
+#include "spdlog.h"
+#endif
+
+#include "details/console_globals.h"
+#include "details/null_mutex.h"
 
 #include <cstdio>
 #include <memory>
