@@ -1,10 +1,4 @@
 /*
- * Transform3D.h
- *
- * Created: 22/11/2016 2016 by Ashley
- *
- * Copyright 2016 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -135,6 +129,8 @@ namespace Dream
          * @param translation Amount to translate the matrix by.
          */
         void preTranslate(vec3 translation);
+
+        vec3 getTranslation();
 
 
         /**

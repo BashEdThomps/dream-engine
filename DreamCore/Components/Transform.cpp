@@ -188,4 +188,11 @@ namespace Dream
         mMatrix = mat*mMatrix;
     }
 
+    vec3
+    Transform::getTranslation
+    ()
+    {
+        return vec3(mMatrix[3]);
+    }
+
 } // End of Dream

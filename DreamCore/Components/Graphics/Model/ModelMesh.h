@@ -40,6 +40,7 @@
 #include "../../../Common/DreamObject.h"
 #include "../Light/LightRuntime.h"
 #include "ModelBone.h"
+#include "../../../Scene/SceneObject/BoundingBox.h"
 
 namespace Dream
 {
@@ -63,23 +64,28 @@ namespace Dream
         vector<GLuint> mIndices;
         vector<SceneObjectRuntime*> mRuntimes;
         vector<SceneObjectRuntime*> mRuntimesInFrustum;
+        BoundingBox mBoundingBox;
 
     public:
         static long DrawCalls;
-        static long RuntimesDrawn;
+        static long MeshesDrawn;
+        static long TrianglesDrawn;
         static long ShadowDrawCalls;
-        static long ShadowRuntimesDrawn;
+        static long ShadowMeshesDrawn;
+        static long ShadowTrianglesDrawn;
 
         static void ClearCounters()
         {
             DrawCalls = 0;
-            RuntimesDrawn = 0;
+            MeshesDrawn = 0;
+            TrianglesDrawn = 0;
             ShadowDrawCalls = 0;
-            ShadowRuntimesDrawn = 0;
+            ShadowMeshesDrawn = 0;
+            ShadowTrianglesDrawn = 0;
         }
 
         ModelMesh(ModelRuntime* parent, string name, vector<Vertex> vertexArray,
-            vector<GLuint> indexArray, MaterialRuntime* material);
+            vector<GLuint> indexArray, MaterialRuntime* material, const BoundingBox bb);
 
         ~ModelMesh();
 
@@ -107,5 +113,6 @@ namespace Dream
         void setVBO(const GLuint& vBO);
         GLuint getIBO() const;
         void setIBO(const GLuint& iBO);
+        BoundingBox getBoundingBox() const;
     };
 }

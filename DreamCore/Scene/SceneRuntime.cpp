@@ -494,7 +494,7 @@ namespace Dream
     (AssetType t)
     const
     {
-        vector<AssetRuntime*> Runtimes;
+        vector<AssetRuntime*> runtimes;
         if (mRootSceneObjectRuntime)
         {
             mRootSceneObjectRuntime->applyToAll
@@ -506,14 +506,14 @@ namespace Dream
                         AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
                         if (inst)
                         {
-                            Runtimes.push_back(inst);
+                            runtimes.push_back(inst);
                         }
                         return static_cast<SceneObjectRuntime*>(nullptr);
                     }
                 )
             );
         }
-        return Runtimes;
+        return runtimes;
     }
 
     vector<SceneObjectRuntime*>
@@ -645,6 +645,4 @@ namespace Dream
     {
         mSceneStartTime = sceneStartTime;
     }
-
-
 }

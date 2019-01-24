@@ -118,7 +118,7 @@ namespace Dream
         void addChildRuntime(SceneObjectRuntime*);
         void removeChildRuntime(SceneObjectRuntime*);
         SceneObjectRuntime* createAndAddChildRuntime(SceneObjectDefinition*);
-        vector<SceneObjectRuntime*>& getChildRuntimes();
+        vector<SceneObjectRuntime*> getChildRuntimes();
         bool isChildOf(SceneObjectRuntime*);
 
         bool isParentOf(SceneObjectRuntime* child);
@@ -162,8 +162,8 @@ namespace Dream
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
         Transform& getInitialTransform();
-        bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
-        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
+        bool applyToAll(const function<bool(SceneObjectRuntime*)> fn);
+        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)> fn);
         void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
 

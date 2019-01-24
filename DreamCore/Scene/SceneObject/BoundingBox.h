@@ -26,8 +26,14 @@ namespace Dream
     class BoundingBox : DreamObject
     {
     public:
-        BoundingBox(glm::vec3 minimum = {-0.5f,-0.5f,-0.5f}, vec3 maximum = {0.5f,0.5f,0.5f});
-        ~BoundingBox();
+        BoundingBox(
+            vec3 minimum = vec3(-0.5f,-0.5f,-0.5f),
+            vec3 maximum = vec3(0.5f,0.5f,0.5f)
+        );
+
+        ~BoundingBox() override;
+
+        void integrate(const BoundingBox& bb);
 
         float maxDimension;
         void setToLimits();

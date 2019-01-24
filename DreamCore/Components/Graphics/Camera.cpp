@@ -375,6 +375,13 @@ namespace Dream
         return mFrustum.testIntersection(tx,bb) != Frustum::TEST_OUTSIDE;
     }
 
+    bool
+    Camera::visibleInFrustum
+    (const BoundingBox& bb, const mat4& tx)
+    {
+        return mFrustum.testIntersection(tx,bb) != Frustum::TEST_OUTSIDE;
+    }
+
 
     mat4 Camera::getProjectionMatrix() const
     {

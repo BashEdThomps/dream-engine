@@ -44,6 +44,8 @@
 #include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Graphics/Texture/TextureCache.h"
 
+#include <thread>
+
 namespace Dream
 {
     ProjectRuntime::ProjectRuntime
@@ -67,8 +69,7 @@ namespace Dream
           mMaterialCache(nullptr),
           mModelCache(nullptr),
           mShaderCache(nullptr),
-          mScriptCache(nullptr),
-          mScriptingEnabled(true)
+          mScriptCache(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("ProjectRuntime");
@@ -559,9 +560,11 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("\n====================\nUpdate Logic called @ {}\n====================",mTime->getAbsoluteTime());
         #endif
+
         // Get Inputs
         mTime->updateFrameTime();
         mInputComponent->updateComponent(sr);
+
         // Do Processing
         mLifetimeComponent->updateComponent(sr);
         mPathComponent->updateComponent(sr);
@@ -569,11 +572,9 @@ namespace Dream
         mAnimationComponent->updateComponent(sr);
         mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->updateComponent(sr);
-        if (mScriptingEnabled)
-        {
-            mScriptComponent->updateComponent(sr);
-        }
-        // Producec Outputs
+        mScriptComponent->updateComponent(sr);
+
+        // Produce Outputs
         mAudioComponent->updateComponent(sr);
         sr->getCamera()->update();
         mGraphicsComponent->updateComponent(sr);
@@ -597,9 +598,6 @@ namespace Dream
         mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->drawDebug();
-        #ifdef DREAM_LOG
-        getLog()->trace("{} Runtimes in {} Draw Calls", ModelMesh::RuntimesDrawn, ModelMesh::DrawCalls);
-        #endif
     }
 
     int
@@ -685,9 +683,9 @@ namespace Dream
                 case SceneState::SCENE_STATE_LOADED:
                     break;
                 case SceneState::SCENE_STATE_ACTIVE:
-                    mWindowComponent->updateComponent(rt);
                     updateLogic(rt);
                     updateGraphics(rt);
+                    mWindowComponent->updateComponent(rt);
                     collectGarbage(rt);
                     break;
                 case SceneState::SCENE_STATE_TO_DESTROY:
@@ -893,21 +891,6 @@ namespace Dream
         if (mMaterialCache != nullptr) mMaterialCache->clear();
         if (mTextureCache  != nullptr) mTextureCache->clear();
         if (mScriptCache   != nullptr) mScriptCache->clear();
-    }
-
-    bool
-    ProjectRuntime::getScriptingEnabled
-    ()
-    const
-    {
-        return mScriptingEnabled;
-    }
-
-    void
-    ProjectRuntime::setScriptingEnabled
-    (bool en)
-    {
-        mScriptingEnabled = en;
     }
 
     AssetDefinition*

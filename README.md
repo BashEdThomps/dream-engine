@@ -53,13 +53,11 @@ arranged within a parent-child relationship tree, through which they can inherit
 Each Scene Object is assigned zero or more 'Assets Definitions' to instanciate at runtime.
 
 ## DreamTool
-
 DreamTool is the Project editor for Dream. It is cross-platrofm, written in Qt. It allows you to build
 and test Scenes that can later be run using the standalone Dream engine. Both the tool and engine
 share the same codebase 'DreamCore' so runtime results will be identical.
 
 ## Build Dependencies
-
 Dream uses the following libraries.
 
 * ALUT
@@ -68,29 +66,20 @@ Dream uses the following libraries.
 * GLM
 * GLEW
 * GLFW
-* Nlohmann JSON
 * Lua 5.3
 * OggVorbis
 * OpenAL
 * OpenGL
-* SOIL
-* SPDLOG
-* TinySpline
 
-### Ubuntu Build Dependencies
-
-#### From Repositories (apt)
-
+### Installing Ubuntu Build Dependencies From Repositories (apt)
 ```
-sudo apt-get -y install libassimp-dev libbullet-dev libglew-dev libglm-dev libopenal-dev libvorbis-dev libalut-dev liblua5.3-dev libfreetype6-dev libsdl2-dev nlohmann-json-dev
-```
-
-#### Manually (Not in Repositories)
-* spdlog
-* Gainput
-* TinySpline
-
-```
-git clone https://github.com/gabime/spdlog
-git clone https://github.com/msteinbeck/tinyspline
+sudo apt-get -y install \
+    libassimp-dev \
+    libbullet-dev \
+    libglew-dev \
+    libglm-dev \
+    libopenal-dev \
+    libvorbis-dev \
+    libalut-dev \
+    liblua5.3-dev
 ```

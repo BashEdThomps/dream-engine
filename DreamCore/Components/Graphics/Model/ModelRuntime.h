@@ -96,7 +96,7 @@ namespace Dream
         mat4 mGlobalInverseTransform;
 
         // Methods
-        void updateBoundingBox(aiMesh* mesh);
+        BoundingBox updateBoundingBox(aiMesh* mesh);
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
         void processNode(aiNode*, const aiScene*);

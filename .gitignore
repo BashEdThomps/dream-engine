@@ -225,8 +225,6 @@ xcuserdata/
 .ycm*
 Doxyfile.bak
 out/
-dream_tool/node_modules
-*node_modules
 .tags*
 tags
 npm-debug.log
@@ -241,8 +239,6 @@ Xcode
 CmakeLists.txt.user
 docs
 *.autosave
-CMakeLists.txt.user
-dream_tool/www/api_docs
 build*
 *.app
 *.user
@@ -251,7 +247,5 @@ ui_*.cpp
 ui_*.h
 qrc_*.cpp
 qrc_*.h
-DreamToolJS/www/api_docs
-DreamToolQt/Makefile
 .vs
 *.blend1

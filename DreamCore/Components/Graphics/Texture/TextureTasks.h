@@ -14,7 +14,9 @@ namespace Dream
             : GraphicsComponentTask(), mTextureRuntime(rt)
         {}
 
-        inline bool execute() override
+        inline bool
+        execute
+        () override
         {
             // Assign texture to ID
             GLuint textureID;
@@ -79,9 +81,14 @@ namespace Dream
     {
         GLuint mTextureId;
     public:
-        inline TextureDeletionTask(GLuint id) : GraphicsComponentTask(), mTextureId(id) {}
+        inline TextureDeletionTask
+        (GLuint id)
+            : GraphicsComponentTask(), mTextureId(id)
+        {}
 
-        inline bool execute() override
+        inline bool
+        execute
+        () override
         {
             glDeleteTextures(1,&mTextureId);
             return true;

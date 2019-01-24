@@ -66,9 +66,6 @@ namespace Dream
         getLog()->trace( "Destroying Object" );
         #endif
         mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(this));
-        /*
-        glDeleteProgram(mShaderProgram);
-        */
     }
 
     GLuint
@@ -111,24 +108,6 @@ namespace Dream
 
         return true;
     }
-
-    /*
-    bool
-    ShaderRuntime::setRuntimeModelMatricies
-    (vector<mat4> value, string name)
-    {
-        GLint location =  getUniformLocation("model[0]");
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            getLog()->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
-            return false;
-        }
-        glUniformMatrix4fv(location,value.size(),GL_FALSE,(float*)&value[0]);
-        return true;
-    }
-    */
-
 
     bool
     ShaderRuntime::setViewMatrix
@@ -215,27 +194,6 @@ namespace Dream
         #endif
         // 2. Compile shaders
         mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileVertexTask(this));
-        /*
-        GLint success;
-        GLchar infoLog[512];
-        // Vertex Shader
-        mVertexShader = glCreateShader(GL_VERTEX_SHADER);
-        const char *vSource = mVertexSource.c_str();
-        glShaderSource(mVertexShader, 1, &vSource, nullptr);
-        glCompileShader(mVertexShader);
-        // Print compile errors if any
-        glGetShaderiv(mVertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
-            #ifdef DREAM_LOG
-            getLog()->error( "VERTEX SHADER COMPILATION FAILED\n {}" ,infoLog );
-            #endif
-            glDeleteShader(mVertexShader);
-            mVertexShader = 0;
-            return false;
-        }
-        */
         return true;
    }
 
@@ -257,85 +215,16 @@ namespace Dream
         #endif
         // 2. Compile shaders
         mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileFragmentTask(this));
-        /*
-        GLint success;
-        GLchar infoLog[512];
-        // Fragment Shader
-        mFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        const char *fSource = mFragmentSource.c_str();
-        glShaderSource(mFragmentShader, 1, &fSource, nullptr);
-        glCompileShader(mFragmentShader);
-        // Print compile errors if any
-        glGetShaderiv(mFragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-            #ifdef DREAM_LOG
-            getLog()->error( "FRAGMENT SHADER COMPILATION FAILED\n {}" , infoLog );
-            #endif
-            glDeleteShader(mFragmentShader);
-            mFragmentShader = 0;
-            return false;
-        }
-        */
         return true;
    }
 
-    bool
+   bool
    ShaderRuntime::linkProgram
    ()
    {
         mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderLinkTask(this));
-        /*
-       if (mVertexShader != 0 && mFragmentShader != 0)
-       {
-           GLint success;
-
-            // Create Shader Program
-            mShaderProgram = glCreateProgram();
-            if (mShaderProgram == 0)
-            {
-                #ifdef DREAM_LOG
-                getLog()->error("Unable to create shader program");
-                #endif
-                return false;
-            }
-
-            glAttachShader(mShaderProgram, mVertexShader);
-            glAttachShader(mShaderProgram, mFragmentShader);
-            glLinkProgram(mShaderProgram);
-
-            // Print linking errors if any
-            glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-            GLchar infoLog[512];
-            if (!success)
-            {
-                glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-                #ifdef DREAM_LOG
-                getLog()->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
-                #endif
-                glDeleteProgram(mShaderProgram);
-                return false;
-            }
-
-            // Delete the shaders as they're linked into our program now and no longer necessery
-            glDeleteShader(mVertexShader);
-            glDeleteShader(mFragmentShader);
-
-            mLoaded = (mShaderProgram != 0);
-
-            if (mLoaded)
-            {
-                mPointLightCountLocation       =  glGetUniformLocation(mShaderProgram, UNIFORM_POINT_LIGHT_COUNT);
-                mSpotLightCountLocation        =  glGetUniformLocation(mShaderProgram, UNIFORM_SPOT_LIGHT_COUNT);
-                mDirectionalLightCountLocation =  glGetUniformLocation(mShaderProgram, UNIFORM_DIRECTIONAL_LIGHT_COUNT);
-            }
-       }
-
-       */
         return mLoaded;
    }
-
 
     void
     ShaderRuntime::use
@@ -820,20 +709,24 @@ namespace Dream
     ShaderRuntime::bindRuntimes
     (const vector<SceneObjectRuntime*>& runtimes)
     {
-        // TODO - Bind as single uniform or UBO?
-        int i = 0;
-        for (auto rt : runtimes)
+        static mat4 data[100];
+        size_t nRuntimes = runtimes.size();
+        for (size_t i = 0; i<nRuntimes; i++)
         {
-            if (i>=MAX_RUNTIMES)
-            {
-                #ifdef DREAM_LOG
-                getLog()->info("Maximum number of Runtimes reached");
-                #endif
-                break;
-            }
-            setModelMatrix(rt->getTransform().getMatrix(), "model["+std::to_string(i)+"]");
-            i++;
+            data[i] = runtimes[i]->getTransform().getMatrix();
         }
+
+        GLint location =  getUniformLocation("model[0]");
+
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            #ifdef DREAM_LOG
+            getLog()->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            #endif
+            return;
+        }
+        glUniformMatrix4fv(location,runtimes.size(),GL_FALSE,(float*)&data[0]);
+        return;
     }
 
     void

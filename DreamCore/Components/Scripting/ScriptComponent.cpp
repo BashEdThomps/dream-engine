@@ -417,7 +417,8 @@ namespace Dream
             "decomposeMatrix",&Transform::decomposeMatrix,
             "recomposeMatrix",&Transform::recomposeMatrix,
             "translate",&Transform::translate,
-            "preTranslate",&Transform::preTranslate
+            "preTranslate",&Transform::preTranslate,
+            "getTranslation",&Transform::getTranslation
         );
 
         stateView.new_usertype<MatrixDecomposition>

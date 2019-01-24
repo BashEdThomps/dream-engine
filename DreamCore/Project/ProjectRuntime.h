@@ -80,7 +80,6 @@ namespace Dream
         ModelCache* mModelCache;
         ShaderCache* mShaderCache;
         ScriptCache* mScriptCache;
-        bool mScriptingEnabled;
 
         vector<SceneRuntime*> mSceneRuntimeVector;
         vector<SceneRuntime*> mSceneRuntimesToRemove;
@@ -136,8 +135,6 @@ namespace Dream
         TextureCache* getTextureCache();
         ScriptCache* getScriptCache();
 
-        bool getScriptingEnabled() const;
-        void setScriptingEnabled(bool);
         bool hasActiveScene();
 
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);

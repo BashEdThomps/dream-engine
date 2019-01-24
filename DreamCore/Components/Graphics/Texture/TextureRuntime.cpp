@@ -16,14 +16,11 @@ namespace Dream
           mHeight(0),
           mChannels(0),
           mImage(nullptr)
-    {
-
-    }
+    {}
 
     TextureRuntime::~TextureRuntime
     ()
     {
-        //glDeleteTextures(1,&mGLID);
         mProjectRuntime->getGraphicsComponent()->pushTask(new TextureDeletionTask(mGLID));
         #ifdef DREAM_LOG
         checkGLError();
@@ -115,7 +112,8 @@ namespace Dream
     }
 
     bool
-    TextureRuntime::operator==(const TextureRuntime& other)
+    TextureRuntime::operator==
+    (const TextureRuntime& other)
     {
         return this->mGLID == other.mGLID && this->mPath.compare(other.mPath) == 0;
     }

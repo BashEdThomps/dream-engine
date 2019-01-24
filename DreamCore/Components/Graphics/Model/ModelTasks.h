@@ -64,6 +64,7 @@ namespace Dream
                         (GLvoid*)offsetof(Vertex, Bitangent)
                         );
             glBindVertexArray(0);
+            return true;
         }
     };
 }

@@ -227,13 +227,13 @@ namespace DreamTool
                     bool scripting = false;
                     if (pRuntime)
                     {
-                        scripting = pRuntime->getScriptingEnabled();
+                        scripting = pRuntime->getScriptComponent()->getEnabled();
                     }
                     if(ImGui::Checkbox("Scripting",&scripting))
                     {
                         if(pRuntime)
                         {
-                            pRuntime->setScriptingEnabled(scripting);
+                            pRuntime->getScriptComponent()->setEnabled(scripting);
                         }
                     }
 

@@ -168,7 +168,7 @@ namespace Dream
            time->perSecond(mVelocity.z)
         );
 
-        auto& children = mSceneObjectRuntime->getChildRuntimes();
+        auto children = mSceneObjectRuntime->getChildRuntimes();
         #ifdef DREAM_LOG
         log->trace("Child has {} children", children.size());
         #endif

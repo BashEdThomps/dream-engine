@@ -40,9 +40,12 @@ namespace DreamTool
                 {
                     if (ImGui::CollapsingHeader("Statistics"))
                     {
-                        ImGui::Text("Geometry Runtimes Drawn: %ld", ModelMesh::RuntimesDrawn);
+                        ImGui::Text("Geometry Triangles Drawn: %ld", ModelMesh::TrianglesDrawn);
+                        ImGui::Text("Geometry Meshes Drawn: %ld", ModelMesh::MeshesDrawn);
                         ImGui::Text("Geometry Draw Calls: %ld", ModelMesh::DrawCalls);
-                        ImGui::Text("Shadow Runtimes Drawn: %ld", ModelMesh::ShadowRuntimesDrawn);
+                        ImGui::Separator();
+                        ImGui::Text("Shadow Triangles Drawn: %ld", ModelMesh::ShadowTrianglesDrawn);
+                        ImGui::Text("Shadow Meshes Drawn: %ld", ModelMesh::ShadowMeshesDrawn);
                         ImGui::Text("Shadow Draw Calls: %ld", ModelMesh::ShadowDrawCalls);
                     }
 

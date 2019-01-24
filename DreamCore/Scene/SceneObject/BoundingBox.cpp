@@ -73,4 +73,47 @@ namespace Dream
         if( normal.z >= 0.0f ) negativeVertex.z = minimum.z;
         return position+negativeVertex;
     }
+
+    void
+    BoundingBox::integrate
+    (const BoundingBox& bb)
+    {
+        // Maximum
+        if (maximum.x < bb.maximum.x)
+        {
+            maximum.x = bb.maximum.x;
+        }
+
+        if (bb.maximum.y < bb.maximum.y)
+        {
+            maximum.y = bb.maximum.y;
+        }
+
+        if (bb.maximum.z < bb.maximum.z)
+        {
+            maximum.z = bb.maximum.z;
+        }
+
+        // Maximum
+        if (bb.minimum.x > bb.minimum.x)
+        {
+            minimum.x = bb.minimum.x;
+        }
+
+        if (bb.minimum.y > bb.minimum.y)
+        {
+            minimum.y = bb.minimum.y;
+        }
+
+        if (bb.minimum.z > bb.minimum.z)
+        {
+            minimum.z = bb.minimum.z;
+        }
+
+        float maxBound;
+        maxBound = (maximum.x > maximum.y ? maximum.x : maximum.y);
+        maxBound = (maxBound > maximum.z ? maxBound : maximum.z);
+
+        maxDimension = maxBound;
+    }
 }

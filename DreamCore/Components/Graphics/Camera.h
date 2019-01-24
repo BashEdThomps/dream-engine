@@ -142,6 +142,8 @@ namespace Dream
         void setMaximumDraw(float maximumDraw);
 
         void updateProjectionMatrix(float w, float h);
+        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx);
+
     private:
         void setFocusTranslationFromTarget(vec3 target);
     }; // End of Camera

@@ -21,6 +21,7 @@ namespace Dream
 {
     class Time;
     class SceneRuntime;
+    class SceneObjectRuntime;
 
     class Component : public DreamObject
     {
@@ -54,7 +55,5 @@ namespace Dream
 
         Time* mTime;
         bool  mEnabled;
-
-    }; // End of Component
-
-} // End of Dream
+    };
+}

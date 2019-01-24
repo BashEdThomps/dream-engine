@@ -26,41 +26,17 @@
 
 namespace Dream
 {
-
-    void ModelMesh::setVAO(const GLuint& vAO)
+    BoundingBox ModelMesh::getBoundingBox() const
     {
-        mVAO = vAO;
-    }
-
-    GLuint ModelMesh::getVBO() const
-    {
-        return mVBO;
-    }
-
-    void ModelMesh::setVBO(const GLuint& vBO)
-    {
-        mVBO = vBO;
-    }
-
-    GLuint ModelMesh::getIBO() const
-    {
-        return mIBO;
-    }
-
-    void ModelMesh::setIBO(const GLuint& iBO)
-    {
-        mIBO = iBO;
+        return mBoundingBox;
     }
 
     ModelMesh::ModelMesh
     (ModelRuntime* parent, string name, vector<Vertex> vertices,
-     vector<GLuint> indices,MaterialRuntime* material)
+     vector<GLuint> indices, MaterialRuntime* material, const BoundingBox bb)
         : DreamObject("ModelMesh"),
-        mParent(parent),
-        mMaterial(material),
-        mName(name),
-        mVertices(vertices),
-        mIndices(indices)
+        mParent(parent),mMaterial(material),mName(name),
+        mVertices(vertices),mIndices(indices),mBoundingBox(bb)
     {
 #ifdef DREAM_LOG
         auto log = getLog();
@@ -111,52 +87,6 @@ namespace Dream
     ()
     {
         mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(new ModelInitMeshTask(this));
-        /*
-        glGenVertexArrays(1, &mVAO);
-        glGenBuffers(1, &mVBO);
-        glGenBuffers(1, &mIBO);
-        glBindVertexArray(mVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertices.size() * sizeof(Vertex)), &mVertices[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mIndices.size() * sizeof(GLuint)),&mIndices[0], GL_STATIC_DRAW);
-        // Vertex Positions
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-                    0, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(Vertex)),
-                    static_cast<GLvoid*>(nullptr)
-                    );
-        // Vertex Normals
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-                    1, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(Vertex)),
-                    (GLvoid*)offsetof(Vertex, Normal)
-                    );
-        // Vertex Texture Coords
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(
-                    2, 2, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(Vertex)),
-                    (GLvoid*)offsetof(Vertex, TexCoords)
-                    );
-        // Vertex Tangents
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(
-                    3, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(Vertex)),
-                    (GLvoid*)offsetof(Vertex, Tangent)
-                    );
-        // Vertex Bitangents
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(
-                    4, 3, GL_FLOAT, GL_FALSE,
-                    static_cast<GLint>(sizeof(Vertex)),
-                    (GLvoid*)offsetof(Vertex, Bitangent)
-                    );
-        glBindVertexArray(0);
-        */
     }
 
 #ifdef DREAM_LOG
@@ -222,8 +152,9 @@ namespace Dream
         mRuntimesInFrustum.clear();
         for (size_t i=0; i<mRuntimes.size();i++)
         {
+            // TODO -- Per mesh Culling
             auto sor = mRuntimes.at(i);
-            if(camera->visibleInFrustum(sor))
+            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
             {
                 mRuntimesInFrustum.push_back(sor);
             }
@@ -240,9 +171,12 @@ namespace Dream
 #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
-        auto size = static_cast<GLsizei>(mRuntimesInFrustum.size());
-        RuntimesDrawn += size;
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
+        GLsizei size = mRuntimesInFrustum.size();
+        GLsizei indices = mIndices.size();
+        GLsizei tris = indices/3;
+        MeshesDrawn += size;
+        TrianglesDrawn += tris*size;
+        glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
         DrawCalls++;
     }
 
@@ -265,14 +199,44 @@ namespace Dream
 #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
-        auto size = static_cast<GLsizei>(inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
-        ShadowRuntimesDrawn += size;
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(mIndices.size()), GL_UNSIGNED_INT, nullptr,size);
+        GLsizei size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
+        GLsizei indices = mIndices.size();
+        GLsizei tris = indices/3;
+        ShadowMeshesDrawn += size;
+        ShadowTrianglesDrawn += tris*size;
+        glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
         ShadowDrawCalls++;
     }
 
+    void ModelMesh::setVAO(const GLuint& vAO)
+    {
+        mVAO = vAO;
+    }
+
+    GLuint ModelMesh::getVBO() const
+    {
+        return mVBO;
+    }
+
+    void ModelMesh::setVBO(const GLuint& vBO)
+    {
+        mVBO = vBO;
+    }
+
+    GLuint ModelMesh::getIBO() const
+    {
+        return mIBO;
+    }
+
+    void ModelMesh::setIBO(const GLuint& iBO)
+    {
+        mIBO = iBO;
+    }
+
     long ModelMesh::DrawCalls = 0;
-    long ModelMesh::RuntimesDrawn = 0;
+    long ModelMesh::MeshesDrawn = 0;
+    long ModelMesh::TrianglesDrawn = 0;
     long ModelMesh::ShadowDrawCalls = 0;
-    long ModelMesh::ShadowRuntimesDrawn = 0;
+    long ModelMesh::ShadowMeshesDrawn = 0;
+    long ModelMesh::ShadowTrianglesDrawn = 0;
 }

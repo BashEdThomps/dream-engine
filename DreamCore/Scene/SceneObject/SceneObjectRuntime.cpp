@@ -807,7 +807,7 @@ namespace Dream
         return nullptr;
     }
 
-    vector<SceneObjectRuntime*>&
+    vector<SceneObjectRuntime*>
     SceneObjectRuntime::getChildRuntimes
     ()
     {
@@ -1189,7 +1189,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::applyToAll
-    (const function<bool(SceneObjectRuntime*)>& fn)
+    (const function<bool(SceneObjectRuntime*)> fn)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -1199,6 +1199,7 @@ namespace Dream
 
         bool retval = fn(this);
 
+        /*
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if (*it)
@@ -1206,12 +1207,22 @@ namespace Dream
                 retval = retval || (*it)->applyToAll(fn);
             }
         }
+        */
+        size_t n = mChildRuntimes.size();
+        for (size_t i=0; i<n; i++ )
+        {
+            auto rt = mChildRuntimes.at(i);
+            if (rt)
+            {
+                retval = retval || (rt)->applyToAll(fn);
+            }
+        }
         return retval;
     }
 
     SceneObjectRuntime*
     SceneObjectRuntime::applyToAll
-    (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
+    (const function<SceneObjectRuntime*(SceneObjectRuntime*)> fn)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -1226,6 +1237,7 @@ namespace Dream
             return retval;
         }
 
+        /*
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if ((*it) != nullptr)
@@ -1237,6 +1249,21 @@ namespace Dream
                 }
             }
         }
+        */
+        size_t n = mChildRuntimes.size();
+        for (size_t i=0; i<n; i++ )
+        {
+            auto rt = mChildRuntimes.at(i);
+            if (rt)
+            {
+                retval = (rt)->applyToAll(fn);
+                if (retval != nullptr)
+                {
+                    return retval;
+                }
+            }
+        }
+
         return nullptr;
     }
 

@@ -123,7 +123,7 @@ namespace Dream
         for(GLuint i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            updateBoundingBox(mesh);
+
             auto aMesh = processMesh(mesh, scene);
             if (aMesh != nullptr)
             {
@@ -282,11 +282,12 @@ namespace Dream
 #ifdef DREAM_LOG
             log->debug( "Using Material {}" , material->getName());
 #endif
+            BoundingBox bb = updateBoundingBox(mesh);
+            mBoundingBox.integrate(bb);
+
             auto aMesh = new ModelMesh
-            (
-                this, string(mesh->mName.C_Str()), vertices, indices,
-                material
-            );
+            (this, string(mesh->mName.C_Str()), vertices, indices,
+                material, bb);
             material->addMesh(aMesh);
 #ifdef DREAM_LOG
             material->debug();
@@ -369,7 +370,7 @@ namespace Dream
         return importer;
     }
 
-    void
+    BoundingBox
     ModelRuntime::updateBoundingBox
     (aiMesh* mesh)
     {
@@ -378,57 +379,53 @@ namespace Dream
         log->debug( "Updating bounding box");
 #endif
 
+        BoundingBox bb;
+
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (mBoundingBox.maximum.x < vertex.x)
+            if (bb.maximum.x < vertex.x)
             {
-                mBoundingBox.maximum.x = vertex.x;
+                bb.maximum.x = vertex.x;
             }
 
-            if (mBoundingBox.maximum.y < vertex.y)
+            if (bb.maximum.y < vertex.y)
             {
-                mBoundingBox.maximum.y = vertex.y;
+                bb.maximum.y = vertex.y;
             }
 
-            if (mBoundingBox.maximum.z < vertex.z)
+            if (bb.maximum.z < vertex.z)
             {
-                mBoundingBox.maximum.z = vertex.z;
+                bb.maximum.z = vertex.z;
             }
 
             // Maximum
-            if (mBoundingBox.minimum.x > vertex.x)
+            if (bb.minimum.x > vertex.x)
             {
-                mBoundingBox.minimum.x = vertex.x;
+                bb.minimum.x = vertex.x;
             }
 
-            if (mBoundingBox.minimum.y > vertex.y)
+            if (bb.minimum.y > vertex.y)
             {
-                mBoundingBox.minimum.y = vertex.y;
+                bb.minimum.y = vertex.y;
             }
 
-            if (mBoundingBox.minimum.z > vertex.z)
+            if (bb.minimum.z > vertex.z)
             {
-                mBoundingBox.minimum.z = vertex.z;
+                bb.minimum.z = vertex.z;
             }
         }
 
         float maxBound;
-        maxBound = (
-            mBoundingBox.maximum.x > mBoundingBox.maximum.y ?
-            mBoundingBox.maximum.x :
-            mBoundingBox.maximum.y
-        );
+        maxBound = (bb.maximum.x > bb.maximum.y ?
+            bb.maximum.x : bb.maximum.y);
+        maxBound = (maxBound > bb.maximum.z ?
+            maxBound : bb.maximum.z);
 
-        maxBound = (
-            maxBound > mBoundingBox.maximum.z ?
-            maxBound :
-            mBoundingBox.maximum.z
-        );
-
-        mBoundingBox.maxDimension = maxBound;
+        bb.maxDimension = maxBound;
+        return bb;
     }
 
     map<string,Bone>&
