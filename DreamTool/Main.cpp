@@ -11,8 +11,6 @@
 
 #define MINIMUM_ARGUMENTS 3
 
-
-
 #include "DTState.h"
 
 using namespace DreamTool;
@@ -21,18 +19,18 @@ int
 main
 (int argc,char** argv)
 {
-#ifdef DREAM_LOG
-    spdlog::set_level(spdlog::level::trace);
+    #ifdef DREAM_LOG
+    spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
     auto log = spdlog::stdout_color_mt("Main");
     log->trace("Starting...");
-#endif
+    #endif
     DTState state(argc,argv);
     state.init();
     state.run();
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     log->info("Run is done. Performing stack-based clean up");
-#endif
+    #endif
     return 0;
 }

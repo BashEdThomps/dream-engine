@@ -83,7 +83,7 @@ namespace DreamTool
         }
     }
 
-    ImVec2 RenderPipelinePreviewWindow::PreviewSize = ImVec2(192,192);
+    ImVec2 RenderPipelinePreviewWindow::PreviewSize = ImVec2(256,256);
     ImVec2 RenderPipelinePreviewWindow::UV1 = ImVec2(0,1);
     ImVec2 RenderPipelinePreviewWindow::UV2 = ImVec2(1,0);
 }

@@ -2,7 +2,20 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream C CXX)
 
-set(DREAM_LOG OFF)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("****************************************")
+    message("             DEBUB Build!")
+    message("****************************************")
+    set(DREAM_LOG ON)
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("****************************************")
+    message("             Release Build!")
+    message("****************************************")
+    set(DREAM_LOG OFF)
+    set(CMAKE_VERBOSE_MAKEFILE OFF)
+endif()
+
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
 set(DREAM_BUILD_TOOL ON)
@@ -13,8 +26,6 @@ message("Using modules path: " ${CMAKE_MODULE_PATH})
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
-
-set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")

@@ -62,6 +62,7 @@ namespace Dream
           mPhysicsComponent(nullptr),
           mPathComponent(nullptr),
           mScriptComponent(nullptr),
+          mScrollerComponent(nullptr),
           mLifetimeComponent(nullptr),
           mWindowComponent(windowComponent),
           mAudioCache(nullptr),

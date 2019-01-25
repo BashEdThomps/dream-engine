@@ -31,27 +31,27 @@ namespace DreamTool
           argc(_argc),
           argv(_argv)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->trace("Constructing");
-#endif
+        #endif
     }
 
     DTState::~DTState()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->trace("Destructing");
-#endif
+        #endif
     }
 
     void DTState::init()
     {
-#ifdef WIN32
+        #ifdef WIN32
         windowComponent.setUiFontSize(24.0f);
         windowComponent.setMonoFontSize(24.0f);
-#else
+        #else
         windowComponent.setUiFontSize(16.0f);
         windowComponent.setMonoFontSize(18.0f);
-#endif
+        #endif
         windowComponent.init();
 
 
@@ -82,9 +82,9 @@ namespace DreamTool
 
     void DTState::run()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         if (argc > 1)
         {
             openProject(argv[1]);
@@ -171,21 +171,21 @@ namespace DreamTool
         bool sendKeysToCamera = false;
         if (!io.WantCaptureMouse)
         {
-#ifdef __APPLE__
+            #ifdef __APPLE__
             if (io.MouseDown[0])
             {
                 camera->deltaYaw(io.MouseDelta.x*mouseScalar);
                 camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
                 sendKeysToCamera = true;
             }
-#else
+            #else
             if (io.MouseDown[2])
             {
                 camera->deltaYaw(io.MouseDelta.x*mouseScalar);
                 camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
                 sendKeysToCamera = true;
             }
-#endif
+            #endif
         }
 
         if (!io.WantCaptureKeyboard)
@@ -327,10 +327,10 @@ namespace DreamTool
     {
         closeProject();
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Opening project {}",dir);
-#endif
+        #endif
         lastDirectory = dir;
         project = projectDirectory.openFromDirectory(dir);
         if(project)
@@ -350,10 +350,10 @@ namespace DreamTool
     DTState::newProject
     (string dir)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Creating Project {}",dir);
-#endif
+        #endif
         lastDirectory = dir;
         closeProject();
         project = projectDirectory.newProject(dir);
@@ -372,7 +372,6 @@ namespace DreamTool
             stringstream ss;
             ss  << "Project already exists in this directory!";
             menuBar.setMessageString(ss.str());
-
         }
         return false;
     }

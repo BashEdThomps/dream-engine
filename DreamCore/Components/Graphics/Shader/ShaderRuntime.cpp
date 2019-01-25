@@ -312,7 +312,7 @@ namespace Dream
         {
 
             #ifdef DREAM_LOG
-            getLog()->>error("Attempted to bind a null material, weird");
+            getLog()->error("Attempted to bind a null material, weird");
             #endif
             return;
         }
@@ -681,6 +681,7 @@ namespace Dream
         CurrentTexture2 = 0;
         CurrentTexture3 = 0;
         CurrentTexture4 = 0;
+        CurrentTexture5 = 0;
         CurrentShaderProgram = 0;
         CurrentVAO = 0;
         CurrentVBO = 0;
@@ -721,7 +722,7 @@ namespace Dream
         if (location == UNIFORM_NOT_FOUND)
         {
             #ifdef DREAM_LOG
-            getLog()->warn( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
+            getLog()->warn( "Unable to find model matrix uinform model[0] in {}", getNameAndUuidString());
             #endif
             return;
         }
@@ -903,6 +904,7 @@ namespace Dream
     GLuint ShaderRuntime::CurrentTexture2 = 0;
     GLuint ShaderRuntime::CurrentTexture3 = 0;
     GLuint ShaderRuntime::CurrentTexture4 = 0;
+    GLuint ShaderRuntime::CurrentTexture5 = 0;
     GLuint ShaderRuntime::CurrentShaderProgram = 0;
     GLuint ShaderRuntime::CurrentVAO = 0;
     GLuint ShaderRuntime::CurrentVBO = 0;
