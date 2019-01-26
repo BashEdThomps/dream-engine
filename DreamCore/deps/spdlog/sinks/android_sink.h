@@ -5,10 +5,14 @@
 
 #pragma once
 
-#include "spdlog/details/fmt_helper.h"
-#include "spdlog/details/null_mutex.h"
-#include "spdlog/details/os.h"
-#include "spdlog/sinks/base_sink.h"
+#ifndef SPDLOG_H
+#include "spdlog.h"
+#endif
+
+#include "details/fmt_helper.h"
+#include "details/null_mutex.h"
+#include "details/os.h"
+#include "sinks/base_sink.h"
 
 #include <android/log.h>
 #include <chrono>
@@ -43,7 +47,7 @@ protected:
         fmt::memory_buffer formatted;
         if (use_raw_msg_)
         {
-            details::fmt_helper::append_buf(msg.raw, formatted);
+            details::fmt_helper::append_string_view(msg.payload, formatted);
         }
         else
         {

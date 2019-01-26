@@ -51,7 +51,6 @@ namespace Dream
         btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
-        btVector3 mGravity;
         PhysicsObjectRuntime* mCharacter;
         bool mDebug;
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);

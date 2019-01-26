@@ -11,10 +11,10 @@
 // implementers..
 //
 
-#include "spdlog/common.h"
-#include "spdlog/details/log_msg.h"
-#include "spdlog/formatter.h"
-#include "spdlog/sinks/sink.h"
+#include "common.h"
+#include "details/log_msg.h"
+#include "formatter.h"
+#include "sinks/sink.h"
 
 namespace spdlog {
 namespace sinks {

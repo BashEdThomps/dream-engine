@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "../details/log_msg.h"
-#include "../details/pattern_formatter.h"
-#include "../formatter.h"
+#include "details/log_msg.h"
+#include "details/pattern_formatter.h"
+#include "formatter.h"
 
 namespace spdlog {
 namespace sinks {
@@ -16,7 +16,7 @@ class sink
 public:
     sink()
         : level_(level::trace)
-        , formatter_(new pattern_formatter("%+"))
+        , formatter_(new pattern_formatter())
     {
     }
 

@@ -5,10 +5,14 @@
 
 #pragma once
 
+#ifndef SPDLOG_H
+#include "spdlog.h"
+#endif
+
 #if defined(_WIN32)
 
-#include "spdlog/details/null_mutex.h"
-#include "spdlog/sinks/base_sink.h"
+#include "details/null_mutex.h"
+#include "sinks/base_sink.h"
 
 #include <winbase.h>
 

@@ -28,10 +28,15 @@
 namespace Dream
 {
     PhysicsComponent::PhysicsComponent
-    ()
-        : Component(),
+    ()  : Component(),
           mCharacter(nullptr),
-          mDebug(false)
+          mDebug(false),
+	  	  mDebugDrawer(nullptr),
+          mDynamicsWorld(nullptr),
+          mBroadphase(nullptr),
+          mCollisionConfiguration(nullptr),
+          mDispatcher(nullptr),
+          mSolver(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("PhysicsComponent");
@@ -128,10 +133,9 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
         #endif
-        mGravity = btVector3(gravity.x, gravity.y, gravity.z);
         if (mDynamicsWorld != nullptr)
         {
-            mDynamicsWorld->setGravity(mGravity);
+            mDynamicsWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
         }
     }
 
@@ -161,7 +165,7 @@ namespace Dream
         mDynamicsWorld = new btDiscreteDynamicsWorld(
             mDispatcher, mBroadphase, mSolver, mCollisionConfiguration
         );
-        mDynamicsWorld->setGravity(mGravity);
+        //mDynamicsWorld->setGravity(mGravity);
         mDebugDrawer = new PhysicsDebugDrawer();
         mDebugDrawer->init();
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);

@@ -62,6 +62,10 @@ main
     if(argc < 2)
     {
 #ifdef DREAM_LOG
+		for (int i = 0; i < argc; i++)
+		{
+			_log->error("Arg {}: {}", i, argv[i]);
+		}
         _log->error("No Project Argument.");
 #endif
         return 1;

@@ -5,10 +5,14 @@
 
 #pragma once
 
-#include "../details/console_globals.h"
-#include "../details/null_mutex.h"
-#include "../details/os.h"
-#include "sink.h"
+#ifndef SPDLOG_H
+#include "spdlog.h"
+#endif
+
+#include "details/console_globals.h"
+#include "details/null_mutex.h"
+#include "details/os.h"
+#include "sinks/sink.h"
 
 #include <memory>
 #include <mutex>

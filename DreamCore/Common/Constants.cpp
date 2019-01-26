@@ -17,7 +17,15 @@
     #include <OpenGL/gl3.h>
 #endif
 
-#if defined _WIN32 || defined WIN32
+#ifdef _WIN32
+	#ifndef NOMINMAX
+		#define NOMINMAX // prevent windows redefining min/max
+	#endif
+
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+
     #include <windows.h>
     #include <GL/gl.h>
     #include <GL/glu.h>
