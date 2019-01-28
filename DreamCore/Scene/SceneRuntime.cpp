@@ -21,13 +21,16 @@
 #include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
 
+#include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
+#include "../Components/Logic/LogicComponent.h"
+#include "../Components/Physics/PhysicsComponent.h"
+#include "../Components/Scripting/ScriptComponent.h"
+
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Graphics/Camera.h"
 
-#include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Scripting/ScriptComponent.h"
 #include "../Components/Time.h"
 
 #ifdef max
@@ -276,7 +279,6 @@ namespace Dream
     SceneRuntime::collectGarbage
     ()
     {
-
         #ifdef DREAM_LOG
         getLog()->debug( "Collecting Garbage {}" , getNameAndUuidString() );
         #endif
@@ -644,5 +646,47 @@ namespace Dream
     void SceneRuntime::setSceneStartTime(double sceneStartTime)
     {
         mSceneStartTime = sceneStartTime;
+    }
+
+    void
+    SceneRuntime::createSceneObjectUpdateQueues
+    ()
+    {
+        auto audioComponent    = mProjectRuntime->getAudioComponent();
+        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
+        auto logicComponent    = mProjectRuntime->getLogicComponent();
+        auto physicsComponent  = mProjectRuntime->getPhysicsComponent();
+
+        audioComponent->clearUpdateQueue();
+        graphicsComponent->clearUpdateQueue();
+        logicComponent->clearUpdateQueue();
+        physicsComponent->clearUpdateQueue();
+
+        mRootSceneObjectRuntime->applyToAll
+        (
+            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
+            [&](SceneObjectRuntime* rt)
+            {
+                rt->lock();
+                logicComponent->pushToUpdateQueue(rt);
+                // Audio
+                if (rt->hasAudioRuntime())
+                {
+                   audioComponent->pushToUpdateQueue(rt);
+                }
+                // Graphics
+                if (rt->hasLightRuntime())
+                {
+                   graphicsComponent->pushToUpdateQueue(rt);
+                }
+                // Physics
+                if (rt->hasPhysicsObjectRuntime())
+                {
+                   physicsComponent->pushToUpdateQueue(rt);
+                }
+                rt->unlock();
+                return static_cast<SceneObjectRuntime*>(nullptr);
+            }
+        ));
     }
 }

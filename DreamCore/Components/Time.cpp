@@ -21,7 +21,7 @@
 namespace Dream
 {
     Time::Time
-    () : DreamObject("Time")
+    () : LockableObject("Time")
     {
         mCurrentFrameTime = 0;
         mLastFrameTime = 0;

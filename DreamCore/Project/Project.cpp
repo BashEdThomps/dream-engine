@@ -81,6 +81,7 @@ namespace Dream
         log->debug("Creating project runtime for {}", mDefinition->getNameAndUuidString());
         #endif
         mRuntime = new ProjectRuntime(this, mWindowComponent);
+        mRuntime->lock();
         if (!mRuntime->useDefinition())
         {
             #ifdef DREAM_LOG
@@ -88,6 +89,10 @@ namespace Dream
             #endif
             delete mRuntime;
             mRuntime = nullptr;
+        }
+        if (mRuntime)
+        {
+            mRuntime->unlock();
         }
         return mRuntime;
     }

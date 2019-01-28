@@ -14,7 +14,7 @@
 
 #include <string>
 
-#include "DreamObject.h"
+#include "LockableObject.h"
 #include "Definition.h"
 
 using std::string;
@@ -27,7 +27,7 @@ namespace Dream
      * @brief Abstract class that contains Runtime data for DreamObjects that
      * are used to implement a Project.
      */
-    class Runtime : public DreamObject
+    class Runtime : public LockableObject
     {
     protected:
         /**
@@ -49,7 +49,7 @@ namespace Dream
          */
         Runtime
         (Definition* def)
-            : DreamObject("Runtime"),
+            : LockableObject("Runtime"),
               mDefinition(def),
               mUuid(def == nullptr ? 0 : def->getUuid()),
               mName(def == nullptr ? "" : def->getName()) {}

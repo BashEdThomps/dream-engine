@@ -21,8 +21,8 @@
 #include <sstream>
 
 #ifdef DREAM_LOG
-#include "../DreamCore/deps/spdlog/spdlog.h"
-#include "../DreamCore/deps/spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
 #include "../DreamCore/Scene/SceneRuntime.h"
@@ -54,20 +54,20 @@ int
 main
 (int argc,char** argv)
 {
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
-#endif
+    #endif
 
     if(argc < 2)
     {
-#ifdef DREAM_LOG
-		for (int i = 0; i < argc; i++)
-		{
-			_log->error("Arg {}: {}", i, argv[i]);
-		}
+        #ifdef DREAM_LOG
+        for (int i = 0; i < argc; i++)
+        {
+            _log->error("Arg {}: {}", i, argv[i]);
+        }
         _log->error("No Project Argument.");
-#endif
+        #endif
         return 1;
     }
 
@@ -80,9 +80,9 @@ Project*
 openProject
 (ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
 {
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     _log->debug("Opening project {}",dir);
-#endif
+    #endif
     auto project = projectDirectory.openFromDirectory(dir);
     if(project)
     {
@@ -105,15 +105,15 @@ run
     SceneDefinition* startupSceneDefinition = nullptr;
     SceneRuntime* activeSceneRuntime = nullptr;
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     _log->trace("Starting...");
-#endif
+    #endif
 
     if(!windowComponent.init())
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         _log->error("Could not initialise window component");
-#endif
+        #endif
         return;
     }
 
@@ -139,9 +139,9 @@ run
             }
             else
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 _log->error("Unable to use startup scene runtime");
-#endif
+                #endif
                 delete activeSceneRuntime;
                 activeSceneRuntime = nullptr;
             }
@@ -174,9 +174,9 @@ run
         //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
     }
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     _log->info("Run is done. Cleaning up");
-#endif
+    #endif
 
     if (activeSceneRuntime)
     {

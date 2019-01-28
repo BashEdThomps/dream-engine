@@ -1,6 +1,4 @@
 /*
-* Dream::PathComponent
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -17,20 +15,24 @@
 
 #pragma once
 
-#include "PathRuntime.h"
 #include "../Component.h"
 
 namespace Dream
 {
-    class PathComponent : public Component
+    class LogicComponent : public Component
     {
     public:
-        PathComponent();
-        ~PathComponent() override;
+        LogicComponent();
+        ~LogicComponent() override;
 
         bool init() override;
         void updateComponent(SceneRuntime*) override;
 
-    }; // End of PathComponent
-
-} // End of Dream
+        void updateSceneRuntimeTime(SceneRuntime* sr);
+        void updateSceneObjects(SceneRuntime* sr);
+        void updateSceneObjectLifetime(SceneObjectRuntime* runt);
+        void updatePath(SceneObjectRuntime* runt);
+        void updateAnimation(SceneObjectRuntime* runt);
+        void updateScroller(SceneObjectRuntime* scroller);
+    };
+}

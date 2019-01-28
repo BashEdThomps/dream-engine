@@ -13,7 +13,7 @@ find_package(OggVorbis REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(GLEW REQUIRED)
-
+find_package(SPDLOG REQUIRED)
 
 include_directories(
     ${ALUT_INCLUDE_DIR}
@@ -26,6 +26,7 @@ include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${OGG_INCLUDE_DIR}
     ${VORBIS_INCLUDE_DIR}
+    ${SPDLOG_INCLUDE_DIR}
 )
 
 if (WIN32)

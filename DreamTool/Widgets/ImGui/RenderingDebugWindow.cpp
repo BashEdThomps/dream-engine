@@ -1,4 +1,4 @@
-#include "RenderPipelinePreviewWindow.h"
+#include "RenderingDebugWindow.h"
 #include "../../DTState.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
@@ -9,24 +9,20 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    RenderPipelinePreviewWindow::RenderPipelinePreviewWindow
+    RenderingDebugWindow::RenderingDebugWindow
     (DTState* state)
         :ImGuiWidget(state,false)
     {
 #ifdef DREAM_LOG
-        setLogClassName("RenderPipelinePreviewWidget");
+        setLogClassName("RenderingDebugWindow");
 #endif
     }
 
-    RenderPipelinePreviewWindow::~RenderPipelinePreviewWindow
-    ()
-    {
-
-    }
+    RenderingDebugWindow::~RenderingDebugWindow (){}
 
 
     void
-    RenderPipelinePreviewWindow::draw
+    RenderingDebugWindow::draw
     ()
     {
         if (mState->project)
@@ -83,7 +79,7 @@ namespace DreamTool
         }
     }
 
-    ImVec2 RenderPipelinePreviewWindow::PreviewSize = ImVec2(256,256);
-    ImVec2 RenderPipelinePreviewWindow::UV1 = ImVec2(0,1);
-    ImVec2 RenderPipelinePreviewWindow::UV2 = ImVec2(1,0);
+    ImVec2 RenderingDebugWindow::PreviewSize = ImVec2(256,256);
+    ImVec2 RenderingDebugWindow::UV1 = ImVec2(0,1);
+    ImVec2 RenderingDebugWindow::UV2 = ImVec2(1,0);
 }

@@ -4,12 +4,12 @@
 
 namespace DreamTool
 {
-    class RenderPipelinePreviewWindow
+    class RenderingDebugWindow
             : public ImGuiWidget
     {
     public:
-        RenderPipelinePreviewWindow(DTState* state);
-        ~RenderPipelinePreviewWindow() override;
+        RenderingDebugWindow(DTState* state);
+        ~RenderingDebugWindow() override;
 
         void draw() override;
         static ImVec2 PreviewSize, UV1, UV2;

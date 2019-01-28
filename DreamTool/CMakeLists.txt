@@ -9,6 +9,7 @@ find_package(GLFW       REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(OPENGL     REQUIRED)
+find_package(SPDLOG     REQUIRED)
 
 include_directories(
     ${DreamCore_INCLUDE_DIRS}
@@ -20,6 +21,7 @@ include_directories(
     ${LUA_INCLUDE_DIR}
     ${OPENAL_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
+    ${SPDLOG_INCLUDE_DIR}
 )
 
 add_executable (

@@ -31,37 +31,24 @@
 #include "../Component.h"
 #include <glm/vec3.hpp>
 
-using std::vector;
+using glm::vec3;
 
 namespace Dream
 {
     class AudioRuntime;
     class AudioDefinition;
-
     class AudioComponent : public Component
     {
-
     private:
-        vector<AudioRuntime*> mUpdateQueue;
         ALCdevice*  mDevice;
         ALCcontext* mContext;
-
     public:
         AudioComponent();
         ~AudioComponent() override;
         bool init() override;
         void updateComponent(SceneRuntime*) override;
-
-        void setListenerPosition(glm::vec3);
-
-        void pushToUpdateQueue(AudioRuntime*);
-
+        void setListenerPosition(vec3);
         void setVolume(float);
         float getVolume();
-
-    protected:
-        void updateRuntimes();
-
-    }; // End of AudioComponent
-
-} // End of Dream
+    };
+}

@@ -22,7 +22,7 @@ namespace Dream
 {
 
     Component::Component
-    () : DreamObject("Component"),
+    () : LockableObject("Component"),
         mEnabled(true)
     {
 
@@ -88,6 +88,18 @@ namespace Dream
     void Component::setEnabled(bool enabled)
     {
         mEnabled = enabled;
+    }
+
+    void
+    Component::pushToUpdateQueue
+    (SceneObjectRuntime* rt)
+    {
+       mUpdateQueue.push_back(rt);
+    }
+
+    void Component::clearUpdateQueue()
+    {
+       mUpdateQueue.clear();
     }
 
     long long

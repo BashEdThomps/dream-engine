@@ -38,6 +38,7 @@ namespace Dream
         bool useDefinition() override;
 
         void orderByTime();
+        void update();
         void stepAnimation(double time);
 
         long getCurrentTime() const;

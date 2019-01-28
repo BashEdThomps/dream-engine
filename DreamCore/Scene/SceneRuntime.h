@@ -73,6 +73,7 @@ namespace Dream
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
+        void createSceneObjectUpdateQueues();
 
         void createAllAssetRuntimes();
 

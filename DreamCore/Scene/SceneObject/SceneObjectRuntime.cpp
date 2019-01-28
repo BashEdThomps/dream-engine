@@ -39,7 +39,6 @@
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptComponent.h"
 #include "../../Components/Scripting/ScriptRuntime.h"
-#include "../../Components/Scroller/ScrollerComponent.h"
 #include "../../Components/Scroller/ScrollerDefinition.h"
 #include "../../Components/Scroller/ScrollerRuntime.h"
 #include "../../Project/Project.h"
@@ -385,13 +384,8 @@ namespace Dream
         if (mDefinition)
         {
             auto definedTransform = static_cast<SceneObjectDefinition*>(mDefinition)->getTransform();
-            mInitialTransform = Transform(definedTransform);
-            mTransform = Transform(definedTransform);
-        }
-        else
-        {
-            mInitialTransform = Transform();
-            mTransform = Transform();
+            mInitialTransform.setMatrix(definedTransform.getMatrix());
+            mTransform.setMatrix(definedTransform.getMatrix());
         }
     }
 
@@ -883,7 +877,7 @@ namespace Dream
     SceneObjectRuntime::setTransform
     (const Transform& transform)
     {
-        mTransform = transform;
+        mTransform.setMatrix(transform.getMatrix());
     }
 
     void
@@ -1275,7 +1269,7 @@ namespace Dream
         applyToAll
         (function<SceneObjectRuntime*(SceneObjectRuntime*)>([&](SceneObjectRuntime* rt)
         {
-            auto& initial = rt->getInitialTransform().getMatrix();
+            auto initial = rt->getInitialTransform().getMatrix();
             rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);
             return static_cast<SceneObjectRuntime*>(nullptr);
         }

@@ -148,14 +148,17 @@ namespace Dream
 
     void
     ScrollerRuntime::update
-    (SceneRuntime* sr)
+    ()
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Updating Runtime");
         #endif
-
-        auto time = sr->getProjectRuntime()->getTime();
+        auto time =
+            mSceneObjectRuntime
+                ->getSceneRuntime()
+                ->getProjectRuntime()
+                ->getTime();
         if (time->getFrameTimeDelta() > Time::DELTA_MAX)
         {
             return;
@@ -168,17 +171,21 @@ namespace Dream
            time->perSecond(mVelocity.z)
         );
 
+        mSceneObjectRuntime->lock();
         auto children = mSceneObjectRuntime->getChildRuntimes();
         #ifdef DREAM_LOG
         log->trace("Child has {} children", children.size());
         #endif
-        for (auto& child : children)
+        for (auto* child : children)
         {
+            child->lock();
             #ifdef DREAM_LOG
             log->trace("Translating Child with delta vel {},{},{}", delta.x, delta.y, delta.z);
             #endif
             child->getTransform().translate(delta);
+            child->unlock();
         }
+        mSceneObjectRuntime->unlock();
 
         for (auto iter = mPreRange.begin(); iter != mPreRange.end();)
         {
@@ -212,21 +219,24 @@ namespace Dream
             iter++;
            }
         }
-
-        collectGarbage(sr);
+        collectGarbage();
     }
 
     void
     ScrollerRuntime::collectGarbage
-    (SceneRuntime* sr)
+    ()
     {
+        mSceneObjectRuntime->lock();
         for (SceneObjectRuntime* runt : mPostRange)
         {
+            runt->lock();
             #ifdef DREAM_LOG
             getLog()->error("Garbage! {}",runt->getNameAndUuidString());
             #endif
             mSceneObjectRuntime->removeChildRuntime(runt);
+            runt->unlock();
         }
         mPostRange.clear();
+        mSceneObjectRuntime->unlock();
     }
 }

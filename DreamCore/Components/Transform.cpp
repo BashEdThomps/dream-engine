@@ -27,7 +27,7 @@ namespace Dream
 
     Transform::Transform
     ()
-        : DreamObject("Transform"),
+        : LockableObject("Transform"),
           mMatrix(1.0f)
     {
         #ifdef DREAM_LOG
@@ -36,8 +36,9 @@ namespace Dream
         #endif
     }
 
-    Transform::Transform(const Transform& other)
-        :DreamObject ("Transform")
+    Transform::Transform
+    (const Transform& other)
+        :LockableObject ("Transform")
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -47,8 +48,8 @@ namespace Dream
     }
 
     Transform::Transform
-    (mat4 mtx)
-        : DreamObject("Transform")
+    (const mat4& mtx)
+        : LockableObject("Transform")
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -58,26 +59,14 @@ namespace Dream
     }
 
     Transform::Transform
-    (json jsonTransform)
-        : DreamObject("Transform")
+    (const json& jsonTransform)
+        : LockableObject("Transform")
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Constructing from json");
         #endif
-        if (!jsonTransform[Constants::TRANSFORM_MATRIX].is_null())
-        {
-            float mtxFloat[16] = {0.0f};
-            for (int i=0; i<16; i++)
-            {
-                mtxFloat[i] = (float)jsonTransform[Constants::TRANSFORM_MATRIX][i];
-                mMatrix = glm::make_mat4(mtxFloat);
-            }
-        }
-        else
-        {
-            mMatrix = mat4(1.0f);
-        }
+        fromJson(jsonTransform);
     }
 
     Transform::~Transform() {}
@@ -112,9 +101,27 @@ namespace Dream
         return j;
     }
 
+    void Transform::fromJson(const json& jsonTransform)
+    {
+        if (!jsonTransform[Constants::TRANSFORM_MATRIX].is_null())
+        {
+            float mtxFloat[16] = {0.0f};
+            for (int i=0; i<16; i++)
+            {
+                mtxFloat[i] = (float)jsonTransform[Constants::TRANSFORM_MATRIX][i];
+                mMatrix = glm::make_mat4(mtxFloat);
+            }
+        }
+        else
+        {
+            mMatrix = mat4(1.0f);
+        }
+    }
+
     float
     Transform::distanceFrom
     (const Transform& other)
+    const
     {
        return glm::distance(mMatrix[3], other.mMatrix[3]);
     }
@@ -123,7 +130,7 @@ namespace Dream
 
     void
     Transform::setMatrix
-    (mat4 mtx)
+    (const mat4& mtx)
     {
         mMatrix = mtx;
     }
@@ -135,9 +142,10 @@ namespace Dream
         return (float*)(&mMatrix[0]);
     }
 
-    mat4&
+    mat4
     Transform::getMatrix
     ()
+    const
     {
         return mMatrix;
     }
@@ -175,14 +183,14 @@ namespace Dream
 
     void
     Transform::translate
-    (vec3 tx)
+    (const vec3& tx)
     {
         mMatrix = glm::translate(mMatrix,tx);
     }
 
     void
     Transform::preTranslate
-    (vec3 translation)
+    (const vec3& translation)
     {
         mat4 mat = glm::translate(mat4(1.0f), translation);
         mMatrix = mat*mMatrix;
@@ -191,6 +199,7 @@ namespace Dream
     vec3
     Transform::getTranslation
     ()
+    const
     {
         return vec3(mMatrix[3]);
     }

@@ -88,16 +88,6 @@ namespace Dream
     }
 
     void
-    AudioComponent::pushToUpdateQueue
-    (AudioRuntime* ai)
-    {
-        if (find(mUpdateQueue.begin(), mUpdateQueue.end(), ai) == mUpdateQueue.end())
-        {
-            mUpdateQueue.push_back(ai);
-        }
-    }
-
-    void
     AudioComponent::updateComponent
     (SceneRuntime*)
     {
@@ -111,18 +101,12 @@ namespace Dream
         }
 
         beginUpdate();
-        updateRuntimes();
+        for (SceneObjectRuntime* rt : mUpdateQueue)
+        {
+            rt->getAudioRuntime()->updateMarkers();
+        }
+        clearUpdateQueue();
         endUpdate();
-    }
-
-    void
-    AudioComponent::updateRuntimes
-    ()
-    {
-       for (AudioRuntime* ai : mUpdateQueue)
-       {
-          ai->updateMarkers();
-       }
     }
 
     void

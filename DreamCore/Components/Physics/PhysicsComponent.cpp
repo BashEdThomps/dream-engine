@@ -31,7 +31,7 @@ namespace Dream
     ()  : Component(),
           mCharacter(nullptr),
           mDebug(false),
-	  	  mDebugDrawer(nullptr),
+          mDebugDrawer(nullptr),
           mDynamicsWorld(nullptr),
           mBroadphase(nullptr),
           mCollisionConfiguration(nullptr),
@@ -281,36 +281,19 @@ namespace Dream
     PhysicsComponent::populatePhysicsWorld
     (SceneRuntime* scene)
     {
-        scene->getRootSceneObjectRuntime()->applyToAll
-        (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* so)
-                {
-                    // Has physics
-                    if (so->hasPhysicsObjectRuntime())
-                    {
-                        auto physicsObject = so->getPhysicsObjectRuntime();
-                        if (!physicsObject->isInPhysicsWorld())
-                        {
-                            #ifdef DREAM_LOG
-                            getLog()->trace( "Adding SceneObject {} to physics world", so->getNameAndUuidString());
-                            #endif
-                            addPhysicsObjectRuntime(physicsObject);
-                            physicsObject->setInPhysicsWorld(true);
-                        }
-                        else
-                        {
-
-                            #ifdef DREAM_LOG
-                            getLog()->trace( "SceneObject {} is in the physics world",so->getNameAndUuidString());
-                            #endif
-                        }
-                    }
-                    return nullptr;
-                }
-            )
-        );
+        for (auto* runt : mUpdateQueue)
+        {
+            auto physicsObject = runt->getPhysicsObjectRuntime();
+            if (!physicsObject->isInPhysicsWorld())
+            {
+                #ifdef DREAM_LOG
+                getLog()->trace( "Adding SceneObject {} to physics world", runt->getNameAndUuidString());
+                #endif
+                addPhysicsObjectRuntime(physicsObject);
+                physicsObject->setInPhysicsWorld(true);
+            }
+        }
+        clearUpdateQueue();
     }
 
     void

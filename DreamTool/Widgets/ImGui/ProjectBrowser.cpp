@@ -111,7 +111,7 @@ namespace DreamTool
 
                     if (sRunt != nullptr)
                     {
-                        if (sRunt->getUuid() == sDef->getUuid())
+                        if (sRunt->getUuid() != sDef->getUuid())
                         {
 #ifdef DREAM_LOG
                             log->trace("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());

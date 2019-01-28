@@ -32,6 +32,8 @@ namespace Dream
      */
     class DreamObject
     {
+
+
     public:
         /**
          * @param classname Logging class name.

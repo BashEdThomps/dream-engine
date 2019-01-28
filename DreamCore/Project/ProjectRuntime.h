@@ -24,9 +24,10 @@ namespace Dream
 {
     // Forward Declarations
     class Project;
-    class PathComponent;
-    class ScrollerComponent;
-    class AnimationComponent;
+    class Transform;
+    class AssetDefinition;
+    class Time;
+
     class AudioComponent;
     class InputComponent;
     class GraphicsComponent;
@@ -34,21 +35,19 @@ namespace Dream
     class PhysicsComponent;
     class ScriptComponent;
     class NanoVGComponent;
-    class Transform;
+    class LogicComponent;
+
     class SceneRuntime;
+    class SceneObjectRuntime;
+
     class SceneDefinition;
+
     class AudioCache;
     class MaterialCache;
     class TextureCache;
     class ScriptCache;
     class ModelCache;
     class ShaderCache;
-    class ComponentThread;
-    class AssetDefinition;
-    class SceneObjectRuntime;
-    class LifetimeComponent;
-
-    class Time;
 
     // Class Declaration
     class ProjectRuntime : public Runtime
@@ -61,17 +60,14 @@ namespace Dream
         Project* mProject;
 
         // Components
-        AnimationComponent* mAnimationComponent;
         AudioComponent* mAudioComponent;
         InputComponent* mInputComponent;
         GraphicsComponent* mGraphicsComponent;
         NanoVGComponent* mNanoVGComponent;
         PhysicsComponent* mPhysicsComponent;
-        PathComponent* mPathComponent;
         ScriptComponent* mScriptComponent;
         WindowComponent* mWindowComponent;
-        ScrollerComponent* mScrollerComponent;
-        LifetimeComponent* mLifetimeComponent;
+        LogicComponent* mLogicComponent;
 
         // Caches
         AudioCache* mAudioCache;
@@ -93,17 +89,14 @@ namespace Dream
 
         Time* getTime();
 
-        AnimationComponent* getAnimationComponent();
         AudioComponent* getAudioComponent();
         PhysicsComponent* getPhysicsComponent();
         GraphicsComponent* getGraphicsComponent();
         NanoVGComponent* getNanoVGComponent();
-        PathComponent* getPathComponent();
         WindowComponent* getWindowComponent();
         ScriptComponent* getScriptComponent();
         InputComponent* getInputComponent();
-        ScrollerComponent* getScrollerComponent();
-        LifetimeComponent* getLifetimeComponent();
+        LogicComponent* getLogicComponent();
 
         Project* getProject();
 
@@ -151,8 +144,6 @@ namespace Dream
         bool hasLoadedScenes();
 
     private: // Member Functions
-        bool initPathComponent();
-        bool initAnimationComponent();
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();
@@ -160,12 +151,10 @@ namespace Dream
         bool initNanoVGComponent();
         bool initWindowComponent();
         bool initScriptComponent();
-        bool initScrollerComponent();
-        bool initLifetimeComponent();
+        bool initLogicComponent();
         bool initCaches();
 
         void deleteCaches();
         void deleteComponents();
     };
-
-} // End Dream
+}

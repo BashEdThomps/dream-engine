@@ -46,13 +46,13 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (Transform& transform)
+    (const Transform& transform)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setTransform called" );
         #endif
-        mDreamTransform = transform;
+        mDreamTransform.setMatrix(transform.getMatrix());
     }
 
     void

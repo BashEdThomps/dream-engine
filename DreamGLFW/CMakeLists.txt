@@ -10,6 +10,7 @@ find_package(GLFW       REQUIRED)
 find_package(GLM        REQUIRED)
 find_package(Lua        REQUIRED)
 find_package(OPENGL     REQUIRED)
+find_package(SPDLOG     REQUIRED)
 
 include_directories(
     ${DreamCore_INCLUDE_DIRS}
@@ -20,6 +21,7 @@ include_directories(
     ${GLM_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
+    ${SPDLOG_INCLUDE_DIR}
 )
 
 add_executable (
@@ -28,25 +30,25 @@ add_executable (
 )
 
 if (WIN32)
-	target_link_libraries(
-		${PROJECT_NAME}
-		DreamCore
+    target_link_libraries(
+        ${PROJECT_NAME}
+        DreamCore
                 ${ASSIMP_LIBRARIES}
                 ${BULLET_LIBRARY}
                 ${GLEW_LIBRARY}
                 ${GLFW_LIBRARY}
-		${LUA_LIBRARIES}
-	)
+        ${LUA_LIBRARIES}
+    )
 else()
-	target_link_libraries(
-	    ${PROJECT_NAME}
-	    DreamCore
-	    -lpthread
-	    -ldl
+    target_link_libraries(
+        ${PROJECT_NAME}
+        DreamCore
+        -lpthread
+        -ldl
             ${ASSIMP_LIBRARIES}
             ${BULLET_LIBRARY}
             ${GLEW_LIBRARY}
-	    ${GLFW_LIBRARY}
-	    ${LUA_LIBRARIES}
-	)
+        ${GLFW_LIBRARY}
+        ${LUA_LIBRARIES}
+    )
 endif()

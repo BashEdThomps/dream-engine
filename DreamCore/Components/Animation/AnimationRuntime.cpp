@@ -27,7 +27,6 @@
 
 namespace Dream
 {
-
     AnimationRuntime::AnimationRuntime
     (
         AnimationDefinition* definition,
@@ -68,7 +67,6 @@ namespace Dream
     AnimationRuntime::stepAnimation
     (double deltaTime)
     {
-
         if (mRunning)
         {
             #ifdef DREAM_LOG
@@ -241,6 +239,17 @@ namespace Dream
     ()
     {
         std::sort(mKeyframes.begin(),mKeyframes.end());
+    }
+
+    void AnimationRuntime::update()
+    {
+       auto timeDelta =
+            mSceneObjectRuntime
+               ->getSceneRuntime()
+               ->getProjectRuntime()
+               ->getTime()
+               ->getFrameTimeDelta();
+       stepAnimation(timeDelta);
     }
 
     void

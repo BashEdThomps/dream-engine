@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/DreamObject.h"
+#include "../Common/LockableObject.h"
 #include <vector>
 
 using namespace std;
@@ -18,7 +18,7 @@ namespace Dream
      * or other AssetRuntime objects. These AssetRuntime objects are cached to
      * reduce the SceneRuntime memory footprint.
      */
-    class Cache : public DreamObject
+    class Cache : public LockableObject
     {
     public:
 

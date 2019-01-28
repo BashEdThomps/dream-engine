@@ -14,10 +14,8 @@ namespace Dream
     {
         #ifdef DREAM_LOG
         setLogClassName("SharedAssetRuntime");
-#endif
+        #endif
     }
-
-
 
     SharedAssetRuntime::~SharedAssetRuntime()
     {
@@ -27,9 +25,7 @@ namespace Dream
     string SharedAssetRuntime::getAssetFilePath
     (string fmt)
     {
-        auto pDir = mProjectRuntime
-                ->getProject()
-                ->getDirectory();
+        auto pDir = mProjectRuntime->getProject()->getDirectory();
         return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
 
     }

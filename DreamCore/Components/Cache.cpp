@@ -10,7 +10,7 @@ namespace Dream
 {
     Cache::Cache
     (ProjectRuntime* parent)
-        : DreamObject ("Cache"),
+        : LockableObject ("Cache"),
           mProjectRuntime(parent)
     {
 

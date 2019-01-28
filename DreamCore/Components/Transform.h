@@ -19,7 +19,7 @@
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
-#include "../Common/DreamObject.h"
+#include "../Common/LockableObject.h"
 
 
 using namespace std;
@@ -44,7 +44,7 @@ namespace Dream
      * @brief Based around a glm::mat4 instance with convenience methods added
      * to make matrix manipulation easier.
      */
-    class Transform : public DreamObject
+    class Transform : public LockableObject
     {
     private:
         /**
@@ -69,13 +69,13 @@ namespace Dream
          * @brief Construct using the passed matrix data
          * @param fromMatrix data
          */
-        Transform(mat4 fromMatrix);
+        Transform(const mat4& fromMatrix);
 
         /**
          * @brief Construct by deserialising a matrix stored in JSON format.
          * @param j JSON matrix data
          */
-        explicit Transform(json j);
+        explicit Transform(const json& j);
 
         /**
           * @brief Default Destructor
@@ -90,13 +90,13 @@ namespace Dream
         /**
          * @brief Get the matrix as a glm matrix object.
          */
-        mat4& getMatrix();
+        mat4 getMatrix() const;
 
         /**
          * @brief Set the internal matrix object from a glm matrix.
          * @param mat glm matrix object.
          */
-        void setMatrix(mat4 mat);
+        void setMatrix(const mat4& mat);
 
         /**
          * @brief Get the pointer to the float[16] matrix data array.
@@ -121,16 +121,16 @@ namespace Dream
          * @brief Translate the underlying matrix by the given amount.
          * @param translation Amount to translate the matrix by.
          */
-        void translate(vec3 translation);
+        void translate(const vec3& translation);
 
         /**
          * @brief Translate to this position first, then apply the underlyinng
          * matrix.
          * @param translation Amount to translate the matrix by.
          */
-        void preTranslate(vec3 translation);
+        void preTranslate(const vec3& translation);
 
-        vec3 getTranslation();
+        vec3 getTranslation() const;
 
 
         /**
@@ -139,11 +139,12 @@ namespace Dream
          */
         json getJson() const;
 
+        void fromJson(const json& js);
+
         /**
          * @param other Other transform
          * @return Distance between this and other Transform
          */
-        float distanceFrom(const Transform& other);
+        float distanceFrom(const Transform& other) const;
     };
-
 }

@@ -15,7 +15,7 @@
 #include "Widgets/ImGui/ToolPropertiesWindow.h"
 #include "Widgets/ImGui/ScriptEditorWindow.h"
 #include "Widgets/ImGui/ShaderEditorWindow.h"
-#include "Widgets/ImGui/RenderPipelinePreviewWindow.h"
+#include "Widgets/ImGui/RenderingDebugWindow.h"
 #include "Widgets/ImGui/GamepadStateWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
@@ -57,7 +57,7 @@ namespace DreamTool
         ScriptEditorWindow scriptEditorWindow;
         ShaderEditorWindow shaderEditorWindow;
         MenuBar menuBar;
-        RenderPipelinePreviewWindow renderPipelineWindow;
+        RenderingDebugWindow renderPipelineWindow;
         GamepadStateWindow gamepadStateWindow;
         // GL Widgets
         Grid grid;

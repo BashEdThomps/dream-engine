@@ -33,7 +33,7 @@ namespace Dream
         PhysicsMotionState(Transform&);
         ~PhysicsMotionState();
 
-        void setTransform(Transform&);
+        void setTransform(const Transform&);
 
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);

@@ -16,7 +16,6 @@
 #include "../Event.h"
 #include "../Transform.h"
 #include "../Time.h"
-#include "../Path/PathComponent.h"
 #include "../Path/PathRuntime.h"
 #include "../Animation/AnimationRuntime.h"
 #include "../Audio/AudioComponent.h"
@@ -242,16 +241,6 @@ namespace Dream
             "Outside",Frustum::TestResult::TEST_OUTSIDE,
             "Intersect",Frustum::TestResult::TEST_INTERSECT
         );
-    }
-
-    void
-    ScriptComponent::exposePathComponent
-    ()
-    {
-        debugRegisteringClass("PathComponent");
-        sol::state_view stateView(State);
-        stateView.new_usertype<PathComponent>("PathComponent");
-        stateView[COMPONENTS_TBL]["Path"] = mProjectRuntime->getPathComponent();
     }
 
     void
@@ -1012,9 +1001,7 @@ namespace Dream
         exposeGraphicsComponent();
         exposeWindowComponent();
         exposeNanoVG();
-        exposePathComponent();
         exposePhysicsComponent();
-
 
         exposeAnimationRuntime();
         exposeAudioRuntime();

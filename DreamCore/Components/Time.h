@@ -17,7 +17,7 @@
 #pragma once
 
 #include <chrono>
-#include "../Common/DreamObject.h"
+#include "../Common/LockableObject.h"
 
 using std::chrono::time_point;
 using std::chrono::steady_clock;
@@ -31,7 +31,7 @@ namespace Dream
      * std::steady_clock and are reported in fractions of a second.
      * e.g. 0.34s, 2.38s etc...
      */
-    class Time : public DreamObject
+    class Time : public LockableObject
     {
 
     private:

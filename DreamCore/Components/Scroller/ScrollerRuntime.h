@@ -38,8 +38,8 @@ namespace Dream
         ScrollerRuntime(ScrollerDefinition*,SceneObjectRuntime*);
         ~ScrollerRuntime() override;
         bool useDefinition() override;
-        void update(SceneRuntime* sr);
-        void collectGarbage(SceneRuntime* sr);
+        void update();
+        void collectGarbage() override;
     protected:
         SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);
         bool removeChlidRuntime(const ScrollerItem& item);

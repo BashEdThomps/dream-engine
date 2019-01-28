@@ -13,10 +13,10 @@
 #pragma once
 
 #include <sstream>
+#include "LockableObject.h"
 #include "../deps/json/json.hpp"
 #include "../Components/Transform.h"
 #include "../Utilities/Uuid.h"
-#include "DreamObject.h"
 
 using nlohmann::json;
 using std::stringstream;
@@ -27,7 +27,7 @@ namespace Dream
      * @brief Definition is an abstract class that provides naming, id-ing and
      * json serialization functionality.
      */
-    class Definition : public DreamObject
+    class Definition : public LockableObject
     {
     protected:
         /**
@@ -41,7 +41,7 @@ namespace Dream
          * @param data Set the internal mJson variable to this data.
          */
         inline Definition
-        (json data) : DreamObject("Definition"), mJson(data)
+        (json data) : LockableObject("Definition"), mJson(data)
         {
             if (mJson[Constants::UUID].is_string())
             {

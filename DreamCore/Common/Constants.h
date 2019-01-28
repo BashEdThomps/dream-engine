@@ -20,8 +20,8 @@
 #include <vector>
 
 #ifdef DREAM_LOG
-    #include "../deps/spdlog/spdlog.h"
-    #include "../deps/spdlog/sinks/stdout_color_sinks.h"
+    #include <spdlog/spdlog.h>
+    #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
 using namespace std;

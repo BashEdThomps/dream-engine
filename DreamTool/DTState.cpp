@@ -21,7 +21,7 @@ namespace DreamTool
           scriptEditorWindow(ScriptEditorWindow(this)),
           shaderEditorWindow(ShaderEditorWindow(this)),
           menuBar(MenuBar(this)),
-          renderPipelineWindow(RenderPipelinePreviewWindow(this)),
+          renderPipelineWindow(RenderingDebugWindow(this)),
           gamepadStateWindow(GamepadStateWindow(this)),
           grid(Grid(this)),
           lightViewer(LightViewer(this)),
@@ -53,7 +53,6 @@ namespace DreamTool
         windowComponent.setMonoFontSize(18.0f);
         #endif
         windowComponent.init();
-
 
         ScriptComponent::AddPrintListener(&luaDebugWindow);
 

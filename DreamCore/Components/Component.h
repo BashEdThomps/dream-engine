@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "../Common/DreamObject.h"
+#include "../Common/LockableObject.h"
 
 namespace Dream
 {
@@ -23,7 +23,7 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
 
-    class Component : public DreamObject
+    class Component : public LockableObject
     {
 
     public:
@@ -41,6 +41,9 @@ namespace Dream
         bool getEnabled() const;
         void setEnabled(bool enabled);
 
+        void pushToUpdateQueue(SceneObjectRuntime*);
+        void clearUpdateQueue();
+
     protected:
 
         void beginUpdate();
@@ -55,5 +58,7 @@ namespace Dream
 
         Time* mTime;
         bool  mEnabled;
+
+        vector<SceneObjectRuntime*> mUpdateQueue;
     };
 }

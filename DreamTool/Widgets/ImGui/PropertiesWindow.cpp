@@ -430,7 +430,6 @@ namespace DreamTool
 #ifdef DREAM_LOG
         auto log = getLog();
 #endif
-
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
 
@@ -469,7 +468,6 @@ namespace DreamTool
 
         if(ImGui::CollapsingHeader("Camera"))
         {
-
             if(ImGui::DragFloat3("Translation",cameraTranslation,0.1f))
             {
                 if (sceneDef != nullptr)
@@ -482,12 +480,11 @@ namespace DreamTool
                 if (sceneRuntime != nullptr)
                 {
                     auto cam = sceneRuntime->getCamera();
-                    cam->setTranslation
-                            ({
-                                 cameraTranslation[0],
-                                 cameraTranslation[1],
-                                 cameraTranslation[2]
-                             });
+                    cam->setTranslation(vec3(
+                         cameraTranslation[0],
+                         cameraTranslation[1],
+                         cameraTranslation[2]
+                     ));
                 }
             }
 
@@ -519,7 +516,6 @@ namespace DreamTool
                     cam->setPitch(radians(cameraRotation[0]));
                     cam->setYaw(radians(cameraRotation[1]));
                 }
-
             }
 
             float camSpeed = sceneDef->getCameraMovementSpeed();

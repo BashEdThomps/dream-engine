@@ -578,7 +578,6 @@ namespace Dream
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
         glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         mWindowComponent->bindDefaultFrameBuffer();
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void
@@ -591,33 +590,23 @@ namespace Dream
         // Clear existing Queues
         clearLightQueue();
 
-        sr->getRootSceneObjectRuntime()->applyToAll
-        (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
-            (
-                [&](SceneObjectRuntime* object)
-                {
-                    if (object->getHidden())
-                    {
-                        return nullptr;
-                    }
-                    // Lights
-                    if (object->hasLightRuntime())
-                    {
-                        LightRuntime* light = object->getLightRuntime();
-                        #ifdef DREAM_LOG
-                        getLog()->debug("Adding light Runtime to queue {}",light->getNameAndUuidString());
-                        #endif
-                        addToLightQueue(light);
-                        if (light->getType() == LightType::LT_DIRECTIONAL)
-                        {
-                           mShadowLight = object;
-                        }
-                    }
-                    return nullptr;
-                }
-            )
-        );
+        for (auto* runt : mUpdateQueue)
+        {
+            if (runt->getHidden())
+            {
+                continue;
+            }
+            LightRuntime* light = runt->getLightRuntime();
+            #ifdef DREAM_LOG
+            getLog()->debug("Adding light Runtime to queue {}",light->getNameAndUuidString());
+            #endif
+            addToLightQueue(light);
+            if (light->getType() == LightType::LT_DIRECTIONAL)
+            {
+               mShadowLight = runt;
+            }
+        }
+        clearUpdateQueue();
     }
 
     // Shadow Pass ==============================================================

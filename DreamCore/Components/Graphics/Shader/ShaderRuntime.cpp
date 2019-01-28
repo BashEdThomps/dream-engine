@@ -722,11 +722,7 @@ namespace Dream
         if (location == UNIFORM_NOT_FOUND)
         {
             #ifdef DREAM_LOG
-<<<<<<< HEAD
             getLog()->warn( "Unable to find model matrix uinform model[0] in {}", getNameAndUuidString());
-=======
-            getLog()->warn( "Unable to find model matrix uinform model[0] in {}" , getNameAndUuidString()  );
->>>>>>> windows
             #endif
             return;
         }

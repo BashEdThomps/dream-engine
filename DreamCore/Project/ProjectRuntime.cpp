@@ -23,14 +23,11 @@
 #include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
 #include "../Components/Transform.h"
-#include "../Components/Path/PathComponent.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Audio/AudioCache.h"
 #include "../Components/Input/InputComponent.h"
-#include "../Components/Animation/AnimationComponent.h"
-#include "../Components/Scroller/ScrollerComponent.h"
 
-#include "../Components/Lifetime/LifetimeComponent.h"
+#include "../Components/Logic/LogicComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Model/ModelMesh.h"
@@ -54,16 +51,13 @@ namespace Dream
           mDone(false),
           mTime(nullptr),
           mProject(project),
-          mAnimationComponent(nullptr),
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
           mGraphicsComponent(nullptr),
           mNanoVGComponent(nullptr),
           mPhysicsComponent(nullptr),
-          mPathComponent(nullptr),
           mScriptComponent(nullptr),
-          mScrollerComponent(nullptr),
-          mLifetimeComponent(nullptr),
+          mLogicComponent(nullptr),
           mWindowComponent(windowComponent),
           mAudioCache(nullptr),
           mTextureCache(nullptr),
@@ -156,27 +150,12 @@ namespace Dream
             return false;
         }
 
-        if(!initPathComponent())
-        {
-            return false;
-        }
-
-        if(!initAnimationComponent())
-        {
-            return false;
-        }
-
-        if (!initScrollerComponent())
-        {
-            return false;
-        }
-
         if (!initScriptComponent())
         {
             return false;
         }
 
-        if (!initLifetimeComponent())
+        if (!initLogicComponent())
         {
             return false;
         }
@@ -200,7 +179,9 @@ namespace Dream
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+        projDef->lock();
         mWindowComponent->setName(projDef->getName());
+        projDef->unlock();
         return true;
     }
 
@@ -209,34 +190,40 @@ namespace Dream
     ()
     {
         mAudioComponent = new AudioComponent();
+        mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise AudioComponent." );
             #endif
+            mAudioComponent->unlock();
             return false;
         }
+        mAudioComponent->unlock();
         return true;
     }
 
     bool ProjectRuntime::initInputComponent()
     {
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        mInputComponent =
-                new InputComponent
-                (
-                    projectDef->getCaptureKeyboard(),
-                    projectDef->getCaptureMouse(),
-                    projectDef->getCaptureJoystick()
-                    );
+        projectDef->lock();
+        mInputComponent = new InputComponent(
+            projectDef->getCaptureKeyboard(),
+            projectDef->getCaptureMouse(),
+            projectDef->getCaptureJoystick()
+        );
+        projectDef->unlock();
+        mInputComponent->lock();
 
         if (!mInputComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise InputComponent." );
             #endif
+            mInputComponent->unlock();
             return false;
         }
+        mInputComponent->unlock();
         return true;
     }
 
@@ -245,14 +232,17 @@ namespace Dream
     ()
     {
         mPhysicsComponent = new PhysicsComponent();
+        mPhysicsComponent->lock();
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise PhysicsComponent." );
             #endif
+            mPhysicsComponent->unlock();
             return false;
         }
+        mPhysicsComponent->unlock();
         return true;
     }
 
@@ -261,6 +251,7 @@ namespace Dream
     ()
     {
         mGraphicsComponent = new GraphicsComponent(mWindowComponent);
+        mGraphicsComponent->lock();
         mGraphicsComponent->setTime(mTime);
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
@@ -268,8 +259,10 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise Graphics Component." );
             #endif
+            mGraphicsComponent->unlock();
             return false;
         }
+        mGraphicsComponent->unlock();
         return true;
     }
 
@@ -278,94 +271,54 @@ namespace Dream
     ()
     {
         mNanoVGComponent = new NanoVGComponent(mWindowComponent);
+        mNanoVGComponent->lock();
         mNanoVGComponent->setTime(mTime);
         if (!mNanoVGComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise Graphics Component." );
             #endif
+            mNanoVGComponent->unlock();
             return false;
         }
+        mNanoVGComponent->unlock();
         return true;
     }
-
-    bool
-    ProjectRuntime::initPathComponent
-    ()
-    {
-        mPathComponent = new PathComponent();
-        mPathComponent->setTime(mTime);
-        if (!mPathComponent->init())
-        {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise Path Component." );
-            #endif
-            return false;
-        }
-        return true;
-    }
-
-
-    bool
-    ProjectRuntime::initAnimationComponent
-    ()
-    {
-        mAnimationComponent = new AnimationComponent();
-        mAnimationComponent->setTime(mTime);
-        if (!mAnimationComponent->init())
-        {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise Animation Component." );
-            #endif
-            return false;
-        }
-        return true;
-    }
-
 
     bool
     ProjectRuntime::initScriptComponent
     ()
     {
         mScriptComponent = new ScriptComponent(this,mScriptCache);
+        mScriptComponent->lock();
         if(!mScriptComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Unable to initialise Script Engine." );
             #endif
+            mScriptComponent->unlock();
             return false;
         }
+        mScriptComponent->unlock();
         return true;
     }
 
     bool
-    ProjectRuntime::initScrollerComponent
+    ProjectRuntime::initLogicComponent
     ()
     {
-        mScrollerComponent = new ScrollerComponent();
-        if (!mScrollerComponent->init())
-        {
-            #if DREAM_LOG
-            getLog()->error("Unable to initialise scroller component");
-            #endif
-            return false;
-        }
-        return true;
-    }
-
-    bool
-    ProjectRuntime::initLifetimeComponent
-    ()
-    {
-        mLifetimeComponent = new LifetimeComponent();
-        if (!mLifetimeComponent->init())
+        mLogicComponent = new LogicComponent();
+        mLogicComponent->lock();
+        mLogicComponent->setTime(mTime);
+        if (!mLogicComponent->init())
         {
             #ifdef DREAM_LOG
             getLog()->error("Unable to init lifetime component");
             #endif
+            mLogicComponent->unlock();
             return false;
         }
-        mLifetimeComponent->setTime(mTime);
+        mLogicComponent->unlock();
         return true;
     }
 
@@ -430,22 +383,10 @@ namespace Dream
     ProjectRuntime::deleteComponents
     ()
     {
-        if (mLifetimeComponent != nullptr)
+        if (mLogicComponent != nullptr)
         {
-            delete mLifetimeComponent;
-            mLifetimeComponent = nullptr;
-        }
-
-        if(mScrollerComponent != nullptr)
-        {
-            delete mScrollerComponent;
-            mScrollerComponent = nullptr;
-        }
-
-        if (mAnimationComponent != nullptr)
-        {
-            delete mAnimationComponent;
-            mAnimationComponent = nullptr;
+            delete mLogicComponent;
+            mLogicComponent = nullptr;
         }
 
         if (mAudioComponent != nullptr)
@@ -478,12 +419,6 @@ namespace Dream
             mPhysicsComponent = nullptr;
         }
 
-        if (mPathComponent != nullptr)
-        {
-            delete mPathComponent;
-            mPathComponent = nullptr;
-        }
-
         if (mScriptComponent != nullptr)
         {
             delete mScriptComponent;
@@ -496,20 +431,6 @@ namespace Dream
     ()
     {
         return mDone;
-    }
-
-    AnimationComponent*
-    ProjectRuntime::getAnimationComponent
-    ()
-    {
-        return mAnimationComponent;
-    }
-
-    PathComponent*
-    ProjectRuntime::getPathComponent
-    ()
-    {
-        return mPathComponent;
     }
 
     AudioComponent*
@@ -547,11 +468,11 @@ namespace Dream
         return mScriptComponent;
     }
 
-    LifetimeComponent*
-    ProjectRuntime::getLifetimeComponent
+    LogicComponent*
+    ProjectRuntime::getLogicComponent
     ()
     {
-        return mLifetimeComponent;
+        return mLogicComponent;
     }
 
     bool
@@ -564,19 +485,18 @@ namespace Dream
 
         // Get Inputs
         mTime->updateFrameTime();
+        sr->createSceneObjectUpdateQueues();
+
         mInputComponent->updateComponent(sr);
 
         // Do Processing
-        mLifetimeComponent->updateComponent(sr);
-        mPathComponent->updateComponent(sr);
-        mScrollerComponent->updateComponent(sr);
-        mAnimationComponent->updateComponent(sr);
+        mLogicComponent->updateComponent(sr);
         mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->updateComponent(sr);
         mScriptComponent->updateComponent(sr);
+        mAudioComponent->updateComponent(sr);
 
         // Produce Outputs
-        mAudioComponent->updateComponent(sr);
         sr->getCamera()->update();
         mGraphicsComponent->updateComponent(sr);
         return true;
@@ -673,6 +593,7 @@ namespace Dream
     {
         for (auto rt : mSceneRuntimeVector)
         {
+            rt->lock();
             #ifdef DREAM_LOG
             getLog()->trace("UpdateAll on {}",rt->getNameAndUuidString());
             #endif
@@ -696,6 +617,7 @@ namespace Dream
                     mSceneRuntimesToRemove.push_back(rt);
                     break;
             }
+            rt->unlock();
         }
 
         collectGarbage();
@@ -722,10 +644,13 @@ namespace Dream
     {
         for (auto* sr : mSceneRuntimeVector)
         {
+            sr->lock();
             if (sr->getUuid() == uuid)
             {
+                sr->unlock();
                 return sr;
             }
+            sr->unlock();
         }
         return nullptr;
     }
@@ -738,6 +663,7 @@ namespace Dream
         for (int i=0;i<nRuntimes;i++)
         {
             auto srt = mSceneRuntimeVector.at(i);
+            srt->lock();
             if (srt->getUuid() == uuid)
             {
                 srt->setState(SceneState::SCENE_STATE_ACTIVE);
@@ -749,6 +675,7 @@ namespace Dream
                     srt->setState(SceneState::SCENE_STATE_LOADED);
                 }
             }
+            srt->unlock();
         }
     }
 
@@ -803,13 +730,6 @@ namespace Dream
     ()
     {
         return mInputComponent;
-    }
-
-    ScrollerComponent*
-    ProjectRuntime::getScrollerComponent
-    ()
-    {
-       return mScrollerComponent;
     }
 
     bool
@@ -886,12 +806,47 @@ namespace Dream
     ProjectRuntime::clearAllCaches
     ()
     {
-        if (mAudioCache    != nullptr) mAudioCache->clear();
-        if (mModelCache    != nullptr) mModelCache->clear();
-        if (mShaderCache   != nullptr) mShaderCache->clear();
-        if (mMaterialCache != nullptr) mMaterialCache->clear();
-        if (mTextureCache  != nullptr) mTextureCache->clear();
-        if (mScriptCache   != nullptr) mScriptCache->clear();
+        if (mAudioCache != nullptr)
+        {
+            mAudioCache->lock();
+            mAudioCache->clear();
+            mAudioCache->unlock();
+        }
+
+        if (mModelCache != nullptr)
+        {
+            mModelCache->lock();
+            mModelCache->clear();
+            mModelCache->unlock();
+        }
+
+        if (mShaderCache != nullptr)
+        {
+            mShaderCache->lock();
+            mShaderCache->clear();
+            mShaderCache->unlock();
+        }
+
+        if (mMaterialCache != nullptr)
+        {
+            mMaterialCache->lock();
+            mMaterialCache->clear();
+            mMaterialCache->unlock();
+        }
+
+        if (mTextureCache != nullptr)
+        {
+            mTextureCache->lock();
+            mTextureCache->clear();
+            mTextureCache->unlock();
+        }
+
+        if (mScriptCache != nullptr)
+        {
+            mScriptCache->lock();
+            mScriptCache->clear();
+            mScriptCache->unlock();
+        }
     }
 
     AssetDefinition*
@@ -923,7 +878,12 @@ namespace Dream
     {
         for (auto srt : mSceneRuntimeVector)
         {
-            if (srt->getState() == SceneState::SCENE_STATE_ACTIVE) return true;
+            srt->lock();
+            if (srt->getState() == SceneState::SCENE_STATE_ACTIVE) {
+                srt->unlock();
+                return true;
+            }
+            srt->unlock();
         }
         return false;
     }
@@ -934,14 +894,14 @@ namespace Dream
     {
         for (auto srt : mSceneRuntimeVector)
         {
-            if (
-                srt->getState() >= SceneState::SCENE_STATE_LOADED
-                &&
-                srt->getState() < SceneState::SCENE_STATE_DESTROYED
-                )
+            srt->lock();
+            if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
+                srt->getState() < SceneState::SCENE_STATE_DESTROYED)
             {
+                srt->unlock();
                 return true;
             }
+            srt->unlock();
         }
         return false;
     }
@@ -951,9 +911,17 @@ namespace Dream
     ProjectRuntime::hasSceneRuntime
     (uint32_t uuid)
     {
+        bool result = false;
         for (auto srt : mSceneRuntimeVector)
         {
-            if (srt->getUuid() == uuid) return true;
+            srt->lock();
+            if (srt->getUuid() == uuid)
+            {
+                result = true;
+            }
+            srt->unlock();
+
+            if (result) break;
         }
         return false;
     }

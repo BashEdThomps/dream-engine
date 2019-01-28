@@ -62,7 +62,6 @@ namespace Dream
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
         void exposeAnimationRuntime();
-        void exposePathComponent();
         void exposePathRuntime();
         void exposeModelRuntime();
         void exposeCamera();
