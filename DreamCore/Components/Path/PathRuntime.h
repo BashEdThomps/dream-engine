@@ -23,7 +23,6 @@
 
 using namespace tinyspline;
 using namespace std;
-using namespace nlohmann;
 
 namespace Dream
 {
@@ -40,7 +39,7 @@ namespace Dream
         vector<vec3> getSplinePoints() const;
         vector<quat> getSplineTangents() const;
         vec3 getSplinePoint(int) const;
-        void recalculate();
+        void update();
 
         void generate();
         const static int SPLINE_DIMENSIONS;
@@ -49,20 +48,25 @@ namespace Dream
         size_t getCurrentIndex() const;
         void setCurrentIndex(size_t currentIndex);
 
-        Transform stepPath();
+        mat4 stepPath();
 
         bool getWrapPath() const;
         void setWrapPath(bool wrapPath);
         quat getHeading(vec3 point, vec3 v1, vec3 v2);
 
-        vector<pair<vec3, vec3> > getSplineDerivatives() const;
+        vector<pair<vec3,vec3> > getSplineDerivatives() const;
+        void setToCurrentPoint();
+        void nextPoint();
 
     private:
         bool mWrapPath;
         size_t mCurrentIndex;
         double mUStep;
         vector<vec3> mSplinePoints;
-        vector<pair<vec3,vec3>> mSplineDerivatives;
+        vector<pair<vec3,vec3> > mSplineDerivatives;
         vector<quat> mSplineTangents;
+        mat4 mCurrentTransform;
+        float mVelocity;
+        float mDistanceToTravel;
     };
 }

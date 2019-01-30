@@ -239,6 +239,9 @@ namespace Dream
         const static unsigned int RGBA_VECTOR_SIZE;
 
         // Path =============================================================
+        const static string ASSET_ATTR_ID;
+        const static string ASSET_ATTR_VELOCITY;
+        const static string ASSET_ATTR_POSITION;
         const static string ASSET_ATTR_KEYFRAMES;
         const static string ASSET_ATTR_START_TIME;
         const static string ASSET_ATTR_WRAP;
@@ -418,7 +421,7 @@ namespace Dream
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;
         static map<AssetType,vector<string> > DREAM_ASSET_FORMATS_MAP;
-        static vector<string> DREAM_ANIMATION_SPLINE_TYPES;
+        static vector<string> DREAM_PATH_SPLINE_TYPES;
 
         static string getAssetTypeStringFromTypeEnum(AssetType type);
         static AssetType getAssetTypeEnumFromString(string type);

@@ -30,7 +30,7 @@ namespace Dream
     () : Component()
     {
         #ifdef DREAM_LOG
-        setLogClassName("LifetimeComponent");
+        setLogClassName("LogicComponent");
         #endif
     }
 
@@ -82,10 +82,12 @@ namespace Dream
     {
        for (auto* runt : mUpdateQueue)
        {
-           updateSceneObjectLifetime(runt);
-           updateAnimation(runt);
-           updatePath(runt);
-           updateScroller(runt);
+           if(updateSceneObjectLifetime(runt))
+           {
+               updateAnimation(runt);
+               updatePath(runt);
+               updateScroller(runt);
+           }
        }
        clearUpdateQueue();
     }
@@ -126,11 +128,11 @@ namespace Dream
     {
         if (runt->hasPathRuntime())
         {
-            //runt->getPathRuntime()->update();
+            runt->getPathRuntime()->update();
         }
     }
 
-    void
+    bool
     LogicComponent::updateSceneObjectLifetime
     (SceneObjectRuntime* runt)
     {
@@ -140,18 +142,22 @@ namespace Dream
        {
             long deferral = deferredFor-timeDelta;
             #ifdef DREAM_LOG
-            getLog()->critical("Reducing defferal by {} to {} for {}", timeDelta, deferral, runt->getNameAndUuidString());
+            getLog()->trace("Reducing defferal by {} to {} for {}", timeDelta, deferral, runt->getNameAndUuidString());
             #endif
             runt->setDeferredFor(deferral);
-            if (deferral < 0) {
+            if (deferral < 0)
+            {
                 #ifdef DREAM_LOG
-                getLog()->critical("Loading Deferred Runtime {}", runt->getNameAndUuidString());
+                getLog()->debug("Loading Deferred Runtime {}", runt->getNameAndUuidString());
                 #endif
                 runt->loadDeferred();
             }
-        } else
+        }
+        else
         {
             runt->increaseLifetime(timeDelta);
+            return true;
         }
+        return false;
     }
 }

@@ -27,6 +27,8 @@ namespace DreamTool
           lightViewer(LightViewer(this)),
           selectionHighlighter(SelectionHighlighter(this)),
           cursor(Cursor(this)),
+          pathViewer(PathViewer(this)),
+          animationViewer(AnimationViewer(this)),
           modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
           argc(_argc),
           argv(_argv)
@@ -73,10 +75,14 @@ namespace DreamTool
         lightViewer.init();
         selectionHighlighter.init();
         cursor.init();
+        pathViewer.init();
+        animationViewer.init();
         windowComponent.addGLWidget(&grid);
         windowComponent.addGLWidget(&lightViewer);
         windowComponent.addGLWidget(&selectionHighlighter);
         windowComponent.addGLWidget(&cursor);
+        windowComponent.addGLWidget(&pathViewer);
+        windowComponent.addGLWidget(&animationViewer);
     }
 
     void DTState::run()

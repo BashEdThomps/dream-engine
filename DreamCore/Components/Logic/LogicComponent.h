@@ -30,7 +30,7 @@ namespace Dream
 
         void updateSceneRuntimeTime(SceneRuntime* sr);
         void updateSceneObjects(SceneRuntime* sr);
-        void updateSceneObjectLifetime(SceneObjectRuntime* runt);
+        bool updateSceneObjectLifetime(SceneObjectRuntime* runt);
         void updatePath(SceneObjectRuntime* runt);
         void updateAnimation(SceneObjectRuntime* runt);
         void updateScroller(SceneObjectRuntime* scroller);

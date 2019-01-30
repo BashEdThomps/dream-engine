@@ -18,13 +18,13 @@
 #endif
 
 #ifdef _WIN32
-	#ifndef NOMINMAX
-		#define NOMINMAX // prevent windows redefining min/max
-	#endif
+    #ifndef NOMINMAX
+        #define NOMINMAX // prevent windows redefining min/max
+    #endif
 
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
 
     #include <windows.h>
     #include <GL/gl.h>
@@ -245,6 +245,9 @@ namespace Dream
     const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
 
     // Path ================================================================
+    const string Constants::ASSET_ATTR_ID            = "id";
+    const string Constants::ASSET_ATTR_VELOCITY      = "velocity";
+    const string Constants::ASSET_ATTR_POSITION      = "position";
     const string Constants::ASSET_ATTR_KEYFRAMES     = "keyframes";
     const string Constants::ASSET_ATTR_START_TIME    = "startTime";
     const string Constants::ASSET_ATTR_WRAP          = "wrap";
@@ -955,7 +958,7 @@ namespace Dream
     shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
 #endif
 
-    vector<string> Constants::DREAM_ANIMATION_SPLINE_TYPES
+    vector<string> Constants::DREAM_PATH_SPLINE_TYPES
     {
         DREAM_PATH_TYPE_OPEN,
         DREAM_PATH_TYPE_BEZIER,

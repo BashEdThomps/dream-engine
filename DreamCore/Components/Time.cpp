@@ -54,7 +54,7 @@ namespace Dream
     Time::show
     ()
     {
-        getLog()->critical
+        getLog()->trace
         (
            "Time: Current: {}, Last: {}, Delta: {}" ,
            getCurrentFrameTime(),

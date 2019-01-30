@@ -4,6 +4,9 @@
 #include "PropertyType.h"
 
 #include <glm/vec3.hpp>
+#include "../../../DreamCore/Components/Path/PathDefinition.h"
+#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
+#include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
 
 namespace Dream
 {
@@ -41,6 +44,8 @@ namespace DreamTool
 
     protected:
         void drawImGizmo();
+        void drawPathControlPointImGuizmo(PathDefinition* pDef, PathControlPoint);
+        void drawAnimationKeyframeImGuizmo(AnimationDefinition* pDef, AnimationKeyframe);
         int getStringIndexInVector(string str, vector<string> vec);
         bool drawDeleteSceneObjectButton();
         bool drawDeleteSceneButton();
@@ -68,7 +73,7 @@ namespace DreamTool
         void setPropertyType(PropertyType t);
         void clear();
         void drawPhysicsImGizmo(CompoundChildDefinition);
-        void replaceRuntimeRuntimes(AssetDefinition* assetDef);
+        void replaceRuntimes(AssetDefinition* assetDef);
     private:
         vector<PropertiesTarget> mHistory;
         PropertyType mType;

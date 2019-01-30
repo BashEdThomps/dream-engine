@@ -41,7 +41,7 @@ namespace Dream
          * @param data Set the internal mJson variable to this data.
          */
         inline Definition
-        (json data) : LockableObject("Definition"), mJson(data)
+        (const json& data) : LockableObject("Definition"), mJson(data)
         {
             if (mJson[Constants::UUID].is_string())
             {

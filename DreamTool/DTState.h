@@ -22,6 +22,8 @@
 #include "Widgets/GL/LightViewer.h"
 #include "Widgets/GL/SelectionHighlighter.h"
 #include "Widgets/GL/Cursor.h"
+#include "Widgets/GL/PathViewer.h"
+#include "Widgets/GL/AnimationViewer.h"
 // Models
 #include "Model/TemplatesModel.h"
 #include "Model/PreferencesModel.h"
@@ -64,6 +66,8 @@ namespace DreamTool
         LightViewer lightViewer;
         SelectionHighlighter selectionHighlighter;
         Cursor cursor;
+        PathViewer pathViewer;
+        AnimationViewer animationViewer;
         // Data Models
         TemplatesModel templatesModel;
         PreferencesModel preferencesModel;

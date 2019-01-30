@@ -162,8 +162,20 @@ namespace DreamTool
                         mProjectionMatrix = cam->getProjectionMatrix();
                         mViewMatrix = cam->getViewMatrix();
                     }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
                 }
 
+            }
+            else
+            {
+                return;
             }
         }
 

@@ -31,6 +31,7 @@
 #include "../../../DreamCore/Components/Audio/AudioCache.h"
 #include "../../../DreamCore/Components/Audio/AudioRuntime.h"
 #include "../../../DreamCore/Components/Audio/AudioDefinition.h"
+
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
@@ -50,6 +51,7 @@
 #include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
 
 #include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
+
 
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
 
@@ -546,6 +548,19 @@ namespace DreamTool
                     sceneDef->setCameraMovementSpeed(camSpeed);
                 }
             }
+
+            if(ImGui::Button("Restore Initial Transform"))
+            {
+                if (sceneRuntime)
+                {
+                    auto cam = sceneRuntime->getCamera();
+                    cam->setTranslation(sceneDef->getCameraTranslation());
+                    cam->setPitch(sceneDef->getCameraPitch());
+                    cam->setYaw(sceneDef->getCameraYaw());
+                    cam->setMovementSpeed(sceneDef->getCameraMovementSpeed());
+                }
+            }
+
 
             auto focused = sceneDef->getCameraFocusedOn();
             string focusedStr = "None";
@@ -1514,7 +1529,7 @@ namespace DreamTool
                                 mGizmoUseSnap ? &mGizmoSnap.x : nullptr
                                                 );
                     ccd.parent->updateCompoundChildTransform(ccd);
-                    replaceRuntimeRuntimes(ccd.parent);
+                    replaceRuntimes(ccd.parent);
                 }
             }
         }
@@ -1524,6 +1539,8 @@ namespace DreamTool
     PropertiesWindow::drawAssetProperties
     ()
     {
+        mState->pathViewer.setVisible(false);
+        mState->animationViewer.setVisible(false);
         auto assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
         if (assetDef == nullptr)
         {
@@ -1632,6 +1649,8 @@ namespace DreamTool
     ()
     {
         auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
+        mState->animationViewer.setAnimationDefinition(animDef);
+        mState->animationViewer.setVisible(true);
 
         ImGui::Columns(2);
 
@@ -1650,7 +1669,7 @@ namespace DreamTool
 
         ImGui::Separator();
 
-        ImGui::Columns(6);
+        ImGui::Columns(5);
         // Table Header
         ImGui::Text("Remove");
         ImGui::NextColumn();
@@ -1658,19 +1677,18 @@ namespace DreamTool
         ImGui::Text("Time (ms)");
         ImGui::NextColumn();
 
-        ImGui::Text("Translation");
+        ImGui::Text("Transform");
         ImGui::NextColumn();
 
-        ImGui::Text("Rotation");
-        ImGui::NextColumn();
-
-        ImGui::Text("Scale");
+        ImGui::Text("Edit");
         ImGui::NextColumn();
 
         ImGui::Text("Easing");
         ImGui::NextColumn();
 
         ImGui::Separator();
+
+        static int selected = -1;
 
         for (auto& kf : animDef->getKeyframes())
         {
@@ -1709,7 +1727,6 @@ namespace DreamTool
                 animDef->updateKeyframe(kf);
             }
             ImGui::PopItemWidth();
-            ImGui::NextColumn();
 
             // Rx
             vec3 vRx = kf.getRotation();
@@ -1724,7 +1741,6 @@ namespace DreamTool
                 animDef->updateKeyframe(kf);
             }
             ImGui::PopItemWidth();
-            ImGui::NextColumn();
 
             // Scale
             vec3 vScale = kf.getScale();
@@ -1741,6 +1757,12 @@ namespace DreamTool
             ImGui::PopItemWidth();
             ImGui::NextColumn();
 
+            if(ImGui::Button("Edit"))
+            {
+               selected = kf.getID();
+            }
+            ImGui::NextColumn();
+
             // Easing
             auto easingTypes = AnimationEasing::EasingNames;
             int currentEasingType = kf.getEasingType();
@@ -1753,8 +1775,54 @@ namespace DreamTool
             ImGui::NextColumn();
             ImGui::Separator();
             ImGui::PopID();
+            if (selected == kf.getID())
+            {
+                drawAnimationKeyframeImGuizmo(animDef, kf);
+            }
+            mState->animationViewer.regenerate();
         }
         ImGui::Columns(1);
+    }
+
+    void
+    PropertiesWindow::drawAnimationKeyframeImGuizmo
+    (AnimationDefinition* def, AnimationKeyframe kf)
+    {
+        mat4 mtx(1.0f);
+        mtx = glm::translate(mtx, kf.getTranslation());
+        float* matrix = glm::value_ptr(mtx);
+
+        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
+
+        auto pRunt = mState->project->getRuntime();
+        if (pRunt)
+        {
+            auto sRunt = pRunt->getActiveSceneRuntime();
+            if (sRunt)
+            {
+                auto cam = sRunt->getCamera();
+                if (cam)
+                {
+                    auto proj = cam->getProjectionMatrix();
+                    auto view = cam->getViewMatrix();
+                    ImGuiIO& io = ImGui::GetIO();
+                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+                    ImGuizmo::Manipulate
+                    (
+                        glm::value_ptr(view),
+                        glm::value_ptr(proj),
+                        currentGizmoOperation,
+                        currentGizmoMode,
+                        matrix,
+                        nullptr,
+                        nullptr
+                    );
+                    kf.setTranslation(vec3(mtx[3]));
+                    def->updateKeyframe(kf);
+                }
+            }
+        }
     }
 
     void
@@ -2595,7 +2663,7 @@ namespace DreamTool
         if (modified)
         {
 
-            replaceRuntimeRuntimes(pod);
+            replaceRuntimes(pod);
         }
     }
 
@@ -2647,7 +2715,165 @@ namespace DreamTool
     void
     PropertiesWindow::drawPathAssetProperties
     ()
-    {}
+    {
+        bool needsRegen = false;
+        auto* pathDef = static_cast<PathDefinition*>(mDefinition);
+        mState->pathViewer.setPathDefinition(pathDef);
+        mState->pathViewer.setVisible(true);
+
+        float stepScalar = pathDef->getStepScalar();
+        if (ImGui::DragFloat("Step Scalar",&stepScalar))
+        {
+            pathDef->setStepScalar(stepScalar >= 1.0f ? stepScalar : 1.0f);
+            needsRegen = true;
+        }
+
+        int splineTypeIndex = getStringIndexInVector(pathDef->getSplineType(),Constants::DREAM_PATH_SPLINE_TYPES);
+        if (StringCombo("Spline Type",&splineTypeIndex, Constants::DREAM_PATH_SPLINE_TYPES,Constants::DREAM_PATH_SPLINE_TYPES.size()))
+        {
+            pathDef->setSplineType(Constants::DREAM_PATH_SPLINE_TYPES.at(splineTypeIndex));
+            needsRegen = true;
+        }
+
+        bool wrap = pathDef->getWrap();
+        if (ImGui::Checkbox("Wrap",&wrap))
+        {
+           pathDef->setWrap(wrap);
+            needsRegen = true;
+        }
+
+        float velocity = pathDef->getVelocity();
+        if (ImGui::DragFloat("Velocity",&velocity))
+        {
+           pathDef->setVelocity(velocity);
+            needsRegen = true;
+        }
+
+        ImGui::Text("Control Points");
+        if (ImGui::Button("Add"))
+        {
+            pathDef->addControlPoint();
+            needsRegen = true;
+        }
+        ImGui::Separator();
+
+        ImGui::Columns(3);
+        ImGui::Text("Remove (id)");
+        ImGui::NextColumn();
+        ImGui::Text("Index");
+        ImGui::NextColumn();
+        ImGui::Text("Translation");
+        ImGui::NextColumn();
+
+        static int selected = -1;
+
+        for (auto cp : pathDef->getControlPoints())
+        {
+            bool modified = false;
+            ImGui::PushID(cp.id);
+
+            // Remove
+            if (ImGui::Button("-##remove"))
+            {
+                pathDef->deleteControlPoint(cp);
+            }
+            ImGui::SameLine();
+            ImGui::Text("(%d)",cp.id);
+            ImGui::NextColumn();
+
+            // Index
+            int index = cp.index;
+            ImGui::PushItemWidth(-1);
+            if(ImGui::InputInt("##index",&index))
+            {
+                cp.index = index;
+                modified = true;
+            }
+            ImGui::PopItemWidth();
+            ImGui::NextColumn();
+
+            // Tx
+            if (ImGui::Button("Edit"))
+            {
+                selected = cp.id;
+            }
+            ImGui::SameLine();
+            vec3 vTx = cp.position;
+            float tx[3] = {vTx.x, vTx.y, vTx.z};
+            if (ImGui::InputFloat3("##position",&tx[0]))
+            {
+                vTx.x = tx[0];
+                vTx.y = tx[1];
+                vTx.z = tx[2];
+                cp.position = vTx;
+                modified = true;
+            }
+            ImGui::NextColumn();
+            ImGui::PopID();
+            if (modified)
+            {
+                pathDef->updateControlPoint(cp);
+                needsRegen = true;
+            }
+            if (selected == cp.id)
+            {
+                mState->pathViewer.setSelectedControlPoint(cp.id);
+                drawPathControlPointImGuizmo(pathDef,cp);
+                needsRegen = true;
+            }
+        }
+        if (needsRegen)
+        {
+            replaceRuntimes(pathDef);
+            mState->pathViewer.regenerate();
+        }
+        ImGui::Columns(1);
+        if (ImGui::Button("Deselect"))
+        {
+            selected = -1;
+        }
+    }
+
+   void
+   PropertiesWindow::drawPathControlPointImGuizmo
+   (PathDefinition* pDef, PathControlPoint cp)
+   {
+        mat4 mtx(1.0f);
+        mtx = glm::translate(mtx, cp.position);
+        float* matrix = glm::value_ptr(mtx);
+
+        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
+
+        auto pRunt = mState->project->getRuntime();
+        if (pRunt)
+        {
+            auto sRunt = pRunt->getActiveSceneRuntime();
+            if (sRunt)
+            {
+                auto cam = sRunt->getCamera();
+                if (cam)
+                {
+                    auto proj = cam->getProjectionMatrix();
+                    auto view = cam->getViewMatrix();
+                    ImGuiIO& io = ImGui::GetIO();
+                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+                    ImGuizmo::Manipulate
+                    (
+                        glm::value_ptr(view),
+                        glm::value_ptr(proj),
+                        currentGizmoOperation,
+                        currentGizmoMode,
+                        matrix,
+                        nullptr,
+                        nullptr
+                    );
+                    cp.position = vec3(mtx[3]);
+                    pDef->updateControlPoint(cp);
+                }
+            }
+        }
+   }
 
     void
     PropertiesWindow::drawParticleEmitterAssetProperties
@@ -2956,7 +3182,7 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::replaceRuntimeRuntimes
+    PropertiesWindow::replaceRuntimes
     (AssetDefinition* assetDef)
     {
         auto pRunt = mState->project->getRuntime();

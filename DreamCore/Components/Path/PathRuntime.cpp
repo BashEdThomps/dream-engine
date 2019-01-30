@@ -18,44 +18,49 @@
 
 #include "PathRuntime.h"
 
-#include "../../deps/tinyspline/tinyspline.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "../Transform.h"
+#include "../Time.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../deps/tinyspline/tinyspline.h"
 
 namespace Dream
 {
 
     PathRuntime::PathRuntime
-    (
-        PathDefinition* definition,
-        SceneObjectRuntime* runtime
-    ) : DiscreteAssetRuntime(definition,runtime),
-          mWrapPath(true),
+    (PathDefinition* definition, SceneObjectRuntime* runtime)
+        : DiscreteAssetRuntime(definition,runtime),
+          mWrapPath(false),
           mCurrentIndex(0),
+          mVelocity(1.0),
+          mCurrentTransform(mat4(1.0f)),
+          mDistanceToTravel(0.0f),
           mUStep(0.05)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("PathRuntime");
-        auto log = getLog();
-        log->trace("Constructing Object");
-#endif
-
+        getLog()->trace("Constructing Object");
+        #endif
     }
 
     PathRuntime::~PathRuntime
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destroying Object");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destroying Object");
+        #endif
     }
 
-    void PathRuntime::recalculate
+    void
+    PathRuntime::update
     ()
     {
-        useDefinition();
+        auto transform = stepPath();
+        mSceneObjectRuntime->getTransform().setMatrix(transform);
     }
 
     bool
@@ -63,50 +68,49 @@ namespace Dream
     ()
     {
         auto animDef = static_cast<PathDefinition*>(mDefinition);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug(
+        #ifdef DREAM_LOG
+        getLog()->debug(
             "Loading {} spline with {} control points for {} ",
             animDef->getSplineType(),
-            animDef->numberOfControlPoints(),
+            animDef->getControlPoints().size(),
             getNameAndUuidString()
         );
-#endif
+        #endif
 
-        if (animDef->numberOfControlPoints() < 2)
+        mWrapPath = animDef->getWrap();
+        mVelocity = animDef->getVelocity();
+
+        int nControlPoints = animDef->getControlPoints().size();
+
+        if (nControlPoints < 2)
         {
-#ifdef DREAM_LOG
-            log->warn("Skipping curve, not enough control points");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->warn("Skipping curve, not enough control points");
+            #endif
             mLoaded = true;
             return true;
         }
 
-        mUStep = 1.0/(animDef->numberOfControlPoints()*animDef->getStepScalar());
+        mUStep = 1.0/(nControlPoints*animDef->getStepScalar());
 
-        if (animDef->numberOfControlPoints() >= SPLINE_DIMENSIONS)
+        if (nControlPoints >= SPLINE_DIMENSIONS)
         {
             generate();
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         else
         {
-            log->error("Not enough control points to generate spline");
+            getLog()->error("Not enough control points to generate spline");
         }
-#endif
-
+        #endif
         mLoaded = true;
         return mLoaded;
-
     }
 
     void
     PathRuntime::generate
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto animDef = static_cast<PathDefinition*>(mDefinition);
         auto splineType = animDef->getSplineTypeEnum();
 
@@ -118,21 +122,20 @@ namespace Dream
         mSplineTangents.clear();
         mSplineDerivatives.clear();
 
-        if (animDef->numberOfControlPoints() <= SPLINE_DIMENSIONS) return;
+        int nControlPoints =  animDef->getControlPoints().size();
 
-        ts_bspline_new(
-            animDef->numberOfControlPoints(),
-            SPLINE_DIMENSIONS, SPLINE_DEGREES,
-            splineType, &spline);
+        if (nControlPoints <= SPLINE_DIMENSIONS) return;
+
+        ts_bspline_new(nControlPoints, SPLINE_DIMENSIONS, SPLINE_DEGREES, splineType, &spline);
 
         /* Setup control points. */
         ts_bspline_control_points(&spline, &ctrlp);
 
-        for (json cp : *animDef->getControlPoints())
+        for (auto cp : animDef->getControlPoints())
         {
-            double x = cp[Constants::X];
-            double y = cp[Constants::Y];
-            double z = cp[Constants::Z];
+            double x = cp.position.x;
+            double y = cp.position.y;
+            double z = cp.position.z;
             // Setup control points.
             ctrlp[i++] = x;
             ctrlp[i++] = y;
@@ -164,10 +167,10 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
-#ifdef DREAM_LOG
-                log->debug("Generating with u={}",u);
-                log->debug("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
-#endif
+                #ifdef DREAM_LOG
+                getLog()->trace("Generating with u={}",u);
+                getLog()->trace("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
+                #endif
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
                 {
@@ -183,14 +186,16 @@ namespace Dream
                 mSplinePoints.push_back(point);
                 mSplineTangents.push_back(getHeading(point, tan1,tan2));
                 mSplineDerivatives.push_back(pair<vec3,vec3>(tan1,tan2));
+
+                ts_deboornet_free(&net1);
+                ts_deboornet_free(&net2);
+                ts_deboornet_free(&net3);
+
+                free(result1);
+                free(result2);
+                free(result3);
             }
 
-            ts_deboornet_free(&net1);
-            ts_deboornet_free(&net2);
-            ts_deboornet_free(&net3);
-            free(result1);
-            free(result2);
-            free(result3);
             free(ctrlp);
             free(knots);
         }
@@ -203,90 +208,144 @@ namespace Dream
 
         }
 
-#ifdef DREAM_LOG
-        log->debug("Finished Loading spline for {}",getNameAndUuidString());
-#endif
+        ts_bspline_free(&spline);
+        ts_bspline_free(&derivative);
+
+        #ifdef DREAM_LOG
+        getLog()->debug("Finished Loading spline for {}",getNameAndUuidString());
+        #endif
     }
 
-    vector<pair<vec3, vec3> > PathRuntime::getSplineDerivatives() const
+    vector<pair<vec3,vec3> >
+    PathRuntime::getSplineDerivatives
+    () const
     {
         return mSplineDerivatives;
     }
 
-    bool PathRuntime::getWrapPath() const
+    bool
+    PathRuntime::getWrapPath
+    () const
     {
         return mWrapPath;
     }
 
-    void PathRuntime::setWrapPath(bool wrapPath)
+    void
+    PathRuntime::setWrapPath
+    (bool wrapPath)
     {
         mWrapPath = wrapPath;
     }
 
-    size_t PathRuntime::getCurrentIndex() const
+    size_t
+    PathRuntime::getCurrentIndex
+    () const
     {
         return mCurrentIndex;
     }
 
-    void PathRuntime::setCurrentIndex(size_t currentIndex)
+    void
+    PathRuntime::setCurrentIndex
+    (size_t currentIndex)
     {
         mCurrentIndex = currentIndex;
     }
 
-    Transform PathRuntime::stepPath()
+    mat4
+    PathRuntime::stepPath
+    ()
     {
-        Transform retval;
-
         if (mSplinePoints.empty())
         {
-            return retval;
+            return mat4(1.0f);
         }
 
-        mCurrentIndex++;
-
-        if (mCurrentIndex >= mSplinePoints.size())
+        if (mCurrentIndex == 0)
         {
-            if (mWrapPath)
+            setToCurrentPoint();
+            nextPoint();
+        }
+        else
+        {
+            float distanceToNext = 0.0f;
+            if (mCurrentIndex != mSplinePoints.size()-1)
             {
-                mCurrentIndex = 0;
+                mDistanceToTravel += mSceneObjectRuntime
+                    ->getSceneRuntime()
+                    ->getProjectRuntime()
+                    ->getTime()
+                    ->perSecond(mVelocity);
+
+                vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
+                distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
+                #ifdef DREAM_LOG
+                getLog()->critical("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
+                #endif
             }
             else
             {
-                mCurrentIndex = mSplinePoints.size()-1;
+                mDistanceToTravel = 0.0f;
+            }
+
+            if (mDistanceToTravel >= distanceToNext)
+            {
+                mDistanceToTravel = 0.0f;
+                nextPoint();
+                setToCurrentPoint();
             }
         }
+        return mCurrentTransform;
+    }
 
+    void PathRuntime::nextPoint()
+    {
+        mCurrentIndex++;
+        if (mCurrentIndex >= mSplinePoints.size())
+        {
+            if (mWrapPath)
+                mCurrentIndex = 0;
+            else
+                mCurrentIndex = mSplinePoints.size()-1;
+        }
+    }
+
+    void
+    PathRuntime::setToCurrentPoint
+    ()
+    {
         vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
         quat thisOrient = mSplineTangents.at(mCurrentIndex);
-
         mat4 mat(1.0f);
         mat  = glm::translate(mat,thisPoint);
         auto rot = mat4_cast(thisOrient);
-        retval.setMatrix(mat*rot);
+        mCurrentTransform = mat*rot;
+        #ifdef DREAM_LOG
         vec3 ang = eulerAngles(thisOrient);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
+        getLog()->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),
             thisPoint.x, thisPoint.y, thisPoint.z,
             ang.x, ang.y, ang.z
         );
-#endif
-        return retval;
-
+        #endif
     }
 
-    vector<vec3> PathRuntime::getSplinePoints() const
+    vector<vec3>
+    PathRuntime::getSplinePoints
+    () const
     {
         return mSplinePoints;
     }
 
-    vector<glm::quat> PathRuntime::getSplineTangents() const
+    vector<quat>
+    PathRuntime::getSplineTangents
+    () const
     {
        return mSplineTangents;
     }
 
-    glm::vec3 PathRuntime::getSplinePoint(int index) const
+    vec3
+    PathRuntime::getSplinePoint
+    (int index) const
     {
         if (index >=0 && index < mSplinePoints.size())
         {
@@ -295,19 +354,25 @@ namespace Dream
         return vec3(0);
     }
 
-    double PathRuntime::getUStep() const
+    double
+    PathRuntime::getUStep
+    () const
     {
         return mUStep;
     }
 
-    void PathRuntime::setUStep(double uStep)
+    void
+    PathRuntime::setUStep
+    (double uStep)
     {
         mUStep = uStep;
     }
 
-    quat PathRuntime::getHeading(vec3 point, vec3 t1, vec3 t2)
+    quat
+    PathRuntime::getHeading
+    (vec3 point, vec3 t1, vec3 t2)
     {
-        glm::mat4 mtx = glm::lookAt(t1,t2,vec3(0,1,0));
+        mat4 mtx = lookAt(t1,t2,vec3(0,1,0));
         quat q = quat(mtx);
         q.x = -q.x;
         q.y = -q.y;
@@ -318,5 +383,4 @@ namespace Dream
 
     const int PathRuntime::SPLINE_DIMENSIONS = 3;
     const int PathRuntime::SPLINE_DEGREES = 3;
-
 }

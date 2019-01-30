@@ -24,6 +24,13 @@
 namespace Dream
 {
 
+    struct PathControlPoint
+    {
+       int id = 0;
+       int index = 0;
+       vec3 position = vec3(0.0f);
+    };
+
     class PathDefinition : public AssetDefinition
     {
     public:
@@ -32,15 +39,26 @@ namespace Dream
 
         void setWrap(bool wrap);
         bool getWrap();
-        json createControlPoint(int index);
-        json* getControlPoint(int i);
-        json* getControlPoints();
-        size_t   numberOfControlPoints();
+
+        float getVelocity();
+        void setVelocity(float v);
+
+        PathControlPoint addControlPoint();
+        void deleteControlPoint(const PathControlPoint& cp);
+        void updateControlPoint(const PathControlPoint& cp);
+        vector<PathControlPoint> getControlPoints();
+
         string getSplineType();
-        void setSplineType(string type);
+        void setSplineType(const string& type);
         tsBSplineType getSplineTypeEnum();
+
         void setStepScalar(double scaler);
         double getStepScalar();
-    };
 
+        PathControlPoint unwrapControlPoint(const json&);
+        json wrapControlPoint(const PathControlPoint& cp);
+    protected:
+        int nextID();
+        void ensureControlPointsArray();
+    };
 }
