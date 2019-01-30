@@ -33,9 +33,16 @@ namespace DreamTool
     {
         WindowSizeChanged = true;
     }
+    void
+    GLFWErrorCallback
+    (int _errno, const char* errmsg)
+    {
+        cout << "GLFW Error: Number " << _errno << "\nMessage: " << errmsg << endl;
+    }
 
     DTWindowComponent::DTWindowComponent
     () : WindowComponent(),
+         mWindow(nullptr),
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
@@ -55,8 +62,11 @@ namespace DreamTool
         log->info("Destructing" );
 #endif
         cleanUpImGui();
-        glfwTerminate();
-        mWindow = nullptr;
+        if (mWindow)
+        {
+            glfwTerminate();
+            mWindow = nullptr;
+        }
     }
 
     GLFWwindow*DTWindowComponent::getGlfwWindow()
@@ -104,6 +114,7 @@ namespace DreamTool
         auto log = getLog();
         log->debug("Initialising GLFW");
 #endif
+        glfwSetErrorCallback(GLFWErrorCallback);
 
         /* Initialize the library */
         if (!glfwInit())
@@ -118,10 +129,18 @@ namespace DreamTool
         //glfwWindowHint(GLFW_SAMPLES, 4);
 #ifdef WIN32
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#else
+#endif
+#ifdef __APPLE__
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+#endif
+#ifdef __linux__
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #endif

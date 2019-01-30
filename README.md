@@ -81,5 +81,6 @@ sudo apt-get -y install \
     libopenal-dev \
     libvorbis-dev \
     libalut-dev \
-    liblua5.3-dev
+    liblua5.3-dev \
+    libspdlog-dev
 ```

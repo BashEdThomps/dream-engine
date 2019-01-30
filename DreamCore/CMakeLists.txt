@@ -54,7 +54,21 @@ IF (WIN32)
             ${OPENAL_LIBRARY}
             ${OPENGL_LIBRARIES}
         )
-ELSE()
+ELSEIF (UNIX AND NOT APPLE) # Linux
+    target_link_libraries(
+         DreamCore
+         -lpthread
+         -ldl
+        ${ALUT_LIBRARY}
+        ${ASSIMP_LIBRARY_RELEASE}
+        ${BULLET_LIBRARY}
+        ${GLEW_LIBRARY_RELEASE}
+        ${LUA_LIBRARIES}
+        ${OGGVORBIS_LIBRARIES}
+        ${OPENAL_LIBRARY}
+        ${OPENGL_LIBRARIES}
+    )
+ELSEIF(APPLE)
         target_link_libraries(
             DreamCore
             -lpthread

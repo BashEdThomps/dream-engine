@@ -7,8 +7,9 @@
 
 #pragma once
 
-#define GL_SILENCE_DEPRECATION
+
 #ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
     #include <OpenGL/gl3.h>
 #endif
 
@@ -17,6 +18,12 @@
     #include <gl/glew.h>
     #include <gl/GLU.h>
 #endif
+
+#ifdef __linux__
+    #include <GL/glew.h>
+    #include <GL/gl.h>
+#endif
+
 
 #include "../DTWidget.h"
 #include <glm/glm.hpp>

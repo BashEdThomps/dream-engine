@@ -12,9 +12,14 @@
 
 #include "Constants.h"
 
-#define GL_SILENCE_DEPRECATION
+
 #ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
     #include <OpenGL/gl3.h>
+#endif
+
+#ifdef __linux__
+    #include <GL/gl.h>
 #endif
 
 #ifdef _WIN32

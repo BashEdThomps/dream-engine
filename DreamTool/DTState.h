@@ -4,6 +4,12 @@
 #include <Windows.h>
 #include <GL/glew.h>
 #endif
+
+#ifdef __linux__
+    #include <GL/glew.h>
+    #include <GL/gl.h>
+#endif
+
 #include "../DreamCore/Common/DreamObject.h"
 #include "Window/DTWindowComponent.h"
 // ImGui Widgets
@@ -86,7 +92,7 @@ namespace DreamTool
         DTState(int _argc, char** _argv);
         ~DTState();
 
-        void init();
+        bool init();
         void run();
         void FPS();
         void handleEditorInput(SceneRuntime*);

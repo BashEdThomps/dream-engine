@@ -92,7 +92,7 @@ namespace Dream
                 auto log = spdlog::get(_CLASSNAME_);
                 if (log == nullptr)
                 {
-                    log = spdlog::stdout_color_st(_CLASSNAME_);
+                    log = spdlog::stdout_color_mt(_CLASSNAME_);
                 }
                 return log;
             }

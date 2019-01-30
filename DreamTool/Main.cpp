@@ -20,13 +20,16 @@ main
 (int argc,char** argv)
 {
     #ifdef DREAM_LOG
-    spdlog::set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
     auto log = spdlog::stdout_color_mt("Main");
     log->trace("Starting...");
     #endif
     DTState state(argc,argv);
-    state.init();
+    if(!state.init())
+    {
+        return 1;
+    }
     state.run();
 
     #ifdef DREAM_LOG

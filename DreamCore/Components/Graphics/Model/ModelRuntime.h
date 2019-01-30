@@ -18,18 +18,21 @@
 #ifdef __APPLE__
     #define GL_SILENCE_DEPRECATION
     #include <OpenGL/gl3.h>
-    #include <assimp/Importer.hpp>
-    #include <assimp/material.h>
+#endif
+
+#ifdef __linux__
+    #include <GL/glew.h>
+    #include <GL/gl.h>
 #endif
 
 #ifdef WIN32
     #include <Windows.h>
     #include <GL/glew.h>
     #include <gl/GLU.h>
-    #include <assimp/Importer.hpp>
-    #include <assimp/material.h>
 #endif
 
+#include <assimp/Importer.hpp>
+#include <assimp/material.h>
 #include <vector>
 #include <string>
 #include <map>

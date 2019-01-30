@@ -45,7 +45,7 @@ namespace DreamTool
         #endif
     }
 
-    void DTState::init()
+    bool DTState::init()
     {
         #ifdef WIN32
         windowComponent.setUiFontSize(24.0f);
@@ -54,7 +54,10 @@ namespace DreamTool
         windowComponent.setUiFontSize(16.0f);
         windowComponent.setMonoFontSize(18.0f);
         #endif
-        windowComponent.init();
+        if (!windowComponent.init())
+        {
+            return false;
+        }
 
         ScriptComponent::AddPrintListener(&luaDebugWindow);
 
@@ -83,6 +86,7 @@ namespace DreamTool
         windowComponent.addGLWidget(&cursor);
         windowComponent.addGLWidget(&pathViewer);
         windowComponent.addGLWidget(&animationViewer);
+        return true;
     }
 
     void DTState::run()

@@ -39,15 +39,27 @@ if (WIN32)
                 ${GLFW_LIBRARY}
         ${LUA_LIBRARIES}
     )
-else()
+elseif(UNIX AND NOT APPLE) # Linux
     target_link_libraries(
         ${PROJECT_NAME}
         DreamCore
         -lpthread
         -ldl
-            ${ASSIMP_LIBRARIES}
-            ${BULLET_LIBRARY}
-            ${GLEW_LIBRARY}
+        ${ASSIMP_LIBRARIES}
+        ${BULLET_LIBRARY}
+        ${GLEW_LIBRARY}
+        ${GLFW_LIBRARY}
+        ${LUA_LIBRARIES}
+    )
+elseif(APPLE)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        DreamCore
+        -lpthread
+        -ldl
+        ${ASSIMP_LIBRARIES}
+        ${BULLET_LIBRARY}
+        ${GLEW_LIBRARY}
         ${GLFW_LIBRARY}
         ${LUA_LIBRARIES}
     )

@@ -21,7 +21,7 @@
 
 #ifdef DREAM_LOG
     #include <spdlog/spdlog.h>
-    #include <spdlog/sinks/stdout_color_sinks.h>
+    #include <spdlog/sinks/stdout_sinks.h>
 #endif
 
 using namespace std;

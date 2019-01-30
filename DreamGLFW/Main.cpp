@@ -22,7 +22,15 @@
 
 #ifdef DREAM_LOG
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+    #ifdef WIN32
+        #include <spdlog/sinks/stdout_color_sinks.h>
+    #endif
+    #ifdef __APPLE__
+        #include <spdlog/sinks/stdout_color_sinks.h>
+    #endif
+    #ifdef __linux__
+        #include <spdlog/sinks/stdout_sinks.h>
+    #endif
 #endif
 
 #include "../DreamCore/Scene/SceneRuntime.h"

@@ -28,6 +28,13 @@ namespace DreamGLFW
     }
 
     void
+    GLFWErrorCallback
+    (int _errno, const char* errmsg)
+    {
+        cout << "GLFW Error: Number " << _errno << "\nMessage: " << errmsg << endl;
+    }
+
+    void
     KeyboardInputCallback
     (GLFWwindow* window, int key, int scancode, int action, int mods)
     {
@@ -123,7 +130,7 @@ namespace DreamGLFW
         auto log = getLog();
         log->debug("Initialising GLFW");
 #endif
-
+        glfwSetErrorCallback(GLFWErrorCallback);
         /* Initialize the library */
         if (!glfwInit())
         {
