@@ -51,20 +51,18 @@ namespace Dream
           mShaderCache(shaderCache),
           mGlobalInverseTransform(mat4(1.0f))
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("ModelRuntime");
-        auto log = getLog();
-        log->trace( "Constructing {}", definition->getNameAndUuidString() );
-#endif
+        getLog()->trace( "Constructing {}", definition->getNameAndUuidString() );
+        #endif
     }
 
     ModelRuntime::~ModelRuntime
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destroying Object");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace( "Destroying Object");
+        #endif
         for (auto mesh : mMeshes)
         {
             delete mesh;
@@ -78,10 +76,9 @@ namespace Dream
     ()
     {
         string path = getAssetFilePath();
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->info( "Loading Model - {}" , path);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->info( "Loading Model - {}" , path);
+        #endif
 
         mMaterialNames.clear();
 
@@ -89,9 +86,9 @@ namespace Dream
 
         if (model == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("Could not get model importer, load failed");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Could not get model importer, load failed");
+            #endif
             return false;
         }
 
@@ -99,9 +96,9 @@ namespace Dream
 
         if(scene == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("Could not get assimp scene from model. Loading failed");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Could not get assimp scene from model. Loading failed");
+            #endif
             return false;
         }
 
@@ -248,9 +245,6 @@ namespace Dream
     ModelRuntime::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         processBoneData(mesh);
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
@@ -270,18 +264,18 @@ namespace Dream
             auto material = static_cast<MaterialRuntime*>(mMaterialCache->getRuntime(materialUuid));
             if (material == nullptr)
             {
-#ifdef DREAM_LOG
-                log->error(
+                #ifdef DREAM_LOG
+                getLog()->error(
                     "No material for mesh {} in model {}."
                     " Cannot create mesh with null material.",
                     mesh->mName.C_Str(), getNameAndUuidString()
                 );
-#endif
+                #endif
                 return nullptr;
             }
-#ifdef DREAM_LOG
-            log->debug( "Using Material {}" , material->getName());
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug( "Using Material {}" , material->getName());
+            #endif
             BoundingBox bb = updateBoundingBox(mesh);
             mBoundingBox.integrate(bb);
 
@@ -289,17 +283,17 @@ namespace Dream
             (this, string(mesh->mName.C_Str()), vertices, indices,
                 material, bb);
             material->addMesh(aMesh);
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             material->debug();
-#endif
+            #endif
             return aMesh;
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         else
         {
-            log->critical("Material Cache is nullptr");
+            getLog()->critical("Material Cache is nullptr");
         }
-#endif
+        #endif
 
         return nullptr;
     }
@@ -350,10 +344,9 @@ namespace Dream
     ModelRuntime::loadImporter
     (string path)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading {} from disk",  path);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Loading {} from disk",  path);
+        #endif
 
         auto importer = make_shared<Importer>();
         importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -361,9 +354,9 @@ namespace Dream
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-#ifdef DREAM_LOG
-            log->error( "Error {}" ,importer->GetErrorString() );
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error( "Error {}" ,importer->GetErrorString() );
+            #endif
             return nullptr;
         }
 
@@ -374,10 +367,9 @@ namespace Dream
     ModelRuntime::updateBoundingBox
     (aiMesh* mesh)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Updating bounding box");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Updating bounding box");
+        #endif
 
         BoundingBox bb;
 

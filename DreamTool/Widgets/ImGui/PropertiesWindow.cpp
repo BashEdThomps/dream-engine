@@ -5,33 +5,24 @@
 #endif
 
 #include "PropertiesWindow.h"
-
 #include <glm/gtc/type_ptr.hpp>
-
 #include "../../deps/ImFileSystem/imguifilesystem.h"
 #include "../../deps/ImGuizmo/ImGuizmo.h"
 #include "../../DTState.h"
-
-
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Project/ProjectDefinition.h"
 #include "../../../DreamCore/Project/ProjectDirectory.h"
-
 #include "../../../DreamCore/Scene/SceneDefinition.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
-
 #include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
 #include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
-
-#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
-#include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
-#include "../../../DreamCore/Components/Animation/AnimationRuntime.h"
-
+#include "../../../DreamCore/Components/Logic/Animation/AnimationDefinition.h"
+#include "../../../DreamCore/Components/Logic/Animation/AnimationKeyframe.h"
+#include "../../../DreamCore/Components/Logic/Animation/AnimationRuntime.h"
 #include "../../../DreamCore/Components/Audio/AudioCache.h"
 #include "../../../DreamCore/Components/Audio/AudioRuntime.h"
 #include "../../../DreamCore/Components/Audio/AudioDefinition.h"
-
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
@@ -49,12 +40,8 @@
 #include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
 #include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
-
-#include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
-
-
+#include "../../../DreamCore/Components/Logic/Scroller/ScrollerDefinition.h"
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
-
 #include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
 #include "../../../DreamCore/Components/Scripting/ScriptRuntime.h"
 
@@ -118,51 +105,30 @@ namespace DreamTool
     PropertiesWindow::drawDeleteSceneObjectButton
     ()
     {
-        bool retval = false;
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
-
         if (ImGui::Button("Delete"))
         {
-            ImGui::OpenPopup("Confirm Delete SceneObject");
-        }
-
-        if(ImGui::BeginPopupModal("Confirm Delete SceneObject"))
-        {
-            ImGui::Text("\n"
-                        "Are you sure you want to delete this SceneObject?\n"
-                        "\n");
-            ImGui::Separator();
-            if (ImGui::Button("Cancel",ImVec2(0,0)))
+            if (soDef)
             {
-                ImGui::CloseCurrentPopup();
+                auto parent = soDef->getParentSceneObject();
+                if (parent)
+                {
+                    parent->removeChildDefinition(soDef);
+                }
             }
-            ImGui::SameLine();
-            if (ImGui::Button("Delete",ImVec2(0,0)))
+            if (soRuntime)
             {
-                if (soDef)
-                {
-                    auto parent = soDef->getParentSceneObject();
-                    if (parent)
-                    {
-                        parent->removeChildDefinition(soDef);
-                    }
-                }
-                if (soRuntime)
-                {
-                    auto parent = soRuntime->getParentRuntime();
-                    parent->removeChildRuntime(soRuntime);
-                }
-                mState->selectionHighlighter.clearSelection();
-                removeFromHistory(mDefinition);
-                mDefinition = nullptr;
-                mRuntime = nullptr;
-                retval = true;
-                ImGui::CloseCurrentPopup();
+                auto parent = soRuntime->getParentRuntime();
+                parent->removeChildRuntime(soRuntime);
             }
-            ImGui::EndPopup();
+            mState->selectionHighlighter.clearSelection();
+            removeFromHistory(mDefinition);
+            mDefinition = nullptr;
+            mRuntime = nullptr;
+            return true;
         }
-        return retval;
+        return false;
     }
 
     bool

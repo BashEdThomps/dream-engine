@@ -16,9 +16,12 @@
 #include "../SceneRuntime.h"
 #include "../SceneDefinition.h"
 #include "../../Components/Event.h"
-#include "../../Components/Path/PathRuntime.h"
-#include "../../Components/Animation/AnimationDefinition.h"
-#include "../../Components/Animation/AnimationRuntime.h"
+#include "../../Components/Logic/Path/PathRuntime.h"
+#include "../../Components/Logic/Animation/AnimationDefinition.h"
+#include "../../Components/Logic/Animation/AnimationRuntime.h"
+#include "../../Components/Logic/Path/PathDefinition.h"
+#include "../../Components/Logic/Scroller/ScrollerDefinition.h"
+#include "../../Components/Logic/Scroller/ScrollerRuntime.h"
 #include "../../Components/Audio/AudioCache.h"
 #include "../../Components/Audio/AudioRuntime.h"
 #include "../../Components/Audio/AudioComponent.h"
@@ -34,18 +37,15 @@
 #include "../../Components/Graphics/Light/LightDefinition.h"
 #include "../../Components/Graphics/Model/ModelDefinition.h"
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-#include "../../Components/Path/PathDefinition.h"
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
 #include "../../Components/Scripting/ScriptDefinition.h"
 #include "../../Components/Scripting/ScriptComponent.h"
 #include "../../Components/Scripting/ScriptRuntime.h"
-#include "../../Components/Scroller/ScrollerDefinition.h"
-#include "../../Components/Scroller/ScrollerRuntime.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
 #include "../../Utilities/Uuid.h"
-
+#include "../../Components/Logic/LogicTasks.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 
@@ -71,6 +71,7 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mBoundingBox(),
+        mLogicUpdateTask(nullptr),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -107,6 +108,11 @@ namespace Dream
             }
         }
         mChildRuntimes.clear();
+
+        if (mLogicUpdateTask)
+        {
+            mLogicUpdateTask->setExpired(true);
+        }
 
         removeScrollerRuntime();
         removeAnimationRuntime();
@@ -354,12 +360,16 @@ namespace Dream
         return mAssetDefinitions;
     }
 
-    bool SceneObjectRuntime::getAlwaysDraw() const
+    bool
+    SceneObjectRuntime::getAlwaysDraw
+    () const
     {
         return mAlwaysDraw;
     }
 
-    void SceneObjectRuntime::setAlwaysDraw(bool alwaysDraw)
+    void
+    SceneObjectRuntime::setAlwaysDraw
+    (bool alwaysDraw)
     {
         mAlwaysDraw = alwaysDraw;
     }
@@ -379,7 +389,8 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::initTransform()
+    SceneObjectRuntime::initTransform
+    ()
     {
         if (mDefinition)
         {
@@ -421,7 +432,9 @@ namespace Dream
         return mEventQueue;
     }
 
-    void SceneObjectRuntime::clearEventQueue()
+    void
+    SceneObjectRuntime::clearEventQueue
+    ()
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -430,7 +443,9 @@ namespace Dream
         mEventQueue.clear();
     }
 
-    void SceneObjectRuntime::collectGarbage()
+    void
+    SceneObjectRuntime::collectGarbage
+    ()
     {
         #ifdef DREAM_LOG
         auto log = getLog();
@@ -1296,5 +1311,19 @@ namespace Dream
     const
     {
         return mDieAfter;
+    }
+
+    void
+    SceneObjectRuntime::clearLogicUpdateTask
+    ()
+    {
+        mLogicUpdateTask = nullptr;
+    }
+
+    void
+    SceneObjectRuntime::setLogicUpdateTask
+    (LogicUpdateTask* logicUpdateTask)
+    {
+        mLogicUpdateTask = logicUpdateTask;
     }
 }

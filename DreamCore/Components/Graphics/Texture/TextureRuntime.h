@@ -40,9 +40,7 @@ namespace Dream
 {
     class TextureDefinition;
     class SceneObjectRuntime;
-    class Runtime;
-
-
+    class TextureCreationTask;
 
     class TextureRuntime : public SharedAssetRuntime
     {
@@ -82,7 +80,6 @@ namespace Dream
         void setImage(unsigned char* image);
 
         void clearCreateTextureTask();
+        void setTextureCreationTask(TextureCreationTask* task);
     };
-
-
-} // end of Dream
+}

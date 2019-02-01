@@ -15,25 +15,25 @@
 
 
 #include "LogicComponent.h"
-
+#include "LogicTasks.h"
 #include "../../Components/Time.h"
-
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../Animation/AnimationRuntime.h"
-#include "../Path/PathRuntime.h"
-#include "../Scroller/ScrollerRuntime.h"
+#include "LogicTasks.h"
+
+using std::thread;
 
 namespace Dream
 {
     LogicComponent::LogicComponent
-    () : Component()
+    () : Component(),
+        mTaskQueueThread(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("LogicComponent");
+        startTaskQueueThread();
         #endif
     }
-
 
     LogicComponent::~LogicComponent
     ()
@@ -41,8 +41,8 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Destroying Object");
         #endif
+        joinTaskQueueThread();
     }
-
 
     bool
     LogicComponent::init
@@ -82,12 +82,9 @@ namespace Dream
     {
        for (auto* runt : mUpdateQueue)
        {
-           if(updateSceneObjectLifetime(runt))
-           {
-               updateAnimation(runt);
-               updatePath(runt);
-               updateScroller(runt);
-           }
+           mTaskQueueMutex.lock();
+           mTaskQueue.push_back(new LogicUpdateTask(runt));
+           mTaskQueueMutex.unlock();
        }
        clearUpdateQueue();
     }
@@ -106,58 +103,44 @@ namespace Dream
     }
 
     void
-    LogicComponent::updateAnimation(SceneObjectRuntime* runt)
+    LogicComponent::executeTaskQueue
+    ()
     {
-        if (runt->hasAnimationRuntime())
+        while (mRunningTaskQueue)
         {
-            runt->getAnimationRuntime()->update();
-        }
-    }
-
-    void
-    LogicComponent::updateScroller(SceneObjectRuntime* runt)
-    {
-        if (runt->hasScrollerRuntime())
-        {
-            runt->getScrollerRuntime()->update();
-        }
-    }
-
-    void
-    LogicComponent::updatePath(SceneObjectRuntime* runt)
-    {
-        if (runt->hasPathRuntime())
-        {
-            runt->getPathRuntime()->update();
-        }
-    }
-
-    bool
-    LogicComponent::updateSceneObjectLifetime
-    (SceneObjectRuntime* runt)
-    {
-       long timeDelta = mTime->getFrameTimeDelta();
-       long deferredFor = runt->getDeferredFor();
-       if (deferredFor > 0)
-       {
-            long deferral = deferredFor-timeDelta;
-            #ifdef DREAM_LOG
-            getLog()->trace("Reducing defferal by {} to {} for {}", timeDelta, deferral, runt->getNameAndUuidString());
-            #endif
-            runt->setDeferredFor(deferral);
-            if (deferral < 0)
+            mTaskQueueMutex.lock();
+            for (LogicUpdateTask* t : mTaskQueue)
             {
-                #ifdef DREAM_LOG
-                getLog()->debug("Loading Deferred Runtime {}", runt->getNameAndUuidString());
-                #endif
-                runt->loadDeferred();
+                if (!t->hasExpired())
+                {
+                    t->execute();
+                }
+                delete t;
             }
+            #ifdef DREAM_LOG
+            getLog()->critical("Finished this lot of LogicUpdateTasks");
+            #endif
+            mTaskQueue.clear();
+            mTaskQueueMutex.unlock();
+            std::this_thread::yield();
         }
-        else
-        {
-            runt->increaseLifetime(timeDelta);
-            return true;
-        }
-        return false;
+    }
+
+    void
+    LogicComponent::startTaskQueueThread
+    ()
+    {
+        mRunningTaskQueue = true;
+        mTaskQueueThread = new thread(&LogicComponent::executeTaskQueue,this);
+    }
+
+    void
+    LogicComponent::joinTaskQueueThread
+    ()
+    {
+        mRunningTaskQueue = false;
+        mTaskQueueThread->join();
+        delete mTaskQueueThread;
+        mTaskQueueThread = nullptr;
     }
 }

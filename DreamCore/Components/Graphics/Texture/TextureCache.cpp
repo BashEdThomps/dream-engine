@@ -109,7 +109,8 @@ namespace Dream
         mRuntimes.push_back(texture);
 
         // Add Load Task
-        mProjectRuntime->getGraphicsComponent()->pushTask(new TextureCreationTask(texture));
+        auto creationTask = new TextureCreationTask(texture);
+        mProjectRuntime->getGraphicsComponent()->pushTask(creationTask);
         return texture;
     }
 

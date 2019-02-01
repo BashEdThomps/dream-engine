@@ -107,7 +107,14 @@ namespace Dream
     TextureRuntime::clearCreateTextureTask
     ()
     {
-       mCreateTextureTask = nullptr;
+        mCreateTextureTask = nullptr;
+    }
+
+    void
+    TextureRuntime::setTextureCreationTask
+    (TextureCreationTask* task)
+    {
+       mCreateTextureTask = task;
     }
 
     GLuint

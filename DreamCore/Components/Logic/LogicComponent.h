@@ -19,6 +19,8 @@
 
 namespace Dream
 {
+    class LogicUpdateTask;
+
     class LogicComponent : public Component
     {
     public:
@@ -34,5 +36,13 @@ namespace Dream
         void updatePath(SceneObjectRuntime* runt);
         void updateAnimation(SceneObjectRuntime* runt);
         void updateScroller(SceneObjectRuntime* scroller);
+        void startTaskQueueThread();
+        void joinTaskQueueThread();
+
+        vector<LogicUpdateTask*> mTaskQueue;
+        void executeTaskQueue();
+        volatile bool mRunningTaskQueue;
+        mutex mTaskQueueMutex;
+        std::thread* mTaskQueueThread;
     };
 }

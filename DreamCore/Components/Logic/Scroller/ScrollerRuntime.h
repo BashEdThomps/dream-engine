@@ -18,7 +18,7 @@
 #include <deque>
 
 #include "ScrollerDefinition.h"
-#include "../DiscreteAssetRuntime.h"
+#include "../../DiscreteAssetRuntime.h"
 
 namespace Dream
 {

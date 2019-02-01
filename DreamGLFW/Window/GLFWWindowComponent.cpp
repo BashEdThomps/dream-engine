@@ -162,6 +162,7 @@ namespace DreamGLFW
             return false;
         }
 
+        glfwMakeContextCurrent(mWindow);
         // Register Callbacks
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
         glfwSetKeyCallback(mWindow, KeyboardInputCallback);
@@ -186,7 +187,6 @@ namespace DreamGLFW
         auto log = getLog();
         log->debug("Initialising GLFW::OpenGL");
 #endif
-        glfwMakeContextCurrent(mWindow);
 
         glewExperimental = GL_TRUE;
         GLenum glewInitResult = glewInit();

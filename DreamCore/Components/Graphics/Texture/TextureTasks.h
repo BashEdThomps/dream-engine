@@ -12,7 +12,9 @@ namespace Dream
     public:
         TextureCreationTask(TextureRuntime* rt)
             : GraphicsComponentTask(), mTextureRuntime(rt)
-        {}
+        {
+            rt->setTextureCreationTask(this);
+        }
 
         inline bool
         execute
@@ -49,12 +51,12 @@ namespace Dream
             #endif
 
             // Set Parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             #ifdef DREAM_LOG
             checkGLError();
             #endif
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             #ifdef DREAM_LOG
             checkGLError();
             #endif

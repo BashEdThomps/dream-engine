@@ -13,7 +13,7 @@
 
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
-#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
+#include "../../../DreamCore/Components/Logic/Animation/AnimationDefinition.h"
 
 using glm::vec3;
 using Dream::AnimationDefinition;
