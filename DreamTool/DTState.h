@@ -1,8 +1,14 @@
 #pragma once
 
 #ifdef WIN32
-#include <Windows.h>
-#include <GL/glew.h>
+    #include <Windows.h>
+    #include <GL/glew.h>
+#endif
+
+#ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
+    #include <OpenGL/gl3.h>
 #endif
 
 #ifdef __linux__
@@ -23,6 +29,7 @@
 #include "Widgets/ImGui/ShaderEditorWindow.h"
 #include "Widgets/ImGui/RenderingDebugWindow.h"
 #include "Widgets/ImGui/GamepadStateWindow.h"
+#include "Widgets/ImGui/CacheContentWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
@@ -67,6 +74,7 @@ namespace DreamTool
         MenuBar menuBar;
         RenderingDebugWindow renderPipelineWindow;
         GamepadStateWindow gamepadStateWindow;
+        CacheContentWindow cacheContentWindow;
         // GL Widgets
         Grid grid;
         LightViewer lightViewer;

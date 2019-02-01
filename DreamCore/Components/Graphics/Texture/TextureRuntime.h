@@ -13,15 +13,20 @@
 #pragma once
 
 #ifdef WIN32
-#include <windows.h>
+    #include <windows.h>
+    #include <GL/glew.h>
+    #include <GL/glu.h>
 #endif
 
 #ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
-#else
-#include <GL/glew.h>
-#include <GL/glu.h>
+    #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
+    #include <OpenGL/gl3.h>
+#endif
+
+#ifdef __linux__
+    #include <GL/glew.h>
+    #include <GL/glu.h>
 #endif
 
 #include <iostream>
@@ -48,6 +53,8 @@ namespace Dream
         int mHeight = 0;
         int mChannels = 0;
         unsigned char* mImage = nullptr;
+        GraphicsComponentTask* mCreateTextureTask;
+
     public:
         TextureRuntime(TextureDefinition* def, ProjectRuntime*);
         ~TextureRuntime() override;
@@ -58,16 +65,23 @@ namespace Dream
 
         GLuint getGLID() const;
         void setGLID(const GLuint& gLID);
+
         string getPath() const;
         void setPath(const string& path);
+
         int getWidth() const;
         void setWidth(int width);
+
         int getHeight() const;
         void setHeight(int height);
+
         int getChannels() const;
         void setChannels(int channels);
+
         unsigned char* getImage() const;
         void setImage(unsigned char* image);
+
+        void clearCreateTextureTask();
     };
 
 

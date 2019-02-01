@@ -36,20 +36,18 @@ namespace Dream
         File(string);
         ~File();
 
-        string getDirectory();
-        string getPath();
-        string readString();
-        vector<char> readBinary();
-        int getFileSize();
-        bool writeBinary(vector<char>);
-        bool writeString(string);
-        bool deleteFile();
-        bool exists();
-        string nameWithExtension();
-        string nameWithoutExtension();
-        string extension();
-
-    }; // End of FileReader
-
-} // End of Dream
+        string getDirectory() const;
+        string getPath() const;
+        string readString() const;
+        vector<char> readBinary() const;
+        int getFileSize() const;
+        bool writeBinary(const vector<char>&) const;
+        bool writeString(const string&) const;
+        bool deleteFile() const;
+        bool exists() const;
+        string nameWithExtension() const;
+        string nameWithoutExtension() const;
+        string extension() const;
+    };
+}
 

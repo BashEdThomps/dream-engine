@@ -53,7 +53,7 @@ namespace Dream
 
         void setElapsedTime(float elapsedTime);
 
-        bool isDead();
+        bool isDead() const;
         void update();
     private:
         deque<Particle> mParticles;

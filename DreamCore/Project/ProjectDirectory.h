@@ -31,38 +31,38 @@ namespace Dream
         ProjectDirectory(Project* project);
         ~ProjectDirectory() override;
 
-        bool baseDirectoryExists();
-        bool createBaseDirectory();
-        bool createAllAssetDirectories();
+        bool baseDirectoryExists() const;
+        bool createBaseDirectory() const;
+        bool createAllAssetDirectories() const;
 
-        vector<char> readAssetData(AssetDefinition*, string format = "");
-        bool writeAssetData(AssetDefinition*, vector<char>, string format = "");
+        vector<char> readAssetData(AssetDefinition*, string format = "") const;
+        bool writeAssetData(AssetDefinition*, vector<char>, string format = "") const;
 
-        string getAssetAbsolutePath(uint32_t);
-        string getAssetAbsolutePath(AssetDefinition*);
-        string getAssetAbsolutePath(AssetDefinition*, string format);
-        string getAssetDirectoryPath(AssetDefinition*);
-        string getAssetTypeDirectory(AssetType type, string base = "");
+        string getAssetAbsolutePath(uint32_t) const;
+        string getAssetAbsolutePath(AssetDefinition*) const;
+        string getAssetAbsolutePath(AssetDefinition*, string format) const;
+        string getAssetDirectoryPath(AssetDefinition*) const;
+        string getAssetTypeDirectory(AssetType type, string base = "") const;
 
-        bool removeAssetDirectory(AssetDefinition*);
+        bool removeAssetDirectory(AssetDefinition*) const;
 
-        string getProjectFilePath();
-        bool assetTypeDirectoryExists(AssetType type);
+        string getProjectFilePath() const;
+        bool assetTypeDirectoryExists(AssetType type) const;
 
-        bool createAssetTypeDirectory(AssetType type);
-        vector<uint32_t> cleanupAssetsDirectory();
+        bool createAssetTypeDirectory(AssetType type) const;
+        vector<uint32_t> cleanupAssetsDirectory() const;
 
-        Project* newProject(string projectDir);
-        Project* openFromFileReader(string directory, File &fileReader);
-        Project* openFromArgumentParser(ArgumentParser &parser);
-        Project* openFromDirectory(string directory);
-        bool     saveProject();
-        void     closeProject();
+        Project* newProject(const string& projectDir);
+        Project* openFromFileReader(const string& directory, const File& fileReader);
+        Project* openFromArgumentParser(const ArgumentParser& parser);
+        Project* openFromDirectory(const string& directory);
+        bool saveProject() const;
+        void closeProject();
 
     protected:
-        string findProjectFileInDirectory(string dir);
-        bool directoryContainsProject(string dir);
-        bool findAssetDirectories(string dir);
+        string findProjectFileInDirectory(const string& dir) const;
+        bool directoryContainsProject(const string& dir) const;
+        bool findAssetDirectories(const string& dir) const;
 
     private:
         Project* mProject;

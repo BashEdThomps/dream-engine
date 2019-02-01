@@ -72,7 +72,7 @@ namespace Dream
             #ifdef DREAM_LOG
             checkGLError();
             #endif
-
+            mTextureRuntime->clearCreateTextureTask();
             return textureID != 0;
         }
     };

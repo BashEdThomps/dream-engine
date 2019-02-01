@@ -19,11 +19,12 @@
     #include <windows.h>
 #endif
 
-#define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
 #ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
     #include <OpenGL/gl3.h>
 #else
+    #include <GL/glew.h>
     #include <GL/glu.h>
 #endif
 
@@ -870,9 +871,12 @@ namespace Dream
     {
         for (GraphicsComponentTask* t : mTaskQueue)
         {
-            t->execute();
+            if (!t->hasExpired())
+            {
+                t->execute();
+            }
             delete t;
         }
         mTaskQueue.clear();
     }
-} // End of Dream
+}

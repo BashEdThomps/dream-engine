@@ -102,6 +102,7 @@ namespace Dream
     bool
     Project::hasProjectRuntime
     ()
+    const
     {
         return mRuntime != nullptr;
     }
@@ -119,6 +120,7 @@ namespace Dream
     bool
     Project::hasProjectDefinition
     ()
+    const
     {
         return mDefinition != nullptr;
     }
@@ -126,6 +128,7 @@ namespace Dream
     ProjectRuntime*
     Project::getRuntime
     ()
+    const
     {
         return mRuntime;
     }
@@ -140,11 +143,11 @@ namespace Dream
     AssetDefinition*
     Project::getAssetDefinitionByUuid
     (uint32_t uuid)
+    const
     {
         if (mDefinition != nullptr)
         {
-            return dynamic_cast<ProjectDefinition*>(mDefinition)
-                ->getAssetDefinitionByUuid(uuid);
+            return dynamic_cast<ProjectDefinition*>(mDefinition)->getAssetDefinitionByUuid(uuid);
         }
         return nullptr;
     }
@@ -170,5 +173,4 @@ namespace Dream
     {
         return mDirectory;
     }
-
-} // End of Dream
+}

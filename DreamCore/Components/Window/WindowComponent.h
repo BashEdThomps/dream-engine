@@ -40,18 +40,18 @@ namespace Dream
 
       void setWidth(int);
       void setHeight(int);
-      int getWidth();
-      int getHeight();
+      int getWidth() const;
+      int getHeight() const;
 
       void setName(string);
-      string getName();
+      string getName() const;
 
       void close();
-      bool shouldClose();
+      bool shouldClose() const;
       void setShouldClose(bool);
       bool sizeHasChanged();
-      double getMouseX();
-      double getMouseY();
+      double getMouseX() const;
+      double getMouseY() const;
       virtual void bindDefaultFrameBuffer() = 0;
 
     protected:

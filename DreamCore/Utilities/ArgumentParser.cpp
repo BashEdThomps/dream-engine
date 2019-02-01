@@ -1,6 +1,4 @@
 /*
-* Dream::ArgumentParser
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -25,10 +23,9 @@ namespace Dream
         : DreamObject ("ArgumentParser")
     {
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Constructing" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace( "Constructing" );
+        #endif
         mArgc = argc;
         mArgv = argv;
         mUsingHttp = false;
@@ -38,19 +35,15 @@ namespace Dream
     ArgumentParser::~ArgumentParser
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destructing" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace( "Destructing" );
+        #endif
     }
 
     void
     ArgumentParser::parse
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         string *nextArg;
         for (int i=0;i<mArgc;i++)
         {
@@ -60,9 +53,9 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-#ifdef DREAM_LOG
-                    log->debug( "Got Dream Path {}" , mDreamPath );
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->debug( "Got Dream Path {}" , mDreamPath );
+                    #endif
                 }
                 else
                 {
@@ -74,9 +67,9 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-#ifdef DREAM_LOG
-                    log->debug( "Got Project UUID {}" , mProjectUUID );
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->debug( "Got Project UUID {}" , mProjectUUID );
+                    #endif
                 }
                 else
                 {
@@ -89,15 +82,15 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-#ifdef DREAM_LOG
-                    log->debug( "Loading project over HTTP from {}" , mHttpUrl );
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->debug( "Loading project over HTTP from {}" , mHttpUrl );
+                    #endif
                 }
                 else
                 {
-#ifdef DREAM_LOG
-                    log->error( "--http passed without URL argument." );
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->error( "--http passed without URL argument." );
+                    #endif
                 }
             }
             delete nextArg;
@@ -106,19 +99,20 @@ namespace Dream
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-#ifdef DREAM_LOG
-        log->debug( "Got Project Path {}" , mProjectPath );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Got Project Path {}" , mProjectPath );
+        #endif
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
 
-#ifdef DREAM_LOG
-        log->debug( "Got Project File Path {} " , mProjectFilePath );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "Got Project File Path {} " , mProjectFilePath );
+        #endif
     }
 
     string
     ArgumentParser::getProjectPath
     ()
+    const
     {
         return mProjectPath;
     }
@@ -126,6 +120,7 @@ namespace Dream
     string
     ArgumentParser::getProjectUUID
     ()
+    const
     {
         return mProjectUUID;
     }
@@ -133,6 +128,7 @@ namespace Dream
     string
     ArgumentParser::getDreamPath
     ()
+    const
     {
         return mDreamPath;
     }
@@ -140,6 +136,7 @@ namespace Dream
     string
     ArgumentParser::getProjectFilePath
     ()
+    const
     {
         return mProjectFilePath;
     }
@@ -147,6 +144,7 @@ namespace Dream
     bool
     ArgumentParser::getUsingHttp
     ()
+    const
     {
         return mUsingHttp;
     }
@@ -154,8 +152,8 @@ namespace Dream
     string
     ArgumentParser::getProjectHttpUrl
     ()
+    const
     {
         return mHttpUrl;
     }
-
-} // End of Dream
+}

@@ -36,21 +36,22 @@ namespace Dream
         mType(LightType::LT_NONE)
 
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("LightRuntime");
-#endif
+        #endif
     }
 
     LightRuntime::~LightRuntime
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Destroying Object" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Destroying Object" );
+        #endif
     }
 
-    vec3 LightRuntime::getAmbient() const
+    vec3
+    LightRuntime::getAmbient
+    () const
     {
         return mAmbient;
     }
@@ -125,17 +126,23 @@ namespace Dream
         return mOuterCutOff;
     }
 
-    void LightRuntime::setOuterCutOff(float outerCutOff)
+    void
+    LightRuntime::setOuterCutOff
+    (float outerCutOff)
     {
         mOuterCutOff = outerCutOff;
     }
 
-    LightType LightRuntime::getType() const
+    LightType
+    LightRuntime::getType
+    () const
     {
         return mType;
     }
 
-    void LightRuntime::setType(const LightType& type)
+    void
+    LightRuntime::setType
+    (const LightType& type)
     {
         mType = type;
     }
@@ -157,7 +164,10 @@ namespace Dream
         }
     }
 
-    PointLight LightRuntime::getPointLightData()
+    PointLight
+    LightRuntime::getPointLightData
+    ()
+    const
     {
         vec3 tx = mSceneObjectRuntime->getTransform().getMatrix()[3];
         return PointLight
@@ -172,7 +182,10 @@ namespace Dream
         };
     }
 
-    SpotLight LightRuntime::getSpotLightData()
+    SpotLight
+    LightRuntime::getSpotLightData
+    ()
+    const
     {
         MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
         return SpotLight
@@ -190,7 +203,10 @@ namespace Dream
         };
     }
 
-    DirLight LightRuntime::getDirectionalLightData()
+    DirLight
+    LightRuntime::getDirectionalLightData
+    ()
+    const
     {
         MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
         return DirLight

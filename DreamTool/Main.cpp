@@ -1,4 +1,8 @@
-#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
+    #include <OpenGL/gl.h>
+#endif
 
 #ifdef WIN32
 #include <windows.h>
@@ -21,8 +25,8 @@ main
 {
     #ifdef DREAM_LOG
     spdlog::set_level(spdlog::level::trace);
-    spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
-    auto log = spdlog::stdout_color_mt("Main");
+    spdlog::set_pattern("%H:%M:%S (%l) %n %v");
+    auto log = spdlog::stdout_logger_mt("Main");
     log->trace("Starting...");
     #endif
     DTState state(argc,argv);

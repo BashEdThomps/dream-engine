@@ -40,9 +40,9 @@ namespace Dream
          */
         DreamObject
         (const string& classname)
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             : _CLASSNAME_(classname)
-#endif
+            #endif
         {}
 
         /**
@@ -52,7 +52,7 @@ namespace Dream
         ()
         {}
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         /**
          * @brief Override the currently defined class name used during logging.
          * @param className The new class name to log with.
@@ -62,7 +62,6 @@ namespace Dream
         (const string& name)
         {
             _CLASSNAME_ = name;
-
         }
 
         /**
@@ -86,13 +85,14 @@ namespace Dream
         std::shared_ptr<spdlog::logger>
         getLog
         ()
+        const
         {
             try
             {
                 auto log = spdlog::get(_CLASSNAME_);
                 if (log == nullptr)
                 {
-                    log = spdlog::stdout_color_mt(_CLASSNAME_);
+                    log = spdlog::stdout_logger_mt(_CLASSNAME_);
                 }
                 return log;
             }
@@ -108,6 +108,6 @@ namespace Dream
          * @brief Name to use during logging.
          */
         string  _CLASSNAME_;
-#endif
+        #endif
     };
 }

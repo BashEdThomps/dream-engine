@@ -16,6 +16,7 @@ namespace Dream
 
         inline bool execute() override
         {
+            mShaderRuntime->lock();
             GLint success;
             GLchar infoLog[512];
             // Fragment Shader
@@ -34,8 +35,11 @@ namespace Dream
                 #endif
                 glDeleteShader(mShaderRuntime->getFragmentShader());
                 mShaderRuntime->setFragmentShader(0);
+                mShaderRuntime->unlock();
                 return false;
             }
+            mShaderRuntime->clearCompileFragmentTask();
+            mShaderRuntime->unlock();
             return true;
         }
     };
@@ -50,6 +54,7 @@ namespace Dream
 
         inline bool execute() override
         {
+            mShaderRuntime->lock();
             GLint success;
             GLchar infoLog[512];
             // Vertex Shader
@@ -68,8 +73,11 @@ namespace Dream
                 #endif
                 glDeleteShader(mShaderRuntime->getVertexShader());
                 mShaderRuntime->setVertexShader(0);
+                mShaderRuntime->unlock();
                 return false;
             }
+            mShaderRuntime->clearCompileVertexTask();
+            mShaderRuntime->unlock();
             return true;
         }
     };
@@ -84,6 +92,7 @@ namespace Dream
 
         inline bool execute() override
         {
+            mShaderRuntime->lock();
             if (mShaderRuntime->getVertexShader() != 0 && mShaderRuntime->getFragmentShader() != 0)
             {
                 GLint success;
@@ -95,6 +104,7 @@ namespace Dream
                     #ifdef DREAM_LOG
                     getLog()->error("Unable to create shader program");
                     #endif
+                    mShaderRuntime->unlock();
                     return false;
                 }
 
@@ -112,6 +122,8 @@ namespace Dream
                     getLog()->error( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
                     #endif
                     glDeleteProgram(mShaderRuntime->getShaderProgram());
+                    mShaderRuntime->setShaderProgram(0);
+                    mShaderRuntime->unlock();
                     return false;
                 }
 
@@ -136,22 +148,23 @@ namespace Dream
                                                      ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT));
                 }
             }
+            mShaderRuntime->clearLinkTask();
+            mShaderRuntime->unlock();
             return true;
         }
     };
 
     class ShaderFreeTask : public GraphicsComponentTask
     {
-        ShaderRuntime* mShaderRuntime;
+        GLuint mShaderProgram;
     public:
-        ShaderFreeTask(ShaderRuntime* rt)
-            : GraphicsComponentTask(), mShaderRuntime(rt)
+        ShaderFreeTask(GLuint rt)
+            : GraphicsComponentTask(), mShaderProgram(rt)
         {}
 
         inline bool execute() override
         {
-            glDeleteProgram(mShaderRuntime->getShaderProgram());
-            mShaderRuntime->setShaderProgram(0);
+            glDeleteProgram(mShaderProgram);
             return true;
         }
     };

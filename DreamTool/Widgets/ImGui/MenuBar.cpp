@@ -282,14 +282,20 @@ namespace DreamTool
                     {
                         mState->gamepadStateWindow.setVisible(showJoystickDebug);
                     }
+
                     auto showLuaDebug = mState->luaDebugWindow.getVisible();
-                    if (ImGui::Checkbox("Lua Debug Window",&showLuaDebug))
+                    if (ImGui::Checkbox("Lua Debug",&showLuaDebug))
                     {
                         mState->luaDebugWindow.setVisible(showLuaDebug);
                     }
 
-                    auto pRuntime = mState->project->getRuntime();
+                    bool showCacheContents = mState->cacheContentWindow.getVisible();
+                    if (ImGui::Checkbox("Cache Contents",&showCacheContents))
+                    {
+                       mState->cacheContentWindow.setVisible(showCacheContents);
+                    }
 
+                    auto pRuntime = mState->project->getRuntime();
                     if (pRuntime)
                     {
                         auto active = pRuntime->getActiveSceneRuntime();

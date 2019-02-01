@@ -1,6 +1,4 @@
 /*
- * Component
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,10 +44,10 @@ namespace Dream
     Component::beginUpdate
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Updating Component");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("\n"
+        "=======================================================================");
+        #endif
         mUpdateBeginTime = mTime->getAbsoluteTime();
         setBusy(true);
     }
@@ -60,10 +58,11 @@ namespace Dream
     {
         mUpdateEndTime =  mTime->getAbsoluteTime();
         setBusy(false);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Update Complete in {}",getUpdateTime());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Update Complete in {}ms\n"
+        "=======================================================================\n\n",
+        getUpdateTime());
+        #endif
     }
 
     void
@@ -134,4 +133,4 @@ namespace Dream
         return mUpdateEndTime;
     }
 
-} // End of Dream
+}

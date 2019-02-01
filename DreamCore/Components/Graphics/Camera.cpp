@@ -79,6 +79,7 @@ namespace Dream
     mat4
     Camera::getViewMatrix
     ()
+    const
     {
         if (mFocusedSceneObject)
         {
@@ -118,6 +119,7 @@ namespace Dream
     vec3
     Camera::getUp
     ()
+    const
     {
         return mUp;
     }
@@ -125,6 +127,7 @@ namespace Dream
     vec3
     Camera::getFront
     ()
+    const
     {
         return mFront;
     }
@@ -228,6 +231,7 @@ namespace Dream
     vec3
     Camera::getTranslation
     ()
+    const
     {
         return mTranslation;
     }
@@ -259,12 +263,14 @@ namespace Dream
 
     void
     Camera::setTranslation
-    (vec3 translation)
+    (const vec3& translation)
     {
         mTranslation = translation;
     }
 
-    void Camera::setTranslation(float x, float y , float z)
+    void
+    Camera::setTranslation
+    (float x, float y , float z)
     {
         mTranslation.x = x;
         mTranslation.y = y;
@@ -281,17 +287,19 @@ namespace Dream
     float
     Camera::getMovementSpeed
     ()
+    const
     {
         return mMovementSpeed;
     }
 
     void
     Camera::setFocusTranslationFromTarget
-    (vec3 target)
+    (const vec3& target)
     {
         mat4 mtx(1.0f);
-        target.y += mFocusElevation;
-        mtx = translate(mtx, target);
+        vec3 newTarget = target;
+        newTarget.y += mFocusElevation;
+        mtx = translate(mtx, newTarget);
         mtx = rotate(mtx,mFocusPitch, vec3(1,0,0));
         mtx = rotate(mtx,mFocusYaw, vec3(0,1,0));
         mtx = translate(mtx,vec3(0,0,-mFocusRadius));
@@ -308,7 +316,10 @@ namespace Dream
         mYaw += yaw;
     }
 
-    float Camera::getFocusedObjectTheta()
+    float
+    Camera::getFocusedObjectTheta
+    ()
+    const
     {
         if (mFocusedSceneObject)
         {
@@ -323,6 +334,7 @@ namespace Dream
     bool
     Camera::containedInFrustum
     (SceneObjectRuntime* sor)
+    const
     {
         return mFrustum.testIntersection(
             sor->getTransform().getMatrix(),
@@ -333,6 +345,7 @@ namespace Dream
     bool
     Camera::containedInFrustum
     (const BoundingBox& bb)
+    const
     {
         const static mat4 tx(1.0f);
         return mFrustum.testIntersection(tx,bb) == Frustum::TEST_INSIDE;
@@ -341,6 +354,7 @@ namespace Dream
     bool
     Camera::exceedsFrustumPlaneAtTranslation
     (Frustum::Plane plane, SceneObjectRuntime* sor, const vec3& tx)
+    const
     {
         auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
         return result != Frustum::TEST_INSIDE;
@@ -349,6 +363,7 @@ namespace Dream
     bool
     Camera::containedInFrustumAfterTransform
     (SceneObjectRuntime* sor, const mat4& tx)
+    const
     {
         return mFrustum.testIntersection(
             sor->getTransform().getMatrix() * tx,
@@ -360,6 +375,7 @@ namespace Dream
     bool
     Camera::visibleInFrustum
     (SceneObjectRuntime* sor)
+    const
     {
         return mFrustum.testIntersection(
             sor->getTransform().getMatrix(),
@@ -370,6 +386,7 @@ namespace Dream
     bool
     Camera::visibleInFrustum
     (const BoundingBox& bb)
+    const
     {
         const static mat4 tx(1.0f);
         return mFrustum.testIntersection(tx,bb) != Frustum::TEST_OUTSIDE;
@@ -378,12 +395,15 @@ namespace Dream
     bool
     Camera::visibleInFrustum
     (const BoundingBox& bb, const mat4& tx)
+    const
     {
         return mFrustum.testIntersection(tx,bb) != Frustum::TEST_OUTSIDE;
     }
 
 
-    mat4 Camera::getProjectionMatrix() const
+    mat4
+    Camera::getProjectionMatrix
+    () const
     {
         return mProjectionMatrix;
     }
@@ -402,17 +422,23 @@ namespace Dream
         mFocusedSceneObject = rt;
     }
 
-    SceneObjectRuntime* Camera::getFocusedSceneObject() const
+    SceneObjectRuntime*
+    Camera::getFocusedSceneObject
+    () const
     {
         return mFocusedSceneObject;
     }
 
-    float Camera::getFocusPitch() const
+    float
+    Camera::getFocusPitch
+    () const
     {
         return mFocusPitch;
     }
 
-    void Camera::setFocusPitch(float focusPitch)
+    void
+    Camera::setFocusPitch
+    (float focusPitch)
     {
         mFocusPitch = focusPitch;
     }

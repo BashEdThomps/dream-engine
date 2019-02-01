@@ -31,12 +31,12 @@ namespace Dream
     ()
     {
         closeProject();
-
     }
 
     bool
     ProjectDirectory::baseDirectoryExists
     ()
+    const
     {
         Directory d(mPath);
         return d.exists();
@@ -45,17 +45,17 @@ namespace Dream
     bool
     ProjectDirectory::createBaseDirectory
     ()
+    const
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Creating project directory {}",mPath);
-#endif
+        getLog()->debug("Creating project directory {}",mPath);
+        #endif
         Directory d(mPath);
         if(!d.create())
         {
-        #ifdef DREAM_LOG
-            log->error("Unable to create project directory {}",mPath);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Unable to create project directory {}",mPath);
+            #endif
             return false;
         }
         return true;
@@ -64,6 +64,7 @@ namespace Dream
     bool
     ProjectDirectory::createAllAssetDirectories
     ()
+    const
     {
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (auto typePair : assetTypes)
@@ -72,8 +73,7 @@ namespace Dream
             if (!createAssetTypeDirectory(type))
             {
                 #ifdef DREAM_LOG
-                auto log = getLog();
-                log->error("Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
+                getLog()->error("Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
                 #endif
                 return false;
             }
@@ -84,6 +84,7 @@ namespace Dream
     vector<char>
     ProjectDirectory::readAssetData
     (AssetDefinition* assetDef, string format)
+    const
     {
         auto path = getAssetAbsolutePath(assetDef,format);
         File f(path);
@@ -93,43 +94,43 @@ namespace Dream
     bool
     ProjectDirectory::writeAssetData
     (AssetDefinition* assetDef, vector<char> data, string format)
+    const
     {
         auto dataPath = getAssetDirectoryPath(assetDef);
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Writing asset data to {}",dataPath);
+        getLog()->debug("Writing asset data to {}",dataPath);
         #endif
 
         //Check target directory exists
         Directory dir(dataPath);
         if (!dir.exists())
         {
-        #ifdef DREAM_LOG
-            log->debug("Asset path does not exist {}",dataPath);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("Asset path does not exist {}",dataPath);
+            #endif
             auto assetTypeEnum = Constants::getAssetTypeEnumFromString(assetDef->getType());
             if (!assetTypeDirectoryExists(assetTypeEnum))
             {
                 if(!createAssetTypeDirectory(assetTypeEnum))
                 {
-        #ifdef DREAM_LOG
-                    log->error("Unable to create asset type directory");
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->error("Unable to create asset type directory");
+                    #endif
                     return false;
                 }
             }
             if(!dir.create())
             {
-        #ifdef DREAM_LOG
-                log->error("Unable to create asset path {}",dataPath);
-#endif
+                #ifdef DREAM_LOG
+                getLog()->error("Unable to create asset path {}",dataPath);
+                #endif
                 return false;
             }
         }
         auto path = getAssetAbsolutePath(assetDef,format);
         #ifdef DREAM_LOG
-        log->debug("Copying asset to {}",path);
-#endif
+        getLog()->debug("Copying asset to {}",path);
+        #endif
         auto file = File(path);
         return file.writeBinary(data);
     }
@@ -137,6 +138,7 @@ namespace Dream
     string
     ProjectDirectory::getAssetAbsolutePath
     (uint32_t uuid)
+    const
     {
         auto assetDef = mProject->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDef)
@@ -158,6 +160,7 @@ namespace Dream
     string
     ProjectDirectory::getAssetAbsolutePath
     (AssetDefinition* assetDef, string format)
+    const
     {
         stringstream path;
         path << mPath
@@ -174,6 +177,7 @@ namespace Dream
     string
     ProjectDirectory::getAssetAbsolutePath
     (AssetDefinition* assetDef)
+    const
     {
         return getAssetAbsolutePath(assetDef,"");
     }
@@ -182,6 +186,7 @@ namespace Dream
     string
     ProjectDirectory::getAssetDirectoryPath
     (AssetDefinition* assetDef)
+    const
     {
         stringstream path;
         path << mPath
@@ -195,12 +200,12 @@ namespace Dream
 
     bool
     ProjectDirectory::removeAssetDirectory
-    (Dream::AssetDefinition* ad)
+    (AssetDefinition* ad)
+    const
     {
         auto path = getAssetDirectoryPath(ad);
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Removing asset directory {}",path);
+        getLog()->debug("Removing asset directory {}",path);
         #endif
         Directory d(path);
         return d.deleteDirectory();
@@ -209,12 +214,13 @@ namespace Dream
     bool
     ProjectDirectory::saveProject
     ()
+    const
     {
         auto pDef = mProject->getDefinition();
         if (pDef)
         {
             auto jsDef = pDef->getJson();
-            auto jsonStr = jsDef.dump(1);
+            auto jsonStr = jsDef.dump();
             auto path = getProjectFilePath();
             File f(path);
             return f.writeString(jsonStr);
@@ -225,6 +231,7 @@ namespace Dream
     string
     ProjectDirectory::getProjectFilePath
     ()
+    const
     {
         stringstream ss;
         ss << mPath
@@ -237,6 +244,7 @@ namespace Dream
     bool
     ProjectDirectory::assetTypeDirectoryExists
     (AssetType type)
+    const
     {
         string dirPath = getAssetTypeDirectory(type);
         Directory dir(dirPath);
@@ -246,6 +254,7 @@ namespace Dream
     string
     ProjectDirectory::getAssetTypeDirectory
     (AssetType type, string base)
+    const
     {
         stringstream ss;
         ss << (base.empty() ? mPath : base)
@@ -254,7 +263,10 @@ namespace Dream
         return ss.str();
     }
 
-    bool ProjectDirectory::createAssetTypeDirectory(AssetType type)
+    bool
+    ProjectDirectory::createAssetTypeDirectory
+    (AssetType type)
+    const
     {
         string assetTypeDirPath = getAssetTypeDirectory(type);
         Directory dir(assetTypeDirPath);
@@ -267,16 +279,14 @@ namespace Dream
     vector<uint32_t>
     ProjectDirectory::cleanupAssetsDirectory
     ()
+    const
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         vector<uint32_t> retval;
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
             #ifdef DREAM_LOG
-            log->error("Cannot cleanup, no project definition");
+            getLog()->error("Cannot cleanup, no project definition");
             #endif
             return retval;
         }
@@ -291,7 +301,7 @@ namespace Dream
             {
                 auto subdirs = assetDir.listSubdirectories();
                 #ifdef DREAM_LOG
-                log->error("Cleaning up {} containing {} definitions", path, subdirs.size());
+                getLog()->error("Cleaning up {} containing {} definitions", path, subdirs.size());
                 #endif
                 int deletedCount=0;
                 for (auto subdirPath : subdirs)
@@ -301,13 +311,13 @@ namespace Dream
                     {
                         uint32_t name = static_cast<uint32_t>(std::stoi(subdir.getName()));
                         #ifdef DREAM_LOG
-                        log->error("Checking subdir {} has definition",name);
+                        getLog()->error("Checking subdir {} has definition",name);
                         #endif
                         auto def = pDef->getAssetDefinitionByUuid(name);
                         if (!def)
                         {
                             #ifdef DREAM_LOG
-                            log->error("Definition {} does not exist, removing...",name);
+                            getLog()->error("Definition {} does not exist, removing...",name);
                             #endif
                             subdir.deleteDirectory();
                             retval.push_back(name);
@@ -315,13 +325,13 @@ namespace Dream
                     }
                 }
                 #ifdef DREAM_LOG
-                log->error("Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+                getLog()->error("Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
                 #endif
             }
             else
             {
                 #ifdef DREAM_LOG
-                log->error("No Directory {}",path);
+                getLog()->error("No Directory {}",path);
                 #endif
             }
         }
@@ -330,7 +340,7 @@ namespace Dream
 
     Project*
     ProjectDirectory::newProject
-    (string projectDir)
+    (const string &projectDir)
     {
         if (mProject)
         {
@@ -359,11 +369,10 @@ namespace Dream
 
     Project*
     ProjectDirectory::openFromFileReader
-    (string projectPath, File &reader)
+    (const string &projectPath, const File &reader)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading project from FileReader", reader.getPath());
+        getLog()->debug("Loading project from FileReader", reader.getPath());
         #endif
 
         string projectJsonStr = reader.readString();
@@ -371,7 +380,7 @@ namespace Dream
         if (projectJsonStr.empty())
         {
             #ifdef DREAM_LOG
-            log->error("Loading Failed. Project Content is Empty");
+            getLog()->error("Loading Failed. Project Content is Empty");
             #endif
             return nullptr;
         }
@@ -384,14 +393,14 @@ namespace Dream
         catch (json::parse_error ex)
         {
             #ifdef DREAM_LOG
-            log->error("Exception while parsing project file: {}",ex.what());
+            getLog()->error("Exception while parsing project file: {}",ex.what());
             #endif
             return nullptr;
         }
 
         mPath = projectPath;
         #ifdef DREAM_LOG
-        log->debug("Project path is: {}", mPath);
+        getLog()->debug("Project path is: {}", mPath);
         #endif
         mProject = new Project(this);
         auto pDef = new ProjectDefinition(projectJson);
@@ -402,24 +411,20 @@ namespace Dream
 
     Project*
     ProjectDirectory::openFromDirectory
-    (string directory)
+    (const string &directory)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
-
         string projectFileName = findProjectFileInDirectory(directory);
 
         if (projectFileName.size() == 0)
         {
             #ifdef DREAM_LOG
-            log->error( "Project: Error {} is not a valid project directory!", directory  );
+            getLog()->error( "Project: Error {} is not a valid project directory!", directory  );
             #endif
             return nullptr;
         }
 
         #ifdef DREAM_LOG
-        log->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
+        getLog()->debug( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
         #endif
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
@@ -443,11 +448,9 @@ namespace Dream
 
     string
     ProjectDirectory::findProjectFileInDirectory
-    (string directory)
+    (const string& directory)
+    const
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         Directory dir(directory);
         vector<string> directoryContents;
         directoryContents = dir.list();
@@ -461,7 +464,7 @@ namespace Dream
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
                 #ifdef DREAM_LOG
-                log->debug( "Found project file ",projectFileName );
+                getLog()->debug( "Found project file ",projectFileName );
                 #endif
                 return projectFileName;
             }
@@ -471,7 +474,8 @@ namespace Dream
 
     bool
     ProjectDirectory::directoryContainsProject
-    (string dir)
+    (const string& dir)
+    const
     {
         bool hasJsonFile = !findProjectFileInDirectory(dir).empty();
         bool hasAssetDirectories = findAssetDirectories(dir);
@@ -480,18 +484,16 @@ namespace Dream
 
     bool
     ProjectDirectory::findAssetDirectories
-    (string dir)
+    (const string &dir)
+    const
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (auto typePair : assetTypes)
         {
             auto type = typePair.first;
             string assetDir = getAssetTypeDirectory(type,dir);
             #ifdef DREAM_LOG
-            log->error("Checking for {}",assetDir);
+            getLog()->error("Checking for {}",assetDir);
             #endif
             if (!Directory(assetDir).exists())
             {
@@ -499,21 +501,18 @@ namespace Dream
             }
         }
         return true;
-
     }
 
     Project*
     ProjectDirectory::openFromArgumentParser
-    (ArgumentParser &parser)
+    (const ArgumentParser &parser)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "Project: Loading from ArgumentParser" );
+        getLog()->debug( "Project: Loading from ArgumentParser" );
         #endif
         File projectFileReader(parser.getProjectFilePath());
         return openFromFileReader(parser.getProjectPath(), projectFileReader);
     }
 
     const size_t ProjectDirectory::BufferSize = 1024*1024;
-
 }

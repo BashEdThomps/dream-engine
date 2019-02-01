@@ -99,6 +99,7 @@ namespace Dream
     SceneState
     SceneRuntime::getState
     ()
+    const
     {
         return mState;
     }
@@ -122,6 +123,7 @@ namespace Dream
     vec3
     SceneRuntime::getGravity
     ()
+    const
     {
         if (mProjectRuntime)
         {
@@ -143,6 +145,7 @@ namespace Dream
     vec3
     SceneRuntime::getClearColour
     ()
+    const
     {
         return mClearColour;
     }
@@ -157,6 +160,7 @@ namespace Dream
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByUuid
     (uint32_t uuid)
+    const
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -186,6 +190,7 @@ namespace Dream
     SceneObjectRuntime*
     SceneRuntime::getSceneObjectRuntimeByName
     (const string& name)
+    const
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -215,6 +220,7 @@ namespace Dream
     int
     SceneRuntime::countSceneObjectRuntimes
     ()
+    const
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -239,6 +245,7 @@ namespace Dream
     void
     SceneRuntime::showScenegraph
     ()
+    const
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -271,6 +278,7 @@ namespace Dream
     SceneObjectRuntime*
     SceneRuntime::getRootSceneObjectRuntime
     ()
+    const
     {
         return mRootSceneObjectRuntime;
     }
@@ -298,6 +306,7 @@ namespace Dream
     ProjectRuntime*
     SceneRuntime::getProjectRuntime
     ()
+    const
     {
         return mProjectRuntime;
     }
@@ -305,6 +314,7 @@ namespace Dream
     bool
     SceneRuntime::hasRootSceneObjectRuntime
     ()
+    const
     {
         return mRootSceneObjectRuntime != nullptr;
     }
@@ -421,6 +431,7 @@ namespace Dream
     bool
     SceneRuntime::getPhysicsDebug
     ()
+    const
     {
         if (mProjectRuntime)
         {
@@ -594,6 +605,7 @@ namespace Dream
     SceneObjectRuntime*
     SceneRuntime::getNearestToCamera
     ()
+    const
     {
         if (!mRootSceneObjectRuntime)
         {
@@ -652,6 +664,9 @@ namespace Dream
     SceneRuntime::createSceneObjectUpdateQueues
     ()
     {
+        #ifdef DREAM_LOG
+        getLog()->debug("Rebuilding SceneObject Update Vector");
+        #endif
         auto audioComponent    = mProjectRuntime->getAudioComponent();
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto logicComponent    = mProjectRuntime->getLogicComponent();

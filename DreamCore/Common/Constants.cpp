@@ -15,6 +15,7 @@
 
 #ifdef __APPLE__
     #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
     #include <OpenGL/gl3.h>
 #endif
 
@@ -960,7 +961,7 @@ namespace Dream
     }
 
 #ifdef DREAM_LOG
-    shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_color_mt("Constants");
+    shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_logger_mt("Constants");
 #endif
 
     vector<string> Constants::DREAM_PATH_SPLINE_TYPES

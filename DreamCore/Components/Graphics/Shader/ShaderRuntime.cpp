@@ -49,7 +49,10 @@ namespace Dream
           mFragmentShader(0),
           mRecompile(false),
           mVertexSource(""),
-          mFragmentSource("")
+          mFragmentSource(""),
+          mCompileFragmentTask(nullptr),
+          mCompileVertexTask(nullptr),
+          mLinkTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("ShaderRuntime");
@@ -65,7 +68,21 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace( "Destroying Object" );
         #endif
-        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(this));
+
+        if (mCompileVertexTask)
+        {
+            mCompileVertexTask->setExpired(true);
+        }
+        if (mCompileFragmentTask)
+        {
+            mCompileFragmentTask->setExpired(true);
+        }
+        if (mLinkTask)
+        {
+            mLinkTask->setExpired(true);
+        }
+
+        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(getShaderProgram()));
     }
 
     GLuint
@@ -177,70 +194,85 @@ namespace Dream
     }
 
     bool
-   ShaderRuntime::compileVertex
-   ()
-   {
+    ShaderRuntime::compileVertex
+    ()
+    {
         // 1. Open Shader Files into Memory
         string absVertexPath = getAssetFilePath(Constants::SHADER_VERTEX_FILE_NAME);
         File vertexReader(absVertexPath);
-        mVertexSource = vertexReader.readString();
+        setVertexSource(vertexReader.readString());
         #ifdef DREAM_LOG
-        getLog()->trace(
-            "Loading Vertex Shader for {} from {}\n Vertex: {}\n",
-            mDefinition->getNameAndUuidString(),
-            absVertexPath,
-            mVertexSource
+        getLog()->trace("Loading Vertex Shader for {} from {}\n{}\n",
+            mDefinition->getNameAndUuidString(),absVertexPath, mVertexSource
         );
         #endif
         // 2. Compile shaders
-        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileVertexTask(this));
+        mCompileVertexTask = new ShaderCompileVertexTask(this);
+        mProjectRuntime->getGraphicsComponent()->pushTask(mCompileVertexTask);
         return true;
-   }
+    }
 
     bool
-   ShaderRuntime::compileFragment
-   ()
-   {
+    ShaderRuntime::compileFragment
+    ()
+    {
         // 1. Open Shader Files into Memory
         string absFragmentPath = getAssetFilePath(Constants::SHADER_FRAGMENT_FILE_NAME);
         File fragmentReader(absFragmentPath);
-        mFragmentSource = fragmentReader.readString();
+        setFragmentSource(fragmentReader.readString());
         #ifdef DREAM_LOG
-        getLog()->trace(
-            "Loading Fragment Shader for {} from {}\n {}\n",
-            mDefinition->getNameAndUuidString(),
-            absFragmentPath,
-            mFragmentSource
+        getLog()->trace("Loading Fragment Shader for {} from {}\n{}\n",
+            mDefinition->getNameAndUuidString(),absFragmentPath, mFragmentSource
         );
         #endif
         // 2. Compile shaders
-        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderCompileFragmentTask(this));
+        mCompileFragmentTask = new ShaderCompileFragmentTask(this);
+        mProjectRuntime->getGraphicsComponent()->pushTask(mCompileFragmentTask);
         return true;
-   }
+    }
 
    bool
    ShaderRuntime::linkProgram
    ()
    {
-        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderLinkTask(this));
-        return mLoaded;
+       mLinkTask = new ShaderLinkTask(this);
+       mProjectRuntime->getGraphicsComponent()->pushTask(mLinkTask);
+       return mLoaded;
    }
 
-    void
-    ShaderRuntime::use
-    ()
-    {
-        mPointLightCount = 0;
-        mSpotLightCount = 0;
-        mDirectionalLightCount = 0;
+   void
+   ShaderRuntime::clearLinkTask
+   ()
+   {
+       mLinkTask = nullptr;
+   }
+
+   void
+   ShaderRuntime::clearCompileFragmentTask
+   ()
+   {
+       mCompileFragmentTask = nullptr;
+   }
+
+   void
+   ShaderRuntime::clearCompileVertexTask
+   ()
+   {
+       mCompileVertexTask = nullptr;
+   }
+
+   void
+   ShaderRuntime::use
+   ()
+   {
+       mPointLightCount = 0;
+       mSpotLightCount = 0;
+       mDirectionalLightCount = 0;
         if (CurrentShaderProgram != mShaderProgram)
         {
             #ifdef DREAM_LOG
-            getLog()->info(
-                "Switching Shader Program from {} to {} for {}",
-                CurrentShaderProgram,
-                mShaderProgram,
-                getNameAndUuidString()
+            getLog()->info("Switching Shader Program from {} to {} for {}",
+                CurrentShaderProgram,mShaderProgram,getNameAndUuidString()
             );
             #endif
             glUseProgram(mShaderProgram);
@@ -282,7 +314,9 @@ namespace Dream
         return (*iter).second;
     }
 
-    void ShaderRuntime::addUniform(UniformType type, const string& name, int count, void* data)
+    void
+    ShaderRuntime::addUniform
+    (UniformType type, const string& name, int count, void* data)
     {
         for (auto uniform : mUniformVector)
         {
@@ -428,7 +462,9 @@ namespace Dream
         #endif
     }
 
-    void ShaderRuntime::bindLight(LightRuntime* light)
+    void
+    ShaderRuntime::bindLight
+    (LightRuntime* light)
     {
         #ifdef DREAM_LOG
         getLog()->debug("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
@@ -537,32 +573,30 @@ namespace Dream
         if (mPointLightCountLocation != UNIFORM_NOT_FOUND)
         {
             glUniform1i(mPointLightCountLocation,mPointLightCount);
-
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
         }
 
         else if (mPointLightCount > 0)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->info("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
-#endif
+            #endif
         }
 
         if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
         {
             glUniform1i(mSpotLightCountLocation,mSpotLightCount);
-
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
         }
         else if (mSpotLightCount > 0)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->info("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
-#endif
+            #endif
         }
 
         if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
@@ -687,7 +721,9 @@ namespace Dream
         CurrentVBO = 0;
     }
 
-    void ShaderRuntime::deleteUniforms()
+    void
+    ShaderRuntime::deleteUniforms
+    ()
     {
        for (ShaderUniform* uniform : mUniformVector)
        {
@@ -797,7 +833,6 @@ namespace Dream
        }
     }
 
-
     bool
     ShaderRuntime::getRecompile
     ()
@@ -842,52 +877,72 @@ namespace Dream
         mFragmentSource = fragmentSource;
     }
 
-    GLuint ShaderRuntime::getVertexShader() const
+    GLuint
+    ShaderRuntime::getVertexShader
+    () const
     {
         return mVertexShader;
     }
 
-    void ShaderRuntime::setVertexShader(const GLuint& vertexShader)
+    void
+    ShaderRuntime::setVertexShader
+    (const GLuint& vertexShader)
     {
         mVertexShader = vertexShader;
     }
 
-    GLuint ShaderRuntime::getFragmentShader() const
+    GLuint
+    ShaderRuntime::getFragmentShader
+    () const
     {
         return mFragmentShader;
     }
 
-    void ShaderRuntime::setFragmentShader(const GLuint& fragmentShader)
+    void
+    ShaderRuntime::setFragmentShader
+    (const GLuint& fragmentShader)
     {
         mFragmentShader = fragmentShader;
     }
 
-    GLint ShaderRuntime::getPointLightCountLocation() const
+    GLint
+    ShaderRuntime::getPointLightCountLocation
+    () const
     {
         return mPointLightCountLocation;
     }
 
-    void ShaderRuntime::setPointLightCountLocation(const GLint& pointLightCountLocation)
+    void
+    ShaderRuntime::setPointLightCountLocation
+    (const GLint& pointLightCountLocation)
     {
         mPointLightCountLocation = pointLightCountLocation;
     }
 
-    GLint ShaderRuntime::getSpotLightCountLocation() const
+    GLint
+    ShaderRuntime::getSpotLightCountLocation
+    () const
     {
         return mSpotLightCountLocation;
     }
 
-    void ShaderRuntime::setSpotLightCountLocation(const GLint& spotLightCountLocation)
+    void
+    ShaderRuntime::setSpotLightCountLocation
+    (const GLint& spotLightCountLocation)
     {
         mSpotLightCountLocation = spotLightCountLocation;
     }
 
-    GLint ShaderRuntime::getDirectionalLightCountLocation() const
+    GLint
+    ShaderRuntime::getDirectionalLightCountLocation
+    () const
     {
         return mDirectionalLightCountLocation;
     }
 
-    void ShaderRuntime::setDirectionalLightCountLocation(const GLint& directionalLightCountLocation)
+    void
+    ShaderRuntime::setDirectionalLightCountLocation
+    (const GLint& directionalLightCountLocation)
     {
         mDirectionalLightCountLocation = directionalLightCountLocation;
     }
@@ -908,7 +963,4 @@ namespace Dream
     GLuint ShaderRuntime::CurrentShaderProgram = 0;
     GLuint ShaderRuntime::CurrentVAO = 0;
     GLuint ShaderRuntime::CurrentVBO = 0;
-
-
-
-} // End of Dream
+}

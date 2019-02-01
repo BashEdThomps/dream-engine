@@ -189,6 +189,14 @@ namespace Dream
     }
 
     void
+    Transform::translate3f
+    (float x, float y, float z)
+    {
+        mMatrix = glm::translate(mMatrix,vec3(x,y,z));
+    }
+
+
+    void
     Transform::preTranslate
     (const vec3& translation)
     {

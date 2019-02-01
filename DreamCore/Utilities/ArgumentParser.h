@@ -1,6 +1,4 @@
 /*
-* Dream::ArgumentParser
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -42,13 +40,11 @@ namespace Dream
         ArgumentParser(int,const char**);
         ~ArgumentParser(void);
         void parse();
-        string getDreamPath();
-        string getProjectPath();
-        string getProjectUUID();
-        string getProjectFilePath();
-        string getProjectHttpUrl();
-        bool getUsingHttp();
-
-    }; // End of ArgumentParser
-
-} // End of Dream
+        string getDreamPath() const;
+        string getProjectPath() const;
+        string getProjectUUID() const;
+        string getProjectFilePath() const;
+        string getProjectHttpUrl() const;
+        bool getUsingHttp() const;
+    };
+}

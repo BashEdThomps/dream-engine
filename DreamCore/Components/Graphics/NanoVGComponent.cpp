@@ -21,16 +21,22 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #ifdef WIN32
-#include <windows.h>
+    #include <windows.h>
+    #include <GL/glew.h>
+    #include <GL/glu.h>
 #endif
 
 #ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
-#else
-#include <GL/glew.h>
-#include <GL/glu.h>
+    #define GL_SILENCE_DEPRECATION
+    #include <GL/glew.h>
+    #include <OpenGL/gl3.h>
 #endif
+
+#ifdef __linux__
+    #include <GL/glew.h>
+    #include <GL/glu.h>
+#endif
+
 #ifdef CreateFont
 #undef CreateFont
 #endif

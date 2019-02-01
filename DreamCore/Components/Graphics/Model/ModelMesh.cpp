@@ -26,32 +26,36 @@
 
 namespace Dream
 {
-    BoundingBox ModelMesh::getBoundingBox() const
-    {
-        return mBoundingBox;
-    }
+
 
     ModelMesh::ModelMesh
     (ModelRuntime* parent, string name, vector<Vertex> vertices,
      vector<GLuint> indices, MaterialRuntime* material, const BoundingBox bb)
         : DreamObject("ModelMesh"),
         mParent(parent),mMaterial(material),mName(name),
-        mVertices(vertices),mIndices(indices),mBoundingBox(bb)
+        mVertices(vertices),mIndices(indices),mBoundingBox(bb),
+        mInitMeshTask(nullptr)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing Mesh for {}", parent->getName());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Constructing Mesh for {}", parent->getName());
+        #endif
         init();
     }
 
     ModelMesh::~ModelMesh
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
+        #endif
+        if (mInitMeshTask)
+        {
+            mInitMeshTask->setExpired(true);
+        }
+        mParent
+            ->getProjectRuntime()
+            ->getGraphicsComponent()
+            ->pushTask(new ModelFreeMeshTask(mVAO,mVBO,mIBO));
     }
 
     string
@@ -86,29 +90,29 @@ namespace Dream
     ModelMesh::init
     ()
     {
-        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(new ModelInitMeshTask(this));
+        mInitMeshTask = new ModelInitMeshTask(this);
+        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(mInitMeshTask);
     }
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     void
     ModelMesh::logRuntimes
     ()
     {
-       auto log = getLog();
-       for (auto Runtime : mRuntimes)
+       for (auto runtime : mRuntimes)
        {
-           log->debug("\t\t\tRuntime for {}", Runtime->getNameAndUuidString());
+           getLog()->debug("\t\t\tRuntime for {}", runtime->getNameAndUuidString());
        }
     }
-#endif
+    #endif
 
     void
     ModelMesh::addRuntime
     (SceneObjectRuntime* runt)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->debug("Adding Runtime of mesh for {}", runt->getNameAndUuidString());
-#endif
+        #endif
         mRuntimes.push_back(runt);
     }
 
@@ -116,15 +120,14 @@ namespace Dream
     ModelMesh::removeRuntime
     (SceneObjectRuntime* runt)
     {
-#ifdef DREAM_LOG
-       auto log = getLog();
-       log->debug("Removing Runtime of mesh for {}", runt->getNameAndUuidString());
-#endif
-       auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
-       if (itr != mRuntimes.end())
-       {
+        #ifdef DREAM_LOG
+        getLog()->debug("Removing Runtime of mesh for {}", runt->getNameAndUuidString());
+        #endif
+        auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
+        if (itr != mRuntimes.end())
+        {
            mRuntimes.erase(itr);
-       }
+        }
     }
 
     MaterialRuntime*
@@ -146,9 +149,6 @@ namespace Dream
     ModelMesh::drawGeometryPassRuntimes
     (Camera* camera, ShaderRuntime* shader)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         mRuntimesInFrustum.clear();
         for (size_t i=0; i<mRuntimes.size();i++)
         {
@@ -161,14 +161,14 @@ namespace Dream
         }
         if (mRuntimesInFrustum.empty())
         {
-#ifdef DREAM_LOG
-            log->debug("(Geometry) No Runtimes of {} in Frustum", getName());
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("(Geometry) No Runtimes of {} in Frustum", getName());
+            #endif
             return;
         }
-#ifdef DREAM_LOG
-        log->trace("(Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("(Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
+        #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
         GLsizei size = mRuntimesInFrustum.size();
@@ -184,19 +184,16 @@ namespace Dream
     ModelMesh::drawShadowPassRuntimes
     (ShaderRuntime* shader, bool inFrustumOnly)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         if (mRuntimes.empty())
         {
-#ifdef DREAM_LOG
-            log->debug("(Shadow) No Runtimes of {} in Frustum", getName());
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("(Shadow) No Runtimes of {} in Frustum", getName());
+            #endif
             return;
         }
-#ifdef DREAM_LOG
-        log->trace("(Shadow) Drawing {} Runtimes of mesh {}", mRuntimes.size(), getName());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("(Shadow) Drawing {} Runtimes of mesh {}", mRuntimes.size(), getName());
+        #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
         GLsizei size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
@@ -208,29 +205,53 @@ namespace Dream
         ShadowDrawCalls++;
     }
 
-    void ModelMesh::setVAO(const GLuint& vAO)
+    void
+    ModelMesh::setVAO
+    (const GLuint& vAO)
     {
         mVAO = vAO;
     }
 
-    GLuint ModelMesh::getVBO() const
+    GLuint
+    ModelMesh::getVBO
+    () const
     {
         return mVBO;
     }
 
-    void ModelMesh::setVBO(const GLuint& vBO)
+    void
+    ModelMesh::setVBO
+    (const GLuint& vBO)
     {
         mVBO = vBO;
     }
 
-    GLuint ModelMesh::getIBO() const
+    GLuint
+    ModelMesh::getIBO
+    () const
     {
         return mIBO;
     }
 
-    void ModelMesh::setIBO(const GLuint& iBO)
+    void
+    ModelMesh::setIBO
+    (const GLuint& iBO)
     {
         mIBO = iBO;
+    }
+
+    BoundingBox
+    ModelMesh::getBoundingBox
+    () const
+    {
+        return mBoundingBox;
+    }
+
+    void
+    ModelMesh::clearInitMeshTask
+    ()
+    {
+       mInitMeshTask = nullptr;
     }
 
     long ModelMesh::DrawCalls = 0;

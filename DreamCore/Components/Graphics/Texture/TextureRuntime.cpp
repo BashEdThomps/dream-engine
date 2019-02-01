@@ -15,12 +15,18 @@ namespace Dream
           mWidth(0),
           mHeight(0),
           mChannels(0),
-          mImage(nullptr)
+          mImage(nullptr),
+          mCreateTextureTask(nullptr)
     {}
 
     TextureRuntime::~TextureRuntime
     ()
     {
+        if (mCreateTextureTask)
+        {
+            mCreateTextureTask->setExpired(true);
+        }
+
         mProjectRuntime->getGraphicsComponent()->pushTask(new TextureDeletionTask(mGLID));
         #ifdef DREAM_LOG
         checkGLError();
@@ -95,6 +101,13 @@ namespace Dream
     (unsigned char* image)
     {
         mImage = image;
+    }
+
+    void
+    TextureRuntime::clearCreateTextureTask
+    ()
+    {
+       mCreateTextureTask = nullptr;
     }
 
     GLuint

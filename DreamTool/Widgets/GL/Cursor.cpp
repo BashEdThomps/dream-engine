@@ -292,6 +292,37 @@ namespace DreamTool
         mModelMatrix = glm::translate(mat4(1.0f),current) * mOrientation;
     }
 
+    void
+    Cursor::setMousePosition
+    (float x, float y)
+    {
+        vec3 pos = mouseToWorldSpace(x,y);
+        setPosition(pos,false);
+    }
+
+    vec3
+    Cursor::mouseToWorldSpace
+    (float x, float y)
+    {
+        auto w =  mState->windowComponent.getWidth();
+        auto h = mState->windowComponent.getHeight();
+        float depth = 0.5;
+        /*if (mState->project->getRuntime())
+        {
+            auto camTx = mState->project->getRuntime()->getActiveSceneRuntime()->getCamera()->getTranslation();
+            depth = glm::distance(vec3(0.0f),camTx);
+        }
+        */
+        mat4 mtx(1.0f);
+        vec3 out = glm::unProject(
+            vec3(x, y, depth),
+            mtx*mViewMatrix,
+            mProjectionMatrix,
+            vec4(0.0f,0.0f,w,h)
+        );
+        return out;
+    }
+
     const vector<GLWidgetVertex> Cursor::ModelVertices =
     {
         GLWidgetVertex{vec3(0.000f, 0.000f, 0.000f), vec3(0.0f,1.0f,0.0f)},

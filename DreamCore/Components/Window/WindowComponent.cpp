@@ -49,6 +49,7 @@ namespace Dream
     int
     WindowComponent::getWidth
     ()
+    const
     {
         return mWidth;
     }
@@ -56,6 +57,7 @@ namespace Dream
     int
     WindowComponent::getHeight
     ()
+    const
     {
         return mHeight;
     }
@@ -70,6 +72,7 @@ namespace Dream
     string
     WindowComponent::getName
     ()
+    const
     {
         return mName;
     }
@@ -84,6 +87,7 @@ namespace Dream
     bool
     WindowComponent::shouldClose
     ()
+    const
     {
         return mShouldClose;
     }
@@ -105,13 +109,15 @@ namespace Dream
     }
 
     double WindowComponent::getMouseX()
+    const
     {
         return mMouseX;
     }
 
     double WindowComponent::getMouseY()
+    const
     {
        return mMouseY;
     }
 
-} // End of Dream
+}

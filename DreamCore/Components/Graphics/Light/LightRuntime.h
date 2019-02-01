@@ -73,10 +73,7 @@ namespace Dream
         LightType mType;
 
     public:
-        LightRuntime(
-            LightDefinition*,
-            SceneObjectRuntime*
-        );
+        LightRuntime(LightDefinition*,SceneObjectRuntime*);
         ~LightRuntime() override;
 
         bool useDefinition() override;
@@ -109,11 +106,8 @@ namespace Dream
         void setType(const LightType& type);
         void loadType();
 
-        PointLight getPointLightData();
-        SpotLight getSpotLightData();
-        DirLight getDirectionalLightData();
-
-    protected:
-
+        PointLight getPointLightData() const;
+        SpotLight getSpotLightData() const;
+        DirLight getDirectionalLightData() const;
     };
 }

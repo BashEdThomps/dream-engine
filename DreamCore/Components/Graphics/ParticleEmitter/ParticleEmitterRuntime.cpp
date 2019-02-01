@@ -29,10 +29,10 @@ namespace Dream
         SceneObjectRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("ParticleEmitterRuntime");
         getLog()->trace("Constructing");
-#endif
+        #endif
     }
 
     void
@@ -55,9 +55,9 @@ namespace Dream
     ParticleEmitterRuntime::~ParticleEmitterRuntime
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->trace("Destroying");
-#endif
+        #endif
         return;
     }
 

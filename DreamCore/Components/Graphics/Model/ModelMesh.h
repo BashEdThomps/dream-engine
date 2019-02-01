@@ -24,9 +24,9 @@
 
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
 #include <GL/glew.h>
-#include <GL/glu.h>
+#include <OpenGL/gl3.h>
+//#include <GL/glu.h>
 #endif
 
 #ifdef __linux__
@@ -60,19 +60,6 @@ namespace Dream
 
     class ModelMesh : public DreamObject
     {
-    private:
-        ModelRuntime* mParent;
-        MaterialRuntime* mMaterial;
-        string mName;
-        GLuint mVAO;
-        GLuint mVBO;
-        GLuint mIBO;
-        vector<Vertex> mVertices;
-        vector<GLuint> mIndices;
-        vector<SceneObjectRuntime*> mRuntimes;
-        vector<SceneObjectRuntime*> mRuntimesInFrustum;
-        BoundingBox mBoundingBox;
-
     public:
         static long DrawCalls;
         static long MeshesDrawn;
@@ -121,5 +108,20 @@ namespace Dream
         GLuint getIBO() const;
         void setIBO(const GLuint& iBO);
         BoundingBox getBoundingBox() const;
+        void clearInitMeshTask();
+
+    private:
+        ModelRuntime* mParent;
+        MaterialRuntime* mMaterial;
+        string mName;
+        GLuint mVAO;
+        GLuint mVBO;
+        GLuint mIBO;
+        vector<Vertex> mVertices;
+        vector<GLuint> mIndices;
+        vector<SceneObjectRuntime*> mRuntimes;
+        vector<SceneObjectRuntime*> mRuntimesInFrustum;
+        BoundingBox mBoundingBox;
+        GraphicsComponentTask* mInitMeshTask;
     };
 }

@@ -38,11 +38,17 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        getLog()->debug( "Time: Update Called" );
+        getLog()->debug( "Update Called" );
         #endif
         mLastFrameTime = mCurrentFrameTime;
         mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
         (steady_clock::now().time_since_epoch()).count();
+
+        // Ignore the huge delta on first start
+        if (mLastFrameTime == 0)
+        {
+            mLastFrameTime = mCurrentFrameTime;
+        }
         #ifdef DREAM_LOG
         show();
         #endif
@@ -56,7 +62,7 @@ namespace Dream
     {
         getLog()->trace
         (
-           "Time: Current: {}, Last: {}, Delta: {}" ,
+           "CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
            getCurrentFrameTime(),
            getLastFrameTime(),
            getFrameTimeDelta()

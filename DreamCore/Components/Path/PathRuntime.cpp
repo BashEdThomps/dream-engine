@@ -279,7 +279,7 @@ namespace Dream
                 vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
                 distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
                 #ifdef DREAM_LOG
-                getLog()->critical("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
+                getLog()->trace("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
                 #endif
             }
             else

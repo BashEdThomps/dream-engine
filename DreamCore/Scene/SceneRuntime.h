@@ -60,16 +60,16 @@ namespace Dream
         ~SceneRuntime() override;
 
         Camera* getCamera();
-        SceneState getState();
+        SceneState getState() const;
         void setState(SceneState state);
 
-        vec3 getGravity();
+        vec3 getGravity() const;
         void setGravity(const vec3& gravity);
 
-        vec3 getClearColour();
+        vec3 getClearColour() const;
         void setClearColour(const vec3& clearColour);
 
-        const vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue();
+        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue() const;
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
@@ -82,25 +82,25 @@ namespace Dream
 
         void setDeleteFlagOnAllSceneObjectRuntimes();
 
-        bool hasRootSceneObjectRuntime();
+        bool hasRootSceneObjectRuntime() const;
         void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObject);
-        SceneObjectRuntime* getRootSceneObjectRuntime();
+        SceneObjectRuntime* getRootSceneObjectRuntime() const;
 
-        SceneObjectRuntime* getSceneObjectRuntimeByName(const string& name);
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(uint32_t uuid);
+        SceneObjectRuntime* getSceneObjectRuntimeByName(const string& name) const;
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(uint32_t uuid) const;
 
-        int countSceneObjectRuntimes();
-        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*);
+        int countSceneObjectRuntimes() const;
+        int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*) const;
 
-        ProjectRuntime* getProjectRuntime();
+        ProjectRuntime* getProjectRuntime() const;
 
-        void showScenegraph();
+        void showScenegraph() const;
 
         void collectGarbage() override;
 
         void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
-        bool getPhysicsDebug();
+        bool getPhysicsDebug() const;
         void setPhysicsDebug(bool physicsDebug);
 
         ShaderRuntime* getLightingPassShader() const;
@@ -135,14 +135,12 @@ namespace Dream
          * @return Gets the nearest SceneObject to the Camera's position excluding
          * the SceneObject the Camera is focused on.
          */
-        SceneObjectRuntime* getNearestToCamera();
+        SceneObjectRuntime* getNearestToCamera() const;
 
         double getSceneCurrentTime() const;
         void setSceneCurrentTime(double sceneCurrentTime);
 
         double getSceneStartTime() const;
         void setSceneStartTime(double sceneStartTime);
-        void updateTime();
-        void updateDeferredSceneObjects();
     };
 }

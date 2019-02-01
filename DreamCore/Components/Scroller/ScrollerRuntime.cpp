@@ -83,6 +83,7 @@ namespace Dream
     ScrollerRuntime::Range
     ScrollerRuntime::checkRange
     (SceneObjectRuntime* runt)
+    const
     {
         Range inRangeX = None;
         //Range inRangeY = None;

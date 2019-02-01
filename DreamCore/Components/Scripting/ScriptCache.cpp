@@ -58,6 +58,9 @@ namespace Dream
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());
+        #ifdef DREAM_LOG
+        getLog()->trace("Loaded Script Source\n{}\n",newScript->getSource());
+        #endif
         mRuntimes.push_back(newScript);
         return newScript;
     }

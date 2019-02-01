@@ -76,14 +76,14 @@ namespace Dream
         Camera(SceneRuntime* parent);
         ~Camera();
 
-        mat4 getViewMatrix();
+        mat4 getViewMatrix() const;
         void update();
         void updateCameraVectors();
-        void setTranslation(vec3);
+        void setTranslation(const vec3&);
         void setTranslation(float,float,float);
-        vec3 getTranslation();
+        vec3 getTranslation() const;
         void  setMovementSpeed(float);
-        float getMovementSpeed();
+        float getMovementSpeed() const;
 
         void flyForward(float scalar=1.0f);
         void flyBackward(float scalar=1.0f);
@@ -95,10 +95,10 @@ namespace Dream
         void deltaPitch(float pitch);
         void deltaYaw(float yaw);
 
-        float getFocusedObjectTheta();
+        float getFocusedObjectTheta() const;
 
-        vec3 getUp();
-        vec3 getFront();
+        vec3 getUp() const;
+        vec3 getFront() const;
 
         float getYaw() const;
         void setYaw(float yaw);
@@ -106,13 +106,13 @@ namespace Dream
         float getPitch() const;
         void setPitch(float pitch);
 
-        bool containedInFrustum(SceneObjectRuntime*);
-        bool containedInFrustum(const BoundingBox&);
-        bool containedInFrustumAfterTransform(SceneObjectRuntime*,const mat4& tx);
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const vec3& tx);
+        bool containedInFrustum(SceneObjectRuntime*) const;
+        bool containedInFrustum(const BoundingBox&) const;
+        bool containedInFrustumAfterTransform(SceneObjectRuntime*,const mat4& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const vec3& tx) const;
 
-        bool visibleInFrustum(SceneObjectRuntime*);
-        bool visibleInFrustum(const BoundingBox&);
+        bool visibleInFrustum(SceneObjectRuntime*)const;
+        bool visibleInFrustum(const BoundingBox&) const;
 
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
@@ -142,9 +142,9 @@ namespace Dream
         void setMaximumDraw(float maximumDraw);
 
         void updateProjectionMatrix(float w, float h);
-        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx);
+        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
 
     private:
-        void setFocusTranslationFromTarget(vec3 target);
+        void setFocusTranslationFromTarget(const vec3& target);
     }; // End of Camera
 } // End of Dream

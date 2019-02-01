@@ -13,6 +13,7 @@ namespace Dream
         ModelInitMeshTask(ModelMesh* mesh)
             : GraphicsComponentTask(),
               mMesh(mesh) {}
+
         inline bool execute() override
         {
             GLuint vao, vbo, ibo;
@@ -30,41 +31,62 @@ namespace Dream
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mMesh->getIndices().size() * sizeof(GLuint)),&mMesh->getIndices()[0], GL_STATIC_DRAW);
             // Vertex Positions
             glEnableVertexAttribArray(0);
-            glVertexAttribPointer(
-                        0, 3, GL_FLOAT, GL_FALSE,
-                        static_cast<GLint>(sizeof(Vertex)),
-                        static_cast<GLvoid*>(nullptr)
-                        );
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
             // Vertex Normals
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(
-                        1, 3, GL_FLOAT, GL_FALSE,
-                        static_cast<GLint>(sizeof(Vertex)),
-                        (GLvoid*)offsetof(Vertex, Normal)
-                        );
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
+                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
             // Vertex Texture Coords
             glEnableVertexAttribArray(2);
-            glVertexAttribPointer(
-                        2, 2, GL_FLOAT, GL_FALSE,
-                        static_cast<GLint>(sizeof(Vertex)),
-                        (GLvoid*)offsetof(Vertex, TexCoords)
-                        );
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
             // Vertex Tangents
             glEnableVertexAttribArray(3);
-            glVertexAttribPointer(
-                        3, 3, GL_FLOAT, GL_FALSE,
-                        static_cast<GLint>(sizeof(Vertex)),
-                        (GLvoid*)offsetof(Vertex, Tangent)
-                        );
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
+                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
             // Vertex Bitangents
             glEnableVertexAttribArray(4);
-            glVertexAttribPointer(
-                        4, 3, GL_FLOAT, GL_FALSE,
-                        static_cast<GLint>(sizeof(Vertex)),
-                        (GLvoid*)offsetof(Vertex, Bitangent)
-                        );
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
+                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
             glBindVertexArray(0);
+            mMesh->clearInitMeshTask();
             return true;
         }
+    };
+
+    class ModelFreeMeshTask : public GraphicsComponentTask
+    {
+        GLuint mVAO;
+        GLuint mVBO;
+        GLuint mIBO;
+    public:
+       ModelFreeMeshTask
+       (GLuint vao, GLuint vbo, GLuint ibo)
+           : GraphicsComponentTask (),
+             mVAO(vao),
+             mVBO(vbo),
+             mIBO(ibo)
+       {}
+       inline bool
+       execute
+       ()
+       {
+            if (mVAO > 0)
+            {
+                glDeleteVertexArrays(1,&mVAO);
+            }
+
+            if (mVBO > 0)
+            {
+                glDeleteBuffers(1,&mVBO);
+            }
+
+            if (mIBO > 0)
+            {
+                glDeleteBuffers(1,&mIBO);
+            }
+            return true;
+       }
     };
 }

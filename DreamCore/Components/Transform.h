@@ -122,6 +122,7 @@ namespace Dream
          * @param translation Amount to translate the matrix by.
          */
         void translate(const vec3& translation);
+        void translate3f(float x, float y, float z);
 
         /**
          * @brief Translate to this position first, then apply the underlyinng

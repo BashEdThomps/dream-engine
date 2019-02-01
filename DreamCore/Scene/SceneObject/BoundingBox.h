@@ -39,7 +39,7 @@ namespace Dream
         void setToLimits();
         vec3 minimum;
         vec3 maximum;
-        vec3 getCenter();
+        vec3 getCenter() const;
         vec3 getNegativeVertex(const vec3& position, const vec3& normal) const;
         vec3 getPositiveVertex(const vec3& position, const vec3& normal) const;
     };

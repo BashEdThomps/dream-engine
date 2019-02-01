@@ -85,20 +85,20 @@ namespace Dream
         ~ProjectRuntime() override;
 
         void setDone(bool);
-        bool isDone();
+        bool isDone() const;
 
-        Time* getTime();
+        Time* getTime() const;
 
-        AudioComponent* getAudioComponent();
-        PhysicsComponent* getPhysicsComponent();
-        GraphicsComponent* getGraphicsComponent();
-        NanoVGComponent* getNanoVGComponent();
-        WindowComponent* getWindowComponent();
-        ScriptComponent* getScriptComponent();
-        InputComponent* getInputComponent();
-        LogicComponent* getLogicComponent();
+        AudioComponent* getAudioComponent() const;
+        PhysicsComponent* getPhysicsComponent() const;
+        GraphicsComponent* getGraphicsComponent() const;
+        NanoVGComponent* getNanoVGComponent() const;
+        WindowComponent* getWindowComponent() const;
+        ScriptComponent* getScriptComponent() const;
+        InputComponent* getInputComponent() const;
+        LogicComponent* getLogicComponent() const;
 
-        Project* getProject();
+        Project* getProject() const;
 
         bool initComponents();
 
@@ -109,10 +109,10 @@ namespace Dream
         bool updateLogic(SceneRuntime* rt);
         void updateGraphics(SceneRuntime* rt);
 
-        int getWindowWidth();
+        int getWindowWidth() const;
         void setWindowWidth(int);
 
-        int getWindowHeight();
+        int getWindowHeight() const;
         void setWindowHeight(int);
 
         bool constructSceneRuntime(SceneRuntime* rt);
@@ -121,29 +121,29 @@ namespace Dream
 
         bool useDefinition() override;
 
-        AudioCache* getAudioCache();
-        ShaderCache* getShaderCache();
-        MaterialCache* getMaterialCache();
-        ModelCache* getModelCache();
-        TextureCache* getTextureCache();
-        ScriptCache* getScriptCache();
+        AudioCache* getAudioCache() const;
+        ShaderCache* getShaderCache() const;
+        MaterialCache* getMaterialCache() const;
+        ModelCache* getModelCache() const;
+        TextureCache* getTextureCache() const;
+        ScriptCache* getScriptCache() const;
 
-        bool hasActiveScene();
+        bool hasActiveScene() const;
 
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
 
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, uint32_t uuid);
-        SceneRuntime* getActiveSceneRuntime();
-        SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid);
+        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
+        SceneRuntime* getActiveSceneRuntime() const;
+        SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid) const;
 
         void addSceneRuntime(SceneRuntime*);
         void removeSceneRuntime(SceneRuntime*);
         void setSceneRuntimeAsActive(uint32_t uuid);
-        vector<SceneRuntime*> getSceneRuntimeVector();
-        bool hasSceneRuntime(uint32_t uuid);
-        bool hasLoadedScenes();
+        vector<SceneRuntime*> getSceneRuntimeVector() const;
+        bool hasSceneRuntime(uint32_t uuid) const;
+        bool hasLoadedScenes() const;
 
-    private: // Member Functions
+    private:
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();

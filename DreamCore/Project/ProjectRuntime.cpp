@@ -92,6 +92,7 @@ namespace Dream
     WindowComponent*
     ProjectRuntime::getWindowComponent
     ()
+    const
     {
         return mWindowComponent;
     }
@@ -106,6 +107,7 @@ namespace Dream
     Time*
     ProjectRuntime::getTime
     ()
+    const
     {
         return mTime;
     }
@@ -429,6 +431,7 @@ namespace Dream
     bool
     ProjectRuntime::isDone
     ()
+    const
     {
         return mDone;
     }
@@ -436,6 +439,7 @@ namespace Dream
     AudioComponent*
     ProjectRuntime::getAudioComponent
     ()
+    const
     {
         return mAudioComponent;
     }
@@ -443,6 +447,7 @@ namespace Dream
     PhysicsComponent*
     ProjectRuntime::getPhysicsComponent
     ()
+    const
     {
         return mPhysicsComponent;
     }
@@ -450,6 +455,7 @@ namespace Dream
     GraphicsComponent*
     ProjectRuntime::getGraphicsComponent
     ()
+    const
     {
         return mGraphicsComponent;
     }
@@ -457,6 +463,7 @@ namespace Dream
     NanoVGComponent*
     ProjectRuntime::getNanoVGComponent
     ()
+    const
     {
         return mNanoVGComponent;
     }
@@ -464,6 +471,7 @@ namespace Dream
     ScriptComponent*
     ProjectRuntime::getScriptComponent
     ()
+    const
     {
         return mScriptComponent;
     }
@@ -471,6 +479,7 @@ namespace Dream
     LogicComponent*
     ProjectRuntime::getLogicComponent
     ()
+    const
     {
         return mLogicComponent;
     }
@@ -480,7 +489,11 @@ namespace Dream
     (SceneRuntime* sr)
     {
         #ifdef DREAM_LOG
-        getLog()->debug("\n====================\nUpdate Logic called @ {}\n====================",mTime->getAbsoluteTime());
+        getLog()->debug("\n"
+        "=======================================================================\n"
+        "Update Logic called @ {}\n"
+        "=======================================================================\n",
+        mTime->getAbsoluteTime());
         #endif
 
         // Get Inputs
@@ -507,7 +520,11 @@ namespace Dream
     (SceneRuntime* sr)
     {
         #ifdef DREAM_LOG
-        getLog()->debug("\n====================\nUpdate Graphics called @ {}\n====================",mTime->getAbsoluteTime());
+        getLog()->debug("\n"
+        "=======================================================================\n"
+        "Update Graphics called @ {}\n"
+        "=======================================================================\n",
+        mTime->getAbsoluteTime());
         #endif
         // Draw 3D/PhysicsDebug/2D
         ModelMesh::ClearCounters();
@@ -524,6 +541,7 @@ namespace Dream
     int
     ProjectRuntime::getWindowWidth
     ()
+    const
     {
         if (mWindowComponent != nullptr)
         {
@@ -545,6 +563,7 @@ namespace Dream
     int
     ProjectRuntime::getWindowHeight
     ()
+    const
     {
         if (mWindowComponent != nullptr)
         {
@@ -568,7 +587,11 @@ namespace Dream
     (SceneRuntime* rt)
     {
         #ifdef DREAM_LOG
-        getLog()->debug("CollectGarbage Called @ {}", mTime->getAbsoluteTime());
+        getLog()->debug("\n"
+        "=======================================================================\n"
+        "CollectGarbage Called @ {}\n"
+        "=======================================================================",
+        mTime->getAbsoluteTime());
         #endif
         rt->collectGarbage();
     }
@@ -594,9 +617,6 @@ namespace Dream
         for (auto rt : mSceneRuntimeVector)
         {
             rt->lock();
-            #ifdef DREAM_LOG
-            getLog()->trace("UpdateAll on {}",rt->getNameAndUuidString());
-            #endif
             switch (rt->getState())
             {
                 case SceneState::SCENE_STATE_TO_LOAD:
@@ -626,6 +646,7 @@ namespace Dream
     SceneRuntime*
     ProjectRuntime::getActiveSceneRuntime
     ()
+    const
     {
         int nRuntimes = mSceneRuntimeVector.size();
         for (int i=0;i<nRuntimes;i++)
@@ -641,6 +662,7 @@ namespace Dream
     SceneRuntime*
     ProjectRuntime::getSceneRuntimeByUuid
     (uint32_t uuid)
+    const
     {
         for (auto* sr : mSceneRuntimeVector)
         {
@@ -682,6 +704,7 @@ namespace Dream
     vector<SceneRuntime*>
     ProjectRuntime::getSceneRuntimeVector
     ()
+    const
     {
         return mSceneRuntimeVector;
     }
@@ -721,6 +744,7 @@ namespace Dream
     Project*
     ProjectRuntime::getProject
     ()
+    const
     {
         return mProject;
     }
@@ -728,6 +752,7 @@ namespace Dream
     InputComponent*
     ProjectRuntime::getInputComponent
     ()
+    const
     {
         return mInputComponent;
     }
@@ -752,6 +777,7 @@ namespace Dream
     AudioCache*
     ProjectRuntime::getAudioCache
     ()
+    const
     {
         return mAudioCache;
     }
@@ -759,6 +785,7 @@ namespace Dream
     ShaderCache*
     ProjectRuntime::getShaderCache
     ()
+    const
     {
         return mShaderCache;
     }
@@ -766,6 +793,7 @@ namespace Dream
     MaterialCache*
     ProjectRuntime::getMaterialCache
     ()
+    const
     {
         return mMaterialCache;
     }
@@ -773,6 +801,7 @@ namespace Dream
     ModelCache*
     ProjectRuntime::getModelCache
     ()
+    const
     {
         return mModelCache;
     }
@@ -780,6 +809,7 @@ namespace Dream
     TextureCache*
     ProjectRuntime::getTextureCache
     ()
+    const
     {
         return mTextureCache;
     }
@@ -787,6 +817,7 @@ namespace Dream
     ScriptCache*
     ProjectRuntime::getScriptCache
     ()
+    const
     {
         return mScriptCache;
     }
@@ -852,6 +883,7 @@ namespace Dream
     AssetDefinition*
     ProjectRuntime::getAssetDefinitionByUuid
     (uint32_t uuid)
+    const
     {
         if (mProject != nullptr)
         {
@@ -863,6 +895,7 @@ namespace Dream
     SceneObjectRuntime*
     ProjectRuntime::getSceneObjectRuntimeByUuid
     (SceneRuntime* rt, uint32_t uuid)
+    const
     {
         if (rt == nullptr)
         {
@@ -875,6 +908,7 @@ namespace Dream
     bool
     ProjectRuntime::hasActiveScene
     ()
+    const
     {
         for (auto srt : mSceneRuntimeVector)
         {
@@ -891,6 +925,7 @@ namespace Dream
     bool
     ProjectRuntime::hasLoadedScenes
     ()
+    const
     {
         for (auto srt : mSceneRuntimeVector)
         {
@@ -910,6 +945,7 @@ namespace Dream
     bool
     ProjectRuntime::hasSceneRuntime
     (uint32_t uuid)
+    const
     {
         bool result = false;
         for (auto srt : mSceneRuntimeVector)
@@ -923,6 +959,6 @@ namespace Dream
 
             if (result) break;
         }
-        return false;
+        return result;
     }
 }

@@ -1185,23 +1185,8 @@ namespace Dream
     SceneObjectRuntime::applyToAll
     (const function<bool(SceneObjectRuntime*)> fn)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("{}::applyToAll(bool) applying to {} children",
-        getNameAndUuidString(),mChildRuntimes.size());
-        #endif
-
         bool retval = fn(this);
 
-        /*
-        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
-        {
-            if (*it)
-            {
-                retval = retval || (*it)->applyToAll(fn);
-            }
-        }
-        */
         size_t n = mChildRuntimes.size();
         for (size_t i=0; i<n; i++ )
         {
@@ -1218,12 +1203,6 @@ namespace Dream
     SceneObjectRuntime::applyToAll
     (const function<SceneObjectRuntime*(SceneObjectRuntime*)> fn)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("{}::applyToAll(void*) applying to {} children",
-        getNameAndUuidString(), mChildRuntimes.size());
-        #endif
-
         SceneObjectRuntime* retval = fn(this);
 
         if (retval != nullptr)
@@ -1231,19 +1210,6 @@ namespace Dream
             return retval;
         }
 
-        /*
-        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
-        {
-            if ((*it) != nullptr)
-            {
-                retval = (*it)->applyToAll(fn);
-                if (retval != nullptr)
-                {
-                    return retval;
-                }
-            }
-        }
-        */
         size_t n = mChildRuntimes.size();
         for (size_t i=0; i<n; i++ )
         {

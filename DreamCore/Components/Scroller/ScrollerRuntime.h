@@ -44,7 +44,7 @@ namespace Dream
         SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);
         bool removeChlidRuntime(const ScrollerItem& item);
         void addAssets(SceneObjectRuntime* runt);
-        Range checkRange(SceneObjectRuntime* runt);
+        Range checkRange(SceneObjectRuntime* runt) const;
     private:
         vec3 mVelocity;
         vec3 mRangeBegin;

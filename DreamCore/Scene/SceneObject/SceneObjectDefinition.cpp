@@ -445,25 +445,23 @@ namespace Dream
     (AssetType type)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-        log->trace("Getting definition {} of in {}",typeStr, getNameAndUuidString());
-#endif
+        #endif
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
             mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
         {
             setEmptyAssetsObject();
         }
+
         if (!mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr].is_number())
         {
-#ifdef DREAM_LOG
-            log->trace("No Runtime");
-#endif
             return 0;
         }
-#ifdef DREAM_LOG
-        log->trace("Found Runtime");
-#endif
+
+        #ifdef DREAM_LOG
+        log->trace("Found {} Runtime",typeStr);
+        #endif
         return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
     }
 

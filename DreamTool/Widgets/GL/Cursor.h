@@ -32,6 +32,7 @@ namespace DreamTool
         void onAction(CursorAction a);
         void setPosition(vec3 pos, bool snap);
         void onAxisPairChanged(Grid::AxisPair);
-
+        void setMousePosition(float x, float y);
+        vec3 mouseToWorldSpace(float x, float y);
     };
 }

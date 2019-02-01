@@ -76,7 +76,7 @@ namespace Dream
           mProjectRuntime(runtime)
     {
         #ifdef DREAM_LOG
-        setLogClassName("LuaComponent");
+        setLogClassName("ScriptingComponent");
         auto log = getLog();
         log->trace( "Constructing Object" );
         #endif
@@ -146,9 +146,6 @@ namespace Dream
         }
 
         beginUpdate();
-        #ifdef DREAM_LOG
-        log->debug( "Update Called" );
-        #endif
 
         for (auto inst : mScriptCache->getRuntimeVector())
         {
@@ -190,7 +187,7 @@ namespace Dream
         stateView.new_usertype<ProjectDirectory>
         (
             "ProjectDirectory",
-            "getAssetPath",static_cast<string (ProjectDirectory::*)(uint32_t)>(&ProjectDirectory::getAssetAbsolutePath)
+            "getAssetPath",static_cast<string (ProjectDirectory::*)(uint32_t) const>(&ProjectDirectory::getAssetAbsolutePath)
         );
 
         stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
@@ -210,7 +207,7 @@ namespace Dream
             "flyUp",&Camera::flyUp,
             "flyDown",&Camera::flyDown,
             "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
-            "setTranslation",static_cast<void(Camera::*)(vec3)>(&Camera::setTranslation),
+            "setTranslation",static_cast<void(Camera::*)(const vec3&)>(&Camera::setTranslation),
             "getTranslation",&Camera::getTranslation,
             "getFocusedSceneObject",&Camera::getFocusedSceneObject,
             "getFocusedObjectTheta",&Camera::getFocusedObjectTheta
@@ -358,6 +355,7 @@ namespace Dream
         stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
             "getName",&SceneObjectRuntime::getName,
             "getNameAndUuidString",&SceneObjectRuntime::getNameAndUuidString,
+            "getScene",&SceneObjectRuntime::getSceneRuntime,
             "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
             "getParent",&SceneObjectRuntime::getParentRuntime,
             "setParent",&SceneObjectRuntime::setParentRuntime,
@@ -388,7 +386,7 @@ namespace Dream
             "containedInFrustumAfterTransform",&SceneObjectRuntime::containedInFrustum,
             "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation,
             "addChildFromTemplateUuid",&SceneObjectRuntime::addChildFromTemplateUuid,
-           "getObjectLifetime",&SceneObjectRuntime::getObjectLifetime,
+            "getObjectLifetime",&SceneObjectRuntime::getObjectLifetime,
             "getDieAfter",&SceneObjectRuntime::getDieAfter
         );
     }
@@ -406,6 +404,7 @@ namespace Dream
             "decomposeMatrix",&Transform::decomposeMatrix,
             "recomposeMatrix",&Transform::recomposeMatrix,
             "translate",&Transform::translate,
+            "translate3f",&Transform::translate3f,
             "preTranslate",&Transform::preTranslate,
             "getTranslation",&Transform::getTranslation
         );
@@ -910,6 +909,15 @@ namespace Dream
                 return glm::translate(m1,v1);
             }
         );
+
+        stateView.set_function(
+            "translate3f",
+            [](const glm::mat4& m1, float x, float y, float z) -> glm::mat4
+            {
+                return glm::translate(m1,vec3(x,y,z));
+            }
+        );
+
         stateView.set_function(
             "rotate",
             [](const glm::mat4& m1, const float f1, const glm::vec3& v1) -> glm::mat4

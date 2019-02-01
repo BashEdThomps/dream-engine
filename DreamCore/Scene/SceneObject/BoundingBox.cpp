@@ -37,7 +37,7 @@ namespace Dream
 
     vec3
     BoundingBox::getCenter
-    ()
+    () const
     {
        return vec3((minimum.x+maximum.x)/2, (minimum.y+maximum.y)/2, (minimum.z+maximum.z)/2);
     }

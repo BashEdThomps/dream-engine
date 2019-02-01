@@ -13,6 +13,7 @@ namespace DreamTool
     DTState::DTState(int _argc, char** _argv)
         : DreamObject("DTState"),
           project(nullptr),
+          // ImGui
           propertiesWindow(PropertiesWindow(this)),
           projectBrowser(ProjectBrowser(this)),
           luaDebugWindow(LuaDebugWindow(this)),
@@ -23,6 +24,8 @@ namespace DreamTool
           menuBar(MenuBar(this)),
           renderPipelineWindow(RenderingDebugWindow(this)),
           gamepadStateWindow(GamepadStateWindow(this)),
+          cacheContentWindow(CacheContentWindow(this)),
+          // GL
           grid(Grid(this)),
           lightViewer(LightViewer(this)),
           selectionHighlighter(SelectionHighlighter(this)),
@@ -30,6 +33,7 @@ namespace DreamTool
           pathViewer(PathViewer(this)),
           animationViewer(AnimationViewer(this)),
           modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
+          // Args
           argc(_argc),
           argv(_argv)
     {
@@ -72,6 +76,7 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&shaderEditorWindow);
         windowComponent.addImGuiWidget(&renderPipelineWindow);
         windowComponent.addImGuiWidget(&gamepadStateWindow);
+        windowComponent.addImGuiWidget(&cacheContentWindow);
 
         // GL Widgets
         grid.init();
@@ -187,6 +192,7 @@ namespace DreamTool
                 camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
                 sendKeysToCamera = true;
             }
+            cursor.setMousePosition(io.MousePos.x, io.MousePos.y);
             #else
             if (io.MouseDown[2])
             {

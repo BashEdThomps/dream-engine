@@ -41,9 +41,9 @@ namespace Dream
         bool useDefinition() override;
         void addRuntime(SceneObjectRuntime*);
         void removeRuntime(SceneObjectRuntime*);
-        vector<SceneObjectRuntime*> getRuntimeVector();
-        string& getSource();
-        void setSource(string source);
+        vector<SceneObjectRuntime*> getRuntimeVector() const;
+        string getSource() const;
+        void setSource(const string& source);
 
         bool executeOnInit();
         bool executeOnUpdate();

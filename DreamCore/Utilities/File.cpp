@@ -36,13 +36,12 @@ namespace Dream
     File::~File
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "FileReader: Destroying reader for {}" , mPath );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug( "FileReader: Destroying reader for {}" , mPath );
+        #endif
     }
 
-    string File::getDirectory()
+    string File::getDirectory() const
     {
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         if (endOfPath == string::npos)
@@ -58,14 +57,14 @@ namespace Dream
 
     string
     File::getPath
-    ()
+    () const
     {
         return mPath;
     }
 
     string
     File::readString
-    ()
+    () const
     {
         ifstream inputStream;
         stringstream stringStream;
@@ -90,7 +89,7 @@ namespace Dream
 
     vector<char>
     File::readBinary
-    ()
+    () const
     {
         vector<char> data;
         ifstream inputStream;
@@ -106,7 +105,7 @@ namespace Dream
 
     bool
     File::writeBinary
-    (vector<char> data)
+    (const vector<char>& data) const
     {
         auto file = fopen(mPath.c_str(),"wb");
         auto bytesWritten = fwrite(&data[0],sizeof(char),data.size(),file);
@@ -116,7 +115,7 @@ namespace Dream
 
     bool
     File::writeString
-    (string data)
+    (const std::string& data) const
     {
         auto file = fopen(mPath.c_str(),"wb");
         auto bytesWritten = fwrite(&data[0],sizeof(char),data.size(),file);
@@ -126,18 +125,17 @@ namespace Dream
 
     bool
     File::deleteFile
-    ()
+    () const
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Deleting file {}",mPath);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Deleting file {}",mPath);
+        #endif
         if(remove(mPath.c_str()) != 0)
         {
-#ifdef DREAM_LOG
-            log->error("Error deleting file {}",mPath );
+            #ifdef DREAM_LOG
+            getLog()->error("Error deleting file {}",mPath );
             perror("File check error");
-#endif
+            #endif
             return false;
         }
         return true;
@@ -146,6 +144,7 @@ namespace Dream
     bool
     File::exists
     ()
+    const
     {
         FILE* file = fopen(mPath.c_str(),"rb");
         if (file)
@@ -153,51 +152,48 @@ namespace Dream
             fclose(file);
             return true;
         }
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         perror("File check error");
-#endif
+        #endif
         return false;
     }
 
     string
     File::nameWithExtension
-    ()
+    () const
     {
 
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Got file name with extension {}",fileName);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Got file name with extension {}",fileName);
+        #endif
         return fileName;
     }
 
-    string File::nameWithoutExtension()
+    string File::nameWithoutExtension() const
     {
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         auto nameOnly = name.substr(0,extStart);
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Got file name without extension {}",nameOnly);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Got file name without extension {}",nameOnly);
+        #endif
         return nameOnly;
     }
 
     string
     File::extension
-    ()
+    () const
     {
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         if (extStart != string::npos)
         {
             auto ext = name.substr(extStart+1);
-#ifdef DREAM_LOG
-            auto log = getLog();
-            log->trace("Got file extension {}",ext);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->trace("Got file extension {}",ext);
+            #endif
             return ext;
         }
         return "";

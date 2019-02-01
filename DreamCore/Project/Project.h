@@ -51,16 +51,16 @@ namespace Dream
         Project(ProjectDirectory* dir);
         ~Project();
 
-        ProjectRuntime* getRuntime();
+        ProjectRuntime* getRuntime() const;
         ProjectRuntime* createProjectRuntime();
-        bool hasProjectRuntime();
+        bool hasProjectRuntime() const;
         void resetProjectRuntime();
 
         ProjectDefinition* getDefinition() const;
         void setDefinition(ProjectDefinition* definition);
-        bool hasProjectDefinition();
+        bool hasProjectDefinition() const;
 
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
+        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
         void setWindowComponent(WindowComponent* windowComponent);
 
         ProjectDirectory* getDirectory() const;
