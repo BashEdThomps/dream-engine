@@ -27,7 +27,7 @@
 #include "../Components/Audio/AudioCache.h"
 #include "../Components/Input/InputComponent.h"
 
-#include "../Components/Logic/LogicComponent.h"
+#include "../Components/TaskManager/TaskManager.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Model/ModelMesh.h"
@@ -57,7 +57,7 @@ namespace Dream
           mNanoVGComponent(nullptr),
           mPhysicsComponent(nullptr),
           mScriptComponent(nullptr),
-          mLogicComponent(nullptr),
+          mTaskManager(nullptr),
           mWindowComponent(windowComponent),
           mAudioCache(nullptr),
           mTextureCache(nullptr),
@@ -157,7 +157,7 @@ namespace Dream
             return false;
         }
 
-        if (!initLogicComponent())
+        if (!initTaskManager())
         {
             return false;
         }
@@ -191,7 +191,7 @@ namespace Dream
     ProjectRuntime::initAudioComponent
     ()
     {
-        mAudioComponent = new AudioComponent();
+        mAudioComponent = new AudioComponent(this);
         mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
@@ -210,10 +210,8 @@ namespace Dream
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         projectDef->lock();
         mInputComponent = new InputComponent(
-            projectDef->getCaptureKeyboard(),
-            projectDef->getCaptureMouse(),
-            projectDef->getCaptureJoystick()
-        );
+            this, projectDef->getCaptureKeyboard(), projectDef->getCaptureMouse(),
+            projectDef->getCaptureJoystick());
         projectDef->unlock();
         mInputComponent->lock();
 
@@ -233,7 +231,7 @@ namespace Dream
     ProjectRuntime::initPhysicsComponent
     ()
     {
-        mPhysicsComponent = new PhysicsComponent();
+        mPhysicsComponent = new PhysicsComponent(this);
         mPhysicsComponent->lock();
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
@@ -252,7 +250,7 @@ namespace Dream
     ProjectRuntime::initGraphicsComponent
     ()
     {
-        mGraphicsComponent = new GraphicsComponent(mWindowComponent);
+        mGraphicsComponent = new GraphicsComponent(this,mWindowComponent);
         mGraphicsComponent->lock();
         mGraphicsComponent->setTime(mTime);
         mGraphicsComponent->setShaderCache(mShaderCache);
@@ -272,7 +270,7 @@ namespace Dream
     ProjectRuntime::initNanoVGComponent
     ()
     {
-        mNanoVGComponent = new NanoVGComponent(mWindowComponent);
+        mNanoVGComponent = new NanoVGComponent(this,mWindowComponent);
         mNanoVGComponent->lock();
         mNanoVGComponent->setTime(mTime);
         if (!mNanoVGComponent->init())
@@ -306,21 +304,10 @@ namespace Dream
     }
 
     bool
-    ProjectRuntime::initLogicComponent
+    ProjectRuntime::initTaskManager
     ()
     {
-        mLogicComponent = new LogicComponent();
-        mLogicComponent->lock();
-        mLogicComponent->setTime(mTime);
-        if (!mLogicComponent->init())
-        {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to init lifetime component");
-            #endif
-            mLogicComponent->unlock();
-            return false;
-        }
-        mLogicComponent->unlock();
+        mTaskManager = new TaskManager();
         return true;
     }
 
@@ -385,10 +372,10 @@ namespace Dream
     ProjectRuntime::deleteComponents
     ()
     {
-        if (mLogicComponent != nullptr)
+        if (mTaskManager != nullptr)
         {
-            delete mLogicComponent;
-            mLogicComponent = nullptr;
+            delete mTaskManager;
+            mTaskManager = nullptr;
         }
 
         if (mAudioComponent != nullptr)
@@ -476,12 +463,12 @@ namespace Dream
         return mScriptComponent;
     }
 
-    LogicComponent*
-    ProjectRuntime::getLogicComponent
+    TaskManager*
+    ProjectRuntime::getTaskManager
     ()
     const
     {
-        return mLogicComponent;
+        return mTaskManager;
     }
 
     bool
@@ -496,18 +483,11 @@ namespace Dream
         mTime->getAbsoluteTime());
         #endif
 
-        // Get Inputs
         mTime->updateFrameTime();
-        sr->createSceneObjectUpdateQueues();
-
         mInputComponent->updateComponent(sr);
-
-        // Do Processing
-        mLogicComponent->updateComponent(sr);
         mPhysicsComponent->setCamera(sr->getCamera());
-        mPhysicsComponent->updateComponent(sr);
+        sr->createSceneTasks();
         mScriptComponent->updateComponent(sr);
-        mAudioComponent->updateComponent(sr);
 
         // Produce Outputs
         sr->getCamera()->update();

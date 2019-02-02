@@ -53,7 +53,7 @@ namespace Dream
     class ScriptDefinition;
     class ParticleEmitterDefinition;
     class AssetRuntime;
-    class LogicUpdateTask;
+    class LifetimeUpdateTask;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -180,8 +180,8 @@ namespace Dream
 
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
-        void clearLogicUpdateTask();
-        void setLogicUpdateTask(LogicUpdateTask* logicUpdateTask);
+        void clearLifetimeUpdateTask();
+        void setLifetimeUpdateTask(LifetimeUpdateTask* l);
 
     private:
         AnimationRuntime* mAnimationRuntime;
@@ -209,6 +209,6 @@ namespace Dream
         long mDeferredFor;
         long mObjectLifetime;
         long mDieAfter;
-        LogicUpdateTask* mLogicUpdateTask;
+        LifetimeUpdateTask* mLifetimeUpdateTask;
     };
 }

@@ -16,10 +16,9 @@
 #include "DiscreteAssetRuntime.h"
 
 #include "AssetDefinition.h"
-
+#include "TaskManager/Task.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../Scene/SceneRuntime.h"
-
 #include "../Project/Project.h"
 #include "../Project/ProjectRuntime.h"
 #include "../Project/ProjectDirectory.h"
@@ -30,16 +29,20 @@ namespace Dream
     DiscreteAssetRuntime::DiscreteAssetRuntime
     (AssetDefinition* def, SceneObjectRuntime* runtime)
         : AssetRuntime (def),
-          mSceneObjectRuntime(runtime)
+          mSceneObjectRuntime(runtime),
+          mUpdateTask(nullptr)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("DiscreteAssetRuntime");
-#endif
+        #endif
     }
 
     DiscreteAssetRuntime::~DiscreteAssetRuntime()
     {
-
+        if (mUpdateTask)
+        {
+            mUpdateTask->setExpired(true);
+        }
     }
 
     string
@@ -71,5 +74,19 @@ namespace Dream
     ()
     {
         return mSceneObjectRuntime;
+    }
+
+    void
+    DiscreteAssetRuntime::setUpdateTask
+    (Task* t)
+    {
+       mUpdateTask = t;
+    }
+
+    void
+    DiscreteAssetRuntime::clearUpdateTask
+    ()
+    {
+       mUpdateTask = nullptr;
     }
 }

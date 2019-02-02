@@ -19,6 +19,7 @@
 namespace Dream
 {
     class SceneObjectRuntime;
+    class Task;
 
     /**
      * @brief A DiscreteAssetRuntime is unique to a single SceneObjectRuntime
@@ -36,7 +37,13 @@ namespace Dream
         SceneObjectRuntime* getSceneObjectRuntime();
         string getAssetFilePath(string fmt = "") override;
         string getAssetDirectoryPath() override;
+
+        void setUpdateTask(Task*);
+        void clearUpdateTask();
+
     protected:
         SceneObjectRuntime* mSceneObjectRuntime;
+        Task* mUpdateTask;
+
     };
 }

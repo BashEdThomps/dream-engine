@@ -73,7 +73,7 @@ namespace Dream
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
         void clearSceneObjectRuntimeCleanUpQueue();
         void processSceneObjectRuntimeCleanUpQueue();
-        void createSceneObjectUpdateQueues();
+        void createSceneTasks();
 
         void createAllAssetRuntimes();
 
@@ -142,5 +142,7 @@ namespace Dream
 
         double getSceneStartTime() const;
         void setSceneStartTime(double sceneStartTime);
+    protected:
+        void updateLifetime();
     };
 }

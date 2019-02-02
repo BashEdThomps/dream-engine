@@ -13,8 +13,8 @@
 
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
-#include "../../../DreamCore/Components/Logic/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Logic/Path/PathRuntime.h"
+#include "../../../DreamCore/Components/Path/PathDefinition.h"
+#include "../../../DreamCore/Components/Path/PathRuntime.h"
 
 using glm::vec3;
 using Dream::PathDefinition;

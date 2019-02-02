@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "PathDefinition.h"
-#include "../../DiscreteAssetRuntime.h"
+#include "../DiscreteAssetRuntime.h"
 
 using namespace tinyspline;
 using namespace std;

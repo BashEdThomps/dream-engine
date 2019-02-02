@@ -26,7 +26,6 @@ extern "C"
 
 namespace Dream
 {
-    class ProjectRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
     class Event;
@@ -56,7 +55,6 @@ namespace Dream
     private:
         const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
-        ProjectRuntime* mProjectRuntime;
 
         // API Exposure Methods ======================================================
         void debugRegisteringClass(const string& classname);
@@ -85,6 +83,5 @@ namespace Dream
         void exposeGLM();
         void exposeDefinition();
         void exposeNanoVG();
-
-    }; // End of LuaComponent
-} // End of Dream
+    };
+}

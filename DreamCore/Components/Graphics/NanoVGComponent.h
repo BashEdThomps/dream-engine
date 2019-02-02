@@ -37,7 +37,7 @@ namespace Dream
     class NanoVGComponent : public Component
     {
     public:
-        NanoVGComponent(WindowComponent* windowComponent);
+        NanoVGComponent(ProjectRuntime* pr, WindowComponent* windowComponent);
         ~NanoVGComponent() override;
 
         // Begin drawing a new frame

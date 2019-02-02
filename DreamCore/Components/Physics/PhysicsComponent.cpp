@@ -18,17 +18,20 @@
 #include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectRuntime.h"
 #include <btBulletDynamicsCommon.h>
+#include "PhysicsTasks.h"
 #include "../Component.h"
 #include "../Transform.h"
 #include "../Event.h"
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
     PhysicsComponent::PhysicsComponent
-    ()  : Component(),
+    (ProjectRuntime* pr)
+        : Component(pr),
           mCharacter(nullptr),
           mDebug(false),
           mDebugDrawer(nullptr),
@@ -36,7 +39,9 @@ namespace Dream
           mBroadphase(nullptr),
           mCollisionConfiguration(nullptr),
           mDispatcher(nullptr),
-          mSolver(nullptr)
+          mSolver(nullptr),
+          mUpdateWorldTask(nullptr),
+          mDrawDebugTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("PhysicsComponent");
@@ -49,6 +54,18 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug( "Destroying Object" );
         #endif
+
+        if (mUpdateWorldTask)
+        {
+            mUpdateWorldTask->setExpired(true);
+            mUpdateWorldTask = nullptr;
+        }
+
+        if (mDrawDebugTask)
+        {
+            mDrawDebugTask->setExpired(true);
+            mDrawDebugTask = nullptr;
+        }
 
         int i;
 
@@ -127,6 +144,14 @@ namespace Dream
     }
 
     void
+    PhysicsComponent::stepSimulation
+    ()
+    {
+        mDynamicsWorld->stepSimulation(mTime->getFrameTimeDelta()/1000.0);
+        checkContactManifolds();
+    }
+
+    void
     PhysicsComponent::setGravity
     (const vec3& gravity)
     {
@@ -193,26 +218,6 @@ namespace Dream
             getLog()->debug( "Update Called" );
             #endif
 
-            // Setup Physics
-            setDebug(sr->getPhysicsDebug());
-
-            populatePhysicsWorld(sr);
-            if (mTime == nullptr )
-            {
-                #ifdef DREAM_LOG
-                getLog()->error("I don't have Time for this");
-                #endif
-                return;
-            }
-            mDynamicsWorld->stepSimulation(mTime->getFrameTimeDelta()/1000.0);
-            checkContactManifolds(sr);
-
-
-            // Put debug info to queue, no draw calls made here sonny
-            if (mDebug)
-            {
-                mDynamicsWorld->debugDrawWorld();
-            }
             endUpdate();
     }
 
@@ -278,25 +283,6 @@ namespace Dream
     }
 
     void
-    PhysicsComponent::populatePhysicsWorld
-    (SceneRuntime* scene)
-    {
-        for (auto* runt : mUpdateQueue)
-        {
-            auto physicsObject = runt->getPhysicsObjectRuntime();
-            if (!physicsObject->isInPhysicsWorld())
-            {
-                #ifdef DREAM_LOG
-                getLog()->trace( "Adding SceneObject {} to physics world", runt->getNameAndUuidString());
-                #endif
-                addPhysicsObjectRuntime(physicsObject);
-                physicsObject->setInPhysicsWorld(true);
-            }
-        }
-        clearUpdateQueue();
-    }
-
-    void
     PhysicsComponent::setCamera
     (Camera* camera)
     {
@@ -320,11 +306,12 @@ namespace Dream
 
     void
     PhysicsComponent::checkContactManifolds
-    (SceneRuntime* scene)
+    ()
     {
         #ifdef DREAM_LOG
         getLog()->trace("Checking contact manifolds");
         #endif
+        auto scene = mProjectRuntime->getActiveSceneRuntime();
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
         {
@@ -380,12 +367,10 @@ namespace Dream
                         bHitsAData.position.z = ptA.z();
                         bHitsA.setCollisionData(bHitsAData);
                      }
-
                     sObjB->addEvent(aHitsB);
                     sObjA->addEvent(bHitsA);
 
                     // Recover
-
                     if (sObjA->getPhysicsObjectRuntime() == mCharacter)
                     {
                        recoverCharacter(contactManifold);
@@ -394,7 +379,6 @@ namespace Dream
                     {
                        recoverCharacter(contactManifold);
                     }
-
                 }
                 else
                 {
@@ -440,12 +424,8 @@ namespace Dream
     PhysicsComponent::drawDebug
     ()
     {
-        if (mDebug)
-        {
-            mDebugDrawer->drawAll();
-        }
+        mDebugDrawer->drawAll();
     }
-
 
     bool
     PhysicsComponent::recoverFromPenetration
@@ -514,5 +494,20 @@ namespace Dream
     (PhysicsObjectRuntime* character)
     {
         mCharacter=character;
+    }
+
+    void PhysicsComponent::setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask)
+    {
+        mUpdateWorldTask = updateWorldTask;
+    }
+
+    void PhysicsComponent::setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask)
+    {
+        mDrawDebugTask = drawDebugTask;
+    }
+
+    PhysicsDebugDrawer*PhysicsComponent::getDebugDrawer()
+    {
+        return mDebugDrawer;
     }
 }

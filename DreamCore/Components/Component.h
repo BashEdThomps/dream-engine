@@ -22,43 +22,35 @@ namespace Dream
     class Time;
     class SceneRuntime;
     class SceneObjectRuntime;
+    class ProjectRuntime;
 
     class Component : public LockableObject
     {
 
     public:
-        Component();
+        Component(ProjectRuntime* pr);
         virtual ~Component();
         virtual bool init() = 0;
         virtual void updateComponent(SceneRuntime*) = 0;
 
         long long getUpdateEndTime() const;
         long long getUpdateBeginTime() const;
-        long long getUpdateTime() const;
-        long long getYieldedTime() const;
+        long long getUpdateDuration() const;
         void setTime(Time*);
 
         bool getEnabled() const;
         void setEnabled(bool enabled);
-
-        void pushToUpdateQueue(SceneObjectRuntime*);
-        void clearUpdateQueue();
 
     protected:
 
         void beginUpdate();
         void endUpdate();
 
-        void setBusy(bool complete);
-        bool isBusy();
-
         long long mUpdateBeginTime;
         long long mUpdateEndTime;
-        bool mBusy;
 
         Time* mTime;
         bool  mEnabled;
-
-        vector<SceneObjectRuntime*> mUpdateQueue;
+        ProjectRuntime *mProjectRuntime;
     };
 }

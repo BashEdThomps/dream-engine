@@ -20,10 +20,11 @@
 
 #include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
+#include "SceneObject/SceneObjectTasks.h"
 
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Logic/LogicComponent.h"
+#include "../Components/TaskManager/TaskManager.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
 
@@ -31,7 +32,14 @@
 #include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Graphics/Camera.h"
 
+#include "../Components/Animation/AnimationTasks.h"
+#include "../Components/Audio/AudioTasks.h"
+#include "../Components/Path/PathTasks.h"
+#include "../Components/Scroller/ScrollerTasks.h"
+
 #include "../Components/Time.h"
+#include "../Components/Physics/PhysicsObjectRuntime.h"
+#include "../Components/Physics/PhysicsTasks.h"
 
 #ifdef max
 #undef max
@@ -661,21 +669,16 @@ namespace Dream
     }
 
     void
-    SceneRuntime::createSceneObjectUpdateQueues
+    SceneRuntime::createSceneTasks
     ()
     {
         #ifdef DREAM_LOG
         getLog()->debug("Rebuilding SceneObject Update Vector");
         #endif
-        auto audioComponent    = mProjectRuntime->getAudioComponent();
-        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
-        auto logicComponent    = mProjectRuntime->getLogicComponent();
-        auto physicsComponent  = mProjectRuntime->getPhysicsComponent();
 
-        audioComponent->clearUpdateQueue();
-        graphicsComponent->clearUpdateQueue();
-        logicComponent->clearUpdateQueue();
-        physicsComponent->clearUpdateQueue();
+        auto taskManager = mProjectRuntime->getTaskManager();
+        auto physicsComponent = mProjectRuntime->getPhysicsComponent();
+        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
 
         mRootSceneObjectRuntime->applyToAll
         (
@@ -683,25 +686,60 @@ namespace Dream
             [&](SceneObjectRuntime* rt)
             {
                 rt->lock();
-                logicComponent->pushToUpdateQueue(rt);
+                // SceneObject
+                taskManager->pushTask(new LifetimeUpdateTask(rt));
+                // Animation
+                if (rt->hasAnimationRuntime())
+                {
+                    taskManager->pushTask(new AnimationUpdateTask(rt->getAnimationRuntime()));
+                }
                 // Audio
                 if (rt->hasAudioRuntime())
                 {
-                   audioComponent->pushToUpdateQueue(rt);
+                    taskManager->pushTask(new AudioMarkersUpdateTask(rt->getAudioRuntime()));
                 }
                 // Graphics
-                if (rt->hasLightRuntime())
+                if (!rt->getHidden() && rt->hasLightRuntime())
                 {
-                   graphicsComponent->pushToUpdateQueue(rt);
+                   graphicsComponent->addToLightQueue(rt);
                 }
                 // Physics
                 if (rt->hasPhysicsObjectRuntime())
                 {
-                   physicsComponent->pushToUpdateQueue(rt);
+                    auto pObj = rt->getPhysicsObjectRuntime();
+                    if (!pObj->isInPhysicsWorld())
+                    {
+                        taskManager->pushTask(new PhysicsAddObjectTask(physicsComponent, pObj));
+                    }
                 }
                 rt->unlock();
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
+
+        taskManager->pushTask(new PhysicsUpdateWorldTask(physicsComponent));
+
+        if (physicsComponent->getDebug())
+        {
+            graphicsComponent->pushTask(new PhysicsDrawDebugTask(physicsComponent));
+        }
+    }
+
+
+    void
+    SceneRuntime::updateLifetime
+    ()
+    {
+        auto time = mProjectRuntime->getTime();
+        long timeDelta = time->getFrameTimeDelta();
+        if (timeDelta <= Time::DELTA_MAX)
+        {
+            long frameTime = time->getCurrentFrameTime();
+            if (getSceneStartTime() <= 0)
+            {
+               setSceneStartTime(frameTime);
+            }
+            setSceneCurrentTime(frameTime-getSceneStartTime());
+        }
     }
 }

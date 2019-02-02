@@ -14,9 +14,8 @@
 namespace Dream
 {
 
-    WindowComponent::WindowComponent
-    ()
-        : Component(),
+    WindowComponent::WindowComponent()
+        : Component(nullptr),
           mWidth(Constants::DEFAULT_SCREEN_WIDTH),
           mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
           mShouldClose(false),

@@ -40,6 +40,9 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
     class Camera;
+    class PhysicsUpdateWorldTask;
+    class PhysicsDrawDebugTask;
+
 
     class PhysicsComponent : public Component
     {
@@ -52,14 +55,15 @@ namespace Dream
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
         PhysicsObjectRuntime* mCharacter;
+        PhysicsUpdateWorldTask* mUpdateWorldTask;
+        PhysicsDrawDebugTask* mDrawDebugTask;
         bool mDebug;
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
         bool recoverFromPenetration(btPersistentManifold* );
         void recoverCharacter(btPersistentManifold*);
     public:
-        PhysicsComponent();
+        PhysicsComponent(ProjectRuntime* pr);
         ~PhysicsComponent() override;
-        void populatePhysicsWorld(SceneRuntime* scene);
         void setGravity(const vec3&);
         vec3 getGravity();
         void setDebug(bool);
@@ -72,9 +76,12 @@ namespace Dream
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCamera(Camera* cam);
-        void checkContactManifolds(SceneRuntime* scene);
+        void checkContactManifolds();
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
-    };// End of PhysicsComponent
-
-} // End of Dream
+        void setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask);
+        void setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask);
+        void stepSimulation();
+        PhysicsDebugDrawer* getDebugDrawer();
+    };
+}

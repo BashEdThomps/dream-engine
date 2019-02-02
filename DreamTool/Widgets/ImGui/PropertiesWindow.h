@@ -4,9 +4,9 @@
 #include "PropertyType.h"
 
 #include <glm/vec3.hpp>
-#include "../../../DreamCore/Components/Logic/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Logic/Animation/AnimationDefinition.h"
-#include "../../../DreamCore/Components/Logic/Animation/AnimationKeyframe.h"
+#include "../../../DreamCore/Components/Path/PathDefinition.h"
+#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
+#include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
 
 namespace Dream
 {

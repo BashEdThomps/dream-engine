@@ -11,8 +11,8 @@
  */
 
 #include "PathViewer.h"
-#include "../../../DreamCore/Components/Logic/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Logic/Path/PathRuntime.h"
+#include "../../../DreamCore/Components/Path/PathDefinition.h"
+#include "../../../DreamCore/Components/Path/PathRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
 using Dream::Constants;

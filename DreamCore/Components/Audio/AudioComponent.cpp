@@ -34,8 +34,8 @@
 namespace Dream
 {
     AudioComponent::AudioComponent
-    ()
-        : Component()
+    (ProjectRuntime* rt)
+        : Component(rt)
     {
         #ifdef DREAM_LOG
         setLogClassName("AudioComponent");
@@ -82,7 +82,7 @@ namespace Dream
 
     void
     AudioComponent::setListenerPosition
-    (vec3 pos)
+    (const vec3& pos)
     {
         alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
     }
@@ -101,11 +101,6 @@ namespace Dream
         }
 
         beginUpdate();
-        for (SceneObjectRuntime* rt : mUpdateQueue)
-        {
-            rt->getAudioRuntime()->updateMarkers();
-        }
-        clearUpdateQueue();
         endUpdate();
     }
 
@@ -116,7 +111,9 @@ namespace Dream
         alListenerf(AL_GAIN,volume);
     }
 
-    float AudioComponent::getVolume()
+    float
+    AudioComponent::getVolume
+    ()
     {
         float vol;
         alGetListenerf(AL_GAIN,&vol);

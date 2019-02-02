@@ -20,37 +20,37 @@
 namespace Dream
 {
     InputComponent::InputComponent
-    (bool useKeyboard, bool useMouse, bool useJoystick)
-        : Component (),
+    (ProjectRuntime* rt, bool useKeyboard, bool useMouse, bool useJoystick)
+        : Component (rt),
           mUseKeyboard(useKeyboard),
           mUseMouse(useMouse),
           mUseJoystick(useJoystick),
           mJoystickMapping(JsPsxMapping)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("InputComponent");
         auto log = getLog();
         log->trace("Constructing");
-#endif
+        #endif
     }
 
     InputComponent::~InputComponent
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->trace("Destructing");
-#endif
+        #endif
     }
 
     bool
     InputComponent::init
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Initialising...");
-#endif
+        #endif
         return true;
     }
 
@@ -60,9 +60,9 @@ namespace Dream
     {
         if (!mEnabled)
         {
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->warn("Update Disabled");
-#endif
+            #endif
             return;
         }
 
@@ -184,6 +184,4 @@ namespace Dream
     {
         return mJoystickMapping;
     }
-
-
 }

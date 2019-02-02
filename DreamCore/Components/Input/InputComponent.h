@@ -28,7 +28,7 @@ namespace Dream
     class InputComponent : public Component
     {
     public:
-        InputComponent(bool useKeyboard = false, bool useMouse = false, bool useJoystick = false);
+        InputComponent(ProjectRuntime* rt, bool useKeyboard = false, bool useMouse = false, bool useJoystick = false);
         ~InputComponent() override;
 
         bool init() override;

@@ -25,6 +25,7 @@
 #include "AudioRuntime.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
+#include "AudioTasks.h"
 
 namespace Dream
 {
@@ -34,7 +35,8 @@ namespace Dream
           mStartTime(-1),
           mLastSampleOffset(0),
           mChannels(-1),
-          mDurationInSamples(-1)
+          mDurationInSamples(-1),
+          mMarkersUpdateTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("AudioRuntime");
@@ -49,6 +51,10 @@ namespace Dream
     {
           alDeleteBuffers(1,&mBuffer);
           alDeleteSources(1,&mSource);
+          if (mMarkersUpdateTask)
+          {
+              mMarkersUpdateTask->setExpired(true);
+          }
     }
 
     void
@@ -335,6 +341,16 @@ namespace Dream
             mDurationInSamples = sizeInBytes * 8 / (channels * bits);
         }
         return mDurationInSamples;
+    }
+
+    void AudioRuntime::clearMarkersUpdateTask()
+    {
+       mMarkersUpdateTask = nullptr;
+    }
+
+    void AudioRuntime::setMarkersUpdateTask(AudioMarkersUpdateTask* t)
+    {
+       mMarkersUpdateTask = t;
     }
 
     ALint

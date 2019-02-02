@@ -16,12 +16,12 @@
 #include "../SceneRuntime.h"
 #include "../SceneDefinition.h"
 #include "../../Components/Event.h"
-#include "../../Components/Logic/Path/PathRuntime.h"
-#include "../../Components/Logic/Animation/AnimationDefinition.h"
-#include "../../Components/Logic/Animation/AnimationRuntime.h"
-#include "../../Components/Logic/Path/PathDefinition.h"
-#include "../../Components/Logic/Scroller/ScrollerDefinition.h"
-#include "../../Components/Logic/Scroller/ScrollerRuntime.h"
+#include "../../Components/Path/PathRuntime.h"
+#include "../../Components/Animation/AnimationDefinition.h"
+#include "../../Components/Animation/AnimationRuntime.h"
+#include "../../Components/Path/PathDefinition.h"
+#include "../../Components/Scroller/ScrollerDefinition.h"
+#include "../../Components/Scroller/ScrollerRuntime.h"
 #include "../../Components/Audio/AudioCache.h"
 #include "../../Components/Audio/AudioRuntime.h"
 #include "../../Components/Audio/AudioComponent.h"
@@ -45,7 +45,7 @@
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
 #include "../../Utilities/Uuid.h"
-#include "../../Components/Logic/LogicTasks.h"
+#include "SceneObjectTasks.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 
@@ -71,7 +71,7 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mBoundingBox(),
-        mLogicUpdateTask(nullptr),
+        mLifetimeUpdateTask(nullptr),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -109,9 +109,9 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
-        if (mLogicUpdateTask)
+        if (mLifetimeUpdateTask)
         {
-            mLogicUpdateTask->setExpired(true);
+            mLifetimeUpdateTask->setExpired(true);
         }
 
         removeScrollerRuntime();
@@ -1314,16 +1314,16 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::clearLogicUpdateTask
+    SceneObjectRuntime::clearLifetimeUpdateTask
     ()
     {
-        mLogicUpdateTask = nullptr;
+        mLifetimeUpdateTask = nullptr;
     }
 
     void
-    SceneObjectRuntime::setLogicUpdateTask
-    (LogicUpdateTask* logicUpdateTask)
+    SceneObjectRuntime::setLifetimeUpdateTask
+    (LifetimeUpdateTask* l)
     {
-        mLogicUpdateTask = logicUpdateTask;
+        mLifetimeUpdateTask = l;
     }
 }

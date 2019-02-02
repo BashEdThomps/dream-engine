@@ -16,10 +16,10 @@
 #include <algorithm>
 
 #include "AnimationRuntime.h"
-#include "../../Time.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../../Scene/SceneRuntime.h"
-#include "../../../Project/ProjectRuntime.h"
+#include "../Time.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>

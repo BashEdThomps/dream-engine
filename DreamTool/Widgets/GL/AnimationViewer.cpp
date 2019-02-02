@@ -11,8 +11,8 @@
  */
 
 #include "AnimationViewer.h"
-#include "../../../DreamCore/Components/Logic/Animation/AnimationDefinition.h"
-#include "../../../DreamCore/Components/Logic/Animation/AnimationRuntime.h"
+#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
+#include "../../../DreamCore/Components/Animation/AnimationRuntime.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
 using Dream::Constants;

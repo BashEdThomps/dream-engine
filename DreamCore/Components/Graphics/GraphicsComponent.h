@@ -47,8 +47,7 @@ namespace Dream
     /**
      * @brief Responsible for managing Dream's graphics pipeline.
      */
-    class GraphicsComponent
-            : public Component
+    class GraphicsComponent : public Component
     {
     private:
 
@@ -79,13 +78,13 @@ namespace Dream
         const int SHADOW_SIZE = 1024;
 
     public:
-        GraphicsComponent(WindowComponent*);
+        GraphicsComponent(ProjectRuntime* pr, WindowComponent*);
         ~GraphicsComponent() override;
 
         bool init() override;
         void updateComponent(SceneRuntime*) override;
 
-        void addToLightQueue(LightRuntime*);
+        void addToLightQueue(SceneObjectRuntime*);
         void clearLightQueue();
         void updateLightQueue(SceneRuntime*);
         bool setupScreenQuad();

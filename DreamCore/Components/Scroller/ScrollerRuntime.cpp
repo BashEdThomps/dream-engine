@@ -17,10 +17,10 @@
 #include <algorithm>
 
 #include "ScrollerRuntime.h"
-#include "../../Time.h"
-#include "../../../Scene/SceneRuntime.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../../Project/ProjectRuntime.h"
+#include "../Time.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {

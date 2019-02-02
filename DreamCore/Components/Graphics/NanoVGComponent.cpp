@@ -48,8 +48,8 @@ namespace Dream
 {
 
     NanoVGComponent::NanoVGComponent
-    (WindowComponent* windowComponent)
-        : Component (),
+    (ProjectRuntime* pr, WindowComponent* windowComponent)
+        : Component (pr),
           mWindowComponent(windowComponent)
     {
 #ifdef DREAM_LOG

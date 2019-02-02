@@ -16,8 +16,8 @@
 #include "../Event.h"
 #include "../Transform.h"
 #include "../Time.h"
-#include "../Logic/Path/PathRuntime.h"
-#include "../Logic/Animation/AnimationRuntime.h"
+#include "../Path/PathRuntime.h"
+#include "../Animation/AnimationRuntime.h"
 #include "../Audio/AudioComponent.h"
 #include "../Audio/AudioRuntime.h"
 #include "../Graphics/Model/ModelRuntime.h"
@@ -71,9 +71,8 @@ namespace Dream
 {
     ScriptComponent::ScriptComponent
     (ProjectRuntime* runtime, ScriptCache* cache)
-        : Component(),
-          mScriptCache(cache),
-          mProjectRuntime(runtime)
+        : Component(runtime),
+          mScriptCache(cache)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptingComponent");
@@ -88,7 +87,6 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying Object");
         #endif
-
         if (State != nullptr)
         {
             lua_close(State);
@@ -106,12 +104,8 @@ namespace Dream
         #endif
         State = luaL_newstate();
         sol::state_view sView(State);
-        sView.open_libraries(
-            sol::lib::base,
-            sol::lib::package,
-            sol::lib::math,
-            sol::lib::string
-        );
+        sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
+            sol::lib::string);
 
         sol::table comps(State, sol::create);
         sView[COMPONENTS_TBL] = comps;

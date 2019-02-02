@@ -20,8 +20,10 @@ namespace Dream
 {
 
     Component::Component
-    () : LockableObject("Component"),
-        mEnabled(true)
+    (ProjectRuntime* pr)
+        : LockableObject("Component"),
+          mProjectRuntime(pr),
+          mEnabled(true)
     {
 
     }
@@ -49,7 +51,6 @@ namespace Dream
         "=======================================================================");
         #endif
         mUpdateBeginTime = mTime->getAbsoluteTime();
-        setBusy(true);
     }
 
     void
@@ -57,26 +58,11 @@ namespace Dream
     ()
     {
         mUpdateEndTime =  mTime->getAbsoluteTime();
-        setBusy(false);
         #ifdef DREAM_LOG
         getLog()->debug("Update Complete in {}ms\n"
         "=======================================================================\n\n",
-        getUpdateTime());
+        getUpdateDuration());
         #endif
-    }
-
-    void
-    Component::setBusy
-    (bool complete)
-    {
-       mBusy = complete;
-    }
-
-    bool
-    Component::isBusy
-    ()
-    {
-       return mBusy;
     }
 
     bool Component::getEnabled() const
@@ -89,18 +75,6 @@ namespace Dream
         mEnabled = enabled;
     }
 
-    void
-    Component::pushToUpdateQueue
-    (SceneObjectRuntime* rt)
-    {
-       mUpdateQueue.push_back(rt);
-    }
-
-    void Component::clearUpdateQueue()
-    {
-       mUpdateQueue.clear();
-    }
-
     long long
     Component::getUpdateBeginTime
     ()
@@ -110,19 +84,11 @@ namespace Dream
     }
 
     long long
-    Component::getUpdateTime
+    Component::getUpdateDuration
     ()
     const
     {
         return mUpdateEndTime-mUpdateBeginTime;
-    }
-
-    long long
-    Component::getYieldedTime
-    ()
-    const
-    {
-       return abs(mUpdateBeginTime-mUpdateEndTime);
     }
 
     long long
@@ -132,5 +98,4 @@ namespace Dream
     {
         return mUpdateEndTime;
     }
-
 }

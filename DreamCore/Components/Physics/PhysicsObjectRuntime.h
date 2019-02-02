@@ -36,6 +36,7 @@ namespace Dream
     class ModelCache;
     class ModelRuntime;
     class SceneObjectRuntime;
+    class PhysicsAddObjectTask;
 
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
@@ -47,6 +48,7 @@ namespace Dream
         bool mInPhysicsWorld;
         PhysicsComponent* mPhysicsComponent;
         ModelCache* mModelCache;
+        PhysicsAddObjectTask* mAddObjectTask;
 
         PhysicsObjectDefinition* getAssetDefinitionByUuid(uint32_t);
         btCollisionShape* createTriangleMeshShape(ModelRuntime*);
@@ -99,5 +101,7 @@ namespace Dream
         void setCenterOfMassTransform(const mat4& tx);
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
+
+        void setAddObjectTask(PhysicsAddObjectTask* t);
     };
 }

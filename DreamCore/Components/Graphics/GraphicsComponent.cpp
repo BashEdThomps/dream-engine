@@ -61,8 +61,8 @@ using namespace glm;
 namespace Dream
 {
     GraphicsComponent::GraphicsComponent
-    (WindowComponent* windowComponent)
-        : Component(),
+    (ProjectRuntime* pr, WindowComponent* windowComponent)
+        : Component(pr),
           mWindowComponent(windowComponent),
           mShaderCache(nullptr),
 
@@ -197,7 +197,7 @@ namespace Dream
 
         mLightingPassShader = sr->getLightingPassShader();
         mShadowPassShader = sr->getShadowPassShader();
-        updateLightQueue(sr);
+        //updateLightQueue(sr);
         endUpdate();
     }
 
@@ -579,6 +579,7 @@ namespace Dream
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
         glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         mWindowComponent->bindDefaultFrameBuffer();
+        clearLightQueue();
     }
 
     void
@@ -589,8 +590,9 @@ namespace Dream
         getLog()->debug("Updating Light Queue");
         #endif
         // Clear existing Queues
-        clearLightQueue();
+        //clearLightQueue();
 
+        /*
         for (auto* runt : mUpdateQueue)
         {
             if (runt->getHidden())
@@ -602,12 +604,10 @@ namespace Dream
             getLog()->debug("Adding light Runtime to queue {}",light->getNameAndUuidString());
             #endif
             addToLightQueue(light);
-            if (light->getType() == LightType::LT_DIRECTIONAL)
-            {
-               mShadowLight = runt;
-            }
+
         }
         clearUpdateQueue();
+        */
     }
 
     // Shadow Pass ==============================================================
@@ -705,9 +705,9 @@ namespace Dream
         }
 
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->debug("\n\n==> Running Shadow Render Pass\n");
-#endif
+        #endif
 
         glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
         glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
@@ -768,16 +768,24 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (LightRuntime* lightRuntime)
+    (SceneObjectRuntime* runt)
     {
-        mLightQueue.push_back(lightRuntime);
+        auto light = runt->getLightRuntime();
+        if (light->getType() == LightType::LT_DIRECTIONAL)
+        {
+           mShadowLight = runt;
+        }
+        mLightQueue.push_back(light);
     }
 
     void
     GraphicsComponent::clearLightQueue
     ()
     {
+        static mutex m;
+        m.lock();
         mLightQueue.clear();
+        m.unlock();
     }
 
     void

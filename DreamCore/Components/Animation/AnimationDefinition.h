@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../../AssetDefinition.h"
+#include "../AssetDefinition.h"
 
 namespace Dream
 {

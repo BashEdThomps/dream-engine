@@ -89,11 +89,14 @@ namespace Dream
         {
             try
             {
+                static mutex m;
+                m.lock();
                 auto log = spdlog::get(_CLASSNAME_);
                 if (log == nullptr)
                 {
                     log = spdlog::stdout_logger_mt(_CLASSNAME_);
                 }
+                m.unlock();
                 return log;
             }
             catch (spdlog::spdlog_ex ex)

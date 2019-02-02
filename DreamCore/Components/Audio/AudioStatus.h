@@ -14,8 +14,7 @@
 */
 
 
-#ifndef AUDIOSTATUS_H
-#define AUDIOSTATUS_H
+#pragma once
 
 namespace Dream
 {
@@ -25,6 +24,5 @@ namespace Dream
     PAUSED,
     STOPPED,
     UNKNOWN
-  }; // End of AudioStauts
-} // End of Dream
-#endif // AUDIOSTATUS_H
+  };
+}

@@ -27,6 +27,7 @@
 #include "../Graphics/Model/ModelCache.h"
 #include "../Graphics/Model/ModelRuntime.h"
 #include "../Graphics/Model/ModelMesh.h"
+#include "PhysicsTasks.h"
 
 namespace Dream
 {
@@ -43,6 +44,7 @@ namespace Dream
          mRigidBodyConstructionInfo(nullptr),
          mInPhysicsWorld(false),
          mPhysicsComponent(comp),
+         mAddObjectTask(nullptr),
          mModelCache(modelCache)
     {
         #ifdef DREAM_LOG
@@ -60,6 +62,12 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destroying" );
         #endif
+
+        if (mAddObjectTask)
+        {
+            mAddObjectTask->setExpired(true);
+            mAddObjectTask = nullptr;
+        }
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -164,6 +172,11 @@ namespace Dream
     {
         mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
         mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    }
+
+    void PhysicsObjectRuntime::setAddObjectTask(PhysicsAddObjectTask* t)
+    {
+       mAddObjectTask = t;
     }
 
     btCollisionShape*

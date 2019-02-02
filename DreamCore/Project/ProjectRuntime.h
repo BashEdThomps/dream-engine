@@ -35,7 +35,7 @@ namespace Dream
     class PhysicsComponent;
     class ScriptComponent;
     class NanoVGComponent;
-    class LogicComponent;
+    class TaskManager;
 
     class SceneRuntime;
     class SceneObjectRuntime;
@@ -67,7 +67,7 @@ namespace Dream
         PhysicsComponent* mPhysicsComponent;
         ScriptComponent* mScriptComponent;
         WindowComponent* mWindowComponent;
-        LogicComponent* mLogicComponent;
+        TaskManager* mTaskManager;
 
         // Caches
         AudioCache* mAudioCache;
@@ -96,7 +96,7 @@ namespace Dream
         WindowComponent* getWindowComponent() const;
         ScriptComponent* getScriptComponent() const;
         InputComponent* getInputComponent() const;
-        LogicComponent* getLogicComponent() const;
+        TaskManager* getTaskManager() const;
 
         Project* getProject() const;
 
@@ -151,7 +151,7 @@ namespace Dream
         bool initNanoVGComponent();
         bool initWindowComponent();
         bool initScriptComponent();
-        bool initLogicComponent();
+        bool initTaskManager();
         bool initCaches();
 
         void deleteCaches();

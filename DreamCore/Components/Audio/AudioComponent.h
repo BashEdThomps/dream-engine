@@ -43,11 +43,11 @@ namespace Dream
         ALCdevice*  mDevice;
         ALCcontext* mContext;
     public:
-        AudioComponent();
+        AudioComponent(ProjectRuntime* rt);
         ~AudioComponent() override;
         bool init() override;
         void updateComponent(SceneRuntime*) override;
-        void setListenerPosition(vec3);
+        void setListenerPosition(const vec3&);
         void setVolume(float);
         float getVolume();
     };
