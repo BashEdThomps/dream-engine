@@ -14,6 +14,7 @@
 */
 
 #include "InputComponent.h"
+#include "InputTasks.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../Scripting/ScriptComponent.h"
 
@@ -25,7 +26,9 @@ namespace Dream
           mUseKeyboard(useKeyboard),
           mUseMouse(useMouse),
           mUseJoystick(useJoystick),
-          mJoystickMapping(JsPsxMapping)
+          mJoystickMapping(JsPsxMapping),
+          mPollDataTask(nullptr),
+          mExecuteScriptTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("InputComponent");
@@ -41,6 +44,18 @@ namespace Dream
         auto log = getLog();
         log->trace("Destructing");
         #endif
+
+        if (mPollDataTask)
+        {
+            mPollDataTask->setExpired(true);
+            mPollDataTask = nullptr;
+        }
+
+        if (mExecuteScriptTask)
+        {
+            mExecuteScriptTask->setExpired(true);
+            mExecuteScriptTask = nullptr;
+        }
     }
 
     bool
@@ -55,27 +70,23 @@ namespace Dream
     }
 
     void
-    InputComponent::updateComponent
+    InputComponent::executeInputScript
     (SceneRuntime* sRunt)
     {
-        if (!mEnabled)
-        {
-            #ifdef DREAM_LOG
-            getLog()->warn("Update Disabled");
-            #endif
-            return;
-        }
-
-        beginUpdate();
-        mLastKeyboardState = mKeyboardState;
-        mLastMouseState = mMouseState;
-        mLastJoystickState = mJoystickState;
         auto inputScript = sRunt->getInputScript();
         if (inputScript)
         {
             inputScript->executeOnInput(this, sRunt);
         }
-        endUpdate();
+    }
+
+    void
+    InputComponent::pollData
+    ()
+    {
+        mLastKeyboardState = mKeyboardState;
+        mLastMouseState = mMouseState;
+        mLastJoystickState = mJoystickState;
     }
 
     bool
@@ -184,4 +195,33 @@ namespace Dream
     {
         return mJoystickMapping;
     }
+
+    void
+    InputComponent::setPollDataTask
+    (InputPollDataTask* t)
+    {
+        mPollDataTask = t;
+    }
+
+    bool
+    InputComponent::hasPollDataTask
+    () const
+    {
+       return mPollDataTask != nullptr;
+    }
+
+    void
+    InputComponent::setExecuteScriptTask
+    (InputExecuteScriptTask* t)
+    {
+        mExecuteScriptTask = t;
+    }
+
+    bool
+    InputComponent::hasExecuteScriptTask
+    () const
+    {
+       return mExecuteScriptTask != nullptr;
+    }
+
 }

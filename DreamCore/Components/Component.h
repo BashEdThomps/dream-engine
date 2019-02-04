@@ -31,24 +31,13 @@ namespace Dream
         Component(ProjectRuntime* pr);
         virtual ~Component();
         virtual bool init() = 0;
-        virtual void updateComponent(SceneRuntime*) = 0;
 
-        long long getUpdateEndTime() const;
-        long long getUpdateBeginTime() const;
-        long long getUpdateDuration() const;
         void setTime(Time*);
 
         bool getEnabled() const;
         void setEnabled(bool enabled);
 
     protected:
-
-        void beginUpdate();
-        void endUpdate();
-
-        long long mUpdateBeginTime;
-        long long mUpdateEndTime;
-
         Time* mTime;
         bool  mEnabled;
         ProjectRuntime *mProjectRuntime;

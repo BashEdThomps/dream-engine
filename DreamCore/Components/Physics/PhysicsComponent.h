@@ -69,7 +69,6 @@ namespace Dream
         void setDebug(bool);
         bool getDebug();
         bool init() override;
-        void updateComponent(SceneRuntime* sr) override;
         void addPhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCharacter(PhysicsObjectRuntime*);
         void addRigidBody(btRigidBody*);
@@ -80,6 +79,7 @@ namespace Dream
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
         void setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask);
+        bool hasUpdateWorldTask();
         void setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask);
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();

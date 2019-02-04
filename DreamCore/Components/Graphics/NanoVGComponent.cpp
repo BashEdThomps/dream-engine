@@ -52,20 +52,18 @@ namespace Dream
         : Component (pr),
           mWindowComponent(windowComponent)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("NanoVGComponent");
-        auto log = getLog();
-        log->trace("Constructing");
-#endif
+        getLog()->trace("Constructing");
+        #endif
     }
 
     NanoVGComponent::~NanoVGComponent
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
         nvgDeleteGL3(mContext);
         mContext = nullptr;
     }
@@ -74,41 +72,25 @@ namespace Dream
     NanoVGComponent::init
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->info("Creating NanoVG Context");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->info("Creating NanoVG Context");
+        #endif
         mContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
         return mContext != nullptr;
-    }
-
-    void
-    NanoVGComponent::updateComponent
-    (SceneRuntime*)
-    {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        if (!mEnabled)
-        {
-            log->warn("Update Disabled");
-            return;
-        }
-#endif
     }
 
     bool
     NanoVGComponent::render
     (SceneRuntime* sr)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->info( "UpdateNanoVG Called" );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->info( "UpdateNanoVG Called" );
+        #endif
         auto scriptObj = sr->getNanoVGScript();
         if (scriptObj)
         {
             BeginFrame();
-            scriptObj->executeOnNanoVG(this,sr);
+            //scriptObj->executeOnNanoVG(this,sr);
             EndFrame();
             return true;
         }

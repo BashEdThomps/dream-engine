@@ -34,35 +34,11 @@ namespace Dream
 
     }
 
-
     void
     Component::setTime
     (Time* time)
     {
         mTime = time;
-    }
-
-    void
-    Component::beginUpdate
-    ()
-    {
-        #ifdef DREAM_LOG
-        getLog()->debug("\n"
-        "=======================================================================");
-        #endif
-        mUpdateBeginTime = mTime->getAbsoluteTime();
-    }
-
-    void
-    Component::endUpdate
-    ()
-    {
-        mUpdateEndTime =  mTime->getAbsoluteTime();
-        #ifdef DREAM_LOG
-        getLog()->debug("Update Complete in {}ms\n"
-        "=======================================================================\n\n",
-        getUpdateDuration());
-        #endif
     }
 
     bool Component::getEnabled() const
@@ -73,29 +49,5 @@ namespace Dream
     void Component::setEnabled(bool enabled)
     {
         mEnabled = enabled;
-    }
-
-    long long
-    Component::getUpdateBeginTime
-    ()
-    const
-    {
-        return mUpdateBeginTime;
-    }
-
-    long long
-    Component::getUpdateDuration
-    ()
-    const
-    {
-        return mUpdateEndTime-mUpdateBeginTime;
-    }
-
-    long long
-    Component::getUpdateEndTime
-    ()
-    const
-    {
-        return mUpdateEndTime;
     }
 }

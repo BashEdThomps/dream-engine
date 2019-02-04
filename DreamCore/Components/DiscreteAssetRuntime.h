@@ -39,7 +39,7 @@ namespace Dream
         string getAssetDirectoryPath() override;
 
         void setUpdateTask(Task*);
-        void clearUpdateTask();
+        bool hasUpdateTask();
 
     protected:
         SceneObjectRuntime* mSceneObjectRuntime;

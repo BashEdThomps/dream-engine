@@ -12,11 +12,18 @@ namespace Dream
     public:
         ShaderCompileFragmentTask(ShaderRuntime* rt)
             : GraphicsComponentTask(), mShaderRuntime(rt)
-        {}
+        {
+           #ifdef DREAM_LOG
+           setLogClassName("ShaderCompileFragmentTask");
+           #endif
+        }
 
-        inline bool execute() override
+        inline void execute() override
         {
             mShaderRuntime->lock();
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             GLint success;
             GLchar infoLog[512];
             // Fragment Shader
@@ -36,11 +43,10 @@ namespace Dream
                 glDeleteShader(mShaderRuntime->getFragmentShader());
                 mShaderRuntime->setFragmentShader(0);
                 mShaderRuntime->unlock();
-                return false;
+                return;
             }
             mShaderRuntime->clearCompileFragmentTask();
             mShaderRuntime->unlock();
-            return true;
         }
     };
 
@@ -50,11 +56,18 @@ namespace Dream
     public:
         ShaderCompileVertexTask(ShaderRuntime* rt)
             : GraphicsComponentTask(), mShaderRuntime(rt)
-        {}
+        {
+           #ifdef DREAM_LOG
+           setLogClassName("ShaderCompileVertexTask");
+           #endif
+        }
 
-        inline bool execute() override
+        inline void execute() override
         {
             mShaderRuntime->lock();
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             GLint success;
             GLchar infoLog[512];
             // Vertex Shader
@@ -74,11 +87,10 @@ namespace Dream
                 glDeleteShader(mShaderRuntime->getVertexShader());
                 mShaderRuntime->setVertexShader(0);
                 mShaderRuntime->unlock();
-                return false;
+                return;
             }
             mShaderRuntime->clearCompileVertexTask();
             mShaderRuntime->unlock();
-            return true;
         }
     };
 
@@ -88,10 +100,17 @@ namespace Dream
     public:
         ShaderLinkTask(ShaderRuntime* rt)
             : GraphicsComponentTask(), mShaderRuntime(rt)
-        {}
-
-        inline bool execute() override
         {
+           #ifdef DREAM_LOG
+           setLogClassName("ShaderLinkTask");
+           #endif
+        }
+
+        inline void execute() override
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             mShaderRuntime->lock();
             if (mShaderRuntime->getVertexShader() != 0 && mShaderRuntime->getFragmentShader() != 0)
             {
@@ -105,7 +124,7 @@ namespace Dream
                     getLog()->error("Unable to create shader program");
                     #endif
                     mShaderRuntime->unlock();
-                    return false;
+                    return;
                 }
 
                 glAttachShader(mShaderRuntime->getShaderProgram(), mShaderRuntime->getVertexShader());
@@ -124,7 +143,7 @@ namespace Dream
                     glDeleteProgram(mShaderRuntime->getShaderProgram());
                     mShaderRuntime->setShaderProgram(0);
                     mShaderRuntime->unlock();
-                    return false;
+                    return;
                 }
 
                 // Delete the shaders as they're linked into our program now and no longer necessery
@@ -150,7 +169,6 @@ namespace Dream
             }
             mShaderRuntime->clearLinkTask();
             mShaderRuntime->unlock();
-            return true;
         }
     };
 
@@ -160,12 +178,18 @@ namespace Dream
     public:
         ShaderFreeTask(GLuint rt)
             : GraphicsComponentTask(), mShaderProgram(rt)
-        {}
-
-        inline bool execute() override
         {
+            #ifdef DREAM_LOG
+            setLogClassName("ShaderFreeTask");
+            #endif
+        }
+
+        inline void execute() override
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             glDeleteProgram(mShaderProgram);
-            return true;
         }
     };
 }

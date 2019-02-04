@@ -212,13 +212,9 @@ namespace DreamGLFW
     }
 
     void
-    GLFWWindowComponent::updateComponent
+    GLFWWindowComponent::updateWindow
     (SceneRuntime* sr)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
-
         glfwPollEvents();
 
         if(glfwWindowShouldClose(mWindow))
@@ -228,9 +224,9 @@ namespace DreamGLFW
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
-#ifdef DREAM_LOG
-            log->error("Window should close");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Window should close");
+            #endif
         }
 
         if (WindowSizeChanged)

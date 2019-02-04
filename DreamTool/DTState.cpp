@@ -117,7 +117,7 @@ namespace DreamTool
                 auto projectRuntime = project->getRuntime();
                 if(!projectRuntime->hasActiveScene())
                 {
-                    windowComponent.updateComponent(nullptr);
+                    windowComponent.updateWindow(nullptr);
                     glClearColor(0.0f,0.0f,0.0f,0.0f);
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 }
@@ -125,7 +125,7 @@ namespace DreamTool
             }
             else
             {
-                windowComponent.updateComponent(nullptr);
+                windowComponent.updateWindow(nullptr);
                 glClearColor(0.0f,0.0f,0.0f,0.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }

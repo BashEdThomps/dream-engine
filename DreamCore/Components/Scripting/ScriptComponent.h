@@ -50,7 +50,6 @@ namespace Dream
        ~ScriptComponent() override;
 
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
 
     private:
         const static string COMPONENTS_TBL;

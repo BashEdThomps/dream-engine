@@ -87,11 +87,13 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying Object");
         #endif
+        lock();
         if (State != nullptr)
         {
             lua_close(State);
             State = nullptr;
         }
+        unlock();
     }
 
     bool
@@ -122,36 +124,6 @@ namespace Dream
         exposeAPI();
         return true;
     }
-
-    void
-    ScriptComponent::updateComponent
-    (SceneRuntime*)
-    {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
-        if (!mEnabled)
-        {
-
-            #ifdef DREAM_LOG
-            log->warn("Update Disabled");
-            #endif
-            return;
-        }
-
-        beginUpdate();
-
-        for (auto inst : mScriptCache->getRuntimeVector())
-        {
-            auto scriptObj = static_cast<ScriptRuntime*>(inst);
-            scriptObj->executeOnInit();
-            scriptObj->executeOnEvent();
-            scriptObj->executeOnUpdate();
-        }
-        endUpdate();
-    }
-
-
 
     // API Exposure Methods ======================================================
 

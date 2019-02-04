@@ -22,14 +22,14 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../deps/sol2/sol.hpp"
+#include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
     ScriptRuntime::ScriptRuntime
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
-          mSource(""),
-          mError(false)
+          mSource("")
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptRuntime");
@@ -42,7 +42,7 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        getLog()->trace("Destructing {}", mDefinition->getNameAndUuidString() );
+        getLog()->trace("Destructing {}", mDefinition->getNameAndUuidString());
         #endif
     }
 
@@ -57,98 +57,63 @@ namespace Dream
         return true;
     }
 
-    void
-    ScriptRuntime::addRuntime
-    (SceneObjectRuntime* sor)
+    ScriptRuntimeState*
+    ScriptRuntime::createState
+    (SceneObjectRuntime* runtime)
     {
-        auto target = mRuntimes.end();
-        for (auto itr = mRuntimes.begin(); itr != mRuntimes.end(); itr++)
-        {
-            if ((*itr).runtime == sor)
-            {
-                target = itr;
-                break;
-            }
-        }
+        ScriptRuntimeState* s = new ScriptRuntimeState(this,runtime);
+        s->error = false;
+        s->runtime = runtime;
+        #ifdef DREAM_LOG
+        getLog()->debug("loadScript called for {}", runtime->getNameAndUuidString() );
+        getLog()->debug("calling scriptLoadFromString in lua for {}" , runtime->getNameAndUuidString() );
+        #endif
 
-        bool error = false;
-        if (target == mRuntimes.end())
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
+        sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+
+        solStateView[s->runtime->getUuid()] = environment;
+
+        auto exec_result = solStateView.safe_script
+        (mSource, environment,
+         [](lua_State*, sol::protected_function_result pfr){return pfr;});
+
+        // it did not work
+        if(!exec_result.valid())
         {
-            uint32_t id = sor->getUuid();
+            // An error has occured
+            sol::error err = exec_result;
+            std::string what = err.what();
             #ifdef DREAM_LOG
-            getLog()->debug( "loadScript called for {}", id );
-            getLog()->debug( "calling scriptLoadFromString in lua for {}" , id );
+            getLog()->critical("{}:\nCould not execute lua script:\n{}",
+                s->runtime->getUuid(),what);
             #endif
+            s->error = true;
+        }
+        mProjectRuntime->getScriptComponent()->unlock();
 
-            sol::state_view solStateView(ScriptComponent::State);
-            sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
-
-            solStateView[sor->getUuid()] = environment;
-
-            auto exec_result = solStateView.safe_script
-            (   mSource, environment,
-                [](lua_State*, sol::protected_function_result pfr)
-                {
-                    // pfr will contain things that went wrong, for either loading or executing the script
-                    // Can throw your own custom error
-                    // You can also just return it, and let the call-site handle the error if necessary.
-                    return pfr;
-                }
-            );
-
-            // it did not work
-            if(!exec_result.valid())
-            {
-                // An error has occured
-                sol::error err = exec_result;
-                std::string what = err.what();
-                #ifdef DREAM_LOG
-                getLog()->critical(
-                    "{}:\n"
-                    "Could not execute lua script:\n"
-                    "{}",
-                    sor->getNameAndUuidString(),
-                    what
-                );
-                #endif
-                error = true;
-            }
-
+        if (!s->error)
+        {
             #ifdef DREAM_LOG
             getLog()->debug("Loaded Script Successfully");
             #endif
-            auto pair = ScriptRuntimeState();
-            pair.runtime = sor;
-            pair.initialised = false;
-            pair.error = error;
-            mRuntimes.push_back(pair);
         }
+        s->initialised = false;
+        return s;
     }
 
     void
-    ScriptRuntime::removeRuntime
-    (SceneObjectRuntime* sor)
+    ScriptRuntime::removeState
+    (ScriptRuntimeState* s)
     {
-        auto target = mRuntimes.end();
-
-        for (auto itr = mRuntimes.begin(); itr != mRuntimes.end(); itr++)
-        {
-            if ((*itr).runtime == sor)
-            {
-                target = itr;
-                break;
-            }
-        }
-
-        if (target != mRuntimes.end())
-        {
-            sol::state_view stateView(ScriptComponent::State);
-            stateView[sor->getUuid()] = sol::lua_nil;
-            #ifdef DREAM_LOG
-            getLog()->debug( "Removed script lua table for {}" , sor->getNameAndUuidString());
-            #endif
-            mRuntimes.erase(target);
-        }
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view stateView(ScriptComponent::State);
+        stateView[s->runtime->getUuid()] = sol::lua_nil;
+        mProjectRuntime->getScriptComponent()->unlock();
+        #ifdef DREAM_LOG
+        getLog()->debug( "Removed script lua table for {}" , s->runtime->getNameAndUuidString());
+        #endif
     }
 
     string
@@ -170,93 +135,151 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnUpdate
-    ()
+    (ScriptRuntimeState* state)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
+        mProjectRuntime->getScriptComponent()->lock();
         sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mRuntimes)
+        if (state->error)
         {
-            if (sceneObject.error)
-            {
-                #ifdef DREAM_LOG
-                getLog()->error("Cannot execute {} in error state", getNameAndUuidString());
-                #endif
-                return false;
-            }
-
             #ifdef DREAM_LOG
-            getLog()->debug("Calling onUpdate for {}",sceneObject.runtime->getNameAndUuidString() );
+            getLog()->error("Cannot execute script {} in error state", getNameAndUuidString());
             #endif
+            return false;
+        }
 
-            sol::protected_function onUpdateFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_UPDATE_FUNCTION];
-            auto result = onUpdateFunction(sceneObject.runtime);
+        #ifdef DREAM_LOG
+        getLog()->debug("Calling onUpdate for {}",state->runtime->getNameAndUuidString());
+        #endif
+
+        bool retval = false;
+        sol::protected_function onUpdateFunction = solStateView[state->runtime->getUuid()][Constants::LUA_UPDATE_FUNCTION];
+        auto result = onUpdateFunction(state->runtime);
+        if (!result.valid())
+        {
+            // An error has occured
+           sol::error err = result;
+           std::string what = err.what();
+           #ifdef DREAM_LOG
+           getLog()->critical
+            (
+               "{}:\nCould not execute onUpdate in lua script:\n{}",
+                state->runtime->getNameAndUuidString(),
+                what
+            );
+            #endif
+            state->error = true;
+           retval =  false;
+        }
+        retval = true;
+        mProjectRuntime->getScriptComponent()->unlock();
+        return retval;
+    }
+
+    bool
+    ScriptRuntime::executeOnInit
+    (ScriptRuntimeState* state)
+    {
+        if (state->error)
+        {
+           #ifdef DREAM_LOG
+            getLog()->error("Cannot init, script for {} in error state.",state->runtime->getNameAndUuidString());
+            #endif
+            return false;
+        }
+        if (state->initialised)
+        {
+           #ifdef DREAM_LOG
+            getLog()->trace("Script has all ready been initialised for {}",state->runtime->getNameAndUuidString());
+            #endif
+            return false;
+        }
+
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
+        #ifdef DREAM_LOG
+        getLog()->debug("Calling onInit in {} for {}",  getName(), state->runtime->getName());
+        #endif
+        sol::protected_function onInitFunction = solStateView[state->runtime->getUuid()][Constants::LUA_INIT_FUNCTION];
+        auto initResult = onInitFunction(state->runtime);
+        if (!initResult.valid())
+        {
+            // An error has occured
+           sol::error err = initResult;
+           std::string what = err.what();
+           #ifdef DREAM_LOG
+           getLog()->critical
+           (
+                "{}\nCould not execute onInit in lua script:\n{}",
+                state->runtime->getNameAndUuidString(),
+                what
+            );
+            #endif
+           state->error = true;
+        }
+        else
+        {
+            state->initialised = true;
+        }
+        mProjectRuntime->getScriptComponent()->unlock();
+        return true;
+    }
+
+    bool
+    ScriptRuntime::executeOnEvent
+    (ScriptRuntimeState* state)
+    {
+        #ifdef DREAM_LOG
+        auto log = getLog();
+        #endif
+
+        if (state->error)
+        {
+           #ifdef DREAM_LOG
+            getLog()->error( "Cannot execute {} in error state ",  getNameAndUuidString());
+            #endif
+            state->runtime->clearEventQueue();
+            return false;
+        }
+
+
+        if (!state->runtime->hasEvents())
+        {
+            return false;
+        }
+
+        #ifdef DREAM_LOG
+        getLog()->debug( "Calling onEvent for {}", state->runtime->getNameAndUuidString());
+        #endif
+
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
+        sol::protected_function onEventFunction =
+            solStateView[state->runtime->getUuid()][Constants::LUA_EVENT_FUNCTION];
+
+        for (const Event& e : state->runtime->getEventQueue())
+        {
+            auto result = onEventFunction(state->runtime,e);
             if (!result.valid())
             {
                 // An error has occured
                sol::error err = result;
                std::string what = err.what();
                #ifdef DREAM_LOG
-               getLog()->critical
+               getLog()->error
                 (
-                   "{}:\nCould not execute onUpdate in lua script:\n{}",
-                    sceneObject.runtime->getNameAndUuidString(),
-                    what
+                   "{}:\nCould not execute onEvent in lua script:\n{}",
+                    state->runtime->getNameAndUuidString(), what
                 );
                 #endif
-               sceneObject.error = true;
-               return false;
+               state->error = true;
+               break;
             }
         }
-        return true;
-    }
-
-    bool
-    ScriptRuntime::executeOnInit
-    ()
-    {
-
-        sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mRuntimes)
-        {
-            if (sceneObject.error)
-            {
-               #ifdef DREAM_LOG
-                getLog()->error("Cannot init, script for {} in error state.",sceneObject.runtime->getNameAndUuidString());
-                #endif
-                continue;
-            }
-            if (sceneObject.initialised)
-            {
-               #ifdef DREAM_LOG
-                getLog()->trace("Script has all ready been initialised for {}",sceneObject.runtime->getNameAndUuidString());
-                #endif
-                continue;
-            }
-               #ifdef DREAM_LOG
-               getLog()->debug("Calling onInit in {} for {}",  getName(),  sceneObject.runtime->getName());
-               #endif
-            sol::protected_function onInitFunction = solStateView[sceneObject.runtime->getUuid()][Constants::LUA_INIT_FUNCTION];
-            auto initResult = onInitFunction(sceneObject.runtime);
-            if (!initResult.valid())
-            {
-                // An error has occured
-               sol::error err = initResult;
-               std::string what = err.what();
-               #ifdef DREAM_LOG
-               getLog()->critical
-               (
-                    "{}\nCould not execute onInit in lua script:\n{}",
-                    sceneObject.runtime->getNameAndUuidString(),
-                    what
-                );
-                #endif
-               sceneObject.error = true;
-               continue;
-            }
-            sceneObject.initialised = true;
-        }
+        state->runtime->clearEventQueue();
+        mProjectRuntime->getScriptComponent()->unlock();
         return true;
     }
 
@@ -267,6 +290,9 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Executing onInput function");
         #endif
+
+        bool retval;
+        mProjectRuntime->getScriptComponent()->lock();
         sol::state_view solStateView(ScriptComponent::State);
         sol::protected_function onInputFunction = solStateView[getUuid()][Constants::LUA_INPUT_FUNCTION];
         auto result = onInputFunction(inputComp, sr);
@@ -279,84 +305,26 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->critical("Could not execute onInput in lua script:\n{}",what);
             #endif
-           return false;
+            retval = false;
+
         }
-       return true;
+        mProjectRuntime->getScriptComponent()->unlock();
+        retval = true;
+        return retval;
     }
 
-    bool
-    ScriptRuntime::executeOnEvent
-    ()
-    {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
-        sol::state_view solStateView(ScriptComponent::State);
-        for (auto& sceneObject : mRuntimes)
-        {
-            if (sceneObject.error)
-            {
-
-               #ifdef DREAM_LOG
-                getLog()->error( "Cannot execute {} in error state ",  getNameAndUuidString());
-                #endif
-                sceneObject.runtime->clearEventQueue();
-                return false;
-            }
-
-            if (!sceneObject.runtime->hasEvents())
-            {
-                continue;
-            }
-
-            #ifdef DREAM_LOG
-            getLog()->debug( "Calling onEvent for {}", sceneObject.runtime->getNameAndUuidString());
-            #endif
-            sol::table objTable = solStateView[sceneObject.runtime->getUuid()];
-            if (objTable == sol::lua_nil)
-            {
-                #ifdef DREAM_LOG
-                getLog()->error("Object table is nil?");
-                #endif
-                return false;
-            }
-            sol::protected_function onEventFunction = objTable[Constants::LUA_EVENT_FUNCTION];
-            for (const Event& e : sceneObject.runtime->getEventQueue())
-            {
-                auto result = onEventFunction(sceneObject.runtime,e);
-                if (!result.valid())
-                {
-                    // An error has occured
-                   sol::error err = result;
-                   std::string what = err.what();
-                   #ifdef DREAM_LOG
-                   getLog()->error
-                    (
-                       "{}:\n"
-                       "Could not execute onEvent in lua script:\n"
-                       "{}",
-                        sceneObject.runtime->getNameAndUuidString(),
-                        what
-                    );
-                    #endif
-                   sceneObject.error = true;
-                   continue;
-                }
-            }
-            sceneObject.runtime->clearEventQueue();
-        }
-        return true;
-    }
 
     bool
     ScriptRuntime::executeOnNanoVG
     (NanoVGComponent* nvg, SceneRuntime* sr)
     {
-        sol::state_view solStateView(ScriptComponent::State);
+        bool retval = false;
         #ifdef DREAM_LOG
         auto log = getLog();
         getLog()->info( "Calling onNanoVG for {}" , getNameAndUuidString() );
         #endif
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
         sol::protected_function onNanoVGFunction = solStateView[getUuid()][Constants::LUA_NANOVG_FUNCTION];
         auto initResult = onNanoVGFunction(nvg,sr);
         if (!initResult.valid())
@@ -367,9 +335,12 @@ namespace Dream
            #ifdef DREAM_LOG
            getLog()->critical("Could not execute onNanoVG in lua script:\n{}",what);
            #endif
-           return false;
+           retval = false;
         }
-        return true;
+
+        mProjectRuntime->getScriptComponent()->unlock();
+        retval = true;
+        return retval;
     }
 
     void
@@ -379,6 +350,7 @@ namespace Dream
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
+        mProjectRuntime->getScriptComponent()->lock();
         sol::state_view solStateView(ScriptComponent::State);
         sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
         solStateView[getUuid()] = environment;
@@ -402,6 +374,8 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Loaded Script Successfully");
         #endif
+
+        mProjectRuntime->getScriptComponent()->unlock();
     }
 
     void
@@ -411,16 +385,16 @@ namespace Dream
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
+
+        mProjectRuntime->getScriptComponent()->lock();
         sol::state_view solStateView(ScriptComponent::State);
         sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
         solStateView[getUuid()] = environment;
         auto exec_result = solStateView.safe_script
-        (   mSource, environment,
-            [](lua_State*, sol::protected_function_result pfr)
-            {
+        (mSource, environment,[](lua_State*, sol::protected_function_result pfr)
+        {
                 return pfr;
-            }
-        );
+        });
         // it did not work
         if(!exec_result.valid())
         {
@@ -435,6 +409,6 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Loaded Script Successfully");
         #endif
+        mProjectRuntime->getScriptComponent()->unlock();
     }
-
 }

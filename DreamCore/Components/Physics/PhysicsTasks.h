@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 #include "../Graphics/GraphicsComponentTask.h"
 #include "PhysicsObjectRuntime.h"
 #include "PhysicsComponent.h"
@@ -25,19 +25,32 @@ namespace Dream
             mRuntime->setAddObjectTask(this);
         }
 
-        inline bool execute() override
+        inline void execute() override
         {
             #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
             getLog()->trace("Adding SceneObject to physics world");
             #endif
-            mRuntime->lock();
-            mComponent->lock();
-            mComponent->addPhysicsObjectRuntime(mRuntime);
-            mComponent->unlock();
-            mRuntime->setInPhysicsWorld(true);
-            mRuntime->setAddObjectTask(nullptr);
-            mRuntime->unlock();
-            return true;
+            if(mRuntime->tryLock())
+            {
+                if(mComponent->tryLock())
+                {
+                    mComponent->addPhysicsObjectRuntime(mRuntime);
+                    mComponent->unlock();
+                    mRuntime->setInPhysicsWorld(true);
+                    mRuntime->setAddObjectTask(nullptr);
+                    clearDeferred();
+                }
+                else
+                {
+                    setDeferred();
+                }
+                mRuntime->unlock();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
     };
 
@@ -54,13 +67,22 @@ namespace Dream
             mComponent->setUpdateWorldTask(this);
         }
 
-        inline bool execute() override
+        inline void execute() override
         {
-            mComponent->lock();
-            mComponent->stepSimulation();
-            mComponent->setUpdateWorldTask(nullptr);
-            mComponent->unlock();
-            return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+            if(mComponent->tryLock())
+            {
+                mComponent->stepSimulation();
+                mComponent->setUpdateWorldTask(nullptr);
+                mComponent->unlock();
+                clearDeferred();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
     };
 
@@ -78,13 +100,22 @@ namespace Dream
             mComponent->setDrawDebugTask(this);
         }
 
-        inline bool execute() override
+        inline void execute() override
         {
-            mComponent->lock();
-            mComponent->getDebugDrawer()->drawAll();
-            mComponent->setDrawDebugTask(nullptr);
-            mComponent->unlock();
-            return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+            if(mComponent->tryLock())
+            {
+                mComponent->getDebugDrawer()->drawAll();
+                mComponent->setDrawDebugTask(nullptr);
+                mComponent->unlock();
+                clearDeferred();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
     };
 }

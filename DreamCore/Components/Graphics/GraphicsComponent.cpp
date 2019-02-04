@@ -178,30 +178,6 @@ namespace Dream
     }
 
     void
-    GraphicsComponent::updateComponent
-    (SceneRuntime* sr)
-    {
-        if (!mEnabled)
-        {
-            #ifdef DREAM_LOG
-            getLog()->warn("Update Disabled");
-            #endif
-            return;
-        }
-
-        beginUpdate();
-
-        #ifdef DREAM_LOG
-        getLog()->debug("GraphicsComponrnt: updateComponent() Called" );
-        #endif
-
-        mLightingPassShader = sr->getLightingPassShader();
-        mShadowPassShader = sr->getShadowPassShader();
-        //updateLightQueue(sr);
-        endUpdate();
-    }
-
-    void
     GraphicsComponent::handleResize
     ()
     {
@@ -502,6 +478,7 @@ namespace Dream
             #endif
             return;
         }
+        mLightingPassShader = sr->getLightingPassShader();
 
 
         #ifdef DREAM_LOG
@@ -690,6 +667,8 @@ namespace Dream
             #endif
             return;
         }
+
+        mShadowPassShader = sr->getShadowPassShader();
 
         if (mShadowLight == nullptr || mShadowPassShader == nullptr)
         {

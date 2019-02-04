@@ -1,6 +1,9 @@
 #pragma once
 
 #include "DreamObject.h"
+#include <mutex>
+
+using std::mutex;
 
 namespace Dream
 {
@@ -14,6 +17,11 @@ namespace Dream
         ()
         {
             mMutex.lock();
+        }
+
+        inline bool tryLock()
+        {
+            return mMutex.try_lock();
         }
 
         inline void

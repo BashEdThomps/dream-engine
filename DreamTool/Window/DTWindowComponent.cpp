@@ -219,7 +219,7 @@ namespace DreamTool
     }
 
     void
-    DTWindowComponent::updateComponent
+    DTWindowComponent::updateWindow
     (SceneRuntime* sr)
     {
         glfwPollEvents();

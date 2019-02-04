@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "../../Common/DreamObject.h"
+#include "../Common/DreamObject.h"
 #include "TaskThread.h"
 
 namespace Dream
@@ -31,9 +31,7 @@ namespace Dream
             : DreamObject("TaskManager"),
               mNextThread(0)
         {
-            #ifdef DREAM_LOG
             startAllThreads();
-            #endif
         }
 
         inline ~TaskManager() override
@@ -46,14 +44,24 @@ namespace Dream
 
         inline void startAllThreads()
         {
+            #ifdef DREAM_LOG
+            getLog()->critical("Starting all worker threads...");
+            #endif
+
             for (unsigned int i=0; i < thread::hardware_concurrency(); i++)
             {
-                mThreadVector.push_back(new TaskThread());
+                #ifdef DREAM_LOG
+                getLog()->critical("Spawning thread {}",i);
+                #endif
+                mThreadVector.push_back(new TaskThread(i));
             }
         }
 
         inline void joinAllThreads()
         {
+            #ifdef DREAM_LOG
+            getLog()->critical("Joining all threads...");
+            #endif
             for (auto* t : mThreadVector)
             {
                 t->setRunning(false);
@@ -70,6 +78,37 @@ namespace Dream
         {
             mThreadVector.at(mNextThread)->pushTask(t);
             mNextThread = (mNextThread +1) % mThreadVector.size();
+        }
+
+        inline void clearFences()
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Clearing all fences");
+            #endif
+            for (auto* t : mThreadVector)
+            {
+               t->clearFence();
+            }
+        }
+
+        inline void waitForFence()
+        {
+           while (true)
+           {
+               bool result = true;
+               for (auto* t : mThreadVector)
+               {
+                   result = result && t->getFence();
+               }
+               if (result)
+               {
+                   #ifdef DREAM_LOG
+                   getLog()->critical("All Fences hit");
+                   #endif
+                   break;
+               }
+               std::this_thread::yield();
+           }
         }
     };
 }

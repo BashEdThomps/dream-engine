@@ -22,9 +22,10 @@
 #include "SceneObject/SceneObjectRuntime.h"
 #include "SceneObject/SceneObjectTasks.h"
 
+#include "../TaskManager/TaskManager.h"
+
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/TaskManager/TaskManager.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Scripting/ScriptComponent.h"
 
@@ -40,6 +41,7 @@
 #include "../Components/Time.h"
 #include "../Components/Physics/PhysicsObjectRuntime.h"
 #include "../Components/Physics/PhysicsTasks.h"
+#include "../Components/Input/InputTasks.h"
 
 #ifdef max
 #undef max
@@ -679,6 +681,12 @@ namespace Dream
         auto taskManager = mProjectRuntime->getTaskManager();
         auto physicsComponent = mProjectRuntime->getPhysicsComponent();
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
+        auto inputComponent = mProjectRuntime->getInputComponent();
+
+        if (!inputComponent->hasPollDataTask())
+        {
+            taskManager->pushTask(new InputPollDataTask(inputComponent));
+        }
 
         mRootSceneObjectRuntime->applyToAll
         (
@@ -687,16 +695,27 @@ namespace Dream
             {
                 rt->lock();
                 // SceneObject
-                taskManager->pushTask(new LifetimeUpdateTask(rt));
+                if (!rt->hasLifetimeUpdateTask())
+                {
+                    taskManager->pushTask(new LifetimeUpdateTask(rt));
+                }
                 // Animation
                 if (rt->hasAnimationRuntime())
                 {
-                    taskManager->pushTask(new AnimationUpdateTask(rt->getAnimationRuntime()));
+                    auto anim = rt->getAnimationRuntime();
+                    if (!anim->hasUpdateTask())
+                    {
+                        taskManager->pushTask(new AnimationUpdateTask(anim));
+                    }
                 }
                 // Audio
                 if (rt->hasAudioRuntime())
                 {
-                    taskManager->pushTask(new AudioMarkersUpdateTask(rt->getAudioRuntime()));
+                    auto audio = rt->getAudioRuntime();
+                    if (!audio->hasMarkersUpdateTask())
+                    {
+                        taskManager->pushTask(new AudioMarkersUpdateTask(audio));
+                    }
                 }
                 // Graphics
                 if (!rt->getHidden() && rt->hasLightRuntime())
@@ -707,9 +726,27 @@ namespace Dream
                 if (rt->hasPhysicsObjectRuntime())
                 {
                     auto pObj = rt->getPhysicsObjectRuntime();
-                    if (!pObj->isInPhysicsWorld())
+                    if (!pObj->isInPhysicsWorld() && !pObj->hasUpdateTask())
                     {
                         taskManager->pushTask(new PhysicsAddObjectTask(physicsComponent, pObj));
+                    }
+                }
+                // Path
+                if (rt->hasPathRuntime())
+                {
+                    auto path = rt->getPathRuntime();
+                    if (!path->hasUpdateTask())
+                    {
+                        taskManager->pushTask(new PathUpdateTask(path));
+                    }
+                }
+                // Scroller
+                if (rt->hasScrollerRuntime())
+                {
+                    auto scr = rt->getScrollerRuntime();
+                    if (!scr->hasUpdateTask())
+                    {
+                        taskManager->pushTask(new ScrollerUpdateTask(scr));
                     }
                 }
                 rt->unlock();
@@ -717,12 +754,17 @@ namespace Dream
             }
         ));
 
-        taskManager->pushTask(new PhysicsUpdateWorldTask(physicsComponent));
+        if (!physicsComponent->hasUpdateWorldTask())
+        {
+            taskManager->pushTask(new PhysicsUpdateWorldTask(physicsComponent));
+        }
 
         if (physicsComponent->getDebug())
         {
             graphicsComponent->pushTask(new PhysicsDrawDebugTask(physicsComponent));
         }
+
+        taskManager->clearFences();
     }
 
 

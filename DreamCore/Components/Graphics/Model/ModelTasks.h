@@ -12,10 +12,18 @@ namespace Dream
     public:
         ModelInitMeshTask(ModelMesh* mesh)
             : GraphicsComponentTask(),
-              mMesh(mesh) {}
-
-        inline bool execute() override
+              mMesh(mesh)
         {
+            #ifdef DREAM_LOG
+            setLogClassName("ModelInitMeshTask");
+            #endif
+        }
+
+        inline void execute() override
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             GLuint vao, vbo, ibo;
             glGenVertexArrays(1, &vao);
             glGenBuffers(1, &vbo);
@@ -51,7 +59,6 @@ namespace Dream
                 static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
             glBindVertexArray(0);
             mMesh->clearInitMeshTask();
-            return true;
         }
     };
 
@@ -67,11 +74,18 @@ namespace Dream
              mVAO(vao),
              mVBO(vbo),
              mIBO(ibo)
-       {}
-       inline bool
-       execute
-       ()
        {
+           #ifdef DREAM_LOG
+           setLogClassName("ModelFreeMeshTask");
+           #endif
+       }
+
+       inline void execute()
+       {
+           #ifdef DREAM_LOG
+           getLog()->critical("Executing on thread {}",mThreadId);
+           #endif
+
             if (mVAO > 0)
             {
                 glDeleteVertexArrays(1,&mVAO);
@@ -86,7 +100,6 @@ namespace Dream
             {
                 glDeleteBuffers(1,&mIBO);
             }
-            return true;
        }
     };
 }

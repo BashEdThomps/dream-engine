@@ -63,7 +63,7 @@ main
 (int argc,char** argv)
 {
     #ifdef DREAM_LOG
-    spdlog::set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S|%n|%l] %v");
     #endif
 
@@ -176,7 +176,7 @@ run
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            windowComponent.updateComponent(nullptr);
+            windowComponent.updateWindow(nullptr);
         }
 
         //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;

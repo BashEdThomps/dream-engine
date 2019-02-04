@@ -47,7 +47,7 @@ namespace DreamTool
         static ImFont* MonoFont;
 
         GLFWwindow* getGlfwWindow();
-        void updateComponent(SceneRuntime* sr) override;
+        void updateWindow(SceneRuntime* sr) override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;

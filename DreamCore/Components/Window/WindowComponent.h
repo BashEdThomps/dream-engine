@@ -34,9 +34,9 @@ namespace Dream
       virtual ~WindowComponent();
 
       bool init() = 0;
-      void updateComponent(SceneRuntime*) = 0;
       virtual void getCurrentDimensions() = 0;
       virtual void swapBuffers() = 0;
+      virtual void updateWindow(SceneRuntime* sr) = 0;
 
       void setWidth(int);
       void setHeight(int);

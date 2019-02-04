@@ -350,7 +350,12 @@ namespace Dream
 
     void AudioRuntime::setMarkersUpdateTask(AudioMarkersUpdateTask* t)
     {
-       mMarkersUpdateTask = t;
+        mMarkersUpdateTask = t;
+    }
+
+    bool AudioRuntime::hasMarkersUpdateTask()
+    {
+       return mMarkersUpdateTask != nullptr;
     }
 
     ALint

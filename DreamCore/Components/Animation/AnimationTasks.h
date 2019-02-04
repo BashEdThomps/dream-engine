@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 #include "../Animation/AnimationRuntime.h"
 
 namespace Dream
@@ -27,15 +27,22 @@ namespace Dream
 
         }
 
-        inline bool
-        execute
-        ()
+        inline void execute() override
         {
-             mAnimationRuntime->lock();
-             mAnimationRuntime->update();
-             mAnimationRuntime->clearUpdateTask();
-             mAnimationRuntime->unlock();
-             return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+             if(mAnimationRuntime->tryLock())
+             {
+                 mAnimationRuntime->update();
+                 mAnimationRuntime->setUpdateTask(nullptr);
+                 mAnimationRuntime->unlock();
+                 clearDeferred();
+             }
+             else
+             {
+                 setDeferred();
+             }
         }
    };
 }

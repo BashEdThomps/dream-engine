@@ -65,7 +65,7 @@ namespace Dream
         mParticleEmitterRuntime(nullptr),
         mPathRuntime(nullptr),
         mPhysicsObjectRuntime(nullptr),
-        mScriptRuntime(nullptr),
+        mScriptRuntimeState(nullptr),
         mModelRuntime(nullptr),
         mScrollerRuntime(nullptr),
         mSceneRuntime(sr),
@@ -185,10 +185,10 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptRuntime != nullptr)
+        if (mScriptRuntimeState != nullptr)
         {
-            mScriptRuntime->removeRuntime(this);
-            mScriptRuntime = nullptr;
+            delete mScriptRuntimeState;
+            mScriptRuntimeState = nullptr;
         }
     }
 
@@ -264,7 +264,7 @@ namespace Dream
     SceneObjectRuntime::getScriptRuntime
     ()
     {
-        return mScriptRuntime;
+        return mScriptRuntimeState->script;
     }
 
     LightRuntime*
@@ -343,7 +343,8 @@ namespace Dream
     SceneObjectRuntime::hasScriptRuntime
     ()
     {
-        return mScriptRuntime != nullptr;
+        return mScriptRuntimeState != nullptr &&
+               mScriptRuntimeState->script != nullptr;
     }
 
     void
@@ -765,10 +766,10 @@ namespace Dream
         auto scriptCache = (mSceneRuntime->getProjectRuntime()->getScriptCache());
         if (scriptCache)
         {
-            mScriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
-            if (mScriptRuntime != nullptr)
+            auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
+            if (scriptRuntime != nullptr)
             {
-                mScriptRuntime->addRuntime(this);
+                mScriptRuntimeState = scriptRuntime->createState(this);
                 return true;
             }
             else
@@ -1106,8 +1107,6 @@ namespace Dream
         return true;
     }
 
-
-
     BoundingBox&
     SceneObjectRuntime::getBoundingBox
     ()
@@ -1313,11 +1312,11 @@ namespace Dream
         return mDieAfter;
     }
 
-    void
-    SceneObjectRuntime::clearLifetimeUpdateTask
+    bool
+    SceneObjectRuntime::hasLifetimeUpdateTask
     ()
     {
-        mLifetimeUpdateTask = nullptr;
+        return mLifetimeUpdateTask != nullptr;
     }
 
     void

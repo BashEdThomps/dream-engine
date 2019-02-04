@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 #include "../Path/PathRuntime.h"
 
 namespace Dream
@@ -21,13 +21,22 @@ namespace Dream
 
         inline  ~PathUpdateTask() {}
 
-        inline bool execute()
+        inline void execute() override
         {
-            mPathRuntime->lock();
-            mPathRuntime->update();
-            mPathRuntime->clearUpdateTask();
-            mPathRuntime->unlock();
-            return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+            if( mPathRuntime->tryLock())
+            {
+                mPathRuntime->update();
+                mPathRuntime->setUpdateTask(nullptr);
+                mPathRuntime->unlock();
+                clearDeferred();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
     };
 }

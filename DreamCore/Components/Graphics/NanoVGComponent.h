@@ -513,12 +513,11 @@ namespace Dream
 
         bool init() override;
 
-        void updateComponent(SceneRuntime*) override;
         void BeginFrame();
         bool render(SceneRuntime*);
 
     protected:
-            NVGcontext* mContext;
-            WindowComponent* mWindowComponent;
+        NVGcontext* mContext;
+        WindowComponent* mWindowComponent;
     };
 }

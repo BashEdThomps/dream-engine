@@ -88,23 +88,6 @@ namespace Dream
     }
 
     void
-    AudioComponent::updateComponent
-    (SceneRuntime*)
-    {
-
-        if (!mEnabled)
-        {
-            #ifdef DREAM_LOG
-            getLog()->warn("Update Disabled");
-            #endif
-            return;
-        }
-
-        beginUpdate();
-        endUpdate();
-    }
-
-    void
     AudioComponent::setVolume
     (float volume)
     {

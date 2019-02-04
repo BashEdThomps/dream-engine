@@ -16,7 +16,7 @@
 #include "DiscreteAssetRuntime.h"
 
 #include "AssetDefinition.h"
-#include "TaskManager/Task.h"
+#include "../TaskManager/Task.h"
 #include "../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../Scene/SceneRuntime.h"
 #include "../Project/Project.h"
@@ -80,13 +80,13 @@ namespace Dream
     DiscreteAssetRuntime::setUpdateTask
     (Task* t)
     {
-       mUpdateTask = t;
+        mUpdateTask = t;
     }
 
-    void
-    DiscreteAssetRuntime::clearUpdateTask
+    bool
+    DiscreteAssetRuntime::hasUpdateTask
     ()
     {
-       mUpdateTask = nullptr;
+       return mUpdateTask != nullptr;
     }
 }

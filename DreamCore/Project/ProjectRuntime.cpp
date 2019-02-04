@@ -27,7 +27,7 @@
 #include "../Components/Audio/AudioCache.h"
 #include "../Components/Input/InputComponent.h"
 
-#include "../Components/TaskManager/TaskManager.h"
+#include "../TaskManager/TaskManager.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Model/ModelMesh.h"
@@ -484,14 +484,14 @@ namespace Dream
         #endif
 
         mTime->updateFrameTime();
-        mInputComponent->updateComponent(sr);
         mPhysicsComponent->setCamera(sr->getCamera());
         sr->createSceneTasks();
-        mScriptComponent->updateComponent(sr);
 
         // Produce Outputs
         sr->getCamera()->update();
-        mGraphicsComponent->updateComponent(sr);
+
+        mTaskManager->waitForFence();
+
         return true;
     }
 
@@ -513,7 +513,7 @@ namespace Dream
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
-        mNanoVGComponent->render(sr);
+        //mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->drawDebug();
     }
@@ -607,7 +607,7 @@ namespace Dream
                 case SceneState::SCENE_STATE_ACTIVE:
                     updateLogic(rt);
                     updateGraphics(rt);
-                    mWindowComponent->updateComponent(rt);
+                    mWindowComponent->updateWindow(rt);
                     collectGarbage(rt);
                     break;
                 case SceneState::SCENE_STATE_TO_DESTROY:

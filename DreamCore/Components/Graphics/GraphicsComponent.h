@@ -82,7 +82,6 @@ namespace Dream
         ~GraphicsComponent() override;
 
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
 
         void addToLightQueue(SceneObjectRuntime*);
         void clearLightQueue();

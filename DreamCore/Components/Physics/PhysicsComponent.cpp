@@ -203,25 +203,6 @@ namespace Dream
     }
 
     void
-    PhysicsComponent::updateComponent
-    (SceneRuntime* sr)
-    {
-        if (!mEnabled)
-        {
-            #ifdef DREAM_LOG
-            getLog()->warn("Update Disabled");
-            #endif
-            return;
-        }
-            beginUpdate();
-            #ifdef DREAM_LOG
-            getLog()->debug( "Update Called" );
-            #endif
-
-            endUpdate();
-    }
-
-    void
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
@@ -499,6 +480,11 @@ namespace Dream
     void PhysicsComponent::setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask)
     {
         mUpdateWorldTask = updateWorldTask;
+    }
+
+    bool PhysicsComponent::hasUpdateWorldTask()
+    {
+       return mUpdateWorldTask != nullptr;
     }
 
     void PhysicsComponent::setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask)

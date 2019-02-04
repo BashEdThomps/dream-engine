@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 #include "../Scroller/ScrollerRuntime.h"
 
 namespace Dream
@@ -14,7 +14,7 @@ namespace Dream
             : Task(), mScrollerRuntime(rt)
         {
             #ifdef DREAM_LOG
-            setLogClassName("LogicUpdateTask");
+            setLogClassName("ScrollerUpdateTask");
             #endif
             rt->setUpdateTask(this);
         }
@@ -22,15 +22,22 @@ namespace Dream
         inline
         ~ScrollerUpdateTask() {}
 
-        inline bool
-        execute
-        ()
+        inline void execute() override
         {
-             mScrollerRuntime->lock();
-             mScrollerRuntime->update();
-             mScrollerRuntime->clearUpdateTask();
-             mScrollerRuntime->unlock();
-             return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+            if(mScrollerRuntime->tryLock())
+            {
+                mScrollerRuntime->update();
+                mScrollerRuntime->setUpdateTask(nullptr);
+                mScrollerRuntime->unlock();
+                clearDeferred();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
    };
 }

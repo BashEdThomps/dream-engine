@@ -37,7 +37,7 @@ namespace Dream
     class ModelRuntime;
     class LightRuntime;
     class PhysicsObjectRuntime;
-    class ScriptRuntime;
+    class ScriptRuntimeState;
     class ParticleEmitterRuntime;
     class SceneRuntime;
     class SceneObjectDefinition;
@@ -52,6 +52,7 @@ namespace Dream
     class PhysicsObjectDefinition;
     class ScriptDefinition;
     class ParticleEmitterDefinition;
+    class ScriptRuntime;
     class AssetRuntime;
     class LifetimeUpdateTask;
 
@@ -180,8 +181,8 @@ namespace Dream
 
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
-        void clearLifetimeUpdateTask();
         void setLifetimeUpdateTask(LifetimeUpdateTask* l);
+        bool hasLifetimeUpdateTask();
 
     private:
         AnimationRuntime* mAnimationRuntime;
@@ -190,9 +191,10 @@ namespace Dream
         ParticleEmitterRuntime* mParticleEmitterRuntime;
         PathRuntime* mPathRuntime;
         PhysicsObjectRuntime* mPhysicsObjectRuntime;
-        ScriptRuntime* mScriptRuntime;
+        ScriptRuntimeState* mScriptRuntimeState;
         ModelRuntime* mModelRuntime;
         ScrollerRuntime* mScrollerRuntime;
+
         Transform mInitialTransform;
         Transform mTransform;
         vector<Event> mEventQueue;

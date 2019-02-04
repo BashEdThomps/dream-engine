@@ -10,16 +10,20 @@ namespace Dream
     {
         TextureRuntime* mTextureRuntime;
     public:
-        TextureCreationTask(TextureRuntime* rt)
+        inline TextureCreationTask(TextureRuntime* rt)
             : GraphicsComponentTask(), mTextureRuntime(rt)
         {
             rt->setTextureCreationTask(this);
+            #ifdef DREAM_LOG
+            setLogClassName("TextureCreationTask");
+            #endif
         }
 
-        inline bool
-        execute
-        () override
+        inline void execute() override
         {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             // Assign texture to ID
             GLuint textureID;
 
@@ -75,7 +79,6 @@ namespace Dream
             checkGLError();
             #endif
             mTextureRuntime->clearCreateTextureTask();
-            return textureID != 0;
         }
     };
 
@@ -86,14 +89,18 @@ namespace Dream
         inline TextureDeletionTask
         (GLuint id)
             : GraphicsComponentTask(), mTextureId(id)
-        {}
-
-        inline bool
-        execute
-        () override
         {
+            #ifdef DREAM_LOG
+            setLogClassName("TextureDeletionTask");
+            #endif
+        }
+
+        inline void execute() override
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
             glDeleteTextures(1,&mTextureId);
-            return true;
         }
     };
 }

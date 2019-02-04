@@ -24,6 +24,8 @@ using namespace std;
 
 namespace Dream
 {
+    class InputPollDataTask;
+    class InputExecuteScriptTask;
 
     class InputComponent : public Component
     {
@@ -32,7 +34,8 @@ namespace Dream
         ~InputComponent() override;
 
         bool init() override;
-        void updateComponent(SceneRuntime*) override;
+        void executeInputScript(SceneRuntime* sr);
+        void pollData();
 
         void debugKeyboard() const;
         void debugMouse() const;
@@ -63,6 +66,11 @@ namespace Dream
         float clearDeadzone(float val);
 
         JoystickMapping getJoystickMapping() const;
+        void setPollDataTask(InputPollDataTask* t);
+        bool hasPollDataTask() const;
+        void setExecuteScriptTask(InputExecuteScriptTask* t);
+        bool hasExecuteScriptTask() const;
+
 
     private:
         bool mUseKeyboard;
@@ -78,6 +86,8 @@ namespace Dream
         JoystickState mJoystickState;
         JoystickState mLastJoystickState;
         JoystickMapping mJoystickMapping;
+        InputPollDataTask* mPollDataTask;
+        InputExecuteScriptTask* mExecuteScriptTask;
 
     };
 }

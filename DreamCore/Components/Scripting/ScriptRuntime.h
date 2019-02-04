@@ -24,14 +24,7 @@ namespace Dream
     class InputComponent;
     class NanoVGComponent;
     class SceneRuntime;
-
-    class ScriptRuntimeState
-    {
-    public:
-        SceneObjectRuntime* runtime = nullptr;
-        bool initialised = false;
-        bool error = false;
-    };
+    class ScriptRuntimeState;
 
     class ScriptRuntime : public SharedAssetRuntime
     {
@@ -39,15 +32,14 @@ namespace Dream
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
-        void addRuntime(SceneObjectRuntime*);
-        void removeRuntime(SceneObjectRuntime*);
-        vector<SceneObjectRuntime*> getRuntimeVector() const;
+        ScriptRuntimeState* createState(SceneObjectRuntime*);
+        void removeState(ScriptRuntimeState* state);
         string getSource() const;
         void setSource(const string& source);
 
-        bool executeOnInit();
-        bool executeOnUpdate();
-        bool executeOnEvent();
+        bool executeOnInit(ScriptRuntimeState* state);
+        bool executeOnUpdate(ScriptRuntimeState* state);
+        bool executeOnEvent(ScriptRuntimeState* state);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
         bool executeOnNanoVG(NanoVGComponent*, SceneRuntime*);
@@ -55,8 +47,31 @@ namespace Dream
         void registerInputScript();
         void registerNanoVGScript();
     private:
-        vector<ScriptRuntimeState> mRuntimes;
         string mSource;
-        bool mError;
+    };
+
+    class ScriptRuntimeState
+    {
+    public:
+        inline ScriptRuntimeState
+        (ScriptRuntime* sc, SceneObjectRuntime* rt)
+            : script(sc), runtime(rt)
+        {
+
+        }
+
+        inline ~ScriptRuntimeState
+        ()
+        {
+            if (script)
+            {
+                script->removeState(this);
+            }
+        }
+
+        ScriptRuntime* script = nullptr;
+        SceneObjectRuntime* runtime = nullptr;
+        bool initialised = false;
+        bool error = false;
     };
 }

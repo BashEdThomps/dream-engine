@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 #include "AudioRuntime.h"
 
 namespace Dream
@@ -14,7 +14,7 @@ namespace Dream
             : Task(), mAudioRuntime(rt)
         {
             #ifdef DREAM_LOG
-            setLogClassName("AudioUpdateTask");
+            setLogClassName("AudioMarkersUpdateTask");
             #endif
             rt->lock();
             rt->setMarkersUpdateTask(this);
@@ -23,13 +23,22 @@ namespace Dream
 
         inline  ~AudioMarkersUpdateTask() {}
 
-        inline bool execute()
+        inline void execute()
         {
-            mAudioRuntime->lock();
-            mAudioRuntime->updateMarkers();
-            mAudioRuntime->clearMarkersUpdateTask();
-            mAudioRuntime->unlock();
-            return true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+            if(mAudioRuntime->tryLock())
+            {
+                mAudioRuntime->updateMarkers();
+                mAudioRuntime->clearMarkersUpdateTask();
+                mAudioRuntime->unlock();
+                clearDeferred();
+            }
+            else
+            {
+                setDeferred();
+            }
         }
     };
 }

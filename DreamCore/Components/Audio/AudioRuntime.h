@@ -104,5 +104,6 @@ namespace Dream
         int getDurationInSamples();
         void clearMarkersUpdateTask();
         void setMarkersUpdateTask(AudioMarkersUpdateTask* t);
+        bool hasMarkersUpdateTask();
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TaskManager/Task.h"
+#include "../../TaskManager/Task.h"
 
 namespace Dream
 {
@@ -8,6 +8,6 @@ namespace Dream
     class GraphicsComponentTask : public Task
     {
     public:
-       virtual bool execute() = 0;
+       virtual void execute() = 0;
     };
 }
