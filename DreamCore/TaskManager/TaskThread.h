@@ -28,8 +28,10 @@ namespace Dream
 
         TaskThread (unsigned int id)
             : DreamObject ("TaskThread"),
-              mThreadId(id),
-              mThread(nullptr)
+              mThread(nullptr),
+              mRunning(false),
+              mFence(false),
+              mThreadId(id)
         {
             mThread = new thread(&TaskThread::executeTaskQueue,this);
         }

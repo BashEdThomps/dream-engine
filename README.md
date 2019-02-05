@@ -29,6 +29,7 @@ your Screen to create Asset Instances. These Asset Instances are then assigned t
 SceneObjects within a scene. Asset Definitions are defined at the Project level so that they
 can be shared by many Scene Objects. There are several types of Asset available in Dream.
 
+* Animation
 * Audio
 * Font
 * Light
@@ -70,6 +71,7 @@ Dream uses the following libraries.
 * OggVorbis
 * OpenAL
 * OpenGL
+* SPDLOG
 
 ### Installing Ubuntu Build Dependencies From Repositories (apt)
 ```

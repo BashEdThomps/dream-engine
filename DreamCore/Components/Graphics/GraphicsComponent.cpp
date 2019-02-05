@@ -71,6 +71,7 @@ namespace Dream
           mGeometryPassAlbedoBuffer(0),
           mGeometryPassNormalBuffer(0),
           mGeometryPassDepthBuffer(0),
+          mGeometryPassIgnoreBuffer(0),
 
           mShadowPassShader(nullptr),
           mShadowPassFB(0),
