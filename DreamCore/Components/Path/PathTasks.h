@@ -31,11 +31,11 @@ namespace Dream
                 mPathRuntime->update();
                 mPathRuntime->setUpdateTask(nullptr);
                 mPathRuntime->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };

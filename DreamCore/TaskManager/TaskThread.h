@@ -64,22 +64,34 @@ namespace Dream
                     continue;
                 }
 
-                mTaskQueueMutex.lock();
-                if (!mTaskQueue.empty())
+                while (!mTaskQueue.empty())
                 {
+                    mTaskQueueMutex.lock();
                     #ifdef DREAM_LOG
                     getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
                     #endif
                     for (Task* t : mTaskQueue)
                     {
-                        if (!t->hasExpired())
+                        // Check if not expired
+                        if (t->hasExpired())
                         {
-                            t->execute();
-                            std::this_thread::yield();
+                           t->setCompleted();
+                        }
+                        else
+                        {
+                            if (!t->isWaitingForDependencies())
+                            {
+                                t->execute();
+                            }
+                            else
+                            {
+                                t->incrementDeferralCount();
+                            }
                         }
 
-                        if (!t->isDeferred())
+                        if (t->isCompleted())
                         {
+                            t->notifyDependents();
                             mCompletedTasks.push_back(t);
                         }
                         else
@@ -101,25 +113,22 @@ namespace Dream
                        }
                     }
                     mCompletedTasks.clear();
-
-                    mFence = true;
-                    mTaskQueueMutex.unlock();
-                    #ifdef DREAM_LOG
-                    getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
-                    #endif
-                }
-                else
-                {
                     mTaskQueueMutex.unlock();
                     std::this_thread::yield();
                 }
+
+                #ifdef DREAM_LOG
+                getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
+                #endif
+                mFence = true;
+                std::this_thread::yield();
             }
         }
 
         inline void clearFence()
         {
             #ifdef DREAM_LOG
-            getLog()->critical("Clearing fence for thresd {}",getThreadId());
+            getLog()->critical("Clearing fence for thread {}",getThreadId());
             #endif
             mFence = false;
         }
@@ -129,12 +138,16 @@ namespace Dream
             return mFence;
         }
 
-        inline void pushTask(Task* t)
+        inline bool pushTask(Task* t)
         {
-            t->setThreadId(mThreadId);
-            mTaskQueueMutex.lock();
-            mTaskQueue.push_back(t);
-            mTaskQueueMutex.unlock();
+            if(mTaskQueueMutex.try_lock())
+            {
+                mTaskQueue.push_back(t);
+                t->setThreadId(mThreadId);
+                mTaskQueueMutex.unlock();
+                return true;
+            }
+            return false;
         }
 
         inline void setRunning(volatile bool running)

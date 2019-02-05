@@ -38,13 +38,15 @@
 #include "../../Components/Graphics/Model/ModelDefinition.h"
 #include "../../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "../../Components/Physics/PhysicsObjectDefinition.h"
-#include "../../Components/Scripting/ScriptDefinition.h"
-#include "../../Components/Scripting/ScriptComponent.h"
-#include "../../Components/Scripting/ScriptRuntime.h"
+#include "../../Components/Script/ScriptDefinition.h"
+#include "../../Components/Script/ScriptComponent.h"
+#include "../../Components/Script/ScriptRuntime.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
 #include "../../Utilities/Uuid.h"
+#include "../../TaskManager/TaskManager.h"
+#include "../../Components/Script/ScriptTasks.h"
 #include "SceneObjectTasks.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
@@ -79,7 +81,9 @@ namespace Dream
         mRandomUuid(randomUuid),
         mDeferredFor(0),
         mObjectLifetime(0),
-        mDieAfter(0)
+        mDieAfter(0),
+        mScriptCreateStateTask(nullptr),
+        mScriptRemoveStateTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
@@ -185,8 +189,14 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptRuntimeState != nullptr)
+        if (mScriptCreateStateTask)
         {
+            mScriptCreateStateTask->setExpired(true);
+        }
+        else if (mScriptRuntimeState != nullptr && mScriptRemoveStateTask == nullptr)
+        {
+            auto* tm = mSceneRuntime->getProjectRuntime()->getTaskManager();
+            tm->pushTask(new ScriptRemoveStateTask(mScriptRuntimeState->script,getUuid()));
             delete mScriptRuntimeState;
             mScriptRuntimeState = nullptr;
         }
@@ -769,7 +779,11 @@ namespace Dream
             auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
             if (scriptRuntime != nullptr)
             {
-                mScriptRuntimeState = scriptRuntime->createState(this);
+                if (mScriptCreateStateTask == nullptr)
+                {
+                    auto taskManager = mSceneRuntime->getProjectRuntime()->getTaskManager();
+                    taskManager->pushTask(new ScriptCreateStateTask(this,scriptRuntime));
+                }
                 return true;
             }
             else
@@ -1324,5 +1338,26 @@ namespace Dream
     (LifetimeUpdateTask* l)
     {
         mLifetimeUpdateTask = l;
+    }
+
+    void
+    SceneObjectRuntime::setScriptRuntimeState
+    (ScriptRuntimeState* s)
+    {
+        mScriptRuntimeState = s;
+    }
+
+    void
+    SceneObjectRuntime::setScriptCreateStateTask
+    (ScriptCreateStateTask* t)
+    {
+        mScriptCreateStateTask = t;
+    }
+
+    void
+    SceneObjectRuntime::setScriptRemoveStateTask
+    (ScriptRemoveStateTask* t)
+    {
+        mScriptRemoveStateTask = t;
     }
 }

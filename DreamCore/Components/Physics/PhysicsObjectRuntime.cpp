@@ -152,7 +152,6 @@ namespace Dream
         setCcdSweptSphereRadius(pod->getCcdSweptSphereRadius());
 
         mLoaded = (mRigidBody != nullptr);
-
         return mLoaded;
     }
 
@@ -396,7 +395,7 @@ namespace Dream
     PhysicsObjectRuntime::clearForces
     ()
     {
-       mRigidBody->clearForces();
+        mRigidBody->clearForces();
     }
 
     void
@@ -540,4 +539,4 @@ namespace Dream
         mInPhysicsWorld = inPhysicsWorld;
     }
 
-} // End of Dream
+}

@@ -76,8 +76,20 @@ namespace Dream
 
         inline void pushTask(Task* t)
         {
-            mThreadVector.at(mNextThread)->pushTask(t);
-            mNextThread = (mNextThread +1) % mThreadVector.size();
+            if (t==nullptr) return;
+
+            while (true)
+            {
+                bool result = mThreadVector.at(mNextThread)->pushTask(t);
+                mNextThread = (mNextThread +1) % mThreadVector.size();
+                if (result)
+                {
+                    #ifdef DREAM_LOG
+                    getLog()->critical("{} pushed to worker {}",t->getClassName(),mNextThread);
+                    #endif
+                    break;
+                }
+            }
         }
 
         inline void clearFences()
@@ -93,6 +105,9 @@ namespace Dream
 
         inline void waitForFence()
         {
+           #ifdef DREAM_LOG
+           getLog()->critical("... Waiting for fence ...");
+           #endif
            while (true)
            {
                bool result = true;

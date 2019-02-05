@@ -32,11 +32,11 @@ namespace Dream
                 mScrollerRuntime->update();
                 mScrollerRuntime->setUpdateTask(nullptr);
                 mScrollerRuntime->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
    };

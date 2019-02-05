@@ -27,7 +27,7 @@
 #include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
-#include "../Components/Scripting/ScriptDefinition.h"
+#include "../Components/Script/ScriptDefinition.h"
 #include "../Utilities/Uuid.h"
 
 namespace Dream

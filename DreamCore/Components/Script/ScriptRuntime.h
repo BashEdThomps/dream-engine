@@ -32,8 +32,8 @@ namespace Dream
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
-        ScriptRuntimeState* createState(SceneObjectRuntime*);
-        void removeState(ScriptRuntimeState* state);
+        bool createState(SceneObjectRuntime* rt);
+        bool removeState(uint32 uuid);
         string getSource() const;
         void setSource(const string& source);
 
@@ -55,7 +55,7 @@ namespace Dream
     public:
         inline ScriptRuntimeState
         (ScriptRuntime* sc, SceneObjectRuntime* rt)
-            : script(sc), runtime(rt)
+            : script(sc), runtime(rt), error(false), initialised(false)
         {
 
         }
@@ -63,10 +63,6 @@ namespace Dream
         inline ~ScriptRuntimeState
         ()
         {
-            if (script)
-            {
-                script->removeState(this);
-            }
         }
 
         ScriptRuntime* script = nullptr;

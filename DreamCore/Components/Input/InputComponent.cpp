@@ -16,7 +16,7 @@
 #include "InputComponent.h"
 #include "InputTasks.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../Scripting/ScriptComponent.h"
+#include "../Script/ScriptRuntime.h"
 
 namespace Dream
 {
@@ -69,15 +69,16 @@ namespace Dream
         return true;
     }
 
-    void
+    bool
     InputComponent::executeInputScript
     (SceneRuntime* sRunt)
     {
         auto inputScript = sRunt->getInputScript();
         if (inputScript)
         {
-            inputScript->executeOnInput(this, sRunt);
+            return inputScript->executeOnInput(this, sRunt);
         }
+        return true;
     }
 
     void

@@ -34,7 +34,7 @@ namespace Dream
         ~InputComponent() override;
 
         bool init() override;
-        void executeInputScript(SceneRuntime* sr);
+        bool executeInputScript(SceneRuntime* sr);
         void pollData();
 
         void debugKeyboard() const;

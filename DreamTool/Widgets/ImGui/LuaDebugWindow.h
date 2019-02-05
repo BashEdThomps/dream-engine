@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "../../../DreamCore/Components/Scripting/ScriptComponent.h"
+#include "../../../DreamCore/Components/Script/ScriptComponent.h"
 
 using namespace Dream;
 

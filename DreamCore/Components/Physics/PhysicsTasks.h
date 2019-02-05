@@ -39,17 +39,17 @@ namespace Dream
                     mComponent->unlock();
                     mRuntime->setInPhysicsWorld(true);
                     mRuntime->setAddObjectTask(nullptr);
-                    clearDeferred();
+                    mCompleted=true;
                 }
                 else
                 {
-                    setDeferred();
+                    mDeferralCount++;
                 }
                 mRuntime->unlock();
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };
@@ -77,11 +77,11 @@ namespace Dream
                 mComponent->stepSimulation();
                 mComponent->setUpdateWorldTask(nullptr);
                 mComponent->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };
@@ -110,11 +110,11 @@ namespace Dream
                 mComponent->getDebugDrawer()->drawAll();
                 mComponent->setDrawDebugTask(nullptr);
                 mComponent->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };

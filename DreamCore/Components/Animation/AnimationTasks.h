@@ -37,11 +37,11 @@ namespace Dream
                  mAnimationRuntime->update();
                  mAnimationRuntime->setUpdateTask(nullptr);
                  mAnimationRuntime->unlock();
-                 clearDeferred();
+                 mCompleted = true;
              }
              else
              {
-                 setDeferred();
+                 mDeferralCount++;
              }
         }
    };

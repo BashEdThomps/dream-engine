@@ -33,11 +33,11 @@ namespace Dream
                 mAudioRuntime->updateMarkers();
                 mAudioRuntime->clearMarkersUpdateTask();
                 mAudioRuntime->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };

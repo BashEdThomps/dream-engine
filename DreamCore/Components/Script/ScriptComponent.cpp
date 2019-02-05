@@ -626,7 +626,6 @@ namespace Dream
         stateView[COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
     }
 
-
     void
     ScriptComponent::exposeAudioComponent
     ()
@@ -796,6 +795,7 @@ namespace Dream
 
         stateView[COMPONENTS_TBL]["NanoVG"] = mProjectRuntime->getNanoVGComponent();
     }
+
     void
     ScriptComponent::exposeSceneRuntime
     ()
@@ -1001,5 +1001,4 @@ namespace Dream
     lua_State* ScriptComponent::State = nullptr;
 
     const string ScriptComponent::COMPONENTS_TBL = "Components";
-} // End of Dream
-
+}

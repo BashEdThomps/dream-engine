@@ -29,7 +29,7 @@ namespace Dream
             if (mSceneObjectRuntime->tryLock())
             {
                 #ifdef DREAM_LOG
-                getLog()->critical("Executing on thread {}",mThreadId);
+                getLog()->critical("{} Executing on thread {}",mSceneObjectRuntime->getNameAndUuidString(), mThreadId);
                 #endif
 
                 long timeDelta = mSceneObjectRuntime
@@ -60,11 +60,11 @@ namespace Dream
                 }
                 mSceneObjectRuntime->setLifetimeUpdateTask(nullptr);
                 mSceneObjectRuntime->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
         }
     };

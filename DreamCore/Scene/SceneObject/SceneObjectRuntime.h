@@ -55,6 +55,8 @@ namespace Dream
     class ScriptRuntime;
     class AssetRuntime;
     class LifetimeUpdateTask;
+    class ScriptCreateStateTask;
+    class ScriptRemoveStateTask;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -184,6 +186,10 @@ namespace Dream
         void setLifetimeUpdateTask(LifetimeUpdateTask* l);
         bool hasLifetimeUpdateTask();
 
+        void setScriptRuntimeState(ScriptRuntimeState* s);
+        void setScriptCreateStateTask(ScriptCreateStateTask* t);
+        void setScriptRemoveStateTask(ScriptRemoveStateTask* t);
+
     private:
         AnimationRuntime* mAnimationRuntime;
         AudioRuntime* mAudioRuntime;
@@ -212,5 +218,7 @@ namespace Dream
         long mObjectLifetime;
         long mDieAfter;
         LifetimeUpdateTask* mLifetimeUpdateTask;
+        ScriptCreateStateTask* mScriptCreateStateTask;
+        ScriptRemoveStateTask* mScriptRemoveStateTask;
     };
 }

@@ -42,8 +42,8 @@
 #include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
 #include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
-#include "../../../DreamCore/Components/Scripting/ScriptDefinition.h"
-#include "../../../DreamCore/Components/Scripting/ScriptRuntime.h"
+#include "../../../DreamCore/Components/Script/ScriptDefinition.h"
+#include "../../../DreamCore/Components/Script/ScriptRuntime.h"
 
 namespace DreamTool
 {

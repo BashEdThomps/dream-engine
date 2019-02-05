@@ -37,7 +37,7 @@ namespace Dream
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
-        uint32_t mUuid;
+        atomic<uint32_t> mUuid;
         /**
          * @brief Name of this Runtime, given by it's Definition.
          */
@@ -119,7 +119,6 @@ namespace Dream
         inline string
         getNameAndUuidString
         ()
-        const
         {
             stringstream ss;
             ss << "[" << getName() << " : " << getUuid() << "]";

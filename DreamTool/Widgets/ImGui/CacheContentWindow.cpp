@@ -7,7 +7,7 @@
 #include "../../../DreamCore/Components/Graphics/Model/ModelCache.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
 #include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
-#include "../../../DreamCore/Components/Scripting/ScriptCache.h"
+#include "../../../DreamCore/Components/Script/ScriptCache.h"
 
 namespace DreamTool
 {

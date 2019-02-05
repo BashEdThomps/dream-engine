@@ -33,7 +33,7 @@
 #include "../Components/Graphics/Model/ModelMesh.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/WindowComponent.h"
-#include "../Components/Scripting/ScriptComponent.h"
+#include "../Components/Script/ScriptComponent.h"
 
 #include "../Components/Graphics/Model/ModelCache.h"
 #include "../Components/Graphics/Material/MaterialCache.h"
@@ -484,12 +484,8 @@ namespace Dream
         #endif
 
         mTime->updateFrameTime();
-        mPhysicsComponent->setCamera(sr->getCamera());
         sr->createSceneTasks();
-
-        // Produce Outputs
         sr->getCamera()->update();
-
         mTaskManager->waitForFence();
 
         return true;
@@ -515,6 +511,7 @@ namespace Dream
         mGraphicsComponent->renderLightingPass(sr);
         //mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
+        mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->drawDebug();
     }
 

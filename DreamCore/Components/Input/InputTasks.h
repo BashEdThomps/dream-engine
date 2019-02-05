@@ -20,16 +20,20 @@ namespace Dream
 
        inline void execute() override
        {
+
             if (mComponent->tryLock())
             {
+                #ifdef DREAM_LOG
+                getLog()->critical("Executing...");
+                #endif
                 mComponent->pollData();
                 mComponent->setPollDataTask(nullptr);
                 mComponent->unlock();
-                clearDeferred();
+                mCompleted = true;
             }
             else
             {
-                setDeferred();
+                mDeferralCount++;
             }
        }
     };
@@ -43,15 +47,38 @@ namespace Dream
            : Task(), mComponent(cp), mSceneRuntime(rt)
        {
             #ifdef DREAM_LOG
-            setLogClassName("InputUpdateTask");
+            setLogClassName("InputExecuteScriptTask");
             #endif
             mComponent->setExecuteScriptTask(this);
        }
 
        inline void execute() override
        {
-            mComponent->executeInputScript(mSceneRuntime);
-            mComponent->setExecuteScriptTask(nullptr);
+           #ifdef DREAM_LOG
+            getLog()->critical("Executing on thread {}",mThreadId);
+            #endif
+
+           if (mComponent->tryLock())
+           {
+                #ifdef DREAM_LOG
+                getLog()->critical("Executing...");
+                #endif
+
+                if (mComponent->executeInputScript(mSceneRuntime))
+                {
+                    mComponent->setExecuteScriptTask(nullptr);
+                    mCompleted = true;
+                }
+                else
+                {
+                    mDeferralCount++;
+                }
+                mComponent->unlock();
+           }
+           else
+           {
+               mDeferralCount++;
+           }
        }
     };
 

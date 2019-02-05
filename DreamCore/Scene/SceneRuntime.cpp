@@ -27,7 +27,7 @@
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Scripting/ScriptComponent.h"
+#include "../Components/Script/ScriptComponent.h"
 
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/Graphics/Shader/ShaderRuntime.h"
@@ -683,71 +683,89 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
+        Task* pollDataTask = nullptr;
+        Task* executeInputTask = nullptr;
+
         if (!inputComponent->hasPollDataTask())
         {
-            taskManager->pushTask(new InputPollDataTask(inputComponent));
+            pollDataTask = new InputPollDataTask(inputComponent);
+
+            if (!inputComponent->hasExecuteScriptTask())
+            {
+                executeInputTask = new InputExecuteScriptTask(inputComponent,this);
+                executeInputTask->dependsOn(pollDataTask);
+            }
+
+            taskManager->pushTask(pollDataTask);
+            taskManager->pushTask(executeInputTask);
+
         }
+        vector<Task*> lifetimeTasks;
 
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
+                Task* lt = nullptr;
                 rt->lock();
                 // SceneObject
                 if (!rt->hasLifetimeUpdateTask())
                 {
-                    taskManager->pushTask(new LifetimeUpdateTask(rt));
-                }
-                // Animation
-                if (rt->hasAnimationRuntime())
-                {
-                    auto anim = rt->getAnimationRuntime();
-                    if (!anim->hasUpdateTask())
+                    lt = (new LifetimeUpdateTask(rt))->dependsOn(executeInputTask);
+                    lifetimeTasks.push_back(lt);
+
+                    // Animation
+                    if (rt->hasAnimationRuntime())
                     {
-                        taskManager->pushTask(new AnimationUpdateTask(anim));
+                        auto anim = rt->getAnimationRuntime();
+                        if (!anim->hasUpdateTask())
+                        {
+                            taskManager->pushTask((new AnimationUpdateTask(anim))->dependsOn(lt));
+                        }
                     }
-                }
-                // Audio
-                if (rt->hasAudioRuntime())
-                {
-                    auto audio = rt->getAudioRuntime();
-                    if (!audio->hasMarkersUpdateTask())
+                    // Audio
+                    if (rt->hasAudioRuntime())
                     {
-                        taskManager->pushTask(new AudioMarkersUpdateTask(audio));
+                        auto audio = rt->getAudioRuntime();
+                        if (!audio->hasMarkersUpdateTask())
+                        {
+                            taskManager->pushTask((new AudioMarkersUpdateTask(audio))->dependsOn(lt));
+                        }
                     }
-                }
-                // Graphics
-                if (!rt->getHidden() && rt->hasLightRuntime())
-                {
-                   graphicsComponent->addToLightQueue(rt);
-                }
-                // Physics
-                if (rt->hasPhysicsObjectRuntime())
-                {
-                    auto pObj = rt->getPhysicsObjectRuntime();
-                    if (!pObj->isInPhysicsWorld() && !pObj->hasUpdateTask())
+                    // Graphics
+                    if (!rt->getHidden() && rt->hasLightRuntime())
                     {
-                        taskManager->pushTask(new PhysicsAddObjectTask(physicsComponent, pObj));
+                       graphicsComponent->addToLightQueue(rt);
                     }
-                }
-                // Path
-                if (rt->hasPathRuntime())
-                {
-                    auto path = rt->getPathRuntime();
-                    if (!path->hasUpdateTask())
+                    // Physics
+                    if (rt->hasPhysicsObjectRuntime())
                     {
-                        taskManager->pushTask(new PathUpdateTask(path));
+                        auto pObj = rt->getPhysicsObjectRuntime();
+                        if (!pObj->isInPhysicsWorld() && !pObj->hasUpdateTask())
+                        {
+                            taskManager->pushTask((new PhysicsAddObjectTask(physicsComponent, pObj))->dependsOn(lt));
+                        }
                     }
-                }
-                // Scroller
-                if (rt->hasScrollerRuntime())
-                {
-                    auto scr = rt->getScrollerRuntime();
-                    if (!scr->hasUpdateTask())
+                    // Path
+                    if (rt->hasPathRuntime())
                     {
-                        taskManager->pushTask(new ScrollerUpdateTask(scr));
+                        auto path = rt->getPathRuntime();
+                        if (!path->hasUpdateTask())
+                        {
+                            taskManager->pushTask((new PathUpdateTask(path))->dependsOn(lt));
+                        }
                     }
+                    // Scroller
+                    if (rt->hasScrollerRuntime())
+                    {
+                        auto scr = rt->getScrollerRuntime();
+                        if (!scr->hasUpdateTask())
+                        {
+                            taskManager->pushTask((new ScrollerUpdateTask(scr))->dependsOn(lt));
+                        }
+                    }
+                    taskManager->pushTask(lt);
                 }
                 rt->unlock();
                 return static_cast<SceneObjectRuntime*>(nullptr);
@@ -756,7 +774,12 @@ namespace Dream
 
         if (!physicsComponent->hasUpdateWorldTask())
         {
-            taskManager->pushTask(new PhysicsUpdateWorldTask(physicsComponent));
+            auto pt = new PhysicsUpdateWorldTask(physicsComponent);
+            for (auto* lt : lifetimeTasks)
+            {
+                pt->dependsOn(lt);
+            }
+            taskManager->pushTask(pt);
         }
 
         if (physicsComponent->getDebug())
