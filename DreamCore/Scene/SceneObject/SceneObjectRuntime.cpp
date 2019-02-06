@@ -106,10 +106,7 @@ namespace Dream
 
         for (auto child : mChildRuntimes)
         {
-            if (child != nullptr)
-            {
-                delete child;
-            }
+            delete child;
         }
         mChildRuntimes.clear();
 
@@ -359,7 +356,7 @@ namespace Dream
 
     void
     SceneObjectRuntime::setAssetDefinitionsMap
-    (map<AssetType,uint32_t> assetMap)
+    (const map<AssetType,uint32_t>& assetMap)
     {
         mAssetDefinitions = assetMap;
     }
@@ -416,7 +413,7 @@ namespace Dream
     ()
     const
     {
-        return mEventQueue.size() > 0;
+        return !mEventQueue.empty();
     }
 
     void
@@ -1024,7 +1021,7 @@ namespace Dream
         #ifdef DREAM_LOG
         auto log = getLog();
         #endif
-        SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntime, mRandomUuid);
+        auto* child = new SceneObjectRuntime(def, mSceneRuntime, mRandomUuid);
         child->setParentRuntime(this);
         if (!child->useDefinition())
         {
@@ -1056,7 +1053,7 @@ namespace Dream
                 #endif
                 return nullptr;
             }
-            SceneObjectRuntime* child = new SceneObjectRuntime(def, mSceneRuntime, true);
+            auto* child = new SceneObjectRuntime(def, mSceneRuntime, true);
             child->setParentRuntime(this);
             if (!child->useDefinition())
             {
@@ -1211,7 +1208,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::applyToAll
-    (const function<bool(SceneObjectRuntime*)> fn)
+    (const function<bool(SceneObjectRuntime*)>& fn)
     {
         bool retval = fn(this);
 
@@ -1229,7 +1226,7 @@ namespace Dream
 
     SceneObjectRuntime*
     SceneObjectRuntime::applyToAll
-    (const function<SceneObjectRuntime*(SceneObjectRuntime*)> fn)
+    (const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn)
     {
         SceneObjectRuntime* retval = fn(this);
 

@@ -2,12 +2,14 @@ cmake_minimum_required (VERSION 2.8.0)
 
 project (Dream C CXX)
 
+set( ENV{MAKEFLAGS} -j8 )
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("****************************************")
     message("             DEBUB Build!")
     message("****************************************")
     set(DREAM_LOG ON)
-    set(CMAKE_VERBOSE_MAKEFILE OFF)
+    set(CMAKE_VERBOSE_MAKEFILE ON)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     message("****************************************")
     message("             Release Build!")

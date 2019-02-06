@@ -24,7 +24,7 @@ namespace Dream
 
         inline  ~LifetimeUpdateTask() {}
 
-        inline void execute() override
+        inline void execute()
         {
             if (mSceneObjectRuntime->tryLock())
             {

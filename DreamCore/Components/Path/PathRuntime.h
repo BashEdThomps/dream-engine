@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "PathDefinition.h"
+#include "PathTasks.h"
 #include "../DiscreteAssetRuntime.h"
 
 using namespace tinyspline;
@@ -68,5 +69,6 @@ namespace Dream
         mat4 mCurrentTransform;
         float mVelocity;
         float mDistanceToTravel;
+        PathUpdateTask mUpdateTask;
     };
 }

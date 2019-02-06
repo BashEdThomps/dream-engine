@@ -32,5 +32,4 @@ namespace Dream
         }
         return retval;
     }
-
-} // End of Dream
+}

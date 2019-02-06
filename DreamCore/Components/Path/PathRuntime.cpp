@@ -37,10 +37,11 @@ namespace Dream
         : DiscreteAssetRuntime(definition,runtime),
           mWrapPath(false),
           mCurrentIndex(0),
-          mVelocity(1.0),
+          mUStep(0.05),
           mCurrentTransform(mat4(1.0f)),
+          mVelocity(1.0),
           mDistanceToTravel(0.0f),
-          mUStep(0.05)
+          mUpdateTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("PathRuntime");

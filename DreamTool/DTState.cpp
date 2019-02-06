@@ -284,14 +284,14 @@ namespace DreamTool
                 JoystickState& js = inputComp->getJoystickState();
 
                 // Mouse
-                memcpy(ms.ButtonsDown, io.MouseDown, sizeof(bool)*5);
+                memcpy(ms.ButtonsDown, &io.MouseDown[0], sizeof(bool)*5);
                 ms.PosX = io.MousePos.x;
                 ms.PosY = io.MousePos.y;
                 ms.ScrollX = io.MouseWheelH;
                 ms.ScrollY = io.MouseWheel;
 
                 // Keys
-                memcpy(ks.KeysDown, io.KeysDown, sizeof(bool)*512);
+                memcpy(ks.KeysDown, &io.KeysDown[0], sizeof(bool)*512);
 
                 // Joystick
                 for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
@@ -338,7 +338,7 @@ namespace DreamTool
 
     bool
     DTState::openProject
-    (string dir)
+    (const string& dir)
     {
         closeProject();
 
@@ -363,7 +363,7 @@ namespace DreamTool
 
     bool
     DTState::newProject
-    (string dir)
+    (const string& dir)
     {
         #ifdef DREAM_LOG
         auto log = getLog();

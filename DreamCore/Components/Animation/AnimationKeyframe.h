@@ -28,8 +28,8 @@ namespace Dream
         vec3 getScale() const;
         void setScale(const vec3& scale);
 
-        void fromJson(json js);
-        json toJson();
+        void fromJson(const json& js);
+        json toJson() const ;
 
         int getID() const;
         void setID(int iD);
@@ -40,7 +40,7 @@ namespace Dream
         bool operator>= (const AnimationKeyframe &other) const;
         bool operator== (const AnimationKeyframe &other) const;
 
-        AnimationEasing::Type getEasingType();
+        AnimationEasing::Type getEasingType() const;
         void setEasingType(AnimationEasing::Type type);
 
     private:

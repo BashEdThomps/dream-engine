@@ -34,7 +34,7 @@ namespace Dream
     class PathDefinition : public AssetDefinition
     {
     public:
-        PathDefinition(ProjectDefinition*, json);
+        PathDefinition(ProjectDefinition*, const json&);
         ~PathDefinition() override;
 
         void setWrap(bool wrap);

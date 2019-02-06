@@ -19,7 +19,7 @@ namespace Dream
     class ParticleEmitterDefinition : public AssetDefinition
     {
     public:
-        ParticleEmitterDefinition(ProjectDefinition* pd, json js);
+        ParticleEmitterDefinition(ProjectDefinition* pd, const json& js);
         ~ParticleEmitterDefinition();
 
         uint32_t getTexture();

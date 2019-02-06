@@ -21,7 +21,7 @@
 namespace Dream
 {
     TextureDefinition::TextureDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json& js)
         : AssetDefinition(pd,js)
     {
     }

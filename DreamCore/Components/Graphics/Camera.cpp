@@ -25,13 +25,15 @@ namespace Dream
     Camera::Camera
     (SceneRuntime* parent)
         : DreamObject("Camera"),
-          mSceneRuntime(parent),
           mTranslation(vec3(0.0f, 0.0f, 0.0f)),
           mFront(vec3(0.0f, 0.0f, -1.0f)),
+          mUp(vec3(0.0f)),
+          mRight(vec3(0.0f)),
           mWorldUp(vec3(0.0f, 1.0f, 0.0f)),
           mYaw(0.0f),
           mPitch(0.0f),
           mMovementSpeed(Constants::CAMERA_SPEED),
+          mProjectionMatrix(mat4(1.0f)),
           mFrustum(Frustum(this)),
           mFocusedSceneObject(nullptr),
           mFocusPitch(0.0f),
@@ -39,21 +41,20 @@ namespace Dream
           mFocusRadius(10.0f),
           mFocusElevation(0.0f),
           mFocusTranslation(vec3(0.0f)),
-          mProjectionMatrix(mat4(1.0f)),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
-          mMeshCullDistance(2500.0f)
+          mMeshCullDistance(2500.0f),
+          mSceneRuntime(parent)
     {
     }
 
     Camera::~Camera
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->debug("Destroying Object");
-#endif
-        return;
+        #endif
     }
 
     float Camera::getYaw() const

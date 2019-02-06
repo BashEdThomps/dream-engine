@@ -18,7 +18,7 @@ namespace Dream
            #endif
         }
 
-        inline void execute() override
+        inline void execute()
         {
             mShaderRuntime->lock();
             #ifdef DREAM_LOG
@@ -62,7 +62,7 @@ namespace Dream
            #endif
         }
 
-        inline void execute() override
+        inline void execute()
         {
             mShaderRuntime->lock();
             #ifdef DREAM_LOG
@@ -106,7 +106,7 @@ namespace Dream
            #endif
         }
 
-        inline void execute() override
+        inline void execute()
         {
             #ifdef DREAM_LOG
             getLog()->critical("Executing on thread {}",mThreadId);
@@ -184,7 +184,7 @@ namespace Dream
             #endif
         }
 
-        inline void execute() override
+        inline void execute()
         {
             #ifdef DREAM_LOG
             getLog()->critical("Executing on thread {}",mThreadId);

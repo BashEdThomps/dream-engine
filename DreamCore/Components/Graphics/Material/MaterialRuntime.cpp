@@ -25,10 +25,18 @@ namespace Dream
 {
     MaterialRuntime::MaterialRuntime(MaterialDefinition* def, ProjectRuntime* rt)
         : SharedAssetRuntime(def, rt),
+
+          mColorDiffuse(vec3(0.0f)),
+          mColorAmbient(vec3(0.0f)),
+          mColorSpecular(vec3(0.0f)),
+          mColorEmissive(vec3(0.0f)),
+          mColorReflective(vec3(0.0f)),
+
           mDiffuseTexture(nullptr),
           mSpecularTexture(nullptr),
           mNormalTexture(nullptr),
           mDisplacementTexture(nullptr),
+
           mShader(nullptr)
     {
 #ifdef DREAM_LOG
@@ -71,7 +79,7 @@ namespace Dream
     MaterialRuntime::operator==
     (MaterialRuntime& other)
     {
-        return getName().compare(other.getName()) == 0;
+        return getName() == other.getName();
     }
 
 #ifdef DREAM_LOG

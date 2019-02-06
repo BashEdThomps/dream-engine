@@ -14,7 +14,7 @@
 namespace Dream
 {
     ScrollerDefinition::ScrollerDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
 
@@ -156,7 +156,7 @@ namespace Dream
         checkItemsArray();
         vector<ScrollerItem> retval;
 
-        for (json item : mJson[Constants::SCROLLER_ITEMS_ARRAY])
+        for (const json& item : mJson[Constants::SCROLLER_ITEMS_ARRAY])
         {
             retval.push_back(unwrapScrollerItem(item));
         }

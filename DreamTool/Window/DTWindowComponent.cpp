@@ -43,6 +43,7 @@ namespace DreamTool
     DTWindowComponent::DTWindowComponent
     () : WindowComponent(),
          mWindow(nullptr),
+         mUiFontSize(16.0f),
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {

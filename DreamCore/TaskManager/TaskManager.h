@@ -23,7 +23,7 @@ namespace Dream
 
     class TaskManager : public DreamObject
     {
-        vector<TaskThread*> mThreadVector;
+        vector<TaskThread> mThreadVector;
         size_t mNextThread;
     public:
 
@@ -48,12 +48,12 @@ namespace Dream
             getLog()->critical("Starting all worker threads...");
             #endif
 
-            for (unsigned int i=0; i < thread::hardware_concurrency(); i++)
+            for (int i=0; i < static_cast<int>(thread::hardware_concurrency()); i++)
             {
                 #ifdef DREAM_LOG
                 getLog()->critical("Spawning thread {}",i);
                 #endif
-                mThreadVector.push_back(new TaskThread(i));
+                mThreadVector.push_back(TaskThread(i));
             }
         }
 
@@ -62,30 +62,27 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->critical("Joining all threads...");
             #endif
-            for (auto* t : mThreadVector)
+            for (TaskThread &t : mThreadVector)
             {
-                t->setRunning(false);
+                t.setRunning(false);
             }
-            for (auto* t : mThreadVector)
+            for (TaskThread &t : mThreadVector)
             {
-                t->join();
-                delete t;
+                t.join();
             }
             mThreadVector.clear();
         }
 
-        inline void pushTask(Task* t)
+        inline void pushTask(Task& t)
         {
-            if (t==nullptr) return;
-
             while (true)
             {
-                bool result = mThreadVector.at(mNextThread)->pushTask(t);
+                bool result = mThreadVector.at(mNextThread).pushTask(t);
                 mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
                     #ifdef DREAM_LOG
-                    getLog()->critical("{} pushed to worker {}",t->getClassName(),mNextThread);
+                    getLog()->critical("{} pushed to worker {}",t.getClassName(),mNextThread);
                     #endif
                     break;
                 }
@@ -97,9 +94,9 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->critical("Clearing all fences");
             #endif
-            for (auto* t : mThreadVector)
+            for (TaskThread &t : mThreadVector)
             {
-               t->clearFence();
+               t.clearFence();
             }
         }
 
@@ -111,9 +108,9 @@ namespace Dream
            while (true)
            {
                bool result = true;
-               for (auto* t : mThreadVector)
+               for (TaskThread& t : mThreadVector)
                {
-                   result = result && t->getFence();
+                   result = result && t.getFence();
                }
                if (result)
                {

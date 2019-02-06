@@ -25,6 +25,6 @@ namespace Dream
     class ShaderDefinition : public AssetDefinition
     {
     public:
-        ShaderDefinition(ProjectDefinition* pd, json js);
+        ShaderDefinition(ProjectDefinition* pd, const json& js);
     };
 }

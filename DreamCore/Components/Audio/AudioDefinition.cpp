@@ -21,26 +21,34 @@
 namespace Dream
 {
     AudioDefinition::AudioDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-
+        #ifdef DREAM_LOG
+        setLogClassName("AudioDefinition");
+        getLog()->trace("Constructing");
+        #endif
     }
 
-    AudioDefinition::~AudioDefinition(){}
+    AudioDefinition::~AudioDefinition()
+    {
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
+    }
 
     bool
     AudioDefinition::isFormatWav
     ()
     {
-        return getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0;
+        return getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV;
     }
 
     bool
     AudioDefinition::isFormatOgg
     ()
     {
-        return getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0;
+        return getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG;
     }
 
     void
@@ -81,33 +89,33 @@ namespace Dream
 
     string
     AudioDefinition::getMarkerName
-    (int index)
+    (unsigned int index)
     {
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME];
     }
 
     void
     AudioDefinition::setMarkerName
-    (int index, string name)
+    (unsigned int index, string name)
     {
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME] = name;
     }
 
     int
     AudioDefinition::getMarkerSampleIndex
-    (int index)
+    (unsigned int index)
     {
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX];
     }
 
     void
     AudioDefinition::setMarkerSampleIndex
-    (int index, int smpl)
+    (unsigned int index, int smpl)
     {
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = smpl;
     }
 
-    int AudioDefinition::getMarkerRepeat(int index)
+    int AudioDefinition::getMarkerRepeat(unsigned int index)
     {
 
         if (mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT].is_null())
@@ -115,13 +123,13 @@ namespace Dream
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT];
     }
 
-    void AudioDefinition::setMarkerRepeat(int index, int repeat)
+    void AudioDefinition::setMarkerRepeat(unsigned int index, int repeat)
     {
 
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = repeat;
     }
 
-    int AudioDefinition::getMarkerRepeatPeriod(int index)
+    int AudioDefinition::getMarkerRepeatPeriod(unsigned int index)
     {
 
         if (mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD].is_null())
@@ -129,7 +137,7 @@ namespace Dream
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD];
     }
 
-    void AudioDefinition::setMarkerRepeatPeriod(int index, int rp)
+    void AudioDefinition::setMarkerRepeatPeriod(unsigned int index, int rp)
     {
 
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = rp;

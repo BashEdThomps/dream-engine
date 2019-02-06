@@ -45,12 +45,12 @@ namespace Dream
     class TextureRuntime : public SharedAssetRuntime
     {
     private:
-        GLuint mGLID = 0;
-        string mPath = "";
-        int mWidth = 0;
-        int mHeight = 0;
-        int mChannels = 0;
-        unsigned char* mImage = nullptr;
+        GLuint mGLID;
+        string mPath;
+        int mWidth;
+        int mHeight;
+        int mChannels;
+        unsigned char* mImage;
         GraphicsComponentTask* mCreateTextureTask;
 
     public:

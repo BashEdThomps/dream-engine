@@ -10,8 +10,8 @@ namespace Dream
           mTime(0),
           mTranslation(vec3(0.0f)),
           mRotation(vec3(0.0f)),
-          mEasingType(AnimationEasing::Type::EasingBounceInOut),
-          mScale(vec3(1.0f))
+          mScale(vec3(1.0f)),
+          mEasingType(AnimationEasing::Type::EasingBounceInOut)
     {
 
     }
@@ -19,7 +19,9 @@ namespace Dream
     AnimationKeyframe::~AnimationKeyframe
     ()
     {
-
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
     }
 
     long
@@ -39,7 +41,7 @@ namespace Dream
 
     void
     AnimationKeyframe::fromJson
-    (json js)
+    (const json &js)
     {
         if (!js[Constants::KEYFRAME_ID].is_null())
         {
@@ -81,6 +83,7 @@ namespace Dream
     json
     AnimationKeyframe::toJson
     ()
+    const
     {
         json js = json::object();
         js[Constants::KEYFRAME_ID] = mID;
@@ -208,6 +211,7 @@ namespace Dream
     AnimationEasing::Type
     AnimationKeyframe::getEasingType
     ()
+    const
     {
         return mEasingType;
     }

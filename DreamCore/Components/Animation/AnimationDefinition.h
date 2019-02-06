@@ -20,14 +20,14 @@ namespace Dream
     class AnimationDefinition : public AssetDefinition
     {
     public:
-        AnimationDefinition(ProjectDefinition*, json);
+        AnimationDefinition(ProjectDefinition*, const json&);
         ~AnimationDefinition() override;
 
         vector<AnimationKeyframe> getKeyframes();
 
-        void addKeyframe(AnimationKeyframe kf);
-        void updateKeyframe(AnimationKeyframe kf);
-        void removeKeyframe(AnimationKeyframe kf);
+        void addKeyframe(const AnimationKeyframe& kf);
+        void updateKeyframe(const AnimationKeyframe& kf);
+        void removeKeyframe(const AnimationKeyframe &kf);
 
         bool getRelative();
         void setRelative(bool relative);

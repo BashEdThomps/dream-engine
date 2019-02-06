@@ -52,7 +52,6 @@ namespace Dream
         #ifdef DREAM_LOG
         show();
         #endif
-        return;
     }
 
     #ifdef DREAM_LOG

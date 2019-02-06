@@ -19,7 +19,7 @@ namespace Dream
             #endif
         }
 
-        inline void execute() override
+        inline void execute()
         {
             #ifdef DREAM_LOG
             getLog()->critical("Executing on thread {}",mThreadId);

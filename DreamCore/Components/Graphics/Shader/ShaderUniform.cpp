@@ -23,6 +23,7 @@ namespace Dream
           mType(type),
           mName(name),
           mCount(count),
+          mLocation(0),
           mNeedsUpdate(true)
     {
 #ifdef DREAM_LOG
@@ -136,7 +137,7 @@ namespace Dream
     ShaderUniform::operator==
     (const ShaderUniform& other) const
     {
-        return getName().compare(other.getName()) == 0;
+        return getName() == other.getName();
     }
 
     int ShaderUniform::getCount() const

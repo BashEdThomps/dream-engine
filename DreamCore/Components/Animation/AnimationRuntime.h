@@ -18,6 +18,7 @@
 #include "AnimationDefinition.h"
 #include "AnimationKeyframe.h"
 #include "../DiscreteAssetRuntime.h"
+#include "AnimationTasks.h"
 #ifdef max
 #undef max
 #endif
@@ -76,5 +77,4 @@ namespace Dream
         tween<float> mTweenScaleY;
         tween<float> mTweenScaleZ;
     };
-
 }

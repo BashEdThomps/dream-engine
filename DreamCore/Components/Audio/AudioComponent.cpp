@@ -35,7 +35,9 @@ namespace Dream
 {
     AudioComponent::AudioComponent
     (ProjectRuntime* rt)
-        : Component(rt)
+        : Component(rt),
+          mDevice(nullptr),
+          mContext(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("AudioComponent");

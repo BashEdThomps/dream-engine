@@ -320,7 +320,7 @@ namespace Dream
     {
         for (auto uniform : mUniformVector)
         {
-            if (uniform->getName().compare(name) == 0)
+            if (uniform->getName() == name)
             {
                 #ifdef DREAM_LOG
                 getLog()->info("Updating uniform {}", uniform->getName());
@@ -763,7 +763,6 @@ namespace Dream
             return;
         }
         glUniformMatrix4fv(location,runtimes.size(),GL_FALSE,(float*)&data[0]);
-        return;
     }
 
     void

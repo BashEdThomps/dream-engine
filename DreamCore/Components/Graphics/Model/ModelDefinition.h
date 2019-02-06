@@ -17,14 +17,14 @@ namespace Dream
     class ModelDefinition : public AssetDefinition
     {
     public:
-        ModelDefinition(ProjectDefinition* pd, json js);
+        ModelDefinition(ProjectDefinition* pd, const json& js);
         ~ModelDefinition() override;
         bool isFormatAssimp();
 
-        bool addModelMaterial(string material, uint32_t shader);
+        bool addModelMaterial(const string& material, uint32_t shader);
         json* getModelMaterials();
-        void removeModelMaterial(string material);
+        void removeModelMaterial(const string& material);
         void clearModelMaterialList();
-        uint32_t getDreamMaterialForModelMaterial(string mat);
+        uint32_t getDreamMaterialForModelMaterial(const string& mat);
     };
 }

@@ -22,13 +22,12 @@ using nlohmann::json;
 namespace Dream
 {
     ModelDefinition::ModelDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing {}", getNameAndUuidString());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Constructing {}", getNameAndUuidString());
+        #endif
     }
 
     ModelDefinition::~ModelDefinition()
@@ -40,12 +39,12 @@ namespace Dream
     ModelDefinition::isFormatAssimp
     ()
     {
-        return getFormat().compare(Constants::ASSET_FORMAT_MODEL_ASSIMP) == 0;
+        return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
     }
 
     bool // Indicates whether a new insertion was made
     ModelDefinition::addModelMaterial
-    (string material, uint32_t shader)
+    (const string &material, uint32_t shader)
     {
         if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
@@ -81,12 +80,8 @@ namespace Dream
 
     void
     ModelDefinition::removeModelMaterial
-    (string material)
+    (const string &material)
     {
-
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {
@@ -94,18 +89,18 @@ namespace Dream
             if (materialName.is_string())
             {
                 string materialNameStr = materialName;
-                if (material.compare(materialNameStr) == 0)
+                if (material == materialNameStr)
                 {
-#ifdef DREAM_LOG
-                    log->debug("Removing material form {} shader map {}",getName(),material);
-#endif
+                    #ifdef DREAM_LOG
+                    getLog()->debug("Removing material form {} shader map {}",getName(),material);
+                    #endif
                     shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }
         }
-#ifdef DREAM_LOG
-        log->error("Could not remove {} from {} shader map, object not found",getName(), material);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->error("Could not remove {} from {} shader map, object not found",getName(), material);
+        #endif
     }
 
     void
@@ -117,7 +112,7 @@ namespace Dream
 
     uint32_t
     ModelDefinition::getDreamMaterialForModelMaterial
-    (string mat)
+    (const string &mat)
     {
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
@@ -126,7 +121,7 @@ namespace Dream
             if (materialName.is_string())
             {
                 string materialNameStr = materialName;
-                if (mat.compare(materialNameStr) == 0)
+                if (mat == materialNameStr)
                 {
                     if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
                     {

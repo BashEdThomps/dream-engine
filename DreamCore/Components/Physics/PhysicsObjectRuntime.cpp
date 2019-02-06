@@ -44,15 +44,14 @@ namespace Dream
          mRigidBodyConstructionInfo(nullptr),
          mInPhysicsWorld(false),
          mPhysicsComponent(comp),
-         mAddObjectTask(nullptr),
-         mModelCache(modelCache)
+         mModelCache(modelCache),
+         mAddObjectTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("PhysicsObjectRuntime");
         auto log = getLog();
         log->trace( "Constructing" );
         #endif
-        return;
     }
 
     PhysicsObjectRuntime::~PhysicsObjectRuntime
@@ -169,8 +168,11 @@ namespace Dream
     PhysicsObjectRuntime::setKinematic
     (bool setKenematic)
     {
-        mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
-        mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+        if (setKenematic)
+        {
+            mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
+            mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+        }
     }
 
     void PhysicsObjectRuntime::setAddObjectTask(PhysicsAddObjectTask* t)
@@ -185,12 +187,12 @@ namespace Dream
         string format = pod->getFormat();
         btCollisionShape *collisionShape = nullptr;
 
-        if (format.compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
+        if (format == Constants::COLLISION_SHAPE_SPHERE)
         {
             btScalar radius = pod->getRadius();
             collisionShape = new btSphereShape(radius);
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_BOX) == 0)
+        else if (format == Constants::COLLISION_SHAPE_BOX)
         {
             btScalar boxX, boxY, boxZ;
             boxX = pod->getHalfExtentsX();
@@ -198,7 +200,7 @@ namespace Dream
             boxZ = pod->getHalfExtentsZ();
             collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_CYLINDER) == 0)
+        else if (format == Constants::COLLISION_SHAPE_CYLINDER)
         {
             btScalar boxX, boxY, boxZ;
             boxX = pod->getHalfExtentsX();
@@ -206,29 +208,29 @@ namespace Dream
             boxZ = pod->getHalfExtentsZ();
             collisionShape = new btCylinderShape(btVector3(boxX,boxY,boxZ));
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_CAPSULE) == 0)
+        else if (format == Constants::COLLISION_SHAPE_CAPSULE)
         {
             float radius = pod->getRadius();
             float height = pod->getHeight();
             collisionShape = new btCapsuleShape(radius,height);
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_CONE) == 0)
+        else if (format == Constants::COLLISION_SHAPE_CONE)
         {
             //collisionShape = new btConeShape();
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_MULTI_SPHERE) == 0)
+        else if (format == Constants::COLLISION_SHAPE_MULTI_SPHERE)
         {
             //collisionShape = new btMultiSphereShape();
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_CONVEX_HULL) == 0)
+        else if (format == Constants::COLLISION_SHAPE_CONVEX_HULL)
         {
             //collisionShape = new btConvexHullShape();
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0)
+        else if (format == Constants::COLLISION_SHAPE_CONVEX_TRIANGLE_MESH)
         {
             //collisionShape = new btConvexTriangleMeshShape();
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        else if (format == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
         {
             // Load Collision Data
             auto sceneRt = mSceneObjectRuntime->getSceneRuntime();
@@ -250,11 +252,11 @@ namespace Dream
                 }
             }
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
+        else if (format == Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN)
         {
             // ???
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
+        else if (format == Constants::COLLISION_SHAPE_STATIC_PLANE)
         {
             float x = pod->getNormalX();
             float y = pod->getNormalY();
@@ -262,16 +264,16 @@ namespace Dream
             float constant = pod->getConstant();
 
             btVector3 planeNormal(x,y,z);
-            btScalar planeConstant = btScalar(constant);
+            auto planeConstant = btScalar(constant);
 
             collisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
         }
-        else if (format.compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
+        else if (format == Constants::COLLISION_SHAPE_COMPOUND)
         {
             collisionShape = new btCompoundShape();
             btCompoundShape* compound = static_cast<btCompoundShape*>(collisionShape);
 
-            for (CompoundChildDefinition child : pod->getCompoundChildren())
+            for (const CompoundChildDefinition& child : pod->getCompoundChildren())
             {
                 auto def = getAssetDefinitionByUuid(child.uuid);
                 btCollisionShape *shape = createCollisionShape(def);
@@ -295,8 +297,8 @@ namespace Dream
     PhysicsObjectRuntime::createTriangleMeshShape
     (ModelRuntime* model)
     {
-        btTriangleMesh *triMesh = new btTriangleMesh();
-        auto meshes = model->getMeshes();
+        auto* triMesh = new btTriangleMesh();
+        auto  meshes = model->getMeshes();
 
         if (meshes.empty())
         {

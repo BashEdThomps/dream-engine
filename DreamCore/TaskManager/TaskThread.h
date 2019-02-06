@@ -17,32 +17,22 @@ namespace Dream
     class TaskThread : public DreamObject
     {
     protected:
-        thread *mThread;
-        vector<Task*> mTaskQueue;
-        vector<Task*> mCompletedTasks;
+        thread mThread;
+        vector<Task> mTaskQueue;
+        vector<Task> mCompletedTasks;
         mutex mTaskQueueMutex;
         atomic<bool> mRunning;
         atomic<bool> mFence;
-        unsigned int mThreadId;
+        int mThreadId;
     public:
 
-        TaskThread (unsigned int id)
+        inline TaskThread (int id)
             : DreamObject ("TaskThread"),
-              mThread(nullptr),
+              mThread(thread(&TaskThread::executeTaskQueue,this)),
               mRunning(false),
               mFence(false),
               mThreadId(id)
         {
-            mThread = new thread(&TaskThread::executeTaskQueue,this);
-        }
-
-        ~TaskThread()
-        {
-            if (mThread)
-            {
-                delete mThread;
-                mThread = nullptr;
-            }
         }
 
         inline void join()
@@ -50,7 +40,7 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->critical("Joining Thread {}",mThreadId);
             #endif
-            mThread->join();
+            mThread.join();
         }
 
         inline void
@@ -72,46 +62,45 @@ namespace Dream
                     #ifdef DREAM_LOG
                     getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
                     #endif
-                    for (Task* t : mTaskQueue)
+                    for (Task& t : mTaskQueue)
                     {
                         // Check if not expired
-                        if (t->hasExpired())
+                        if (t.hasExpired())
                         {
-                           t->setCompleted();
+                           t.setCompleted();
                         }
                         else
                         {
-                            if (!t->isWaitingForDependencies())
+                            if (!t.isWaitingForDependencies())
                             {
-                                t->execute();
+                                t.execute();
                             }
                             else
                             {
-                                t->incrementDeferralCount();
+                                t.incrementDeferralCount();
                             }
                         }
 
-                        if (t->isCompleted())
+                        if (t.isCompleted())
                         {
-                            t->notifyDependents();
+                            t.notifyDependents();
                             mCompletedTasks.push_back(t);
                         }
                         else
                         {
                             #ifdef DREAM_LOG
-                            getLog()->critical("Worker {} has deferred {} for {} time",getThreadId(),t->getClassName(),t->getDeferralCount());
+                            getLog()->critical("Worker {} has deferred {} for {} time",getThreadId(),t.getClassName(),t.getDeferralCount());
                             #endif
                         }
                     }
 
                     // Remove completed tasks from queue
-                    for(auto* t : mCompletedTasks)
+                    for(const Task& t : mCompletedTasks)
                     {
                        auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
                        if (itr!=mTaskQueue.end())
                        {
                            mTaskQueue.erase(itr);
-                           delete t;
                        }
                     }
                     mCompletedTasks.clear();
@@ -140,12 +129,12 @@ namespace Dream
             return mFence;
         }
 
-        inline bool pushTask(Task* t)
+        inline bool pushTask(Task& t)
         {
             if(mTaskQueueMutex.try_lock())
             {
                 mTaskQueue.push_back(t);
-                t->setThreadId(mThreadId);
+                t.setThreadId(mThreadId);
                 mTaskQueueMutex.unlock();
                 return true;
             }
@@ -157,7 +146,7 @@ namespace Dream
             mRunning = running;
         }
 
-        inline unsigned int getThreadId()
+        inline int getThreadId()
         {
             return mThreadId;
         }

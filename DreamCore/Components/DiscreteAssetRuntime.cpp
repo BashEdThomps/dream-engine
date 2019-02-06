@@ -29,8 +29,7 @@ namespace Dream
     DiscreteAssetRuntime::DiscreteAssetRuntime
     (AssetDefinition* def, SceneObjectRuntime* runtime)
         : AssetRuntime (def),
-          mSceneObjectRuntime(runtime),
-          mUpdateTask(nullptr)
+          mSceneObjectRuntime(runtime)
     {
         #ifdef DREAM_LOG
         setLogClassName("DiscreteAssetRuntime");
@@ -39,10 +38,6 @@ namespace Dream
 
     DiscreteAssetRuntime::~DiscreteAssetRuntime()
     {
-        if (mUpdateTask)
-        {
-            mUpdateTask->setExpired(true);
-        }
     }
 
     string
@@ -74,19 +69,5 @@ namespace Dream
     ()
     {
         return mSceneObjectRuntime;
-    }
-
-    void
-    DiscreteAssetRuntime::setUpdateTask
-    (Task* t)
-    {
-        mUpdateTask = t;
-    }
-
-    bool
-    DiscreteAssetRuntime::hasUpdateTask
-    ()
-    {
-       return mUpdateTask != nullptr;
     }
 }

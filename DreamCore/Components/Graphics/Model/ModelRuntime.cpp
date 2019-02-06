@@ -49,6 +49,7 @@ namespace Dream
         : SharedAssetRuntime(definition,runtime),
           mMaterialCache(texCache),
           mShaderCache(shaderCache),
+          mModelMatrix(mat4(1.0f)),
           mGlobalInverseTransform(mat4(1.0f))
     {
         #ifdef DREAM_LOG
@@ -68,7 +69,6 @@ namespace Dream
             delete mesh;
         }
         mMeshes.clear();
-        return;
     }
 
     bool

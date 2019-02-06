@@ -58,7 +58,6 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying");
         #endif
-        return;
     }
 
     bool

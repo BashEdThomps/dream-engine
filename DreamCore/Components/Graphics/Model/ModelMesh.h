@@ -78,8 +78,8 @@ namespace Dream
             ShadowTrianglesDrawn = 0;
         }
 
-        ModelMesh(ModelRuntime* parent, string name, vector<Vertex> vertexArray,
-            vector<GLuint> indexArray, MaterialRuntime* material, const BoundingBox bb);
+        ModelMesh(ModelRuntime* parent, const string &name, const vector<Vertex> &vertexArray,
+            const vector<GLuint> &indexArray, MaterialRuntime* material, const BoundingBox &bb);
 
         ~ModelMesh();
 

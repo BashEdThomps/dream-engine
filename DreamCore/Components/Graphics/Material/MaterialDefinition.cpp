@@ -22,14 +22,20 @@
 namespace Dream
 {
     MaterialDefinition::MaterialDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json &js)
         :AssetDefinition(pd,js)
     {
+        #ifdef DREAM_LOG
+        setLogClassName("MaterialDefinition");
+        getLog()->trace("Constructing");
+        #endif
     }
 
     MaterialDefinition::~MaterialDefinition()
     {
-
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
     }
 
     // Shader

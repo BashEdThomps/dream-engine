@@ -32,14 +32,14 @@ namespace Dream
         vector<SceneDefinition*> mSceneDefinitions;
         vector<AssetDefinition*> mAssetDefinitions;
     public:
-        ProjectDefinition(json data);
+        ProjectDefinition(const json& data);
         ~ProjectDefinition() override;
 
         string getAuthor();
-        void setAuthor(string author);
+        void setAuthor(const string& author);
 
         string getDescription();
-        void setDescription(string description);
+        void setDescription(const string& description);
 
         uint32_t getStartupSceneUuid();
         void setStartupSceneUuid(uint32_t sceneUuid);
@@ -55,12 +55,12 @@ namespace Dream
 
         size_t countAssetDefinitions();
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
-        AssetDefinition* getAssetDefinitionByName(string name);
+        AssetDefinition* getAssetDefinitionByName(const string& name);
         void addAssetDefinition(AssetDefinition* def);
 
         size_t countScenesDefinitions();
         SceneDefinition* getSceneDefinitionByUuid(uint32_t uuid);
-        SceneDefinition* getSceneDefinitionByName(string name);
+        SceneDefinition* getSceneDefinitionByName(const string& name);
         vector<SceneDefinition*> getSceneDefinitionsVector();
         void removeSceneDefinition(SceneDefinition* sceneDef);
 
@@ -96,14 +96,14 @@ namespace Dream
 
         map<AssetType, vector<string> >& getAssetDefinitionGroups();
 
-        static ProjectDefinition* createNewProjectDefinition(string name = Constants::PROJECT_DEFAULT_NAME);
+        static ProjectDefinition* createNewProjectDefinition(const string& name = Constants::PROJECT_DEFAULT_NAME);
 
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
-        void loadAssetDefinition(json assetDefinition);
-        void loadSceneDefinition(json sceneDefinition);
-        AssetDefinition* createAssetDefinitionRuntime(json assetDefinitionJs);
+        void loadAssetDefinition(const json& assetDefinition);
+        void loadSceneDefinition(const json& sceneDefinition);
+        AssetDefinition* createAssetDefinitionRuntime(const json& assetDefinitionJs);
         map<AssetType,vector<string> > mAssetDefinitionGroups;
     };
 }

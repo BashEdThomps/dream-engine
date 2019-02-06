@@ -27,7 +27,6 @@ namespace Dream
     {
     public:
         static uint32_t generateUuid();
-    }; // End of Uuid
-
-}  // End of Dream
+    };
+}
 

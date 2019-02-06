@@ -150,7 +150,7 @@ namespace Dream
 
         bool replaceAssetUuid(AssetType type, uint32_t uuid);
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
-        void setAssetDefinitionsMap(map<AssetType,uint32_t> loadQueue);
+        void setAssetDefinitionsMap(const map<AssetType, uint32_t> &loadQueue);
         map<AssetType, uint32_t> getAssetDefinitionsMap();
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
@@ -166,8 +166,8 @@ namespace Dream
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
         Transform& getInitialTransform();
-        bool applyToAll(const function<bool(SceneObjectRuntime*)> fn);
-        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)> fn);
+        bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
+        SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
         void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
 

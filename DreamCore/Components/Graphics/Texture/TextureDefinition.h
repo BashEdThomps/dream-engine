@@ -24,7 +24,7 @@ namespace Dream
     class TextureDefinition : public AssetDefinition
     {
     public:
-        TextureDefinition(ProjectDefinition* pd, json js);
+        TextureDefinition(ProjectDefinition* pd, const json& js);
         ~TextureDefinition() override;
     };
 }

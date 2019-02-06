@@ -29,12 +29,19 @@ namespace Dream
 
 
     ModelMesh::ModelMesh
-    (ModelRuntime* parent, string name, vector<Vertex> vertices,
-     vector<GLuint> indices, MaterialRuntime* material, const BoundingBox bb)
+    (ModelRuntime* parent, const string& name, const vector<Vertex>& vertices,
+     const vector<GLuint>& indices, MaterialRuntime* material, const BoundingBox& bb)
         : DreamObject("ModelMesh"),
-        mParent(parent),mMaterial(material),mName(name),
-        mVertices(vertices),mIndices(indices),mBoundingBox(bb),
-        mInitMeshTask(nullptr)
+          mParent(parent),
+          mMaterial(material),
+          mName(name),
+          mVAO(0),
+          mVBO(0),
+          mIBO(0),
+          mVertices(vertices),
+          mIndices(indices),
+          mBoundingBox(bb),
+          mInitMeshTask(nullptr)
     {
         #ifdef DREAM_LOG
         getLog()->trace("Constructing Mesh for {}", parent->getName());
@@ -150,10 +157,9 @@ namespace Dream
     (Camera* camera, ShaderRuntime* shader)
     {
         mRuntimesInFrustum.clear();
-        for (size_t i=0; i<mRuntimes.size();i++)
+        for (auto* sor : mRuntimes)
         {
             // TODO -- Per mesh Culling
-            auto sor = mRuntimes.at(i);
             if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
             {
                 mRuntimesInFrustum.push_back(sor);

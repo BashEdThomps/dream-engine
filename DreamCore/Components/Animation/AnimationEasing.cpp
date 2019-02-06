@@ -14,7 +14,7 @@ namespace Dream
 
     AnimationEasing::Type
     AnimationEasing::getEasingType
-    (std::string str)
+    (const string& str)
     {
        auto namePos = std::find(EasingNames.begin(), EasingNames.end(),str);
        if (namePos != EasingNames.end())

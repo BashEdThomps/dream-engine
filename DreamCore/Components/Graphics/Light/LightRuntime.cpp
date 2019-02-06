@@ -150,15 +150,15 @@ namespace Dream
     void LightRuntime::loadType()
     {
         auto assetDef = static_cast<AssetDefinition*>(mDefinition);
-        if (assetDef->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
+        if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
         {
             mType = LightType::LT_DIRECTIONAL;
         }
-        else if (assetDef->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_POINT) == 0)
+        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
         {
             mType = LightType::LT_POINT;
         }
-        else if (assetDef->getFormat().compare(Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
+        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
         {
             mType = LightType::LT_SPOTLIGHT;
         }

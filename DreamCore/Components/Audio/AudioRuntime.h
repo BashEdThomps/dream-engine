@@ -18,6 +18,7 @@
 #include <vector>
 #include <deque>
 #include "AudioStatus.h"
+#include "AudioTasks.h"
 #include "../SharedAssetRuntime.h"
 #include "../Event.h"
 
@@ -37,7 +38,6 @@ namespace Dream
 {
     class AudioDefinition;
     class AudioComponent;
-    class AudioMarkersUpdateTask;
     /**
      * @brief AudioRuntime data for an OpenAL based Audio Clip.
      */
@@ -61,7 +61,7 @@ namespace Dream
         ALuint generateSource();
         ALuint generateBuffer();
         bool loadIntoAL();
-        AudioMarkersUpdateTask* mMarkersUpdateTask;
+        AudioMarkersUpdateTask mMarkersUpdateTask;
 
     public:
 

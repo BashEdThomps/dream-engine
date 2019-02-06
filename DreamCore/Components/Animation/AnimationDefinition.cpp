@@ -16,7 +16,7 @@
 namespace Dream
 {
     AnimationDefinition::AnimationDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json& js)
         : AssetDefinition(pd,js)
     {
         if (mJson[Constants::ASSET_ATTR_KEYFRAMES].is_null())
@@ -28,7 +28,9 @@ namespace Dream
     AnimationDefinition::~AnimationDefinition
     ()
     {
-
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
     }
 
     vector<AnimationKeyframe>
@@ -47,14 +49,14 @@ namespace Dream
 
     void
     AnimationDefinition::addKeyframe
-    (AnimationKeyframe kf)
+    (const AnimationKeyframe& kf)
     {
         mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
     }
 
     void
     AnimationDefinition::updateKeyframe
-    (AnimationKeyframe kf)
+    (const AnimationKeyframe& kf)
     {
         auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
         auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
@@ -84,7 +86,7 @@ namespace Dream
 
     void
     AnimationDefinition::removeKeyframe
-    (AnimationKeyframe kf)
+    (const AnimationKeyframe& kf)
     {
         auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
         auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();

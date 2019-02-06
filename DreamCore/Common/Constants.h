@@ -56,7 +56,7 @@ namespace Dream
     {
     public:
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
         // Debug ================================================================
         /**
          * @brief Used to check for OpenGL Runtime Errors. This will display the
@@ -65,10 +65,10 @@ namespace Dream
          *
          * @return True if an error was detected.
          */
-        static bool checkGLError_(string,int);
+        static bool checkGLError_(const string &, int);
 
-    #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
-#endif
+        #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
+    #endif
 
         // Misc =================================================================
         const static string DIR_PATH_SEP;
@@ -424,16 +424,16 @@ namespace Dream
         static vector<string> DREAM_PATH_SPLINE_TYPES;
 
         static string getAssetTypeStringFromTypeEnum(AssetType type);
-        static AssetType getAssetTypeEnumFromString(string type);
+        static AssetType getAssetTypeEnumFromString(const string &type);
 
-        static string getAssetTypeReadableNameFromString(string);
+        static string getAssetTypeReadableNameFromString(const string&);
 
-        static string getAssetFormatStringFromReadableName(string format);
-        static string getAssetFormatReadableNameFromString(string);
+        static string getAssetFormatStringFromReadableName(const string& format);
+        static string getAssetFormatReadableNameFromString(const string&);
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
         static shared_ptr<spdlog::logger> logger;
-#endif
+    #endif
     };
 }
 

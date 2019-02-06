@@ -63,7 +63,7 @@ namespace  Dream
     class AudioDefinition : public AssetDefinition
     {
     public:
-        AudioDefinition(ProjectDefinition* pd, json js);
+        AudioDefinition(ProjectDefinition* pd, const json& js);
         ~AudioDefinition() override;
 
         bool isFormatWav();
@@ -79,17 +79,17 @@ namespace  Dream
         void removeMarker(const int index);
         int countMarkers();
 
-        string getMarkerName(int index);
-        void setMarkerName(int index, string name);
+        string getMarkerName(unsigned int index);
+        void setMarkerName(unsigned int index, string name);
 
-        int getMarkerSampleIndex(int index);
-        void setMarkerSampleIndex(int index, int smpl);
+        int getMarkerSampleIndex(unsigned int index);
+        void setMarkerSampleIndex(unsigned int index, int smpl);
 
-        int getMarkerRepeat(int index);
-        void setMarkerRepeat(int index, int repeat);
+        int getMarkerRepeat(unsigned int index);
+        void setMarkerRepeat(unsigned int index, int repeat);
 
-        int getMarkerRepeatPeriod(int index);
-        void setMarkerRepeatPeriod(int index, int rp);
+        int getMarkerRepeatPeriod(unsigned int index);
+        void setMarkerRepeatPeriod(unsigned int index, int rp);
 
     };
 

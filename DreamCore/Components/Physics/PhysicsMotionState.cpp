@@ -61,7 +61,7 @@ namespace Dream
     {
         auto mtx = mDreamTransform.getMatrix();
         float mtxPtr[16];
-        memcpy(mtxPtr,glm::value_ptr(mtx),sizeof(float)*16);
+        memcpy(&mtxPtr[0],glm::value_ptr(mtx),sizeof(float)*16);
         worldTrans.setFromOpenGLMatrix(mtxPtr);
     }
 

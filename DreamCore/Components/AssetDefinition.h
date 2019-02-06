@@ -36,7 +36,7 @@ namespace Dream
          * @param project ProjectDefinition that owns this AssetDefinition
          * @param data JSON object from which to construct the AssetDefinition
          */
-        AssetDefinition(ProjectDefinition* project, json data);
+        AssetDefinition(ProjectDefinition* project, const json& data);
         virtual ~AssetDefinition();
 
         /**

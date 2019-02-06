@@ -35,11 +35,10 @@ namespace Dream
        }
     };
 
-    class PhysicsObjectDefinition
-            : public AssetDefinition
+    class PhysicsObjectDefinition : public AssetDefinition
     {
     public:
-        PhysicsObjectDefinition(ProjectDefinition* pd, json js);
+        PhysicsObjectDefinition(ProjectDefinition* pd, const json& js);
 
         // Physics
         void  setMass(float mass);

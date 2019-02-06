@@ -33,7 +33,7 @@
 namespace Dream
 {
     ProjectDefinition::ProjectDefinition
-    (json data)
+    (const json& data)
         : Definition(data)
 
     {
@@ -74,7 +74,7 @@ namespace Dream
 
     void
     ProjectDefinition::setDescription
-    (string description)
+    (const string &description)
     {
         mJson[Constants::PROJECT_DESCRIPTION] = description;
     }
@@ -88,7 +88,7 @@ namespace Dream
 
     void
     ProjectDefinition::setAuthor
-    (string author)
+    (const string &author)
     {
         mJson[Constants::PROJECT_AUTHOR] = author;
     }
@@ -145,7 +145,7 @@ namespace Dream
         log->debug("Loading AssetDefinitions from JSON");
         #endif
 
-        for (nlohmann::json it : mJson[Constants::PROJECT_ASSET_ARRAY])
+        for (const json& it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
             loadAssetDefinition(it);
         }
@@ -161,7 +161,7 @@ namespace Dream
         log->debug("Loading ScenesDefinitions from JSON");
         #endif
 
-        for (nlohmann::json it : mJson[Constants::PROJECT_SCENE_ARRAY])
+        for (const json& it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
             loadSceneDefinition(it);
         }
@@ -170,7 +170,7 @@ namespace Dream
 
     AssetDefinition*
     ProjectDefinition::createAssetDefinitionRuntime
-    (json assetDefinitionJs)
+    (const json &assetDefinitionJs)
     {
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
@@ -221,7 +221,7 @@ namespace Dream
 
     void
     ProjectDefinition::loadAssetDefinition
-    (json assetDefinitionJs)
+    (const json &assetDefinitionJs)
     {
         AssetDefinition* newDef = createAssetDefinitionRuntime(assetDefinitionJs);
         if (newDef != nullptr)
@@ -285,7 +285,7 @@ namespace Dream
 
     AssetDefinition*
     ProjectDefinition::getAssetDefinitionByName
-    (string name)
+    (const string& name)
     {
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
@@ -307,7 +307,7 @@ namespace Dream
 
     void
     ProjectDefinition::loadSceneDefinition
-    (json scene)
+    (const json &scene)
     {
         auto so = new SceneDefinition(this, scene);
         so->loadRootSceneObjectDefinition();
@@ -323,7 +323,7 @@ namespace Dream
 
     SceneDefinition*
     ProjectDefinition::getSceneDefinitionByName
-    (string name)
+    (const string &name)
     {
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
@@ -664,7 +664,7 @@ namespace Dream
     ()
     {
         mAssetDefinitionGroups.clear();
-        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             mAssetDefinitionGroups.insert(
                 pair<AssetType,vector<string> >(
@@ -687,7 +687,7 @@ namespace Dream
 
     ProjectDefinition*
     ProjectDefinition::createNewProjectDefinition
-    (string name)
+    (const string &name)
     {
         json j = json::object();
 

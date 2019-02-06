@@ -67,7 +67,7 @@ namespace Dream
     const
     {
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
-        for (auto typePair : assetTypes)
+        for (const auto& typePair : assetTypes)
         {
             auto type = typePair.first;
             if (!createAssetTypeDirectory(type))
@@ -83,7 +83,7 @@ namespace Dream
 
     vector<char>
     ProjectDirectory::readAssetData
-    (AssetDefinition* assetDef, string format)
+    (AssetDefinition* assetDef, const string &format)
     const
     {
         auto path = getAssetAbsolutePath(assetDef,format);
@@ -93,7 +93,7 @@ namespace Dream
 
     bool
     ProjectDirectory::writeAssetData
-    (AssetDefinition* assetDef, vector<char> data, string format)
+    (AssetDefinition* assetDef, const vector<char>& data, const string& format)
     const
     {
         auto dataPath = getAssetDirectoryPath(assetDef);
@@ -159,7 +159,7 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (AssetDefinition* assetDef, string format)
+    (AssetDefinition* assetDef, const string& format)
     const
     {
         stringstream path;
@@ -253,7 +253,7 @@ namespace Dream
 
     string
     ProjectDirectory::getAssetTypeDirectory
-    (AssetType type, string base)
+    (AssetType type, const string& base)
     const
     {
         stringstream ss;
@@ -291,7 +291,7 @@ namespace Dream
             return retval;
         }
 
-        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             AssetType type = typePair.first;
             string typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
@@ -304,7 +304,7 @@ namespace Dream
                 getLog()->error("Cleaning up {} containing {} definitions", path, subdirs.size());
                 #endif
                 int deletedCount=0;
-                for (auto subdirPath : subdirs)
+                for (const auto& subdirPath : subdirs)
                 {
                     Directory subdir(subdirPath);
                     if (subdir.exists())
@@ -390,7 +390,7 @@ namespace Dream
         {
             projectJson = json::parse(projectJsonStr);
         }
-        catch (json::parse_error ex)
+        catch (const json::parse_error& ex)
         {
             #ifdef DREAM_LOG
             getLog()->error("Exception while parsing project file: {}",ex.what());
@@ -415,7 +415,7 @@ namespace Dream
     {
         string projectFileName = findProjectFileInDirectory(directory);
 
-        if (projectFileName.size() == 0)
+        if (projectFileName.empty())
         {
             #ifdef DREAM_LOG
             getLog()->error( "Project: Error {} is not a valid project directory!", directory  );
@@ -457,7 +457,7 @@ namespace Dream
 
         string projectFileName;
 
-        for (string filename : directoryContents)
+        for (const string &filename : directoryContents)
         {
             size_t dotJsonIndex = filename.find(Constants::PROJECT_EXTENSION);
             if (dotJsonIndex != string::npos)
@@ -488,7 +488,7 @@ namespace Dream
     const
     {
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
-        for (auto typePair : assetTypes)
+        for (const auto &typePair : assetTypes)
         {
             auto type = typePair.first;
             string assetDir = getAssetTypeDirectory(type,dir);

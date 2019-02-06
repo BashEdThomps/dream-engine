@@ -22,10 +22,10 @@ namespace Dream
     (AudioDefinition* definition, ProjectRuntime* project)
         : AudioRuntime(definition, project)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("WavAudioRuntime");
         getLog()->error("Constructing");
-#endif
+        #endif
     }
 
     bool
@@ -34,33 +34,32 @@ namespace Dream
     {
         string absPath = getAssetFilePath();
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading wav file from {}", absPath);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Loading wav file from {}", absPath);
+        #endif
 
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
         if (wavFile == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("Unable to open wave file: {}", absPath);
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Unable to open wave file: {}", absPath);
+            #endif
             return false;
         }
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
-#ifdef DREAM_LOG
-        log->debug("Header Read {} bytes" ,bytesRead);
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Header Read {} bytes" ,bytesRead);
+        #endif
         if (bytesRead > 0)
         {
             //Read the data
             //uint16_t bytesPerSample = mWavHeader.BitsPerSample / 8;      // Number of bytes per sample
             //uint64_t numSamples = mWavHeader.ChunkSize / bytesPerSample; //How many samples are in the wav file?
-            int8_t* buffer = new int8_t[AUDIO_BUFFER_SIZE];
+            auto* buffer = new int8_t[AUDIO_BUFFER_SIZE];
             while ((bytesRead = fread(buffer, sizeof buffer[0], AUDIO_BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0)
             {
                 mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
@@ -79,15 +78,15 @@ namespace Dream
 
             setLooping(static_cast<AudioDefinition*>(mDefinition)->getLoop());
 
-#ifdef DREAM_LOG
-            log->debug("Read {} bytes", mAudioDataBuffer.size());
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("Read {} bytes", mAudioDataBuffer.size());
+            #endif
             delete [] buffer;
-            buffer = NULL;
+            buffer = nullptr;
             filelength = getFileSize(wavFile);
 
-#ifdef DREAM_LOG
-            log->debug(
+            #ifdef DREAM_LOG
+            getLog()->debug(
                 "Status...\n"
                 "\tFile size is: {} bytes\n"
                 "\tRIFF header: {} {} {} {}\n"
@@ -116,7 +115,7 @@ namespace Dream
                   mWavHeader.BlockAlign,
                   mWavHeader.Subchunk2ID[0], mWavHeader.Subchunk2ID[1], mWavHeader.Subchunk2ID[2], mWavHeader.Subchunk2ID[3]
             );
-#endif
+            #endif
         }
         fclose(wavFile);
         return loadIntoAL();

@@ -24,7 +24,7 @@ namespace Dream
     class FontDefinition : public AssetDefinition
     {
     public:
-        FontDefinition(ProjectDefinition* pd, json js);
+        FontDefinition(ProjectDefinition* pd, const json& js);
     };
 
 }

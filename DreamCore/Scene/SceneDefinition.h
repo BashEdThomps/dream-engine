@@ -33,7 +33,7 @@ namespace Dream
         ProjectDefinition* mProjectDefinition;
 
     public:
-        SceneDefinition(ProjectDefinition* project, json data);
+        SceneDefinition(ProjectDefinition* project, const json& data);
         ~SceneDefinition() override;
 
         void loadRootSceneObjectDefinition();

@@ -56,18 +56,20 @@ namespace Dream
     SceneRuntime::SceneRuntime
     (SceneDefinition* sd, ProjectRuntime* project)
         : Runtime(sd),
-          mState(SceneState::SCENE_STATE_TO_LOAD),
-          mCamera(Camera(this)),
-          mClearColour(vec3(0.0f)),
+        mState(SceneState::SCENE_STATE_TO_LOAD),
+        mClearColour(vec3(0.0f)),
         mProjectRuntime(project),
         mRootSceneObjectRuntime(nullptr),
+        mLightingPassShader(nullptr),
+        mShadowPassShader(nullptr),
         mInputScript(nullptr),
         mNanoVGScript(nullptr),
+        mCamera(Camera(this)),
+        mSceneStartTime(0),
+        mSceneCurrentTime(0),
         mMinDrawDistance(0.1f),
         mMaxDrawDistance(1000.0f),
-        mMeshCullDistance(1000.0f),
-        mSceneStartTime(0),
-        mSceneCurrentTime(0)
+        mMeshCullDistance(1000.0f)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneRuntime");
@@ -683,23 +685,18 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
-        Task* pollDataTask = nullptr;
-        Task* executeInputTask = nullptr;
-
         if (!inputComponent->hasPollDataTask())
         {
-            pollDataTask = new InputPollDataTask(inputComponent);
-
+            InputPollDataTask pollDataTask(inputComponent);
             if (!inputComponent->hasExecuteScriptTask())
             {
-                executeInputTask = new InputExecuteScriptTask(inputComponent,this);
-                executeInputTask->dependsOn(pollDataTask);
+                InputExecuteScriptTask executeInputTask(inputComponent,this);
+                executeInputTask.dependsOn(&pollDataTask);
+                taskManager->pushTask(executeInputTask);
             }
-
             taskManager->pushTask(pollDataTask);
-            taskManager->pushTask(executeInputTask);
-
         }
+
         vector<Task*> lifetimeTasks;
 
         mRootSceneObjectRuntime->applyToAll
@@ -712,7 +709,7 @@ namespace Dream
                 // SceneObject
                 if (!rt->hasLifetimeUpdateTask())
                 {
-                    lt = (new LifetimeUpdateTask(rt))->dependsOn(executeInputTask);
+                    lt = LifetimeUpdateTask(rt).dependsOn(executeInputTask);
                     lifetimeTasks.push_back(lt);
 
                     // Animation

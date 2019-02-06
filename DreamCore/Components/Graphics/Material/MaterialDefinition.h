@@ -25,7 +25,7 @@ namespace Dream
     class MaterialDefinition : public AssetDefinition
     {
     public:
-        MaterialDefinition(ProjectDefinition* pd, json js);
+        MaterialDefinition(ProjectDefinition* pd, const json& js);
         ~MaterialDefinition() override;
 
         // Shader

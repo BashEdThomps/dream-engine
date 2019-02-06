@@ -19,31 +19,26 @@
 #include <regex>
 #include "../Project/ProjectDefinition.h"
 
-using std::cout;
-using std::endl;
-
 namespace Dream
 {
     AssetDefinition::AssetDefinition
-    (ProjectDefinition* parent, json jsonDef)
+    (ProjectDefinition* parent, const json &jsonDef)
         : Definition(jsonDef),
           mProjectDefinition(parent)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("AssetDefinition");
-        auto log = getLog();
-        log->trace("Constructing {}", getNameAndUuidString());
-#endif
+        getLog()->trace("Constructing {}", getNameAndUuidString());
+        #endif
     }
 
     AssetDefinition::~AssetDefinition
     ()
     {
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing {}", getNameAndUuidString());
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing {}", getNameAndUuidString());
+        #endif
     }
 
     AssetType
@@ -94,82 +89,82 @@ namespace Dream
     AssetDefinition::isTypeAnimation
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_ANIMATION) == 0;
+        return getType() == Constants::ASSET_TYPE_ANIMATION;
     }
 
     bool
     AssetDefinition::isTypeLight
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_LIGHT) == 0;
+        return getType() == Constants::ASSET_TYPE_LIGHT;
     }
 
     bool AssetDefinition::isTypeMaterial()
     {
-       return getType().compare(Constants::ASSET_TYPE_MATERIAL) == 0;
+       return getType() == Constants::ASSET_TYPE_MATERIAL;
     }
 
     bool
     AssetDefinition::isTypeFont
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_FONT) == 0;
+        return getType() == Constants::ASSET_TYPE_FONT;
     }
 
     bool
     AssetDefinition::isTypePhysicsObject
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_PHYSICS_OBJECT) == 0;
+        return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
     }
 
     bool
     AssetDefinition::isTypeTexture
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_TEXTURE) == 0;
+        return getType() == Constants::ASSET_TYPE_TEXTURE;
     }
 
     bool
     AssetDefinition::isTypePath
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_PATH) == 0;
+        return getType() == Constants::ASSET_TYPE_PATH;
     }
 
     bool
     AssetDefinition::isTypeParticleEmitter
     ()
     {
-       return getType().compare(Constants::ASSET_TYPE_PARTICLE_EMITTER) == 0;
+       return getType() == Constants::ASSET_TYPE_PARTICLE_EMITTER;
     }
 
     bool
     AssetDefinition::isTypeAudio
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_AUDIO) == 0;
+        return getType() == Constants::ASSET_TYPE_AUDIO;
     }
 
     bool
     AssetDefinition::isTypeModel
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_MODEL) == 0;
+        return getType() == Constants::ASSET_TYPE_MODEL;
     }
 
     bool
     AssetDefinition::isTypeScript
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_SCRIPT) == 0;
+        return getType() == Constants::ASSET_TYPE_SCRIPT;
     }
 
     bool
     AssetDefinition::isTypeShader
     ()
     {
-        return getType().compare(Constants::ASSET_TYPE_SHADER) == 0;
+        return getType() == Constants::ASSET_TYPE_SHADER;
     }
 
     string
@@ -232,4 +227,4 @@ namespace Dream
         return newAD;
     }
 
-} // End of Dream
+}

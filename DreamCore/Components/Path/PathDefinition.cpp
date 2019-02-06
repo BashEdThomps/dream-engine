@@ -20,7 +20,7 @@
 namespace Dream
 {
     PathDefinition::PathDefinition
-    (ProjectDefinition* pd, json js)
+    (ProjectDefinition* pd, const json& js)
         : AssetDefinition(pd,js)
     {
 #ifdef DREAM_LOG

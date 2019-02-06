@@ -35,14 +35,14 @@ namespace Dream
         bool createBaseDirectory() const;
         bool createAllAssetDirectories() const;
 
-        vector<char> readAssetData(AssetDefinition*, string format = "") const;
-        bool writeAssetData(AssetDefinition*, vector<char>, string format = "") const;
+        vector<char> readAssetData(AssetDefinition*, const string &format = "") const;
+        bool writeAssetData(AssetDefinition*, const vector<char> &, const string &format = "") const;
 
         string getAssetAbsolutePath(uint32_t) const;
         string getAssetAbsolutePath(AssetDefinition*) const;
-        string getAssetAbsolutePath(AssetDefinition*, string format) const;
+        string getAssetAbsolutePath(AssetDefinition*, const string &format) const;
         string getAssetDirectoryPath(AssetDefinition*) const;
-        string getAssetTypeDirectory(AssetType type, string base = "") const;
+        string getAssetTypeDirectory(AssetType type, const string &base = "") const;
 
         bool removeAssetDirectory(AssetDefinition*) const;
 

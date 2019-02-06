@@ -106,7 +106,7 @@ namespace DreamTool
         void handleEditorInput(SceneRuntime*);
         void handleSceneInput(SceneRuntime*);
         void closeProject();
-        bool openProject(string);
-        bool newProject(string dir);
+        bool openProject(const string &);
+        bool newProject(const string &dir);
     };
 }

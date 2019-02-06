@@ -24,10 +24,9 @@
 namespace Dream
 {
     SceneObjectDefinition::SceneObjectDefinition
-    (
-            SceneObjectDefinition* parent,
+    (SceneObjectDefinition* parent,
             SceneDefinition* sceneDefinition,
-            json jsonData,
+            const json &jsonData,
             bool randomUuid
             )
         : Definition(jsonData),
@@ -108,7 +107,7 @@ namespace Dream
 
         if (!childrenArray.is_null() && childrenArray.is_array())
         {
-            for (json childDefinition : childrenArray)
+            for (const json& childDefinition : childrenArray)
             {
                 auto sod = new SceneObjectDefinition
                 (
@@ -428,7 +427,7 @@ namespace Dream
     ()
     {
         map<AssetType, uint32_t> assetsMap;
-        for (auto typePair : Constants::DREAM_ASSET_TYPES_MAP)
+        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             AssetType type = typePair.first;
             uint32_t uuid = getAssetDefinition(type);

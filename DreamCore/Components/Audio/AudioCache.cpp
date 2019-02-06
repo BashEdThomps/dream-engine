@@ -43,11 +43,11 @@ namespace Dream
         auto aDef = static_cast<AudioDefinition*>(def);
         SharedAssetRuntime* asset = nullptr;
 
-        if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
+        if (def->getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV)
         {
             asset = new WavAudioRuntime(aDef,mProjectRuntime);
         }
-        else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
+        else if (def->getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG)
         {
             asset = new OggAudioRuntime(aDef,mProjectRuntime);
         }

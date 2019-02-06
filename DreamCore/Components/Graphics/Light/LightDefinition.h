@@ -36,7 +36,7 @@ namespace Dream
     class LightDefinition : public AssetDefinition
     {
     public:
-        LightDefinition(ProjectDefinition* pd, json js);
+        LightDefinition(ProjectDefinition* pd, const json& js);
         ~LightDefinition() override;
 
         void setDiffuse(vec3);

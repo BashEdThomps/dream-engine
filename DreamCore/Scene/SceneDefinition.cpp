@@ -20,8 +20,9 @@
 namespace Dream
 {
     SceneDefinition::SceneDefinition
-    (ProjectDefinition* projectDefinition, json data)
+    (ProjectDefinition* projectDefinition, const json& data)
         : Definition(data),
+          mRootSceneObjectDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
         #ifdef DREAM_LOG

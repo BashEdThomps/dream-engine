@@ -25,18 +25,22 @@
 #include "AudioRuntime.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
-#include "AudioTasks.h"
 
 namespace Dream
 {
     AudioRuntime::AudioRuntime
     (AudioDefinition* def, ProjectRuntime* project)
         : SharedAssetRuntime(def,project),
+          mLooping(false),
+          mFormat(0),
+          mFrequency(0),
+          mSource(0),
+          mBuffer(0),
           mStartTime(-1),
           mLastSampleOffset(0),
           mChannels(-1),
           mDurationInSamples(-1),
-          mMarkersUpdateTask(nullptr)
+          mMarkersUpdateTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("AudioRuntime");
@@ -51,10 +55,7 @@ namespace Dream
     {
           alDeleteBuffers(1,&mBuffer);
           alDeleteSources(1,&mSource);
-          if (mMarkersUpdateTask)
-          {
-              mMarkersUpdateTask->setExpired(true);
-          }
+          mMarkersUpdateTask.setExpired(true);
     }
 
     void
@@ -343,21 +344,6 @@ namespace Dream
         return mDurationInSamples;
     }
 
-    void AudioRuntime::clearMarkersUpdateTask()
-    {
-       mMarkersUpdateTask = nullptr;
-    }
-
-    void AudioRuntime::setMarkersUpdateTask(AudioMarkersUpdateTask* t)
-    {
-        mMarkersUpdateTask = t;
-    }
-
-    bool AudioRuntime::hasMarkersUpdateTask()
-    {
-       return mMarkersUpdateTask != nullptr;
-    }
-
     ALint
     AudioRuntime::getSampleOffset
     ()
@@ -442,4 +428,4 @@ namespace Dream
         #endif
         return true;
     }
-} // End of Dream
+}

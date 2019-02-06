@@ -32,16 +32,17 @@ namespace Dream
     PhysicsComponent::PhysicsComponent
     (ProjectRuntime* pr)
         : Component(pr),
-          mCharacter(nullptr),
-          mDebug(false),
           mDebugDrawer(nullptr),
           mDynamicsWorld(nullptr),
           mBroadphase(nullptr),
           mCollisionConfiguration(nullptr),
           mDispatcher(nullptr),
           mSolver(nullptr),
-          mUpdateWorldTask(nullptr),
-          mDrawDebugTask(nullptr)
+          mProjectionMatrix(mat4(1.0f)),
+          mCharacter(nullptr),
+          mUpdateWorldTask(this),
+          mDrawDebugTask(this),
+          mDebug(false)
     {
         #ifdef DREAM_LOG
         setLogClassName("PhysicsComponent");
@@ -55,19 +56,7 @@ namespace Dream
         getLog()->debug( "Destroying Object" );
         #endif
 
-        if (mUpdateWorldTask)
-        {
-            mUpdateWorldTask->setExpired(true);
-            mUpdateWorldTask = nullptr;
-        }
-
-        if (mDrawDebugTask)
-        {
-            mDrawDebugTask->setExpired(true);
-            mDrawDebugTask = nullptr;
-        }
-
-        int i;
+        int i = 0;
 
         //removed/delete constraints
         for (i=mDynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
@@ -475,21 +464,6 @@ namespace Dream
     (PhysicsObjectRuntime* character)
     {
         mCharacter=character;
-    }
-
-    void PhysicsComponent::setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask)
-    {
-        mUpdateWorldTask = updateWorldTask;
-    }
-
-    bool PhysicsComponent::hasUpdateWorldTask()
-    {
-       return mUpdateWorldTask != nullptr;
-    }
-
-    void PhysicsComponent::setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask)
-    {
-        mDrawDebugTask = drawDebugTask;
     }
 
     PhysicsDebugDrawer*PhysicsComponent::getDebugDrawer()

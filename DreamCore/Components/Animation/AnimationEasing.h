@@ -60,7 +60,7 @@ namespace Dream
 
 
         static const vector<string> EasingNames;
-        static AnimationEasing::Type getEasingType(string);
+        static AnimationEasing::Type getEasingType(const string &);
         static const string getEasingName(AnimationEasing::Type easing);
     };
 }

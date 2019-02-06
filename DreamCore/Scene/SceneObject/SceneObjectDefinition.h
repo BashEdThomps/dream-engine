@@ -37,7 +37,7 @@ namespace Dream
         SceneObjectDefinition(
             SceneObjectDefinition* parent,
             SceneDefinition* sceneDefinition,
-            json data,
+            const json& data,
             bool randomUuid = false
         );
 

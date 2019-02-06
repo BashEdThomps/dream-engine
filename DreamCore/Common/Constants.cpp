@@ -46,7 +46,7 @@ namespace Dream
 #ifdef DREAM_LOG
     bool
     Constants::checkGLError_
-    (string file, int line)
+    (const string& file, int line)
     {
         GLenum errorCode = 0;
         bool wasError = false;
@@ -599,153 +599,141 @@ namespace Dream
 
     AssetType
     Constants::getAssetTypeEnumFromString
-    (string type)
+    (const string& type)
     {
-        if (type.compare(ASSET_TYPE_ANIMATION) == 0 ||
-            type.compare(ASSET_TYPE_ANIMATION_READABLE) == 0)
+        AssetType retval = AssetType::NONE;
+        if (type == ASSET_TYPE_ANIMATION || type == ASSET_TYPE_ANIMATION_READABLE)
         {
-            return ANIMATION;
+            retval =  ANIMATION;
         }
 
-        else if (type.compare(ASSET_TYPE_AUDIO) == 0 ||
-            type.compare(ASSET_TYPE_AUDIO_READABLE) == 0)
+        else if (type == ASSET_TYPE_AUDIO || type == ASSET_TYPE_AUDIO_READABLE)
         {
-            return AUDIO;
+            retval = AUDIO;
         }
 
-        else if (type.compare(ASSET_TYPE_FONT) == 0 ||
-                 type.compare(ASSET_TYPE_FONT_READABLE) == 0)
+        else if (type == ASSET_TYPE_FONT || type == ASSET_TYPE_FONT_READABLE)
         {
-            return FONT;
+            retval = FONT;
         }
 
-        else if (type.compare(ASSET_TYPE_LIGHT) == 0 ||
-                 type.compare(ASSET_TYPE_LIGHT_READABLE) == 0)
+        else if (type == ASSET_TYPE_LIGHT || type == ASSET_TYPE_LIGHT_READABLE)
         {
-            return LIGHT;
+            retval = LIGHT;
         }
 
-        else if (type.compare(ASSET_TYPE_MATERIAL) == 0 ||
-                 type.compare(ASSET_TYPE_MATERIAL_READABLE) == 0)
+        else if (type == ASSET_TYPE_MATERIAL || type == ASSET_TYPE_MATERIAL_READABLE)
         {
-            return MATERIAL;
+            retval = MATERIAL;
         }
 
-        else if (type.compare(ASSET_TYPE_MODEL) == 0 ||
-                 type.compare(ASSET_TYPE_MODEL_READABLE) == 0)
+        else if (type == ASSET_TYPE_MODEL || type == ASSET_TYPE_MODEL_READABLE)
         {
-            return MODEL;
+            retval = MODEL;
         }
 
-        else if (type.compare(ASSET_TYPE_PARTICLE_EMITTER) == 0 ||
-                 type.compare(ASSET_TYPE_PARTICLE_EMITTER_READABLE) == 0)
+        else if (type == ASSET_TYPE_PARTICLE_EMITTER || type == ASSET_TYPE_PARTICLE_EMITTER_READABLE)
         {
-            return PARTICLE_EMITTER;
+            retval = PARTICLE_EMITTER;
         }
 
-        else if (type.compare(ASSET_TYPE_PATH) == 0 ||
-            type.compare(ASSET_TYPE_PATH_READABLE) == 0)
+        else if (type == ASSET_TYPE_PATH || type == ASSET_TYPE_PATH_READABLE)
         {
-            return PATH;
+            retval = PATH;
         }
 
-        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0 ||
-                 type.compare(ASSET_TYPE_PHYSICS_OBJECT_READABLE) == 0)
+        else if (type == ASSET_TYPE_PHYSICS_OBJECT || type == ASSET_TYPE_PHYSICS_OBJECT_READABLE)
         {
-            return PHYSICS_OBJECT;
+            retval = PHYSICS_OBJECT;
         }
 
-        else if (type.compare(ASSET_TYPE_SCRIPT) == 0 ||
-                 type.compare(ASSET_TYPE_SCRIPT_READABLE) == 0)
+        else if (type == ASSET_TYPE_SCRIPT || type == ASSET_TYPE_SCRIPT_READABLE)
         {
-            return SCRIPT;
+            retval = SCRIPT;
         }
 
-        else if (type.compare(ASSET_TYPE_SCROLLER) == 0 ||
-                 type.compare(ASSET_TYPE_SCROLLER_READABLE) == 0)
+        else if (type == ASSET_TYPE_SCROLLER || type == ASSET_TYPE_SCROLLER_READABLE)
         {
-            return SCROLLER;
+            retval = SCROLLER;
         }
 
-        else if (type.compare(ASSET_TYPE_SHADER) == 0 ||
-                 type.compare(ASSET_TYPE_SHADER_READABLE) == 0)
+        else if (type == ASSET_TYPE_SHADER || type == ASSET_TYPE_SHADER_READABLE)
         {
-            return SHADER;
+            retval = SHADER;
         }
 
-        else if (type.compare(ASSET_TYPE_TEXTURE) == 0 ||
-                 type.compare(ASSET_TYPE_TEXTURE_READABLE) == 0)
+        else if (type == ASSET_TYPE_TEXTURE || type == ASSET_TYPE_TEXTURE_READABLE)
         {
-            return TEXTURE;
+            retval =  TEXTURE;
         }
-        return NONE;
+        return retval;
     }
 
     string
     Constants::getAssetTypeReadableNameFromString
-    (string type)
+    (const string& type)
     {
-        if (type.compare(ASSET_TYPE_ANIMATION) == 0)
+        if (type == ASSET_TYPE_ANIMATION)
         {
             return ASSET_TYPE_ANIMATION_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_AUDIO) == 0)
+        else if (type == ASSET_TYPE_AUDIO)
         {
             return ASSET_TYPE_AUDIO_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_FONT) == 0)
+        else if (type == ASSET_TYPE_FONT)
         {
             return ASSET_TYPE_FONT_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_LIGHT) == 0)
+        else if (type == ASSET_TYPE_LIGHT)
         {
             return ASSET_TYPE_LIGHT_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_MATERIAL) == 0)
+        else if (type == ASSET_TYPE_MATERIAL)
         {
             return ASSET_TYPE_MATERIAL_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_MODEL) == 0)
+        else if (type == ASSET_TYPE_MODEL)
         {
             return ASSET_TYPE_MODEL_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_PARTICLE_EMITTER) == 0)
+        else if (type == ASSET_TYPE_PARTICLE_EMITTER)
         {
             return ASSET_TYPE_PARTICLE_EMITTER_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_PATH) == 0)
+        else if (type == ASSET_TYPE_PATH)
         {
             return ASSET_TYPE_PATH_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_PHYSICS_OBJECT) == 0)
+        else if (type == ASSET_TYPE_PHYSICS_OBJECT)
         {
             return ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_SCRIPT) == 0)
+        else if (type == ASSET_TYPE_SCRIPT)
         {
             return ASSET_TYPE_SCRIPT_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_SCROLLER) == 0)
+        else if (type == ASSET_TYPE_SCROLLER)
         {
             return ASSET_TYPE_SCROLLER_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_SHADER) == 0)
+        else if (type == ASSET_TYPE_SHADER)
         {
             return ASSET_TYPE_SHADER_READABLE;
         }
 
-        else if (type.compare(ASSET_TYPE_TEXTURE) == 0)
+        else if (type == ASSET_TYPE_TEXTURE)
         {
             return ASSET_TYPE_TEXTURE_READABLE;
         }
@@ -754,105 +742,105 @@ namespace Dream
 
     string
     Constants::getAssetFormatReadableNameFromString
-    (string format)
+    (const string& format)
     {
         // Script
-        if (format.compare(ASSET_FORMAT_SCRIPT_LUA) == 0)
+        if (format == ASSET_FORMAT_SCRIPT_LUA)
         {
            return ASSET_FORMAT_SCRIPT_LUA_READABLE;
         }
         // Model
-        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP) == 0)
+        else if (format == ASSET_FORMAT_MODEL_ASSIMP)
         {
            return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         }
-        else if (format.compare(ASSET_FORMAT_MODEL_OBJ) == 0)
+        else if (format == ASSET_FORMAT_MODEL_OBJ)
         {
            return ASSET_FORMAT_MODEL_OBJ_READABLE;
         }
         // Audio
-        else if (format.compare(ASSET_FORMAT_AUDIO_OGG) == 0)
+        else if (format == ASSET_FORMAT_AUDIO_OGG)
         {
            return ASSET_FORMAT_AUDIO_OGG_READABLE;
         }
-        else if (format.compare(ASSET_FORMAT_AUDIO_WAV) == 0)
+        else if (format == ASSET_FORMAT_AUDIO_WAV)
         {
            return ASSET_FORMAT_AUDIO_WAV_READABLE;
         }
         // Font
-        else if (format.compare(ASSET_FORMAT_FONT_TTF) == 0)
+        else if (format == ASSET_FORMAT_FONT_TTF)
         {
            return ASSET_FORMAT_FONT_TTF_READABLE;
         }
         // Shader
-        else if (format.compare(ASSET_FORMAT_SHADER_GLSL) == 0)
+        else if (format == ASSET_FORMAT_SHADER_GLSL)
         {
            return ASSET_FORMAT_SHADER_GLSL_READABLE;
         }
         // Light
-        else if (format.compare(ASSET_FORMAT_LIGHT_POINT) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_POINT)
         {
            return ASSET_FORMAT_LIGHT_POINT_READABLE;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_DIRECTIONAL)
         {
            return ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_SPOTLIGHT)
         {
            return ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
         }
         // Dream
-        else if (format.compare(ASSET_FORMAT_DREAM) == 0)
+        else if (format == ASSET_FORMAT_DREAM)
         {
             return ASSET_FORMAT_DREAM_READABLE;
         }
         // Physics
-        else if (format.compare(COLLISION_SHAPE_SPHERE) == 0)
+        else if (format == COLLISION_SHAPE_SPHERE)
         {
             return COLLISION_SHAPE_SPHERE_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_BOX) == 0)
+        else if (format == COLLISION_SHAPE_BOX)
         {
             return COLLISION_SHAPE_BOX_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_CYLINDER) == 0)
+        else if (format == COLLISION_SHAPE_CYLINDER)
         {
             return COLLISION_SHAPE_CYLINDER_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_CAPSULE) == 0)
+        else if (format == COLLISION_SHAPE_CAPSULE)
         {
             return COLLISION_SHAPE_CAPSULE_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONE) == 0)
+        else if (format == COLLISION_SHAPE_CONE)
         {
             return COLLISION_SHAPE_MULTI_SPHERE_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL) == 0)
+        else if (format == COLLISION_SHAPE_CONVEX_HULL)
         {
             return COLLISION_SHAPE_CONVEX_HULL_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH) == 0)
+        else if (format == COLLISION_SHAPE_CONVEX_TRIANGLE_MESH)
         {
             return COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
+        else if (format == COLLISION_SHAPE_BVH_TRIANGLE_MESH)
         {
             return COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN) == 0)
+        else if (format == COLLISION_SHAPE_HEIGHTFIELD_TERRAIN)
         {
             return COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE) == 0)
+        else if (format == COLLISION_SHAPE_STATIC_PLANE)
         {
             return COLLISION_SHAPE_STATIC_PLANE_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_COMPOUND) == 0)
+        else if (format == COLLISION_SHAPE_COMPOUND)
         {
             return COLLISION_SHAPE_COMPOUND_READABLE;
         }
-        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE) == 0)
+        else if (format == COLLISION_SHAPE_MULTI_SPHERE)
         {
             return COLLISION_SHAPE_MULTI_SPHERE_READABLE;
         }
@@ -862,97 +850,97 @@ namespace Dream
 
     string
     Constants::getAssetFormatStringFromReadableName
-    (string format)
+    (const string& format)
     {
-        if (format.compare(ASSET_FORMAT_SCRIPT_LUA_READABLE) == 0)
+        if (format == ASSET_FORMAT_SCRIPT_LUA_READABLE)
         {
            return ASSET_FORMAT_SCRIPT_LUA;
         }
-        else if (format.compare(ASSET_FORMAT_MODEL_ASSIMP_READABLE) == 0)
+        else if (format == ASSET_FORMAT_MODEL_ASSIMP_READABLE)
         {
            return ASSET_FORMAT_MODEL_ASSIMP;
         }
-        else if (format.compare(ASSET_FORMAT_MODEL_OBJ_READABLE) == 0)
+        else if (format == ASSET_FORMAT_MODEL_OBJ_READABLE)
         {
            return ASSET_FORMAT_MODEL_OBJ;
         }
-        else if (format.compare(ASSET_FORMAT_AUDIO_OGG_READABLE) == 0)
+        else if (format == ASSET_FORMAT_AUDIO_OGG_READABLE)
         {
            return ASSET_FORMAT_AUDIO_OGG;
         }
-        else if (format.compare(ASSET_FORMAT_AUDIO_WAV_READABLE) == 0)
+        else if (format == ASSET_FORMAT_AUDIO_WAV_READABLE)
         {
            return ASSET_FORMAT_AUDIO_WAV;
         }
-        else if (format.compare(ASSET_FORMAT_FONT_TTF_READABLE) == 0)
+        else if (format == ASSET_FORMAT_FONT_TTF_READABLE)
         {
            return ASSET_FORMAT_FONT_TTF;
         }
-        else if (format.compare(ASSET_FORMAT_SHADER_GLSL_READABLE) == 0)
+        else if (format == ASSET_FORMAT_SHADER_GLSL_READABLE)
         {
            return ASSET_FORMAT_SHADER_GLSL;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_POINT_READABLE) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_POINT_READABLE)
         {
            return ASSET_FORMAT_LIGHT_POINT;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE)
         {
            return ASSET_FORMAT_LIGHT_DIRECTIONAL;
         }
-        else if (format.compare(ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE) == 0)
+        else if (format == ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE)
         {
            return ASSET_FORMAT_LIGHT_SPOTLIGHT;
         }
-        else if (format.compare(ASSET_FORMAT_DREAM_READABLE) == 0)
+        else if (format == ASSET_FORMAT_DREAM_READABLE)
         {
             return ASSET_FORMAT_DREAM;
         }
-        else if (format.compare(COLLISION_SHAPE_SPHERE_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_SPHERE_READABLE)
         {
             return COLLISION_SHAPE_SPHERE;
         }
-        else if (format.compare(COLLISION_SHAPE_BOX_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_BOX_READABLE)
         {
             return COLLISION_SHAPE_BOX;
         }
-        else if (format.compare(COLLISION_SHAPE_CYLINDER_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_CYLINDER_READABLE)
         {
             return COLLISION_SHAPE_CYLINDER;
         }
-        else if (format.compare(COLLISION_SHAPE_CAPSULE_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_CAPSULE_READABLE)
         {
             return COLLISION_SHAPE_CAPSULE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONE_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_CONE_READABLE)
         {
             return COLLISION_SHAPE_CONE;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_HULL_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_CONVEX_HULL_READABLE)
         {
             return COLLISION_SHAPE_CONVEX_HULL;
         }
-        else if (format.compare(COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_CONVEX_TRIANGLE_MESH_READABLE)
         {
             return COLLISION_SHAPE_CONVEX_TRIANGLE_MESH;
         }
-        else if (format.compare(COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_BVH_TRIANGLE_MESH_READABLE)
         {
             return COLLISION_SHAPE_BVH_TRIANGLE_MESH;
         }
-        else if (format.compare(COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE)
         {
             return COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
         }
-        else if (format.compare(COLLISION_SHAPE_STATIC_PLANE_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_STATIC_PLANE_READABLE)
         {
             return COLLISION_SHAPE_STATIC_PLANE;
         }
-        else if (format.compare(COLLISION_SHAPE_COMPOUND_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_COMPOUND_READABLE)
         {
             return COLLISION_SHAPE_COMPOUND;
         }
-        else if (format.compare(COLLISION_SHAPE_MULTI_SPHERE_READABLE) == 0)
+        else if (format == COLLISION_SHAPE_MULTI_SPHERE_READABLE)
         {
             return COLLISION_SHAPE_MULTI_SPHERE;
         }
@@ -960,9 +948,9 @@ namespace Dream
         return "";
     }
 
-#ifdef DREAM_LOG
+    #ifdef DREAM_LOG
     shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_logger_mt("Constants");
-#endif
+    #endif
 
     vector<string> Constants::DREAM_PATH_SPLINE_TYPES
     {

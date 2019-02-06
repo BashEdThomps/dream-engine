@@ -135,7 +135,8 @@ namespace Dream
     TextureRuntime::operator==
     (const TextureRuntime& other)
     {
-        return this->mGLID == other.mGLID && this->mPath.compare(other.mPath) == 0;
+        return this->mGLID == other.mGLID &&
+               this->mPath == other.mPath;
     }
 
     bool

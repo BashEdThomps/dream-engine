@@ -9,12 +9,12 @@ namespace Dream
         atomic<bool> mExpired;
         atomic<int>  mThreadId;
         atomic<bool> mCompleted;
-        atomic<int>  mDeferralCount;
-        atomic<int>  mWaitingForDependencies;
+        atomic<unsigned int>  mDeferralCount;
+        atomic<unsigned int>  mWaitingForDependencies;
         vector<Task*> mWaitingForMe;
 
     public:
-        Task() :
+        inline Task() :
             DreamObject("Task"),
             mExpired(false),
             mThreadId(-1),
@@ -23,8 +23,8 @@ namespace Dream
             mWaitingForDependencies(0)
         {}
 
-        virtual ~Task() {}
-        virtual void execute() = 0;
+        inline ~Task() {}
+        inline void execute() {}
 
         inline void incrementDeferralCount()
         {
@@ -51,14 +51,14 @@ namespace Dream
             return mCompleted;
         }
 
-        inline int getDeferralCount()
+        inline unsigned int getDeferralCount()
         {
             return mDeferralCount;
         }
 
         inline void notifyDependents()
         {
-           for (auto* t : mWaitingForMe)
+           for (Task* t : mWaitingForMe)
            {
                #ifdef DREAM_LOG
                getLog()->critical("is notifying dependant {} of completion",t->getClassName());
@@ -79,14 +79,11 @@ namespace Dream
             return retval;
         }
 
-        inline Task* dependsOn(Task* t)
+        inline Task& dependsOn(Task& t)
         {
-            if (t!=nullptr)
-            {
-                mWaitingForDependencies++;
-                t->mWaitingForMe.push_back(this);
-            }
-            return this;
+            mWaitingForDependencies++;
+            t.mWaitingForMe.emplace_back(this);
+            return *this;
         }
 
         inline void setCompleted()

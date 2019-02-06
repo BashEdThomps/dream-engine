@@ -29,7 +29,11 @@ namespace Dream
     (
         ScrollerDefinition* definition,
         SceneObjectRuntime* runtime
-    ) : DiscreteAssetRuntime(definition,runtime)
+    ) : DiscreteAssetRuntime(definition,runtime),
+        mVelocity(0),
+        mRangeBegin(0),
+        mRangeEnd(0),
+        mLoop(false)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScrollerRuntime");

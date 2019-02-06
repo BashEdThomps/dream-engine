@@ -32,9 +32,10 @@ namespace Dream
         AnimationDefinition* definition,
         SceneObjectRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
+        mRunning(false),
         mCurrentTime(0),
         mDuration(1),
-        mRunning(false),
+        mRelative(false),
         mOriginalTransform(runtime->getTransform().getMatrix())
     {
         #ifdef DREAM_LOG

@@ -22,10 +22,21 @@
 namespace Dream
 {
     LightDefinition::LightDefinition
-    (ProjectDefinition* pd, json js)
-        : AssetDefinition(pd,js) {}
+    (ProjectDefinition* pd, const json &js)
+        : AssetDefinition(pd,js)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("LightDefinition");
+        getLog()->trace("Constructing");
+        #endif
+    }
 
-    LightDefinition::~LightDefinition(){}
+    LightDefinition::~LightDefinition()
+    {
+        #ifdef DREAM_LOG
+        getLog()->trace("Destructing");
+        #endif
+    }
 
     void
     LightDefinition::setDiffuse
@@ -145,15 +156,15 @@ namespace Dream
     ()
     {
         LightType type;
-        if (getFormat().compare(Constants::ASSET_FORMAT_LIGHT_POINT) == 0)
+        if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
         {
             type = LT_POINT;
         }
-        else if (getFormat().compare(Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL) == 0)
+        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
         {
             type = LT_DIRECTIONAL;
         }
-        else if (getFormat().compare(Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT) == 0)
+        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
         {
             type = LT_SPOTLIGHT;
         }

@@ -19,6 +19,7 @@
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 #include "../Component.h"
+#include "PhysicsTasks.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -40,8 +41,6 @@ namespace Dream
     class SceneRuntime;
     class SceneObjectRuntime;
     class Camera;
-    class PhysicsUpdateWorldTask;
-    class PhysicsDrawDebugTask;
 
 
     class PhysicsComponent : public Component
@@ -55,12 +54,14 @@ namespace Dream
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
         PhysicsObjectRuntime* mCharacter;
-        PhysicsUpdateWorldTask* mUpdateWorldTask;
-        PhysicsDrawDebugTask* mDrawDebugTask;
+        PhysicsUpdateWorldTask mUpdateWorldTask;
+        PhysicsDrawDebugTask mDrawDebugTask;
+
         bool mDebug;
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
         bool recoverFromPenetration(btPersistentManifold* );
         void recoverCharacter(btPersistentManifold*);
+
     public:
         PhysicsComponent(ProjectRuntime* pr);
         ~PhysicsComponent() override;
@@ -78,9 +79,6 @@ namespace Dream
         void checkContactManifolds();
         SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
-        void setUpdateWorldTask(PhysicsUpdateWorldTask* updateWorldTask);
-        bool hasUpdateWorldTask();
-        void setDrawDebugTask(PhysicsDrawDebugTask* drawDebugTask);
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();
     };

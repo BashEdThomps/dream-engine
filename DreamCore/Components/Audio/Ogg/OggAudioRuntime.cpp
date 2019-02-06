@@ -92,7 +92,7 @@ namespace Dream
         do
         {
             // Read up to a buffer's worth of decoded sound data
-            bytes = ov_read(&oggFile, buffer, AUDIO_BUFFER_SIZE, endian, 2, 1, &bitStream);
+            bytes = ov_read(&oggFile, &buffer[0], AUDIO_BUFFER_SIZE, endian, 2, 1, &bitStream);
 
             if (bytes < 0)
             {
@@ -103,7 +103,7 @@ namespace Dream
                 return false;
             }
             // Append to end of buffer
-            mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytes);
+            mAudioDataBuffer.insert(mAudioDataBuffer.end(), &buffer[0], &buffer[0] + bytes);
         }
         while (bytes > 0);
 

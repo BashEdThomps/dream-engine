@@ -28,7 +28,10 @@ namespace Dream
     }
 
     PhysicsDebugDrawer::PhysicsDebugDrawer
-    () : DreamObject ("PhysicsDebugDrawer")
+    () : DreamObject ("PhysicsDebugDrawer"),
+        mCamera(nullptr),
+        mVAO(0),mVBO(0)
+
     {
         #ifdef DREAM_LOG
         auto log = getLog();

@@ -44,11 +44,11 @@ namespace Dream
     ArgumentParser::parse
     ()
     {
-        string *nextArg;
+        string nextArg;
         for (int i=0;i<mArgc;i++)
         {
-            nextArg = new string(mArgv[i]);
-            if (nextArg->compare(Constants::PROJECT_DIRECTORY_ARG) == 0)
+            nextArg = string(mArgv[i]);
+            if (nextArg == Constants::PROJECT_DIRECTORY_ARG)
             {
                 if (mArgc > i)
                 {
@@ -62,7 +62,7 @@ namespace Dream
                     return;
                 }
             }
-            else if (nextArg->compare(Constants::PROJECT_UUID_ARG) == 0)
+            else if (nextArg == Constants::PROJECT_UUID_ARG)
             {
                 if (mArgc > i)
                 {
@@ -76,7 +76,7 @@ namespace Dream
                     return;
                 }
             }
-            else if (nextArg->compare(Constants::HTTP_ARG) == 0)
+            else if (nextArg == Constants::HTTP_ARG)
             {
                 mUsingHttp = true;
                 if (mArgc > i)
@@ -93,8 +93,6 @@ namespace Dream
                     #endif
                 }
             }
-            delete nextArg;
-            nextArg = nullptr;
         }
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;

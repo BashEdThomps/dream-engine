@@ -26,7 +26,7 @@ namespace Dream
     class ScrollerDefinition : public AssetDefinition
     {
     public:
-        ScrollerDefinition(ProjectDefinition*, json);
+        ScrollerDefinition(ProjectDefinition*, const json&);
         ~ScrollerDefinition() override;
 
         vec3 getVelocity();
