@@ -142,6 +142,7 @@ namespace Dream
 
         double getSceneStartTime() const;
         void setSceneStartTime(double sceneStartTime);
+
     protected:
         void updateLifetime();
     };

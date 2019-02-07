@@ -83,7 +83,10 @@ namespace Dream
         mDieAfter(0),
         mLifetimeUpdateTask(this),
         mScriptCreateStateTask(this),
-        mScriptRemoveStateTask(this->getUuid())
+        mScriptRemoveStateTask(this->getUuid()),
+        mScriptOnInitTask(this),
+        mScriptOnUpdateTask(this),
+        mScriptOnEventTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
@@ -183,9 +186,8 @@ namespace Dream
     {
         if (mScriptRuntimeState != nullptr)
         {
-            auto* tm = mSceneRuntime->getProjectRuntime()->getTaskManager();
             mScriptRemoveStateTask.clearState();
-            tm->pushTask(&mScriptRemoveStateTask);
+            mScriptRemoveStateTask.setState(TaskState::QUEUED);
             delete mScriptRuntimeState;
             mScriptRuntimeState = nullptr;
         }
@@ -768,11 +770,13 @@ namespace Dream
             auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
             if (scriptRuntime != nullptr)
             {
-                auto taskManager = mSceneRuntime->getProjectRuntime()->getTaskManager();
                 mScriptCreateStateTask.clearState();
+                mScriptCreateStateTask.setState(TaskState::QUEUED);
                 mScriptCreateStateTask.setScript(scriptRuntime);
                 mScriptRemoveStateTask.setScript(scriptRuntime);
-                taskManager->pushTask(&mScriptCreateStateTask);
+                mScriptOnInitTask.setScript(scriptRuntime);
+                mScriptOnUpdateTask.setScript(scriptRuntime);
+                mScriptOnEventTask.setScript(scriptRuntime);
                 return true;
             }
             else
@@ -1320,5 +1324,39 @@ namespace Dream
     ()
     {
         return &mLifetimeUpdateTask;
+    }
+
+    ScriptCreateStateTask*
+    SceneObjectRuntime::getScriptCreateStateTask
+    ()
+    {
+        return &mScriptCreateStateTask;
+    }
+
+    ScriptRemoveStateTask*
+    SceneObjectRuntime::getScriptRemoveStateTask
+    ()
+    {
+        return &mScriptRemoveStateTask;
+    }
+
+    ScriptOnInitTask *SceneObjectRuntime::getScriptOnInitTask()
+    {
+       return &mScriptOnInitTask;
+    }
+
+    ScriptOnEventTask *SceneObjectRuntime::getScriptOnEventTask()
+    {
+       return &mScriptOnEventTask;
+    }
+
+    ScriptOnUpdateTask *SceneObjectRuntime::getScriptOnUpdateTask()
+    {
+        return &mScriptOnUpdateTask;
+    }
+
+    ScriptRuntimeState *SceneObjectRuntime::getScriptRuntimeState()
+    {
+       return mScriptRuntimeState;
     }
 }

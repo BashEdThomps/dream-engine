@@ -48,10 +48,11 @@ namespace Dream
                         }
                         else
                         {
+                            t->setState(TaskState::ACTIVE);
                             t->execute();
                         }
 
-                        if (t->isCompleted())
+                        if (t->getState() == TaskState::COMPLETED)
                         {
                            completed.push_back(t);
                         }

@@ -3,11 +3,21 @@
 
 namespace Dream
 {
+
+    enum TaskState
+    {
+        CLEAR,
+        QUEUED,
+        WAITING,
+        ACTIVE,
+        COMPLETED
+    };
+
     class Task : public DreamObject
     {
     protected:
         atomic<int>  mThreadId;
-        atomic<bool> mCompleted;
+        atomic<TaskState> mState;
         atomic<unsigned int>  mDeferralCount;
 
         mutex mWaitingForMutex;
@@ -28,8 +38,8 @@ namespace Dream
         unsigned int getDeferralCount();
         void incrementDeferralCount();
 
-        bool isCompleted();
-        void setCompleted(bool a);
+        void setState(const TaskState& s);
+        TaskState getState() const;
 
         void clearDependency(Task* t);
         void notifyDependents();

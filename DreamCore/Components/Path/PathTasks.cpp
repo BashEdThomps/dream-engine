@@ -20,10 +20,11 @@ namespace Dream
         {
             mPathRuntime->update();
             mPathRuntime->unlock();
-            mCompleted = true;
+            mState = TaskState::COMPLETED;
         }
         else
         {
+            mState = TaskState::WAITING;
             mDeferralCount++;
         }
     }

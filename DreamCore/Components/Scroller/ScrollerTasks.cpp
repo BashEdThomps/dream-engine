@@ -20,10 +20,11 @@ namespace Dream
             {
                 mScrollerRuntime->update();
                 mScrollerRuntime->unlock();
-                mCompleted = true;
+                mState = TaskState::COMPLETED;
             }
             else
             {
+                mState = TaskState::WAITING;
                 mDeferralCount++;
             }
         }

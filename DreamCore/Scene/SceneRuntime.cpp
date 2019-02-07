@@ -766,6 +766,45 @@ namespace Dream
                     ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
+
+                // Scripting
+                auto scriptCreation = rt->getScriptCreateStateTask();
+                if (scriptCreation->getState() == TaskState::QUEUED)
+                {
+                    taskManager->pushTask(scriptCreation);
+                }
+                auto scriptRemoval = rt->getScriptRemoveStateTask();
+                if (scriptRemoval->getState() == TaskState::QUEUED)
+                {
+                    taskManager->pushTask(scriptRemoval);
+                }
+
+                /*
+                if (rt->hasScriptRuntime())
+                {
+                    auto scriptState = rt->getScriptRuntimeState();
+                    if (!scriptState->initialised)
+                    {
+                        auto init = rt->getScriptOnInitTask();
+                        init->clearState();
+                        taskManager->pushTask(init);
+                    }
+                    else
+                    {
+                        if (rt->hasEvents())
+                        {
+                            auto event = rt->getScriptOnEventTask();
+                            event->clearState();
+                            taskManager->pushTask(event);
+                        }
+
+                        auto update = rt->getScriptOnUpdateTask();
+                        update->clearState();
+                        taskManager->pushTask(update);
+                    }
+                }
+                */
+
                 // Graphics
                 if (!rt->getHidden() && rt->hasLightRuntime())
                 {

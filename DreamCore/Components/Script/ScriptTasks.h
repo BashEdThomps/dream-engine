@@ -29,27 +29,47 @@ namespace Dream
         void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptExecuteOnInitTask : public Task
+    class ScriptOnInitTask : public Task
     {
+        SceneObjectRuntime* mSceneObject;
+        ScriptRuntime* mScript;
+
     public:
+        ScriptOnInitTask(SceneObjectRuntime* rt);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptExecuteOnUpdateTask : public Task
+    class ScriptOnUpdateTask : public Task
     {
+        SceneObjectRuntime* mSceneObject;
+        ScriptRuntime* mScript;
+
     public:
+        ScriptOnUpdateTask(SceneObjectRuntime* rt);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptExecuteOnEventTask : public Task
+    class ScriptOnEventTask : public Task
     {
+        SceneObjectRuntime* mSceneObject;
+        ScriptRuntime* mScript;
+
     public:
+        ScriptOnEventTask(SceneObjectRuntime* rt);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptExecuteOnNanoVGTask : public GraphicsComponentTask
+    class ScriptOnNanoVGTask : public GraphicsComponentTask
     {
+        SceneObjectRuntime* mSceneObject;
+        ScriptRuntime* mScript;
+
     public:
+        ScriptOnNanoVGTask(SceneObjectRuntime* rt);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
 }

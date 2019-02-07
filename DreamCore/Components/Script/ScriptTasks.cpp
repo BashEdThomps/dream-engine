@@ -1,76 +1,234 @@
 ﻿#include "ScriptTasks.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "ScriptRuntime.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
-        ScriptCreateStateTask::ScriptCreateStateTask
-        (SceneObjectRuntime* rt)
-            : Task(),
-              mSceneObject(rt)
+//==================================================================================================
+    ScriptCreateStateTask::ScriptCreateStateTask
+    (SceneObjectRuntime* rt)
+        : Task(),
+          mSceneObject(rt)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptCreateStateTask");
+        #endif
+    }
+
+     void ScriptCreateStateTask::execute()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->createState(mSceneObject))
         {
-            #ifdef DREAM_LOG
-            setLogClassName("ScriptCreateStateTask");
-            #endif
+            mState = TaskState::COMPLETED;
+        }
+        else
+        {
+            mState = TaskState::WAITING;
+            mDeferralCount++;
+        }
+     }
+
+     void ScriptCreateStateTask::setScript(ScriptRuntime *rt)
+     {
+        mScript = rt;
+     }
+
+//==================================================================================================
+     ScriptRemoveStateTask::ScriptRemoveStateTask
+     (uint32_t uuid)
+        : Task(),
+          mUuid(uuid)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptRemoveStateTask");
+        #endif
+    }
+
+    void
+    ScriptRemoveStateTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->removeState(mUuid))
+        {
+            mState = TaskState::COMPLETED;
+        }
+        else
+        {
+            mState = TaskState::WAITING;
+            mDeferralCount++;
+        }
+     }
+
+     void
+     ScriptRemoveStateTask::setScript
+     (ScriptRuntime *rt)
+     {
+        mScript = rt;
+     }
+
+//==================================================================================================
+
+     ScriptOnInitTask::ScriptOnInitTask
+     (SceneObjectRuntime* rt)
+         : Task(),
+           mSceneObject(rt)
+     {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptExecuteOnInitTask");
+        #endif
+     }
+
+    void
+    ScriptOnInitTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->executeOnInit(mSceneObject->getScriptRuntimeState()))
+        {
+            mState = TaskState::COMPLETED;
+        }
+        else
+        {
+            mState = TaskState::WAITING;
+            mDeferralCount++;
         }
 
-         void ScriptCreateStateTask::execute()
+    }
+
+    void
+    ScriptOnInitTask::setScript
+    (ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+//==================================================================================================
+
+    ScriptOnUpdateTask::ScriptOnUpdateTask
+    (SceneObjectRuntime* rt)
+        : Task(),
+          mSceneObject(rt)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptExecuteOnUpdateTask");
+        #endif
+    }
+
+    void
+    ScriptOnUpdateTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->executeOnUpdate(mSceneObject->getScriptRuntimeState()))
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
-
-            if(mScript->createState(mSceneObject))
-            {
-                mCompleted = true;
-            }
-            else
-            {
-                mDeferralCount++;
-            }
-         }
-
-         void ScriptCreateStateTask::setScript(ScriptRuntime *rt)
-         {
-            mScript = rt;
-         }
-
-         ScriptRemoveStateTask::ScriptRemoveStateTask
-         (uint32_t uuid)
-            : Task(),
-              mUuid(uuid)
-        {
-            #ifdef DREAM_LOG
-            setLogClassName("ScriptRemoveStateTask");
-            #endif
+            mState = TaskState::COMPLETED;
         }
-
-         void ScriptRemoveStateTask::execute()
+        else
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
+            mState = TaskState::WAITING;
+            mDeferralCount++;
+        }
+    }
 
-            if(mScript->removeState(mUuid))
-            {
-                mCompleted = true;
-            }
-            else
-            {
-                mDeferralCount++;
-            }
-         }
+    void
+    ScriptOnUpdateTask::setScript
+    (ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
 
-         void ScriptRemoveStateTask::setScript(ScriptRuntime *rt)
-         {
-            mScript = rt;
-         }
+//==================================================================================================
 
-    void ScriptExecuteOnInitTask::execute() {}
+    ScriptOnEventTask::ScriptOnEventTask
+    (SceneObjectRuntime* rt)
+        : Task(),
+          mSceneObject(rt)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptOnEventTask");
+        #endif
+    }
 
-    void ScriptExecuteOnUpdateTask::execute() {}
+    void
+    ScriptOnEventTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
 
-    void ScriptExecuteOnEventTask::execute() {}
+        if(mScript->executeOnEvent(mSceneObject->getScriptRuntimeState()))
+        {
+            mState = TaskState::COMPLETED;
+        }
+        else
+        {
+            mState = TaskState::WAITING;
+            mDeferralCount++;
+        }
+    }
 
-    void ScriptExecuteOnNanoVGTask::execute() {}
+    void
+    ScriptOnEventTask::setScript
+    (ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+//==================================================================================================
+
+    ScriptOnNanoVGTask::ScriptOnNanoVGTask
+    (SceneObjectRuntime* rt)
+        : GraphicsComponentTask(),
+          mSceneObject(rt)
+
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptExecuteOnNanoVGTask");
+        #endif
+    }
+
+    void
+    ScriptOnNanoVGTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        auto scene = mSceneObject->getSceneRuntime();
+        auto project = scene->getProjectRuntime();
+        auto nvg = project->getNanoVGComponent();
+
+        if(mScript->executeOnNanoVG(nvg,scene))
+        {
+            mState = TaskState::COMPLETED;
+        }
+        else
+        {
+            mState = TaskState::WAITING;
+            mDeferralCount++;
+        }
+    }
+
+    void
+    ScriptOnNanoVGTask::setScript
+    (ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
 }

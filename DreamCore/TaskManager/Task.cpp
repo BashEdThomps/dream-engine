@@ -5,7 +5,7 @@ namespace Dream
         Task::Task()
             : DreamObject("Task"),
             mThreadId(-1),
-            mCompleted(false),
+            mState(CLEAR),
             mDeferralCount(0)
         {
             clearState();
@@ -21,11 +21,6 @@ namespace Dream
         void Task::setThreadId(int t)
         {
             mThreadId = t;
-        }
-
-        bool Task::isCompleted()
-        {
-            return mCompleted;
         }
 
         unsigned int Task::getDeferralCount()
@@ -44,7 +39,7 @@ namespace Dream
             mWaitingForMeMutex.unlock();
 
             mThreadId = -1;
-            mCompleted = false;
+            mState = TaskState::CLEAR;
             mDeferralCount = 0;
         }
 
@@ -87,6 +82,7 @@ namespace Dream
             #ifdef DREAM_LOG
             if (retval)
             {
+                mState = TaskState::WAITING;
                 getLog()->critical("Waiting for {} dependencies to finish",mWaitingFor.size());
             }
             #endif
@@ -104,8 +100,13 @@ namespace Dream
             t->mWaitingForMeMutex.unlock();
         }
 
-        void Task::setCompleted(bool a)
+        void Task::setState(const TaskState& s)
         {
-            mCompleted = a;
+            mState = s;;
+        }
+
+        TaskState Task::getState() const
+        {
+            return mState;
         }
 }

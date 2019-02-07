@@ -33,16 +33,18 @@ namespace Dream
                     mComponent->addPhysicsObjectRuntime(mRuntime);
                     mComponent->unlock();
                     mRuntime->setInPhysicsWorld(true);
-                    mCompleted=true;
+                    mState = TaskState::COMPLETED;
                 }
                 else
                 {
+                    mState = TaskState::WAITING;
                     mDeferralCount++;
                 }
                 mRuntime->unlock();
             }
             else
             {
+                mState = TaskState::WAITING;
                 mDeferralCount++;
             }
         }
@@ -67,10 +69,11 @@ namespace Dream
             {
                 mComponent->stepSimulation();
                 mComponent->unlock();
-                mCompleted = true;
+                mState = TaskState::COMPLETED;
             }
             else
             {
+                mState = TaskState::WAITING;
                 mDeferralCount++;
             }
         }
@@ -95,11 +98,11 @@ namespace Dream
             {
                 mComponent->getDebugDrawer()->drawAll();
                 mComponent->unlock();
-                mCompleted = true;
+                mState = TaskState::COMPLETED;
             }
             else
             {
-                mDeferralCount++;
+                mState = TaskState::WAITING;
             }
         }
 }

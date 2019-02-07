@@ -183,6 +183,12 @@ namespace Dream
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
         LifetimeUpdateTask* getLifetimeUpdateTask();
+        ScriptCreateStateTask* getScriptCreateStateTask();
+        ScriptRemoveStateTask* getScriptRemoveStateTask();
+        ScriptOnInitTask* getScriptOnInitTask();
+        ScriptOnEventTask* getScriptOnEventTask();
+        ScriptOnUpdateTask* getScriptOnUpdateTask();
+        ScriptRuntimeState* getScriptRuntimeState();
 
     private:
         AnimationRuntime* mAnimationRuntime;
@@ -214,5 +220,8 @@ namespace Dream
         LifetimeUpdateTask mLifetimeUpdateTask;
         ScriptCreateStateTask mScriptCreateStateTask;
         ScriptRemoveStateTask mScriptRemoveStateTask;
+        ScriptOnInitTask mScriptOnInitTask;
+        ScriptOnUpdateTask mScriptOnUpdateTask;
+        ScriptOnEventTask mScriptOnEventTask;
     };
 }

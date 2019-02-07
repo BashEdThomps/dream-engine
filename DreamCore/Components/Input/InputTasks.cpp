@@ -24,10 +24,11 @@ namespace Dream
             #endif
             mComponent->pollData();
             mComponent->unlock();
-            mCompleted = true;
+            mState = TaskState::COMPLETED;
         }
         else
         {
+            mState = TaskState::WAITING;
             mDeferralCount++;
         }
     }
@@ -55,10 +56,11 @@ namespace Dream
 
             if (mComponent->executeInputScript())
             {
-                mCompleted = true;
+                mState = TaskState::COMPLETED;
             }
             else
             {
+                mState = TaskState::WAITING;
                 mDeferralCount++;
             }
             mComponent->unlock();
