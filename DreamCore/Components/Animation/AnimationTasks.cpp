@@ -22,7 +22,6 @@ namespace Dream
          {
              mAnimationRuntime->update();
              mAnimationRuntime->unlock();
-             setActive(false);
              mCompleted = true;
          }
          else

@@ -60,7 +60,6 @@ namespace Dream
         void nextPoint();
 
         PathUpdateTask* getUpdateTask();
-        bool updateTaskActive();
 
     private:
         bool mWrapPath;

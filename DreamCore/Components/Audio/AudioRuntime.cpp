@@ -55,7 +55,6 @@ namespace Dream
     {
           alDeleteBuffers(1,&mBuffer);
           alDeleteSources(1,&mSource);
-          mMarkersUpdateTask.setExpired(true);
     }
 
     void
@@ -347,11 +346,6 @@ namespace Dream
     AudioMarkersUpdateTask *AudioRuntime::getMarkersUpdateTask()
     {
        return &mMarkersUpdateTask;
-    }
-
-    bool AudioRuntime::markersUpdateTaskActive()
-    {
-       return mMarkersUpdateTask.isActive();
     }
 
     ALint

@@ -114,11 +114,6 @@ namespace Dream
         mRunning = running;
     }
 
-    bool AnimationRuntime::updateTaskActive()
-    {
-       return mUpdateTask.isActive();
-    }
-
     AnimationUpdateTask *AnimationRuntime::getUpdateTask()
     {
        return &mUpdateTask;

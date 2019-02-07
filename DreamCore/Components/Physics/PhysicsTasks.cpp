@@ -33,7 +33,6 @@ namespace Dream
                     mComponent->addPhysicsObjectRuntime(mRuntime);
                     mComponent->unlock();
                     mRuntime->setInPhysicsWorld(true);
-                    setActive(false);
                     mCompleted=true;
                 }
                 else
@@ -68,7 +67,6 @@ namespace Dream
             {
                 mComponent->stepSimulation();
                 mComponent->unlock();
-                setActive(false);
                 mCompleted = true;
             }
             else
@@ -97,7 +95,6 @@ namespace Dream
             {
                 mComponent->getDebugDrawer()->drawAll();
                 mComponent->unlock();
-                setActive(false);
                 mCompleted = true;
             }
             else

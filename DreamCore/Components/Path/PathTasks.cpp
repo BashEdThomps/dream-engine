@@ -20,7 +20,6 @@ namespace Dream
         {
             mPathRuntime->update();
             mPathRuntime->unlock();
-            setActive(false);
             mCompleted = true;
         }
         else

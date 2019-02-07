@@ -45,9 +45,6 @@ namespace Dream
         auto log = getLog();
         log->trace("Destructing");
         #endif
-
-        mPollDataTask.setExpired(true);
-        mExecuteScriptTask.setExpired(true);
     }
 
     bool
@@ -199,13 +196,6 @@ namespace Dream
         return &mPollDataTask;
     }
 
-    bool
-    InputComponent::pollDataTaskActive
-    () const
-    {
-       return mPollDataTask.isActive();
-    }
-
     InputExecuteScriptTask*
     InputComponent::getExecuteScriptTask
     ()
@@ -222,12 +212,4 @@ namespace Dream
     {
         mCurrentSceneRuntime = currentSceneRuntime;
     }
-
-    bool
-    InputComponent::executeScriptTaskActive
-    () const
-    {
-        return mExecuteScriptTask.isActive();
-    }
-
 }

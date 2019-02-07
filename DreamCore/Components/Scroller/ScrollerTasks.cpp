@@ -20,7 +20,6 @@ namespace Dream
             {
                 mScrollerRuntime->update();
                 mScrollerRuntime->unlock();
-                setActive(false);
                 mCompleted = true;
             }
             else

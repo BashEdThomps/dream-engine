@@ -56,7 +56,6 @@ namespace Dream
         bool getRunning() const;
         void setRunning(bool running);
 
-        bool updateTaskActive();
         AnimationUpdateTask* getUpdateTask();
 
     private:

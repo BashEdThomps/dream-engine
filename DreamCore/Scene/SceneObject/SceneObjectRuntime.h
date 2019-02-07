@@ -183,7 +183,6 @@ namespace Dream
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
         LifetimeUpdateTask* getLifetimeUpdateTask();
-        bool lifetimeUpdateTaskActive();
 
     private:
         AnimationRuntime* mAnimationRuntime;

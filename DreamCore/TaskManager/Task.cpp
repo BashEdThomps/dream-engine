@@ -4,29 +4,18 @@ namespace Dream
 {
         Task::Task()
             : DreamObject("Task"),
-            mActive(false),
-            mExpired(false),
             mThreadId(-1),
             mCompleted(false),
-            mDeferralCount(0),
-            mWaitingForDependencies(0)
-        {}
+            mDeferralCount(0)
+        {
+            clearState();
+        }
 
         Task::~Task() {}
 
         void Task::incrementDeferralCount()
         {
             mDeferralCount++;
-        }
-
-        bool Task::hasExpired() const
-        {
-            return mExpired;
-        }
-
-        void Task::setExpired(bool e)
-        {
-            mExpired = e;
         }
 
         void Task::setThreadId(int t)
@@ -44,24 +33,61 @@ namespace Dream
             return mDeferralCount;
         }
 
+        void Task::clearState()
+        {
+            mWaitingForMutex.lock();
+            mWaitingFor.clear();
+            mWaitingForMutex.unlock();
+
+            mWaitingForMeMutex.lock();
+            mWaitingForMe.clear();
+            mWaitingForMeMutex.unlock();
+
+            mThreadId = -1;
+            mCompleted = false;
+            mDeferralCount = 0;
+        }
+
+        void Task::clearDependency(Task* t)
+        {
+            mWaitingForMutex.lock();
+            auto itr = find(mWaitingFor.begin(), mWaitingFor.end(), t);
+            if (itr != mWaitingFor.end())
+            {
+                mWaitingFor.erase(itr);
+            }
+            else
+            {
+                #ifdef DREAM_LOG
+                getLog()->critical("*** WHAT THE F JEFF!!! *** {} was not waiting for {}",getClassName(), t->getClassName());
+                #endif
+            }
+            mWaitingForMutex.unlock();
+        }
+
         void Task::notifyDependents()
         {
+           mWaitingForMeMutex.lock();
            for (Task* t : mWaitingForMe)
            {
                #ifdef DREAM_LOG
                getLog()->critical("is notifying dependant {} of completion",t->getClassName());
                #endif
-               t->mWaitingForDependencies--;
+               t->clearDependency(this);
            }
+           mWaitingForMe.clear();
+           mWaitingForMeMutex.unlock();
         }
 
         bool Task::isWaitingForDependencies()
         {
-            bool retval = mWaitingForDependencies != 0;
+            mWaitingForMutex.lock();
+            bool retval = !mWaitingFor.empty();
+            mWaitingForMutex.unlock();
             #ifdef DREAM_LOG
             if (retval)
             {
-                getLog()->critical("Waiting for {} dependencies to finish",mWaitingForDependencies);
+                getLog()->critical("Waiting for {} dependencies to finish",mWaitingFor.size());
             }
             #endif
             return retval;
@@ -69,28 +95,17 @@ namespace Dream
 
         void Task::dependsOn(Task* t)
         {
-            mWaitingForDependencies++;
-            t->mWaitingForMe.emplace_back(this);
+            mWaitingForMutex.lock();
+            mWaitingFor.push_back(t);
+            mWaitingForMutex.unlock();
+
+            t->mWaitingForMeMutex.lock();
+            t->mWaitingForMe.push_back(this);
+            t->mWaitingForMeMutex.unlock();
         }
 
         void Task::setCompleted(bool a)
         {
             mCompleted = a;
-        }
-
-        bool Task::isActive() const
-        {
-            return mActive;
-        }
-
-        void Task::setActive(bool a)
-        {
-            mActive = a;
-        }
-
-        void Task::clearDependencies()
-        {
-           mWaitingForMe.clear();
-           mWaitingForDependencies = 0;
         }
 }

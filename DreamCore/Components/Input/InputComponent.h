@@ -66,11 +66,8 @@ namespace Dream
 
         JoystickMapping getJoystickMapping() const;
 
-        bool pollDataTaskActive() const;
-        bool executeScriptTaskActive() const;
         InputPollDataTask* getPollDataTask();
         InputExecuteScriptTask* getExecuteScriptTask();
-
 
         SceneRuntime *getCurrentSceneRuntime() const;
         void setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime);

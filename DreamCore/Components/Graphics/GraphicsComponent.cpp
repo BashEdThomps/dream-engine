@@ -859,10 +859,7 @@ namespace Dream
     {
         for (GraphicsComponentTask* t : mTaskQueue)
         {
-            if (!t->hasExpired())
-            {
-                t->execute();
-            }
+            t->execute();
             delete t;
         }
         mTaskQueue.clear();

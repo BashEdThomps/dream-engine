@@ -110,8 +110,6 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
-        mLifetimeUpdateTask.setExpired(true);
-
         removeScrollerRuntime();
         removeAnimationRuntime();
         removeAudioRuntime();
@@ -183,13 +181,10 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptCreateStateTask.isActive())
-        {
-            mScriptCreateStateTask.setExpired(true);
-        }
-        else if (mScriptRuntimeState != nullptr && !mScriptRemoveStateTask.isActive())
+        if (mScriptRuntimeState != nullptr)
         {
             auto* tm = mSceneRuntime->getProjectRuntime()->getTaskManager();
+            mScriptRemoveStateTask.clearState();
             tm->pushTask(&mScriptRemoveStateTask);
             delete mScriptRuntimeState;
             mScriptRuntimeState = nullptr;
@@ -773,13 +768,11 @@ namespace Dream
             auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
             if (scriptRuntime != nullptr)
             {
-                if (!mScriptCreateStateTask.isActive())
-                {
-                    auto taskManager = mSceneRuntime->getProjectRuntime()->getTaskManager();
-                    mScriptCreateStateTask.setScript(scriptRuntime);
-                    mScriptRemoveStateTask.setScript(scriptRuntime);
-                    taskManager->pushTask(&mScriptCreateStateTask);
-                }
+                auto taskManager = mSceneRuntime->getProjectRuntime()->getTaskManager();
+                mScriptCreateStateTask.clearState();
+                mScriptCreateStateTask.setScript(scriptRuntime);
+                mScriptRemoveStateTask.setScript(scriptRuntime);
+                taskManager->pushTask(&mScriptCreateStateTask);
                 return true;
             }
             else
@@ -1320,13 +1313,6 @@ namespace Dream
     const
     {
         return mDieAfter;
-    }
-
-    bool
-    SceneObjectRuntime::lifetimeUpdateTaskActive
-    ()
-    {
-        return mLifetimeUpdateTask.isActive();
     }
 
     LifetimeUpdateTask*

@@ -475,9 +475,4 @@ namespace Dream
     {
         return &mUpdateWorldTask;
     }
-
-    bool PhysicsComponent::updateWorldTaskActive()
-    {
-       return mUpdateWorldTask.isActive();
-    }
 }

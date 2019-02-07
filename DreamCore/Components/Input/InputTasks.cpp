@@ -24,7 +24,6 @@ namespace Dream
             #endif
             mComponent->pollData();
             mComponent->unlock();
-            setActive(false);
             mCompleted = true;
         }
         else
@@ -56,7 +55,6 @@ namespace Dream
 
             if (mComponent->executeInputScript())
             {
-                setActive(false);
                 mCompleted = true;
             }
             else

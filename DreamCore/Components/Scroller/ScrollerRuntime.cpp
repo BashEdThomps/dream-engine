@@ -250,8 +250,4 @@ namespace Dream
         return &mUpdateTask;
     }
 
-    bool ScrollerRuntime::updateTaskActive()
-    {
-        return mUpdateTask.isActive();
-    }
 }

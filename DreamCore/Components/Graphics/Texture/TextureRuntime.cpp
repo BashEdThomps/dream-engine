@@ -22,11 +22,6 @@ namespace Dream
     TextureRuntime::~TextureRuntime
     ()
     {
-        if (mCreateTextureTask)
-        {
-            mCreateTextureTask->setExpired(true);
-        }
-
         mProjectRuntime->getGraphicsComponent()->pushTask(new TextureDeletionTask(mGLID));
         #ifdef DREAM_LOG
         checkGLError();

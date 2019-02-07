@@ -103,6 +103,5 @@ namespace Dream
         void setKinematic(bool setKenematic);
 
         PhysicsAddObjectTask* getAddObjectTask();
-        bool addObjectTaskActive();
     };
 }

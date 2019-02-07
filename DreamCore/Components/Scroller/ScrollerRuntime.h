@@ -43,7 +43,6 @@ namespace Dream
         void collectGarbage() override;
 
         ScrollerUpdateTask* getUpdateTask();
-        bool updateTaskActive();
 
     protected:
         SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);

@@ -62,8 +62,6 @@ namespace Dream
         log->trace( "Destroying" );
         #endif
 
-        mAddObjectTask.setExpired(true);
-
         /***** Deletes are handled by PhysicsComponent! *****/
 
         if (mRigidBody != nullptr)
@@ -175,12 +173,6 @@ namespace Dream
     PhysicsObjectRuntime::getAddObjectTask()
     {
        return &mAddObjectTask;
-    }
-
-    bool
-    PhysicsObjectRuntime::addObjectTaskActive()
-    {
-        return mAddObjectTask.isActive();
     }
 
     btCollisionShape*

@@ -22,7 +22,6 @@ namespace Dream
 
             if(mScript->createState(mSceneObject))
             {
-                setActive(false);
                 mCompleted = true;
             }
             else
@@ -54,7 +53,6 @@ namespace Dream
 
             if(mScript->removeState(mUuid))
             {
-                setActive(false);
                 mCompleted = true;
             }
             else

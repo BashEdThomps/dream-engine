@@ -52,7 +52,6 @@ namespace Dream
             {
                 mSceneObjectRuntime->increaseLifetime(timeDelta);
             }
-            setActive(false);
             mCompleted = true;
             mSceneObjectRuntime->unlock();
         }

@@ -487,7 +487,6 @@ namespace Dream
         sr->createSceneTasks();
         sr->getCamera()->update();
         mTaskManager->waitForFence();
-
         return true;
     }
 

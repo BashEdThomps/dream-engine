@@ -55,10 +55,6 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
         #endif
-        if (mInitMeshTask)
-        {
-            mInitMeshTask->setExpired(true);
-        }
         mParent
             ->getProjectRuntime()
             ->getGraphicsComponent()

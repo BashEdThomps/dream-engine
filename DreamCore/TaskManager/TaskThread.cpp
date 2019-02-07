@@ -32,58 +32,43 @@ namespace Dream
                     continue;
                 }
 
+                mTaskQueueMutex.lock();
                 while (!mTaskQueue.empty())
                 {
-                    mTaskQueueMutex.lock();
                     #ifdef DREAM_LOG
                     getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
                     #endif
                     for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
                     {
                         auto* t = (*itr);
-                        // Check if succeeded
-                        if (t->isCompleted())
-                        {
-                            t->notifyDependents();
-                            completed.push_back(t);
-                        }
-                        // Bop expired
-                        else if (t->hasExpired())
-                        {
-                           t->setActive(false);
-                           t->setCompleted(false);
-                           t->clearDependencies();
-                           t->notifyDependents();
-                           completed.push_back(t);
-                        }
                         // Check if ready to execute
-                        else if (t->isWaitingForDependencies())
+                        if (t->isWaitingForDependencies())
                         {
                             t->incrementDeferralCount();
-                            #ifdef DREAM_LOG
-                            getLog()->critical("Worker {} has deferred {} for {} time",
-                                               getThreadId(),t->getClassName(),t->getDeferralCount());
-                            #endif
                         }
                         else
                         {
                             t->execute();
                         }
 
+                        if (t->isCompleted())
+                        {
+                           completed.push_back(t);
+                        }
                     }
 
                     for (auto* t : completed)
                     {
+                        t->notifyDependents();
                         auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
                         if (itr != mTaskQueue.end())
                         {
                             mTaskQueue.erase(itr);
                         }
                     }
-
-                    mTaskQueueMutex.unlock();
-                    std::this_thread::yield();
+                    completed.clear();
                 }
+                mTaskQueueMutex.unlock();
 
                 #ifdef DREAM_LOG
                 getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());

@@ -68,20 +68,6 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace( "Destroying Object" );
         #endif
-
-        if (mCompileVertexTask)
-        {
-            mCompileVertexTask->setExpired(true);
-        }
-        if (mCompileFragmentTask)
-        {
-            mCompileFragmentTask->setExpired(true);
-        }
-        if (mLinkTask)
-        {
-            mLinkTask->setExpired(true);
-        }
-
         mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(getShaderProgram()));
     }
 

@@ -682,8 +682,9 @@ namespace Dream
     SceneRuntime::createSceneTasks
     ()
     {
+
         #ifdef DREAM_LOG
-        getLog()->debug("Rebuilding SceneObject Update Vector");
+        getLog()->debug("Building SceneRuntime Task Queue...");
         #endif
 
         auto taskManager = mProjectRuntime->getTaskManager();
@@ -691,109 +692,98 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
+
+        // Poll Data
         inputComponent->setCurrentSceneRuntime(this);
-        if (!inputComponent->pollDataTaskActive())
-        {
-            if (!inputComponent->executeScriptTaskActive())
-            {
-                inputComponent->getExecuteScriptTask()->dependsOn(inputComponent->getPollDataTask());
-                taskManager->pushTask(inputComponent->getExecuteScriptTask());
-            }
-            taskManager->pushTask(inputComponent->getPollDataTask());
-        }
+        inputComponent->getPollDataTask()->clearState();
+        taskManager->pushTask(inputComponent->getPollDataTask());
 
+        // Process Input
+        inputComponent->getExecuteScriptTask()->clearState();
+        inputComponent->getExecuteScriptTask()->dependsOn(inputComponent->getPollDataTask());
+        taskManager->pushTask(inputComponent->getExecuteScriptTask());
+
+        // Process SceneObjects
         vector<LifetimeUpdateTask*> lifetimeTasks;
-
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                LifetimeUpdateTask* lt = nullptr;
                 rt->lock();
+                LifetimeUpdateTask* lt = rt->getLifetimeUpdateTask();
                 // SceneObject
-                if (!rt->lifetimeUpdateTaskActive())
-                {
-                    lt = rt->getLifetimeUpdateTask();
-                    lt->dependsOn(inputComponent->getExecuteScriptTask());
-                    lifetimeTasks.push_back(lt);
+                lt->clearState();
+                lt->dependsOn(inputComponent->getExecuteScriptTask());
+                lifetimeTasks.push_back(lt);
 
-                    // Animation
-                    if (rt->hasAnimationRuntime())
+                // Animation
+                if (rt->hasAnimationRuntime())
+                {
+                    auto anim = rt->getAnimationRuntime();
+                    auto ut = anim->getUpdateTask();
+                    ut->clearState();
+                    ut->dependsOn(lt);
+                    taskManager->pushTask(ut);
+                }
+                // Audio
+                if (rt->hasAudioRuntime())
+                {
+                    auto audio = rt->getAudioRuntime();
+                    auto ut = audio->getMarkersUpdateTask();
+                    ut->clearState();
+                    ut->dependsOn(lt);
+                    taskManager->pushTask(ut);
+                }
+
+                // Physics
+                if (rt->hasPhysicsObjectRuntime())
+                {
+                    auto pObj = rt->getPhysicsObjectRuntime();
+                    if (!pObj->isInPhysicsWorld())
                     {
-                        auto anim = rt->getAnimationRuntime();
-                        if (!anim->updateTaskActive())
-                        {
-                            auto ut = anim->getUpdateTask();
-                            ut->dependsOn(lt);
-                            taskManager->pushTask(ut);
-                        }
+                        auto ut = pObj->getAddObjectTask();
+                        ut->clearState();
+                        ut->dependsOn(lt);
+                        taskManager->pushTask(ut);
                     }
-                    // Audio
-                    if (rt->hasAudioRuntime())
-                    {
-                        auto audio = rt->getAudioRuntime();
-                        if (!audio->markersUpdateTaskActive())
-                        {
-                            auto ut = audio->getMarkersUpdateTask();
-                            ut->dependsOn(lt);
-                            taskManager->pushTask(ut);
-                        }
-                    }
-                    // Graphics
-                    if (!rt->getHidden() && rt->hasLightRuntime())
-                    {
-                       graphicsComponent->addToLightQueue(rt);
-                    }
-                    // Physics
-                    if (rt->hasPhysicsObjectRuntime())
-                    {
-                        auto pObj = rt->getPhysicsObjectRuntime();
-                        if (!pObj->isInPhysicsWorld() && !pObj->addObjectTaskActive())
-                        {
-                            auto ut = pObj->getAddObjectTask();
-                            ut->dependsOn(lt);
-                            taskManager->pushTask(ut);
-                        }
-                    }
-                    // Path
-                    if (rt->hasPathRuntime())
-                    {
-                        auto path = rt->getPathRuntime();
-                        if (!path->updateTaskActive())
-                        {
-                            auto ut = path->getUpdateTask();
-                            ut->dependsOn(lt);
-                            taskManager->pushTask(ut);
-                        }
-                    }
-                    // Scroller
-                    if (rt->hasScrollerRuntime())
-                    {
-                        auto scr = rt->getScrollerRuntime();
-                        if (!scr->updateTaskActive())
-                        {
-                            auto ut = scr->getUpdateTask();
-                            ut->dependsOn(lt);
-                            taskManager->pushTask(ut);
-                        }
-                    }
-                    taskManager->pushTask(lt);
+                }
+                // Path
+                if (rt->hasPathRuntime())
+                {
+                    auto path = rt->getPathRuntime();
+                    auto ut = path->getUpdateTask();
+                    ut->clearState();
+                    ut->dependsOn(lt);
+                    taskManager->pushTask(ut);
+                }
+                // Scroller
+                if (rt->hasScrollerRuntime())
+                {
+                    auto scr = rt->getScrollerRuntime();
+                    auto ut = scr->getUpdateTask();
+                    ut->clearState();
+                    ut->dependsOn(lt);
+                    taskManager->pushTask(ut);
+                }
+                // Graphics
+                if (!rt->getHidden() && rt->hasLightRuntime())
+                {
+                   graphicsComponent->addToLightQueue(rt);
                 }
                 rt->unlock();
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
 
-        if (!physicsComponent->updateWorldTaskActive())
+        auto pt = physicsComponent->getUpdateWorldTask();
+        pt->clearState();
+        for (auto* lt : lifetimeTasks)
         {
-            auto pt = physicsComponent->getUpdateWorldTask();
-            for (auto* lt : lifetimeTasks)
-            {
-                pt->dependsOn(lt);
-            }
-            taskManager->pushTask(pt);
+            pt->dependsOn(lt);
+            taskManager->pushTask(lt);
         }
+        taskManager->pushTask(pt);
 
         if (physicsComponent->getDebug())
         {

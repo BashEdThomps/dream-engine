@@ -388,11 +388,6 @@ namespace Dream
         return &mUpdateTask;
     }
 
-    bool PathRuntime::updateTaskActive()
-    {
-        return mUpdateTask.isActive();
-    }
-
     const int PathRuntime::SPLINE_DIMENSIONS = 3;
     const int PathRuntime::SPLINE_DEGREES = 3;
 }
