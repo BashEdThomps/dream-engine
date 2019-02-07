@@ -45,7 +45,7 @@ namespace Dream
          mInPhysicsWorld(false),
          mPhysicsComponent(comp),
          mModelCache(modelCache),
-         mAddObjectTask(nullptr)
+         mAddObjectTask(mPhysicsComponent,this)
     {
         #ifdef DREAM_LOG
         setLogClassName("PhysicsObjectRuntime");
@@ -62,11 +62,7 @@ namespace Dream
         log->trace( "Destroying" );
         #endif
 
-        if (mAddObjectTask)
-        {
-            mAddObjectTask->setExpired(true);
-            mAddObjectTask = nullptr;
-        }
+        mAddObjectTask.setExpired(true);
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -175,9 +171,16 @@ namespace Dream
         }
     }
 
-    void PhysicsObjectRuntime::setAddObjectTask(PhysicsAddObjectTask* t)
+    PhysicsAddObjectTask*
+    PhysicsObjectRuntime::getAddObjectTask()
     {
-       mAddObjectTask = t;
+       return &mAddObjectTask;
+    }
+
+    bool
+    PhysicsObjectRuntime::addObjectTaskActive()
+    {
+        return mAddObjectTask.isActive();
     }
 
     btCollisionShape*

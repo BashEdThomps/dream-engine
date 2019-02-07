@@ -17,6 +17,8 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
+#include "SceneObjectTasks.h"
+#include "../../Components/Script/ScriptTasks.h"
 #include "../../Components/Graphics/Frustum.h"
 #include "../../Common/Runtime.h"
 #include "../../Components/Transform.h"
@@ -54,9 +56,6 @@ namespace Dream
     class ParticleEmitterDefinition;
     class ScriptRuntime;
     class AssetRuntime;
-    class LifetimeUpdateTask;
-    class ScriptCreateStateTask;
-    class ScriptRemoveStateTask;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -183,12 +182,8 @@ namespace Dream
 
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
-        void setLifetimeUpdateTask(LifetimeUpdateTask* l);
-        bool hasLifetimeUpdateTask();
-
-        void setScriptRuntimeState(ScriptRuntimeState* s);
-        void setScriptCreateStateTask(ScriptCreateStateTask* t);
-        void setScriptRemoveStateTask(ScriptRemoveStateTask* t);
+        LifetimeUpdateTask* getLifetimeUpdateTask();
+        bool lifetimeUpdateTaskActive();
 
     private:
         AnimationRuntime* mAnimationRuntime;
@@ -217,8 +212,8 @@ namespace Dream
         long mDeferredFor;
         long mObjectLifetime;
         long mDieAfter;
-        LifetimeUpdateTask* mLifetimeUpdateTask;
-        ScriptCreateStateTask* mScriptCreateStateTask;
-        ScriptRemoveStateTask* mScriptRemoveStateTask;
+        LifetimeUpdateTask mLifetimeUpdateTask;
+        ScriptCreateStateTask mScriptCreateStateTask;
+        ScriptRemoveStateTask mScriptRemoveStateTask;
     };
 }

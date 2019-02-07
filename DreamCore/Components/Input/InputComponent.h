@@ -19,13 +19,12 @@
 #include "../Component.h"
 #include "InputMapping.h"
 #include "InputState.h"
+#include "InputTasks.h"
 
 using namespace std;
 
 namespace Dream
 {
-    class InputPollDataTask;
-    class InputExecuteScriptTask;
 
     class InputComponent : public Component
     {
@@ -34,7 +33,7 @@ namespace Dream
         ~InputComponent() override;
 
         bool init() override;
-        bool executeInputScript(SceneRuntime* sr);
+        bool executeInputScript();
         void pollData();
 
         void debugKeyboard() const;
@@ -66,13 +65,19 @@ namespace Dream
         float clearDeadzone(float val);
 
         JoystickMapping getJoystickMapping() const;
-        void setPollDataTask(InputPollDataTask* t);
-        bool hasPollDataTask() const;
-        void setExecuteScriptTask(InputExecuteScriptTask* t);
-        bool hasExecuteScriptTask() const;
 
+        bool pollDataTaskActive() const;
+        bool executeScriptTaskActive() const;
+        InputPollDataTask* getPollDataTask();
+        InputExecuteScriptTask* getExecuteScriptTask();
+
+
+        SceneRuntime *getCurrentSceneRuntime() const;
+        void setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime);
 
     private:
+        SceneRuntime* mCurrentSceneRuntime;
+
         bool mUseKeyboard;
         bool mUseMouse;
         bool mUseJoystick;
@@ -86,8 +91,7 @@ namespace Dream
         JoystickState mJoystickState;
         JoystickState mLastJoystickState;
         JoystickMapping mJoystickMapping;
-        InputPollDataTask* mPollDataTask;
-        InputExecuteScriptTask* mExecuteScriptTask;
-
+        InputPollDataTask mPollDataTask;
+        InputExecuteScriptTask mExecuteScriptTask;
     };
 }

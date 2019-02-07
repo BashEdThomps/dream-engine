@@ -11,7 +11,6 @@ namespace Dream
         AudioRuntime* mAudioRuntime;
     public:
         AudioMarkersUpdateTask(AudioRuntime* rt);
-        ~AudioMarkersUpdateTask();
         void execute();
     };
 }

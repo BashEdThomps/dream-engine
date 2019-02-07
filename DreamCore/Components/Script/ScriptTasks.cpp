@@ -1,21 +1,17 @@
-﻿#pragma once
-
-#include "ScriptTasks.h"
+﻿#include "ScriptTasks.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "ScriptRuntime.h"
 
 namespace Dream
 {
         ScriptCreateStateTask::ScriptCreateStateTask
-        (SceneObjectRuntime* rt, ScriptRuntime* script)
+        (SceneObjectRuntime* rt)
             : Task(),
-              mSceneObject(rt),
-              mScript(script)
+              mSceneObject(rt)
         {
             #ifdef DREAM_LOG
             setLogClassName("ScriptCreateStateTask");
             #endif
-            mSceneObject->setScriptCreateStateTask(this);
         }
 
          void ScriptCreateStateTask::execute()
@@ -26,20 +22,24 @@ namespace Dream
 
             if(mScript->createState(mSceneObject))
             {
-                mSceneObject->setScriptCreateStateTask(nullptr);
+                setActive(false);
                 mCompleted = true;
             }
             else
             {
                 mDeferralCount++;
             }
-        }
+         }
+
+         void ScriptCreateStateTask::setScript(ScriptRuntime *rt)
+         {
+            mScript = rt;
+         }
 
          ScriptRemoveStateTask::ScriptRemoveStateTask
-         (ScriptRuntime* script, uint32_t uuid)
+         (uint32_t uuid)
             : Task(),
-              mUuid(uuid),
-              mScript(script)
+              mUuid(uuid)
         {
             #ifdef DREAM_LOG
             setLogClassName("ScriptRemoveStateTask");
@@ -54,14 +54,19 @@ namespace Dream
 
             if(mScript->removeState(mUuid))
             {
+                setActive(false);
                 mCompleted = true;
             }
             else
             {
                 mDeferralCount++;
             }
-        }
-    };
+         }
+
+         void ScriptRemoveStateTask::setScript(ScriptRuntime *rt)
+         {
+            mScript = rt;
+         }
 
     void ScriptExecuteOnInitTask::execute() {}
 

@@ -18,9 +18,8 @@ namespace Dream
     class InputExecuteScriptTask : public Task
     {
         InputComponent* mComponent;
-        SceneRuntime* mSceneRuntime;
     public:
-        InputExecuteScriptTask(InputComponent* cp, SceneRuntime* rt);
+        InputExecuteScriptTask(InputComponent* cp);
         void execute();
     };
 }

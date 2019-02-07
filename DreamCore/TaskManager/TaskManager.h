@@ -20,107 +20,17 @@
 
 namespace Dream
 {
-
     class TaskManager : public DreamObject
     {
-        vector<TaskThread> mThreadVector;
+        vector<TaskThread*> mThreadVector;
         size_t mNextThread;
     public:
-
-        inline TaskManager()
-            : DreamObject("TaskManager"),
-              mNextThread(0)
-        {
-            startAllThreads();
-        }
-
-        inline ~TaskManager() override
-        {
-            #ifdef DREAM_LOG
-            getLog()->debug("Destroying Object");
-            #endif
-            joinAllThreads();
-        }
-
-        inline void startAllThreads()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Starting all worker threads...");
-            #endif
-
-            for (int i=0; i < static_cast<int>(thread::hardware_concurrency()); i++)
-            {
-                #ifdef DREAM_LOG
-                getLog()->critical("Spawning thread {}",i);
-                #endif
-                mThreadVector.push_back(TaskThread(i));
-            }
-        }
-
-        inline void joinAllThreads()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Joining all threads...");
-            #endif
-            for (TaskThread &t : mThreadVector)
-            {
-                t.setRunning(false);
-            }
-            for (TaskThread &t : mThreadVector)
-            {
-                t.join();
-            }
-            mThreadVector.clear();
-        }
-
-        inline void pushTask(Task& t)
-        {
-            while (true)
-            {
-                bool result = mThreadVector.at(mNextThread).pushTask(t);
-                mNextThread = (mNextThread +1) % mThreadVector.size();
-                if (result)
-                {
-                    #ifdef DREAM_LOG
-                    getLog()->critical("{} pushed to worker {}",t.getClassName(),mNextThread);
-                    #endif
-                    break;
-                }
-            }
-        }
-
-        inline void clearFences()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Clearing all fences");
-            #endif
-            for (TaskThread &t : mThreadVector)
-            {
-               t.clearFence();
-            }
-        }
-
-        inline void waitForFence()
-        {
-           #ifdef DREAM_LOG
-           getLog()->critical("... Waiting for fence ...");
-           #endif
-           while (true)
-           {
-               bool result = true;
-               for (TaskThread& t : mThreadVector)
-               {
-                   result = result && t.getFence();
-               }
-               if (result)
-               {
-                   #ifdef DREAM_LOG
-                   getLog()->critical("All Fences hit");
-                   #endif
-                   break;
-               }
-               std::this_thread::yield();
-           }
-        }
+         TaskManager();
+         ~TaskManager();
+         void startAllThreads();
+         void joinAllThreads();
+         void pushTask(Task* t);
+         void clearFences();
+         void waitForFence();
     };
 }

@@ -64,7 +64,6 @@ namespace Dream
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
             ScriptRuntimeState* s = new ScriptRuntimeState(this,runtime);
-            runtime->setScriptRuntimeState(s);
             #ifdef DREAM_LOG
             getLog()->debug("loadScript called for {}", runtime->getNameAndUuidString() );
             getLog()->debug("calling scriptLoadFromString in lua for {}" , runtime->getNameAndUuidString() );
@@ -91,7 +90,7 @@ namespace Dream
                     std::string what = err.what();
                     #ifdef DREAM_LOG
                     getLog()->critical("{}:\nCould not execute lua script:\n{}",
-                        s->runtime->getUuid(),what);
+                    s->runtime->getUuid(),what);
                     #endif
                     s->error = true;
                 }

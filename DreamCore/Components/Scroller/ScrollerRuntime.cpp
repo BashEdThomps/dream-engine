@@ -33,7 +33,8 @@ namespace Dream
         mVelocity(0),
         mRangeBegin(0),
         mRangeEnd(0),
-        mLoop(false)
+        mLoop(false),
+        mUpdateTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScrollerRuntime");
@@ -66,7 +67,6 @@ namespace Dream
         mRangeEnd =  scrollerDef->getRangeEnd();
         mLoop = scrollerDef->getLoop();
 
-        uint32_t parentId = mSceneObjectRuntime->getUuid();
         for (const ScrollerItem& item : items)
         {
             auto newChild = createChlidRuntime(item);
@@ -243,5 +243,15 @@ namespace Dream
         }
         mPostRange.clear();
         mSceneObjectRuntime->unlock();
+    }
+
+    ScrollerUpdateTask* ScrollerRuntime::getUpdateTask()
+    {
+        return &mUpdateTask;
+    }
+
+    bool ScrollerRuntime::updateTaskActive()
+    {
+        return mUpdateTask.isActive();
     }
 }

@@ -344,6 +344,16 @@ namespace Dream
         return mDurationInSamples;
     }
 
+    AudioMarkersUpdateTask *AudioRuntime::getMarkersUpdateTask()
+    {
+       return &mMarkersUpdateTask;
+    }
+
+    bool AudioRuntime::markersUpdateTaskActive()
+    {
+       return mMarkersUpdateTask.isActive();
+    }
+
     ALint
     AudioRuntime::getSampleOffset
     ()

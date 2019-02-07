@@ -59,6 +59,9 @@ namespace Dream
         void setToCurrentPoint();
         void nextPoint();
 
+        PathUpdateTask* getUpdateTask();
+        bool updateTaskActive();
+
     private:
         bool mWrapPath;
         size_t mCurrentIndex;

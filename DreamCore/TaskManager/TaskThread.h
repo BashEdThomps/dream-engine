@@ -4,7 +4,6 @@
 #include <vector>
 #include <mutex>
 
-#include "Task.h"
 #include "../Common/DreamObject.h"
 
 using std::thread;
@@ -14,141 +13,25 @@ using std::atomic;
 
 namespace Dream
 {
+    class Task;
     class TaskThread : public DreamObject
     {
     protected:
         thread mThread;
-        vector<Task> mTaskQueue;
-        vector<Task> mCompletedTasks;
+        vector<Task*> mTaskQueue;
         mutex mTaskQueueMutex;
         atomic<bool> mRunning;
         atomic<bool> mFence;
         int mThreadId;
     public:
 
-        inline TaskThread (int id)
-            : DreamObject ("TaskThread"),
-              mThread(thread(&TaskThread::executeTaskQueue,this)),
-              mRunning(false),
-              mFence(false),
-              mThreadId(id)
-        {
-        }
-
-        inline void join()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Joining Thread {}",mThreadId);
-            #endif
-            mThread.join();
-        }
-
-        inline void
-        executeTaskQueue
-        ()
-        {
-            mRunning = true;
-            while (mRunning)
-            {
-                if (mFence)
-                {
-                    std::this_thread::yield();
-                    continue;
-                }
-
-                while (!mTaskQueue.empty())
-                {
-                    mTaskQueueMutex.lock();
-                    #ifdef DREAM_LOG
-                    getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
-                    #endif
-                    for (Task& t : mTaskQueue)
-                    {
-                        // Check if not expired
-                        if (t.hasExpired())
-                        {
-                           t.setCompleted();
-                        }
-                        else
-                        {
-                            if (!t.isWaitingForDependencies())
-                            {
-                                t.execute();
-                            }
-                            else
-                            {
-                                t.incrementDeferralCount();
-                            }
-                        }
-
-                        if (t.isCompleted())
-                        {
-                            t.notifyDependents();
-                            mCompletedTasks.push_back(t);
-                        }
-                        else
-                        {
-                            #ifdef DREAM_LOG
-                            getLog()->critical("Worker {} has deferred {} for {} time",getThreadId(),t.getClassName(),t.getDeferralCount());
-                            #endif
-                        }
-                    }
-
-                    // Remove completed tasks from queue
-                    for(const Task& t : mCompletedTasks)
-                    {
-                       auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
-                       if (itr!=mTaskQueue.end())
-                       {
-                           mTaskQueue.erase(itr);
-                       }
-                    }
-                    mCompletedTasks.clear();
-                    mTaskQueueMutex.unlock();
-                    std::this_thread::yield();
-                }
-
-                #ifdef DREAM_LOG
-                getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
-                #endif
-                mFence = true;
-                std::this_thread::yield();
-            }
-        }
-
-        inline void clearFence()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Clearing fence for thread {}",getThreadId());
-            #endif
-            mFence = false;
-        }
-
-        inline bool getFence()
-        {
-            return mFence;
-        }
-
-        inline bool pushTask(Task& t)
-        {
-            if(mTaskQueueMutex.try_lock())
-            {
-                mTaskQueue.push_back(t);
-                t.setThreadId(mThreadId);
-                mTaskQueueMutex.unlock();
-                return true;
-            }
-            return false;
-        }
-
-        inline void setRunning(volatile bool running)
-        {
-            mRunning = running;
-        }
-
-        inline int getThreadId()
-        {
-            return mThreadId;
-        }
+         TaskThread (int id);
+         void join();
+         void executeTaskQueue();
+         void clearFence();
+         bool getFence();
+         bool pushTask(Task* t);
+         void setRunning(volatile bool running);
+         int getThreadId();
     };
 }

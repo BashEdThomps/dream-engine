@@ -23,12 +23,13 @@ namespace Dream
     InputComponent::InputComponent
     (ProjectRuntime* rt, bool useKeyboard, bool useMouse, bool useJoystick)
         : Component (rt),
+          mCurrentSceneRuntime(nullptr),
           mUseKeyboard(useKeyboard),
           mUseMouse(useMouse),
           mUseJoystick(useJoystick),
           mJoystickMapping(JsPsxMapping),
-          mPollDataTask(nullptr),
-          mExecuteScriptTask(nullptr)
+          mPollDataTask(this),
+          mExecuteScriptTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("InputComponent");
@@ -45,17 +46,8 @@ namespace Dream
         log->trace("Destructing");
         #endif
 
-        if (mPollDataTask)
-        {
-            mPollDataTask->setExpired(true);
-            mPollDataTask = nullptr;
-        }
-
-        if (mExecuteScriptTask)
-        {
-            mExecuteScriptTask->setExpired(true);
-            mExecuteScriptTask = nullptr;
-        }
+        mPollDataTask.setExpired(true);
+        mExecuteScriptTask.setExpired(true);
     }
 
     bool
@@ -71,12 +63,15 @@ namespace Dream
 
     bool
     InputComponent::executeInputScript
-    (SceneRuntime* sRunt)
+    ()
     {
-        auto inputScript = sRunt->getInputScript();
-        if (inputScript)
+        if (mCurrentSceneRuntime)
         {
-            return inputScript->executeOnInput(this, sRunt);
+            auto inputScript = mCurrentSceneRuntime->getInputScript();
+            if (inputScript)
+            {
+                return inputScript->executeOnInput(this, mCurrentSceneRuntime);
+            }
         }
         return true;
     }
@@ -197,32 +192,42 @@ namespace Dream
         return mJoystickMapping;
     }
 
-    void
-    InputComponent::setPollDataTask
-    (InputPollDataTask* t)
+    InputPollDataTask*
+    InputComponent::getPollDataTask
+    ()
     {
-        mPollDataTask = t;
+        return &mPollDataTask;
     }
 
     bool
-    InputComponent::hasPollDataTask
+    InputComponent::pollDataTaskActive
     () const
     {
-       return mPollDataTask != nullptr;
+       return mPollDataTask.isActive();
     }
 
-    void
-    InputComponent::setExecuteScriptTask
-    (InputExecuteScriptTask* t)
+    InputExecuteScriptTask*
+    InputComponent::getExecuteScriptTask
+    ()
     {
-        mExecuteScriptTask = t;
+        return &mExecuteScriptTask;
+    }
+
+    SceneRuntime *InputComponent::getCurrentSceneRuntime() const
+    {
+        return mCurrentSceneRuntime;
+    }
+
+    void InputComponent::setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime)
+    {
+        mCurrentSceneRuntime = currentSceneRuntime;
     }
 
     bool
-    InputComponent::hasExecuteScriptTask
+    InputComponent::executeScriptTaskActive
     () const
     {
-       return mExecuteScriptTask != nullptr;
+        return mExecuteScriptTask.isActive();
     }
 
 }

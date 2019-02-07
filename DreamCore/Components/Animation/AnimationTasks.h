@@ -12,7 +12,6 @@ namespace Dream
         AnimationRuntime* mAnimationRuntime;
    public:
         AnimationUpdateTask(AnimationRuntime* rt);
-        ~AnimationUpdateTask();
         void execute();
    };
 }

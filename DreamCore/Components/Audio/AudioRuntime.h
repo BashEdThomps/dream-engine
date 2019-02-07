@@ -103,7 +103,7 @@ namespace Dream
         vector<char> getAudioBuffer(size_t offset, size_t length) const;
         int getDurationInSamples();
         void clearMarkersUpdateTask();
-        void setMarkersUpdateTask(AudioMarkersUpdateTask* t);
-        bool hasMarkersUpdateTask();
+        AudioMarkersUpdateTask* getMarkersUpdateTask();
+        bool markersUpdateTaskActive();
     };
 }

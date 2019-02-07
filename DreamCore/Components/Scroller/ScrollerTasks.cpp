@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ScrollerTasks.h"
 #include "ScrollerRuntime.h"
 
@@ -22,6 +20,7 @@ namespace Dream
             {
                 mScrollerRuntime->update();
                 mScrollerRuntime->unlock();
+                setActive(false);
                 mCompleted = true;
             }
             else

@@ -19,6 +19,7 @@
 
 #include "ScrollerDefinition.h"
 #include "../DiscreteAssetRuntime.h"
+#include "ScrollerTasks.h"
 
 namespace Dream
 {
@@ -40,12 +41,16 @@ namespace Dream
         bool useDefinition() override;
         void update();
         void collectGarbage() override;
+
+        ScrollerUpdateTask* getUpdateTask();
+        bool updateTaskActive();
+
     protected:
         SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);
         bool removeChlidRuntime(const ScrollerItem& item);
         void addAssets(SceneObjectRuntime* runt);
         Range checkRange(SceneObjectRuntime* runt) const;
-    private:
+
         vec3 mVelocity;
         vec3 mRangeBegin;
         vec3 mRangeEnd;
@@ -54,5 +59,6 @@ namespace Dream
         vector<SceneObjectRuntime*> mPostRange;
         map<uint32_t,uint32_t> mAssetsMap;
         bool mLoop;
+        ScrollerUpdateTask mUpdateTask;
     };
 }

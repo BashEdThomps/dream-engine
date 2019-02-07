@@ -11,7 +11,7 @@ namespace Dream
         setLogClassName("AudioMarkersUpdateTask");
         #endif
         rt->lock();
-        rt->setMarkersUpdateTask(this);
+        setActive(true);
         rt->unlock();
     }
 
@@ -25,7 +25,7 @@ namespace Dream
         if(mAudioRuntime->tryLock())
         {
             mAudioRuntime->updateMarkers();
-            mAudioRuntime->clearMarkersUpdateTask();
+            setActive(false);
             mAudioRuntime->unlock();
             mCompleted = true;
         }

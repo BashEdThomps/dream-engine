@@ -13,17 +13,20 @@ namespace Dream
         SceneObjectRuntime* mSceneObject;
         ScriptRuntime* mScript;
     public:
-        ScriptCreateStateTask(SceneObjectRuntime* rt, ScriptRuntime* script);
+        ScriptCreateStateTask(SceneObjectRuntime* rt);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
+
 
     class ScriptRemoveStateTask : public Task
     {
         uint32_t mUuid;
         ScriptRuntime* mScript;
     public:
-        ScriptRemoveStateTask(ScriptRuntime* script, uint32_t uuid);
+        ScriptRemoveStateTask(uint32_t uuid);
         void execute();
+        void setScript(ScriptRuntime* rt);
     };
 
     class ScriptExecuteOnInitTask : public Task

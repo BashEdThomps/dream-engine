@@ -4,72 +4,70 @@
 
 namespace Dream
 {
-   InputPollDataTask::InputPollDataTask
-   (InputComponent* cp)
-       : Task(), mComponent(cp)
-   {
-    #ifdef DREAM_LOG
-    setLogClassName("InputPollDataTask");
-    #endif
-    mComponent->setPollDataTask(this);
-   }
-
-   void
-   InputPollDataTask::execute
-   ()
-   {
-    if (mComponent->tryLock())
+    InputPollDataTask::InputPollDataTask
+    (InputComponent* cp)
+        : Task(), mComponent(cp)
     {
         #ifdef DREAM_LOG
-        getLog()->critical("Executing...");
+        setLogClassName("InputPollDataTask");
         #endif
-        mComponent->pollData();
-        mComponent->setPollDataTask(nullptr);
-        mComponent->unlock();
-        mCompleted = true;
     }
-    else
+
+    void
+    InputPollDataTask::execute
+    ()
     {
-        mDeferralCount++;
-    }
-   }
-
-   InputExecuteScriptTask::InputExecuteScriptTask
-   (InputComponent* cp, SceneRuntime* rt)
-       : Task(), mComponent(cp), mSceneRuntime(rt)
-   {
-    #ifdef DREAM_LOG
-    setLogClassName("InputExecuteScriptTask");
-    #endif
-    mComponent->setExecuteScriptTask(this);
-   }
-
-    void InputExecuteScriptTask::execute()
-   {
-       #ifdef DREAM_LOG
-    getLog()->critical("Executing on thread {}",mThreadId);
-    #endif
-
-       if (mComponent->tryLock())
-       {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing...");
-        #endif
-
-        if (mComponent->executeInputScript(mSceneRuntime))
+        if (mComponent->tryLock())
         {
-        mComponent->setExecuteScriptTask(nullptr);
-        mCompleted = true;
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing on worker {}",mThreadId);
+            #endif
+            mComponent->pollData();
+            mComponent->unlock();
+            setActive(false);
+            mCompleted = true;
         }
         else
         {
-        mDeferralCount++;
+            mDeferralCount++;
         }
-        mComponent->unlock();
-       }
-       else
-       {
-       mDeferralCount++;
-       }
-   }
+    }
+
+    InputExecuteScriptTask::InputExecuteScriptTask
+    (InputComponent* cp)
+        : Task(), mComponent(cp)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("InputExecuteScriptTask");
+        #endif
+    }
+
+    void InputExecuteScriptTask::execute()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if (mComponent->tryLock())
+        {
+            #ifdef DREAM_LOG
+            getLog()->critical("Executing...");
+            #endif
+
+            if (mComponent->executeInputScript())
+            {
+                setActive(false);
+                mCompleted = true;
+            }
+            else
+            {
+                mDeferralCount++;
+            }
+            mComponent->unlock();
+        }
+        else
+        {
+            mDeferralCount++;
+        }
+    }
 }

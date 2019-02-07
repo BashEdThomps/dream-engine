@@ -20,28 +20,34 @@
 
 #include "SceneObject/SceneObjectDefinition.h"
 #include "SceneObject/SceneObjectRuntime.h"
-#include "SceneObject/SceneObjectTasks.h"
-
-#include "../TaskManager/TaskManager.h"
 
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Script/ScriptComponent.h"
+#include "../Components/Input/InputComponent.h"
 
-#include "../Components/Graphics/Shader/ShaderCache.h"
-#include "../Components/Graphics/Shader/ShaderRuntime.h"
-#include "../Components/Graphics/Camera.h"
 
+#include "../TaskManager/TaskManager.h"
+#include "SceneObject/SceneObjectTasks.h"
 #include "../Components/Animation/AnimationTasks.h"
 #include "../Components/Audio/AudioTasks.h"
 #include "../Components/Path/PathTasks.h"
 #include "../Components/Scroller/ScrollerTasks.h"
-
-#include "../Components/Time.h"
-#include "../Components/Physics/PhysicsObjectRuntime.h"
 #include "../Components/Physics/PhysicsTasks.h"
 #include "../Components/Input/InputTasks.h"
+
+#include "../Components/Time.h"
+#include "../Components/Graphics/Camera.h"
+
+#include "../Components/Animation/AnimationRuntime.h"
+#include "../Components/Graphics/Shader/ShaderRuntime.h"
+#include "../Components/Audio/AudioRuntime.h"
+#include "../Components/Physics/PhysicsObjectRuntime.h"
+#include "../Components/Path/PathRuntime.h"
+#include "../Components/Scroller/ScrollerRuntime.h"
+
+#include "../Components/Graphics/Shader/ShaderCache.h"
 
 #ifdef max
 #undef max
@@ -685,49 +691,53 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
-        if (!inputComponent->hasPollDataTask())
+        inputComponent->setCurrentSceneRuntime(this);
+        if (!inputComponent->pollDataTaskActive())
         {
-            InputPollDataTask pollDataTask(inputComponent);
-            if (!inputComponent->hasExecuteScriptTask())
+            if (!inputComponent->executeScriptTaskActive())
             {
-                InputExecuteScriptTask executeInputTask(inputComponent,this);
-                executeInputTask.dependsOn(&pollDataTask);
-                taskManager->pushTask(executeInputTask);
+                inputComponent->getExecuteScriptTask()->dependsOn(inputComponent->getPollDataTask());
+                taskManager->pushTask(inputComponent->getExecuteScriptTask());
             }
-            taskManager->pushTask(pollDataTask);
+            taskManager->pushTask(inputComponent->getPollDataTask());
         }
 
-        vector<Task*> lifetimeTasks;
+        vector<LifetimeUpdateTask*> lifetimeTasks;
 
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                Task* lt = nullptr;
+                LifetimeUpdateTask* lt = nullptr;
                 rt->lock();
                 // SceneObject
-                if (!rt->hasLifetimeUpdateTask())
+                if (!rt->lifetimeUpdateTaskActive())
                 {
-                    lt = LifetimeUpdateTask(rt).dependsOn(executeInputTask);
+                    lt = rt->getLifetimeUpdateTask();
+                    lt->dependsOn(inputComponent->getExecuteScriptTask());
                     lifetimeTasks.push_back(lt);
 
                     // Animation
                     if (rt->hasAnimationRuntime())
                     {
                         auto anim = rt->getAnimationRuntime();
-                        if (!anim->hasUpdateTask())
+                        if (!anim->updateTaskActive())
                         {
-                            taskManager->pushTask((new AnimationUpdateTask(anim))->dependsOn(lt));
+                            auto ut = anim->getUpdateTask();
+                            ut->dependsOn(lt);
+                            taskManager->pushTask(ut);
                         }
                     }
                     // Audio
                     if (rt->hasAudioRuntime())
                     {
                         auto audio = rt->getAudioRuntime();
-                        if (!audio->hasMarkersUpdateTask())
+                        if (!audio->markersUpdateTaskActive())
                         {
-                            taskManager->pushTask((new AudioMarkersUpdateTask(audio))->dependsOn(lt));
+                            auto ut = audio->getMarkersUpdateTask();
+                            ut->dependsOn(lt);
+                            taskManager->pushTask(ut);
                         }
                     }
                     // Graphics
@@ -739,27 +749,33 @@ namespace Dream
                     if (rt->hasPhysicsObjectRuntime())
                     {
                         auto pObj = rt->getPhysicsObjectRuntime();
-                        if (!pObj->isInPhysicsWorld() && !pObj->hasUpdateTask())
+                        if (!pObj->isInPhysicsWorld() && !pObj->addObjectTaskActive())
                         {
-                            taskManager->pushTask((new PhysicsAddObjectTask(physicsComponent, pObj))->dependsOn(lt));
+                            auto ut = pObj->getAddObjectTask();
+                            ut->dependsOn(lt);
+                            taskManager->pushTask(ut);
                         }
                     }
                     // Path
                     if (rt->hasPathRuntime())
                     {
                         auto path = rt->getPathRuntime();
-                        if (!path->hasUpdateTask())
+                        if (!path->updateTaskActive())
                         {
-                            taskManager->pushTask((new PathUpdateTask(path))->dependsOn(lt));
+                            auto ut = path->getUpdateTask();
+                            ut->dependsOn(lt);
+                            taskManager->pushTask(ut);
                         }
                     }
                     // Scroller
                     if (rt->hasScrollerRuntime())
                     {
                         auto scr = rt->getScrollerRuntime();
-                        if (!scr->hasUpdateTask())
+                        if (!scr->updateTaskActive())
                         {
-                            taskManager->pushTask((new ScrollerUpdateTask(scr))->dependsOn(lt));
+                            auto ut = scr->getUpdateTask();
+                            ut->dependsOn(lt);
+                            taskManager->pushTask(ut);
                         }
                     }
                     taskManager->pushTask(lt);
@@ -769,9 +785,9 @@ namespace Dream
             }
         ));
 
-        if (!physicsComponent->hasUpdateWorldTask())
+        if (!physicsComponent->updateWorldTaskActive())
         {
-            auto pt = new PhysicsUpdateWorldTask(physicsComponent);
+            auto pt = physicsComponent->getUpdateWorldTask();
             for (auto* lt : lifetimeTasks)
             {
                 pt->dependsOn(lt);

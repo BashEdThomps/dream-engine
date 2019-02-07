@@ -56,6 +56,9 @@ namespace Dream
         bool getRunning() const;
         void setRunning(bool running);
 
+        bool updateTaskActive();
+        AnimationUpdateTask* getUpdateTask();
+
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::Type easing);
         vector<AnimationKeyframe> mKeyframes;
@@ -76,5 +79,6 @@ namespace Dream
         tween<float> mTweenScaleX;
         tween<float> mTweenScaleY;
         tween<float> mTweenScaleZ;
+        AnimationUpdateTask mUpdateTask;
     };
 }

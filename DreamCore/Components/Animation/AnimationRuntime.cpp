@@ -36,7 +36,8 @@ namespace Dream
         mCurrentTime(0),
         mDuration(1),
         mRelative(false),
-        mOriginalTransform(runtime->getTransform().getMatrix())
+        mOriginalTransform(runtime->getTransform().getMatrix()),
+        mUpdateTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("AnimationRuntime");
@@ -111,6 +112,16 @@ namespace Dream
     (bool running)
     {
         mRunning = running;
+    }
+
+    bool AnimationRuntime::updateTaskActive()
+    {
+       return mUpdateTask.isActive();
+    }
+
+    AnimationUpdateTask *AnimationRuntime::getUpdateTask()
+    {
+       return &mUpdateTask;
     }
 
     void

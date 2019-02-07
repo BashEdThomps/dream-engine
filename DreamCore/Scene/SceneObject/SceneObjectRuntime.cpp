@@ -73,7 +73,6 @@ namespace Dream
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
         mBoundingBox(),
-        mLifetimeUpdateTask(nullptr),
         mHasCameraFocus(false),
         mDeleted(false),
         mHidden(false),
@@ -82,8 +81,9 @@ namespace Dream
         mDeferredFor(0),
         mObjectLifetime(0),
         mDieAfter(0),
-        mScriptCreateStateTask(nullptr),
-        mScriptRemoveStateTask(nullptr)
+        mLifetimeUpdateTask(this),
+        mScriptCreateStateTask(this),
+        mScriptRemoveStateTask(this->getUuid())
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
@@ -110,10 +110,7 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
-        if (mLifetimeUpdateTask)
-        {
-            mLifetimeUpdateTask->setExpired(true);
-        }
+        mLifetimeUpdateTask.setExpired(true);
 
         removeScrollerRuntime();
         removeAnimationRuntime();
@@ -186,14 +183,14 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptCreateStateTask)
+        if (mScriptCreateStateTask.isActive())
         {
-            mScriptCreateStateTask->setExpired(true);
+            mScriptCreateStateTask.setExpired(true);
         }
-        else if (mScriptRuntimeState != nullptr && mScriptRemoveStateTask == nullptr)
+        else if (mScriptRuntimeState != nullptr && !mScriptRemoveStateTask.isActive())
         {
             auto* tm = mSceneRuntime->getProjectRuntime()->getTaskManager();
-            tm->pushTask(new ScriptRemoveStateTask(mScriptRuntimeState->script,getUuid()));
+            tm->pushTask(&mScriptRemoveStateTask);
             delete mScriptRuntimeState;
             mScriptRuntimeState = nullptr;
         }
@@ -776,10 +773,12 @@ namespace Dream
             auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
             if (scriptRuntime != nullptr)
             {
-                if (mScriptCreateStateTask == nullptr)
+                if (!mScriptCreateStateTask.isActive())
                 {
                     auto taskManager = mSceneRuntime->getProjectRuntime()->getTaskManager();
-                    taskManager->pushTask(new ScriptCreateStateTask(this,scriptRuntime));
+                    mScriptCreateStateTask.setScript(scriptRuntime);
+                    mScriptRemoveStateTask.setScript(scriptRuntime);
+                    taskManager->pushTask(&mScriptCreateStateTask);
                 }
                 return true;
             }
@@ -948,7 +947,7 @@ namespace Dream
     SceneObjectRuntime::transformOffsetInitial
     (const mat4& matrix)
     {
-        mTransform.setMatrix(mTransform.getMatrix()*mInitialTransform.getMatrix());
+        mTransform.setMatrix(matrix*mInitialTransform.getMatrix());
     }
 
     void
@@ -1324,37 +1323,16 @@ namespace Dream
     }
 
     bool
-    SceneObjectRuntime::hasLifetimeUpdateTask
+    SceneObjectRuntime::lifetimeUpdateTaskActive
     ()
     {
-        return mLifetimeUpdateTask != nullptr;
+        return mLifetimeUpdateTask.isActive();
     }
 
-    void
-    SceneObjectRuntime::setLifetimeUpdateTask
-    (LifetimeUpdateTask* l)
+    LifetimeUpdateTask*
+    SceneObjectRuntime::getLifetimeUpdateTask
+    ()
     {
-        mLifetimeUpdateTask = l;
-    }
-
-    void
-    SceneObjectRuntime::setScriptRuntimeState
-    (ScriptRuntimeState* s)
-    {
-        mScriptRuntimeState = s;
-    }
-
-    void
-    SceneObjectRuntime::setScriptCreateStateTask
-    (ScriptCreateStateTask* t)
-    {
-        mScriptCreateStateTask = t;
-    }
-
-    void
-    SceneObjectRuntime::setScriptRemoveStateTask
-    (ScriptRemoveStateTask* t)
-    {
-        mScriptRemoveStateTask = t;
+        return &mLifetimeUpdateTask;
     }
 }

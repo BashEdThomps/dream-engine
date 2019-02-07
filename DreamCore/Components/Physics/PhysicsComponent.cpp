@@ -470,4 +470,14 @@ namespace Dream
     {
         return mDebugDrawer;
     }
+
+    PhysicsUpdateWorldTask *PhysicsComponent::getUpdateWorldTask()
+    {
+        return &mUpdateWorldTask;
+    }
+
+    bool PhysicsComponent::updateWorldTaskActive()
+    {
+       return mUpdateWorldTask.isActive();
+    }
 }

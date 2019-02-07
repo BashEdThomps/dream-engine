@@ -81,5 +81,8 @@ namespace Dream
         void drawDebug();
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();
+
+        PhysicsUpdateWorldTask* getUpdateWorldTask();
+        bool updateWorldTaskActive();
     };
 }
