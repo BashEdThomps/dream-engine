@@ -1,5 +1,9 @@
 #include "Task.h"
 
+#include <algorithm>
+
+using std::find;
+
 namespace Dream
 {
         Task::Task()
@@ -46,7 +50,7 @@ namespace Dream
         void Task::clearDependency(Task* t)
         {
             mWaitingForMutex.lock();
-            auto itr = find(mWaitingFor.begin(), mWaitingFor.end(), t);
+            auto itr = std::find(mWaitingFor.begin(), mWaitingFor.end(), t);
             if (itr != mWaitingFor.end())
             {
                 mWaitingFor.erase(itr);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -41,6 +41,7 @@
 #include "../../Components/Script/ScriptDefinition.h"
 #include "../../Components/Script/ScriptComponent.h"
 #include "../../Components/Script/ScriptRuntime.h"
+#include "../../Components/Script/ScriptRuntimeState.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -1340,23 +1341,38 @@ namespace Dream
         return &mScriptRemoveStateTask;
     }
 
-    ScriptOnInitTask *SceneObjectRuntime::getScriptOnInitTask()
+    ScriptOnInitTask*
+    SceneObjectRuntime::getScriptOnInitTask
+    ()
     {
        return &mScriptOnInitTask;
     }
 
-    ScriptOnEventTask *SceneObjectRuntime::getScriptOnEventTask()
+    ScriptOnEventTask*
+    SceneObjectRuntime::getScriptOnEventTask
+    ()
     {
        return &mScriptOnEventTask;
     }
 
-    ScriptOnUpdateTask *SceneObjectRuntime::getScriptOnUpdateTask()
+    ScriptOnUpdateTask*
+    SceneObjectRuntime::getScriptOnUpdateTask
+    ()
     {
         return &mScriptOnUpdateTask;
     }
 
-    ScriptRuntimeState *SceneObjectRuntime::getScriptRuntimeState()
+    ScriptRuntimeState*
+    SceneObjectRuntime::getScriptRuntimeState
+    ()
     {
-       return mScriptRuntimeState;
+        return mScriptRuntimeState;
+    }
+
+    void
+    SceneObjectRuntime::setScriptRuntimeState
+    (ScriptRuntimeState *s)
+    {
+       mScriptRuntimeState = s;
     }
 }

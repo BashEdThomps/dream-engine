@@ -3,6 +3,7 @@
 #include <thread>
 #include <vector>
 #include <mutex>
+#include <atomic>
 
 #include "../Common/DreamObject.h"
 

@@ -16,6 +16,7 @@
 #include "ScriptRuntime.h"
 #include "ScriptDefinition.h"
 #include "ScriptComponent.h"
+#include "ScriptRuntimeState.h"
 
 #include "../Input/InputComponent.h"
 #include "../Graphics/NanoVGComponent.h"
@@ -102,6 +103,7 @@ namespace Dream
                 getLog()->debug("Loaded Script Successfully");
                 #endif
             }
+
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }

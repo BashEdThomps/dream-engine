@@ -13,11 +13,13 @@
 #pragma once
 
 #include <string>
+#include <atomic>
 
 #include "LockableObject.h"
 #include "Definition.h"
 
 using std::string;
+using std::atomic;
 
 namespace Dream
 {
@@ -37,7 +39,7 @@ namespace Dream
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
-        atomic<uint32_t> mUuid;
+        atomic<uint32> mUuid;
         /**
          * @brief Name of this Runtime, given by it's Definition.
          */

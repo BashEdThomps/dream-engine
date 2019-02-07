@@ -1,6 +1,10 @@
 #include "TaskThread.h"
 #include "Task.h"
 
+#include <algorithm>
+
+using std::find;
+
 namespace Dream
 {
          TaskThread::TaskThread (int id)

@@ -49,25 +49,4 @@ namespace Dream
     private:
         string mSource;
     };
-
-    class ScriptRuntimeState
-    {
-    public:
-        inline ScriptRuntimeState
-        (ScriptRuntime* sc, SceneObjectRuntime* rt)
-            : script(sc), runtime(rt), error(false), initialised(false)
-        {
-
-        }
-
-        inline ~ScriptRuntimeState
-        ()
-        {
-        }
-
-        ScriptRuntime* script = nullptr;
-        SceneObjectRuntime* runtime = nullptr;
-        bool initialised = false;
-        bool error = false;
-    };
 }

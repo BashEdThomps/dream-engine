@@ -1,5 +1,12 @@
 #pragma once
 #include "../Common/DreamObject.h"
+#include <vector>
+#include <atomic>
+#include <mutex>
+
+using std::mutex;
+using std::atomic;
+using std::vector;
 
 namespace Dream
 {

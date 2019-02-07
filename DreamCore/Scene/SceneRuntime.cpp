@@ -46,7 +46,7 @@
 #include "../Components/Physics/PhysicsObjectRuntime.h"
 #include "../Components/Path/PathRuntime.h"
 #include "../Components/Scroller/ScrollerRuntime.h"
-
+#include "../Components/Script/ScriptRuntimeState.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
 
 #ifdef max
@@ -779,7 +779,6 @@ namespace Dream
                     taskManager->pushTask(scriptRemoval);
                 }
 
-                /*
                 if (rt->hasScriptRuntime())
                 {
                     auto scriptState = rt->getScriptRuntimeState();
@@ -803,7 +802,6 @@ namespace Dream
                         taskManager->pushTask(update);
                     }
                 }
-                */
 
                 // Graphics
                 if (!rt->getHidden() && rt->hasLightRuntime())

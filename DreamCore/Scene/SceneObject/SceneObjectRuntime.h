@@ -189,6 +189,7 @@ namespace Dream
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();
         ScriptRuntimeState* getScriptRuntimeState();
+        void setScriptRuntimeState(ScriptRuntimeState* s);
 
     private:
         AnimationRuntime* mAnimationRuntime;
