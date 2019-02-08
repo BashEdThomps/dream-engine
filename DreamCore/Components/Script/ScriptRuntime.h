@@ -18,13 +18,16 @@
 #include "../SharedAssetRuntime.h"
 #include "../Event.h"
 
+class asIScriptModule;
+class asIScriptFunction;
+class asIScriptContext;
+
 namespace Dream
 {
     class ScriptDefinition;
     class InputComponent;
     class NanoVGComponent;
     class SceneRuntime;
-    class ScriptRuntimeState;
 
     class ScriptRuntime : public SharedAssetRuntime
     {
@@ -32,21 +35,28 @@ namespace Dream
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
-        bool createState(SceneObjectRuntime* rt);
-        bool removeState(uint32 uuid);
         string getSource() const;
         void setSource(const string& source);
 
-        bool executeOnInit(ScriptRuntimeState* state);
-        bool executeOnUpdate(ScriptRuntimeState* state);
-        bool executeOnEvent(ScriptRuntimeState* state);
+        bool executeOnInit(SceneObjectRuntime* state);
+        bool executeOnUpdate(SceneObjectRuntime* state);
+        bool executeOnEvent(SceneObjectRuntime* state);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
         bool executeOnNanoVG(NanoVGComponent*, SceneRuntime*);
 
-        void registerInputScript();
-        void registerNanoVGScript();
+        bool getInitialised() const;
     private:
+        bool mError;
+        bool mInitialised;
         string mSource;
+        asIScriptModule* mScriptModule;
+        asIScriptFunction *mInitFunction;
+        asIScriptFunction *mUpdateFunction;
+        asIScriptFunction *mEventFunction;
+        asIScriptFunction *mNanoVGFunction;
+        asIScriptFunction *mInputFunction;
+        asIScriptContext *mContext;
+        string mUuidString;
     };
 }

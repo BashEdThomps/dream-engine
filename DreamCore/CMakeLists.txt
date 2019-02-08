@@ -8,20 +8,20 @@ find_package(ALUT REQUIRED)
 find_package(ASSIMP REQUIRED)
 find_package(BULLET REQUIRED)
 find_package(GLM REQUIRED)
-find_package(Lua REQUIRED)
 find_package(OggVorbis REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(SPDLOG REQUIRED)
+find_package(ANGELSCRIPT REQUIRED)
 
 include_directories(
+    ${Angelscript_INCLUDE_DIRS}
     ${ALUT_INCLUDE_DIR}
     ${ASSIMP_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
-    ${LUA_INCLUDE_DIR}
     ${OPENAL_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${OGG_INCLUDE_DIR}
@@ -43,46 +43,46 @@ else()
 endif()
 
 IF (WIN32)
-        target_link_libraries(
-            DreamCore
-            ${ALUT_LIBRARY}
-            ${ASSIMP_LIBRARY_RELEASE}
-            ${BULLET_LIBRARY}
-            ${GLEW_LIBRARY_RELEASE}
-            ${LUA_LIBRARIES}
-            ${OGGVORBIS_LIBRARIES}
-            ${OPENAL_LIBRARY}
-            ${OPENGL_LIBRARIES}
-        )
+    target_link_libraries(
+        DreamCore
+        ${Angelscript_LIBRARY}
+        ${ALUT_LIBRARY}
+        ${ASSIMP_LIBRARY_RELEASE}
+        ${BULLET_LIBRARY}
+        ${GLEW_LIBRARY_RELEASE}
+        ${OGGVORBIS_LIBRARIES}
+        ${OPENAL_LIBRARY}
+        ${OPENGL_LIBRARIES}
+    )
 ELSEIF (UNIX AND NOT APPLE) # Linux
     target_link_libraries(
          DreamCore
          -lpthread
          -ldl
+        ${Angelscript_LIBRARY}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
         ${GLEW_LIBRARY_RELEASE}
-        ${LUA_LIBRARIES}
         ${OGGVORBIS_LIBRARIES}
         ${OPENAL_LIBRARY}
         ${OPENGL_LIBRARIES}
     )
 ELSEIF(APPLE)
-        target_link_libraries(
-            DreamCore
-            -lpthread
-            -ldl
-            "-framework CoreFoundation"
-            ${ALUT_LIBRARY}
-            ${ASSIMP_LIBRARIES}
-            ${BULLET_LIBRARY}
-            ${GLEW_LIBRARY_RELEASE}
-            ${LUA_LIBRARIES}
-            ${OGGVORBIS_LIBRARIES}
-            ${OPENAL_LIBRARY}
-            ${OPENGL_LIBRARIES}
-        )
+    target_link_libraries(
+        DreamCore
+        -lpthread
+        -ldl
+        "-framework CoreFoundation"
+        ${Angelscript_LIBRARY}
+        ${ALUT_LIBRARY}
+        ${ASSIMP_LIBRARIES}
+        ${BULLET_LIBRARY}
+        ${GLEW_LIBRARY_RELEASE}
+        ${OGGVORBIS_LIBRARIES}
+        ${OPENAL_LIBRARY}
+        ${OPENGL_LIBRARIES}
+    )
 ENDIF()
 
 set(

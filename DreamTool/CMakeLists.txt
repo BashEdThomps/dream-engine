@@ -18,7 +18,6 @@ include_directories(
     ${GLEW_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
-    ${LUA_INCLUDE_DIR}
     ${OPENAL_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${SPDLOG_INCLUDE_DIR}
@@ -36,7 +35,6 @@ if (WIN32)
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
         ${GLFW_LIBRARY}
-        ${LUA_LIBRARIES}
     )
 else()
     target_link_libraries(
@@ -47,7 +45,6 @@ else()
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARY}
         ${GLFW_LIBRARY}
-        ${LUA_LIBRARIES}
     )
 endif()
 

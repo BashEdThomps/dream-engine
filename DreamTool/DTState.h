@@ -22,7 +22,7 @@
 #include "Widgets/ImGui/ProjectBrowser.h"
 #include "Widgets/ImGui/PropertiesWindow.h"
 #include "Widgets/ImGui/MenuBar.h"
-#include "Widgets/ImGui/LuaDebugWindow.h"
+#include "Widgets/ImGui/ScriptDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
 #include "Widgets/ImGui/ToolPropertiesWindow.h"
 #include "Widgets/ImGui/ScriptEditorWindow.h"
@@ -66,7 +66,7 @@ namespace DreamTool
         Dream::Project* project;
         PropertiesWindow propertiesWindow;
         ProjectBrowser projectBrowser;
-        LuaDebugWindow luaDebugWindow;
+        ScriptDebugWindow scriptDebugWindow;
         SceneStateWindow sceneStateWindow;
         ToolPropertiesWindow gridPropertiesWindow;
         ScriptEditorWindow scriptEditorWindow;

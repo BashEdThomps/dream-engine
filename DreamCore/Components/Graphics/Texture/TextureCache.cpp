@@ -70,6 +70,8 @@ namespace Dream
 
         // Check image data against existing textures
 
+        // TODO - No longer necessary to retain raw image data
+
         for (auto runtime : mRuntimes)
         {
             auto nextTexture = static_cast<TextureRuntime*>(runtime);

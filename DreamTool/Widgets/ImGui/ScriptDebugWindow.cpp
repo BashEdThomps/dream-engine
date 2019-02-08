@@ -1,31 +1,31 @@
-#include "LuaDebugWindow.h"
+#include "ScriptDebugWindow.h"
 #include "../../DTState.h"
 
 namespace DreamTool
 {
-    LuaDebugWindow::LuaDebugWindow
+    ScriptDebugWindow::ScriptDebugWindow
     (DTState* proj)
         : ImGuiWidget(proj,false),
-        LuaPrintListener()
+        ScriptPrintListener()
     {
 #ifdef DREAM_LOG
-        setLogClassName("LuaDebugWindow");
+        setLogClassName("ScriptDebugWindow");
 #endif
     }
 
-    LuaDebugWindow::~LuaDebugWindow
+    ScriptDebugWindow::~ScriptDebugWindow
     ()
     {
 
     }
 
     void
-    LuaDebugWindow::draw
+    ScriptDebugWindow::draw
     ()
     {
         if (mState->project)
         {
-            ImGui::Begin("Lua Debug Output",&mVisible);
+            ImGui::Begin("Script Debug Output",&mVisible);
 
             if(ImGui::Button("Clear"))
             {
@@ -56,7 +56,7 @@ namespace DreamTool
     }
 
     void
-    LuaDebugWindow::onPrint
+    ScriptDebugWindow::onPrint
     (const string& msg)
     {
         mLogBuffer.appendf("%s\n",msg.c_str());

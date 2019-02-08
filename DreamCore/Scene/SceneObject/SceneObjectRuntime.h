@@ -39,7 +39,6 @@ namespace Dream
     class ModelRuntime;
     class LightRuntime;
     class PhysicsObjectRuntime;
-    class ScriptRuntimeState;
     class ParticleEmitterRuntime;
     class SceneRuntime;
     class SceneObjectDefinition;
@@ -111,7 +110,7 @@ namespace Dream
 
         bool hasEvents() const;
         void addEvent(const Event& event);
-        const vector<Event>& getEventQueue() const;
+        vector<Event>& getEventQueue();
         void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeByUuid(uint32_t uuid);
@@ -183,13 +182,9 @@ namespace Dream
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
         LifetimeUpdateTask* getLifetimeUpdateTask();
-        ScriptCreateStateTask* getScriptCreateStateTask();
-        ScriptRemoveStateTask* getScriptRemoveStateTask();
         ScriptOnInitTask* getScriptOnInitTask();
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();
-        ScriptRuntimeState* getScriptRuntimeState();
-        void setScriptRuntimeState(ScriptRuntimeState* s);
 
     private:
         AnimationRuntime* mAnimationRuntime;
@@ -198,7 +193,7 @@ namespace Dream
         ParticleEmitterRuntime* mParticleEmitterRuntime;
         PathRuntime* mPathRuntime;
         PhysicsObjectRuntime* mPhysicsObjectRuntime;
-        ScriptRuntimeState* mScriptRuntimeState;
+        ScriptRuntime* mScriptRuntime;
         ModelRuntime* mModelRuntime;
         ScrollerRuntime* mScrollerRuntime;
 
@@ -219,8 +214,6 @@ namespace Dream
         long mObjectLifetime;
         long mDieAfter;
         LifetimeUpdateTask mLifetimeUpdateTask;
-        ScriptCreateStateTask mScriptCreateStateTask;
-        ScriptRemoveStateTask mScriptRemoveStateTask;
         ScriptOnInitTask mScriptOnInitTask;
         ScriptOnUpdateTask mScriptOnUpdateTask;
         ScriptOnEventTask mScriptOnEventTask;

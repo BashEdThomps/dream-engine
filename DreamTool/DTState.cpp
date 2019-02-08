@@ -16,7 +16,7 @@ namespace DreamTool
           // ImGui
           propertiesWindow(PropertiesWindow(this)),
           projectBrowser(ProjectBrowser(this)),
-          luaDebugWindow(LuaDebugWindow(this)),
+          scriptDebugWindow(ScriptDebugWindow(this)),
           sceneStateWindow(SceneStateWindow(this)),
           gridPropertiesWindow(ToolPropertiesWindow(this)),
           scriptEditorWindow(ScriptEditorWindow(this)),
@@ -63,12 +63,12 @@ namespace DreamTool
             return false;
         }
 
-        ScriptComponent::AddPrintListener(&luaDebugWindow);
+        ScriptComponent::AddPrintListener(&scriptDebugWindow);
 
         // ImGui Widgets
         windowComponent.addImGuiWidget(&propertiesWindow);
         windowComponent.addImGuiWidget(&projectBrowser);
-        windowComponent.addImGuiWidget(&luaDebugWindow);
+        windowComponent.addImGuiWidget(&scriptDebugWindow);
         windowComponent.addImGuiWidget(&sceneStateWindow);
         windowComponent.addImGuiWidget(&menuBar);
         windowComponent.addImGuiWidget(&gridPropertiesWindow);

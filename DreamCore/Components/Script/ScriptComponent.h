@@ -12,13 +12,7 @@
 
 #pragma once
 
-extern "C"
-{
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-}
-
+#include <angelscript.h>
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "../Component.h"
@@ -31,10 +25,10 @@ namespace Dream
     class Event;
     class ScriptCache;
 
-    class LuaPrintListener
+    class ScriptPrintListener
     {
     public:
-        virtual ~LuaPrintListener();
+        virtual ~ScriptPrintListener();
         virtual void onPrint(const string&) = 0;
     };
 
@@ -42,9 +36,9 @@ namespace Dream
     {
     public:
 
-        static vector<LuaPrintListener*> PrintListeners;
-        static void AddPrintListener(LuaPrintListener* listener);
-        static lua_State* State;
+        static vector<ScriptPrintListener*> PrintListeners;
+        static void AddPrintListener(ScriptPrintListener* listener);
+        static asIScriptEngine* Engine;
 
         ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
        ~ScriptComponent() override;
@@ -58,6 +52,8 @@ namespace Dream
         // API Exposure Methods ======================================================
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
+        void exposeClasses();
+        void exposeAssetDefinition();
         void exposeAnimationRuntime();
         void exposePathRuntime();
         void exposeModelRuntime();

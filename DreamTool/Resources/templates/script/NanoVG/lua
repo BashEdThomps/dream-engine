@@ -1,5 +1,3 @@
--- Template NanoVG Lua Script
-
-function onNanoVG(sceneObject)
-  -- Draw NanoVG Here
-end
+void onNanoVG(NanoVGComponent@ nvg, SceneRuntime@ scene)
+{
+}

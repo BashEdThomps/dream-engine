@@ -7,13 +7,13 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    class LuaDebugWindow
+    class ScriptDebugWindow
             : public ImGuiWidget,
-              public LuaPrintListener
+              public ScriptPrintListener
     {
     public:
-        LuaDebugWindow(DTState* proj);
-        ~LuaDebugWindow() override;
+        ScriptDebugWindow(DTState* proj);
+        ~ScriptDebugWindow() override;
 
         void draw() override;
         void onPrint(const string&) override;

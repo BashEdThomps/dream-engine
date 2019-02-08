@@ -1,13 +1,11 @@
--- Template SceneObject Lua Script
+void onInit(SceneObjectRuntime@ sceneObject)
+{
+}
 
-function onInit(sceneObject)
-  -- Init Here
-end
+void onUpdate(SceneObjectRuntime@ sceneObject)
+{
+}
 
-function onUpdate(sceneObject)
-  -- Update Here
-end
-
-function onEvent(sceneObject, event)
-  -- Handle Events Here
-end
+void onEvent(SceneObjectRuntime@ sceneObject, Event@ event)
+{
+}

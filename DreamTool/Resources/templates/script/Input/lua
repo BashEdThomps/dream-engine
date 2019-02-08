@@ -1,5 +1,3 @@
--- Template Input Lua Script
-
-function onInput()
-  -- Handle Input Events Here
-end
+void onInput(InputComponent@ inputComponent, SceneRuntime@ scene)
+{
+}

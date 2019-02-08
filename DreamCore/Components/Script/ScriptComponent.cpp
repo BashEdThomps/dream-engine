@@ -33,9 +33,8 @@
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-
-#define SOL_CHECK_ARGUMENTS 1
-#include "../../deps/sol2/sol.hpp"
+#include "../../deps/angelscript/scriptstdstring/scriptstdstring.h"
+#include "../../deps/angelscript/scriptbuilder/scriptbuilder.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 using std::stringstream;
@@ -44,28 +43,69 @@ using std::cout;
 using std::cerr;
 using std::string;
 
-static int l_my_print(lua_State* L)
+static void whyYouFail(int r)
 {
-    int nargs = lua_gettop(L);
-    stringstream stream;
-    for (int i=1; i <= nargs; ++i)
+    if (r<0)
     {
-        stream << lua_tostring(L, i);
+        string errStr;
+        switch (r)
+        {
+            case asINVALID_DECLARATION:
+                errStr = "Invalid Declaration";
+                break;
+            case asINVALID_NAME:
+                errStr = "Invalid Name";
+                break;
+            case asNAME_TAKEN:
+                errStr = "Name Taken";
+                break;
+            case asERROR:
+                errStr = "Error: not a proper id";
+                break;
+            case asALREADY_REGISTERED:
+                errStr = "Already Registered";
+            default:
+                errStr = "idk??";
+                break;
+        }
+        cout << r << " " << errStr << endl;
+        assert(false);
     }
-
-    string out = stream.str();
-    for (auto listener : Dream::ScriptComponent::PrintListeners)
-    {
-        listener->onPrint(out);
-    }
-    return 0;
 }
 
-static const struct luaL_Reg printlib [] =
+static void PrintCallback(const string& in)
 {
-  {"print", l_my_print},
-  {nullptr, nullptr} /* end of array */
-};
+    for (auto* pl : Dream::ScriptComponent::PrintListeners)
+    {
+        pl->onPrint(in);
+    }
+    cout << in << endl;
+}
+
+static void MessageCallback(const asSMessageInfo *msg, void *param)
+{
+  stringstream ss;
+  if( msg->type == asMSGTYPE_WARNING )
+  {
+    ss << "WARN ";
+  }
+  else if( msg->type == asMSGTYPE_INFORMATION )
+  {
+    ss << "INFO ";
+  }
+  else
+  {
+    ss << "ERR ";
+  }
+
+  ss << "(" << msg->section << ") [" <<  msg->row << "," << msg->col << "] " << msg->message;
+  cout << ss.str() << endl;
+
+  for (auto* pl : Dream::ScriptComponent::PrintListeners)
+    {
+        pl->onPrint(ss.str());
+    }
+}
 
 namespace Dream
 {
@@ -88,10 +128,11 @@ namespace Dream
         getLog()->trace("Destroying Object");
         #endif
         lock();
-        if (State != nullptr)
+        if (Engine != nullptr)
         {
-            lua_close(State);
-            State = nullptr;
+            int r = Engine->ShutDownAndRelease();
+            assert(r>=0);
+            Engine = nullptr;
         }
         unlock();
     }
@@ -102,22 +143,12 @@ namespace Dream
     {
         #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug( "Initialising LuaComponent" );
+        log->debug( "Initialising ScriptComponent" );
         #endif
-        State = luaL_newstate();
-        sol::state_view sView(State);
-        sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
-            sol::lib::string);
-
-        sol::table comps(State, sol::create);
-        sView[COMPONENTS_TBL] = comps;
-
-        // Register print callback
-
-        lua_getglobal(State, "_G");
-        luaL_setfuncs(State, printlib, 0);
-        lua_pop(State, 1);
-
+        Engine = asCreateScriptEngine();
+        int r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+        assert( r >= 0 );
+        RegisterStdString(Engine);
         #ifdef DREAM_LOG
         log->debug( "Got a sol state" );
         #endif
@@ -128,10 +159,53 @@ namespace Dream
     // API Exposure Methods ======================================================
 
     void
+    ScriptComponent::exposeClasses
+    ()
+    {
+        debugRegisteringClass("Dream Classes");
+        int r;
+        r = Engine->RegisterGlobalFunction("void print(string)", asFUNCTION(PrintCallback), asCALL_CDECL); whyYouFail( r >= 0 );
+        r = Engine->RegisterObjectType("AnimationRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("AssetDefinition", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("AudioComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("AudioRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("Camera", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("Definition", 0, asOBJ_REF | asOBJ_NOCOUNT);
+        r = Engine->RegisterObjectType("Event", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("CollisionData", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("GraphicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("InputComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("LightRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("ModelRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("NanoVGComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("PathRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("PhysicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("PhysicsObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("ProjectDirectory", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("ProjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("SceneObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("SceneRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("ScriptRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("ShaderRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("Time", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("Transform", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("WindowComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+    }
+
+    void
+    ScriptComponent::exposeAssetDefinition
+    ()
+    {
+        debugRegisteringClass("AssetDefinition");
+    }
+
+    void
     ScriptComponent::exposeProjectRuntime
     ()
     {
         debugRegisteringClass("ProjectRuntime");
+
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
             "getTime",&ProjectRuntime::getTime,
@@ -142,6 +216,14 @@ namespace Dream
         );
 
         stateView["Runtime"] = mProjectRuntime;
+        */
+        int r;
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "Time@ getTime()",asMETHOD(ProjectRuntime,getTime), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "AssetDefinition@ getAssetDefinitionByUuid()",asMETHOD(ProjectRuntime,getAssetDefinitionByUuid), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "SceneObjectRuntime@ getSceneObjectByUuid()",asMETHOD(ProjectRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowWidth()",asMETHOD(ProjectRuntime,getWindowWidth), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowHeight()",asMETHOD(ProjectRuntime,getWindowHeight), asCALL_THISCALL);whyYouFail(r);
+
     }
 
     void
@@ -149,6 +231,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ProjectDirectory");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<ProjectDirectory>
         (
@@ -157,6 +240,7 @@ namespace Dream
         );
 
         stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
+        */
     }
 
     void
@@ -164,6 +248,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Camera");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<Camera>("Camera",
             "flyForward",&Camera::flyForward,
@@ -204,6 +289,10 @@ namespace Dream
             "Outside",Frustum::TestResult::TEST_OUTSIDE,
             "Intersect",Frustum::TestResult::TEST_INTERSECT
         );
+        */
+
+        int r;
+        r = Engine->RegisterObjectMethod("Camera", "void flyRight(float)",asMETHOD(Camera,flyRight), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -211,6 +300,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<PathRuntime>("PathRuntime",
             "generate",&PathRuntime::generate,
@@ -220,6 +310,8 @@ namespace Dream
             "setUStep",&PathRuntime::setUStep,
             "stepPath",&PathRuntime::stepPath
         );
+        */
+
     }
 
     void
@@ -227,9 +319,11 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GraphicsComponent");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
         stateView[COMPONENTS_TBL]["Graphics"] = mProjectRuntime->getGraphicsComponent();
+        */
     }
 
     void
@@ -237,8 +331,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("LightRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<LightRuntime>("LightRuntime");
+        */
     }
 
     void
@@ -246,6 +342,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ShaderRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<ShaderRuntime>("ShaderRuntime",
             "getUuid", &ShaderRuntime::getUuid,
@@ -270,6 +367,8 @@ namespace Dream
             "FLOAT3",UniformType::FLOAT3,
             "FLOAT4",UniformType::FLOAT4
         );
+        */
+
     }
 
     void
@@ -277,12 +376,15 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsComponent");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<PhysicsComponent>("PhysicsComponent",
             "setDebug",&PhysicsComponent::setDebug
         );
 
         stateView[COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
+        */
+
     }
 
     void
@@ -290,6 +392,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsObjectRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<PhysicsObjectRuntime>("PhysicsObjectRuntime",
             "getUuid", &PhysicsObjectRuntime::getUuid,
@@ -310,6 +413,7 @@ namespace Dream
             "setKinematicObject",&PhysicsObjectRuntime::setKinematic,
             "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter
         );
+        */
     }
 
     void
@@ -317,6 +421,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
             "getName",&SceneObjectRuntime::getName,
@@ -355,6 +460,10 @@ namespace Dream
             "getObjectLifetime",&SceneObjectRuntime::getObjectLifetime,
             "getDieAfter",&SceneObjectRuntime::getDieAfter
         );
+        */
+        int r;
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getScene()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "Transform@ getTransform()",asMETHOD(SceneObjectRuntime,getTransform), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -362,6 +471,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Transform");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<Transform>("Transform",
             // Translation ===========================================================
@@ -384,6 +494,10 @@ namespace Dream
             "skew",&MatrixDecomposition::skew,
             "perspective",&MatrixDecomposition::perspective
         );
+        */
+        int r;
+        r = Engine->RegisterObjectMethod("Transform", "void translate3f(float,float,float)",asMETHOD(Transform,translate3f), asCALL_THISCALL); whyYouFail(r);
+
     }
 
     void
@@ -391,6 +505,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<Time>("Time",
             "getCurrentFrameTime",&Time::getCurrentFrameTime,
@@ -400,6 +515,7 @@ namespace Dream
         );
 
         stateView["Time"] = mProjectRuntime->getTime();
+        */
     }
 
     void
@@ -407,8 +523,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ModelRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<ModelRuntime>("ModelRuntime");
+        */
     }
 
     void
@@ -416,6 +534,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Event");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<Event>("Event",
             sol::constructors<Event(SceneObjectRuntime*)>(),
@@ -429,6 +548,7 @@ namespace Dream
             "impulse",&CollisionData::impulse,
             "position",&CollisionData::position
         );
+        */
     }
 
     void
@@ -436,6 +556,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("WindowComponent");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<WindowComponent>
         (
@@ -444,6 +565,7 @@ namespace Dream
             "getHeight",&WindowComponent::getHeight
         );
         stateView[COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
+        */
     }
 
     void
@@ -451,6 +573,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("InputComponent");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<InputComponent>(
             "InputComponent",
@@ -503,11 +626,11 @@ namespace Dream
             "KeyboardMapping",
             "KEY_UNKNOWN",  -1,
             "KEY_SPACE",  32,
-            "KEY_APOSTROPHE",  39,  /* ' */
-            "KEY_COMMA",  44,  /* , */
-            "KEY_MINUS",  45,  /* - */
-            "KEY_PERIOD",  46,  /* . */
-            "KEY_SLASH",  47,  /* / */
+            "KEY_APOSTROPHE",  39,  // '
+            "KEY_COMMA",  44,  // ,
+            "KEY_MINUS",  45,  // -
+            "KEY_PERIOD",  46,  // .
+            "KEY_SLASH",  47,  // /
             "KEY_0",  48,
             "KEY_1",  49,
             "KEY_2",  50,
@@ -518,8 +641,8 @@ namespace Dream
             "KEY_7",  55,
             "KEY_8",  56,
             "KEY_9",  57,
-            "KEY_SEMICOLON",  59,  /* , */
-            "KEY_EQUAL",  61,  /* ", */
+            "KEY_SEMICOLON",  59,  // ,
+            "KEY_EQUAL",  61,  // ",
             "KEY_A",  65,
             "KEY_B",  66,
             "KEY_C",  67,
@@ -546,12 +669,12 @@ namespace Dream
             "KEY_X",  88,
             "KEY_Y",  89,
             "KEY_Z",  90,
-            "KEY_LEFT_BRACKET",  91,  /* [ */
-            "KEY_BACKSLASH",  92,  /* \ */
-            "KEY_RIGHT_BRACKET",  93,  /* ] */
-            "KEY_GRAVE_ACCENT",  96,  /* ` */
-            "KEY_WORLD_1",  161, /* non-US #1 */
-            "KEY_WORLD_2",  162, /* non-US #2 */
+            "KEY_LEFT_BRACKET",  91,  // [
+            "KEY_BACKSLASH",  92,  // \
+            "KEY_RIGHT_BRACKET",  93,  // ]
+            "KEY_GRAVE_ACCENT",  96,  // `
+            "KEY_WORLD_1",  161, // non-US #1
+            "KEY_WORLD_2",  162, // non-US #2
             "KEY_ESCAPE",  256,
             "KEY_ENTER",  257,
             "KEY_TAB",  258,
@@ -624,6 +747,7 @@ namespace Dream
             "KEY_MENU",  348
         );
         stateView[COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
+        */
     }
 
     void
@@ -631,9 +755,11 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioComponent");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<AudioComponent>("AudioComponent");
         stateView[COMPONENTS_TBL]["Audio"] = mProjectRuntime->getAudioComponent();
+        */
     }
 
     void
@@ -648,6 +774,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<AudioRuntime>
         (
@@ -666,6 +793,7 @@ namespace Dream
             "PAUSED",  AudioStatus::PAUSED,
             "STOPPED", AudioStatus::STOPPED
         );
+        */
     }
 
     void
@@ -673,6 +801,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("NanoVG");
+        /*
         sol::state_view stateView(State);
 
         stateView.new_usertype<NVGcolor>("NVGcolor");
@@ -794,6 +923,7 @@ namespace Dream
         );
 
         stateView[COMPONENTS_TBL]["NanoVG"] = mProjectRuntime->getNanoVGComponent();
+        */
     }
 
     void
@@ -801,6 +931,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<SceneRuntime>
         (
@@ -808,6 +939,10 @@ namespace Dream
             "getCamera",&SceneRuntime::getCamera,
             "getSceneObjectByUuid",&SceneRuntime::getSceneObjectRuntimeByUuid
         );
+        */
+        int r;
+        r = Engine->RegisterObjectMethod("SceneRuntime", "Camera@ getCamera()",asMETHOD(SceneRuntime,getCamera), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneRuntime", "SceneObjectRuntime@ getSceneObjectByUuid(int)",asMETHOD(SceneRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -815,6 +950,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GLM");
+        /*
         sol::state_view stateView(State);
 
         auto vec3MultiplicationOverloads = sol::overload(
@@ -917,6 +1053,7 @@ namespace Dream
                 return  mtx[col];
             }
         );
+        */
     }
 
     void
@@ -924,8 +1061,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Definitions");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<Definition>("Definition");
+        */
     }
 
     void
@@ -933,6 +1072,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AnimationRuntime");
+        /*
         sol::state_view stateView(State);
         stateView.new_usertype<AnimationRuntime>(
             "AnimationRuntime",
@@ -940,6 +1080,7 @@ namespace Dream
            "pause",&AnimationRuntime::pause,
            "reset",&AnimationRuntime::reset
         );
+        */
     }
 
     void
@@ -956,16 +1097,18 @@ namespace Dream
     ScriptComponent::exposeAPI
     ()
     {
+        exposeClasses();
+        exposeTime();
         exposeDefinition();
+        exposeAssetDefinition();
 
+        exposeEvent();
         exposeProjectRuntime();
         exposeProjectDirectory();
 
         exposeSceneRuntime();
         exposeSceneObjectRuntime();
 
-        exposeEvent();
-        exposeTime();
         exposeTransform();
         exposeCamera();
         exposeGLM();
@@ -987,18 +1130,18 @@ namespace Dream
         exposePhysicsObjectRuntime();
     }
 
-    vector<LuaPrintListener*> ScriptComponent::PrintListeners;
+    vector<ScriptPrintListener*> ScriptComponent::PrintListeners;
 
     void
     ScriptComponent::AddPrintListener
-    (LuaPrintListener* listener)
+    (ScriptPrintListener* listener)
     {
         PrintListeners.push_back(listener);
     }
 
-    LuaPrintListener::~LuaPrintListener(){}
+    ScriptPrintListener::~ScriptPrintListener(){}
 
-    lua_State* ScriptComponent::State = nullptr;
+    asIScriptEngine* ScriptComponent::Engine = nullptr;
 
     const string ScriptComponent::COMPONENTS_TBL = "Components";
 }

@@ -6,78 +6,6 @@
 
 namespace Dream
 {
-//==================================================================================================
-    ScriptCreateStateTask::ScriptCreateStateTask
-    (SceneObjectRuntime* rt)
-        : Task(),
-          mSceneObject(rt)
-    {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptCreateStateTask");
-        #endif
-    }
-
-     void ScriptCreateStateTask::execute()
-    {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
-
-        if(mScript->createState(mSceneObject))
-        {
-            mState = TaskState::COMPLETED;
-        }
-        else
-        {
-            mState = TaskState::WAITING;
-            mDeferralCount++;
-        }
-     }
-
-     void ScriptCreateStateTask::setScript(ScriptRuntime *rt)
-     {
-        mScript = rt;
-     }
-
-//==================================================================================================
-     ScriptRemoveStateTask::ScriptRemoveStateTask
-     (uint32_t uuid)
-        : Task(),
-          mUuid(uuid)
-    {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptRemoveStateTask");
-        #endif
-    }
-
-    void
-    ScriptRemoveStateTask::execute
-    ()
-    {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
-
-        if(mScript->removeState(mUuid))
-        {
-            mState = TaskState::COMPLETED;
-        }
-        else
-        {
-            mState = TaskState::WAITING;
-            mDeferralCount++;
-        }
-     }
-
-     void
-     ScriptRemoveStateTask::setScript
-     (ScriptRuntime *rt)
-     {
-        mScript = rt;
-     }
-
-//==================================================================================================
-
      ScriptOnInitTask::ScriptOnInitTask
      (SceneObjectRuntime* rt)
          : Task(),
@@ -96,7 +24,7 @@ namespace Dream
         getLog()->critical("Executing on thread {}",mThreadId);
         #endif
 
-        if(mScript->executeOnInit(mSceneObject->getScriptRuntimeState()))
+        if(mScript->executeOnInit(mSceneObject))
         {
             mState = TaskState::COMPLETED;
         }
@@ -134,7 +62,7 @@ namespace Dream
         getLog()->critical("Executing on thread {}",mThreadId);
         #endif
 
-        if(mScript->executeOnUpdate(mSceneObject->getScriptRuntimeState()))
+        if(mScript->executeOnUpdate(mSceneObject))
         {
             mState = TaskState::COMPLETED;
         }
@@ -172,7 +100,7 @@ namespace Dream
         getLog()->critical("Executing on thread {}",mThreadId);
         #endif
 
-        if(mScript->executeOnEvent(mSceneObject->getScriptRuntimeState()))
+        if(mScript->executeOnEvent(mSceneObject))
         {
             mState = TaskState::COMPLETED;
         }

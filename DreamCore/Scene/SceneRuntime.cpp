@@ -46,7 +46,6 @@
 #include "../Components/Physics/PhysicsObjectRuntime.h"
 #include "../Components/Path/PathRuntime.h"
 #include "../Components/Scroller/ScrollerRuntime.h"
-#include "../Components/Script/ScriptRuntimeState.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
 
 #ifdef max
@@ -399,10 +398,6 @@ namespace Dream
             getLog()->error("Unable to load Input r Script {}",inputScriptUuid);
             #endif
         }
-        else
-        {
-            mInputScript->registerInputScript();
-        }
 
         auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
         mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(nvgScriptUuid));
@@ -411,10 +406,6 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->error("Unable to load NanoVG Script {}",nvgScriptUuid);
             #endif
-        }
-        else
-        {
-            mNanoVGScript->registerNanoVGScript();
         }
 
          // Physics
@@ -768,21 +759,10 @@ namespace Dream
                 }
 
                 // Scripting
-                auto scriptCreation = rt->getScriptCreateStateTask();
-                if (scriptCreation->getState() == TaskState::QUEUED)
-                {
-                    taskManager->pushTask(scriptCreation);
-                }
-                auto scriptRemoval = rt->getScriptRemoveStateTask();
-                if (scriptRemoval->getState() == TaskState::QUEUED)
-                {
-                    taskManager->pushTask(scriptRemoval);
-                }
-
                 if (rt->hasScriptRuntime())
                 {
-                    auto scriptState = rt->getScriptRuntimeState();
-                    if (!scriptState->initialised)
+                    auto script = rt->getScriptRuntime();
+                    if (!script->getInitialised())
                     {
                         auto init = rt->getScriptOnInitTask();
                         init->clearState();

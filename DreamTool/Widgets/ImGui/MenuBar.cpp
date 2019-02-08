@@ -1,5 +1,5 @@
 #include "MenuBar.h"
-#include "LuaDebugWindow.h"
+#include "ScriptDebugWindow.h"
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
@@ -283,10 +283,10 @@ namespace DreamTool
                         mState->gamepadStateWindow.setVisible(showJoystickDebug);
                     }
 
-                    auto showLuaDebug = mState->luaDebugWindow.getVisible();
-                    if (ImGui::Checkbox("Lua Debug",&showLuaDebug))
+                    auto showLuaDebug = mState->scriptDebugWindow.getVisible();
+                    if (ImGui::Checkbox("Script Debug",&showLuaDebug))
                     {
-                        mState->luaDebugWindow.setVisible(showLuaDebug);
+                        mState->scriptDebugWindow.setVisible(showLuaDebug);
                     }
 
                     bool showCacheContents = mState->cacheContentWindow.getVisible();

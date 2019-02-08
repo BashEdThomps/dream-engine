@@ -24,7 +24,7 @@ main
 (int argc,char** argv)
 {
     #ifdef DREAM_LOG
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::off);
     spdlog::set_pattern("%H:%M:%S (%l) %n %v");
     auto log = spdlog::stdout_logger_mt("Main");
     log->trace("Starting...");

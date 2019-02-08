@@ -41,7 +41,6 @@
 #include "../../Components/Script/ScriptDefinition.h"
 #include "../../Components/Script/ScriptComponent.h"
 #include "../../Components/Script/ScriptRuntime.h"
-#include "../../Components/Script/ScriptRuntimeState.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -68,7 +67,7 @@ namespace Dream
         mParticleEmitterRuntime(nullptr),
         mPathRuntime(nullptr),
         mPhysicsObjectRuntime(nullptr),
-        mScriptRuntimeState(nullptr),
+        mScriptRuntime(nullptr),
         mModelRuntime(nullptr),
         mScrollerRuntime(nullptr),
         mSceneRuntime(sr),
@@ -83,16 +82,13 @@ namespace Dream
         mObjectLifetime(0),
         mDieAfter(0),
         mLifetimeUpdateTask(this),
-        mScriptCreateStateTask(this),
-        mScriptRemoveStateTask(this->getUuid()),
         mScriptOnInitTask(this),
         mScriptOnUpdateTask(this),
         mScriptOnEventTask(this)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
-        auto log = getLog();
-        log->trace( "Constructing Object" );
+        getLog()->trace( "Constructing Object" );
         #endif
         if (mRandomUuid)
         {
@@ -104,8 +100,7 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destroying Object" );
+        getLog()->trace( "Destroying Object" );
         #endif
 
         for (auto child : mChildRuntimes)
@@ -140,13 +135,7 @@ namespace Dream
     SceneObjectRuntime::removeAudioRuntime
     ()
     {
-        /*
-        if (mAudioRuntime != nullptr)
-        {
-            delete mAudioRuntime;
-            mAudioRuntime = nullptr;
-        }
-        */
+        mAudioRuntime = nullptr;
     }
 
     void
@@ -185,12 +174,10 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptRuntimeState != nullptr)
+        if (mScriptRuntime != nullptr)
         {
-            mScriptRemoveStateTask.clearState();
-            mScriptRemoveStateTask.setState(TaskState::QUEUED);
-            delete mScriptRuntimeState;
-            mScriptRuntimeState = nullptr;
+            delete mScriptRuntime;
+            mScriptRuntime = nullptr;
         }
     }
 
@@ -266,7 +253,7 @@ namespace Dream
     SceneObjectRuntime::getScriptRuntime
     ()
     {
-        return mScriptRuntimeState->script;
+        return mScriptRuntime;
     }
 
     LightRuntime*
@@ -345,8 +332,7 @@ namespace Dream
     SceneObjectRuntime::hasScriptRuntime
     ()
     {
-        return mScriptRuntimeState != nullptr &&
-               mScriptRuntimeState->script != nullptr;
+        return mScriptRuntime != nullptr;
     }
 
     void
@@ -416,8 +402,7 @@ namespace Dream
     (const Event& event)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace
+        getLog()->trace
         (
             "Event posted from {} to {}",
             event.getSender()->getNameAndUuidString(),
@@ -427,10 +412,9 @@ namespace Dream
         mEventQueue.push_back(event);
     }
 
-    const vector<Event>&
+    vector<Event>&
     SceneObjectRuntime::getEventQueue
     ()
-    const
     {
         return mEventQueue;
     }
@@ -440,8 +424,7 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Clearing event queue");
+        getLog()->trace("Clearing event queue");
         #endif
         mEventQueue.clear();
     }
@@ -451,8 +434,7 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Collecting Garbage {}" ,getNameAndUuidString());
+        getLog()->trace("Collecting Garbage {}" ,getNameAndUuidString());
         #endif
 
         vector<SceneObjectRuntime*> toDelete;
@@ -468,7 +450,7 @@ namespace Dream
         for (auto child : toDelete)
         {
             #ifdef DREAM_LOG
-            log->trace("Deleting child {}",child->getNameAndUuidString());
+            getLog()->trace("Deleting child {}",child->getNameAndUuidString());
             #endif
             mChildRuntimes.erase
             (
@@ -508,9 +490,6 @@ namespace Dream
     SceneObjectRuntime::createAssetRuntimes
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         for (auto assetPair : mAssetDefinitions)
         {
             AssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
@@ -518,12 +497,12 @@ namespace Dream
             if (def == nullptr)
             {
                 #ifdef DREAM_LOG
-                log->error("Could not find asset definition {}", assetPair.second);
+                getLog()->error("Could not find asset definition {}", assetPair.second);
                 #endif
                 continue;
             }
             #ifdef DREAM_LOG
-            log->trace("Creating {}",def->getNameAndUuidString());
+            getLog()->trace("Creating {}",def->getNameAndUuidString());
             #endif
             switch (assetPair.first)
             {
@@ -569,14 +548,11 @@ namespace Dream
     SceneObjectRuntime::getAssetDefinitionByUuid
     (uint32_t uuid)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
             #ifdef DREAM_LOG
-            log->error("Project is not found");
+            getLog()->error("Project is not found");
             #endif
             return nullptr;
         }
@@ -584,7 +560,7 @@ namespace Dream
         if (assetDefinition == nullptr)
         {
             #ifdef DREAM_LOG
-            log->error("AssetDefinition not found");
+            getLog()->error("AssetDefinition not found");
             #endif
         }
         return assetDefinition;
@@ -595,14 +571,13 @@ namespace Dream
     (AssetType type, uint32_t uuid)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->info("REPLACING asset Runtime from uuid {}", uuid);
+        getLog()->info("REPLACING asset Runtime from uuid {}", uuid);
         #endif
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
             #ifdef DREAM_LOG
-            log->error("Project is not found");
+            getLog()->error("Project is not found");
             #endif
             return false;
         }
@@ -610,7 +585,7 @@ namespace Dream
         if (def == nullptr)
         {
             #ifdef DREAM_LOG
-            log->error("AssetDefinition not found");
+            getLog()->error("AssetDefinition not found");
             #endif
         }
         switch (type)
@@ -644,8 +619,7 @@ namespace Dream
     {
         removePhysicsObjectRuntime();
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Creating Physics Object Asset Runtime." );
+        getLog()->trace( "Creating Physics Object Asset Runtime." );
         #endif
         mPhysicsObjectRuntime = new PhysicsObjectRuntime(
             definition,
@@ -661,8 +635,7 @@ namespace Dream
     (ParticleEmitterDefinition* definition)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Creating ParticleEmitter asset Runtime." );
+        getLog()->trace( "Creating ParticleEmitter asset Runtime." );
         #endif
         removeParticleEmitterRuntime();
         mParticleEmitterRuntime = new ParticleEmitterRuntime(definition,this);
@@ -674,8 +647,7 @@ namespace Dream
     (ScrollerDefinition* def)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Creating Scroller asset Runtime.");
+        getLog()->debug("Creating Scroller asset Runtime.");
         #endif
         removeScrollerRuntime();
         mScrollerRuntime = new ScrollerRuntime(def,this);
@@ -687,8 +659,7 @@ namespace Dream
     (AnimationDefinition* definition)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Creating Animation asset Runtime." );
+        getLog()->trace( "Creating Animation asset Runtime." );
         #endif
         removeAnimationRuntime();
         mAnimationRuntime = new AnimationRuntime(definition,this);
@@ -700,8 +671,7 @@ namespace Dream
     (PathDefinition* definition)
     {
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Creating Path asset Runtime." );
+        getLog()->trace( "Creating Path asset Runtime." );
         #endif
         removePathRuntime();
         mPathRuntime = new PathRuntime(definition,this);
@@ -721,8 +691,7 @@ namespace Dream
         else
         {
             #ifdef DREAM_LOG
-            auto log = getLog();
-            log->error("Cannot create AudioRuntime. AudioComponent is nullptr");
+            getLog()->error("Cannot create AudioRuntime. AudioComponent is nullptr");
             #endif
         }
         return false;
@@ -734,8 +703,7 @@ namespace Dream
     {
         removeModelRuntime();
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->info("Creating Model asset Runtime.");
+        getLog()->info("Creating Model asset Runtime.");
         #endif
         auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
@@ -748,7 +716,7 @@ namespace Dream
             else
             {
                 #ifdef DREAM_LOG
-                log->error("Error getting model Runtime, cache returned nullptr");
+                getLog()->error("Error getting model Runtime, cache returned nullptr");
                 #endif
                 return false;
             }
@@ -762,34 +730,29 @@ namespace Dream
     {
         removeScriptRuntime();
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Creating Script asset Runtime.");
+        getLog()->trace("Creating Script asset Runtime.");
         #endif
-        auto scriptCache = (mSceneRuntime->getProjectRuntime()->getScriptCache());
+        auto scriptCache = mSceneRuntime->getProjectRuntime()->getScriptCache();
         if (scriptCache)
         {
-            auto scriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
-            if (scriptRuntime != nullptr)
+            mScriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
+            if (mScriptRuntime)
             {
-                mScriptCreateStateTask.clearState();
-                mScriptCreateStateTask.setState(TaskState::QUEUED);
-                mScriptCreateStateTask.setScript(scriptRuntime);
-                mScriptRemoveStateTask.setScript(scriptRuntime);
-                mScriptOnInitTask.setScript(scriptRuntime);
-                mScriptOnUpdateTask.setScript(scriptRuntime);
-                mScriptOnEventTask.setScript(scriptRuntime);
+                mScriptOnInitTask.setScript(mScriptRuntime);
+                mScriptOnUpdateTask.setScript(mScriptRuntime);
+                mScriptOnEventTask.setScript(mScriptRuntime);
                 return true;
             }
             else
             {
                 #ifdef DREAM_LOG
-                log->error("Error getting script Runtime, cache returned nullptr");
+                getLog()->error("Error getting script Runtime, cache returned nullptr");
                 #endif
                 return false;
             }
         }
         #ifdef DREAM_LOG
-        log->error("Script cache is null");
+        getLog()->error("Script cache is null");
         #endif
         return false;
     }
@@ -800,8 +763,7 @@ namespace Dream
     {
         removeLightRuntime();
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Creating Light Asset Runtime." );
+        getLog()->trace( "Creating Light Asset Runtime." );
         #endif
         mLightRuntime = new LightRuntime(definition,this);
         return mLightRuntime->useDefinition();
@@ -878,9 +840,6 @@ namespace Dream
     SceneObjectRuntime::loadChildrenFromDefinition
     (SceneObjectDefinition* definition)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         vector<SceneObjectDefinition*> definitions = definition->getChildDefinitionsList();
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
@@ -1015,15 +974,12 @@ namespace Dream
     SceneObjectRuntime::createAndAddChildRuntime
     (SceneObjectDefinition* def)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto* child = new SceneObjectRuntime(def, mSceneRuntime, mRandomUuid);
         child->setParentRuntime(this);
         if (!child->useDefinition())
         {
             #ifdef DREAM_LOG
-            log->error("Error creating child runtime");
+            getLog()->error("Error creating child runtime");
             #endif
             delete child;
             return nullptr;
@@ -1036,9 +992,6 @@ namespace Dream
     SceneObjectRuntime::addChildFromTemplateUuid
     (uint32_t uuid)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto sceneDef = static_cast<SceneDefinition*>(mSceneRuntime->getDefinition());
         auto def = sceneDef->getTemplateByUuid(uuid);
         if (def)
@@ -1046,7 +999,7 @@ namespace Dream
             if (!def->getIsTemplate())
             {
                 #ifdef DREAM_LOG
-                log->error("This SO is not a Template, too dangerous");
+                getLog()->error("This SO is not a Template, too dangerous");
                 #endif
                 return nullptr;
             }
@@ -1055,19 +1008,19 @@ namespace Dream
             if (!child->useDefinition())
             {
                 #ifdef DREAM_LOG
-                log->error("Error creating child runtime");
+                getLog()->error("Error creating child runtime");
                 #endif
                 delete child;
                 return nullptr;
             }
             addChildRuntime(child);
             #ifdef DREAM_LOG
-            log->error("Successfully added child from template {}",def->getNameAndUuidString());
+            getLog()->error("Successfully added child from template {}",def->getNameAndUuidString());
             #endif
             return child;
         }
         #ifdef DREAM_LOG
-        log->error("Cannt create child, definition not found");
+        getLog()->error("Cannt create child, definition not found");
         #endif
         return nullptr;
     }
@@ -1080,8 +1033,7 @@ namespace Dream
         {
             auto def = static_cast<SceneObjectDefinition*>(mDefinition);
             #ifdef DREAM_LOG
-            auto log = getLog();
-            log->trace( "Using Definition {}", def->getNameAndUuidString());
+            getLog()->trace( "Using Definition {}", def->getNameAndUuidString());
             #endif
             setName(def->getName());
             setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
@@ -1327,20 +1279,6 @@ namespace Dream
         return &mLifetimeUpdateTask;
     }
 
-    ScriptCreateStateTask*
-    SceneObjectRuntime::getScriptCreateStateTask
-    ()
-    {
-        return &mScriptCreateStateTask;
-    }
-
-    ScriptRemoveStateTask*
-    SceneObjectRuntime::getScriptRemoveStateTask
-    ()
-    {
-        return &mScriptRemoveStateTask;
-    }
-
     ScriptOnInitTask*
     SceneObjectRuntime::getScriptOnInitTask
     ()
@@ -1360,19 +1298,5 @@ namespace Dream
     ()
     {
         return &mScriptOnUpdateTask;
-    }
-
-    ScriptRuntimeState*
-    SceneObjectRuntime::getScriptRuntimeState
-    ()
-    {
-        return mScriptRuntimeState;
-    }
-
-    void
-    SceneObjectRuntime::setScriptRuntimeState
-    (ScriptRuntimeState *s)
-    {
-       mScriptRuntimeState = s;
     }
 }

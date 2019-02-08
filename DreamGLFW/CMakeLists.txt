@@ -19,7 +19,6 @@ include_directories(
     ${GLEW_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
-    ${LUA_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${SPDLOG_INCLUDE_DIR}
 )
@@ -37,7 +36,6 @@ if (WIN32)
                 ${BULLET_LIBRARY}
                 ${GLEW_LIBRARY}
                 ${GLFW_LIBRARY}
-        ${LUA_LIBRARIES}
     )
 elseif(UNIX AND NOT APPLE) # Linux
     target_link_libraries(
@@ -49,7 +47,6 @@ elseif(UNIX AND NOT APPLE) # Linux
         ${BULLET_LIBRARY}
         ${GLEW_LIBRARY}
         ${GLFW_LIBRARY}
-        ${LUA_LIBRARIES}
     )
 elseif(APPLE)
     target_link_libraries(
@@ -61,6 +58,5 @@ elseif(APPLE)
         ${BULLET_LIBRARY}
         ${GLEW_LIBRARY}
         ${GLFW_LIBRARY}
-        ${LUA_LIBRARIES}
     )
 endif()
