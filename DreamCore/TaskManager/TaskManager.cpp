@@ -41,7 +41,7 @@ namespace Dream
             getLog()->critical("Starting all worker threads...");
             #endif
 
-            for (int i=0; i < 4/*static_cast<int>(thread::hardware_concurrency())*/; i++)
+            for (int i=0; i <  static_cast<int>(thread::hardware_concurrency()); i++)
             {
                 #ifdef DREAM_LOG
                 getLog()->critical("Spawning thread {}",i);
