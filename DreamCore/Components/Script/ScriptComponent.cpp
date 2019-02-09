@@ -190,6 +190,9 @@ namespace Dream
         r = Engine->RegisterObjectType("Time", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Transform", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("WindowComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("vec3", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("mat4", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("quat", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
     }
 
     void

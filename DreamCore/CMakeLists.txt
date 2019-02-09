@@ -45,7 +45,7 @@ endif()
 IF (WIN32)
     target_link_libraries(
         DreamCore
-        ${Angelscript_LIBRARY}
+        ${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
@@ -59,7 +59,7 @@ ELSEIF (UNIX AND NOT APPLE) # Linux
          DreamCore
          -lpthread
          -ldl
-        ${Angelscript_LIBRARY}
+        ${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
@@ -74,7 +74,7 @@ ELSEIF(APPLE)
         -lpthread
         -ldl
         "-framework CoreFoundation"
-        ${Angelscript_LIBRARY}
+        ${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARY}
