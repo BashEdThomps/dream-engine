@@ -13,6 +13,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 
 #include "PhysicsObjectRuntime.h"
 
@@ -404,14 +405,20 @@ namespace Dream
 
     void
     PhysicsObjectRuntime::setCenterOfMassTransform
-    (const mat4& tx)
+    (mat4 tx)
     {
         btTransform transform;
-        float tmp[16];
-        const float* matPtr = value_ptr(tx);
-        memcpy(tmp,matPtr,sizeof(float)*16);
-        transform.setFromOpenGLMatrix(tmp);
+        transform.setFromOpenGLMatrix(value_ptr(tx));
         mRigidBody->setCenterOfMassTransform(transform);
+    }
+
+    void
+    PhysicsObjectRuntime::setCenterOfMassTransform
+    (vec3 tx)
+    {
+        auto mtx = mRigidBody->getCenterOfMassTransform();
+        mtx.setOrigin(btVector3(tx.x,tx.y,tx.z));
+        mRigidBody->setCenterOfMassTransform(mtx);
     }
 
     void

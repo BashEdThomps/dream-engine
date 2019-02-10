@@ -8,11 +8,17 @@ namespace Dream
     class GraphicsComponentTask : public Task
     {
     public:
-        GraphicsComponentTask() : Task()
-        {}
-
-        ~GraphicsComponentTask()
-        {}
+        inline GraphicsComponentTask() : Task() {}
+        inline ~GraphicsComponentTask() {}
         inline void execute() {}
     };
+
+    class GraphicsComponentDestructionTask : public DestructionTask
+    {
+    public:
+        inline GraphicsComponentDestructionTask() : DestructionTask() {}
+        inline ~GraphicsComponentDestructionTask() {}
+        inline void execute() {}
+    };
+
 }

@@ -2,6 +2,7 @@
 #include "Task.h"
 
 #include <algorithm>
+#include <angelscript.h>
 
 using std::find;
 
@@ -96,6 +97,7 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->critical("---------- Worker {} is ending it's task queue",getThreadId());
             #endif
+            int r = asThreadCleanup(); assert(r>=0);
         }
 
         void TaskThread::clearFence()

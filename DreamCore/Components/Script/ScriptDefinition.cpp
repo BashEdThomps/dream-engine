@@ -26,9 +26,9 @@ namespace Dream
     }
 
     bool
-    ScriptDefinition::isFormatLua
+    ScriptDefinition::isFormatAngelScript
     ()
     {
-        return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
+        return getFormat() == Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
     }
 }

@@ -45,6 +45,21 @@
 
 namespace Dream
 {
+    deque<float> ProjectRuntime::getFrameDurationHistory() const
+    {
+        return mFrameDurationHistory;
+    }
+
+    float ProjectRuntime::getAverageFramerate()
+    {
+       float f = 0.0;
+       for (const auto& dur : mFrameDurationHistory)
+       {
+           f += dur;
+       }
+       return f/MaxFrameCount;
+    }
+
     ProjectRuntime::ProjectRuntime
     (Project* project, WindowComponent* windowComponent)
         : Runtime(project->getDefinition()),
@@ -70,6 +85,7 @@ namespace Dream
         setLogClassName("ProjectRuntime");
         getLog()->debug( "Constructing" );
         #endif
+        mFrameDurationHistory.resize(MaxFrameCount);
     }
 
     ProjectRuntime::~ProjectRuntime
@@ -484,6 +500,11 @@ namespace Dream
         #endif
 
         mTime->updateFrameTime();
+        mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
+        if (mFrameDurationHistory.size() > MaxFrameCount)
+        {
+            mFrameDurationHistory.pop_front();
+        }
         sr->createSceneTasks();
         sr->getCamera()->update();
         mTaskManager->waitForFence();
@@ -509,6 +530,7 @@ namespace Dream
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
         mNanoVGComponent->render(sr);
+        mGraphicsComponent->executeDestructionTaskQueue();
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->drawDebug();
@@ -590,32 +612,41 @@ namespace Dream
     ProjectRuntime::updateAll
     ()
     {
-        for (auto rt : mSceneRuntimeVector)
+        if (mSceneRuntimeVector.empty())
         {
-            rt->lock();
-            switch (rt->getState())
-            {
-                case SceneState::SCENE_STATE_TO_LOAD:
-                    constructSceneRuntime(rt);
-                    break;
-                case SceneState::SCENE_STATE_LOADED:
-                    break;
-                case SceneState::SCENE_STATE_ACTIVE:
-                    updateLogic(rt);
-                    updateGraphics(rt);
-                    mWindowComponent->updateWindow(rt);
-                    collectGarbage(rt);
-                    break;
-                case SceneState::SCENE_STATE_TO_DESTROY:
-                    destructSceneRuntime(rt);
-                    break;
-                case SceneState::SCENE_STATE_DESTROYED:
-                    mSceneRuntimesToRemove.push_back(rt);
-                    break;
-            }
-            rt->unlock();
+            mTaskManager->clearFences();
+            mTaskManager->waitForFence();
+            mGraphicsComponent->executeTaskQueue();
+            mGraphicsComponent->executeDestructionTaskQueue();
         }
-
+        else
+        {
+            for (auto rt : mSceneRuntimeVector)
+            {
+                rt->lock();
+                switch (rt->getState())
+                {
+                    case SceneState::SCENE_STATE_TO_LOAD:
+                        constructSceneRuntime(rt);
+                        break;
+                    case SceneState::SCENE_STATE_LOADED:
+                        break;
+                    case SceneState::SCENE_STATE_ACTIVE:
+                        updateLogic(rt);
+                        updateGraphics(rt);
+                        mWindowComponent->updateWindow(rt);
+                        collectGarbage(rt);
+                        break;
+                    case SceneState::SCENE_STATE_TO_DESTROY:
+                        destructSceneRuntime(rt);
+                        break;
+                    case SceneState::SCENE_STATE_DESTROYED:
+                        mSceneRuntimesToRemove.push_back(rt);
+                        break;
+                }
+                rt->unlock();
+            }
+        }
         collectGarbage();
     }
 
@@ -937,4 +968,6 @@ namespace Dream
         }
         return result;
     }
+
+    int ProjectRuntime::MaxFrameCount = 100;
 }

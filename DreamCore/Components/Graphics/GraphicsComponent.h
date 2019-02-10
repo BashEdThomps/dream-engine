@@ -52,6 +52,7 @@ namespace Dream
     private:
 
         vector<GraphicsComponentTask*> mTaskQueue;
+        vector<GraphicsComponentDestructionTask> mDestructionTaskQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCache;
@@ -116,6 +117,8 @@ namespace Dream
         GLuint getGeometryPassIgnoreBuffer() const;
 
         void pushTask(GraphicsComponentTask* t);
+        void pushDestructionTask(const GraphicsComponentDestructionTask& t);
         void executeTaskQueue();
+        void executeDestructionTaskQueue();
     };
 }

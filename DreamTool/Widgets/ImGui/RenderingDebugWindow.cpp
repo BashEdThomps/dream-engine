@@ -36,6 +36,12 @@ namespace DreamTool
                 {
                     if (ImGui::CollapsingHeader("Statistics"))
                     {
+
+                        ImGui::PushItemWidth(-1);
+                        ImGui::PlotLines("FPS",&pRuntime->getFrameDurationHistory()[0],ProjectRuntime::MaxFrameCount, 0, "FPS", 0.f, 250.f, ImVec2(0,50));
+                        ImGui::PopItemWidth();
+                        ImGui::Text("Average: %.3f",pRuntime->getAverageFramerate());
+                        ImGui::Separator();
                         ImGui::Text("Geometry Triangles Drawn: %ld", ModelMesh::TrianglesDrawn);
                         ImGui::Text("Geometry Meshes Drawn: %ld", ModelMesh::MeshesDrawn);
                         ImGui::Text("Geometry Draw Calls: %ld", ModelMesh::DrawCalls);

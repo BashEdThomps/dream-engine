@@ -22,6 +22,6 @@ namespace Dream
         ScriptDefinition(ProjectDefinition* pd, const json& js);
         virtual ~ScriptDefinition();
 
-        bool isFormatLua();
+        bool isFormatAngelScript();
     };
 }

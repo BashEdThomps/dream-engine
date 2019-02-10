@@ -49,8 +49,8 @@ namespace Dream
         ScriptRuntime* mInputScript;
         ScriptRuntime* mNanoVGScript;
         Camera mCamera;
-        double mSceneStartTime;
-        double mSceneCurrentTime;
+        unsigned long mSceneStartTime;
+        unsigned long mSceneCurrentTime;
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
@@ -137,11 +137,11 @@ namespace Dream
          */
         SceneObjectRuntime* getNearestToCamera() const;
 
-        double getSceneCurrentTime() const;
-        void setSceneCurrentTime(double sceneCurrentTime);
+        unsigned long getSceneCurrentTime() const;
+        void setSceneCurrentTime(unsigned long sceneCurrentTime);
 
-        double getSceneStartTime() const;
-        void setSceneStartTime(double sceneStartTime);
+        unsigned long getSceneStartTime() const;
+        void setSceneStartTime(unsigned long sceneStartTime);
 
     protected:
         void updateLifetime();

@@ -49,7 +49,7 @@ namespace Dream
         void execute();
     };
 
-    class ShaderFreeTask : public GraphicsComponentTask
+    class ShaderFreeTask : public GraphicsComponentDestructionTask
     {
         GLuint mShaderProgram;
     public:

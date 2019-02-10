@@ -158,7 +158,7 @@ namespace Dream
     }
 
     ShaderFreeTask::ShaderFreeTask()
-        : GraphicsComponentTask(), mShaderProgram(0)
+        : GraphicsComponentDestructionTask(), mShaderProgram(0)
     {
         #ifdef DREAM_LOG
         setLogClassName("ShaderFreeTask");

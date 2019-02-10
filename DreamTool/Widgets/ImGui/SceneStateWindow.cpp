@@ -54,7 +54,7 @@ namespace DreamTool
                         auto srt = pRunt->getSceneRuntimeByUuid(sceneDef->getUuid());
 
                         string state;
-                        double time = 0.0;
+                        unsigned long time = 0;
                         if (srt == nullptr)
                         {
                             state = "Not Loaded";
@@ -83,7 +83,7 @@ namespace DreamTool
                         }
                         ImGui::Text("%s",state.c_str());
                         ImGui::NextColumn();
-                        ImGui::Text("%lf",time);
+                        ImGui::Text("%lu",time);
                     }
                     else
                     {

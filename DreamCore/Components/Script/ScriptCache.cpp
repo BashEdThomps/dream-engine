@@ -47,13 +47,6 @@ namespace Dream
     (AssetDefinition* def)
     {
         auto scriptDef = static_cast<ScriptDefinition*>(def);
-        for (auto* inst: mRuntimes)
-        {
-            if (inst->getUuid() == scriptDef->getUuid())
-            {
-                return inst;
-            }
-        }
         auto newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
         auto absPath = getAbsolutePath(scriptDef);
         File scriptFile(absPath);

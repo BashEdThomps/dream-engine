@@ -77,10 +77,7 @@ namespace Dream
     const
     {
         btTransform transform;
-        float tmp[16];
-        const float* matPtr = value_ptr(mMatrix);
-        memcpy(tmp,matPtr,sizeof(float)*16);
-        transform.setFromOpenGLMatrix(tmp);
+        transform.setFromOpenGLMatrix(value_ptr(mMatrix));
         return transform;
     }
 
@@ -142,7 +139,7 @@ namespace Dream
         return (float*)(&mMatrix[0]);
     }
 
-    mat4& Transform::getMatrix()
+    mat4 Transform::getMatrix()
     {
         return mMatrix;
     }

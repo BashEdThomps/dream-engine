@@ -64,4 +64,9 @@ namespace Dream
 
         int getTaskId() const;
     };
+
+    class DestructionTask : public Task
+    {
+        inline void execute() {}
+    };
 }

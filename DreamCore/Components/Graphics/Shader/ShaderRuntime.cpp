@@ -70,7 +70,7 @@ namespace Dream
         mFreeTask.clearState();
         mFreeTask.setState(TaskState::QUEUED);
         mFreeTask.setShaderProgram(mShaderProgram);
-        mProjectRuntime->getGraphicsComponent()->pushTask(&mFreeTask);
+        mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mFreeTask);
     }
 
     GLuint

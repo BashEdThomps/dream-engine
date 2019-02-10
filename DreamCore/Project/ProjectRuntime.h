@@ -14,11 +14,13 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 #include "../Common/Runtime.h"
 
 using std::string;
 using std::vector;
+using std::deque;
 
 namespace Dream
 {
@@ -79,8 +81,11 @@ namespace Dream
 
         vector<SceneRuntime*> mSceneRuntimeVector;
         vector<SceneRuntime*> mSceneRuntimesToRemove;
+        deque<float> mFrameDurationHistory;
 
     public: // Public Functions
+        static int MaxFrameCount;
+
         ProjectRuntime(Project* parentProject, WindowComponent* wc = nullptr);
         ~ProjectRuntime() override;
 
@@ -142,6 +147,9 @@ namespace Dream
         vector<SceneRuntime*> getSceneRuntimeVector() const;
         bool hasSceneRuntime(uint32_t uuid) const;
         bool hasLoadedScenes() const;
+
+        deque<float> getFrameDurationHistory() const;
+        float getAverageFramerate();
 
     private:
         bool initAudioComponent();

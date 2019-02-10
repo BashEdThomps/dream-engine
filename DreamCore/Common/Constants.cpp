@@ -142,7 +142,7 @@ namespace Dream
 
     // Formats
     const string Constants::ASSET_FORMAT = "format";
-    const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
+    const string Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT = "script.as";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
     const string Constants::ASSET_FORMAT_MODEL_OBJ = "assimp.obj";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
@@ -177,7 +177,7 @@ namespace Dream
     const string Constants::ASSET_ATTR_GROUP = "group";
     const string Constants::ASSET_ATTR_GROUP_DEFAULT = "None";
 
-    const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
+    const string Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE = "AngelScript";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
     const string Constants::ASSET_FORMAT_MODEL_OBJ_READABLE = "Wavefront OBJ";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
@@ -348,11 +348,11 @@ namespace Dream
     const string Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL = "dream_material";
 
     // Lua ======================================================================
-    const string Constants::LUA_INIT_FUNCTION   = "onInit";
-    const string Constants::LUA_UPDATE_FUNCTION = "onUpdate";
-    const string Constants::LUA_NANOVG_FUNCTION = "onNanoVG";
-    const string Constants::LUA_INPUT_FUNCTION  = "onInput";
-    const string Constants::LUA_EVENT_FUNCTION  = "onEvent";
+    const string Constants::SCRIPT_INIT_FUNCTION   = "onInit";
+    const string Constants::SCRIPT_UPDATE_FUNCTION = "onUpdate";
+    const string Constants::SCRIPT_NANOVG_FUNCTION = "onNanoVG";
+    const string Constants::SCRIPT_INPUT_FUNCTION  = "onInput";
+    const string Constants::SCRIPT_EVENT_FUNCTION  = "onEvent";
 
     // Scroller ================================================================
     const string Constants::SCROLLER_VELOCITY = "velocity";
@@ -536,7 +536,7 @@ namespace Dream
         {
             AssetType::SCRIPT,
             {
-                ASSET_FORMAT_SCRIPT_LUA
+                ASSET_FORMAT_SCRIPT_ANGELSCRIPT
             }
         },
         {
@@ -745,9 +745,9 @@ namespace Dream
     (const string& format)
     {
         // Script
-        if (format == ASSET_FORMAT_SCRIPT_LUA)
+        if (format == ASSET_FORMAT_SCRIPT_ANGELSCRIPT)
         {
-           return ASSET_FORMAT_SCRIPT_LUA_READABLE;
+           return ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
         }
         // Model
         else if (format == ASSET_FORMAT_MODEL_ASSIMP)
@@ -852,9 +852,9 @@ namespace Dream
     Constants::getAssetFormatStringFromReadableName
     (const string& format)
     {
-        if (format == ASSET_FORMAT_SCRIPT_LUA_READABLE)
+        if (format == ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE)
         {
-           return ASSET_FORMAT_SCRIPT_LUA;
+           return ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
         }
         else if (format == ASSET_FORMAT_MODEL_ASSIMP_READABLE)
         {

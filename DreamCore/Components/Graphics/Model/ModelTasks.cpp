@@ -56,7 +56,7 @@ namespace Dream
         setState(TaskState::COMPLETED);
     }
 
-   ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentTask ()
+   ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentDestructionTask ()
    {
        #ifdef DREAM_LOG
        setLogClassName("ModelFreeMeshTask");

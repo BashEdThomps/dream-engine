@@ -93,9 +93,6 @@ namespace DreamTool
         int argc;
         char** argv;
         bool MainLoopDone = false;
-        double LastTime = glfwGetTime();
-        double CurrentTime = glfwGetTime();
-        double Frames = 0;
         InputTarget inputTarget=EDITOR;
         string lastDirectory;
 
@@ -104,7 +101,6 @@ namespace DreamTool
 
         bool init();
         void run();
-        void FPS();
         void handleEditorInput(SceneRuntime*);
         void handleSceneInput(SceneRuntime*);
         void closeProject();

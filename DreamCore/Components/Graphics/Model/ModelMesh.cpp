@@ -59,7 +59,7 @@ namespace Dream
         mFreeMeshTask.clearState();
         mFreeMeshTask.setState(TaskState::QUEUED);
         mFreeMeshTask.setBuffers(mVAO,mVBO,mIBO);
-        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mFreeMeshTask);
+        mParent->getProjectRuntime()->getGraphicsComponent()->pushDestructionTask(mFreeMeshTask);
     }
 
     string

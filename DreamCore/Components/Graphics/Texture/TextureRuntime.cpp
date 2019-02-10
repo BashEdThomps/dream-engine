@@ -24,7 +24,7 @@ namespace Dream
     {
         mTextureDestructionTask.setGLID(mGLID);
         mTextureDestructionTask.setState(TaskState::QUEUED);
-        mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureDestructionTask);
+        mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
         #ifdef DREAM_LOG
         checkGLError();
         #endif

@@ -51,13 +51,6 @@ namespace Dream
         bool mError;
         bool mInitialised;
         string mSource;
-        asIScriptModule* mScriptModule;
-        asIScriptFunction *mInitFunction;
-        asIScriptFunction *mUpdateFunction;
-        asIScriptFunction *mEventFunction;
-        asIScriptFunction *mNanoVGFunction;
-        asIScriptFunction *mInputFunction;
-        asIScriptContext *mContext;
         string mUuidString;
     };
 }

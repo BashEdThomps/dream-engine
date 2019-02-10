@@ -33,7 +33,7 @@ namespace Dream
         void execute();
     };
 
-    class TextureDestructionTask : public GraphicsComponentTask
+    class TextureDestructionTask : public GraphicsComponentDestructionTask
     {
         GLuint mTextureId;
     public:

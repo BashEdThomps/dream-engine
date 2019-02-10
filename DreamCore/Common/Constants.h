@@ -125,8 +125,7 @@ namespace Dream
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_DREAM;
 
-        const static string ASSET_FORMAT_SCRIPT_LUA;
-        const static string ASSET_FORMAT_SCRIPT_JS;
+        const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
 
         const static string ASSET_FORMAT_MODEL_ASSIMP;
         const static string ASSET_FORMAT_MODEL_OBJ;
@@ -161,8 +160,7 @@ namespace Dream
 
 
         const static string ASSET_FORMAT_READABLE;
-        const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
-        const static string ASSET_FORMAT_SCRIPT_JS_READABLE;
+        const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         const static string ASSET_FORMAT_MODEL_OBJ_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
@@ -360,11 +358,11 @@ namespace Dream
         const static string SHADER_VERTEX_FILE_NAME;
 
         // Lua ==================================================================
-        const static string LUA_INIT_FUNCTION;
-        const static string LUA_UPDATE_FUNCTION;
-        const static string LUA_NANOVG_FUNCTION;
-        const static string LUA_INPUT_FUNCTION;
-        const static string LUA_EVENT_FUNCTION;
+        const static string SCRIPT_INIT_FUNCTION;
+        const static string SCRIPT_UPDATE_FUNCTION;
+        const static string SCRIPT_NANOVG_FUNCTION;
+        const static string SCRIPT_INPUT_FUNCTION;
+        const static string SCRIPT_EVENT_FUNCTION;
 
         // Scroller ============================================================
         const static string SCROLLER_VELOCITY;

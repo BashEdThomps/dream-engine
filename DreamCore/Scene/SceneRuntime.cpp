@@ -649,22 +649,28 @@ namespace Dream
         return nearest;
     }
 
-    double SceneRuntime::getSceneCurrentTime() const
+    unsigned long
+    SceneRuntime::getSceneCurrentTime
+    () const
     {
         return mSceneCurrentTime;
     }
 
-    void SceneRuntime::setSceneCurrentTime(double sceneCurrentTime)
+    void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
     {
         mSceneCurrentTime = sceneCurrentTime;
     }
 
-    double SceneRuntime::getSceneStartTime() const
+    unsigned long
+    SceneRuntime::getSceneStartTime
+    () const
     {
         return mSceneStartTime;
     }
 
-    void SceneRuntime::setSceneStartTime(double sceneStartTime)
+    void
+    SceneRuntime::setSceneStartTime
+    (unsigned long sceneStartTime)
     {
         mSceneStartTime = sceneStartTime;
     }
@@ -677,6 +683,8 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Building SceneRuntime Task Queue...");
         #endif
+
+        updateLifetime();
 
         auto taskManager = mProjectRuntime->getTaskManager();
         auto physicsComponent = mProjectRuntime->getPhysicsComponent();

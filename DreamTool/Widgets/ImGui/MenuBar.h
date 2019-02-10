@@ -32,11 +32,8 @@ namespace DreamTool
         string getMessageString() const;
         void setMessageString(const string& messageString);
 
-        void setFPS(double fPS);
-
     protected:
         string mMessageString;
         float mMessagePadding = 15.0f;
-        double mFPS;
     };
 }

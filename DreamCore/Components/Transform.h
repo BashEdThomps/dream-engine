@@ -90,7 +90,7 @@ namespace Dream
         /**
          * @brief Get the matrix as a glm matrix object.
          */
-        mat4& getMatrix();
+        mat4 getMatrix();
 
         /**
          * @brief Set the internal matrix object from a glm matrix.

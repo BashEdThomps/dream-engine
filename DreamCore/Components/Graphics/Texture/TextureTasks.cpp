@@ -77,7 +77,7 @@ namespace Dream
 
     TextureDestructionTask::TextureDestructionTask
     ()
-        : GraphicsComponentTask()
+        : GraphicsComponentDestructionTask()
     {
         #ifdef DREAM_LOG
         setLogClassName("TextureDeletionTask");

@@ -43,25 +43,39 @@ using std::cout;
 using std::cerr;
 using std::string;
 
-static mat4* mat4_translate3f(mat4 mtx, float x, float y, float z)
+static mat4 mat4_translate3f(mat4 mtx, float x,float y ,float z)
 {
-    static mat4 result = glm::translate(mtx,vec3(x,y,z));
-    return &result;
+    return glm::translate(mtx,vec3(x,y,z));
 }
 
-static void mat4_delete(mat4* m)
+static void mat4_constructor(void *memory)
 {
-    delete m;
+  new(memory) mat4(1.0f);
 }
 
-static void vec3_delete(vec3* v)
+static void mat4_destructor(void *memory)
 {
-    delete v;
+  ((mat4*)memory)->~mat4();
 }
 
-static void vec4_delete(vec4* v)
+static void vec3_constructor(void *memory)
 {
-    delete v;
+  new(memory) vec3(0.0f);
+}
+
+static void vec3_destructor(void *memory)
+{
+  ((vec3*)memory)->~vec3();
+}
+
+static void vec4_constructor(void *memory)
+{
+  new(memory) vec4(0.0f);
+}
+
+static void vec4_destructor(void *memory)
+{
+  ((vec4*)memory)->~vec4();
 }
 
 static void whyYouFail(int r)
@@ -151,8 +165,9 @@ namespace Dream
         lock();
         if (Engine != nullptr)
         {
-            //int r = Engine->ShutDownAndRelease();
-            //assert(r>=0);
+            int r = asThreadCleanup(); assert(r>=0);
+            r = Engine->ShutDownAndRelease(); assert(r>=0);
+            asUnprepareMultithread();
             Engine = nullptr;
         }
         unlock();
@@ -166,8 +181,10 @@ namespace Dream
         auto log = getLog();
         log->debug( "Initialising ScriptComponent" );
         #endif
+        int r = asPrepareMultithread();
+        assert( r >= 0 );
         Engine = asCreateScriptEngine();
-        int r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
+        r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
         assert( r >= 0 );
         RegisterStdString(Engine);
         #ifdef DREAM_LOG
@@ -215,10 +232,19 @@ namespace Dream
         r = Engine->RegisterObjectType("Time", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Transform", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("WindowComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        r = Engine->RegisterObjectType("vec3", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
-        r = Engine->RegisterObjectType("vec4", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
-        r = Engine->RegisterObjectType("mat4", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
-        r = Engine->RegisterObjectType("quat", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
+        int glmFlags =
+            asOBJ_VALUE |
+            asOBJ_POD |
+            asOBJ_VALUE |
+            asOBJ_POD |
+            asOBJ_APP_CLASS |
+            asOBJ_APP_CLASS_CONSTRUCTOR |
+            asOBJ_APP_CLASS_ASSIGNMENT |
+            asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
+
+        r = Engine->RegisterObjectType("vec3", sizeof(vec3),glmFlags); whyYouFail(r);
+        r = Engine->RegisterObjectType("vec4", sizeof(vec4),glmFlags); whyYouFail(r);
+        r = Engine->RegisterObjectType("mat4", sizeof(mat4),glmFlags); whyYouFail(r);
 
         // Enums
         r = Engine->RegisterEnum("KeyboardMapping");
@@ -324,7 +350,8 @@ namespace Dream
     {
         debugRegisteringClass("PhysicsObjectRuntime");
         int r;
-        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(const mat4@)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(const mat4&),void),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(mat4)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(mat4),void),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(const vec3)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(vec3),void),asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(const Transform@)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(const Transform&),void),asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setLinearVelocity(float,float,float)",asMETHOD(PhysicsObjectRuntime,setLinearVelocity),asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setAngularVelocity(float,float,float)",asMETHOD(PhysicsObjectRuntime,setAngularVelocity),asCALL_THISCALL); whyYouFail(r);
@@ -352,8 +379,8 @@ namespace Dream
         debugRegisteringClass("Transform");
         int r;
         r = Engine->RegisterObjectMethod("Transform", "void translate3f(float,float,float)",asMETHOD(Transform,translate3f), asCALL_THISCALL); whyYouFail(r);
-        r = Engine->RegisterObjectMethod("Transform","vec3@ getTranslation()",asMETHOD(Transform,getTranslation),asCALL_THISCALL); whyYouFail(r);
-        r = Engine->RegisterObjectMethod("Transform","mat4@ getMatrix()",asMETHOD(Transform,getMatrix),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Transform","vec3 getTranslation()",asMETHOD(Transform,getTranslation),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Transform","mat4 getMatrix()",asMETHOD(Transform,getMatrix),asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -553,7 +580,7 @@ namespace Dream
         int r;
         r = Engine->RegisterObjectMethod("NanoVGComponent","int CreateFont(string,string)",asMETHOD(NanoVGComponent,CreateFont),asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("NanoVGComponent","void FontSize(float)",asMETHOD(NanoVGComponent,FontSize),asCALL_THISCALL); whyYouFail(r);
-        r = Engine->RegisterObjectMethod("NanoVGComponent","vec4@ TextBoxBounds(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBoxBounds,(float, float, float, string),vec4*),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("NanoVGComponent","vec4 TextBoxBounds(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBoxBounds,(float, float, float, string),vec4),asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("NanoVGComponent","void TextBox(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBox,(float,float,float, string),void),asCALL_THISCALL); whyYouFail(r);
     }
 
@@ -574,19 +601,28 @@ namespace Dream
     {
         debugRegisteringClass("GLM");
         int r;
-        r = Engine->RegisterGlobalFunction("mat4@ translate3f(mat4@, float,float,float)", asFUNCTION(mat4_translate3f), asCALL_CDECL); whyYouFail( r >= 0 );
-        r = Engine->RegisterGlobalFunction("void mat4_delete(mat4@)",asFUNCTION(mat4_delete),asCALL_CDECL); whyYouFail(r);
         // vec3
         r = Engine->RegisterObjectProperty("vec3","float x",asOFFSET(vec3,x)); whyYouFail(r);
         r = Engine->RegisterObjectProperty("vec3","float y",asOFFSET(vec3,y)); whyYouFail(r);
         r = Engine->RegisterObjectProperty("vec3","float z",asOFFSET(vec3,z)); whyYouFail(r);
-        r = Engine->RegisterGlobalFunction("void vec3_delete(vec3@)",asFUNCTION(vec4_delete),asCALL_CDECL); whyYouFail(r);
-        // Vec4
+        //r = Engine->RegisterObjectMethod("vec3", "vec3 opAssign(const vec3 &in)", asMETHODPR(glm::vec3, operator=, (const glm::vec3&), glm::vec3&), asCALL_THISCALL);
+        //r = Engine->RegisterObjectBehaviour("vec3", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(vec3_constructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
+        //r = Engine->RegisterObjectBehaviour("vec3", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(vec3_destructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
+
+        // vec4
         r = Engine->RegisterObjectProperty("vec4","float w",asOFFSET(vec4,w)); whyYouFail(r);
         r = Engine->RegisterObjectProperty("vec4","float x",asOFFSET(vec4,x)); whyYouFail(r);
         r = Engine->RegisterObjectProperty("vec4","float y",asOFFSET(vec4,y)); whyYouFail(r);
         r = Engine->RegisterObjectProperty("vec4","float z",asOFFSET(vec4,z)); whyYouFail(r);
-        r = Engine->RegisterGlobalFunction("void vec4_delete(vec3@)",asFUNCTION(vec4_delete),asCALL_CDECL); whyYouFail(r);
+        //r = Engine->RegisterObjectMethod("vec4", "vec4 opAssign(const vec4 &in)", asMETHODPR(glm::vec4, operator=, (const glm::vec4&), glm::vec4&), asCALL_THISCALL);
+        //r = Engine->RegisterObjectBehaviour("vec4", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(vec4_constructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
+        //r = Engine->RegisterObjectBehaviour("vec4", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(vec4_destructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
+
+        // mat4
+        r = Engine->RegisterGlobalFunction("mat4 translate3f(mat4,float,float,float)",asFUNCTION(mat4_translate3f), asCALL_CDECL); whyYouFail(r);
+        //r = Engine->RegisterObjectMethod("mat4", "mat4 opAssign(const mat4 &in)", asMETHODPR(glm::mat4, operator=, (const glm::mat4&), glm::mat4&), asCALL_THISCALL);
+        //r = Engine->RegisterObjectBehaviour("mat4", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(mat4_constructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
+        //r = Engine->RegisterObjectBehaviour("mat4", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(mat4_destructor), asCALL_CDECL_OBJLAST); whyYouFail(r);
     }
 
 

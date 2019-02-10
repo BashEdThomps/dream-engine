@@ -174,11 +174,8 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        if (mScriptRuntime != nullptr)
-        {
-            //delete mScriptRuntime;
-            mScriptRuntime = nullptr;
-        }
+        //delete mScriptRuntime;
+        mScriptRuntime = nullptr;
     }
 
     void

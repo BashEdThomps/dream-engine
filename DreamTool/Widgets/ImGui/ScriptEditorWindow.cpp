@@ -54,7 +54,7 @@ namespace DreamTool
                     scriptInst->setSource(currentText);
                     string source = scriptInst->getSource();
                     vector<char> data(source.begin(),source.end());
-                    if (mState->projectDirectory.writeAssetData(mScriptDefinition,data,Constants::ASSET_FORMAT_SCRIPT_LUA))
+                    if (mState->projectDirectory.writeAssetData(mScriptDefinition,data,Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT))
                     {
 
                         mState->menuBar.setMessageString("Saved Script "+scriptInst->getNameAndUuidString());
@@ -106,7 +106,7 @@ namespace DreamTool
                     else
                     {
                         auto templateName = templates.at(currentTemplateIndex);
-                        auto templateStr = mState->templatesModel.getTemplate(AssetType::SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_LUA);
+                        auto templateStr = mState->templatesModel.getTemplate(AssetType::SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT);
                         if (scriptInst)
                         {
                             scriptInst->setSource(templateStr);

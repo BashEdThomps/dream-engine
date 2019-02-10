@@ -495,7 +495,7 @@ namespace Dream
         // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
         // Measured values are returned in local coordinate space.
         void TextBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds);
-        vec4* TextBoxBounds(float x, float y, float breakRowWidth, std::string str);
+        vec4 TextBoxBounds(float x, float y, float breakRowWidth, std::string str);
 
         // Calculates the glyph x positions of the specified text. If end is specified only the sub-string will be used.
         // Measured values are returned in local coordinate space.

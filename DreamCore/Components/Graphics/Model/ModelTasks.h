@@ -33,7 +33,7 @@ namespace Dream
         void execute();
     };
 
-    class ModelFreeMeshTask : public GraphicsComponentTask
+    class ModelFreeMeshTask : public GraphicsComponentDestructionTask
     {
         GLuint mVAO;
         GLuint mVBO;

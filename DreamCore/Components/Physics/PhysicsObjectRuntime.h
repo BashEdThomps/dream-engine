@@ -98,10 +98,11 @@ namespace Dream
 
         void  setCcdSweptSphereRadius(float);
         float getCcdSweptSphereRadius();
-        void setCenterOfMassTransform(const mat4& tx);
+        void setCenterOfMassTransform(mat4 tx);
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
 
         PhysicsAddObjectTask* getAddObjectTask();
+        void setCenterOfMassTransform(vec3 tx);
     };
 }

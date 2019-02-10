@@ -36,9 +36,9 @@ namespace Dream
     Cache::clear
     ()
     {
-        for (auto* Runtime : mRuntimes)
+        for (auto* runtime : mRuntimes)
         {
-            delete Runtime;
+            delete runtime;
         }
         mRuntimes.clear();
     }
@@ -58,11 +58,11 @@ namespace Dream
         {
             return nullptr;
         }
-       for (auto* Runtime : mRuntimes)
+       for (auto* runtime : mRuntimes)
        {
-           if (Runtime->getUuid() == def->getUuid())
+           if (runtime->getUuid() == def->getUuid())
            {
-               return Runtime;
+               return runtime;
            }
        }
        return loadRuntime(def);
@@ -76,11 +76,11 @@ namespace Dream
        {
             return nullptr;
        }
-       for (auto Runtime : mRuntimes)
+       for (auto runtime : mRuntimes)
        {
-           if (Runtime->getUuid() == id)
+           if (runtime->getUuid() == id)
            {
-               return Runtime;
+               return runtime;
            }
        }
        return loadRuntime(getAssetDefinitionByUuid(id));

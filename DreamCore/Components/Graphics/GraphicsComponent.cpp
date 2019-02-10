@@ -852,6 +852,12 @@ namespace Dream
     {
        mTaskQueue.push_back(t);
     }
+    void
+    GraphicsComponent::pushDestructionTask
+    (const GraphicsComponentDestructionTask& t)
+    {
+        mDestructionTaskQueue.push_back(std::move(t));
+    }
 
     void
     GraphicsComponent::executeTaskQueue
@@ -892,5 +898,18 @@ namespace Dream
             completed.clear();
         }
         mTaskQueue.clear();
+    }
+
+    void
+    GraphicsComponent::executeDestructionTaskQueue
+    ()
+    {
+        for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
+        {
+            auto& t = (*itr);
+            t.setState(TaskState::ACTIVE);
+            t.execute();
+        }
+        mDestructionTaskQueue.clear();
     }
 }

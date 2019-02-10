@@ -22,8 +22,7 @@
 namespace DreamTool
 {
     MenuBar::MenuBar(DTState* def)
-        : ImGuiWidget(def),
-          mFPS(0)
+        : ImGuiWidget(def)
     {
 #ifdef DREAM_LOG
         setLogClassName("MenuBar");
@@ -366,14 +365,9 @@ namespace DreamTool
             }
 
             static char msgBuf[128] = {0};
-            snprintf(
-                        msgBuf,
-                        128,
-                        "%s | Input to %s | %.3d fps",
-                        mMessageString.c_str(),
-                        (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"),
-                        static_cast<int>(mFPS)
-                        );
+            snprintf(msgBuf,128,"%s | Input to %s",
+                mMessageString.c_str(),
+                (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"));
 
             auto maxX = ImGui::GetWindowContentRegionMax().x;
             ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);
@@ -632,8 +626,4 @@ namespace DreamTool
         mMessageString = messageString;
     }
 
-    void MenuBar::setFPS(double fPS)
-    {
-        mFPS = fPS;
-    }
 }

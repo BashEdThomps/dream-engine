@@ -165,16 +165,7 @@ namespace DreamTool
                 }
             }
             windowComponent.swapBuffers();
-            FPS();
         }
-    }
-
-    void DTState::FPS()
-    {
-        LastTime = CurrentTime;
-        CurrentTime = glfwGetTime();
-        Frames = 1.0/(CurrentTime-LastTime);
-        menuBar.setFPS(Frames);
     }
 
     void
