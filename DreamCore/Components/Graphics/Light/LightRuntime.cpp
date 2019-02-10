@@ -169,7 +169,7 @@ namespace Dream
     ()
     const
     {
-        vec3 tx = mSceneObjectRuntime->getTransform().getMatrix()[3];
+        vec3 tx =mSceneObjectRuntime->getTransform()->getMatrix()[3];
         return PointLight
         {
             tx,
@@ -187,7 +187,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition tx = mSceneObjectRuntime->getTransform()->decomposeMatrix();
         return SpotLight
         {
             tx.translation,
@@ -208,7 +208,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition tx = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition tx = mSceneObjectRuntime->getTransform()->decomposeMatrix();
         return DirLight
         {
             eulerAngles(tx.rotation),

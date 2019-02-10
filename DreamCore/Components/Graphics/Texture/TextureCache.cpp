@@ -108,11 +108,10 @@ namespace Dream
         texture->setHeight(height);
         texture->setChannels(channels);
         texture->setImage(image);
+        texture->pushConstructionTask();
         mRuntimes.push_back(texture);
 
         // Add Load Task
-        auto creationTask = new TextureCreationTask(texture);
-        mProjectRuntime->getGraphicsComponent()->pushTask(creationTask);
         return texture;
     }
 

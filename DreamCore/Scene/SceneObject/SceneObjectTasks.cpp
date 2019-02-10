@@ -52,12 +52,12 @@ namespace Dream
             {
                 mSceneObjectRuntime->increaseLifetime(timeDelta);
             }
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
             mSceneObjectRuntime->unlock();
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
     }

@@ -22,19 +22,25 @@ namespace Dream
 
     class Task : public DreamObject
     {
+        static int TaskID;
+
+        static mutex TaskStatesMutex;
+        static map<int,TaskState> TaskStates;
+
+        static mutex WaitingForMutex;
+        static map<int,vector<Task*> > WaitingFor;
+
+        static mutex WaitingForMeMutex;
+        static map<int,vector<Task*> > WaitingForMe;
+
     protected:
-        atomic<int>  mThreadId;
-        atomic<TaskState> mState;
-        atomic<unsigned int>  mDeferralCount;
-
-        mutex mWaitingForMutex;
-        vector<Task*> mWaitingFor;
-
-        mutex mWaitingForMeMutex;
-        vector<Task*> mWaitingForMe;
+        int mTaskId;
+        int  mThreadId;
+        unsigned int  mDeferralCount;
 
     public:
         Task();
+        Task(const Task& other);
         virtual ~Task();
         virtual void execute() = 0;
 
@@ -54,5 +60,8 @@ namespace Dream
 
         void dependsOn(Task* t);
 
+        bool operator==(const Task& other);
+
+        int getTaskId() const;
     };
 }

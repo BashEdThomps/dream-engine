@@ -1,6 +1,5 @@
 #include "TextureRuntime.h"
 #include "TextureDefinition.h"
-#include "TextureTasks.h"
 #include "../GraphicsComponent.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
@@ -16,13 +15,16 @@ namespace Dream
           mHeight(0),
           mChannels(0),
           mImage(nullptr),
-          mCreateTextureTask(nullptr)
+          mTextureConstructionTask(this),
+          mTextureDestructionTask()
     {}
 
     TextureRuntime::~TextureRuntime
     ()
     {
-        mProjectRuntime->getGraphicsComponent()->pushTask(new TextureDeletionTask(mGLID));
+        mTextureDestructionTask.setGLID(mGLID);
+        mTextureDestructionTask.setState(TaskState::QUEUED);
+        mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureDestructionTask);
         #ifdef DREAM_LOG
         checkGLError();
         #endif
@@ -98,18 +100,9 @@ namespace Dream
         mImage = image;
     }
 
-    void
-    TextureRuntime::clearCreateTextureTask
-    ()
+    void TextureRuntime::pushConstructionTask()
     {
-        mCreateTextureTask = nullptr;
-    }
-
-    void
-    TextureRuntime::setTextureCreationTask
-    (TextureCreationTask* task)
-    {
-       mCreateTextureTask = task;
+        mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureConstructionTask);
     }
 
     GLuint
@@ -130,8 +123,7 @@ namespace Dream
     TextureRuntime::operator==
     (const TextureRuntime& other)
     {
-        return this->mGLID == other.mGLID &&
-               this->mPath == other.mPath;
+        return this->mGLID == other.mGLID && this->mPath == other.mPath;
     }
 
     bool

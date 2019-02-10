@@ -66,9 +66,9 @@ namespace Dream
     {
         auto log = getLog();
         log->debug("Contents of shader cache");
-        for (auto Runtime : mRuntimes)
+        for (auto runtime : mRuntimes)
         {
-            auto shader = static_cast<ShaderRuntime*>(Runtime);
+            auto shader = static_cast<ShaderRuntime*>(runtime);
             log->debug("{}",shader->getNameAndUuidString());
             shader->logMaterials();
         }

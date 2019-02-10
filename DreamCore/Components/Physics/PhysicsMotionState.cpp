@@ -24,7 +24,7 @@
 namespace Dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (Transform& dreamTransform)
+    (Transform* dreamTransform)
         : btMotionState(),
           DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
@@ -46,20 +46,20 @@ namespace Dream
 
     void
     PhysicsMotionState::setTransform
-    (const Transform& transform)
+    (Transform* transform)
     {
         #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setTransform called" );
         #endif
-        mDreamTransform.setMatrix(transform.getMatrix());
+        mDreamTransform->setMatrix(transform->getMatrix());
     }
 
     void
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        auto mtx = mDreamTransform.getMatrix();
+        auto mtx = mDreamTransform->getMatrix();
         float mtxPtr[16];
         memcpy(&mtxPtr[0],glm::value_ptr(mtx),sizeof(float)*16);
         worldTrans.setFromOpenGLMatrix(mtxPtr);
@@ -76,7 +76,7 @@ namespace Dream
         #endif
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
-        mDreamTransform.setMatrix(glm::make_mat4(mtx));
+        mDreamTransform->setMatrix(glm::make_mat4(mtx));
     }
 
     void

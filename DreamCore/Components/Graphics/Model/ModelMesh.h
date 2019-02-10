@@ -48,6 +48,7 @@
 #include "../Light/LightRuntime.h"
 #include "ModelBone.h"
 #include "../../../Scene/SceneObject/BoundingBox.h"
+#include "ModelTasks.h"
 
 namespace Dream
 {
@@ -108,7 +109,6 @@ namespace Dream
         GLuint getIBO() const;
         void setIBO(const GLuint& iBO);
         BoundingBox getBoundingBox() const;
-        void clearInitMeshTask();
 
     private:
         ModelRuntime* mParent;
@@ -122,6 +122,7 @@ namespace Dream
         vector<SceneObjectRuntime*> mRuntimes;
         vector<SceneObjectRuntime*> mRuntimesInFrustum;
         BoundingBox mBoundingBox;
-        GraphicsComponentTask* mInitMeshTask;
+        ModelInitMeshTask mInitMeshTask;
+        ModelFreeMeshTask mFreeMeshTask;
     };
 }

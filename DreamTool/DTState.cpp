@@ -14,25 +14,26 @@ namespace DreamTool
         : DreamObject("DTState"),
           project(nullptr),
           // ImGui
-          propertiesWindow(PropertiesWindow(this)),
-          projectBrowser(ProjectBrowser(this)),
-          scriptDebugWindow(ScriptDebugWindow(this)),
-          sceneStateWindow(SceneStateWindow(this)),
-          gridPropertiesWindow(ToolPropertiesWindow(this)),
-          scriptEditorWindow(ScriptEditorWindow(this)),
-          shaderEditorWindow(ShaderEditorWindow(this)),
-          menuBar(MenuBar(this)),
-          renderPipelineWindow(RenderingDebugWindow(this)),
-          gamepadStateWindow(GamepadStateWindow(this)),
-          cacheContentWindow(CacheContentWindow(this)),
+          propertiesWindow(this),
+          projectBrowser(this),
+          scriptDebugWindow(this),
+          sceneStateWindow(this),
+          gridPropertiesWindow(this),
+          scriptEditorWindow(this),
+          shaderEditorWindow(this),
+          menuBar(this),
+          renderPipelineWindow(this),
+          gamepadStateWindow(this),
+          cacheContentWindow(this),
+          taskManagerWindow(this),
           // GL
-          grid(Grid(this)),
-          lightViewer(LightViewer(this)),
-          selectionHighlighter(SelectionHighlighter(this)),
-          cursor(Cursor(this)),
-          pathViewer(PathViewer(this)),
-          animationViewer(AnimationViewer(this)),
-          modelDefinitionBatchImporter(ModelDefinitionBatchImporter(this)),
+          grid(this),
+          lightViewer(this),
+          selectionHighlighter(this),
+          cursor(this),
+          pathViewer(this),
+          animationViewer(this),
+          modelDefinitionBatchImporter(this),
           // Args
           argc(_argc),
           argv(_argv)
@@ -77,6 +78,7 @@ namespace DreamTool
         windowComponent.addImGuiWidget(&renderPipelineWindow);
         windowComponent.addImGuiWidget(&gamepadStateWindow);
         windowComponent.addImGuiWidget(&cacheContentWindow);
+        windowComponent.addImGuiWidget(&taskManagerWindow);
 
         // GL Widgets
         grid.init();

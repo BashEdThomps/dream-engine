@@ -50,6 +50,7 @@
 #include "../../SharedAssetRuntime.h"
 #include "../Light/LightRuntime.h"
 #include "../../../Common/DreamObject.h"
+#include "ShaderTasks.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -62,7 +63,6 @@ namespace Dream
     class MaterialRuntime;
     class LightRuntime;
     class Camera;
-    class GraphicsComponentTask;
 
     class ShaderRuntime : public SharedAssetRuntime
     {
@@ -175,17 +175,14 @@ namespace Dream
         GLint getDirectionalLightCountLocation() const;
         void setDirectionalLightCountLocation(const GLint& directionalLightCountLocation);
 
-        void clearCompileVertexTask();
-        void clearCompileFragmentTask();
-        void clearLinkTask();
-
     protected:
         bool compileVertex();
         bool compileFragment();
         bool linkProgram();
 
-        GraphicsComponentTask* mCompileVertexTask;
-        GraphicsComponentTask* mCompileFragmentTask;
-        GraphicsComponentTask* mLinkTask;
+        ShaderCompileFragmentTask mCompileFragmentTask;
+        ShaderCompileVertexTask mCompileVertexTask;
+        ShaderLinkTask mLinkTask;
+        ShaderFreeTask mFreeTask;
     };
 }

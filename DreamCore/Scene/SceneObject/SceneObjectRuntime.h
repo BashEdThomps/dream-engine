@@ -98,8 +98,9 @@ namespace Dream
         bool hasLightRuntime();
         bool hasScrollerRuntime();
 
-        Transform& getTransform();
-        void setTransform(const Transform& transform);
+        Transform* getTransform();
+        Transform* getInitialTransform();
+        void setTransform(Transform* transform);
         void translateWithChildren(const vec3& translation);
         void preTranslateWithChildren(const vec3& translation);
         void transformOffsetInitial(const mat4& matrix);
@@ -163,7 +164,6 @@ namespace Dream
         bool containedInFrustumAfterTransform(const mat4& tx);
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
 
-        Transform& getInitialTransform();
         bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
         SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
         void translateOffsetInitialWithChildren(const vec3& translation);

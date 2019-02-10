@@ -483,7 +483,7 @@ namespace Dream
         // White space is stripped at the beginning of the rows, the text is split at word boundaries or when new-line characters are encountered.
         // Words longer than the max width are slit at nearest character (i.e. no hyphenation).
         void TextBox(float x, float y, float breakRowWidth, const char* string, const char* end);
-        void TextBox(float x, float y, float breakRowWidth, const char* string);
+        void TextBox(float x, float y, float breakRowWidth, std::string str);
 
         // Measures the specified text string. Parameter bounds should be a pointer to float[4],
         // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
@@ -495,7 +495,7 @@ namespace Dream
         // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
         // Measured values are returned in local coordinate space.
         void TextBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds);
-        vec4 TextBoxBounds(float x, float y, float breakRowWidth, const char* string);
+        vec4* TextBoxBounds(float x, float y, float breakRowWidth, std::string str);
 
         // Calculates the glyph x positions of the specified text. If end is specified only the sub-string will be used.
         // Measured values are returned in local coordinate space.

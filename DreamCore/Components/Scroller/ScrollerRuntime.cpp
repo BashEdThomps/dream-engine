@@ -93,7 +93,7 @@ namespace Dream
         //Range inRangeY = None;
         //Range inrangeZ = None;
 
-        vec3 tx = runt->getTransform().getMatrix()[3];
+        vec3 tx = runt->getTransform()->getMatrix()[3];
 
         // Range check is dependent on heading, determined by velocity.
 
@@ -145,8 +145,8 @@ namespace Dream
         newChild->setParentRuntime(mSceneObjectRuntime);
         newChild->setName(mSceneObjectRuntime->getName()+"_Scroller_Child_"+std::to_string(item.index));
         newChild->initTransform();
-        newChild->getInitialTransform().translate(item.origin);
-        newChild->getTransform().translate(item.origin);
+        newChild->getInitialTransform()->translate(item.origin);
+        newChild->getTransform()->translate(item.origin);
         mSceneObjectRuntime->addChildRuntime(newChild);
         return newChild;
     }
@@ -187,7 +187,7 @@ namespace Dream
             #ifdef DREAM_LOG
             log->trace("Translating Child with delta vel {},{},{}", delta.x, delta.y, delta.z);
             #endif
-            child->getTransform().translate(delta);
+            child->getTransform()->translate(delta);
             child->unlock();
         }
         mSceneObjectRuntime->unlock();

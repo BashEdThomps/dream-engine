@@ -137,7 +137,7 @@ namespace DreamTool
             for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();
+                mModelMatrix = light->getSceneObjectRuntime()->getTransform()->getMatrix();
                 vec3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)

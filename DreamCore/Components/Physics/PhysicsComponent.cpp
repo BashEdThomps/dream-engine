@@ -475,4 +475,9 @@ namespace Dream
     {
         return &mUpdateWorldTask;
     }
+
+    PhysicsDrawDebugTask* PhysicsComponent::getDrawDebugTask()
+    {
+        return &mDrawDebugTask;
+    }
 }

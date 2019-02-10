@@ -749,12 +749,12 @@ namespace DreamTool
         {
             auto newChildDef = soDef->createNewChildDefinition();
             mat4 cursorTx = glm::translate(mat4(1.0f),mState->cursor.getPosition());
-            newChildDef->setTransform(Transform(cursorTx));
+            newChildDef->getTransform().setMatrix(cursorTx);
             SceneObjectRuntime* newRt = nullptr;
             if (soRuntime)
             {
                 newRt = soRuntime->createAndAddChildRuntime(newChildDef);
-                newRt->getTransform().setMatrix(cursorTx);
+                newRt->getTransform()->setMatrix(cursorTx);
             }
             pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
         }
@@ -1257,7 +1257,7 @@ namespace DreamTool
 
         if (soRunt)
         {
-            matrix = soRunt->getTransform().getMatrixFloatPointer();
+            matrix = soRunt->getTransform()->getMatrixFloatPointer();
         }
         else
         {
@@ -1367,7 +1367,8 @@ namespace DreamTool
             {
                 if (soDef && soRunt)
                 {
-                    soRunt->setTransform(soDef->getTransform());
+                    auto tmp = soDef->getTransform();
+                    soRunt->setTransform(&tmp);
                     if (withChildren)
                     {
                         soRunt->applyToAll
@@ -1378,7 +1379,8 @@ namespace DreamTool
                                         if (rt != soRunt)
                                         {
                                             auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
-                                            rt->setTransform(d->getTransform());
+                                            auto tmp = d->getTransform();
+                                            rt->setTransform(&tmp);
                                         }
                                         return static_cast<SceneObjectRuntime*>(nullptr);
                                     }
@@ -1429,7 +1431,7 @@ namespace DreamTool
                         {
                                         if (rt != soRunt)
                                         {
-                                            rt->getTransform().preTranslate(tx);
+                                            rt->getTransform()->preTranslate(tx);
                                         }
                                         return static_cast<SceneObjectRuntime*>(nullptr);
                                     }

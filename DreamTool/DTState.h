@@ -30,6 +30,7 @@
 #include "Widgets/ImGui/RenderingDebugWindow.h"
 #include "Widgets/ImGui/GamepadStateWindow.h"
 #include "Widgets/ImGui/CacheContentWindow.h"
+#include "Widgets/ImGui/TaskManagerWindow.h"
 // Plain GL Widgets
 #include "Widgets/GL/Grid.h"
 #include "Widgets/GL/LightViewer.h"
@@ -75,6 +76,7 @@ namespace DreamTool
         RenderingDebugWindow renderPipelineWindow;
         GamepadStateWindow gamepadStateWindow;
         CacheContentWindow cacheContentWindow;
+        TaskManagerWindow taskManagerWindow;
         // GL Widgets
         Grid grid;
         LightViewer lightViewer;

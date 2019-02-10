@@ -754,9 +754,9 @@ namespace Dream
 
     void
     NanoVGComponent::TextBox
-    (float x, float y, float breakRowWidth, const char* string)
+    (float x, float y, float breakRowWidth, std::string str)
     {
-        nvgTextBox(mContext,x,y,breakRowWidth,string,nullptr);
+        nvgTextBox(mContext,x,y,breakRowWidth,str.c_str(),nullptr);
     }
 
     float
@@ -773,13 +773,13 @@ namespace Dream
         nvgTextBoxBounds(mContext,x,y,breakRowWidth,string,end,bounds);
     }
 
-    vec4
+    vec4*
     NanoVGComponent::TextBoxBounds
-    (float x, float y, float breakRowWidth, const char* string)
+    (float x, float y, float breakRowWidth, std::string str)
     {
-        vec4 bounds(0.0f);
-        nvgTextBoxBounds(mContext,x,y,breakRowWidth,string,nullptr,glm::value_ptr(bounds));
-        return bounds;
+        static vec4 bounds(0.0f);
+        nvgTextBoxBounds(mContext,x,y,breakRowWidth,str.c_str(),nullptr,glm::value_ptr(bounds));
+        return &bounds;
     }
 
 

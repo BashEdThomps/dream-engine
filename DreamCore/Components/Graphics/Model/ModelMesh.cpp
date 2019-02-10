@@ -41,7 +41,8 @@ namespace Dream
           mVertices(vertices),
           mIndices(indices),
           mBoundingBox(bb),
-          mInitMeshTask(nullptr)
+          mInitMeshTask(this),
+          mFreeMeshTask()
     {
         #ifdef DREAM_LOG
         getLog()->trace("Constructing Mesh for {}", parent->getName());
@@ -55,10 +56,10 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
         #endif
-        mParent
-            ->getProjectRuntime()
-            ->getGraphicsComponent()
-            ->pushTask(new ModelFreeMeshTask(mVAO,mVBO,mIBO));
+        mFreeMeshTask.clearState();
+        mFreeMeshTask.setState(TaskState::QUEUED);
+        mFreeMeshTask.setBuffers(mVAO,mVBO,mIBO);
+        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mFreeMeshTask);
     }
 
     string
@@ -93,8 +94,9 @@ namespace Dream
     ModelMesh::init
     ()
     {
-        mInitMeshTask = new ModelInitMeshTask(this);
-        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(mInitMeshTask);
+        mInitMeshTask.clearState();
+        mInitMeshTask.setState(TaskState::QUEUED);
+        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mInitMeshTask);
     }
 
     #ifdef DREAM_LOG
@@ -156,7 +158,7 @@ namespace Dream
         for (auto* sor : mRuntimes)
         {
             // TODO -- Per mesh Culling
-            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
+            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform()->getMatrix()))
             {
                 mRuntimesInFrustum.push_back(sor);
             }
@@ -247,13 +249,6 @@ namespace Dream
     () const
     {
         return mBoundingBox;
-    }
-
-    void
-    ModelMesh::clearInitMeshTask
-    ()
-    {
-       mInitMeshTask = nullptr;
     }
 
     long ModelMesh::DrawCalls = 0;

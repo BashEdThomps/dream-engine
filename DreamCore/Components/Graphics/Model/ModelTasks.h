@@ -1,65 +1,36 @@
 #pragma once
 
-#include "ModelMesh.h"
+#ifdef WIN32
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/glu.h>
+#endif
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#include <GL/glew.h>
+#include <OpenGL/gl3.h>
+//#include <GL/glu.h>
+#endif
+
+#ifdef __linux__
+#include <GL/glew.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#endif
+
 #include "../GraphicsComponentTask.h"
 
 namespace Dream
 {
+    class ModelMesh;
 
     class ModelInitMeshTask : public GraphicsComponentTask
     {
         ModelMesh* mMesh;
     public:
-        ModelInitMeshTask(ModelMesh* mesh)
-            : GraphicsComponentTask(),
-              mMesh(mesh)
-        {
-            #ifdef DREAM_LOG
-            setLogClassName("ModelInitMeshTask");
-            #endif
-        }
-
-        inline void execute()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
-            GLuint vao, vbo, ibo;
-            glGenVertexArrays(1, &vao);
-            glGenBuffers(1, &vbo);
-            glGenBuffers(1, &ibo);
-            mMesh->setVAO(vao);
-            mMesh->setVBO(vbo);
-            mMesh->setIBO(ibo);
-
-            glBindVertexArray(mMesh->getVAO());
-            glBindBuffer(GL_ARRAY_BUFFER, mMesh->getVBO());
-            glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mMesh->getVertices().size() * sizeof(Vertex)), &mMesh->getVertices()[0], GL_STATIC_DRAW);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mMesh->getIBO());
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mMesh->getIndices().size() * sizeof(GLuint)),&mMesh->getIndices()[0], GL_STATIC_DRAW);
-            // Vertex Positions
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
-            // Vertex Normals
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
-            // Vertex Texture Coords
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
-            // Vertex Tangents
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
-            // Vertex Bitangents
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-                static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
-            glBindVertexArray(0);
-            mMesh->clearInitMeshTask();
-        }
+        ModelInitMeshTask(ModelMesh* mesh);
+        void execute();
     };
 
     class ModelFreeMeshTask : public GraphicsComponentTask
@@ -68,38 +39,8 @@ namespace Dream
         GLuint mVBO;
         GLuint mIBO;
     public:
-       ModelFreeMeshTask
-       (GLuint vao, GLuint vbo, GLuint ibo)
-           : GraphicsComponentTask (),
-             mVAO(vao),
-             mVBO(vbo),
-             mIBO(ibo)
-       {
-           #ifdef DREAM_LOG
-           setLogClassName("ModelFreeMeshTask");
-           #endif
-       }
-
-       inline void execute()
-       {
-           #ifdef DREAM_LOG
-           getLog()->critical("Executing on thread {}",mThreadId);
-           #endif
-
-            if (mVAO > 0)
-            {
-                glDeleteVertexArrays(1,&mVAO);
-            }
-
-            if (mVBO > 0)
-            {
-                glDeleteBuffers(1,&mVBO);
-            }
-
-            if (mIBO > 0)
-            {
-                glDeleteBuffers(1,&mIBO);
-            }
-       }
+       ModelFreeMeshTask();
+       void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
+       void execute();
     };
 }

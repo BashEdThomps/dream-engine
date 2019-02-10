@@ -23,11 +23,11 @@ namespace Dream
         {
             mAudioRuntime->updateMarkers();
             mAudioRuntime->unlock();
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
     }

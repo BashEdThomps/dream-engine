@@ -20,9 +20,14 @@
 
 namespace Dream
 {
-        TaskManager::TaskManager()
-            : DreamObject("TaskManager"),
-              mNextThread(0)
+    vector<TaskThread*> TaskManager::getThreadVector() const
+    {
+        return mThreadVector;
+    }
+
+    TaskManager::TaskManager()
+        : DreamObject("TaskManager"),
+          mNextThread(0)
         {
             startAllThreads();
         }

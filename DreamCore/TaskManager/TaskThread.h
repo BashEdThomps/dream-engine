@@ -19,6 +19,7 @@ namespace Dream
     {
     protected:
         thread mThread;
+        vector<Task*> mDebugTaskQueue;
         vector<Task*> mTaskQueue;
         mutex mTaskQueueMutex;
         atomic<bool> mRunning;
@@ -34,5 +35,6 @@ namespace Dream
          bool pushTask(Task* t);
          void setRunning(volatile bool running);
          int getThreadId();
+         const vector<Task*>& getDebugTaskQueue();
     };
 }

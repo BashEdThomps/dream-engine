@@ -93,7 +93,7 @@ namespace Dream
 
         if (mScriptModule)
         {
-            mScriptModule->Discard();
+            //mScriptModule->Discard();
             mScriptModule = nullptr;
         }
     }
@@ -294,7 +294,7 @@ namespace Dream
             }
             if (mInputFunction)
             {
-                mContext->Prepare(mNanoVGFunction);
+                mContext->Prepare(mInputFunction);
                 mContext->SetArgObject(0,inputComp);
                 mContext->SetArgObject(1,sr);
                 int r = mContext->Execute();

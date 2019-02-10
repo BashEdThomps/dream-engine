@@ -7,9 +7,16 @@ using std::find;
 
 namespace Dream
 {
-         TaskThread::TaskThread (int id)
-            : DreamObject ("TaskThread"),
-              mThread(thread(&TaskThread::executeTaskQueue,this)),
+    const vector<Task*>& TaskThread::getDebugTaskQueue()
+    {
+        sort(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),
+             [&](Task* t1, Task* t2){return t1->getTaskId() > t2->getTaskId();});
+        return mDebugTaskQueue;
+    }
+
+    TaskThread::TaskThread (int id)
+        : DreamObject ("TaskThread"),
+          mThread(thread(&TaskThread::executeTaskQueue,this)),
               mRunning(false),
               mFence(false),
               mThreadId(id)
@@ -36,6 +43,7 @@ namespace Dream
                     continue;
                 }
 
+                mDebugTaskQueue.clear();
                 mTaskQueueMutex.lock();
                 while (!mTaskQueue.empty())
                 {
@@ -44,6 +52,10 @@ namespace Dream
                     #endif
                     for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
                     {
+                        if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),(*itr)) == mDebugTaskQueue.end())
+                        {
+                            mDebugTaskQueue.push_back((*itr));
+                        }
                         auto* t = (*itr);
                         // Check if ready to execute
                         if (t->isWaitingForDependencies())

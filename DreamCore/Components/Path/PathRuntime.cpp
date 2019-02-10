@@ -62,7 +62,7 @@ namespace Dream
     ()
     {
         auto transform = stepPath();
-        mSceneObjectRuntime->getTransform().setMatrix(transform);
+        mSceneObjectRuntime->getTransform()->setMatrix(transform);
     }
 
     bool

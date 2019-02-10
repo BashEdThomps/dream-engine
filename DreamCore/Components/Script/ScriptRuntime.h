@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "ScriptTasks.h"
 #include "../SharedAssetRuntime.h"
 #include "../Event.h"
 

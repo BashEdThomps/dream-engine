@@ -59,6 +59,7 @@ namespace Dream
         void exposeModelRuntime();
         void exposeCamera();
         void exposeProjectRuntime();
+        void exposeProject();
         void exposeProjectDirectory();
         void exposeEvent();
         void exposeWindowComponent();

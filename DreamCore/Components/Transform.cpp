@@ -142,10 +142,7 @@ namespace Dream
         return (float*)(&mMatrix[0]);
     }
 
-    mat4
-    Transform::getMatrix
-    ()
-    const
+    mat4& Transform::getMatrix()
     {
         return mMatrix;
     }

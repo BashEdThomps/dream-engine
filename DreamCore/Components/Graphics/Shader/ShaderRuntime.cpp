@@ -31,8 +31,6 @@ using namespace glm;
 
 namespace Dream
 {
-
-
     ShaderRuntime::ShaderRuntime
     (ShaderDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
@@ -50,9 +48,10 @@ namespace Dream
           mRecompile(false),
           mVertexSource(""),
           mFragmentSource(""),
-          mCompileFragmentTask(nullptr),
-          mCompileVertexTask(nullptr),
-          mLinkTask(nullptr)
+          mCompileFragmentTask(this),
+          mCompileVertexTask(this),
+          mLinkTask(this),
+          mFreeTask()
     {
         #ifdef DREAM_LOG
         setLogClassName("ShaderRuntime");
@@ -68,7 +67,10 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace( "Destroying Object" );
         #endif
-        mProjectRuntime->getGraphicsComponent()->pushTask(new ShaderFreeTask(getShaderProgram()));
+        mFreeTask.clearState();
+        mFreeTask.setState(TaskState::QUEUED);
+        mFreeTask.setShaderProgram(mShaderProgram);
+        mProjectRuntime->getGraphicsComponent()->pushTask(&mFreeTask);
     }
 
     GLuint
@@ -193,8 +195,9 @@ namespace Dream
         );
         #endif
         // 2. Compile shaders
-        mCompileVertexTask = new ShaderCompileVertexTask(this);
-        mProjectRuntime->getGraphicsComponent()->pushTask(mCompileVertexTask);
+        mCompileVertexTask.clearState();
+        mCompileVertexTask.setState(TaskState::QUEUED);
+        mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileVertexTask);
         return true;
     }
 
@@ -212,8 +215,9 @@ namespace Dream
         );
         #endif
         // 2. Compile shaders
-        mCompileFragmentTask = new ShaderCompileFragmentTask(this);
-        mProjectRuntime->getGraphicsComponent()->pushTask(mCompileFragmentTask);
+        mCompileFragmentTask.clearState();
+        mCompileFragmentTask.setState(TaskState::QUEUED);
+        mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileFragmentTask);
         return true;
     }
 
@@ -221,30 +225,12 @@ namespace Dream
    ShaderRuntime::linkProgram
    ()
    {
-       mLinkTask = new ShaderLinkTask(this);
-       mProjectRuntime->getGraphicsComponent()->pushTask(mLinkTask);
-       return mLoaded;
-   }
-
-   void
-   ShaderRuntime::clearLinkTask
-   ()
-   {
-       mLinkTask = nullptr;
-   }
-
-   void
-   ShaderRuntime::clearCompileFragmentTask
-   ()
-   {
-       mCompileFragmentTask = nullptr;
-   }
-
-   void
-   ShaderRuntime::clearCompileVertexTask
-   ()
-   {
-       mCompileVertexTask = nullptr;
+       mLinkTask.clearState();
+       mLinkTask.dependsOn(&mCompileVertexTask);
+       mLinkTask.dependsOn(&mCompileFragmentTask);
+       mLinkTask.setState(TaskState::QUEUED);
+       mProjectRuntime->getGraphicsComponent()->pushTask(&mLinkTask);
+       return true;
    }
 
    void
@@ -736,7 +722,7 @@ namespace Dream
         size_t nRuntimes = runtimes.size();
         for (size_t i = 0; i<nRuntimes; i++)
         {
-            data[i] = runtimes[i]->getTransform().getMatrix();
+            data[i] = runtimes[i]->getTransform()->getMatrix();
         }
 
         GLint location =  getUniformLocation("model[0]");

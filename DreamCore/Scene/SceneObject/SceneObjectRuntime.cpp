@@ -176,7 +176,7 @@ namespace Dream
     {
         if (mScriptRuntime != nullptr)
         {
-            delete mScriptRuntime;
+            //delete mScriptRuntime;
             mScriptRuntime = nullptr;
         }
     }
@@ -370,11 +370,11 @@ namespace Dream
         return mPhysicsObjectRuntime;
     }
 
-    Transform&
+    Transform*
     SceneObjectRuntime::getTransform
     ()
     {
-        return mTransform;
+        return &mTransform;
     }
 
     void
@@ -858,9 +858,9 @@ namespace Dream
 
     void
     SceneObjectRuntime::setTransform
-    (const Transform& transform)
+    (Transform* transform)
     {
-        mTransform.setMatrix(transform.getMatrix());
+        mTransform.setMatrix(transform->getMatrix());
     }
 
     void
@@ -872,7 +872,7 @@ namespace Dream
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
                 [&](SceneObjectRuntime* rt)
                 {
-                    rt->getTransform().translate(translation);
+                    rt->getTransform()->translate(translation);
                     return static_cast<SceneObjectRuntime*>(nullptr);
                 }
             )
@@ -887,31 +887,31 @@ namespace Dream
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                rt->getTransform().preTranslate(translation);
+                rt->getTransform()->preTranslate(translation);
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
     }
 
-    Transform&
+    Transform*
     SceneObjectRuntime::getInitialTransform
     ()
     {
-       return mInitialTransform;
+       return &mInitialTransform;
     }
 
     void
     SceneObjectRuntime::transformOffsetInitial
     (const mat4& matrix)
     {
-        mTransform.setMatrix(matrix*mInitialTransform.getMatrix());
+        mTransform.setMatrix(matrix * mInitialTransform.getMatrix());
     }
 
     void
     SceneObjectRuntime::translateOffsetInitial
     (const vec3& tx)
     {
-        mTransform.setMatrix(glm::translate(mat4(1.0),tx)*mInitialTransform.getMatrix());
+        mTransform.setMatrix(glm::translate(mat4(1.0),tx)* mInitialTransform.getMatrix());
     }
 
     bool
@@ -1089,7 +1089,7 @@ namespace Dream
     SceneObjectRuntime::distanceFrom
     (SceneObjectRuntime* other)
     {
-        return mTransform.distanceFrom(other->getTransform());
+        return mTransform.distanceFrom(*other->getTransform());
     }
 
     float
@@ -1209,8 +1209,8 @@ namespace Dream
         applyToAll
         (function<SceneObjectRuntime*(SceneObjectRuntime*)>([&](SceneObjectRuntime* rt)
         {
-            auto initial = rt->getInitialTransform().getMatrix();
-            rt->getTransform().setMatrix(glm::translate(ident,translation)*initial);
+            auto initial = rt->getInitialTransform()->getMatrix();
+            rt->getTransform()->setMatrix(glm::translate(ident,translation)* initial);
             return static_cast<SceneObjectRuntime*>(nullptr);
         }
         ));

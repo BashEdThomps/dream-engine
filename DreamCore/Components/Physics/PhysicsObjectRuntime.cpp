@@ -406,7 +406,12 @@ namespace Dream
     PhysicsObjectRuntime::setCenterOfMassTransform
     (const mat4& tx)
     {
-       mRigidBody->setCenterOfMassTransform(Transform(tx).getBtTransform());
+        btTransform transform;
+        float tmp[16];
+        const float* matPtr = value_ptr(tx);
+        memcpy(tmp,matPtr,sizeof(float)*16);
+        transform.setFromOpenGLMatrix(tmp);
+        mRigidBody->setCenterOfMassTransform(transform);
     }
 
     void

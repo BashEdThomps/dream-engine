@@ -508,7 +508,7 @@ namespace Dream
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
-        //mNanoVGComponent->render(sr);
+        mNanoVGComponent->render(sr);
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->setCamera(sr->getCamera());
         mPhysicsComponent->drawDebug();

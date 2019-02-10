@@ -32,6 +32,7 @@
 #include <iostream>
 #include "../../SharedAssetRuntime.h"
 #include "../GraphicsComponentTask.h"
+#include "TextureTasks.h"
 
 using namespace std;
 
@@ -40,7 +41,8 @@ namespace Dream
 {
     class TextureDefinition;
     class SceneObjectRuntime;
-    class TextureCreationTask;
+    class TextureDestructionTask;
+    class TextureConstructionTask;
 
     class TextureRuntime : public SharedAssetRuntime
     {
@@ -51,7 +53,8 @@ namespace Dream
         int mHeight;
         int mChannels;
         unsigned char* mImage;
-        GraphicsComponentTask* mCreateTextureTask;
+        TextureConstructionTask mTextureConstructionTask;
+        TextureDestructionTask mTextureDestructionTask;
 
     public:
         TextureRuntime(TextureDefinition* def, ProjectRuntime*);
@@ -79,7 +82,7 @@ namespace Dream
         unsigned char* getImage() const;
         void setImage(unsigned char* image);
 
-        void clearCreateTextureTask();
-        void setTextureCreationTask(TextureCreationTask* task);
+        void pushConstructionTask();
+
     };
 }

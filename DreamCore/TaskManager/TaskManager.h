@@ -32,5 +32,6 @@ namespace Dream
          void pushTask(Task* t);
          void clearFences();
          void waitForFence();
+         vector<TaskThread*> getThreadVector() const;
     };
 }

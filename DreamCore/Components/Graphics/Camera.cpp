@@ -86,7 +86,7 @@ namespace Dream
         {
             return lookAt(
                 mFocusTranslation,
-                vec3(mFocusedSceneObject->getTransform().getMatrix()[3]),
+                vec3(mFocusedSceneObject->getTransform()->getMatrix()[3]),
                 mUp
             );
         }
@@ -243,7 +243,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 tx = mFocusedSceneObject->getTransform().getMatrix()[3];
+            vec3 tx = mFocusedSceneObject->getTransform()->getMatrix()[3];
             setFocusTranslationFromTarget(tx);
             mFront = normalize(tx);
             mRight = normalize(cross(mFront, mWorldUp));
@@ -324,7 +324,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 objTx = mFocusedSceneObject->getTransform().getMatrix()[3];
+            vec3 objTx = mFocusedSceneObject->getTransform()->getMatrix()[3];
             float x = mFocusTranslation.x - objTx.x;
             float z = mFocusTranslation.z - objTx.z;
             return atan2(x,z);
@@ -338,7 +338,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform().getMatrix(),
+            sor->getTransform()->getMatrix(),
             sor->getBoundingBox()
         ) == Frustum::TEST_INSIDE;
     }
@@ -367,7 +367,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform().getMatrix() * tx,
+            sor->getTransform()->getMatrix() * tx,
             sor->getBoundingBox()
          ) != Frustum::TEST_OUTSIDE;
 
@@ -379,7 +379,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform().getMatrix(),
+            sor->getTransform()->getMatrix(),
             sor->getBoundingBox()
          ) != Frustum::TEST_OUTSIDE;
     }

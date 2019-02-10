@@ -1,106 +1,44 @@
 #pragma once
 
+#ifdef WIN32
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/glu.h>
+#endif
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#include <GL/glew.h>
+#include <OpenGL/gl3.h>
+//#include <GL/glu.h>
+#endif
+
+#ifdef __linux__
+#include <GL/glew.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#endif
+
 // Defer GL Operations using Task objects
-#include "TextureRuntime.h"
 #include "../GraphicsComponentTask.h"
 
 namespace Dream
 {
-    class TextureCreationTask : public GraphicsComponentTask
+    class TextureRuntime;
+    class TextureConstructionTask : public GraphicsComponentTask
     {
         TextureRuntime* mTextureRuntime;
     public:
-        inline TextureCreationTask(TextureRuntime* rt)
-            : GraphicsComponentTask(), mTextureRuntime(rt)
-        {
-            rt->setTextureCreationTask(this);
-            #ifdef DREAM_LOG
-            setLogClassName("TextureCreationTask");
-            #endif
-        }
-
-        inline void execute()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
-            // Assign texture to ID
-            GLuint textureID;
-
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            glGenTextures(1, &textureID);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            glBindTexture(GL_TEXTURE_2D, textureID);
-            #ifdef DREAM_LOG
-            checkGLError();
-            getLog()->debug("Bound to texture id {}",textureID);
-            #endif
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mTextureRuntime->getWidth(),
-                mTextureRuntime->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                mTextureRuntime->getImage());
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            glGenerateMipmap(GL_TEXTURE_2D);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            // Set Parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            mTextureRuntime->setGLID(textureID);
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            mTextureRuntime->clearCreateTextureTask();
-        }
+        TextureConstructionTask(TextureRuntime* rt);
+        void execute();
     };
 
-    class TextureDeletionTask : public GraphicsComponentTask
+    class TextureDestructionTask : public GraphicsComponentTask
     {
         GLuint mTextureId;
     public:
-        inline TextureDeletionTask
-        (GLuint id)
-            : GraphicsComponentTask(), mTextureId(id)
-        {
-            #ifdef DREAM_LOG
-            setLogClassName("TextureDeletionTask");
-            #endif
-        }
-
-        inline void execute()
-        {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
-            glDeleteTextures(1,&mTextureId);
-        }
+        TextureDestructionTask();
+        void setGLID(GLuint id);
+        void execute();
     };
 }

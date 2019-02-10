@@ -43,6 +43,27 @@ using std::cout;
 using std::cerr;
 using std::string;
 
+static mat4* mat4_translate3f(mat4 mtx, float x, float y, float z)
+{
+    static mat4 result = glm::translate(mtx,vec3(x,y,z));
+    return &result;
+}
+
+static void mat4_delete(mat4* m)
+{
+    delete m;
+}
+
+static void vec3_delete(vec3* v)
+{
+    delete v;
+}
+
+static void vec4_delete(vec4* v)
+{
+    delete v;
+}
+
 static void whyYouFail(int r)
 {
     if (r<0)
@@ -130,8 +151,8 @@ namespace Dream
         lock();
         if (Engine != nullptr)
         {
-            int r = Engine->ShutDownAndRelease();
-            assert(r>=0);
+            //int r = Engine->ShutDownAndRelease();
+            //assert(r>=0);
             Engine = nullptr;
         }
         unlock();
@@ -150,7 +171,7 @@ namespace Dream
         assert( r >= 0 );
         RegisterStdString(Engine);
         #ifdef DREAM_LOG
-        log->debug( "Got a sol state" );
+        log->debug( "Got an AngelScript Engine");
         #endif
         exposeAPI();
         return true;
@@ -170,17 +191,21 @@ namespace Dream
         r = Engine->RegisterObjectType("AudioComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("AudioRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Camera", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("CollisionData", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Definition", 0, asOBJ_REF | asOBJ_NOCOUNT);
         r = Engine->RegisterObjectType("Event", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        r = Engine->RegisterObjectType("CollisionData", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("GraphicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("InputComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("KeyboardState", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("JoystickState", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("MouseState", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("LightRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("ModelRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("NanoVGComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("PathRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("PhysicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("PhysicsObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("Project", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("ProjectDirectory", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("ProjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("SceneObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
@@ -190,9 +215,13 @@ namespace Dream
         r = Engine->RegisterObjectType("Time", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Transform", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("WindowComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        r = Engine->RegisterObjectType("vec3", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        r = Engine->RegisterObjectType("mat4", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        r = Engine->RegisterObjectType("quat", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
+        r = Engine->RegisterObjectType("vec3", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
+        r = Engine->RegisterObjectType("vec4", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
+        r = Engine->RegisterObjectType("mat4", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
+        r = Engine->RegisterObjectType("quat", 0, asOBJ_REF | asOBJ_NOCOUNT ); whyYouFail(r);
+
+        // Enums
+        r = Engine->RegisterEnum("KeyboardMapping");
     }
 
     void
@@ -207,43 +236,37 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ProjectRuntime");
-
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<ProjectRuntime>("ProjectRuntime",
-            "getTime",&ProjectRuntime::getTime,
-            "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid,
-            "getSceneObject",&ProjectRuntime::getSceneObjectRuntimeByUuid,
-            "windowWidth",&ProjectRuntime::getWindowWidth,
-            "windowHeight",&ProjectRuntime::getWindowHeight
-        );
-
-        stateView["Runtime"] = mProjectRuntime;
-        */
         int r;
         r = Engine->RegisterObjectMethod("ProjectRuntime", "Time@ getTime()",asMETHOD(ProjectRuntime,getTime), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "AssetDefinition@ getAssetDefinitionByUuid()",asMETHOD(ProjectRuntime,getAssetDefinitionByUuid), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "SceneObjectRuntime@ getSceneObjectByUuid()",asMETHOD(ProjectRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowWidth()",asMETHOD(ProjectRuntime,getWindowWidth), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowHeight()",asMETHOD(ProjectRuntime,getWindowHeight), asCALL_THISCALL);whyYouFail(r);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "Project@ getProject()",asMETHOD(ProjectRuntime,getProject),asCALL_THISCALL); whyYouFail(r);
 
     }
+
+    void
+    ScriptComponent::exposeProject
+    ()
+    {
+        debugRegisteringClass("Project");
+        int r;
+        r = Engine->RegisterObjectMethod("Project","ProjectDirectory@ getDirectory() const",asMETHOD(Project,getDirectory),asCALL_THISCALL); whyYouFail(r);
+    }
+
 
     void
     ScriptComponent::exposeProjectDirectory
     ()
     {
         debugRegisteringClass("ProjectDirectory");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<ProjectDirectory>
-        (
-            "ProjectDirectory",
-            "getAssetPath",static_cast<string (ProjectDirectory::*)(uint32_t) const>(&ProjectDirectory::getAssetAbsolutePath)
-        );
-
-        stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
-        */
+        int r;
+        r = Engine->RegisterObjectMethod(
+            "ProjectDirectory","string getAssetAbsolutePath(int) const",
+            asMETHODPR(ProjectDirectory,getAssetAbsolutePath,(uint32_t) const,string),
+            asCALL_THISCALL
+        ); whyYouFail(r);
     }
 
     void
@@ -251,51 +274,13 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Camera");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<Camera>("Camera",
-            "flyForward",&Camera::flyForward,
-            "flyBackward",&Camera::flyBackward,
-            "flyLeft",&Camera::flyLeft,
-            "flyRight",&Camera::flyRight,
-            "flyUp",&Camera::flyUp,
-            "flyDown",&Camera::flyDown,
-            "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
-            "setTranslation",static_cast<void(Camera::*)(const vec3&)>(&Camera::setTranslation),
-            "getTranslation",&Camera::getTranslation,
-            "getFocusedSceneObject",&Camera::getFocusedSceneObject,
-            "getFocusedObjectTheta",&Camera::getFocusedObjectTheta
-        );
-
-        stateView.new_enum("CameraMovement",
-            "FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD,
-            "BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD,
-            "LEFT",     Constants::CAMERA_MOVEMENT_LEFT,
-            "RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT
-        );
-
-        stateView.new_enum
-        (
-            "FrustumPlane",
-            "Back",Frustum::Plane::PLANE_BACK,
-            "Front",Frustum::Plane::PLANE_FRONT,
-            "Right",Frustum::Plane::PLANE_RIGHT,
-            "Left",Frustum::Plane::PLANE_LEFT,
-            "Top",Frustum::Plane::PLANE_TOP,
-            "Bottom",Frustum::Plane::PLANE_BOTTOM
-        );
-
-        stateView.new_enum
-        (
-            "FrustumTestResult",
-            "Inside",Frustum::TestResult::TEST_INSIDE,
-            "Outside",Frustum::TestResult::TEST_OUTSIDE,
-            "Intersect",Frustum::TestResult::TEST_INTERSECT
-        );
-        */
-
         int r;
+        r = Engine->RegisterObjectMethod("Camera", "void flyForward(float)",asMETHOD(Camera,flyForward), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Camera", "void flyBackward(float)",asMETHOD(Camera,flyBackward), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Camera", "void flyLeft(float)",asMETHOD(Camera,flyLeft), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("Camera", "void flyRight(float)",asMETHOD(Camera,flyRight), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Camera", "void flyUp(float)",asMETHOD(Camera,flyUp), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Camera", "void flyDown(float)",asMETHOD(Camera,flyDown), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -303,18 +288,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PathRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<PathRuntime>("PathRuntime",
-            "generate",&PathRuntime::generate,
-            "getSplinePoints",&PathRuntime::getSplinePoints,
-            "getSplinePoint",&PathRuntime::getSplinePoint,
-            "getUStep",&PathRuntime::getUStep,
-            "setUStep",&PathRuntime::setUStep,
-            "stepPath",&PathRuntime::stepPath
-        );
-        */
-
     }
 
     void
@@ -322,11 +295,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GraphicsComponent");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
-        stateView[COMPONENTS_TBL]["Graphics"] = mProjectRuntime->getGraphicsComponent();
-        */
     }
 
     void
@@ -334,10 +302,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("LightRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<LightRuntime>("LightRuntime");
-        */
     }
 
     void
@@ -345,33 +309,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ShaderRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<ShaderRuntime>("ShaderRuntime",
-            "getUuid", &ShaderRuntime::getUuid,
-            "addUniform",&ShaderRuntime::addUniform
-
-        );
-
-        debugRegisteringClass("ShaderUniform");
-
-        stateView.new_usertype<ShaderUniform>("ShaderUniform");
-        stateView.new_enum("UniformType",
-            "INT1",UniformType::INT1,
-            "INT2",UniformType::INT2,
-            "INT3",UniformType::INT3,
-            "INT4",UniformType::INT4,
-            "UINT1",UniformType::UINT1,
-            "UINT2",UniformType::UINT2,
-            "UINT3",UniformType::UINT3,
-            "UINT4",UniformType::UINT4,
-            "FLOAT1",UniformType::FLOAT1,
-            "FLOAT2",UniformType::FLOAT2,
-            "FLOAT3",UniformType::FLOAT3,
-            "FLOAT4",UniformType::FLOAT4
-        );
-        */
-
     }
 
     void
@@ -379,15 +316,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsComponent");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<PhysicsComponent>("PhysicsComponent",
-            "setDebug",&PhysicsComponent::setDebug
-        );
-
-        stateView[COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
-        */
-
     }
 
     void
@@ -395,28 +323,13 @@ namespace Dream
     ()
     {
         debugRegisteringClass("PhysicsObjectRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<PhysicsObjectRuntime>("PhysicsObjectRuntime",
-            "getUuid", &PhysicsObjectRuntime::getUuid,
-            "getMass", &PhysicsObjectRuntime::getMass,
-            "setMass", &PhysicsObjectRuntime::setMass,
-            "getLinearVelocity", &PhysicsObjectRuntime::getLinearVelocity,
-            "setLinearVelocity", &PhysicsObjectRuntime::setLinearVelocity,
-            "setLinearFactor", &PhysicsObjectRuntime::setLinearFactor,
-            "setAngularFactor", &PhysicsObjectRuntime::setAngularFactor,
-            "setAngularVelocity", &PhysicsObjectRuntime::setAngularVelocity,
-            "getRestitution", &PhysicsObjectRuntime::getRestitution,
-            "setRestitution", &PhysicsObjectRuntime::setRestitution,
-            "getFriction", &PhysicsObjectRuntime::getFriction,
-            "setFriction", &PhysicsObjectRuntime::setFriction,
-            "clearForces",&PhysicsObjectRuntime::clearForces,
-            "getCenterOfMassPosition",&PhysicsObjectRuntime::getCenterOfMassPosition,
-            "setCenterOfMassTransform",static_cast<void (PhysicsObjectRuntime::*)(const mat4&)>(&PhysicsObjectRuntime::setCenterOfMassTransform),
-            "setKinematicObject",&PhysicsObjectRuntime::setKinematic,
-            "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter
-        );
-        */
+        int r;
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(const mat4@)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(const mat4&),void),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setCenterOfMassTransform(const Transform@)",asMETHODPR(PhysicsObjectRuntime,setCenterOfMassTransform,(const Transform&),void),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setLinearVelocity(float,float,float)",asMETHOD(PhysicsObjectRuntime,setLinearVelocity),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setAngularVelocity(float,float,float)",asMETHOD(PhysicsObjectRuntime,setAngularVelocity),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setLinearFactor(float,float,float)",asMETHOD(PhysicsObjectRuntime,setLinearFactor),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("PhysicsObjectRuntime","void setAngularFactor(float,float,float)",asMETHOD(PhysicsObjectRuntime,setAngularFactor),asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -424,49 +337,12 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneObjectRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<SceneObjectRuntime>("SceneObjectRuntime",
-            "getName",&SceneObjectRuntime::getName,
-            "getNameAndUuidString",&SceneObjectRuntime::getNameAndUuidString,
-            "getScene",&SceneObjectRuntime::getSceneRuntime,
-            "getChildByUuid",&SceneObjectRuntime::getChildRuntimeByUuid,
-            "getParent",&SceneObjectRuntime::getParentRuntime,
-            "setParent",&SceneObjectRuntime::setParentRuntime,
-            "getTransform",&SceneObjectRuntime::getTransform,
-            "getPath",&SceneObjectRuntime::getPathRuntime,
-            "getAnimation",&SceneObjectRuntime::getAnimationRuntime,
-            "getAudio",&SceneObjectRuntime::getAudioRuntime,
-            "getModel",&SceneObjectRuntime::getModelRuntime,
-            "getLight",&SceneObjectRuntime::getLightRuntime,
-            "getPhysicsObject",&SceneObjectRuntime::getPhysicsObjectRuntime,
-            "hasPath",&SceneObjectRuntime::hasPathRuntime,
-            "hasAudio",&SceneObjectRuntime::hasAudioRuntime,
-            "hasModel",&SceneObjectRuntime::hasModelRuntime,
-            "hasLight",&SceneObjectRuntime::hasLightRuntime,
-            "hasPhysicsObject",&SceneObjectRuntime::hasPhysicsObjectRuntime,
-            "getDeleted",&SceneObjectRuntime::getDeleted,
-            "setDeleted",&SceneObjectRuntime::setDeleted,
-            "getHidden",&SceneObjectRuntime::getHidden,
-            "setHidden",&SceneObjectRuntime::setHidden,
-            "addEvent",&SceneObjectRuntime::addEvent,
-            "replaceAssetUuid",&SceneObjectRuntime::replaceAssetUuid,
-            "translateWithChildren",&SceneObjectRuntime::translateWithChildren,
-            "preTranslateWithChildren",&SceneObjectRuntime::preTranslateWithChildren,
-            "transformOffsetInitial",&SceneObjectRuntime::transformOffsetInitial,
-            "translateOffsetInitial",&SceneObjectRuntime::translateOffsetInitial,
-            "translateOffsetInitialWithChildren",&SceneObjectRuntime::translateOffsetInitialWithChildren,
-            "containedInFrustum",&SceneObjectRuntime::containedInFrustum,
-            "containedInFrustumAfterTransform",&SceneObjectRuntime::containedInFrustum,
-            "exceedsFrustumPlaneAtTranslation",&SceneObjectRuntime::exceedsFrustumPlaneAtTranslation,
-            "addChildFromTemplateUuid",&SceneObjectRuntime::addChildFromTemplateUuid,
-            "getObjectLifetime",&SceneObjectRuntime::getObjectLifetime,
-            "getDieAfter",&SceneObjectRuntime::getDieAfter
-        );
-        */
         int r;
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getScene()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getSceneRuntime()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "Transform@ getTransform()",asMETHOD(SceneObjectRuntime,getTransform), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ addChildFromTemplateUuid(int)",asMETHOD(SceneObjectRuntime,addChildFromTemplateUuid), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,hasPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "PhysicsObjectRuntime@ getPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,getPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -474,33 +350,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Transform");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<Transform>("Transform",
-            // Translation ===========================================================
-            "getMatrix",&Transform::getMatrix,
-            "setMatrix",&Transform::setMatrix,
-            "decomposeMatrix",&Transform::decomposeMatrix,
-            "recomposeMatrix",&Transform::recomposeMatrix,
-            "translate",&Transform::translate,
-            "translate3f",&Transform::translate3f,
-            "preTranslate",&Transform::preTranslate,
-            "getTranslation",&Transform::getTranslation
-        );
-
-        stateView.new_usertype<MatrixDecomposition>
-        (
-            "MatrixDecomposition",
-            "translation",&MatrixDecomposition::translation,
-            "rotation",&MatrixDecomposition::rotation,
-            "scale",&MatrixDecomposition::scale,
-            "skew",&MatrixDecomposition::skew,
-            "perspective",&MatrixDecomposition::perspective
-        );
-        */
         int r;
         r = Engine->RegisterObjectMethod("Transform", "void translate3f(float,float,float)",asMETHOD(Transform,translate3f), asCALL_THISCALL); whyYouFail(r);
-
+        r = Engine->RegisterObjectMethod("Transform","vec3@ getTranslation()",asMETHOD(Transform,getTranslation),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Transform","mat4@ getMatrix()",asMETHOD(Transform,getMatrix),asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -508,17 +361,9 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Time");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<Time>("Time",
-            "getCurrentFrameTime",&Time::getCurrentFrameTime,
-            "getLastFrameTime",&Time::getLastFrameTime,
-            "getFrameTimeDelta",&Time::getFrameTimeDelta,
-            "perSecond",&Time::perSecond
-        );
-
-        stateView["Time"] = mProjectRuntime->getTime();
-        */
+        int r;
+        r = Engine->RegisterObjectMethod("Time","double perSecond(double)",asMETHOD(Time,perSecond),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("Time","int getCurrentFrameTime()",asMETHOD(Time,getCurrentFrameTime),asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -526,10 +371,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("ModelRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<ModelRuntime>("ModelRuntime");
-        */
     }
 
     void
@@ -537,21 +378,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("Event");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<Event>("Event",
-            sol::constructors<Event(SceneObjectRuntime*)>(),
-            "getSender",&Event::getSender,
-            "getCollisionData",&Event::getCollisionData
-        );
-
-        stateView.new_usertype<CollisionData>(
-            "CollisionData",
-            "present",&CollisionData::present,
-            "impulse",&CollisionData::impulse,
-            "position",&CollisionData::position
-        );
-        */
+        int r;
     }
 
     void
@@ -559,16 +386,6 @@ namespace Dream
     ()
     {
         debugRegisteringClass("WindowComponent");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<WindowComponent>
-        (
-            "IWindowComponent",
-            "getWidth",&WindowComponent::getWidth,
-            "getHeight",&WindowComponent::getHeight
-        );
-        stateView[COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
-        */
     }
 
     void
@@ -576,193 +393,134 @@ namespace Dream
     ()
     {
         debugRegisteringClass("InputComponent");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<InputComponent>(
-            "InputComponent",
-            "clearDeadzone",&InputComponent::clearDeadzone,
-            "isKeyDown",&InputComponent::isKeyDown,
-            "getKeyboardState",&InputComponent::getKeyboardState,
-            "getMouseState",&InputComponent::getMouseState,
-            "getJoystickState",&InputComponent::getJoystickState,
-            "getJoystickMapping",&InputComponent::getJoystickMapping
-        );
+        int r;
+        r = Engine->RegisterObjectMethod("InputComponent","void clearDeadzone()",asMETHOD(InputComponent,clearDeadzone),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("InputComponent","bool isKeyDown(int)",asMETHOD(InputComponent,isKeyDown),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("InputComponent","KeyboardState@ getKeyboardState()",asMETHOD(InputComponent,getKeyboardState),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("InputComponent","JoystickState@ getJoystickState()",asMETHOD(InputComponent,getJoystickState),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("InputComponent","MouseState@ getMouseState()",asMETHOD(InputComponent,getMouseState),asCALL_THISCALL); whyYouFail(r);
 
-        stateView.new_usertype<JoystickMapping>
-        (
-            "JoystickMapping",
-            "AnalogLeftXAxis",&JoystickMapping::AnalogLeftXAxis ,
-            "AnalogLeftYAxis",&JoystickMapping::AnalogLeftYAxis ,
-            "AnalogRightXAxis",&JoystickMapping::AnalogRightXAxis ,
-            "AnalogRightYAxis",&JoystickMapping::AnalogRightYAxis ,
-            "FaceButtonNorth",&JoystickMapping::FaceButtonNorth ,
-            "FaceButtonEast",&JoystickMapping::FaceButtonEast ,
-            "FaceButtonSouth",&JoystickMapping::FaceButtonSouth ,
-            "FaceButtonWest",&JoystickMapping::FaceButtonWest ,
-            "FaceButtonSelect",&JoystickMapping::FaceButtonSelect ,
-            "FaceButtonStart",&JoystickMapping::FaceButtonStart ,
-            "FaceButtonHome",&JoystickMapping::FaceButtonHome ,
-            "ShoulderLeft",&JoystickMapping::ShoulderLeft ,
-            "ShoulderRight",&JoystickMapping::ShoulderRight ,
-            "TriggerLeftButton",&JoystickMapping::TriggerLeftButton ,
-            "TriggerRightButton",&JoystickMapping::TriggerRightButton ,
-            "AnalogLeftButton",&JoystickMapping::AnalogLeftButton ,
-            "AnalogRightButton",&JoystickMapping::AnalogRightButton ,
-            "DPadNorth",&JoystickMapping::DPadNorth,
-            "DPadWest",&JoystickMapping::DPadWest,
-            "DPadSouth",&JoystickMapping::DPadSouth,
-            "DPadEast",&JoystickMapping::DPadEast
-        );
-
-        stateView.new_usertype<JoystickState>
-        (
-            "JoystickState",
-            "Name", &JoystickState::Name,
-            "ButtonCount", &JoystickState::ButtonCount,
-            "getButtonData", &JoystickState::getButtonData,
-            "AxisCount", &JoystickState::AxisCount,
-            "getAxisData", &JoystickState::getAxisData,
-            "DeadZone", &JoystickState::DeadZone
-        );
-
-        stateView.new_enum(
-            "KeyboardMapping",
-            "KEY_UNKNOWN",  -1,
-            "KEY_SPACE",  32,
-            "KEY_APOSTROPHE",  39,  // '
-            "KEY_COMMA",  44,  // ,
-            "KEY_MINUS",  45,  // -
-            "KEY_PERIOD",  46,  // .
-            "KEY_SLASH",  47,  // /
-            "KEY_0",  48,
-            "KEY_1",  49,
-            "KEY_2",  50,
-            "KEY_3",  51,
-            "KEY_4",  52,
-            "KEY_5",  53,
-            "KEY_6",  54,
-            "KEY_7",  55,
-            "KEY_8",  56,
-            "KEY_9",  57,
-            "KEY_SEMICOLON",  59,  // ,
-            "KEY_EQUAL",  61,  // ",
-            "KEY_A",  65,
-            "KEY_B",  66,
-            "KEY_C",  67,
-            "KEY_D",  68,
-            "KEY_E",  69,
-            "KEY_F",  70,
-            "KEY_G",  71,
-            "KEY_H",  72,
-            "KEY_I",  73,
-            "KEY_J",  74,
-            "KEY_K",  75,
-            "KEY_L",  76,
-            "KEY_M",  77,
-            "KEY_N",  78,
-            "KEY_O",  79,
-            "KEY_P",  80,
-            "KEY_Q",  81,
-            "KEY_R",  82,
-            "KEY_S",  83,
-            "KEY_T",  84,
-            "KEY_U",  85,
-            "KEY_V",  86,
-            "KEY_W",  87,
-            "KEY_X",  88,
-            "KEY_Y",  89,
-            "KEY_Z",  90,
-            "KEY_LEFT_BRACKET",  91,  // [
-            "KEY_BACKSLASH",  92,  // \
-            "KEY_RIGHT_BRACKET",  93,  // ]
-            "KEY_GRAVE_ACCENT",  96,  // `
-            "KEY_WORLD_1",  161, // non-US #1
-            "KEY_WORLD_2",  162, // non-US #2
-            "KEY_ESCAPE",  256,
-            "KEY_ENTER",  257,
-            "KEY_TAB",  258,
-            "KEY_BACKSPACE",  259,
-            "KEY_INSERT",  260,
-            "KEY_DELETE",  261,
-            "KEY_RIGHT",  262,
-            "KEY_LEFT",  263,
-            "KEY_DOWN",  264,
-            "KEY_UP",  265,
-            "KEY_PAGE_UP",  266,
-            "KEY_PAGE_DOWN",  267,
-            "KEY_HOME",  268,
-            "KEY_END",  269,
-            "KEY_CAPS_LOCK",  280,
-            "KEY_SCROLL_LOCK",  281,
-            "KEY_NUM_LOCK",  282,
-            "KEY_PRINT_SCREEN",  283,
-            "KEY_PAUSE",  284,
-            "KEY_F1",  290,
-            "KEY_F2",  291,
-            "KEY_F3",  292,
-            "KEY_F4",  293,
-            "KEY_F5",  294,
-            "KEY_F6",  295,
-            "KEY_F7",  296,
-            "KEY_F8",  297,
-            "KEY_F9",  298,
-            "KEY_F10",  299,
-            "KEY_F11",  300,
-            "KEY_F12",  301,
-            "KEY_F13",  302,
-            "KEY_F14",  303,
-            "KEY_F15",  304,
-            "KEY_F16",  305,
-            "KEY_F17",  306,
-            "KEY_F18",  307,
-            "KEY_F19",  308,
-            "KEY_F20",  309,
-            "KEY_F21",  310,
-            "KEY_F22",  311,
-            "KEY_F23",  312,
-            "KEY_F24",  313,
-            "KEY_F25",  314,
-            "KEY_KP_0",  320,
-            "KEY_KP_1",  321,
-            "KEY_KP_2",  322,
-            "KEY_KP_3",  323,
-            "KEY_KP_4",  324,
-            "KEY_KP_5",  325,
-            "KEY_KP_6",  326,
-            "KEY_KP_7",  327,
-            "KEY_KP_8",  328,
-            "KEY_KP_9",  329,
-            "KEY_KP_DECIMAL",  330,
-            "KEY_KP_DIVIDE",  331,
-            "KEY_KP_MULTIPLY",  332,
-            "KEY_KP_SUBTRACT",  333,
-            "KEY_KP_ADD",  334,
-            "KEY_KP_ENTER",  335,
-            "KEY_KP_EQUAL",  336,
-            "KEY_LEFT_SHIFT",  340,
-            "KEY_LEFT_CONTROL",  341,
-            "KEY_LEFT_ALT",  342,
-            "KEY_LEFT_SUPER",  343,
-            "KEY_RIGHT_SHIFT",  344,
-            "KEY_RIGHT_CONTROL",  345,
-            "KEY_RIGHT_ALT",  346,
-            "KEY_RIGHT_SUPER",  347,
-            "KEY_MENU",  348
-        );
-        stateView[COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
-        */
-    }
-
-    void
-    ScriptComponent::exposeAudioComponent
-    ()
-    {
-        debugRegisteringClass("AudioComponent");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<AudioComponent>("AudioComponent");
-        stateView[COMPONENTS_TBL]["Audio"] = mProjectRuntime->getAudioComponent();
-        */
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_UNKNOWN",  -1); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_SPACE",  32);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_APOSTROPHE",  39);  // '
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_COMMA",  44); whyYouFail(r);  // ,
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_MINUS",  45); whyYouFail(r);  // -
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_PERIOD",  46); whyYouFail(r);  // .
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_SLASH",  47); whyYouFail(r);  // /
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_0",  48); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_1",  49); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_2",  50); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_3",  51); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_4",  52); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_5",  53); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_6",  54); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_7",  55); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_8",  56); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_9",  57); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_SEMICOLON",  59); whyYouFail(r);  // ,
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_EQUAL",  61); whyYouFail(r);  // ",
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_A",  65); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_B",  66); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_C",  67); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_D",  68); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_E",  69); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F",  70); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_G",  71); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_H",  72); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_I",  73); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_J",  74); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_K",  75); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_L",  76); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_M",  77); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_N",  78); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_O",  79); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_P",  80); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_Q",  81); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_R",  82); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_S",  83); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_T",  84); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_U",  85); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_V",  86); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_W",  87); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_X",  88); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_Y",  89); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_Z",  90); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT_BRACKET",  91); whyYouFail(r);  // [
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_BACKSLASH",  92); whyYouFail(r);  // Backslash
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT_BRACKET",  93); whyYouFail(r);  // ]
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_GRAVE_ACCENT",  96); whyYouFail(r);  // `
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_WORLD_1",  161); whyYouFail(r); // non-US #1
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_WORLD_2",  162); whyYouFail(r); // non-US #2
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_ESCAPE",  256); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_ENTER",  257); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_TAB",  258); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_BACKSPACE",  259); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_INSERT",  260); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_DELETE",  261); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT",  262); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT",  263); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_DOWN",  264); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_UP",  265); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_PAGE_UP",  266); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_PAGE_DOWN",  267); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_HOME",  268); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_END",  269); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_CAPS_LOCK",  280); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_SCROLL_LOCK",  281); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_NUM_LOCK",  282); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_PRINT_SCREEN",  283); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_PAUSE",  284); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F1",  290); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F2",  291); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F3",  292); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F4",  293); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F5",  294); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F6",  295); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F7",  296); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F8",  297); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F9",  298); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F10",  299); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F11",  300); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F12",  301); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F13",  302); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F14",  303); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F15",  304); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F16",  305); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F17",  306); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F18",  307); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F19",  308); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F20",  309); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F21",  310); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F22",  311); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F23",  312); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F24",  313); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_F25",  314); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_0",  320); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_1",  321); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_2",  322); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_3",  323); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_4",  324); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_5",  325); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_6",  326); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_7",  327); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_8",  328); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_9",  329); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_DECIMAL",  330); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_DIVIDE",  331); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_MULTIPLY",  332); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_SUBTRACT",  333); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_ADD",  334); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_ENTER",  335); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_KP_EQUAL",  336); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT_SHIFT",  340); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT_CONTROL",  341); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT_ALT",  342); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_LEFT_SUPER",  343); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT_SHIFT",  344); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT_CONTROL",  345); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT_ALT",  346); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_RIGHT_SUPER",  347); whyYouFail(r);
+        r = Engine->RegisterEnumValue("KeyboardMapping","KEY_MENU",  348); whyYouFail(r);
     }
 
     void
@@ -777,156 +535,26 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AudioRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<AudioRuntime>
-        (
-            "AudioRuntime",
-            "getState",&AudioRuntime::getState,
-            "play",&AudioRuntime::play,
-            "pause",&AudioRuntime::pause,
-            "stop",&AudioRuntime::stop
-
-        );
-
-        stateView.new_enum
-        (
-            "AudioState",
-            "PLAYING", AudioStatus::PLAYING,
-            "PAUSED",  AudioStatus::PAUSED,
-            "STOPPED", AudioStatus::STOPPED
-        );
-        */
     }
+
+    void
+    ScriptComponent::exposeAudioComponent
+    ()
+    {
+        debugRegisteringClass("AudioRuntime");
+    }
+
 
     void
     ScriptComponent::exposeNanoVG
     ()
     {
         debugRegisteringClass("NanoVG");
-        /*
-        sol::state_view stateView(State);
-
-        stateView.new_usertype<NVGcolor>("NVGcolor");
-        stateView.new_usertype<NVGpaint>("NVGpaint");
-        stateView.new_usertype<NVGglyphPosition>("NVGglyphPosition");
-        stateView.new_usertype<NVGtextRow>("NVGtextRow");
-
-        stateView.new_enum(
-            "NVGsolidity",
-            "NVG_SOLID",NVG_SOLID,
-            "NVG_HOLE",NVG_HOLE
-        );
-        stateView.new_enum(
-            "NVGImageFlags",
-            "NVG_IMAGE_GENERATE_MIPMAPS",NVG_IMAGE_GENERATE_MIPMAPS,
-            "NVG_IMAGE_REPEATX",NVG_IMAGE_REPEATX,
-            "NVG_IMAGE_REPEATY",NVG_IMAGE_REPEATY,
-            "NVG_IMAGE_FLIPY",NVG_IMAGE_FLIPY,
-            "NVG_IMAGE_PREMULTIPLIED",NVG_IMAGE_PREMULTIPLIED,
-            "NVG_IMAGE_NEAREST",NVG_IMAGE_NEAREST
-        );
-
-        stateView.new_usertype<NanoVGComponent>
-        (
-            "NanoVGComponent",
-            "GlobalCompositeOperation",&NanoVGComponent::GlobalCompositeOperation,
-            "GlobalCompositeBlendFunc",&NanoVGComponent::GlobalCompositeBlendFunc,
-            "GlobalCompositeBlendFuncSeparate",&NanoVGComponent::GlobalCompositeBlendFuncSeparate,
-            "RGB",&NanoVGComponent::_RGB,
-            "RGBf",&NanoVGComponent::RGBf,
-            "RGBA",&NanoVGComponent::RGBA,
-            "RGBAf",&NanoVGComponent::RGBAf,
-            "LerpRGBA",&NanoVGComponent::LerpRGBA,
-            "TransRGBA",&NanoVGComponent::TransRGBA,
-            "TransRGBAf",&NanoVGComponent::TransRGBAf,
-            "HSL",&NanoVGComponent::HSL,
-            "HSLA",&NanoVGComponent::HSLA,
-            "Save",&NanoVGComponent::Save,
-            "Restore",&NanoVGComponent::Restore,
-            "Reset",&NanoVGComponent::Reset,
-            "ShapeAntiAlias",&NanoVGComponent::ShapeAntiAlias,
-            "StrokeColor",&NanoVGComponent::StrokeColor,
-            "StrokePaint",&NanoVGComponent::StrokePaint,
-            "FillColor",&NanoVGComponent::FillColor,
-            "FillPaint",&NanoVGComponent::FillPaint,
-            "MiterLimit",&NanoVGComponent::MiterLimit,
-            "StrokeWidth",&NanoVGComponent::StrokeWidth,
-            "LineCap",&NanoVGComponent::LineCap,
-            "LineJoin",&NanoVGComponent::LineJoin,
-            "GlobalAlpha",&NanoVGComponent::GlobalAlpha,
-            "ResetTransform",&NanoVGComponent::ResetTransform,
-            "Transform",&NanoVGComponent::Transform,
-            "Translate",&NanoVGComponent::Translate,
-            "Rotate",&NanoVGComponent::Rotate,
-            "SkewX",&NanoVGComponent::SkewX,
-            "SkewY",&NanoVGComponent::SkewY,
-            "Scale;",&NanoVGComponent::Scale,
-            "CurrentTransform",&NanoVGComponent::CurrentTransform,
-            "TransformIdentity",&NanoVGComponent::TransformIdentity,
-            "TransformTranslate",&NanoVGComponent::TransformTranslate,
-            "TransformScale",&NanoVGComponent::TransformScale,
-            "TransformRotate",&NanoVGComponent::TransformRotate,
-            "TransformSkewX",&NanoVGComponent::TransformSkewX,
-            "TransformSkewY",&NanoVGComponent::TransformSkewY,
-            "TransformMultiply",&NanoVGComponent::TransformMultiply,
-            "TransformPremultiply",&NanoVGComponent::TransformPremultiply,
-            "TransformInverse",&NanoVGComponent::TransformInverse,
-            "TransformPoint",&NanoVGComponent::TransformPoint,
-            "DegToRad",&NanoVGComponent::DegToRad,
-            "RadToDeg",&NanoVGComponent::RadToDeg,
-            "CreateImage",&NanoVGComponent::CreateImage,
-            "CreateImageMem",&NanoVGComponent::CreateImageMem,
-            "CreateImageRGBA",&NanoVGComponent::CreateImageRGBA,
-            "UpdateImage",&NanoVGComponent::UpdateImage,
-            "ImageSize",&NanoVGComponent::ImageSize,
-            "DeleteImage",&NanoVGComponent::DeleteImage,
-            "LinearGradient",&NanoVGComponent::LinearGradient,
-            "BoxGradient",&NanoVGComponent::BoxGradient,
-            "RadialGradient",&NanoVGComponent::RadialGradient,
-            "ImagePattern",&NanoVGComponent::ImagePattern,
-            "Scissor",&NanoVGComponent::Scissor,
-            "IntersectScissor",&NanoVGComponent::IntersectScissor,
-            "ResetScissor",&NanoVGComponent::ResetScissor,
-            "BeginPath",&NanoVGComponent::BeginPath,
-            "MoveTo",&NanoVGComponent::MoveTo,
-            "LineTo",&NanoVGComponent::LineTo,
-            "BezierTo",&NanoVGComponent::BezierTo,
-            "QuadTo",&NanoVGComponent::QuadTo,
-            "ArcTo",&NanoVGComponent::ArcTo,
-            "ClosePath",&NanoVGComponent::ClosePath,
-            "PathWinding",&NanoVGComponent::PathWinding,
-            "Arc",&NanoVGComponent::Arc,
-            "Rect",&NanoVGComponent::Rect,
-            "RoundedRect",&NanoVGComponent::RoundedRect,
-            "RoundedRectVarying",&NanoVGComponent::RoundedRectVarying,
-            "Ellipse",&NanoVGComponent::Ellipse,
-            "Circle",&NanoVGComponent::Circle,
-            "Fill",&NanoVGComponent::Fill,
-            "Stroke",&NanoVGComponent::Stroke,
-            "CreateFont",&NanoVGComponent::CreateFont,
-            "CreateFontMem",&NanoVGComponent::CreateFontMem,
-            "FindFont",&NanoVGComponent::FindFont,
-            "AddFallbackFontId",&NanoVGComponent::AddFallbackFontId,
-            "AddFallbackFont",&NanoVGComponent::AddFallbackFont,
-            "FontSize",&NanoVGComponent::FontSize,
-            "FontBlur",&NanoVGComponent::FontBlur,
-            "TextLetterSpacing",&NanoVGComponent::TextLetterSpacing,
-            "TextLineHeight",&NanoVGComponent::TextLineHeight,
-            "TextAlign",&NanoVGComponent::TextAlign,
-            "FontFaceId",&NanoVGComponent::FontFaceId,
-            "FontFace",&NanoVGComponent::FontFace,
-            "Text",static_cast<float (NanoVGComponent::*)(float,float,const char*)>(&NanoVGComponent::Text),
-            "TextBox",static_cast<void(NanoVGComponent::*)(float,float,float,const char*)>(&NanoVGComponent::TextBox),
-            "TextBounds",&NanoVGComponent::TextBounds,
-            "TextBoxBounds",static_cast<vec4 (NanoVGComponent::*)(float, float, float, const char*)>(&NanoVGComponent::TextBoxBounds),
-            "TextGlyphPositions",&NanoVGComponent::TextGlyphPositions,
-            "TextMetrics",&NanoVGComponent::TextMetrics,
-            "TextBreakLines",&NanoVGComponent::TextBreakLines
-        );
-
-        stateView[COMPONENTS_TBL]["NanoVG"] = mProjectRuntime->getNanoVGComponent();
-        */
+        int r;
+        r = Engine->RegisterObjectMethod("NanoVGComponent","int CreateFont(string,string)",asMETHOD(NanoVGComponent,CreateFont),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("NanoVGComponent","void FontSize(float)",asMETHOD(NanoVGComponent,FontSize),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("NanoVGComponent","vec4@ TextBoxBounds(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBoxBounds,(float, float, float, string),vec4*),asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("NanoVGComponent","void TextBox(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBox,(float,float,float, string),void),asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -934,18 +562,10 @@ namespace Dream
     ()
     {
         debugRegisteringClass("SceneRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<SceneRuntime>
-        (
-            "SceneRuntime",
-            "getCamera",&SceneRuntime::getCamera,
-            "getSceneObjectByUuid",&SceneRuntime::getSceneObjectRuntimeByUuid
-        );
-        */
         int r;
         r = Engine->RegisterObjectMethod("SceneRuntime", "Camera@ getCamera()",asMETHOD(SceneRuntime,getCamera), asCALL_THISCALL); whyYouFail(r);
         r = Engine->RegisterObjectMethod("SceneRuntime", "SceneObjectRuntime@ getSceneObjectByUuid(int)",asMETHOD(SceneRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r);
+        r = Engine->RegisterObjectMethod("SceneRuntime", "ProjectRuntime@ getProjectRuntime()",asMETHOD(SceneRuntime,getProjectRuntime), asCALL_THISCALL); whyYouFail(r);
     }
 
     void
@@ -953,121 +573,28 @@ namespace Dream
     ()
     {
         debugRegisteringClass("GLM");
-        /*
-        sol::state_view stateView(State);
-
-        auto vec3MultiplicationOverloads = sol::overload(
-            [](const glm::vec3& v1, const glm::vec3& v2) -> glm::vec3 { return v1*v2; },
-            [](const glm::vec3& v1, float f) -> glm::vec3 { return v1*f; },
-            [](float f, const glm::vec3& v1) -> glm::vec3 { return f*v1; }
-        );
-
-        auto vec3SubtractionOverloads = sol::overload(
-            [](const glm::vec3& v1, const glm::vec3& v2) -> glm::vec3 { return v1-v2; },
-            [](const glm::vec3& v1, float f) -> glm::vec3 { return v1-f; },
-            [](float f, const glm::vec3& v1) -> glm::vec3 { return f-v1; }
-        );
-
-        stateView.new_usertype<glm::vec3>(
-            "vec3",
-            sol::constructors<glm::vec3(), glm::vec3(float), glm::vec3(float, float, float)>(),
-            sol::meta_function::multiplication, vec3MultiplicationOverloads,
-            sol::meta_function::subtraction, vec3SubtractionOverloads,
-            "x", &glm::vec3::x,
-            "y", &glm::vec3::y,
-            "z", &glm::vec3::z
-        );
-
-        stateView.new_usertype<glm::vec4>(
-            "vec4",
-            "x", &glm::vec4::x,
-            "y", &glm::vec4::y,
-            "z", &glm::vec4::z,
-            "w", &glm::vec4::w
-        );
-
-        stateView.new_usertype<glm::quat>(
-            "quat",
-            sol::constructors<glm::quat(), glm::quat(float, float, float, float)>(),
-            "w", &glm::quat::w,
-            "x", &glm::quat::x,
-            "y", &glm::quat::y,
-            "z", &glm::quat::z
-        );
-
-        auto mat4MultiplicationOverloads = sol::overload(
-            [](const glm::mat4& v1, const glm::mat4& v2) -> glm::mat4 { return v1*v2; },
-            [](const glm::mat4& v1, float f) -> glm::mat4 { return v1*f; },
-            [](float f, const glm::mat4& v1) -> glm::mat4 { return f*v1; }
-        );
-
-        stateView.new_usertype<glm::mat4>(
-            "mat4",
-            sol::constructors<glm::mat4(), glm::mat4(float), glm::mat4(glm::mat4)>(),
-            sol::meta_function::multiplication, mat4MultiplicationOverloads
-        );
-
-        stateView.set_function(
-            "translate",
-            [](const glm::mat4& m1, const glm::vec3& v1) -> glm::mat4
-            {
-                return glm::translate(m1,v1);
-            }
-        );
-
-        stateView.set_function(
-            "translate3f",
-            [](const glm::mat4& m1, float x, float y, float z) -> glm::mat4
-            {
-                return glm::translate(m1,vec3(x,y,z));
-            }
-        );
-
-        stateView.set_function(
-            "rotate",
-            [](const glm::mat4& m1, const float f1, const glm::vec3& v1) -> glm::mat4
-            {
-                return glm::rotate(m1,f1,v1);
-            }
-        );
-
-        stateView.set_function(
-            "scale",
-            [](const glm::mat4& m1, glm::vec3& v1) -> glm::mat4
-            {
-                return glm::scale(m1,v1);
-            }
-        );
-
-        stateView.set_function
-        (
-            "mat4_cast",
-            [](const glm::quat& q1) -> glm::mat4
-            {
-                return glm::mat4_cast(q1);
-            }
-        );
-
-        stateView.set_function
-        (
-            "matrix_col",
-            [](const glm::mat4& mtx, int col) -> glm::vec3
-            {
-                return  mtx[col];
-            }
-        );
-        */
+        int r;
+        r = Engine->RegisterGlobalFunction("mat4@ translate3f(mat4@, float,float,float)", asFUNCTION(mat4_translate3f), asCALL_CDECL); whyYouFail( r >= 0 );
+        r = Engine->RegisterGlobalFunction("void mat4_delete(mat4@)",asFUNCTION(mat4_delete),asCALL_CDECL); whyYouFail(r);
+        // vec3
+        r = Engine->RegisterObjectProperty("vec3","float x",asOFFSET(vec3,x)); whyYouFail(r);
+        r = Engine->RegisterObjectProperty("vec3","float y",asOFFSET(vec3,y)); whyYouFail(r);
+        r = Engine->RegisterObjectProperty("vec3","float z",asOFFSET(vec3,z)); whyYouFail(r);
+        r = Engine->RegisterGlobalFunction("void vec3_delete(vec3@)",asFUNCTION(vec4_delete),asCALL_CDECL); whyYouFail(r);
+        // Vec4
+        r = Engine->RegisterObjectProperty("vec4","float w",asOFFSET(vec4,w)); whyYouFail(r);
+        r = Engine->RegisterObjectProperty("vec4","float x",asOFFSET(vec4,x)); whyYouFail(r);
+        r = Engine->RegisterObjectProperty("vec4","float y",asOFFSET(vec4,y)); whyYouFail(r);
+        r = Engine->RegisterObjectProperty("vec4","float z",asOFFSET(vec4,z)); whyYouFail(r);
+        r = Engine->RegisterGlobalFunction("void vec4_delete(vec3@)",asFUNCTION(vec4_delete),asCALL_CDECL); whyYouFail(r);
     }
+
 
     void
     ScriptComponent::exposeDefinition
     ()
     {
         debugRegisteringClass("Definitions");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<Definition>("Definition");
-        */
     }
 
     void
@@ -1075,15 +602,7 @@ namespace Dream
     ()
     {
         debugRegisteringClass("AnimationRuntime");
-        /*
-        sol::state_view stateView(State);
-        stateView.new_usertype<AnimationRuntime>(
-            "AnimationRuntime",
-           "run",&AnimationRuntime::run,
-           "pause",&AnimationRuntime::pause,
-           "reset",&AnimationRuntime::reset
-        );
-        */
+        int r;
     }
 
     void
@@ -1106,6 +625,7 @@ namespace Dream
         exposeAssetDefinition();
 
         exposeEvent();
+        exposeProject();
         exposeProjectRuntime();
         exposeProjectDirectory();
 

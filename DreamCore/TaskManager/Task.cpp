@@ -6,16 +6,67 @@ using std::find;
 
 namespace Dream
 {
-        Task::Task()
-            : DreamObject("Task"),
+    int Task::TaskID = 0;
+
+    mutex Task::TaskStatesMutex;
+    map<int,TaskState> Task::TaskStates;
+
+    mutex Task::WaitingForMutex;
+    map<int,vector<Task*> > Task::WaitingFor;
+
+    mutex Task::WaitingForMeMutex;
+    map<int,vector<Task*> > Task::WaitingForMe;
+
+    int Task::getTaskId() const
+    {
+        return mTaskId;
+    }
+    
+    Task::Task()
+        : DreamObject("Task"),
+          mTaskId(TaskID++),
             mThreadId(-1),
-            mState(CLEAR),
             mDeferralCount(0)
         {
             clearState();
+            TaskStatesMutex.lock();
+            if (TaskStates.count(mTaskId) == 0)
+            {
+                TaskStates[mTaskId] = CLEAR;
+            }
+            TaskStatesMutex.unlock();
+
+            WaitingForMutex.lock();
+            if (WaitingFor.count(mTaskId) == 0)
+            {
+                WaitingFor[mTaskId] = vector<Task*>();
+            }
+            WaitingForMutex.unlock();
+
+            WaitingForMeMutex.lock();
+            if (WaitingForMe.count(mTaskId) == 0)
+            {
+                WaitingForMe[mTaskId] = vector<Task*>();
+            }
+            WaitingForMeMutex.unlock();
+        }
+
+        Task::Task(const Task& other)
+            : DreamObject ("Task"),
+            mTaskId(other.mTaskId),
+            mThreadId(other.mThreadId),
+            mDeferralCount(other.mDeferralCount)
+        {
+
         }
 
         Task::~Task() {}
+
+        bool Task::operator==(const Task& other)
+        {
+            return mTaskId == other.mTaskId;
+        }
+
 
         void Task::incrementDeferralCount()
         {
@@ -34,26 +85,30 @@ namespace Dream
 
         void Task::clearState()
         {
-            mWaitingForMutex.lock();
-            mWaitingFor.clear();
-            mWaitingForMutex.unlock();
+            WaitingForMutex.lock();
+            WaitingFor[mTaskId].clear();
+            WaitingForMutex.unlock();
 
-            mWaitingForMeMutex.lock();
-            mWaitingForMe.clear();
-            mWaitingForMeMutex.unlock();
+            WaitingForMeMutex.lock();
+            WaitingForMe[mTaskId].clear();
+            WaitingForMeMutex.unlock();
 
             mThreadId = -1;
-            mState = TaskState::CLEAR;
+
+            TaskStatesMutex.lock();
+            TaskStates[mTaskId] = TaskState::CLEAR;
+            TaskStatesMutex.unlock();
+
             mDeferralCount = 0;
         }
 
         void Task::clearDependency(Task* t)
         {
-            mWaitingForMutex.lock();
-            auto itr = std::find(mWaitingFor.begin(), mWaitingFor.end(), t);
-            if (itr != mWaitingFor.end())
+            WaitingForMutex.lock();
+            auto itr = std::find(WaitingFor[mTaskId].begin(), WaitingFor[mTaskId].end(), t);
+            if (itr != WaitingFor[mTaskId].end())
             {
-                mWaitingFor.erase(itr);
+                WaitingFor[mTaskId].erase(itr);
             }
             else
             {
@@ -61,56 +116,68 @@ namespace Dream
                 getLog()->critical("*** WHAT THE F JEFF!!! *** {} was not waiting for {}",getClassName(), t->getClassName());
                 #endif
             }
-            mWaitingForMutex.unlock();
+            WaitingForMutex.unlock();
         }
 
         void Task::notifyDependents()
         {
-           mWaitingForMeMutex.lock();
-           for (Task* t : mWaitingForMe)
+            WaitingForMeMutex.lock();
+           for (Task* t : WaitingForMe[mTaskId])
            {
                #ifdef DREAM_LOG
                getLog()->critical("is notifying dependant {} of completion",t->getClassName());
                #endif
                t->clearDependency(this);
            }
-           mWaitingForMe.clear();
-           mWaitingForMeMutex.unlock();
+           WaitingForMe[mTaskId].clear();
+           WaitingForMeMutex.unlock();
         }
 
         bool Task::isWaitingForDependencies()
         {
-            mWaitingForMutex.lock();
-            bool retval = !mWaitingFor.empty();
-            mWaitingForMutex.unlock();
+            WaitingForMutex.lock();
+            bool retval = !WaitingFor[mTaskId].empty();
             #ifdef DREAM_LOG
             if (retval)
             {
-                mState = TaskState::WAITING;
-                getLog()->critical("Waiting for {} dependencies to finish",mWaitingFor.size());
+                TaskStatesMutex.lock();
+                TaskStates[mTaskId] = TaskState::WAITING;
+                TaskStatesMutex.unlock();
+                getLog()->critical("is waiting for {} dependencies to finish",WaitingFor[mTaskId].size());
             }
             #endif
+            WaitingForMutex.unlock();
             return retval;
         }
 
         void Task::dependsOn(Task* t)
         {
-            mWaitingForMutex.lock();
-            mWaitingFor.push_back(t);
-            mWaitingForMutex.unlock();
+            WaitingForMutex.lock();
+            if (WaitingFor.count(mTaskId) == 0)
+            {
+               WaitingFor[mTaskId] = vector<Task*>();
+            }
+            WaitingFor[mTaskId].push_back(t);
+            WaitingForMutex.unlock();
 
-            t->mWaitingForMeMutex.lock();
-            t->mWaitingForMe.push_back(this);
-            t->mWaitingForMeMutex.unlock();
+            WaitingForMeMutex.lock();
+            if (WaitingForMe.count(t->mTaskId) == 0)
+            {
+                WaitingForMe[t->mTaskId] = vector<Task*>();
+            }
+            WaitingForMe[t->mTaskId].push_back(this);
+            WaitingForMeMutex.unlock();
         }
 
         void Task::setState(const TaskState& s)
         {
-            mState = s;;
+            TaskStatesMutex.lock();
+            TaskStates[mTaskId] = s;
+            TaskStatesMutex.unlock();
         }
 
         TaskState Task::getState() const
         {
-            return mState;
+            return TaskStates[mTaskId];
         }
 }

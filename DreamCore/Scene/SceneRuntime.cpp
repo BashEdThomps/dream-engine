@@ -804,7 +804,7 @@ namespace Dream
 
         if (physicsComponent->getDebug())
         {
-            graphicsComponent->pushTask(new PhysicsDrawDebugTask(physicsComponent));
+            //graphicsComponent->pushTask(mDrawDebugTask);
         }
 
         taskManager->clearFences();

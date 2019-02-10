@@ -700,7 +700,7 @@ namespace Dream
 
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
 
-        mat4 lightMat = mShadowLight->getTransform().getMatrix();
+        mat4 lightMat = mShadowLight->getTransform()->getMatrix();
         mat4 lightView = glm::lookAt
         (
             vec3(lightMat[3]), // Light Pos
@@ -857,10 +857,39 @@ namespace Dream
     GraphicsComponent::executeTaskQueue
     ()
     {
-        for (GraphicsComponentTask* t : mTaskQueue)
+        vector<GraphicsComponentTask*> completed;
+        while (!mTaskQueue.empty())
         {
-            t->execute();
-            delete t;
+            for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
+            {
+                auto t = (*itr);
+                // Check if ready to execute
+                if (t->isWaitingForDependencies())
+                {
+                    t->incrementDeferralCount();
+                }
+                else
+                {
+                    t->setState(TaskState::ACTIVE);
+                    t->execute();
+                }
+
+                if (t->getState() == TaskState::COMPLETED)
+                {
+                   completed.push_back(t);
+                }
+            }
+
+            for (auto t : completed)
+            {
+                auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
+                if (itr != mTaskQueue.end())
+                {
+                    t->notifyDependents();
+                    mTaskQueue.erase(itr);
+                }
+            }
+            completed.clear();
         }
         mTaskQueue.clear();
     }

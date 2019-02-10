@@ -22,11 +22,11 @@ namespace Dream
          {
              mAnimationRuntime->update();
              mAnimationRuntime->unlock();
-             mState = TaskState::COMPLETED;
+             setState(TaskState::COMPLETED);
          }
          else
          {
-             mState = TaskState::WAITING;
+             setState(TaskState::WAITING);
              mDeferralCount++;
          }
     }

@@ -36,12 +36,10 @@ class btPersistentManifold;
 
 namespace Dream
 {
-    class PhysicsDebugDrawer;
     class PhysicsObjectRuntime;
     class SceneRuntime;
     class SceneObjectRuntime;
     class Camera;
-
 
     class PhysicsComponent : public Component
     {
@@ -82,5 +80,6 @@ namespace Dream
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();
         PhysicsUpdateWorldTask* getUpdateWorldTask();
+        PhysicsDrawDebugTask* getDrawDebugTask();
     };
 }

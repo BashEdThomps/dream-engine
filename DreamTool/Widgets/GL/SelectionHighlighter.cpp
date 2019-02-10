@@ -320,7 +320,7 @@ namespace DreamTool
 #endif
             }
 
-            mModelMatrix = mSelectedSceneObjectRuntime->getTransform().getMatrix();
+            mModelMatrix = mSelectedSceneObjectRuntime->getTransform()->getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {

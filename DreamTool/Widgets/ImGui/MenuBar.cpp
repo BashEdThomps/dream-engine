@@ -295,6 +295,13 @@ namespace DreamTool
                        mState->cacheContentWindow.setVisible(showCacheContents);
                     }
 
+                    bool showTaskManager = mState->taskManagerWindow.getVisible();
+                    if (ImGui::Checkbox("Task Manager",&showTaskManager))
+                    {
+                       mState->taskManagerWindow.setVisible(showTaskManager);
+                    }
+
+
                     auto pRuntime = mState->project->getRuntime();
                     if (pRuntime)
                     {

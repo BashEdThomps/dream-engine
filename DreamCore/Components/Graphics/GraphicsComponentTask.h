@@ -8,6 +8,11 @@ namespace Dream
     class GraphicsComponentTask : public Task
     {
     public:
-        virtual void execute() = 0;
+        GraphicsComponentTask() : Task()
+        {}
+
+        ~GraphicsComponentTask()
+        {}
+        inline void execute() {}
     };
 }

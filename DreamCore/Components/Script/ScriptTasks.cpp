@@ -26,11 +26,11 @@ namespace Dream
 
         if(mScript->executeOnInit(mSceneObject))
         {
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
 
@@ -64,11 +64,11 @@ namespace Dream
 
         if(mScript->executeOnUpdate(mSceneObject))
         {
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
     }
@@ -102,11 +102,11 @@ namespace Dream
 
         if(mScript->executeOnEvent(mSceneObject))
         {
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
     }
@@ -144,11 +144,11 @@ namespace Dream
 
         if(mScript->executeOnNanoVG(nvg,scene))
         {
-            mState = TaskState::COMPLETED;
+            setState(TaskState::COMPLETED);
         }
         else
         {
-            mState = TaskState::WAITING;
+            setState(TaskState::WAITING);
             mDeferralCount++;
         }
     }
