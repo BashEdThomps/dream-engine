@@ -14,7 +14,6 @@
 
 #include <vector>
 
-#include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
 #include "SceneObjectTasks.h"
@@ -26,7 +25,6 @@
 using std::vector;
 using std::function;
 using nlohmann::json;
-using glm::vec3;
 
 namespace Dream
 {
@@ -98,13 +96,13 @@ namespace Dream
         bool hasLightRuntime();
         bool hasScrollerRuntime();
 
-        Transform* getTransform();
-        Transform* getInitialTransform();
+        Transform& getTransform();
+        Transform getInitialTransform();
         void setTransform(Transform* transform);
-        void translateWithChildren(const vec3& translation);
-        void preTranslateWithChildren(const vec3& translation);
+        void translateWithChildren(const Vector3& translation);
+        void preTranslateWithChildren(const Vector3& translation);
         void transformOffsetInitial(const mat4& matrix);
-        void translateOffsetInitial(const vec3& tx);
+        void translateOffsetInitial(const Vector3& tx);
 
         bool getHasCameraFocus() const;
         void setHasCameraFocus(bool);
@@ -158,15 +156,15 @@ namespace Dream
         void setBoundingBox(const BoundingBox& boundingBox);
 
         float distanceFrom(SceneObjectRuntime* other);
-        float distanceFrom(const vec3& other);
+        float distanceFrom(const Vector3& other);
         bool visibleInFrustum();
         bool containedInFrustum();
         bool containedInFrustumAfterTransform(const mat4& tx);
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx);
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const Vector3& tx);
 
         bool applyToAll(const function<bool(SceneObjectRuntime*)>& fn);
         SceneObjectRuntime* applyToAll(const function<SceneObjectRuntime*(SceneObjectRuntime*)>& fn);
-        void translateOffsetInitialWithChildren(const vec3& translation);
+        void translateOffsetInitialWithChildren(const Vector3& translation);
         void initTransform();
 
         long getDeferredFor() const;

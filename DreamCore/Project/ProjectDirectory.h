@@ -16,8 +16,8 @@
 #pragma once
 
 #include "../Common/DreamObject.h"
-#include "../Utilities/ArgumentParser.h"
-#include "../Utilities/File.h"
+#include "../Common/ArgumentParser.h"
+#include "../Common/File.h"
 
 namespace Dream
 {

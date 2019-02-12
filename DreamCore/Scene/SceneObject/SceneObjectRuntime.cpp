@@ -44,7 +44,7 @@
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
-#include "../../Utilities/Uuid.h"
+#include "../../Common/Uuid.h"
 #include "../../TaskManager/TaskManager.h"
 #include "../../Components/Script/ScriptTasks.h"
 #include "SceneObjectTasks.h"
@@ -52,7 +52,6 @@
 #include <glm/matrix.hpp>
 
 using std::vector;
-using glm::vec3;
 
 namespace Dream
 {
@@ -367,11 +366,11 @@ namespace Dream
         return mPhysicsObjectRuntime;
     }
 
-    Transform*
+    Transform&
     SceneObjectRuntime::getTransform
     ()
     {
-        return &mTransform;
+        return mTransform;
     }
 
     void
@@ -862,14 +861,14 @@ namespace Dream
 
     void
     SceneObjectRuntime::translateWithChildren
-    (const vec3& translation)
+    (const Vector3& translation)
     {
         applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
                 [&](SceneObjectRuntime* rt)
                 {
-                    rt->getTransform()->translate(translation);
+                    rt->getTransform().translate(translation);
                     return static_cast<SceneObjectRuntime*>(nullptr);
                 }
             )
@@ -878,23 +877,23 @@ namespace Dream
 
     void
     SceneObjectRuntime::preTranslateWithChildren
-    (const vec3& translation)
+    (const Vector3& translation)
     {
         applyToAll(
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                rt->getTransform()->preTranslate(translation);
+                rt->getTransform().preTranslate(translation);
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
     }
 
-    Transform*
+    Transform
     SceneObjectRuntime::getInitialTransform
     ()
     {
-       return &mInitialTransform;
+       return mInitialTransform;
     }
 
     void
@@ -906,9 +905,9 @@ namespace Dream
 
     void
     SceneObjectRuntime::translateOffsetInitial
-    (const vec3& tx)
+    (const Vector3& tx)
     {
-        mTransform.setMatrix(glm::translate(mat4(1.0),tx)* mInitialTransform.getMatrix());
+        mTransform.setMatrix(glm::translate(mat4(1.0),tx.toGLM())* mInitialTransform.getMatrix());
     }
 
     bool
@@ -1086,14 +1085,14 @@ namespace Dream
     SceneObjectRuntime::distanceFrom
     (SceneObjectRuntime* other)
     {
-        return mTransform.distanceFrom(*other->getTransform());
+        return mTransform.distanceFrom(other->getTransform());
     }
 
     float
     SceneObjectRuntime::distanceFrom
-    (const vec3& other)
+    (const Vector3& other)
     {
-        return glm::distance(vec3(mTransform.getMatrix()[3]),other);
+        return glm::distance(vec3(mTransform.getMatrix()[3]),other.toGLM());
     }
 
     bool
@@ -1135,7 +1134,7 @@ namespace Dream
 
     bool
     SceneObjectRuntime::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, const vec3& tx)
+    (Frustum::Plane plane, const Vector3& tx)
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
@@ -1200,14 +1199,14 @@ namespace Dream
 
     void
     SceneObjectRuntime::translateOffsetInitialWithChildren
-    (const vec3& translation)
+    (const Vector3& translation)
     {
         static mat4 ident(1.0f);
         applyToAll
         (function<SceneObjectRuntime*(SceneObjectRuntime*)>([&](SceneObjectRuntime* rt)
         {
-            auto initial = rt->getInitialTransform()->getMatrix();
-            rt->getTransform()->setMatrix(glm::translate(ident,translation)* initial);
+            auto initial = rt->getInitialTransform().getMatrix();
+            rt->getTransform().setMatrix(glm::translate(ident,translation.toGLM())* initial);
             return static_cast<SceneObjectRuntime*>(nullptr);
         }
         ));

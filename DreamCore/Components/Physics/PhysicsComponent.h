@@ -15,13 +15,12 @@
 
 #pragma once
 
-#include <glm/vec3.hpp>
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 #include "../Component.h"
+#include "../../Common/Math.h"
 #include "PhysicsTasks.h"
 
-using glm::vec3;
 using glm::mat4;
 
 class btDynamicsWorld;
@@ -63,8 +62,8 @@ namespace Dream
     public:
         PhysicsComponent(ProjectRuntime* pr);
         ~PhysicsComponent() override;
-        void setGravity(const vec3&);
-        vec3 getGravity();
+        void setGravity(const Vector3&);
+        Vector3 getGravity();
         void setDebug(bool);
         bool getDebug();
         bool init() override;

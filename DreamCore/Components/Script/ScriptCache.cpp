@@ -16,7 +16,7 @@
 
 #include "ScriptCache.h"
 
-#include "../../Utilities/File.h"
+#include "../../Common/File.h"
 #include "ScriptDefinition.h"
 #include "ScriptRuntime.h"
 

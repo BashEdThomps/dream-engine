@@ -142,27 +142,27 @@ namespace Dream
 
     void
     PhysicsComponent::setGravity
-    (const vec3& gravity)
+    (const Vector3& gravity)
     {
         #ifdef DREAM_LOG
-        getLog()->debug("Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
+        getLog()->debug("Setting Gravity {},{},{}" , gravity.x(), gravity.y(), gravity.z());
         #endif
         if (mDynamicsWorld != nullptr)
         {
-            mDynamicsWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
+            mDynamicsWorld->setGravity(btVector3(gravity.x(), gravity.y(), gravity.z()));
         }
     }
 
-    vec3
+    Vector3
     PhysicsComponent::getGravity
     ()
     {
         if (mDynamicsWorld != nullptr)
         {
             auto gv = mDynamicsWorld->getGravity();
-            return vec3(gv.x(),gv.y(),gv.z());
+            return Vector3(gv.x(),gv.y(),gv.z());
         }
-        return vec3(0.0f);
+        return Vector3(0.0f);
     }
 
     bool

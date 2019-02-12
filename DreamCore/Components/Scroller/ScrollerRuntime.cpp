@@ -93,18 +93,18 @@ namespace Dream
         //Range inRangeY = None;
         //Range inrangeZ = None;
 
-        vec3 tx = runt->getTransform()->getMatrix()[3];
+        vec3 tx = runt->getTransform().getMatrix()[3];
 
         // Range check is dependent on heading, determined by velocity.
 
         // Going from + -> -
-        if (mVelocity.x < 0)
+        if (mVelocity.x() < 0)
         {
-           if (tx.x > mRangeBegin.x)
+           if (tx.x > mRangeBegin.x())
            {
                inRangeX = PreRange;
            }
-           else if (tx.x < mRangeEnd.x)
+           else if (tx.x < mRangeEnd.x())
            {
                inRangeX = PostRange;
            }
@@ -114,13 +114,13 @@ namespace Dream
            }
         }
         // Going from - -> +
-        else if (mVelocity.x > 0)
+        else if (mVelocity.x() > 0)
         {
-           if (tx.x < mRangeBegin.x)
+           if (tx.x < mRangeBegin.x())
            {
                inRangeX = PreRange;
            }
-           else if (tx.x > mRangeEnd.x)
+           else if (tx.x > mRangeEnd.x())
            {
                inRangeX = PostRange;
            }
@@ -145,8 +145,8 @@ namespace Dream
         newChild->setParentRuntime(mSceneObjectRuntime);
         newChild->setName(mSceneObjectRuntime->getName()+"_Scroller_Child_"+std::to_string(item.index));
         newChild->initTransform();
-        newChild->getInitialTransform()->translate(item.origin);
-        newChild->getTransform()->translate(item.origin);
+        newChild->getInitialTransform().translate(item.origin);
+        newChild->getTransform().translate(item.origin);
         mSceneObjectRuntime->addChildRuntime(newChild);
         return newChild;
     }
@@ -169,11 +169,11 @@ namespace Dream
             return;
         }
 
-        vec3 delta
+        Vector3 delta
         (
-           time->perSecond(mVelocity.x),
-           time->perSecond(mVelocity.y),
-           time->perSecond(mVelocity.z)
+           time->perSecond(mVelocity.x()),
+           time->perSecond(mVelocity.y()),
+           time->perSecond(mVelocity.z())
         );
 
         mSceneObjectRuntime->lock();
@@ -185,9 +185,9 @@ namespace Dream
         {
             child->lock();
             #ifdef DREAM_LOG
-            log->trace("Translating Child with delta vel {},{},{}", delta.x, delta.y, delta.z);
+            log->trace("Translating Child with delta vel {},{},{}", delta.x(), delta.y(), delta.z());
             #endif
-            child->getTransform()->translate(delta);
+            child->getTransform().translate(delta);
             child->unlock();
         }
         mSceneObjectRuntime->unlock();

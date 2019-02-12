@@ -23,7 +23,7 @@
 #include "../Light/LightRuntime.h"
 #include "../Material/MaterialRuntime.h"
 #include "../Texture/TextureRuntime.h"
-#include "../../../Utilities/File.h"
+#include "../../../Common/File.h"
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
@@ -153,7 +153,7 @@ namespace Dream
 
     bool
     ShaderRuntime::setViewerPosition
-    (const vec3& value, const string& name)
+    (const Vector3& value, const string& name)
     {
         GLint uCamPos = getUniformLocation(name);
 
@@ -164,7 +164,7 @@ namespace Dream
             #endif
             return false;
         }
-        glUniform3fv(uCamPos,1,value_ptr(value));
+        glUniform3fv(uCamPos,1,value_ptr(value.toGLM()));
         #ifdef DREAM_LOG
         checkGLError();
         #endif
@@ -347,7 +347,7 @@ namespace Dream
         }
 
         auto diffuseColour = material->getColorDiffuse();
-        vec3 glmDiffuse(diffuseColour.r,diffuseColour.g,diffuseColour.b);
+        Vector3 glmDiffuse(diffuseColour.r,diffuseColour.g,diffuseColour.b);
         addUniform(FLOAT3, "material.diffuseColor", 1, &glmDiffuse);
 
         auto specular = material->getSpecularTexture();
@@ -374,7 +374,7 @@ namespace Dream
         }
 
         auto spec = material->getColorSpecular();
-        vec3 glmSpec(spec.r,spec.g,spec.b);
+        Vector3 glmSpec(spec.r,spec.g,spec.b);
         addUniform(FLOAT3, "material.specularColor", 1, &glmSpec);
         float ss = material->getShininessStrength();
         addUniform(FLOAT1, "material.shininess", 1, &ss);
@@ -722,7 +722,7 @@ namespace Dream
         size_t nRuntimes = runtimes.size();
         for (size_t i = 0; i<nRuntimes; i++)
         {
-            data[i] = runtimes[i]->getTransform()->getMatrix();
+            data[i] = runtimes[i]->getTransform().getMatrix();
         }
 
         GLint location =  getUniformLocation("model[0]");

@@ -14,6 +14,8 @@
 
 #include "Transform.h"
 
+#include <iostream>
+#include "../Common/Math.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,6 +23,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 using namespace glm;
+using std::cout;
+using std::endl;
 
 namespace Dream
 {
@@ -139,7 +143,7 @@ namespace Dream
         return (float*)(&mMatrix[0]);
     }
 
-    mat4 Transform::getMatrix()
+    mat4 Transform::getMatrix() const
     {
         return mMatrix;
     }
@@ -177,9 +181,9 @@ namespace Dream
 
     void
     Transform::translate
-    (const vec3& tx)
+    (const Vector3& tx)
     {
-        mMatrix = glm::translate(mMatrix,tx);
+        mMatrix = glm::translate(mMatrix,tx.toGLM());
     }
 
     void
@@ -192,18 +196,21 @@ namespace Dream
 
     void
     Transform::preTranslate
-    (const vec3& translation)
+    (const Vector3& translation)
     {
-        mat4 mat = glm::translate(mat4(1.0f), translation);
+        mat4 mat = glm::translate(mat4(1.0f), translation.toGLM());
         mMatrix = mat*mMatrix;
     }
 
-    vec3
+    Vector3
     Transform::getTranslation
     ()
-    const
     {
-        return vec3(mMatrix[3]);
+        return Vector3(
+            mMatrix[3].x,
+            mMatrix[3].y,
+            mMatrix[3].z
+        );
     }
 
-} // End of Dream
+}

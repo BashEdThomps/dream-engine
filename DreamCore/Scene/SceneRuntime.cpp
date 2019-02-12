@@ -62,7 +62,7 @@ namespace Dream
     (SceneDefinition* sd, ProjectRuntime* project)
         : Runtime(sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
-        mClearColour(vec3(0.0f)),
+        mClearColour(Vector3(0.0f)),
         mProjectRuntime(project),
         mRootSceneObjectRuntime(nullptr),
         mLightingPassShader(nullptr),
@@ -137,7 +137,7 @@ namespace Dream
         }
     }
 
-    vec3
+    Vector3
     SceneRuntime::getGravity
     ()
     const
@@ -146,12 +146,12 @@ namespace Dream
         {
             return mProjectRuntime->getPhysicsComponent()->getGravity();
         }
-        return vec3(0.0f);
+        return Vector3(0.0f);
     }
 
     void
     SceneRuntime::setGravity
-    (const vec3& gravity)
+    (const Vector3& gravity)
     {
         if (mProjectRuntime)
         {
@@ -159,7 +159,7 @@ namespace Dream
         }
     }
 
-    vec3
+    Vector3
     SceneRuntime::getClearColour
     ()
     const
@@ -169,7 +169,7 @@ namespace Dream
 
     void
     SceneRuntime::setClearColour
-    (const vec3& clearColour)
+    (const Vector3& clearColour)
     {
         mClearColour = clearColour;
     }
@@ -622,7 +622,7 @@ namespace Dream
         }
 
         float distance = std::numeric_limits<float>::max();
-        vec3 camTrans = mCamera.getTranslation();
+        Vector3 camTrans = mCamera.getTranslation();
         SceneObjectRuntime* nearest = mRootSceneObjectRuntime;
         SceneObjectRuntime* focused = mCamera.getFocusedSceneObject();
 
@@ -703,7 +703,7 @@ namespace Dream
         taskManager->pushTask(inputComponent->getExecuteScriptTask());
 
         // Process SceneObjects
-        vector<LifetimeUpdateTask*> lifetimeTasks;
+        vector<Task*> physicsDependencies;
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
@@ -714,7 +714,8 @@ namespace Dream
                 // SceneObject
                 lt->clearState();
                 lt->dependsOn(inputComponent->getExecuteScriptTask());
-                lifetimeTasks.push_back(lt);
+                physicsDependencies.push_back(lt);
+                taskManager->pushTask(lt);
 
                 // Animation
                 if (rt->hasAnimationRuntime())
@@ -774,6 +775,7 @@ namespace Dream
                     {
                         auto init = rt->getScriptOnInitTask();
                         init->clearState();
+                        physicsDependencies.push_back(init);
                         taskManager->pushTask(init);
                     }
                     else
@@ -782,11 +784,13 @@ namespace Dream
                         {
                             auto event = rt->getScriptOnEventTask();
                             event->clearState();
+                            physicsDependencies.push_back(event);
                             taskManager->pushTask(event);
                         }
 
                         auto update = rt->getScriptOnUpdateTask();
                         update->clearState();
+                        physicsDependencies.push_back(update);
                         taskManager->pushTask(update);
                     }
                 }
@@ -803,10 +807,9 @@ namespace Dream
 
         auto pt = physicsComponent->getUpdateWorldTask();
         pt->clearState();
-        for (auto* lt : lifetimeTasks)
+        for (auto* task : physicsDependencies)
         {
-            pt->dependsOn(lt);
-            taskManager->pushTask(lt);
+            pt->dependsOn(task);
         }
         taskManager->pushTask(pt);
 

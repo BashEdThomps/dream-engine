@@ -16,7 +16,8 @@
 #include "LockableObject.h"
 #include "../deps/json/json.hpp"
 #include "../Components/Transform.h"
-#include "../Utilities/Uuid.h"
+#include "Math.h"
+#include "Uuid.h"
 
 using nlohmann::json;
 using std::stringstream;
@@ -148,20 +149,20 @@ namespace Dream
         }
 
         json
-        inline wrapVec3(const vec3& v)
+        inline wrapVector3(const Vector3& v)
         {
            json retval = json::object();
-           retval[Constants::X] = v.x;
-           retval[Constants::Y] = v.y;
-           retval[Constants::Z] = v.z;
+           retval[Constants::X] = v.x();
+           retval[Constants::Y] = v.y();
+           retval[Constants::Z] = v.z();
            return retval;
         }
 
-        vec3
-        inline unwrapVec3
+        Vector3
+        inline unwrapVector3
         (const json& j)
         {
-            return vec3
+            return Vector3
             (
                 j[Constants::X],
                 j[Constants::Y],

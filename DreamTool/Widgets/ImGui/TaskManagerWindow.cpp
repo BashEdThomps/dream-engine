@@ -5,6 +5,7 @@
 #include "../../../DreamCore/TaskManager/Task.h"
 #include "../../../DreamCore/TaskManager/TaskThread.h"
 #include "../../../DreamCore/TaskManager/TaskManager.h"
+#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 
 namespace DreamTool
 {
@@ -26,7 +27,7 @@ namespace DreamTool
     TaskManagerWindow::draw
     ()
     {
-        ImGui::Begin("Task Manager");
+        ImGui::Begin("Task Manager",&mVisible);
 
         if (mState->project)
         {
@@ -48,6 +49,14 @@ namespace DreamTool
                     ImGui::NextColumn();
                 }
                 ImGui::Columns(1);
+                ImGui::Separator();
+                ImGui::Text("GraphicsComponent Tasks");
+                auto* gfxComponent = projRunt->getGraphicsComponent();
+                auto gfxTaskQueue = gfxComponent->getDebugTaskQueue();
+                for (GraphicsComponentTask* task : gfxTaskQueue)
+                {
+                    ImGui::Text("[%0.3d/%0.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                }
             }
             else
             {

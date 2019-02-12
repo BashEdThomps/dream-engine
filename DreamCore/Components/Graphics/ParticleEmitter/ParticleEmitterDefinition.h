@@ -13,6 +13,7 @@
 #pragma once
 
 #include "../../AssetDefinition.h"
+#include "../../../Common/Math.h"
 
 namespace Dream
 {
@@ -25,11 +26,11 @@ namespace Dream
         uint32_t getTexture();
         void setTexture(uint32_t texture);
 
-        vec3 getArea();
-        void setArea(const vec3& area);
+        Vector3 getArea();
+        void setArea(const Vector3& area);
 
-        vec2 getParticleSize();
-        void setParticleSize(const vec2& size);
+        Vector2 getParticleSize();
+        void setParticleSize(const Vector2& size);
 
         float getVelocity();
         void setVelocity(float velocity);

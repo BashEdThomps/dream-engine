@@ -1,4 +1,4 @@
-/*
+ /*
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -93,7 +93,7 @@ namespace Dream
         mJson[Constants::PARTICLE_EMITTER_VELOCITY] = velocity;
     }
 
-    vec2
+    Vector2
     ParticleEmitterDefinition::getParticleSize
     ()
     {
@@ -101,7 +101,7 @@ namespace Dream
         {
             initSize();
         }
-        return vec2(
+        return Vector2(
             mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::X],
             mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::Y]
         );
@@ -109,17 +109,17 @@ namespace Dream
 
     void
     ParticleEmitterDefinition::setParticleSize
-    (const vec2& size)
+    (const Vector2& size)
     {
         if (!mJson[Constants::PARTICLE_EMITTER_SIZE].is_object())
         {
             initSize();
         }
-        mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::X] = size.x ;
-        mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::Y] = size.y ;
+        mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::X] = size.x() ;
+        mJson[Constants::PARTICLE_EMITTER_SIZE][Constants::Y] = size.y() ;
     }
 
-    vec3
+    Vector3
     ParticleEmitterDefinition::getArea
     ()
     {
@@ -128,7 +128,7 @@ namespace Dream
             initArea();
         }
 
-        return vec3(
+        return Vector3(
             mJson[Constants::PARTICLE_EMITTER_AREA][Constants::X],
             mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Y],
             mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Z]
@@ -137,15 +137,15 @@ namespace Dream
 
     void
     ParticleEmitterDefinition::setArea
-    (const vec3& area)
+    (const Vector3& area)
     {
         if (!mJson[Constants::PARTICLE_EMITTER_AREA].is_object())
         {
             initArea();
         }
-        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::X] = area.x;
-        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Y] = area.y;
-        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Z] = area.z;
+        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::X] = area.x();
+        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Y] = area.y();
+        mJson[Constants::PARTICLE_EMITTER_AREA][Constants::Z] = area.z();
     }
 
     uint32_t

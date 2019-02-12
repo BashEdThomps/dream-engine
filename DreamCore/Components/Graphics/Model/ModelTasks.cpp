@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ModelTasks.h"
 #include "ModelMesh.h"
 

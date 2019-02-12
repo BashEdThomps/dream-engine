@@ -62,7 +62,7 @@ namespace Dream
     ()
     {
         auto transform = stepPath();
-        mSceneObjectRuntime->getTransform()->setMatrix(transform);
+        mSceneObjectRuntime->getTransform().setMatrix(transform);
     }
 
     bool
@@ -135,9 +135,9 @@ namespace Dream
 
         for (auto cp : animDef->getControlPoints())
         {
-            double x = cp.position.x;
-            double y = cp.position.y;
-            double z = cp.position.z;
+            auto x = cp.position.x();
+            auto y = cp.position.y();
+            auto z = cp.position.z();
             // Setup control points.
             ctrlp[i++] = x;
             ctrlp[i++] = y;

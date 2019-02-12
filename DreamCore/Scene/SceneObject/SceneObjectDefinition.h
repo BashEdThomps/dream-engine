@@ -49,7 +49,7 @@ namespace Dream
         bool getHasCameraFocus();
 
         Transform getTransform();
-        void setTransform(const Transform* tform);
+        void setTransform(const Transform& tform);
 
         vector<SceneObjectDefinition*>& getChildDefinitionsList();
         void adoptChildDefinition(SceneObjectDefinition* child);

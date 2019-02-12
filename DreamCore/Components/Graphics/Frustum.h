@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../Common/DreamObject.h"
 #include <glm/matrix.hpp>
+#include "../../Common/DreamObject.h"
+#include "../../Common/Math.h"
 #include "../../Scene/SceneObject/BoundingBox.h"
 
 using namespace glm;
@@ -33,10 +34,10 @@ namespace Dream
         ~Frustum();
         void updatePlanes();
         Frustum::TestResult testIntersection(const mat4& modelMatrix, const BoundingBox& box) const;
-        Frustum::TestResult testIntersectionWithPlane(Plane plane, const vec3& modelMatrix, const BoundingBox& box) const;
+        Frustum::TestResult testIntersectionWithPlane(Plane plane, const Vector3& modelPos, const BoundingBox& box) const;
 
     protected:
-        vec4 mPlanes[6];
+        Vector4 mPlanes[6];
         Camera* mCamera;
     };
 }

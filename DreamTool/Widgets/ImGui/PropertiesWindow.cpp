@@ -193,10 +193,10 @@ namespace DreamTool
         }
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->error("Pushed target {}",mHistory.size());
-#endif
+        #endif
         setPropertyType(type);
         setDefinition(def);
         setRuntime(runt);
@@ -230,10 +230,10 @@ namespace DreamTool
         setPropertyType(last.type);
         setDefinition(last.definition);
         setRuntime(last.runtime);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->error("Popped target {}",mHistory.size());
-#endif
+        #endif
         mHistory.pop_back();
     }
 
@@ -395,9 +395,9 @@ namespace DreamTool
     PropertiesWindow::drawSceneProperties
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
 
@@ -423,9 +423,9 @@ namespace DreamTool
         {
             auto cam = sceneRuntime->getCamera();
             auto tx = cam->getTranslation();
-            cameraTranslation[0] = tx.x;
-            cameraTranslation[1] = tx.y;
-            cameraTranslation[2] = tx.z;
+            cameraTranslation[0] = tx.x();
+            cameraTranslation[1] = tx.y();
+            cameraTranslation[2] = tx.z();
         }
         else
         {
@@ -448,7 +448,7 @@ namespace DreamTool
                 if (sceneRuntime != nullptr)
                 {
                     auto cam = sceneRuntime->getCamera();
-                    cam->setTranslation(vec3(
+                    cam->setTranslation(Vector3(
                          cameraTranslation[0],
                          cameraTranslation[1],
                          cameraTranslation[2]
@@ -612,21 +612,19 @@ namespace DreamTool
             }
 
             auto clearVec = sceneDef->getClearColour();
-            if(ImGui::ColorEdit3("Clear Color",&clearVec[0]))
+            float clear[3] = {clearVec.x(), clearVec.y(), clearVec.z()};
+            if(ImGui::ColorEdit3("Clear Color",&clear[0]))
             {
                 if (sceneDef != nullptr)
                 {
-                    sceneDef->setClearColourR(clearVec[0]);
-                    sceneDef->setClearColourG(clearVec[1]);
-                    sceneDef->setClearColourB(clearVec[2]);
+                    sceneDef->setClearColourR(clear[0]);
+                    sceneDef->setClearColourG(clear[1]);
+                    sceneDef->setClearColourB(clear[2]);
                 }
                 if (sceneRuntime)
                 {
-                    sceneRuntime->setClearColour({
-                                                     clearVec[0],
-                                                     clearVec[1],
-                                                     clearVec[2]
-                                                 });
+                    sceneRuntime->setClearColour(
+                        Vector3(clear[0],clear[1],clear[2]));
                 }
             }
 
@@ -648,9 +646,9 @@ namespace DreamTool
                 auto name = selectedShader->getName();
                 sceneDef->setLightingPassShader(uuid);
 
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Switched lighting pass shader to {} {}", name, uuid);
-#endif
+                #endif
             }
 
 
@@ -660,9 +658,9 @@ namespace DreamTool
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Switched shadow pass shader to {} {}", name, uuid);
-#endif
+                #endif
             }
         }
 
@@ -704,16 +702,21 @@ namespace DreamTool
                 }
             }
 
-            auto gravityVec = sceneDef->getGravity();
+            float gravityVec[3] ={
+                sceneDef->getGravity().x(),
+                sceneDef->getGravity().y(),
+                sceneDef->getGravity().z()
+            };
             if (ImGui::DragFloat3("Gravity", &gravityVec[0],0.1f))
             {
+                Vector3 grav(gravityVec[0],gravityVec[1],gravityVec[2]);
                 if (sceneDef)
                 {
-                    sceneDef->setGravity(gravityVec);
+                    sceneDef->setGravity(grav);
                 }
                 if (sceneRuntime)
                 {
-                    sceneRuntime->setGravity(gravityVec);
+                    sceneRuntime->setGravity(grav);
                 }
             }
         }
@@ -726,9 +729,9 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
 
         if (soDef == nullptr)
         {
@@ -754,7 +757,7 @@ namespace DreamTool
             if (soRuntime)
             {
                 newRt = soRuntime->createAndAddChildRuntime(newChildDef);
-                newRt->getTransform()->setMatrix(cursorTx);
+                newRt->getTransform().setMatrix(cursorTx);
             }
             pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
         }
@@ -1248,16 +1251,16 @@ namespace DreamTool
     ()
     {
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         float *matrix = nullptr;
         auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
 
         if (soRunt)
         {
-            matrix = soRunt->getTransform()->getMatrixFloatPointer();
+            matrix = soRunt->getTransform().getMatrixFloatPointer();
         }
         else
         {
@@ -1423,7 +1426,7 @@ namespace DreamTool
 
                     if (soRunt && withChildren)
                     {
-                        vec3 tx = vec3(delta[3]);
+                        Vector3 tx(delta[3][0],delta[3][1],delta[3][2]);
                         soRunt->applyToAll
                                 (
                                     function<SceneObjectRuntime*(SceneObjectRuntime*)>(
@@ -1431,7 +1434,7 @@ namespace DreamTool
                         {
                                         if (rt != soRunt)
                                         {
-                                            rt->getTransform()->preTranslate(tx);
+                                            rt->getTransform().preTranslate(tx);
                                         }
                                         return static_cast<SceneObjectRuntime*>(nullptr);
                                     }
@@ -2766,13 +2769,13 @@ namespace DreamTool
                 selected = cp.id;
             }
             ImGui::SameLine();
-            vec3 vTx = cp.position;
-            float tx[3] = {vTx.x, vTx.y, vTx.z};
+            Vector3 vTx = cp.position;
+            float tx[3] = {vTx.x(), vTx.y(), vTx.z()};
             if (ImGui::InputFloat3("##position",&tx[0]))
             {
-                vTx.x = tx[0];
-                vTx.y = tx[1];
-                vTx.z = tx[2];
+                vTx.setX(tx[0]);
+                vTx.setY(tx[1]);
+                vTx.setZ(tx[2]);
                 cp.position = vTx;
                 modified = true;
             }
@@ -2807,7 +2810,7 @@ namespace DreamTool
    (PathDefinition* pDef, PathControlPoint cp)
    {
         mat4 mtx(1.0f);
-        mtx = glm::translate(mtx, cp.position);
+        mtx = glm::translate(mtx, cp.position.toGLM());
         float* matrix = glm::value_ptr(mtx);
 
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -2836,7 +2839,7 @@ namespace DreamTool
                         nullptr,
                         nullptr
                     );
-                    cp.position = vec3(mtx[3]);
+                    cp.position = Vector3(mtx[3][0],mtx[3][1],mtx[3][2]);
                     pDef->updateControlPoint(cp);
                 }
             }
@@ -2893,17 +2896,35 @@ namespace DreamTool
         ImGui::Separator();
 
         // Area
-        vec3 area = peDef->getArea();
-        if (ImGui::DragFloat3("Spawn Area",glm::value_ptr(area)))
+        float area[3] = {
+            peDef->getArea().x(),
+            peDef->getArea().y(),
+            peDef->getArea().z()
+        };
+        if (ImGui::DragFloat3("Spawn Area",&area[0]))
         {
-            peDef->setArea(area);
+            peDef->setArea(
+                Vector3(
+                    area[0],
+                    area[1],
+                    area[2]
+                )
+            );
         }
 
         // Particle Size
-        vec2 size = peDef->getParticleSize();
-        if (ImGui::DragFloat2("Particle Size", glm::value_ptr(size)))
+        float size[3] = {
+                peDef->getParticleSize().x(),
+                peDef->getParticleSize().y()
+        };
+        if (ImGui::DragFloat2("Particle Size", &size[0]))
         {
-            peDef->setParticleSize(size);
+            peDef->setParticleSize(
+                Vector2(
+                    size[0],
+                    size[1]
+                )
+            );
         }
 
         // Velocity
@@ -2953,18 +2974,18 @@ namespace DreamTool
             }
         }
 
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
-#endif
+        #endif
         bool selectFile = ImGui::Button("Texture File...");
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".png","Select Texture File");
         if (strlen(chosenPath) > 0)
         {
             auto filePath = openDlg.getChosenPath();
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             log->error("Opening Texture File {}",filePath);
-#endif
+            #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
             auto data = file.readBinary();
@@ -2991,25 +3012,55 @@ namespace DreamTool
         ScrollerDefinition* scrDef = static_cast<ScrollerDefinition*>(mDefinition);
         auto projDef = mState->project->getDefinition();
 
-        vec3 velocity = scrDef->getVelocity();
-        if (ImGui::DragFloat3("Velocity (units/s)",glm::value_ptr(velocity)))
+        float velocity[3] = {
+            scrDef->getVelocity().x(),
+            scrDef->getVelocity().y(),
+            scrDef->getVelocity().z()
+        };
+        if (ImGui::DragFloat3("Velocity (units/s)",&velocity[0]))
         {
-            scrDef->setVelocity(velocity);
+            scrDef->setVelocity(
+                Vector3(
+                    velocity[0],
+                    velocity[1],
+                    velocity[2]
+                )
+            );
         }
 
         ImGui::Separator();
         ImGui::Text("Range");
 
-        vec3 rangeBegin = scrDef->getRangeBegin();
-        if (ImGui::DragFloat3("Begin",glm::value_ptr(rangeBegin)))
+        float rangeBegin[3] = {
+            scrDef->getRangeBegin().x(),
+            scrDef->getRangeBegin().y(),
+            scrDef->getRangeBegin().z()
+        };
+        if (ImGui::DragFloat3("Begin",&rangeBegin[0]))
         {
-            scrDef->setRangeBegin(rangeBegin);
+            scrDef->setRangeBegin(
+                Vector3(
+                    rangeBegin[0],
+                    rangeBegin[1],
+                    rangeBegin[2]
+                )
+            );
         }
 
-        vec3 rangeEnd = scrDef->getRangeEnd();
-        if (ImGui::DragFloat3("End",glm::value_ptr(rangeEnd)))
+        float rangeEnd[3] = {
+            scrDef->getRangeEnd().x(),
+            scrDef->getRangeEnd().y(),
+            scrDef->getRangeEnd().z()
+        };
+        if (ImGui::DragFloat3("End",&rangeEnd[0]))
         {
-            scrDef->setRangeEnd(rangeEnd);
+            scrDef->setRangeEnd(
+                Vector3(
+                    rangeEnd[0],
+                    rangeEnd[1],
+                    rangeEnd[2]
+                )
+            );
         }
 
         ImGui::Separator();
@@ -3096,9 +3147,10 @@ namespace DreamTool
 
             ImGui::NextColumn();
 
-            vec3 origin = item.origin;
+            Vector3 origin = item.origin;
             ImGui::PushItemWidth(-1);
-            if (ImGui::DragFloat3("##Origin",glm::value_ptr(origin)))
+            float originF[3] = {origin.x(),origin.y(),origin.z()};
+            if (ImGui::DragFloat3("##Origin",&originF[0]))
             {
                 item.origin = origin;
                 updated = true;

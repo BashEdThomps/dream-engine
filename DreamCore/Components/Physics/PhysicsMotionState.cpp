@@ -45,24 +45,11 @@ namespace Dream
     }
 
     void
-    PhysicsMotionState::setTransform
-    (Transform* transform)
-    {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "setTransform called" );
-        #endif
-        mDreamTransform->setMatrix(transform->getMatrix());
-    }
-
-    void
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        auto mtx = mDreamTransform->getMatrix();
-        float mtxPtr[16];
-        memcpy(&mtxPtr[0],glm::value_ptr(mtx),sizeof(float)*16);
-        worldTrans.setFromOpenGLMatrix(mtxPtr);
+        float* mtx = mDreamTransform->getMatrixFloatPointer();
+        worldTrans.setFromOpenGLMatrix(mtx);
     }
 
     void
@@ -83,11 +70,10 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-
         #ifdef DREAM_LOG
         auto log = getLog();
         log->debug( "setKinematicPos called" );
         #endif
         setWorldTransform(trans);
     }
-} // End of Dream
+}

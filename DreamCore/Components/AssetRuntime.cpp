@@ -16,7 +16,7 @@
 #include "AssetRuntime.h"
 
 #include "AssetDefinition.h"
-#include "../Utilities/Uuid.h"
+#include "../Common/Uuid.h"
 
 namespace Dream
 {

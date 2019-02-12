@@ -116,7 +116,7 @@ namespace Dream
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(mSceneObjectRuntime->getTransform());
+        mMotionState = new PhysicsMotionState(&mSceneObjectRuntime->getTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
@@ -355,38 +355,37 @@ namespace Dream
         return mRigidBody;
     }
 
-    vec3
+    Vector3
     PhysicsObjectRuntime::getCenterOfMassPosition
     ()
     {
-       auto tx = mRigidBody->getCenterOfMassPosition();
-       return vec3(tx.x(),tx.y(),tx.z());
+       return Vector3(mRigidBody->getCenterOfMassPosition());
     }
 
     void
-    PhysicsObjectRuntime::applyCentralImpulse(vec3 force)
+    PhysicsObjectRuntime::applyCentralImpulse(const Vector3& force)
     {
-        mRigidBody->applyCentralImpulse(btVector3(force.x,force.y,force.z));
+        mRigidBody->applyCentralImpulse(force.toBullet());
     }
 
     void
-    PhysicsObjectRuntime::applyTorqueImpulse(vec3 torque)
+    PhysicsObjectRuntime::applyTorqueImpulse(const Vector3& torque)
     {
-        mRigidBody->applyTorqueImpulse(btVector3(torque.x,torque.y,torque.z));
+        mRigidBody->applyTorqueImpulse(torque.toBullet());
     }
 
     void
     PhysicsObjectRuntime::applyForce
-    (vec3 force)
+    (const Vector3& force)
     {
-       mRigidBody->applyForce(btVector3(force.x,force.y,force.z),btVector3(0.0f,0.0f,0.0f));
+       mRigidBody->applyForce(force.toBullet(),btVector3(0.0f,0.0f,0.0f));
     }
 
     void
     PhysicsObjectRuntime::applyTorque
-    (vec3 torque)
+    (const Vector3& torque)
     {
-        mRigidBody->applyTorque(btVector3(torque.x,torque.y,torque.z));
+        mRigidBody->applyTorque(torque.toBullet());
     }
 
     void
@@ -414,10 +413,11 @@ namespace Dream
 
     void
     PhysicsObjectRuntime::setCenterOfMassTransform
-    (vec3 tx)
+    (const Vector3& tx)
     {
+        cout << "POR: Setting COM " << tx.x() << "," << tx.y() << "," << tx.z() << endl;
         auto mtx = mRigidBody->getCenterOfMassTransform();
-        mtx.setOrigin(btVector3(tx.x,tx.y,tx.z));
+        mtx.setOrigin(tx.toBullet());
         mRigidBody->setCenterOfMassTransform(mtx);
     }
 
@@ -435,12 +435,11 @@ namespace Dream
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
-    vec3
+    Vector3
     PhysicsObjectRuntime::getLinearVelocity
     ()
     {
-        auto lv = mRigidBody->getLinearVelocity();
-        return vec3(lv.x(), lv.y(), lv.z());
+        return Vector3(mRigidBody->getLinearVelocity());
     }
 
     PhysicsObjectDefinition*

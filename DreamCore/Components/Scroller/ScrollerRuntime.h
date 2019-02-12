@@ -50,9 +50,9 @@ namespace Dream
         void addAssets(SceneObjectRuntime* runt);
         Range checkRange(SceneObjectRuntime* runt) const;
 
-        vec3 mVelocity;
-        vec3 mRangeBegin;
-        vec3 mRangeEnd;
+        Vector3 mVelocity;
+        Vector3 mRangeBegin;
+        Vector3 mRangeEnd;
         vector<SceneObjectRuntime*> mPreRange;
         vector<SceneObjectRuntime*> mInRange;
         vector<SceneObjectRuntime*> mPostRange;

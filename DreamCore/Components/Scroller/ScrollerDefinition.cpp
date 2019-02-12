@@ -20,22 +20,22 @@ namespace Dream
 
     }
 
-    vec3
+    Vector3
     ScrollerDefinition::getVelocity
     ()
     {
        if (!mJson[Constants::SCROLLER_VELOCITY].is_object())
        {
-           setVelocity(vec3(0.0f));
+           setVelocity(Vector3(0.0f));
        }
-       return unwrapVec3(mJson[Constants::SCROLLER_VELOCITY]);
+       return unwrapVector3(mJson[Constants::SCROLLER_VELOCITY]);
     }
 
     void
     ScrollerDefinition::setVelocity
-    (vec3 vel)
+    (const Vector3& vel)
     {
-        mJson[Constants::SCROLLER_VELOCITY] = wrapVec3(vel);
+        mJson[Constants::SCROLLER_VELOCITY] = wrapVector3(vel);
     }
 
     bool
@@ -56,34 +56,34 @@ namespace Dream
         mJson[Constants::SCROLLER_LOOP] = loop;
     }
 
-    vec3 ScrollerDefinition::getRangeBegin()
+    Vector3 ScrollerDefinition::getRangeBegin()
     {
        if (!mJson[Constants::SCROLLER_RANGE_BEGIN].is_object())
        {
-           setRangeBegin(vec3(0.0f));
+           setRangeBegin(Vector3(0.0f));
        }
-       return unwrapVec3(mJson[Constants::SCROLLER_RANGE_BEGIN]);
+       return unwrapVector3(mJson[Constants::SCROLLER_RANGE_BEGIN]);
 
     }
 
-    void ScrollerDefinition::setRangeBegin(vec3 range)
+    void ScrollerDefinition::setRangeBegin(const Vector3& range)
     {
-       mJson[Constants::SCROLLER_RANGE_BEGIN] = wrapVec3(range);
+       mJson[Constants::SCROLLER_RANGE_BEGIN] = wrapVector3(range);
     }
 
-    vec3 ScrollerDefinition::getRangeEnd()
+    Vector3 ScrollerDefinition::getRangeEnd()
     {
         if (!mJson[Constants::SCROLLER_RANGE_END].is_object())
        {
-           setRangeEnd(vec3(0.0f));
+           setRangeEnd(Vector3(0.0f));
        }
-       return unwrapVec3(mJson[Constants::SCROLLER_RANGE_END]);
+       return unwrapVector3(mJson[Constants::SCROLLER_RANGE_END]);
 
     }
 
-    void ScrollerDefinition::setRangeEnd(vec3 range)
+    void ScrollerDefinition::setRangeEnd(const Vector3& range)
     {
-       mJson[Constants::SCROLLER_RANGE_END] = wrapVec3(range);
+       mJson[Constants::SCROLLER_RANGE_END] = wrapVector3(range);
     }
 
     void
@@ -97,7 +97,7 @@ namespace Dream
         {
             if ((*iter)[Constants::SCROLLER_ITEM_INDEX] == item.index)
             {
-                (*iter)[Constants::SCROLLER_ITEM_ORIGIN] = wrapVec3(item.origin);
+                (*iter)[Constants::SCROLLER_ITEM_ORIGIN] = wrapVector3(item.origin);
                 (*iter)[Constants::UUID] = item.uuid;
                 return;
             }
@@ -133,7 +133,7 @@ namespace Dream
     {
        json j;
        j[Constants::SCROLLER_ITEM_INDEX] = item.index;
-       j[Constants::SCROLLER_ITEM_ORIGIN] = wrapVec3(item.origin);
+       j[Constants::SCROLLER_ITEM_ORIGIN] = wrapVector3(item.origin);
        j[Constants::UUID] = item.uuid;
        return j;
     }
@@ -145,7 +145,7 @@ namespace Dream
         ScrollerItem i;
         i.index = j[Constants::SCROLLER_ITEM_INDEX];
         i.uuid = j[Constants::UUID];
-        i.origin = unwrapVec3(j[Constants::SCROLLER_ITEM_ORIGIN]);
+        i.origin = unwrapVector3(j[Constants::SCROLLER_ITEM_ORIGIN]);
         return i;
     }
 
@@ -242,7 +242,7 @@ namespace Dream
             if (target != mJson[Constants::SCROLLER_ITEMS_ARRAY].begin())
             {
                 auto prev = (target-1);
-                vec3 delta = newItem.origin-unwrapScrollerItem(*prev).origin;
+                Vector3 delta = newItem.origin-unwrapScrollerItem(*prev).origin;
                 newItem.origin += delta;
             }
             mJson[Constants::SCROLLER_ITEMS_ARRAY].insert(target+1,wrapScrollerItem(newItem));

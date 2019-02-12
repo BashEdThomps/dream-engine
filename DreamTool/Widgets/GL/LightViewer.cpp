@@ -137,53 +137,53 @@ namespace DreamTool
             for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getSceneObjectRuntime()->getTransform()->getMatrix();
-                vec3 lightColorVec = light->getDiffuse();
+                mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();
+                Vector3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)
                 {
-#ifdef DREAM_LOG
+                    #ifdef DREAM_LOG
                     log->error("Unable to find Uniform Location for model");
-#endif
+                    #endif
                     break;
                 }
                 else
                 {
                     glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-#ifdef DREAM_LOG
+                    #ifdef DREAM_LOG
                     checkGLError();
-#endif
+                    #endif
                 }
 
                 if (mLightColorUniform == -1)
                 {
-#ifdef DREAM_LOG
+                    #ifdef DREAM_LOG
                    log->error("Unable to find uniform location for lightColor");
-#endif
+                    #endif
                    break;
                 }
                 else
                 {
-                    glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec));
-#ifdef DREAM_LOG
+                    glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec.toGLM()));
+                    #ifdef DREAM_LOG
                     checkGLError();
-#endif
+                    #endif
                 }
                 // Draw
                 glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 checkGLError();
-#endif
+                #endif
             }
 
             // Revert State
-#ifndef __APPLE__
+            #ifndef __APPLE__
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
             #ifdef DREAM_LOG
             checkGLError();
             #endif
-#endif
+            #endif
         }
     }
 
@@ -195,35 +195,35 @@ namespace DreamTool
        ShaderRuntime::CurrentVAO = mVao;
       #ifdef DREAM_LOG
        checkGLError();
-#endif
+        #endif
 
        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
        ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
        checkGLError();
-#endif
+        #endif
 
        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
        checkGLError();
-#endif
+        #endif
 
        glBindVertexArray(0);
 
         mLightColorUniform = glGetUniformLocation(mShaderProgram, "lightColor");
        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
     }
 
     void
     LightViewer::setShader
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->error("Compiling LightViewer Shaders");
-#endif
+        #endif
         mVertexShaderSource =
             "#version 330 core\n"
             "\n"

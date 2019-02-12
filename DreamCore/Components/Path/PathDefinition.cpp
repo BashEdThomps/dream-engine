@@ -1,10 +1,4 @@
 /*
- * PathDefinition.cpp
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
@@ -144,7 +138,7 @@ namespace Dream
         PathControlPoint cp;
         cp.id = js[Constants::ASSET_ATTR_ID];
         cp.index = js[Constants::ASSET_ATTR_INDEX];
-        cp.position = unwrapVec3(js[Constants::ASSET_ATTR_POSITION]);
+        cp.position = unwrapVector3(js[Constants::ASSET_ATTR_POSITION]);
         return cp;
     }
 
@@ -153,7 +147,7 @@ namespace Dream
     (const PathControlPoint& cp)
     {
         json js;
-        js[Constants::ASSET_ATTR_POSITION] = wrapVec3(cp.position);
+        js[Constants::ASSET_ATTR_POSITION] = wrapVector3(cp.position);
         js[Constants::ASSET_ATTR_ID] = cp.id;
         js[Constants::ASSET_ATTR_INDEX] = cp.index;
         return js;

@@ -255,7 +255,7 @@ namespace DreamTool
     PathViewer::generateNode
     (const PathControlPoint& cp)
     {
-        vec3 pos = cp.position;
+        vec3 pos = cp.position.toGLM();
         int index = cp.index;
 
         #ifdef DREAM_LOG

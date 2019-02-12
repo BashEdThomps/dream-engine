@@ -26,30 +26,30 @@ namespace Dream
 {
     struct DirLight
     {
-        vec3 direction;
-        vec3 ambient;
-        vec3 diffuse;
-        vec3 specular;
+        Vector3 direction;
+        Vector3 ambient;
+        Vector3 diffuse;
+        Vector3 specular;
     };
 
     struct PointLight
     {
-        vec3 position;
+        Vector3 position;
         float constant;
         float linear;
         float quadratic;
-        vec3 ambient;
-        vec3 diffuse;
-        vec3 specular;
+        Vector3 ambient;
+        Vector3 diffuse;
+        Vector3 specular;
     };
 
     struct SpotLight
     {
-        vec3 position;
-        vec3 direction;
-        vec3 ambient;
-        vec3 diffuse;
-        vec3 specular;
+        Vector3 position;
+        Vector3 direction;
+        Vector3 ambient;
+        Vector3 diffuse;
+        Vector3 specular;
         float cutOff;
         float outerCutOff;
         float constant;
@@ -62,9 +62,9 @@ namespace Dream
     class LightRuntime
         : public DiscreteAssetRuntime
     {
-        vec3 mAmbient;
-        vec3 mDiffuse;
-        vec3 mSpecular;
+        Vector3 mAmbient;
+        Vector3 mDiffuse;
+        Vector3 mSpecular;
         float mConstant;
         float mLinear;
         float mQuadratic;
@@ -78,14 +78,14 @@ namespace Dream
 
         bool useDefinition() override;
 
-        vec3 getAmbient() const;
-        void setAmbient(const vec3& ambient);
+        Vector3 getAmbient() const;
+        void setAmbient(const Vector3& ambient);
 
-        vec3 getDiffuse() const;
-        void setDiffuse(const vec3& diffuse);
+        Vector3 getDiffuse() const;
+        void setDiffuse(const Vector3& diffuse);
 
-        vec3 getSpecular() const;
-        void setSpecular(const vec3& specular);
+        Vector3 getSpecular() const;
+        void setSpecular(const Vector3& specular);
 
         float getConstant() const;
         void setConstant(float constant);

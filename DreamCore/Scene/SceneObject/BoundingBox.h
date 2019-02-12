@@ -16,10 +16,8 @@
 
 #pragma once
 #define GLM_FORCE_RADIANS
-#include <glm/vec3.hpp>
 #include "../../Common/DreamObject.h"
-
-using namespace glm;
+#include "../../Common/Math.h"
 
 namespace Dream
 {
@@ -27,8 +25,8 @@ namespace Dream
     {
     public:
         BoundingBox(
-            vec3 minimum = vec3(-0.5f,-0.5f,-0.5f),
-            vec3 maximum = vec3(0.5f,0.5f,0.5f)
+            const Vector3& minimum = Vector3(-0.5f,-0.5f,-0.5f),
+            const Vector3& maximum = Vector3(0.5f,0.5f,0.5f)
         );
 
         ~BoundingBox() override;
@@ -37,11 +35,11 @@ namespace Dream
 
         float maxDimension;
         void setToLimits();
-        vec3 minimum;
-        vec3 maximum;
-        vec3 getCenter() const;
-        vec3 getNegativeVertex(const vec3& position, const vec3& normal) const;
-        vec3 getPositiveVertex(const vec3& position, const vec3& normal) const;
+        Vector3 minimum;
+        Vector3 maximum;
+        Vector3 getCenter() const;
+        Vector3 getNegativeVertex(const Vector3& position, const Vector3& normal) const;
+        Vector3 getPositiveVertex(const Vector3& position, const Vector3& normal) const;
     };
 }
 

@@ -19,9 +19,6 @@
 #pragma once
 
 #include "../../AssetDefinition.h"
-#include <glm/vec3.hpp>
-
-using namespace glm;
 
 namespace Dream
 {
@@ -39,14 +36,14 @@ namespace Dream
         LightDefinition(ProjectDefinition* pd, const json& js);
         ~LightDefinition() override;
 
-        void setDiffuse(vec3);
-        vec3 getDiffuse();
+        void setDiffuse(const Vector3&);
+        Vector3 getDiffuse();
 
-        void setAmbient(vec3);
-        vec3 getAmbient();
+        void setAmbient(const Vector3&);
+        Vector3 getAmbient();
 
-        void setSpecular(vec3);
-        vec3 getSpecular();
+        void setSpecular(const Vector3&);
+        Vector3 getSpecular();
 
         void setType(LightType);
         LightType getType();

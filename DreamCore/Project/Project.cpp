@@ -32,10 +32,10 @@
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
 
-#include "../Utilities/ArgumentParser.h"
-#include "../Utilities/File.h"
-#include "../Utilities/Uuid.h"
-#include "../Utilities/Directory.h"
+#include "../Common/ArgumentParser.h"
+#include "../Common/File.h"
+#include "../Common/Uuid.h"
+#include "../Common/Directory.h"
 
 namespace Dream
 {

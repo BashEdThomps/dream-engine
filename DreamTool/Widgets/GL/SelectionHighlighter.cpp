@@ -22,18 +22,18 @@ namespace DreamTool
           mZColour(vec3(0.0f, 0.0f, 1.0f)),
           mOutlineOnly(true)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("SelectionHighlighterWidget");
         getLog()->trace("Constructing");
-#endif
+        #endif
     }
 
     SelectionHighlighter::~SelectionHighlighter
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->trace("Destructing");
-#endif
+        #endif
     }
 
     void
@@ -41,9 +41,9 @@ namespace DreamTool
     (SceneObjectRuntime* selected)
     {
         mSelectedSceneObjectRuntime = selected;
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         getLog()->error("SelectedSceneObject changed to {}",mSelectedSceneObjectRuntime->getNameAndUuidString());
-#endif
+        #endif
         updateGeometry();
     }
 
@@ -56,20 +56,20 @@ namespace DreamTool
     SelectionHighlighter::updateGeometry
     ()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         log->error("Updating");
-#endif
+        #endif
         if (mSelectedSceneObjectRuntime == nullptr)
         {
             return;
         }
 
         BoundingBox bounds = mSelectedSceneObjectRuntime->getBoundingBox();
-#ifdef DREAM_LOG
-        log->error("Minimum Bounds {},{},{}",bounds.minimum.x ,bounds.minimum.y, bounds.minimum.z);
-        log->error("Maximum Bounds {},{},{}",bounds.maximum.x ,bounds.maximum.y, bounds.maximum.z);
-#endif
+        #ifdef DREAM_LOG
+        log->error("Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
+        log->error("Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
+        #endif
 
         mVertexBuffer.clear();
         // Top Quad
@@ -89,14 +89,14 @@ namespace DreamTool
         bottomBackL.Color  = mSelectionColour;
         bottomBackR.Color  = mSelectionColour;
 
-        topFrontL.Position    = vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-        topFrontR.Position    = vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.maximum.z+mOffset);
-        topBackL.Position     = vec3(bounds.minimum.x-mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-        topBackR.Position     = vec3(bounds.maximum.x+mOffset, bounds.maximum.y+mOffset, bounds.minimum.z-mOffset);
-        bottomFrontL.Position = vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-        bottomFrontR.Position = vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.maximum.z+mOffset);
-        bottomBackL.Position  = vec3(bounds.minimum.x-mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
-        bottomBackR.Position  = vec3(bounds.maximum.x+mOffset, bounds.minimum.y-mOffset, bounds.minimum.z-mOffset);
+        topFrontL.Position    = vec3(bounds.minimum.x()-mOffset, bounds.maximum.y()+mOffset, bounds.maximum.z()+mOffset);
+        topFrontR.Position    = vec3(bounds.maximum.x()+mOffset, bounds.maximum.y()+mOffset, bounds.maximum.z()+mOffset);
+        topBackL.Position     = vec3(bounds.minimum.x()-mOffset, bounds.maximum.y()+mOffset, bounds.minimum.z()-mOffset);
+        topBackR.Position     = vec3(bounds.maximum.x()+mOffset, bounds.maximum.y()+mOffset, bounds.minimum.z()-mOffset);
+        bottomFrontL.Position = vec3(bounds.minimum.x()-mOffset, bounds.minimum.y()-mOffset, bounds.maximum.z()+mOffset);
+        bottomFrontR.Position = vec3(bounds.maximum.x()+mOffset, bounds.minimum.y()-mOffset, bounds.maximum.z()+mOffset);
+        bottomBackL.Position  = vec3(bounds.minimum.x()-mOffset, bounds.minimum.y()-mOffset, bounds.minimum.z()-mOffset);
+        bottomBackR.Position  = vec3(bounds.maximum.x()+mOffset, bounds.minimum.y()-mOffset, bounds.minimum.z()-mOffset);
 
         if (mOutlineOnly)
         {
@@ -206,27 +206,28 @@ namespace DreamTool
          // Buffer Data
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
+
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         checkGLError();
-#endif
+        #endif
         glBindVertexArray(0);
     }
 
     void SelectionHighlighter::draw()
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         auto log = getLog();
         checkGLError();
-#endif
+        #endif
 
         if (!mSelectedSceneObjectRuntime)
         {
@@ -270,46 +271,46 @@ namespace DreamTool
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
             if (mProjectionUniform == -1)
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for projection");
-#endif
+                #endif
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 checkGLError();
-#endif
+                #endif
             }
 
             // Set the view matrix
-#ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             checkGLError();
-#endif
+            #endif
             if (mViewUniform == -1)
             {
-#ifdef DREAM_LOG
+                #ifdef DREAM_LOG
                 log->error("Unable to find Uniform Location for view");
-#endif
+                #endif
                 return;
             }
             else
@@ -320,7 +321,7 @@ namespace DreamTool
 #endif
             }
 
-            mModelMatrix = mSelectedSceneObjectRuntime->getTransform()->getMatrix();
+            mModelMatrix = mSelectedSceneObjectRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {

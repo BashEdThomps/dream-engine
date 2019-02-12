@@ -378,44 +378,41 @@ namespace Dream
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (bb.maximum.x < vertex.x)
+            if (bb.maximum.x() < vertex.x)
             {
-                bb.maximum.x = vertex.x;
+                bb.maximum.setX(vertex.x);
             }
 
-            if (bb.maximum.y < vertex.y)
+            if (bb.maximum.y() > vertex.y)
             {
-                bb.maximum.y = vertex.y;
+                bb.maximum.setY(vertex.y);
             }
 
-            if (bb.maximum.z < vertex.z)
+            if (bb.maximum.z() < vertex.z)
             {
-                bb.maximum.z = vertex.z;
+                bb.maximum.setZ(vertex.z);
             }
 
             // Maximum
-            if (bb.minimum.x > vertex.x)
+            if (bb.minimum.x() > vertex.x)
             {
-                bb.minimum.x = vertex.x;
+                bb.minimum.setX(vertex.x);
             }
 
-            if (bb.minimum.y > vertex.y)
+            if (bb.minimum.y() > vertex.y)
             {
-                bb.minimum.y = vertex.y;
+                bb.minimum.setY(vertex.y);
             }
 
-            if (bb.minimum.z > vertex.z)
+            if (bb.minimum.z() > vertex.z)
             {
-                bb.minimum.z = vertex.z;
+                bb.minimum.setZ(vertex.z);
             }
         }
 
         float maxBound;
-        maxBound = (bb.maximum.x > bb.maximum.y ?
-            bb.maximum.x : bb.maximum.y);
-        maxBound = (maxBound > bb.maximum.z ?
-            maxBound : bb.maximum.z);
-
+        maxBound = (bb.maximum.x() > bb.maximum.y() ? bb.maximum.x() : bb.maximum.y());
+        maxBound = (maxBound > bb.maximum.z() ? maxBound : bb.maximum.z());
         bb.maxDimension = maxBound;
         return bb;
     }

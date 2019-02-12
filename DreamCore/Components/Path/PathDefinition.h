@@ -28,7 +28,7 @@ namespace Dream
     {
        int id = 0;
        int index = 0;
-       vec3 position = vec3(0.0f);
+       Vector3 position = Vector3(0.0f);
     };
 
     class PathDefinition : public AssetDefinition

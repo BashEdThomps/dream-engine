@@ -5,8 +5,8 @@
 #include "../../DreamCore/Project/ProjectDefinition.h"
 #include "../../DreamCore/Project/ProjectDirectory.h"
 #include "../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
-#include "../../DreamCore/Utilities/File.h"
-#include "../../DreamCore/Utilities/Directory.h"
+#include "../../DreamCore/Common/File.h"
+#include "../../DreamCore/Common/Directory.h"
 
 using namespace std;
 using namespace Dream;

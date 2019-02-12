@@ -40,7 +40,7 @@ namespace Dream
     {
     private:
         SceneState mState;
-        vec3 mClearColour;
+        Vector3 mClearColour;
         ProjectRuntime* mProjectRuntime;
         vector<SceneObjectRuntime*> mSceneObjectRuntimeCleanUpQueue;
         SceneObjectRuntime* mRootSceneObjectRuntime;
@@ -63,11 +63,11 @@ namespace Dream
         SceneState getState() const;
         void setState(SceneState state);
 
-        vec3 getGravity() const;
-        void setGravity(const vec3& gravity);
+        Vector3 getGravity() const;
+        void setGravity(const Vector3& gravity);
 
-        vec3 getClearColour() const;
-        void setClearColour(const vec3& clearColour);
+        Vector3 getClearColour() const;
+        void setClearColour(const Vector3& clearColour);
 
         vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue() const;
         void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);

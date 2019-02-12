@@ -36,7 +36,7 @@ namespace Dream
         mCurrentTime(0),
         mDuration(1),
         mRelative(false),
-        mOriginalTransform(runtime->getTransform()->getMatrix()),
+        mOriginalTransform(runtime->getTransform().getMatrix()),
         mUpdateTask(this)
     {
         #ifdef DREAM_LOG
@@ -231,7 +231,7 @@ namespace Dream
         }
         matrix = matrix*mat4_cast(quat(newRx));
         matrix = glm::scale(matrix,newSx);
-        mSceneObjectRuntime->getTransform()->setMatrix(matrix);
+        mSceneObjectRuntime->getTransform().setMatrix(matrix);
     }
 
     long

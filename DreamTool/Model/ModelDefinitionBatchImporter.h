@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../DreamCore/Common/DreamObject.h"
-#include "../../DreamCore/Utilities/Directory.h"
+#include "../../DreamCore/Common/Directory.h"
 
 namespace Dream
 {

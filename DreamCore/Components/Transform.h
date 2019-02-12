@@ -12,9 +12,9 @@
 
 #pragma once
 
+#include "../Common/Math.h"
 #include "../deps/json/json.hpp"
 #include <string>
-#include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
@@ -90,7 +90,7 @@ namespace Dream
         /**
          * @brief Get the matrix as a glm matrix object.
          */
-        mat4 getMatrix();
+        mat4 getMatrix() const;
 
         /**
          * @brief Set the internal matrix object from a glm matrix.
@@ -121,7 +121,7 @@ namespace Dream
          * @brief Translate the underlying matrix by the given amount.
          * @param translation Amount to translate the matrix by.
          */
-        void translate(const vec3& translation);
+        void translate(const Vector3& translation);
         void translate3f(float x, float y, float z);
 
         /**
@@ -129,10 +129,9 @@ namespace Dream
          * matrix.
          * @param translation Amount to translate the matrix by.
          */
-        void preTranslate(const vec3& translation);
+        void preTranslate(const Vector3& translation);
 
-        vec3 getTranslation() const;
-
+        Vector3 getTranslation();
 
         /**
          * @brief Get the JSON serialised representation of this object's

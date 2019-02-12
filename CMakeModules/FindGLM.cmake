@@ -11,30 +11,31 @@
 #
 
 if (WIN32)
-	# Find include files
-	find_path(
-		GLM_INCLUDE_DIR
-		NAMES glm/glm.hpp
-		PATHS
-		$ENV{PROGRAMFILES}/include
-		${GLM_ROOT_DIR}/include
-		DOC "The directory where glm/glm.hpp resides")
+    # Find include files
+    find_path(
+        GLM_INCLUDE_DIR
+        NAMES glm/glm.hpp
+        PATHS
+        $ENV{PROGRAMFILES}/include
+        ${GLM_ROOT_DIR}/include
+        DOC "The directory where glm/glm.hpp resides")
 else()
-	# Find include files
-	find_path(
-		GLM_INCLUDE_DIR
-		NAMES glm/glm.hpp
-		PATHS
-		/usr/include
-		/usr/local/include
-		/sw/include
-		/opt/local/include
-		${GLM_ROOT_DIR}/include
-		DOC "The directory where glm/glm.hpp resides")
+    # Find include files
+    find_path(
+        GLM_INCLUDE_DIR
+        NAMES glm/glm.hpp
+        PATHS
+        /usr/include
+        /usr/local/include
+        /sw/include
+        /opt/local/include
+        ${GLM_ROOT_DIR}/include
+        DOC "The directory where glm/glm.hpp resides")
 endif()
 
 set(GLM_FOUND "NO")
 
 if(GLM_INCLUDE_DIR)
   set(GLM_FOUND "YES")
+  message("Found GLM at ${GLM_INCLUDE_DIR}")
 endif()

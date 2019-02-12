@@ -20,7 +20,7 @@ namespace Dream
     {
        unsigned int index = 0;
        uint32_t uuid = 0;
-       vec3 origin = vec3(0.0f);
+       Vector3 origin = Vector3(0.0f);
     };
 
     class ScrollerDefinition : public AssetDefinition
@@ -29,17 +29,17 @@ namespace Dream
         ScrollerDefinition(ProjectDefinition*, const json&);
         ~ScrollerDefinition() override;
 
-        vec3 getVelocity();
-        void setVelocity(vec3);
+        Vector3 getVelocity();
+        void setVelocity(const Vector3&);
 
         bool getLoop();
         void setLoop(bool loop);
 
-        vec3 getRangeBegin();
-        void setRangeBegin(vec3);
+        Vector3 getRangeBegin();
+        void setRangeBegin(const Vector3&);
 
-        vec3 getRangeEnd();
-        void setRangeEnd(vec3);
+        Vector3 getRangeEnd();
+        void setRangeEnd(const Vector3&);
 
         void updateScrollerItem(const ScrollerItem& item);
         void removeScrollerItem(const ScrollerItem& item);
@@ -49,7 +49,6 @@ namespace Dream
 
         void moveScrollerItem(const ScrollerItem& item, bool forward);
         void copyScrollerItem(const ScrollerItem& item);
-
 
     protected:
         json wrapScrollerItem(const ScrollerItem& item);

@@ -28,7 +28,7 @@
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Script/ScriptDefinition.h"
-#include "../Utilities/Uuid.h"
+#include "../Common/Uuid.h"
 
 namespace Dream
 {

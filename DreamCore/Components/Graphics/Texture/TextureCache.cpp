@@ -4,7 +4,7 @@
 #include "TextureTasks.h"
 #include "../GraphicsComponent.h"
 #include "../../SharedAssetRuntime.h"
-#include "../../../Utilities/File.h"
+#include "../../../Common/File.h"
 #include "../../../Project/ProjectRuntime.h"
 #include "../../../deps/soil/SOIL.h"
 

@@ -25,9 +25,9 @@ namespace Dream
         LightDefinition* definition,
         SceneObjectRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform),
-        mAmbient(glm::vec3(0.0f,0.0f,0.0f)),
-        mDiffuse(glm::vec3(0.0f,0.0f,0.0f)),
-        mSpecular(glm::vec3(0.0f,0.0f,0.0f)),
+        mAmbient(0.0f),
+        mDiffuse(0.0f),
+        mSpecular(0.0f),
         mConstant(0.0f),
         mLinear(0.0f),
         mQuadratic(0.0f),
@@ -49,34 +49,34 @@ namespace Dream
         #endif
     }
 
-    vec3
+    Vector3
     LightRuntime::getAmbient
     () const
     {
         return mAmbient;
     }
 
-    void LightRuntime::setAmbient(const vec3& ambient)
+    void LightRuntime::setAmbient(const Vector3& ambient)
     {
         mAmbient = ambient;
     }
 
-    vec3 LightRuntime::getDiffuse() const
+    Vector3 LightRuntime::getDiffuse() const
     {
         return mDiffuse;
     }
 
-    void LightRuntime::setDiffuse(const vec3& diffuse)
+    void LightRuntime::setDiffuse(const Vector3& diffuse)
     {
         mDiffuse = diffuse;
     }
 
-    vec3 LightRuntime::getSpecular() const
+    Vector3 LightRuntime::getSpecular() const
     {
         return mSpecular;
     }
 
-    void LightRuntime::setSpecular(const vec3& specular)
+    void LightRuntime::setSpecular(const Vector3& specular)
     {
         mSpecular = specular;
     }
@@ -169,7 +169,10 @@ namespace Dream
     ()
     const
     {
-        vec3 tx =mSceneObjectRuntime->getTransform()->getMatrix()[3];
+        Vector3 tx(
+            mSceneObjectRuntime->getTransform().getMatrix()[3][0],
+            mSceneObjectRuntime->getTransform().getMatrix()[3][1],
+            mSceneObjectRuntime->getTransform().getMatrix()[3][2]);
         return PointLight
         {
             tx,
@@ -187,11 +190,19 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition tx = mSceneObjectRuntime->getTransform()->decomposeMatrix();
+        MatrixDecomposition decomp = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        Vector3 tx(
+            decomp.translation.x,
+            decomp.translation.y,
+            decomp.translation.z
+        );
+        auto e = eulerAngles(decomp.rotation);
+        Vector3 euler(e.x,e.y,e.z);
+
         return SpotLight
         {
-            tx.translation,
-            eulerAngles(tx.rotation),
+            tx,
+            euler,
             mAmbient,
             mDiffuse,
             mSpecular,
@@ -208,10 +219,12 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition tx = mSceneObjectRuntime->getTransform()->decomposeMatrix();
+        MatrixDecomposition decomp = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        auto e = eulerAngles(decomp.rotation);
+        Vector3 euler(e.x,e.y,e.z);
         return DirLight
         {
-            eulerAngles(tx.rotation),
+            euler,
             mAmbient,
             mDiffuse,
             mSpecular

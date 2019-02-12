@@ -56,20 +56,20 @@ namespace Dream
         void setMaxDrawDistance(float mdd);
         float getMaxDrawDistance();
 
-        vec3 getCameraTranslation();
-        void setCameraTranslation(const vec3& trans);
+        Vector3 getCameraTranslation();
+        void setCameraTranslation(const Vector3& trans);
 
-        vec3 getCameraLookAt();
-        void setCameraLookAt(const vec3& lookAt);
+        Vector3 getCameraLookAt();
+        void setCameraLookAt(const Vector3& lookAt);
 
-        vec3 getGravity();
-        void setGravity(const vec3& gravity);
+        Vector3 getGravity();
+        void setGravity(const Vector3& gravity);
         void setGravityX(float);
         void setGravityY(float);
         void setGravityZ(float);
 
-        vec3 getClearColour();
-        void setClearColour(const vec3& clearColour);
+        Vector3 getClearColour();
+        void setClearColour(const Vector3& clearColour);
         void setClearColourR(float);
         void setClearColourG(float);
         void setClearColourB(float);

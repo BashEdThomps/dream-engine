@@ -30,8 +30,6 @@
     #include <alc.h>
 #endif
 
-#include <glm/glm.hpp>
-
 using namespace std;
 
 namespace Dream

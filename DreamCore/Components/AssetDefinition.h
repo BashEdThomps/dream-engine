@@ -80,9 +80,7 @@ namespace Dream
         bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
         bool isTypeTexture();
-
-            protected:
+    protected:
         ProjectDefinition* mProjectDefinition;
-
     };
 }

@@ -54,12 +54,14 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectDefinition.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../Utilities/Math.h"
+#include "../../Common/Math.h"
 
 using namespace glm;
 
 namespace Dream
 {
+
+
     GraphicsComponent::GraphicsComponent
     (ProjectRuntime* pr, WindowComponent* windowComponent)
         : Component(pr),
@@ -221,7 +223,7 @@ namespace Dream
         if (sr != nullptr)
         {
             auto clearColour = sr->getClearColour();
-            glClearColor(clearColour.r, clearColour.g, clearColour.b, 1.0f);
+            glClearColor(clearColour.x(), clearColour.y(), clearColour.z(), 1.0f);
         }
         else
         {
@@ -560,34 +562,6 @@ namespace Dream
         clearLightQueue();
     }
 
-    void
-    GraphicsComponent::updateLightQueue
-    (SceneRuntime* sr)
-    {
-        #ifdef DREAM_LOG
-        getLog()->debug("Updating Light Queue");
-        #endif
-        // Clear existing Queues
-        //clearLightQueue();
-
-        /*
-        for (auto* runt : mUpdateQueue)
-        {
-            if (runt->getHidden())
-            {
-                continue;
-            }
-            LightRuntime* light = runt->getLightRuntime();
-            #ifdef DREAM_LOG
-            getLog()->debug("Adding light Runtime to queue {}",light->getNameAndUuidString());
-            #endif
-            addToLightQueue(light);
-
-        }
-        clearUpdateQueue();
-        */
-    }
-
     // Shadow Pass ==============================================================
 
     bool
@@ -700,7 +674,7 @@ namespace Dream
 
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
 
-        mat4 lightMat = mShadowLight->getTransform()->getMatrix();
+        mat4 lightMat = mShadowLight->getTransform().getMatrix();
         mat4 lightView = glm::lookAt
         (
             vec3(lightMat[3]), // Light Pos
@@ -709,7 +683,7 @@ namespace Dream
         );
 
         DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
-        vec3 dirVec = dir.direction;
+        vec3 dirVec = dir.direction.toGLM();
         //mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
         mShadowMatrix = lightProjection*lightView;
         //glCullFace(GL_FRONT);
@@ -868,7 +842,13 @@ namespace Dream
         {
             for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
             {
+                // Put in debug task queue
                 auto t = (*itr);
+                if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(), t) == mDebugTaskQueue.end())
+                {
+                    mDebugTaskQueue.push_back(t);
+                }
+
                 // Check if ready to execute
                 if (t->isWaitingForDependencies())
                 {
@@ -911,5 +891,12 @@ namespace Dream
             t.execute();
         }
         mDestructionTaskQueue.clear();
+    }
+
+    vector<GraphicsComponentTask*>&
+    GraphicsComponent::getDebugTaskQueue
+    ()
+    {
+        return mDebugTaskQueue;
     }
 }

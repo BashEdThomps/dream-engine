@@ -19,17 +19,18 @@
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include <glm/common.hpp>
 
 namespace Dream
 {
     Camera::Camera
     (SceneRuntime* parent)
         : DreamObject("Camera"),
-          mTranslation(vec3(0.0f, 0.0f, 0.0f)),
-          mFront(vec3(0.0f, 0.0f, -1.0f)),
-          mUp(vec3(0.0f)),
-          mRight(vec3(0.0f)),
-          mWorldUp(vec3(0.0f, 1.0f, 0.0f)),
+          mTranslation(0.0f),
+          mFront(0.0f, 0.0f, -1.0f),
+          mUp(0.0f),
+          mRight(0.0),
+          mWorldUp(0.0f, 1.0f, 0.0f),
           mYaw(0.0f),
           mPitch(0.0f),
           mMovementSpeed(Constants::CAMERA_SPEED),
@@ -40,7 +41,7 @@ namespace Dream
           mFocusYaw(0.0f),
           mFocusRadius(10.0f),
           mFocusElevation(0.0f),
-          mFocusTranslation(vec3(0.0f)),
+          mFocusTranslation(0.0f),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
           mMeshCullDistance(2500.0f),
@@ -85,14 +86,14 @@ namespace Dream
         if (mFocusedSceneObject)
         {
             return lookAt(
-                mFocusTranslation,
-                vec3(mFocusedSceneObject->getTransform()->getMatrix()[3]),
-                mUp
+                mFocusTranslation.toGLM(),
+                vec3(mFocusedSceneObject->getTransform().getMatrix()[3]),
+                mUp.toGLM()
             );
         }
         else
         {
-            return lookAt(mTranslation,mTranslation+mFront, mUp);
+            return lookAt(mTranslation.toGLM(),(mTranslation+mFront).toGLM(), mUp.toGLM());
         }
     }
 
@@ -117,7 +118,7 @@ namespace Dream
        mProjectionMatrix = perspective(Constants::CAMERA_ZOOM, w/h,mMinimumDraw,mMaximumDraw);
     }
 
-    vec3
+    Vector3
     Camera::getUp
     ()
     const
@@ -125,7 +126,7 @@ namespace Dream
         return mUp;
     }
 
-    vec3
+    Vector3
     Camera::getFront
     ()
     const
@@ -147,9 +148,9 @@ namespace Dream
         }
         else
         {
-            mTranslation.x += mFront.x * mMovementSpeed*scalar;
-            mTranslation.y += mFront.y * mMovementSpeed*scalar;
-            mTranslation.z += mFront.z * mMovementSpeed*scalar;
+            mTranslation.setX(mTranslation.x() + (mFront.x() * mMovementSpeed*scalar));
+            mTranslation.setY(mTranslation.y() + (mFront.y() * mMovementSpeed*scalar));
+            mTranslation.setZ(mTranslation.z() + (mFront.z() * mMovementSpeed*scalar));
         }
     }
 
@@ -163,9 +164,9 @@ namespace Dream
         }
         else
         {
-            mTranslation.x -= mFront.x * mMovementSpeed*scalar;
-            mTranslation.y -= mFront.y * mMovementSpeed*scalar;
-            mTranslation.z -= mFront.z * mMovementSpeed*scalar;
+            mTranslation.setX(mTranslation.x() - (mFront.x() * mMovementSpeed*scalar));
+            mTranslation.setY(mTranslation.y() - (mFront.y() * mMovementSpeed*scalar));
+            mTranslation.setZ(mTranslation.z() - (mFront.z() * mMovementSpeed*scalar));
         }
     }
 
@@ -179,9 +180,9 @@ namespace Dream
         }
         else
         {
-            mTranslation.x -= mRight.x * mMovementSpeed*scalar;
-            mTranslation.y -= mRight.y * mMovementSpeed*scalar;
-            mTranslation.z -= mRight.z * mMovementSpeed*scalar;
+            mTranslation.setX(mTranslation.x() - (mRight.x() * mMovementSpeed*scalar));
+            mTranslation.setY(mTranslation.y() - (mRight.y() * mMovementSpeed*scalar));
+            mTranslation.setZ(mTranslation.z() - (mRight.z() * mMovementSpeed*scalar));
         }
     }
 
@@ -195,9 +196,9 @@ namespace Dream
         }
         else
         {
-            mTranslation.x += mRight.x * mMovementSpeed*scalar;
-            mTranslation.y += mRight.y * mMovementSpeed*scalar;
-            mTranslation.z += mRight.z * mMovementSpeed*scalar;
+            mTranslation.setX(mTranslation.x() + (mRight.x() * mMovementSpeed*scalar));
+            mTranslation.setY(mTranslation.y() + (mRight.y() * mMovementSpeed*scalar));
+            mTranslation.setZ(mTranslation.z() + (mRight.z() * mMovementSpeed*scalar));
         }
     }
 
@@ -211,7 +212,7 @@ namespace Dream
         }
         else
         {
-            mTranslation.y += mMovementSpeed*scalar;
+            mTranslation.setY(mTranslation.y() + mMovementSpeed*scalar);
         }
     }
 
@@ -225,11 +226,11 @@ namespace Dream
         }
         else
         {
-            mTranslation.y -= mMovementSpeed*scalar;
+            mTranslation.setY(mTranslation.y() - mMovementSpeed*scalar);
         }
     }
 
-    vec3
+    Vector3
     Camera::getTranslation
     ()
     const
@@ -243,19 +244,23 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 tx = mFocusedSceneObject->getTransform()->getMatrix()[3];
+            Vector3 tx(
+                mFocusedSceneObject->getTransform().getMatrix()[3][0],
+                mFocusedSceneObject->getTransform().getMatrix()[3][1],
+                mFocusedSceneObject->getTransform().getMatrix()[3][2]
+            );
             setFocusTranslationFromTarget(tx);
-            mFront = normalize(tx);
-            mRight = normalize(cross(mFront, mWorldUp));
+            mFront = Vector3::normalize(tx);
+            mRight = Vector3::normalize(Vector3::cross(mFront, mWorldUp));
             mUp    = mWorldUp;
         }
         else
         {
-            mFront.x = static_cast<float>(cos(mYaw) * cos(mPitch));
-            mFront.y = static_cast<float>(sin(mPitch));
-            mFront.z = static_cast<float>(sin(mYaw) * cos(mPitch));
-            mFront = normalize(mFront);
-            mRight = normalize(cross(mFront, mWorldUp));
+            mFront.setX(static_cast<float>(cos(mYaw) * cos(mPitch)));
+            mFront.setY(static_cast<float>(sin(mPitch)));
+            mFront.setZ(static_cast<float>(sin(mYaw) * cos(mPitch)));
+            mFront = Vector3::normalize(mFront);
+            mRight = Vector3::normalize(Vector3::cross(mFront, mWorldUp));
             mUp    = mWorldUp;
         }
 
@@ -264,7 +269,7 @@ namespace Dream
 
     void
     Camera::setTranslation
-    (const vec3& translation)
+    (const Vector3& translation)
     {
         mTranslation = translation;
     }
@@ -273,9 +278,9 @@ namespace Dream
     Camera::setTranslation
     (float x, float y , float z)
     {
-        mTranslation.x = x;
-        mTranslation.y = y;
-        mTranslation.z = z;
+        mTranslation.setX(x);
+        mTranslation.setY(y);
+        mTranslation.setZ(z);
     }
 
     void
@@ -295,16 +300,16 @@ namespace Dream
 
     void
     Camera::setFocusTranslationFromTarget
-    (const vec3& target)
+    (const Vector3& target)
     {
         mat4 mtx(1.0f);
-        vec3 newTarget = target;
-        newTarget.y += mFocusElevation;
-        mtx = translate(mtx, newTarget);
+        Vector3 newTarget = target;
+        newTarget.setY(newTarget.y() + mFocusElevation);
+        mtx = translate(mtx, newTarget.toGLM());
         mtx = rotate(mtx,mFocusPitch, vec3(1,0,0));
         mtx = rotate(mtx,mFocusYaw, vec3(0,1,0));
         mtx = translate(mtx,vec3(0,0,-mFocusRadius));
-        mFocusTranslation = vec3(mtx[3]);
+        mFocusTranslation = Vector3(mtx[3][0],mtx[3][1],mtx[3][2]);
     }
 
     void Camera::deltaPitch(float pitch)
@@ -324,9 +329,9 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            vec3 objTx = mFocusedSceneObject->getTransform()->getMatrix()[3];
-            float x = mFocusTranslation.x - objTx.x;
-            float z = mFocusTranslation.z - objTx.z;
+            vec3 objTx = mFocusedSceneObject->getTransform().getMatrix()[3];
+            float x = mFocusTranslation.x() - objTx.x;
+            float z = mFocusTranslation.z() - objTx.z;
             return atan2(x,z);
         }
         return 0.0f;
@@ -338,7 +343,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform()->getMatrix(),
+            sor->getTransform().getMatrix(),
             sor->getBoundingBox()
         ) == Frustum::TEST_INSIDE;
     }
@@ -354,7 +359,7 @@ namespace Dream
 
     bool
     Camera::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, SceneObjectRuntime* sor, const vec3& tx)
+    (Frustum::Plane plane, SceneObjectRuntime* sor, const Vector3& tx)
     const
     {
         auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
@@ -367,7 +372,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform()->getMatrix() * tx,
+            sor->getTransform().getMatrix() * tx,
             sor->getBoundingBox()
          ) != Frustum::TEST_OUTSIDE;
 
@@ -379,7 +384,7 @@ namespace Dream
     const
     {
         return mFrustum.testIntersection(
-            sor->getTransform()->getMatrix(),
+            sor->getTransform().getMatrix(),
             sor->getBoundingBox()
          ) != Frustum::TEST_OUTSIDE;
     }

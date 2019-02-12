@@ -1,15 +1,9 @@
 /*
- * LightDefinition.cpp
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
  * This file may be distributed under the terms of GNU Public License version
  * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
  * license should have been included with this file, or the project in which
  * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
+ * http://www.y()nu.org/licenses/gpl-3.0.txt
  *
  * If you have any questions regarding the use of this file, feel free to
  * contact the author of this file, or the owner of the project in which
@@ -40,23 +34,23 @@ namespace Dream
 
     void
     LightDefinition::setDiffuse
-    (vec3 diffuse)
+    (const Vector3& diffuse)
     {
         if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
         }
 
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]   = diffuse.r;
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN] = diffuse.g;
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]  = diffuse.b;
+        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]   = diffuse.x();
+        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN] = diffuse.y();
+        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]  = diffuse.z();
     }
 
-    vec3
+    Vector3
     LightDefinition::getDiffuse
     ()
     {
-        vec3 diffuse;
+        Vector3 diffuse;
         if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]=json::object();
@@ -64,30 +58,30 @@ namespace Dream
             mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN] = 0.0f;
             mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE] = 0.0f;
         }
-        diffuse.r = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]);
-        diffuse.g = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN]);
-        diffuse.b = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]);
+        diffuse.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]));
+        diffuse.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN]));
+        diffuse.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]));
         return diffuse;
     }
 
     void
     LightDefinition::setAmbient
-    (vec3 ambient)
+    (const Vector3& ambient)
     {
         if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
         }
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]   = ambient.r;
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN] = ambient.g;
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]  = ambient.b;
+        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]   = ambient.x();
+        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN] = ambient.y();
+        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]  = ambient.z();
     }
 
-    vec3
+    Vector3
     LightDefinition::getAmbient
     ()
     {
-        vec3 ambient;
+        Vector3 ambient;
         if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]=json::object();
@@ -95,29 +89,29 @@ namespace Dream
             mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN] = 0.0f;
             mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE] = 0.0f;
         }
-        ambient.r = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]);
-        ambient.g = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN]);
-        ambient.b = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]);
+        ambient.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]));
+        ambient.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN]));
+        ambient.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]));
         return ambient;
     }
 
     void
     LightDefinition::setSpecular
-    (vec3 specular)
+    (const Vector3& specular)
     {
         if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
         }
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]   = specular.r;
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN] = specular.g;
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]  = specular.b;
+        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]   = specular.x();
+        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN] = specular.y();
+        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]  = specular.z();
     }
 
-    vec3
+    Vector3
     LightDefinition::getSpecular()
     {
-        vec3 specular;
+        Vector3 specular;
         if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR]=json::object();
@@ -125,9 +119,9 @@ namespace Dream
             mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN] = 0.0f;
             mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE] = 0.0f;
         }
-        specular.r = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]);
-        specular.g = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN]);
-        specular.b = static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]);
+        specular.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]));
+        specular.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN]));
+        specular.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]));
         return specular;
     }
 
@@ -247,109 +241,109 @@ namespace Dream
 
     float LightDefinition::getDiffuseBlue()
     {
-        return getDiffuse().b;
+        return getDiffuse().z();
     }
 
     void LightDefinition::setDiffuseBlue(float diffuseBlue)
     {
         auto current = getDiffuse();
-        current.b = diffuseBlue;
+        current.setZ(diffuseBlue);
         setDiffuse(current);
     }
 
     float LightDefinition::getDiffuseGreen()
     {
-        return getDiffuse().g;
+        return getDiffuse().y();
     }
 
     void LightDefinition::setDiffuseGreen(float diffuseGreen)
     {
         auto current = getDiffuse();
-        current.g = diffuseGreen;
+        current.setY(diffuseGreen);
         setDiffuse(current);
     }
 
     float LightDefinition::getDiffuseRed()
     {
-        return getDiffuse().r;
+        return getDiffuse().x();
     }
 
     void LightDefinition::setDiffuseRed(float diffuseRed)
     {
         auto current = getDiffuse();
-        current.r = diffuseRed;
+        current.setX(diffuseRed);
         setDiffuse(current);
     }
 
     float LightDefinition::getAmbientBlue()
     {
-        return getAmbient().b;
+        return getAmbient().z();
     }
 
     void LightDefinition::setAmbientBlue(float blue)
     {
         auto current = getAmbient();
-        current.b = blue;
+        current.setZ(blue);
         setAmbient(current);
     }
 
     float LightDefinition::getAmbientGreen()
     {
-        return getAmbient().g;
+        return getAmbient().y();
     }
 
     void LightDefinition::setAmbientGreen(float ambientGreen)
     {
         auto current = getAmbient();
-        current.g = ambientGreen;
+        current.setY(ambientGreen);
         setAmbient(current);
     }
 
     float LightDefinition::getAmbientRed()
     {
-        return getAmbient().r;
+        return getAmbient().x();
     }
 
     void LightDefinition::setAmbientRed(float ambientRed)
     {
         auto current = getAmbient();
-        current.r = ambientRed ;
+        current.setX(ambientRed);
         setAmbient(current);
     }
 
     float LightDefinition::getSpecularBlue()
     {
-        return getSpecular().b;
+        return getSpecular().z();
     }
 
     void LightDefinition::setSpecularBlue(float specularBlue)
     {
         auto current = getSpecular();
-        current.b = specularBlue;
+        current.setZ(specularBlue);
         setSpecular(current);
     }
 
     float LightDefinition::getSpecularGreen()
     {
-        return getSpecular().g;
+        return getSpecular().y();
     }
 
     void LightDefinition::setSpecularGreen(float specularGreen)
     {
         auto current = getSpecular();
-        current.g = specularGreen;
+        current.setY(specularGreen);
         setSpecular(current);
     }
 
     float LightDefinition::getSpecularRed()
     {
-        return getSpecular().r;
+        return getSpecular().x();
     }
 
     void LightDefinition::setSpecularRed(float specularRed)
     {
         auto current = getSpecular();
-        current.r = specularRed;
+        current.setX(specularRed);
         setSpecular(current);
     }
 }

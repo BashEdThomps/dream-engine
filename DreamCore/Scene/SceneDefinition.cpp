@@ -15,7 +15,7 @@
 #include "SceneObject/SceneObjectDefinition.h"
 #include "../Components/Transform.h"
 #include "../Project/ProjectDefinition.h"
-#include "../Utilities/Uuid.h"
+#include "../Common/Uuid.h"
 
 namespace Dream
 {
@@ -141,62 +141,62 @@ namespace Dream
         return nullptr;
     }
 
-    vec3
+    Vector3
     SceneDefinition::getCameraTranslation
     ()
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
-        return unwrapVec3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
+        return unwrapVector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
     }
 
     void
     SceneDefinition::setCameraTranslation
-    (const vec3& transform)
+    (const Vector3& transform)
     {
         // Translation
-        mJson[Constants::SCENE_CAMERA_TRANSLATION] = wrapVec3(transform);
+        mJson[Constants::SCENE_CAMERA_TRANSLATION] = wrapVector3(transform);
     }
 
-    vec3 SceneDefinition::getCameraLookAt()
+    Vector3 SceneDefinition::getCameraLookAt()
     {
         if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
         {
-           setCameraLookAt(vec3(0));
+           setCameraLookAt(Vector3(0.0f));
         }
-        return unwrapVec3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
+        return unwrapVector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
     }
 
     void
     SceneDefinition::setCameraLookAt
-    (const vec3& lookAt)
+    (const Vector3& lookAt)
     {
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = wrapVec3(lookAt);
+        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = wrapVector3(lookAt);
     }
 
-    vec3
+    Vector3
     SceneDefinition::getGravity
     ()
     {
-        vec3 gravity;
+        Vector3 gravity;
 
         if (mJson[Constants::SCENE_GRAVITY].is_null())
         {
-            mJson[Constants::SCENE_GRAVITY] = wrapVec3(vec3(0.0f));
+            mJson[Constants::SCENE_GRAVITY] = wrapVector3(Vector3(0.0f));
         }
 
-        gravity = unwrapVec3(mJson[Constants::SCENE_GRAVITY]);
+        gravity = unwrapVector3(mJson[Constants::SCENE_GRAVITY]);
 
         return gravity;
     }
 
     void
     SceneDefinition::setGravity
-    (const vec3& gravity)
+    (const Vector3& gravity)
     {
-        mJson[Constants::SCENE_GRAVITY] = wrapVec3(gravity);
+        mJson[Constants::SCENE_GRAVITY] = wrapVector3(gravity);
     }
 
     void
@@ -220,11 +220,11 @@ namespace Dream
         mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
     }
 
-    vec3
+    Vector3
     SceneDefinition::getClearColour
     ()
     {
-        vec3 colour;
+        Vector3 colour;
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
@@ -234,25 +234,25 @@ namespace Dream
 
         }
 
-        colour.x = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED];
-        colour.y = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN];
-        colour.z = mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE];
+        colour.setX(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
+        colour.setY(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
+        colour.setZ(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
 
         return colour;
     }
 
     void
     SceneDefinition::setClearColour
-    (const vec3& colour)
+    (const Vector3& colour)
     {
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
             mJson[Constants::SCENE_CLEAR_COLOUR] = {};
         }
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour.r;
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour.g;
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour.b;
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour.x();
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour.y();
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour.z();
     }
 
     void
@@ -349,7 +349,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
     }
@@ -358,7 +358,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
     }
@@ -367,7 +367,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
     }
@@ -376,7 +376,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
     }
@@ -385,7 +385,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
     }
@@ -394,7 +394,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(vec3(0));
+           setCameraTranslation(Vector3(0));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
     }

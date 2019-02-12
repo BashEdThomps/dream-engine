@@ -158,7 +158,7 @@ namespace Dream
         for (auto* sor : mRuntimes)
         {
             // TODO -- Per mesh Culling
-            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform()->getMatrix()))
+            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
             {
                 mRuntimesInFrustum.push_back(sor);
             }

@@ -52,6 +52,7 @@ namespace Dream
     private:
 
         vector<GraphicsComponentTask*> mTaskQueue;
+        vector<GraphicsComponentTask*> mDebugTaskQueue;
         vector<GraphicsComponentDestructionTask> mDestructionTaskQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
@@ -86,7 +87,6 @@ namespace Dream
 
         void addToLightQueue(SceneObjectRuntime*);
         void clearLightQueue();
-        void updateLightQueue(SceneRuntime*);
         bool setupScreenQuad();
         void renderLightingPass(SceneRuntime* sr);
 
@@ -120,5 +120,6 @@ namespace Dream
         void pushDestructionTask(const GraphicsComponentDestructionTask& t);
         void executeTaskQueue();
         void executeDestructionTaskQueue();
+        vector<GraphicsComponentTask*>& getDebugTaskQueue();
     };
 }

@@ -27,10 +27,10 @@
 #include <numeric>
 #include <cmath>
 
-#include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../Scene/SceneObject/BoundingBox.h"
 #include "../../Common/DreamObject.h"
+#include "../../Common/Math.h"
 #include "../Transform.h"
 #include "Frustum.h"
 
@@ -49,11 +49,11 @@ namespace Dream
     {
     private:
         // Camera Attributes
-        vec3 mTranslation;
-        vec3 mFront;
-        vec3 mUp;
-        vec3 mRight;
-        vec3 mWorldUp;
+        Vector3 mTranslation;
+        Vector3 mFront;
+        Vector3 mUp;
+        Vector3 mRight;
+        Vector3 mWorldUp;
         // Eular Angles
         float mYaw;
         float mPitch;
@@ -67,7 +67,7 @@ namespace Dream
         float mFocusYaw;
         float mFocusRadius;
         float mFocusElevation;
-        vec3  mFocusTranslation;
+        Vector3  mFocusTranslation;
         float mMinimumDraw;
         float mMaximumDraw;
         float mMeshCullDistance;
@@ -79,9 +79,9 @@ namespace Dream
         mat4 getViewMatrix() const;
         void update();
         void updateCameraVectors();
-        void setTranslation(const vec3&);
+        void setTranslation(const Vector3&);
         void setTranslation(float,float,float);
-        vec3 getTranslation() const;
+        Vector3 getTranslation() const;
         void  setMovementSpeed(float);
         float getMovementSpeed() const;
 
@@ -97,8 +97,8 @@ namespace Dream
 
         float getFocusedObjectTheta() const;
 
-        vec3 getUp() const;
-        vec3 getFront() const;
+        Vector3 getUp() const;
+        Vector3 getFront() const;
 
         float getYaw() const;
         void setYaw(float yaw);
@@ -109,7 +109,7 @@ namespace Dream
         bool containedInFrustum(SceneObjectRuntime*) const;
         bool containedInFrustum(const BoundingBox&) const;
         bool containedInFrustumAfterTransform(SceneObjectRuntime*,const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const vec3& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const Vector3& tx) const;
 
         bool visibleInFrustum(SceneObjectRuntime*)const;
         bool visibleInFrustum(const BoundingBox&) const;
@@ -145,6 +145,6 @@ namespace Dream
         bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
 
     private:
-        void setFocusTranslationFromTarget(const vec3& target);
-    }; // End of Camera
-} // End of Dream
+        void setFocusTranslationFromTarget(const Vector3& target);
+    };
+}

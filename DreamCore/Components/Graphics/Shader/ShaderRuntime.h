@@ -42,7 +42,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 #include <glm/matrix.hpp>
 
 #include "ShaderUniform.h"
@@ -128,7 +127,7 @@ namespace Dream
         bool setProjectionMatrix(const mat4&,const string& name = "projection");
 
         // Viewer
-        bool setViewerPosition(const vec3&, const string& name = "viewPos");
+        bool setViewerPosition(const Vector3&, const string& name = "viewPos");
 
         void bindVertexArray(GLuint);
         void unbindVertexArray();

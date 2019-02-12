@@ -17,7 +17,7 @@
 
 #include "../../Components/AssetDefinition.h"
 #include "../../Components/Transform.h"
-#include "../../Utilities/Uuid.h"
+#include "../../Common/Uuid.h"
 
 #include <regex>
 
@@ -76,9 +76,9 @@ namespace Dream
 
     void
     SceneObjectDefinition::setTransform
-    (const Transform* tform)
+    (const Transform& tform)
     {
-        mJson[Constants::TRANSFORM] = tform->getJson();
+        mJson[Constants::TRANSFORM] = tform.getJson();
     }
 
     void

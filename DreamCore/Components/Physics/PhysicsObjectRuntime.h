@@ -66,17 +66,18 @@ namespace Dream
         void getWorldTransform(btTransform&);
         btCollisionObject* getCollisionObject();
 
-        vec3 getCenterOfMassPosition();
-        void applyCentralImpulse(vec3);
-        void applyTorqueImpulse(vec3);
-        void applyForce(vec3);
-        void applyTorque(vec3);
+        Vector3 getCenterOfMassPosition();
+        void applyCentralImpulse(const Vector3&);
+        void applyTorqueImpulse(const Vector3&);
+        void applyForce(const Vector3&);
+        void applyTorque(const Vector3&);
         void clearForces();
 
         void setCenterOfMassTransform(const Transform& tx);
+        void setCenterOfMassTransform(const Vector3& tx);
         void setWorldTransform(const Transform& tx);
 
-        vec3 getLinearVelocity();
+        Vector3 getLinearVelocity();
         void setLinearVelocity(float, float, float);
 
         bool isInPhysicsWorld();
@@ -103,6 +104,5 @@ namespace Dream
         void setKinematic(bool setKenematic);
 
         PhysicsAddObjectTask* getAddObjectTask();
-        void setCenterOfMassTransform(vec3 tx);
     };
 }

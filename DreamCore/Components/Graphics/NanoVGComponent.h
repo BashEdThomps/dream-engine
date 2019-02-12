@@ -17,7 +17,8 @@
 #pragma once
 
 #include "../Component.h"
-#include <glm/vec4.hpp>
+#include "../../Common/Math.h"
+
 extern "C" {
     #include "../../deps/nanovg/nanovg.h"
 }
@@ -26,7 +27,6 @@ extern "C" {
 #undef CreateFont
 #endif
 
-using glm::vec4;
 typedef struct NVGcontext NVGcontext;
 
 namespace Dream
@@ -495,7 +495,7 @@ namespace Dream
         // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
         // Measured values are returned in local coordinate space.
         void TextBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds);
-        vec4 TextBoxBounds(float x, float y, float breakRowWidth, std::string str);
+        Vector4 TextBoxBounds(float x, float y, float breakRowWidth, std::string str);
 
         // Calculates the glyph x positions of the specified text. If end is specified only the sub-string will be used.
         // Measured values are returned in local coordinate space.

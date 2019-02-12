@@ -2,8 +2,8 @@
 
 #include <sstream>
 
-#include "../Utilities/Directory.h"
-#include "../Utilities/File.h"
+#include "../Common/Directory.h"
+#include "../Common/File.h"
 #include "../Project/Project.h"
 #include "../Components/AssetDefinition.h"
 #include "ProjectDefinition.h"

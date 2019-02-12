@@ -21,9 +21,9 @@ using std::numeric_limits;
 
 namespace Dream
 {
-    BoundingBox::BoundingBox(vec3 min, vec3 max)
+    BoundingBox::BoundingBox(const Vector3& min, const Vector3& max)
         : DreamObject("BoundingBox"),
-          maxDimension(max.x*2),
+          maxDimension(max.x()*2),
           minimum(min),
           maximum(max)
     {
@@ -35,42 +35,42 @@ namespace Dream
 
     }
 
-    vec3
+    Vector3
     BoundingBox::getCenter
     () const
     {
-       return vec3((minimum.x+maximum.x)/2, (minimum.y+maximum.y)/2, (minimum.z+maximum.z)/2);
+       return Vector3((minimum.x()+maximum.x())/2, (minimum.y()+maximum.y())/2, (minimum.z()+maximum.z())/2);
     }
 
     void
     BoundingBox::setToLimits
     ()
     {
-        maximum = vec3(numeric_limits<float>::min());
-        minimum = vec3(numeric_limits<float>::max());
+        maximum = Vector3(numeric_limits<float>::min());
+        minimum = Vector3(numeric_limits<float>::max());
     }
 
-    vec3
+    Vector3
     BoundingBox::getPositiveVertex
-    (const vec3& position, const vec3& normal)
+    (const Vector3& position, const Vector3& normal)
     const
     {
-        vec3 positiveVertex = minimum;
-        if( normal.x >= 0.0f ) positiveVertex.x = maximum.x;
-        if( normal.y >= 0.0f ) positiveVertex.y = maximum.y;
-        if( normal.z >= 0.0f ) positiveVertex.z = maximum.z;
+        Vector3 positiveVertex = minimum;
+        if( normal.x() >= 0.0f ) positiveVertex.setX(maximum.x());
+        if( normal.y() >= 0.0f ) positiveVertex.setY(maximum.y());
+        if( normal.z() >= 0.0f ) positiveVertex.setZ(maximum.z());
         return position+positiveVertex;
     }
 
-    vec3
+    Vector3
     BoundingBox::getNegativeVertex
-    (const vec3& position, const vec3& normal)
+    (const Vector3& position, const Vector3& normal)
     const
     {
-        vec3 negativeVertex = maximum;
-        if( normal.x >= 0.0f ) negativeVertex.x = minimum.x;
-        if( normal.y >= 0.0f ) negativeVertex.y = minimum.y;
-        if( normal.z >= 0.0f ) negativeVertex.z = minimum.z;
+        Vector3 negativeVertex = maximum;
+        if( normal.x() >= 0.0f ) negativeVertex.setX(minimum.x());
+        if( normal.y() >= 0.0f ) negativeVertex.setY(minimum.y());
+        if( normal.z() >= 0.0f ) negativeVertex.setZ(minimum.z());
         return position+negativeVertex;
     }
 
@@ -79,40 +79,40 @@ namespace Dream
     (const BoundingBox& bb)
     {
         // Maximum
-        if (maximum.x < bb.maximum.x)
+        if (maximum.x() < bb.maximum.x())
         {
-            maximum.x = bb.maximum.x;
+            maximum.setX(bb.maximum.x());
         }
 
-        if (bb.maximum.y < bb.maximum.y)
+        if (bb.maximum.y() < bb.maximum.y())
         {
-            maximum.y = bb.maximum.y;
+            maximum.setY(bb.maximum.y());
         }
 
-        if (bb.maximum.z < bb.maximum.z)
+        if (bb.maximum.z() < bb.maximum.z())
         {
-            maximum.z = bb.maximum.z;
+            maximum.setZ(bb.maximum.z());
         }
 
         // Maximum
-        if (bb.minimum.x > bb.minimum.x)
+        if (bb.minimum.x() > bb.minimum.x())
         {
-            minimum.x = bb.minimum.x;
+            minimum.setX(bb.minimum.x());
         }
 
-        if (bb.minimum.y > bb.minimum.y)
+        if (bb.minimum.y() > bb.minimum.y())
         {
-            minimum.y = bb.minimum.y;
+            minimum.setY(bb.minimum.y());
         }
 
-        if (bb.minimum.z > bb.minimum.z)
+        if (bb.minimum.z() > bb.minimum.z())
         {
-            minimum.z = bb.minimum.z;
+            minimum.setZ(bb.minimum.z());
         }
 
         float maxBound;
-        maxBound = (maximum.x > maximum.y ? maximum.x : maximum.y);
-        maxBound = (maxBound > maximum.z ? maxBound : maximum.z);
+        maxBound = (maximum.x() > maximum.y() ? maximum.x() : maximum.y());
+        maxBound = (maxBound > maximum.z() ? maxBound : maximum.z());
 
         maxDimension = maxBound;
     }
