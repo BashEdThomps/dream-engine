@@ -1,5 +1,3 @@
-#pragma once
-
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
 

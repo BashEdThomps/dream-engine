@@ -29,9 +29,9 @@ namespace Dream
     ScriptRuntime::ScriptRuntime
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
-          mSource(""),
-          mInitialised(false),
           mError(false),
+          mInitialised(false),
+          mSource(""),
           mUuidString(std::to_string(mUuid))
     {
         #ifdef DREAM_LOG
@@ -285,8 +285,6 @@ namespace Dream
     ScriptRuntime::executeOnNanoVG
     (NanoVGComponent* nvg, SceneRuntime* sr)
     {
-        bool retval = false;
-
         #ifdef DREAM_LOG
         getLog()->info( "Calling onNanoVG for {}" , getNameAndUuidString() );
         #endif

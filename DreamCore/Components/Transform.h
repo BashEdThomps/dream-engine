@@ -75,7 +75,7 @@ namespace Dream
          * @brief Construct by deserialising a matrix stored in JSON format.
          * @param j JSON matrix data
          */
-        explicit Transform(const json& j);
+        Transform(const json& j);
 
         /**
           * @brief Default Destructor

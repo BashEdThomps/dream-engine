@@ -42,10 +42,10 @@ namespace Dream
     Project::Project
     (ProjectDirectory* dir)
         : DreamObject("Project"),
+          mDirectory(dir),
           mDefinition(nullptr),
           mRuntime(nullptr),
-          mWindowComponent(nullptr),
-          mDirectory(dir)
+          mWindowComponent(nullptr)
     {
         #ifdef DREAM_LOG
         getLog()->trace("Constructing");

@@ -22,8 +22,8 @@ namespace Dream
     Component::Component
     (ProjectRuntime* pr)
         : LockableObject("Component"),
-          mProjectRuntime(pr),
-          mEnabled(true)
+          mEnabled(true),
+          mProjectRuntime(pr)
     {
 
     }

@@ -53,7 +53,6 @@ static void Vector3_del(void* mem)
 {
     Dream::Vector3* v = (Dream::Vector3*)mem;
     v->~Vector3();
-    delete v;
 }
 
 static glm::mat4 mat4_translate3f(mat4 mtx, float x,float y ,float z)
@@ -93,6 +92,7 @@ static void whyYouFail(int r)
                 break;
             case asALREADY_REGISTERED:
                 errStr = "Already Registered";
+            break;
             default:
                 errStr = "idk??";
                 break;
@@ -226,7 +226,7 @@ namespace Dream
         r = Engine->RegisterObjectType("Time", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("Transform", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
         r = Engine->RegisterObjectType("WindowComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r);
-        int glmFlags =
+        asDWORD glmFlags =
             asOBJ_VALUE |
             asOBJ_POD |
             asOBJ_VALUE |

@@ -682,8 +682,8 @@ namespace Dream
             vec3(0.0f,1.0f,0.0f) // Up
         );
 
-        DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
-        vec3 dirVec = dir.direction.toGLM();
+        //DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
+        //vec3 dirVec = dir.direction.toGLM();
         //mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
         mShadowMatrix = lightProjection*lightView;
         //glCullFace(GL_FRONT);

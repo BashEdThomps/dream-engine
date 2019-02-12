@@ -37,14 +37,14 @@ namespace DreamTool
                 auto* taskManager = projRunt->getTaskManager();
                 const auto& threadVector = taskManager->getThreadVector();
                 ImGui::Text("%lu Threads Running",threadVector.size());
-                ImGui::Columns(threadVector.size());
+                ImGui::Columns(static_cast<int>(threadVector.size()));
                 for (TaskThread* t : threadVector)
                 {
                     auto& debugQueue = t->getDebugTaskQueue();
-                    ImGui::Text("Worker Thread %d (%0.3lu Tasks)", t->getThreadId(),debugQueue.size());
+                    ImGui::Text("Worker Thread %d (%3lu Tasks)", t->getThreadId(),debugQueue.size());
                     for (Task* task : debugQueue)
                     {
-                       ImGui::Text("[%0.3d/%0.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                       ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
                     }
                     ImGui::NextColumn();
                 }
@@ -55,7 +55,7 @@ namespace DreamTool
                 auto gfxTaskQueue = gfxComponent->getDebugTaskQueue();
                 for (GraphicsComponentTask* task : gfxTaskQueue)
                 {
-                    ImGui::Text("[%0.3d/%0.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                    ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
                 }
             }
             else

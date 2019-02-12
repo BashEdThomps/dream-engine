@@ -85,6 +85,7 @@ namespace Dream
                     #endif
                     break;
                 }
+                std::this_thread::yield();
             }
         }
 

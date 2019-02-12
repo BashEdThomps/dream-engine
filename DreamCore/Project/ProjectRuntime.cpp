@@ -72,8 +72,8 @@ namespace Dream
           mNanoVGComponent(nullptr),
           mPhysicsComponent(nullptr),
           mScriptComponent(nullptr),
-          mTaskManager(nullptr),
           mWindowComponent(windowComponent),
+          mTaskManager(nullptr),
           mAudioCache(nullptr),
           mTextureCache(nullptr),
           mMaterialCache(nullptr),
@@ -623,7 +623,6 @@ namespace Dream
         {
             for (auto rt : mSceneRuntimeVector)
             {
-                rt->lock();
                 switch (rt->getState())
                 {
                     case SceneState::SCENE_STATE_TO_LOAD:
@@ -644,7 +643,6 @@ namespace Dream
                         mSceneRuntimesToRemove.push_back(rt);
                         break;
                 }
-                rt->unlock();
             }
         }
         collectGarbage();
@@ -673,13 +671,10 @@ namespace Dream
     {
         for (auto* sr : mSceneRuntimeVector)
         {
-            sr->lock();
             if (sr->getUuid() == uuid)
             {
-                sr->unlock();
                 return sr;
             }
-            sr->unlock();
         }
         return nullptr;
     }
@@ -692,7 +687,6 @@ namespace Dream
         for (int i=0;i<nRuntimes;i++)
         {
             auto srt = mSceneRuntimeVector.at(i);
-            srt->lock();
             if (srt->getUuid() == uuid)
             {
                 srt->setState(SceneState::SCENE_STATE_ACTIVE);
@@ -704,7 +698,6 @@ namespace Dream
                     srt->setState(SceneState::SCENE_STATE_LOADED);
                 }
             }
-            srt->unlock();
         }
     }
 
@@ -834,6 +827,7 @@ namespace Dream
     (SceneRuntime* rt, bool clearCaches)
     {
         rt->destroyRuntime();
+        delete rt;
         if (clearCaches)
         {
             clearAllCaches();

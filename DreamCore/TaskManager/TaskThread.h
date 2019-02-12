@@ -28,6 +28,7 @@ namespace Dream
     public:
 
          TaskThread (int id);
+         TaskThread(const TaskThread&& that);
          void join();
          void executeTaskQueue();
          void clearFence();

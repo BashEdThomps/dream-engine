@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ShaderRuntime.h"
 #include "ShaderTasks.h"
 

@@ -45,48 +45,50 @@ namespace Dream
                 }
 
                 mDebugTaskQueue.clear();
-                mTaskQueueMutex.lock();
-                while (!mTaskQueue.empty())
+                if(mTaskQueueMutex.try_lock())
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
-                    #endif
-                    for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
+                    while (!mTaskQueue.empty())
                     {
-                        if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),(*itr)) == mDebugTaskQueue.end())
+                        #ifdef DREAM_LOG
+                        getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
+                        #endif
+                        for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
                         {
-                            mDebugTaskQueue.push_back((*itr));
-                        }
-                        auto* t = (*itr);
-                        // Check if ready to execute
-                        if (t->isWaitingForDependencies())
-                        {
-                            t->incrementDeferralCount();
-                        }
-                        else
-                        {
-                            t->setState(TaskState::ACTIVE);
-                            t->execute();
+                            if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),(*itr)) == mDebugTaskQueue.end())
+                            {
+                                mDebugTaskQueue.push_back((*itr));
+                            }
+                            auto* t = (*itr);
+                            // Check if ready to execute
+                            if (t->isWaitingForDependencies())
+                            {
+                                t->incrementDeferralCount();
+                            }
+                            else
+                            {
+                                t->setState(TaskState::ACTIVE);
+                                t->execute();
+                            }
+
+                            if (t->getState() == TaskState::COMPLETED)
+                            {
+                               completed.push_back(t);
+                            }
                         }
 
-                        if (t->getState() == TaskState::COMPLETED)
+                        for (auto* t : completed)
                         {
-                           completed.push_back(t);
+                            t->notifyDependents();
+                            auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
+                            if (itr != mTaskQueue.end())
+                            {
+                                mTaskQueue.erase(itr);
+                            }
                         }
+                        completed.clear();
                     }
-
-                    for (auto* t : completed)
-                    {
-                        t->notifyDependents();
-                        auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
-                        if (itr != mTaskQueue.end())
-                        {
-                            mTaskQueue.erase(itr);
-                        }
-                    }
-                    completed.clear();
+                    mTaskQueueMutex.unlock();
                 }
-                mTaskQueueMutex.unlock();
 
                 #ifdef DREAM_LOG
                 getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());

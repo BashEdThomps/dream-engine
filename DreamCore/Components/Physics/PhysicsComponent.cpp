@@ -130,6 +130,12 @@ namespace Dream
             delete mCollisionConfiguration;
             mCollisionConfiguration = nullptr;
         }
+
+        if (mDebugDrawer)
+        {
+            delete mDebugDrawer;
+            mDebugDrawer = nullptr;
+        }
     }
 
     void
