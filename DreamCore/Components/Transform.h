@@ -131,7 +131,7 @@ namespace Dream
          */
         void preTranslate(const Vector3& translation);
 
-        Vector3 getTranslation();
+        Vector3& getTranslation();
 
         /**
          * @brief Get the JSON serialised representation of this object's

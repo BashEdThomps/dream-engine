@@ -38,7 +38,6 @@ namespace Dream
 
     class SceneRuntime : public Runtime
     {
-    private:
         SceneState mState;
         Vector3 mClearColour;
         ProjectRuntime* mProjectRuntime;
@@ -54,6 +53,16 @@ namespace Dream
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
+        SceneObjectRuntime* mPlayerObject;
+
+    protected:
+        void updateLifetime();
+        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue() const;
+        void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
+        void clearSceneObjectRuntimeCleanUpQueue();
+        void processSceneObjectRuntimeCleanUpQueue();
+        void createAllAssetRuntimes();
+        void setDeleteFlagOnAllSceneObjectRuntimes();
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
@@ -69,18 +78,22 @@ namespace Dream
         Vector3 getClearColour() const;
         void setClearColour(const Vector3& clearColour);
 
-        vector<SceneObjectRuntime*> getSceneObjectRuntimeCleanUpQueue() const;
-        void addSceneObjectRuntimeToCleanUpQueue(SceneObjectRuntime*);
-        void clearSceneObjectRuntimeCleanUpQueue();
-        void processSceneObjectRuntimeCleanUpQueue();
-        void createSceneTasks();
-
-        void createAllAssetRuntimes();
-
         bool useDefinition() override;
         void destroyRuntime();
 
-        void setDeleteFlagOnAllSceneObjectRuntimes();
+        bool getPhysicsDebug() const;
+        void setPhysicsDebug(bool physicsDebug);
+
+        void setMeshCullDistance(float);
+        float getMeshCullDistance() const;
+
+        float getMinDrawDistance() const;
+        void setMinDrawDistance(float);
+
+        float getMaxDrawDistance() const;
+        void setMaxDrawDistance(float);
+
+        void createSceneTasks();
 
         bool hasRootSceneObjectRuntime() const;
         void setRootSceneObjectRuntime(SceneObjectRuntime* sceneObject);
@@ -92,32 +105,18 @@ namespace Dream
         int countSceneObjectRuntimes() const;
         int countChildrenOfSceneObjectRuntime(SceneObjectRuntime*) const;
 
+        void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
+
         ProjectRuntime* getProjectRuntime() const;
 
         void showScenegraph() const;
-
         void collectGarbage() override;
-
-        void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
-
-        bool getPhysicsDebug() const;
-        void setPhysicsDebug(bool physicsDebug);
 
         ShaderRuntime* getLightingPassShader() const;
         void setLightingPassShader(ShaderRuntime* lightingShader);
 
         ShaderRuntime* getShadowPassShader() const;
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
-
-        void setMeshCullDistance(float);
-        float getMeshCullDistance() const;
-
-        float getMinDrawDistance() const;
-        void setMinDrawDistance(float);
-
-        float getMaxDrawDistance() const;
-        void setMaxDrawDistance(float);
-
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
         vector<SceneObjectRuntime*> getSceneObjectsWithRuntimeOf(AssetDefinition* def) const;
@@ -143,7 +142,7 @@ namespace Dream
         unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
-    protected:
-        void updateLifetime();
+        void setPlayerObject(SceneObjectRuntime* po);
+        SceneObjectRuntime* getPlayerObject() const;
     };
 }

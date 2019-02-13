@@ -94,9 +94,6 @@ namespace Dream
         const static string PROJECT_WINDOW_HEIGHT;
         const static int    PROJECT_DEFAULT_WINDOW_WIDTH;
         const static int    PROJECT_DEFAULT_WINDOW_HEIGHT;
-        const static string PROJECT_CAPTURE_JOYSTICK;
-        const static string PROJECT_CAPTURE_KEYBOARD;
-        const static string PROJECT_CAPTURE_MOUSE;
 
         // Asset ================================================================
         const static string UUID;
@@ -210,6 +207,7 @@ namespace Dream
         const static string SCENE_OBJECT_HIDDEN;
         const static string SCENE_OBJECT_DEFERRED;
         const static string SCENE_OBJECT_DIE_AFTER;
+        const static string SCENE_OBJECT_PLAYER_OBJECT;
 
         // Transform ============================================================
         const static string TRANSFORM;

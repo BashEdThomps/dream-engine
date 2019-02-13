@@ -202,15 +202,17 @@ namespace Dream
         mMatrix = mat*mMatrix;
     }
 
-    Vector3
+    Vector3&
     Transform::getTranslation
     ()
     {
-        return Vector3(
+        static Vector3 tx;
+        tx = Vector3(
             mMatrix[3].x,
             mMatrix[3].y,
             mMatrix[3].z
         );
+        return tx;
     }
 
 }

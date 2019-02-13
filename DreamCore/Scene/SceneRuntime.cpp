@@ -11,35 +11,24 @@
  */
 
 #include "SceneRuntime.h"
-
 #include <iostream>
-
-#include "../Project/ProjectRuntime.h"
-
 #include "SceneDefinition.h"
-
 #include "SceneObject/SceneObjectDefinition.h"
+#include "SceneObject/SceneObjectTasks.h"
 #include "SceneObject/SceneObjectRuntime.h"
-
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Script/ScriptComponent.h"
 #include "../Components/Input/InputComponent.h"
-
-
-#include "../TaskManager/TaskManager.h"
-#include "SceneObject/SceneObjectTasks.h"
 #include "../Components/Animation/AnimationTasks.h"
 #include "../Components/Audio/AudioTasks.h"
 #include "../Components/Path/PathTasks.h"
 #include "../Components/Scroller/ScrollerTasks.h"
 #include "../Components/Physics/PhysicsTasks.h"
 #include "../Components/Input/InputTasks.h"
-
 #include "../Components/Time.h"
 #include "../Components/Graphics/Camera.h"
-
 #include "../Components/Animation/AnimationRuntime.h"
 #include "../Components/Graphics/Shader/ShaderRuntime.h"
 #include "../Components/Audio/AudioRuntime.h"
@@ -47,6 +36,8 @@
 #include "../Components/Path/PathRuntime.h"
 #include "../Components/Scroller/ScrollerRuntime.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Project/ProjectRuntime.h"
+#include "../TaskManager/TaskManager.h"
 
 #ifdef max
 #undef max
@@ -74,7 +65,8 @@ namespace Dream
         mSceneCurrentTime(0),
         mMinDrawDistance(0.1f),
         mMaxDrawDistance(1000.0f),
-        mMeshCullDistance(1000.0f)
+        mMeshCullDistance(1000.0f),
+        mPlayerObject(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneRuntime");
@@ -837,5 +829,19 @@ namespace Dream
             }
             setSceneCurrentTime(frameTime-getSceneStartTime());
         }
+    }
+
+    void
+    SceneRuntime::setPlayerObject
+    (SceneObjectRuntime* po)
+    {
+        mPlayerObject = po;
+    }
+
+    SceneObjectRuntime*
+    SceneRuntime::getPlayerObject
+    () const
+    {
+       return mPlayerObject;
     }
 }

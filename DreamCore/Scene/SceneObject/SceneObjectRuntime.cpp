@@ -89,9 +89,15 @@ namespace Dream
         setLogClassName("SceneObjectRuntime");
         getLog()->trace( "Constructing Object" );
         #endif
+
         if (mRandomUuid)
         {
             mUuid = Uuid::generateUuid();
+        }
+
+        if (static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->getPlayerObject() == mUuid)
+        {
+            mSceneRuntime->setPlayerObject(this);
         }
     }
 

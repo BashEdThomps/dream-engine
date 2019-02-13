@@ -75,6 +75,7 @@ namespace Dream
 
         void setCenterOfMassTransform(const Transform& tx);
         void setCenterOfMassTransform(const Vector3& tx);
+        void setCenterOfMassTransform(float x, float y, float z);
         void setWorldTransform(const Transform& tx);
 
         Vector3 getLinearVelocity();

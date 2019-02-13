@@ -15,18 +15,20 @@
 
 #include "InputComponent.h"
 #include "InputTasks.h"
-#include "../../Scene/SceneRuntime.h"
+#include "../Transform.h"
 #include "../Script/ScriptRuntime.h"
+#include "../Graphics/Camera.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
 
 namespace Dream
 {
+
+
     InputComponent::InputComponent
-    (ProjectRuntime* rt, bool useKeyboard, bool useMouse, bool useJoystick)
+    (ProjectRuntime* rt)
         : Component (rt),
           mCurrentSceneRuntime(nullptr),
-          mUseKeyboard(useKeyboard),
-          mUseMouse(useMouse),
-          mUseJoystick(useJoystick),
           mJoystickMapping(JsPsxMapping),
           mPollDataTask(this),
           mExecuteScriptTask(this)
@@ -64,6 +66,30 @@ namespace Dream
     {
         if (mCurrentSceneRuntime)
         {
+            auto playerObject = mCurrentSceneRuntime->getPlayerObject();
+            if (playerObject)
+            {
+                mJoystickNavigation3D = JoystickNavigation3D(
+                    mJoystickState.getAxisData(mJoystickMapping.AnalogLeftXAxis),
+                    mJoystickState.getAxisData(mJoystickMapping.AnalogLeftYAxis),
+                    mJoystickState.getAxisData(mJoystickMapping.AnalogRightXAxis),
+                    mJoystickState.getAxisData(mJoystickMapping.AnalogRightYAxis)
+                );
+
+                static mat4 ident(1.0f);
+                static vec3 yAxis(0.0f,1.0f,0.0f);
+                Transform& playerTransform = playerObject->getTransform();
+                Vector3 translation = playerTransform.getTranslation();
+                mat4 mtx = glm::translate(ident,translation.toGLM());
+                auto camera = mCurrentSceneRuntime->getCamera();
+                auto camYaw = camera->getYaw();
+                auto totalYaw =  mJoystickNavigation3D.getRightTheta()-camYaw;
+                mJoystickNavigation3D.setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
+                mtx = glm::rotate(mtx,totalYaw,yAxis);
+                mtx = glm::translate(mtx,vec3(mJoystickNavigation3D.getLeftVelocity(),0,0));
+                playerTransform.setMatrix(mtx);
+            }
+
             auto inputScript = mCurrentSceneRuntime->getInputScript();
             if (inputScript)
             {
@@ -80,30 +106,6 @@ namespace Dream
         mLastKeyboardState = mKeyboardState;
         mLastMouseState = mMouseState;
         mLastJoystickState = mJoystickState;
-    }
-
-    bool
-    InputComponent::usingKeyboard
-    ()
-    const
-    {
-        return mUseKeyboard;
-    }
-
-    bool
-    InputComponent::usingMouse
-    ()
-    const
-    {
-        return mUseMouse;
-    }
-
-    bool
-    InputComponent::usingJoystick
-    ()
-    const
-    {
-        return mUseJoystick;
     }
 
     bool
@@ -184,7 +186,9 @@ namespace Dream
         return 0.0f;
     }
 
-    JoystickMapping InputComponent::getJoystickMapping() const
+    JoystickMapping&
+    InputComponent::getJoystickMapping
+    ()
     {
         return mJoystickMapping;
     }
@@ -203,13 +207,24 @@ namespace Dream
         return &mExecuteScriptTask;
     }
 
-    SceneRuntime *InputComponent::getCurrentSceneRuntime() const
+    SceneRuntime*
+    InputComponent::getCurrentSceneRuntime
+    () const
     {
         return mCurrentSceneRuntime;
     }
 
-    void InputComponent::setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime)
+    void
+    InputComponent::setCurrentSceneRuntime
+    (SceneRuntime *currentSceneRuntime)
     {
         mCurrentSceneRuntime = currentSceneRuntime;
+    }
+
+    JoystickNavigation3D&
+    InputComponent::getJoystickNavigation3D
+    ()
+    {
+        return mJoystickNavigation3D;
     }
 }

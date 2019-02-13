@@ -413,6 +413,17 @@ namespace Dream
 
     void
     PhysicsObjectRuntime::setCenterOfMassTransform
+    (float x, float y, float z)
+    {
+        btTransform transform;
+        auto current = mRigidBody->getCenterOfMassTransform();
+        current.setOrigin(btVector3(x,y,z));
+        mRigidBody->setCenterOfMassTransform(current);
+    }
+
+
+    void
+    PhysicsObjectRuntime::setCenterOfMassTransform
     (const Vector3& tx)
     {
         cout << "POR: Setting COM " << tx.x() << "," << tx.y() << "," << tx.z() << endl;

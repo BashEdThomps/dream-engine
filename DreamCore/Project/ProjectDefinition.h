@@ -73,15 +73,6 @@ namespace Dream
 
         json getJson() override;
 
-        bool getCaptureKeyboard();
-        void setCaptureKeyboard(bool);
-
-        bool getCaptureMouse();
-        void setCaptureMouse(bool);
-
-        bool getCaptureJoystick();
-        void setCaptureJoystick(bool);
-
         void deleteAssetDefinitions();
         void deleteSceneDefinitions();
 

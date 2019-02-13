@@ -528,48 +528,6 @@ namespace Dream
         return handlesMap;
     }
 
-    bool ProjectDefinition::getCaptureKeyboard()
-    {
-        if (mJson[Constants::PROJECT_CAPTURE_KEYBOARD].is_null())
-        {
-            mJson[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
-        }
-        return mJson[Constants::PROJECT_CAPTURE_KEYBOARD];
-    }
-
-    void ProjectDefinition::setCaptureKeyboard(bool cap)
-    {
-        mJson[Constants::PROJECT_CAPTURE_KEYBOARD] = cap;
-    }
-
-    bool ProjectDefinition::getCaptureMouse()
-    {
-        if (mJson[Constants::PROJECT_CAPTURE_MOUSE].is_null())
-        {
-            mJson[Constants::PROJECT_CAPTURE_MOUSE] = false;
-        }
-        return mJson[Constants::PROJECT_CAPTURE_MOUSE];
-    }
-
-    void ProjectDefinition::setCaptureMouse(bool cap)
-    {
-        mJson[Constants::PROJECT_CAPTURE_MOUSE] = cap;
-    }
-
-    bool ProjectDefinition::getCaptureJoystick()
-    {
-        if (mJson[Constants::PROJECT_CAPTURE_JOYSTICK].is_null())
-        {
-            mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
-        }
-        return mJson[Constants::PROJECT_CAPTURE_JOYSTICK];
-    }
-
-    void ProjectDefinition::setCaptureJoystick(bool cap)
-    {
-        mJson[Constants::PROJECT_CAPTURE_JOYSTICK] = cap;
-    }
-
     void ProjectDefinition::deleteAssetDefinitions()
     {
         for (auto ad : mAssetDefinitions)
@@ -690,23 +648,16 @@ namespace Dream
     (const string &name)
     {
         json j = json::object();
-
         j[Constants::NAME] = name;
         j[Constants::UUID] = Uuid::generateUuid();
         j[Constants::PROJECT_AUTHOR] = "";
         j[Constants::PROJECT_DESCRIPTION] = "";
         j[Constants::PROJECT_STARTUP_SCENE] = "";
-        j[Constants::PROJECT_CAPTURE_JOYSTICK] = false;
-        j[Constants::PROJECT_CAPTURE_MOUSE] = false;
-        j[Constants::PROJECT_CAPTURE_KEYBOARD] = false;
-
         j[Constants::PROJECT_WINDOW_SIZE] = json::object();
         j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;
         j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = Constants::PROJECT_DEFAULT_WINDOW_HEIGHT;
-
         j[Constants::PROJECT_ASSET_ARRAY] = json::array();
         j[Constants::PROJECT_SCENE_ARRAY] = json::array();
-
         return new ProjectDefinition(j);
     }
 }

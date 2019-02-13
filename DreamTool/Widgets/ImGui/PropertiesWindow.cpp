@@ -338,29 +338,6 @@ namespace DreamTool
         }
         ImGui::Separator();
 
-        // Capture mouse,keyboard,joystick
-        bool usingKeyboard = projDef->getCaptureKeyboard();
-        bool usingMouse = projDef->getCaptureMouse();
-        bool usingGamepad = projDef->getCaptureJoystick();
-
-        ImGui::Columns(3);
-        if (ImGui::Checkbox("Keyboard",&usingKeyboard))
-        {
-            projDef->setCaptureKeyboard(usingKeyboard);
-        }
-        ImGui::NextColumn();
-        if(ImGui::Checkbox("Mouse", &usingMouse))
-        {
-            projDef->setCaptureMouse(usingMouse);
-        }
-        ImGui::NextColumn();
-        if(ImGui::Checkbox("Gamepad",  &usingGamepad))
-        {
-            projDef->setCaptureJoystick(usingGamepad);
-        }
-        ImGui::Columns(1);
-        ImGui::Separator();
-
         // Window Dimensions
         int windowSize[2] = {
             projDef->getWindowWidth(),
@@ -550,7 +527,21 @@ namespace DreamTool
                     }
                 }
             }
+
             ImGui::Text("Focused on: %s",focusedStr.c_str());
+
+            if (sceneRuntime)
+            {
+                auto* po = sceneRuntime->getSceneObjectRuntimeByUuid(sceneDef->getPlayerObject());
+                if (po)
+                {
+                    ImGui::Text("PlayerObject: %s",po->getNameAndUuidString().c_str());
+                }
+            }
+            else
+            {
+                ImGui::Text("PlayerObject: %d",sceneDef->getPlayerObject());
+            }
 
             string nearestStr = "None";
             SceneObjectRuntime* nearest = nullptr;
@@ -799,6 +790,27 @@ namespace DreamTool
                 {
                     auto cam = sRunt->getCamera();
                     cam->setFocusedSceneObejct(soRuntime);
+                }
+            }
+        }
+        ImGui::NextColumn();
+
+        if (ImGui::Button("Set as Player Object"))
+        {
+            if(soDef)
+            {
+                auto sDef = soDef->getSceneDefinition();
+                if (sDef)
+                {
+                    sDef->setPlayerObject(soDef->getUuid());
+                }
+            }
+            if (soRuntime)
+            {
+                auto sRunt = soRuntime->getSceneRuntime();
+                if (sRunt)
+                {
+                    sRunt->setPlayerObject(soRuntime);
                 }
             }
         }

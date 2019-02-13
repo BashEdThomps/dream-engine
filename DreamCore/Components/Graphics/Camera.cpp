@@ -37,10 +37,6 @@ namespace Dream
           mProjectionMatrix(mat4(1.0f)),
           mFrustum(Frustum(this)),
           mFocusedSceneObject(nullptr),
-          mFocusPitch(0.0f),
-          mFocusYaw(0.0f),
-          mFocusRadius(10.0f),
-          mFocusElevation(0.0f),
           mFocusTranslation(0.0f),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -140,10 +136,10 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-           mFocusRadius -= mMovementSpeed*scalar;
-           if (mFocusRadius < 0.0f)
+           mTranslation.setZ(mTranslation.z() - (mMovementSpeed*scalar));
+           if (mTranslation.z() < 0.0f)
            {
-               mFocusRadius = 0.1f;
+               mTranslation.setZ(0.1f);
            }
         }
         else
@@ -160,7 +156,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-           mFocusRadius += mMovementSpeed*scalar;
+           mTranslation.setZ(mTranslation.z() + (mMovementSpeed*scalar));
         }
         else
         {
@@ -176,7 +172,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            mFocusYaw -= mMovementSpeed*scalar;
+            mYaw -= mMovementSpeed*scalar;
         }
         else
         {
@@ -192,7 +188,7 @@ namespace Dream
     {
         if (mFocusedSceneObject)
         {
-            mFocusYaw += mMovementSpeed*scalar;
+            mYaw += mMovementSpeed*scalar;
         }
         else
         {
@@ -206,28 +202,14 @@ namespace Dream
     Camera::flyUp
     (float scalar)
     {
-        if (mFocusedSceneObject)
-        {
-            mFocusElevation += mMovementSpeed*scalar;
-        }
-        else
-        {
-            mTranslation.setY(mTranslation.y() + mMovementSpeed*scalar);
-        }
+        mTranslation.setY(mTranslation.y() + mMovementSpeed*scalar);
     }
 
     void
     Camera::flyDown
     (float scalar)
     {
-        if (mFocusedSceneObject)
-        {
-            mFocusElevation -= mMovementSpeed*scalar;
-        }
-        else
-        {
-            mTranslation.setY(mTranslation.y() - mMovementSpeed*scalar);
-        }
+        mTranslation.setY(mTranslation.y() - mMovementSpeed*scalar);
     }
 
     Vector3
@@ -304,11 +286,11 @@ namespace Dream
     {
         mat4 mtx(1.0f);
         Vector3 newTarget = target;
-        newTarget.setY(newTarget.y() + mFocusElevation);
+        newTarget.setY(newTarget.y() + mTranslation.y());
         mtx = translate(mtx, newTarget.toGLM());
-        mtx = rotate(mtx,mFocusPitch, vec3(1,0,0));
-        mtx = rotate(mtx,mFocusYaw, vec3(0,1,0));
-        mtx = translate(mtx,vec3(0,0,-mFocusRadius));
+        mtx = rotate(mtx,mYaw, vec3(1,0,0));
+        mtx = rotate(mtx,mPitch, vec3(0,1,0));
+        mtx = translate(mtx,vec3(0,0,-mTranslation.z()));
         mFocusTranslation = Vector3(mtx[3][0],mtx[3][1],mtx[3][2]);
     }
 
@@ -436,52 +418,6 @@ namespace Dream
     }
 
     float
-    Camera::getFocusPitch
-    () const
-    {
-        return mFocusPitch;
-    }
-
-    void
-    Camera::setFocusPitch
-    (float focusPitch)
-    {
-        mFocusPitch = focusPitch;
-    }
-
-    float Camera::getFocusYaw() const
-    {
-        return mFocusYaw;
-    }
-
-    void Camera::setFocusYaw(float focusYaw)
-    {
-        mFocusYaw = focusYaw;
-    }
-
-    float Camera::getFocusRadius() const
-    {
-        return mFocusRadius;
-    }
-
-    void Camera::setFocusRadius(float focusRadius)
-    {
-        mFocusRadius = focusRadius;
-    }
-
-    float Camera::getFocusElevation() const
-    {
-        return mFocusElevation;
-    }
-
-    void
-    Camera::setFocusElevation
-    (float focusElevation)
-    {
-        mFocusElevation = focusElevation;
-    }
-
-    float
     Camera::getMinimumDraw
     () const
     {
@@ -524,4 +460,4 @@ namespace Dream
         mMeshCullDistance = meshCullDistance;
     }
 
-} // End of Dream
+}

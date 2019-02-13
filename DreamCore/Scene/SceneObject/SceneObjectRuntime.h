@@ -56,6 +56,37 @@ namespace Dream
 
     class SceneObjectRuntime : public Runtime
     {
+        AnimationRuntime* mAnimationRuntime;
+        AudioRuntime* mAudioRuntime;
+        LightRuntime* mLightRuntime;
+        ParticleEmitterRuntime* mParticleEmitterRuntime;
+        PathRuntime* mPathRuntime;
+        PhysicsObjectRuntime* mPhysicsObjectRuntime;
+        ScriptRuntime* mScriptRuntime;
+        ModelRuntime* mModelRuntime;
+        ScrollerRuntime* mScrollerRuntime;
+
+        Transform mInitialTransform;
+        Transform mTransform;
+        vector<Event> mEventQueue;
+        map<AssetType,uint32_t> mAssetDefinitions;
+        vector<SceneObjectRuntime*> mChildRuntimes;
+        SceneRuntime* mSceneRuntime;
+        SceneObjectRuntime* mParentRuntime;
+        BoundingBox mBoundingBox;
+        bool mHasCameraFocus;
+        bool mDeleted;
+        bool mHidden;
+        bool mAlwaysDraw;
+        bool mRandomUuid;
+        long mDeferredFor;
+        long mObjectLifetime;
+        long mDieAfter;
+        LifetimeUpdateTask mLifetimeUpdateTask;
+        ScriptOnInitTask mScriptOnInitTask;
+        ScriptOnUpdateTask mScriptOnUpdateTask;
+        ScriptOnEventTask mScriptOnEventTask;
+
     public:
         SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr, bool randomUuid = false);
         ~SceneObjectRuntime() override;
@@ -184,36 +215,6 @@ namespace Dream
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();
 
-    private:
-        AnimationRuntime* mAnimationRuntime;
-        AudioRuntime* mAudioRuntime;
-        LightRuntime* mLightRuntime;
-        ParticleEmitterRuntime* mParticleEmitterRuntime;
-        PathRuntime* mPathRuntime;
-        PhysicsObjectRuntime* mPhysicsObjectRuntime;
-        ScriptRuntime* mScriptRuntime;
-        ModelRuntime* mModelRuntime;
-        ScrollerRuntime* mScrollerRuntime;
 
-        Transform mInitialTransform;
-        Transform mTransform;
-        vector<Event> mEventQueue;
-        map<AssetType,uint32_t> mAssetDefinitions;
-        vector<SceneObjectRuntime*> mChildRuntimes;
-        SceneRuntime* mSceneRuntime;
-        SceneObjectRuntime* mParentRuntime;
-        BoundingBox mBoundingBox;
-        bool mHasCameraFocus;
-        bool mDeleted;
-        bool mHidden;
-        bool mAlwaysDraw;
-        bool mRandomUuid;
-        long mDeferredFor;
-        long mObjectLifetime;
-        long mDieAfter;
-        LifetimeUpdateTask mLifetimeUpdateTask;
-        ScriptOnInitTask mScriptOnInitTask;
-        ScriptOnUpdateTask mScriptOnUpdateTask;
-        ScriptOnEventTask mScriptOnEventTask;
     };
 }

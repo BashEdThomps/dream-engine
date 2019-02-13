@@ -63,10 +63,6 @@ namespace Dream
         Frustum mFrustum;
         // Focus on SO
         SceneObjectRuntime* mFocusedSceneObject;
-        float mFocusPitch;
-        float mFocusYaw;
-        float mFocusRadius;
-        float mFocusElevation;
         Vector3  mFocusTranslation;
         float mMinimumDraw;
         float mMaximumDraw;

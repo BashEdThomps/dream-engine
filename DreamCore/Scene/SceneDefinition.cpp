@@ -521,4 +521,20 @@ namespace Dream
     {
        mJson[Constants::SCENE_NANOVG_SCRIPT] = shader;
     }
+
+    void
+    SceneDefinition::setPlayerObject
+    (uint32_t po)
+    {
+        mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT] = po;
+    }
+
+    uint32_t SceneDefinition::getPlayerObject()
+    {
+        if (!mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT].is_number())
+        {
+            mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT] = 0;
+        }
+        return mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT];
+    }
 }

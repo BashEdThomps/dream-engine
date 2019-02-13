@@ -108,5 +108,8 @@ namespace Dream
 
         uint32_t getNanoVGScript();
         void setNanoVGScript(uint32_t shader);
+
+        void setPlayerObject(uint32_t po);
+        uint32_t getPlayerObject();
     };
 }

@@ -225,9 +225,7 @@ namespace Dream
     {
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         projectDef->lock();
-        mInputComponent = new InputComponent(
-            this, projectDef->getCaptureKeyboard(), projectDef->getCaptureMouse(),
-            projectDef->getCaptureJoystick());
+        mInputComponent = new InputComponent(this);
         projectDef->unlock();
         mInputComponent->lock();
 
@@ -827,7 +825,6 @@ namespace Dream
     (SceneRuntime* rt, bool clearCaches)
     {
         rt->destroyRuntime();
-        delete rt;
         if (clearCaches)
         {
             clearAllCaches();

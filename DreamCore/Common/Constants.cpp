@@ -113,9 +113,6 @@ namespace Dream
     const string Constants::PROJECT_WINDOW_SIZE  = "windowSize";
     const string Constants::PROJECT_WINDOW_WIDTH = "width";
     const string Constants::PROJECT_WINDOW_HEIGHT = "height";
-    const string Constants::PROJECT_CAPTURE_JOYSTICK = "capture_joystick";
-    const string Constants::PROJECT_CAPTURE_KEYBOARD = "capture_keyboard";
-    const string Constants::PROJECT_CAPTURE_MOUSE = "capture_mouse";
     const int    Constants::PROJECT_DEFAULT_WINDOW_WIDTH = 1280;
     const int    Constants::PROJECT_DEFAULT_WINDOW_HEIGHT = 720;
 
@@ -225,6 +222,7 @@ namespace Dream
     const string Constants::SCENE_OBJECT_HIDDEN = "hidden";
     const string Constants::SCENE_OBJECT_DEFERRED = "deferred";
     const string Constants::SCENE_OBJECT_DIE_AFTER = "die_after";
+    const string Constants::SCENE_OBJECT_PLAYER_OBJECT = "player_object";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";

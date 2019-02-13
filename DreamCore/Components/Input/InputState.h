@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::string;
 
 namespace Dream
 {
@@ -14,7 +17,7 @@ namespace Dream
         unsigned char ButtonData[32] = {0};
         int AxisCount = 0;
         float AxisData[32] = {0.0f};
-        float DeadZone = 0.25f;
+        float DeadZone = 0.15f;
 
         float getAxisData(int idx)
         {
@@ -40,6 +43,4 @@ namespace Dream
     {
         bool KeysDown[512] = {false};
     };
-
-
 }
