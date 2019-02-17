@@ -90,37 +90,39 @@ namespace Dream
                     mTaskQueueMutex.unlock();
                 }
 
-                mDestructionTaskQueueMutex.lock();
-                vector< shared_ptr<DestructionTask> > completed;
-                for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
+                if(mDestructionTaskQueueMutex.try_lock())
                 {
-                    auto& t = (*itr);
-                    if (t->isWaitingForDependencies())
+                    vector< shared_ptr<DestructionTask> > completed;
+                    for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
                     {
-                        t->incrementDeferralCount();
-                    }
-                    else
-                    {
-                        t->setState(TaskState::ACTIVE);
-                        t->execute();
+                        auto& t = (*itr);
+                        if (t->isWaitingForDependencies())
+                        {
+                            t->incrementDeferralCount();
+                        }
+                        else
+                        {
+                            t->setState(TaskState::ACTIVE);
+                            t->execute();
+                        }
+
+                        if (t->getState() == TaskState::COMPLETED)
+                        {
+                           completed.push_back(t);
+                        }
                     }
 
-                    if (t->getState() == TaskState::COMPLETED)
+                    for (auto t : completed)
                     {
-                       completed.push_back(t);
+                        t->notifyDependents();
+                        auto itr = find(mDestructionTaskQueue.begin(),mDestructionTaskQueue.end(), t);
+                        if (itr != mDestructionTaskQueue.end())
+                        {
+                            mDestructionTaskQueue.erase(itr);
+                        }
                     }
+                    mDestructionTaskQueueMutex.unlock();
                 }
-
-                for (auto t : completed)
-                {
-                    t->notifyDependents();
-                    auto itr = find(mDestructionTaskQueue.begin(),mDestructionTaskQueue.end(), t);
-                    if (itr != mDestructionTaskQueue.end())
-                    {
-                        mDestructionTaskQueue.erase(itr);
-                    }
-                }
-                mDestructionTaskQueueMutex.unlock();
 
                 #ifdef DREAM_LOG
                 getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
@@ -136,6 +138,7 @@ namespace Dream
 
         void TaskThread::clearFence()
         {
+            assert(mFence);
             #ifdef DREAM_LOG
             getLog()->critical("Clearing fence for thread {}",getThreadId());
             #endif
@@ -151,6 +154,7 @@ namespace Dream
         {
             if(mTaskQueueMutex.try_lock())
             {
+                assert(mFence);
                 mTaskQueue.push_back(t);
                 t->setThreadId(mThreadId);
                 mTaskQueueMutex.unlock();
@@ -163,6 +167,7 @@ namespace Dream
         {
             if(mDestructionTaskQueueMutex.try_lock())
             {
+                assert(mFence);
                 dt->setThreadId(mThreadId);
                 mDestructionTaskQueue.push_back(dt);
                 mDestructionTaskQueueMutex.unlock();
@@ -171,7 +176,7 @@ namespace Dream
             return false;
         }
 
-        void TaskThread::setRunning(volatile bool running)
+        void TaskThread::setRunning(bool running)
         {
             mRunning = running;
         }

@@ -503,9 +503,11 @@ namespace Dream
         {
             mFrameDurationHistory.pop_front();
         }
+
         sr->createSceneTasks();
-        sr->getCamera()->update();
+        mTaskManager->clearFences();
         mTaskManager->waitForFence();
+        sr->getCamera()->update();
         return true;
     }
 
@@ -612,8 +614,8 @@ namespace Dream
     {
         if (mSceneRuntimeVector.empty())
         {
-            mTaskManager->clearFences();
-            mTaskManager->waitForFence();
+            //mTaskManager->clearFences();
+            //mTaskManager->waitForFence();
             mGraphicsComponent->executeTaskQueue();
             mGraphicsComponent->executeDestructionTaskQueue();
         }

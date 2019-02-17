@@ -17,7 +17,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
-#include "SceneObjectTasks.h"
 #include "../../Components/Script/ScriptTasks.h"
 #include "../../Components/Graphics/Frustum.h"
 #include "../../Common/Runtime.h"
@@ -87,7 +86,6 @@ namespace Dream
         long mDeferredFor;
         long mObjectLifetime;
         long mDieAfter;
-        LifetimeUpdateTask mLifetimeUpdateTask;
         ScriptOnInitTask mScriptOnInitTask;
         ScriptOnUpdateTask mScriptOnUpdateTask;
         ScriptOnEventTask mScriptOnEventTask;
@@ -213,14 +211,13 @@ namespace Dream
 
         long getObjectLifetime() const;
         void setObjectLifetime(long l);
-        void increaseLifetime(long l);
 
         long getDieAfter() const;
         void setDieAfter(long);
+        void updateLifetime();
 
         bool loadChildrenFromDefinition(SceneObjectDefinition* definition);
 
-        LifetimeUpdateTask* getLifetimeUpdateTask();
         ScriptOnInitTask* getScriptOnInitTask();
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();

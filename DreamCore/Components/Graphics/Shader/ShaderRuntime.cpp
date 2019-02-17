@@ -721,6 +721,7 @@ namespace Dream
     {
         static mat4 data[100];
         size_t nRuntimes = runtimes.size();
+        nRuntimes = (nRuntimes > MAX_RUNTIMES ? MAX_RUNTIMES : nRuntimes);
         for (size_t i = 0; i<nRuntimes; i++)
         {
             data[i] = runtimes[i]->getTransform().getMatrix();

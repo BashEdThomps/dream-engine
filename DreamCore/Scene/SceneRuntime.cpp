@@ -14,7 +14,6 @@
 #include <iostream>
 #include "SceneDefinition.h"
 #include "SceneObject/SceneObjectDefinition.h"
-#include "SceneObject/SceneObjectTasks.h"
 #include "SceneObject/SceneObjectRuntime.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
@@ -38,6 +37,7 @@
 #include "../Components/Graphics/Shader/ShaderCache.h"
 #include "../Components/ObjectEmitter/ObjectEmitterRuntime.h"
 #include "../Components/ObjectEmitter/ObjectEmitterTasks.h"
+#include "../Components/Script/ScriptRuntime.h"
 #include "../Project/ProjectRuntime.h"
 #include "../TaskManager/TaskManager.h"
 
@@ -707,21 +707,13 @@ namespace Dream
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                //rt->lock();
-                LifetimeUpdateTask* lt = rt->getLifetimeUpdateTask();
-                // SceneObject
-                lt->clearState();
-                lt->dependsOn(inputComponent->getExecuteScriptTask());
-                physicsDependencies.push_back(lt);
-                taskManager->pushTask(lt);
-
+                rt->updateLifetime();
                 // Animation
                 if (rt->hasAnimationRuntime())
                 {
                     auto anim = rt->getAnimationRuntime();
                     auto ut = anim->getUpdateTask();
                     ut->clearState();
-                    ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
                 // Audio
@@ -730,7 +722,6 @@ namespace Dream
                     auto audio = rt->getAudioRuntime();
                     auto ut = audio->getMarkersUpdateTask();
                     ut->clearState();
-                    ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
 
@@ -742,7 +733,6 @@ namespace Dream
                     {
                         auto ut = pObj->getAddObjectTask();
                         ut->clearState();
-                        ut->dependsOn(lt);
                         physicsDependencies.push_back(ut);
                         taskManager->pushTask(ut);
                     }
@@ -753,7 +743,6 @@ namespace Dream
                     auto path = rt->getPathRuntime();
                     auto ut = path->getUpdateTask();
                     ut->clearState();
-                    ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
                 // Scroller
@@ -762,7 +751,6 @@ namespace Dream
                     auto scr = rt->getScrollerRuntime();
                     auto ut = scr->getUpdateTask();
                     ut->clearState();
-                    ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
 
@@ -772,7 +760,6 @@ namespace Dream
                     auto oe = rt->getObjectEmitterRuntime();
                     auto ut = oe->getUpdateTask();
                     ut->clearState();
-                    ut->dependsOn(lt);
                     taskManager->pushTask(ut);
                 }
 
@@ -781,12 +768,11 @@ namespace Dream
                 {
                     auto script = rt->getScriptRuntime();
                     auto load = script->getConstructionTask();
-                    if (load->getState() == TaskState::QUEUED)
+                    if (load->getState() == TaskState::NEW)
                     {
                         // Don't clear state of load
-                        load->dependsOn(lt);
-                        physicsDependencies.push_back(load);
                         taskManager->pushTask(load);
+                        load->setState(TaskState::QUEUED);
                     }
                     else if (load->getState() == TaskState::COMPLETED)
                     {
@@ -794,8 +780,6 @@ namespace Dream
                         {
                             auto init = rt->getScriptOnInitTask();
                             init->clearState();
-                            init->dependsOn(lt);
-                            physicsDependencies.push_back(init);
                             taskManager->pushTask(init);
                         }
                         else
@@ -804,15 +788,11 @@ namespace Dream
                             {
                                 auto event = rt->getScriptOnEventTask();
                                 event->clearState();
-                                event->dependsOn(lt);
-                                physicsDependencies.push_back(event);
                                 taskManager->pushTask(event);
                             }
 
                             auto update = rt->getScriptOnUpdateTask();
                             update->clearState();
-                            update->dependsOn(lt);
-                            physicsDependencies.push_back(update);
                             taskManager->pushTask(update);
                         }
                     }
@@ -840,8 +820,6 @@ namespace Dream
         {
             //graphicsComponent->pushTask(mDrawDebugTask);
         }
-
-        taskManager->clearFences();
     }
 
 

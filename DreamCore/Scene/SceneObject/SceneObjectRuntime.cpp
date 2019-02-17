@@ -49,7 +49,7 @@
 #include "../../Common/Uuid.h"
 #include "../../TaskManager/TaskManager.h"
 #include "../../Components/Script/ScriptTasks.h"
-#include "SceneObjectTasks.h"
+#include "../../Components/Time.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 
@@ -83,7 +83,6 @@ namespace Dream
         mDeferredFor(0),
         mObjectLifetime(0),
         mDieAfter(0),
-        mLifetimeUpdateTask(this),
         mScriptOnInitTask(this),
         mScriptOnUpdateTask(this),
         mScriptOnEventTask(this),
@@ -1304,17 +1303,6 @@ namespace Dream
     }
 
     void
-    SceneObjectRuntime::increaseLifetime
-    (long l)
-    {
-        mObjectLifetime += l;
-        if (mDieAfter > 0 && mObjectLifetime > mDieAfter)
-        {
-            setDeleted(true);
-        }
-    }
-
-    void
     SceneObjectRuntime::setDieAfter
     (long d)
     {
@@ -1327,13 +1315,6 @@ namespace Dream
     const
     {
         return mDieAfter;
-    }
-
-    LifetimeUpdateTask*
-    SceneObjectRuntime::getLifetimeUpdateTask
-    ()
-    {
-        return &mLifetimeUpdateTask;
     }
 
     ScriptOnInitTask*
@@ -1355,5 +1336,34 @@ namespace Dream
     ()
     {
         return &mScriptOnUpdateTask;
+    }
+    void
+    SceneObjectRuntime::updateLifetime
+    ()
+    {
+        long timeDelta = getSceneRuntime()->getProjectRuntime()->getTime()->getFrameTimeDelta();
+        if (mDeferredFor > 0)
+        {
+            long deferral = mDeferredFor-timeDelta;
+            #ifdef DREAM_LOG
+            getLog()->critical("Reducing defferal by {} to {} for {}", timeDelta, deferral, getNameAndUuidString());
+            #endif
+            setDeferredFor(deferral);
+            if (deferral < 0)
+            {
+                #ifdef DREAM_LOG
+                getLog()->critical("Loading Deferred Runtime {}", getNameAndUuidString());
+                #endif
+                loadDeferred();
+            }
+        }
+        else
+        {
+            mObjectLifetime += timeDelta;
+            if (mDieAfter > 0 && mObjectLifetime > mDieAfter)
+            {
+                setDeleted(true);
+            }
+        }
     }
 }

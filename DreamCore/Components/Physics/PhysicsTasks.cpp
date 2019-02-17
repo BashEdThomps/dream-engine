@@ -26,21 +26,13 @@ namespace Dream
             getLog()->critical("Executing on thread {}",mThreadId);
             getLog()->trace("Adding SceneObject to physics world");
             #endif
-            if(mRuntime->tryLock())
+
+            if(mComponent->tryLock())
             {
-                if(mComponent->tryLock())
-                {
                     mComponent->addPhysicsObjectRuntime(mRuntime);
                     mComponent->unlock();
                     mRuntime->setInPhysicsWorld(true);
                     setState(TaskState::COMPLETED);
-                }
-                else
-                {
-                    setState(TaskState::WAITING);
-                    mDeferralCount++;
-                }
-                mRuntime->unlock();
             }
             else
             {

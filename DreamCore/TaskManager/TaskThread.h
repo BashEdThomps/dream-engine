@@ -28,7 +28,7 @@ namespace Dream
         mutex mDestructionTaskQueueMutex;
         atomic<bool> mRunning;
         atomic<bool> mFence;
-        int mThreadId;
+        atomic<int> mThreadId;
     public:
 
          TaskThread (int id);
@@ -39,7 +39,7 @@ namespace Dream
          bool getFence();
          bool pushTask(Task* t);
          bool pushDestructionTask(const shared_ptr<DestructionTask>& dt);
-         void setRunning(volatile bool running);
+         void setRunning(bool running);
          int getThreadId();
          const vector<Task*>& getDebugTaskQueue();
     };

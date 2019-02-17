@@ -40,10 +40,10 @@ namespace Dream
           mVAO(0),
           mVBO(0),
           mIBO(0),
-          mIndicesCount(indices.size()),
-          mVerticesCount(vertices.size()),
           mVertices(vertices),
           mIndices(indices),
+          mVerticesCount(vertices.size()),
+          mIndicesCount(indices.size()),
           mBoundingBox(bb),
           mInitMeshTask(this),
           mFreeMeshTask(nullptr)
@@ -180,9 +180,16 @@ namespace Dream
         #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
-        GLsizei size = mRuntimesInFrustum.size();
-        GLsizei indices = mIndicesCount;
-        GLsizei tris = indices/3;
+        size_t size = mRuntimesInFrustum.size();
+        if (size > ShaderRuntime::MAX_RUNTIMES)
+        {
+            #ifdef DREAM_LOG
+            getLog()->trace("(Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+            #endif
+            size = ShaderRuntime::MAX_RUNTIMES;
+        }
+        size_t indices = mIndicesCount;
+        size_t tris = indices/3;
         MeshesDrawn += size;
         TrianglesDrawn += tris*size;
         glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
@@ -205,9 +212,17 @@ namespace Dream
         #endif
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
-        GLsizei size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
-        GLsizei indices = mIndicesCount;
-        GLsizei tris = indices/3;
+        size_t size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
+        if (size > ShaderRuntime::MAX_RUNTIMES)
+        {
+            size = ShaderRuntime::MAX_RUNTIMES;
+            #ifdef DREAM_LOG
+            getLog()->trace("(Shadow) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+            #endif
+        }
+
+        size_t indices = mIndicesCount;
+        size_t tris = indices/3;
         ShadowMeshesDrawn += size;
         ShadowTrianglesDrawn += tris*size;
         glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);

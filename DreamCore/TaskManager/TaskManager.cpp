@@ -123,12 +123,25 @@ namespace Dream
            #ifdef DREAM_LOG
            getLog()->critical("... Waiting for fence ...");
            #endif
+           int trys = 0;
            while (true)
            {
                bool result = true;
                for (TaskThread* t : mThreadVector)
                {
+                   trys++;
+                   #ifdef DREAM_LOG
+                   getLog()->critical("Trying for {} time",trys);
+                   #endif
+
                    result = result && t->getFence();
+                   if (!result)
+                   {
+                       #ifdef DREAM_LOG
+                       getLog()->critical("Thread {} is still working",t->getThreadId());
+                       #endif
+                       break;
+                   }
                }
                if (result)
                {

@@ -65,9 +65,33 @@ namespace Dream
     ()
     {
         mConstructionTask.setScript(this);
-        mConstructionTask.setState(TaskState::QUEUED);
+        mConstructionTask.setState(TaskState::NEW);
         mLoaded = false;
         return true;
+    }
+
+    bool
+    ScriptRuntime::getInitialised
+    (SceneObjectRuntime* sor)
+    {
+       return mInitialised[sor->getUuid()];
+    }
+
+    ScriptConstructionTask*
+    ScriptRuntime::getConstructionTask
+    ()
+    {
+        return &mConstructionTask;
+    }
+
+    void
+    ScriptRuntime::removeInitialisedFlag(uint32_t id)
+    {
+        auto itr = mInitialised.find(id);
+        if (itr != mInitialised.end())
+        {
+            mInitialised.erase(itr);
+        }
     }
 
     bool ScriptRuntime::createScript()
@@ -391,29 +415,5 @@ namespace Dream
             return true;
         }
         return false;
-    }
-
-    bool
-    ScriptRuntime::getInitialised
-    (SceneObjectRuntime* sor)
-    {
-       return mInitialised[sor->getUuid()];
-    }
-
-    ScriptConstructionTask*
-    ScriptRuntime::getConstructionTask
-    ()
-    {
-        return &mConstructionTask;
-    }
-
-    void
-    ScriptRuntime::removeInitialisedFlag(uint32_t id)
-    {
-        auto itr = mInitialised.find(id);
-        if (itr != mInitialised.end())
-        {
-            mInitialised.erase(itr);
-        }
     }
 }

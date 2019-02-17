@@ -13,6 +13,7 @@ namespace Dream
 
     enum TaskState
     {
+        NEW,
         CLEAR,
         QUEUED,
         WAITING,

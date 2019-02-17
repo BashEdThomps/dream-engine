@@ -27,7 +27,7 @@ namespace Dream
     class TaskManager : public DreamObject
     {
         vector<TaskThread*> mThreadVector;
-        size_t mNextThread;
+        atomic<size_t> mNextThread;
     public:
          TaskManager();
          ~TaskManager();
