@@ -39,6 +39,6 @@ namespace Dream
     public:
         TextureDestructionTask();
         void setGLID(GLuint id);
-        void execute();
+        void execute() override;
     };
 }

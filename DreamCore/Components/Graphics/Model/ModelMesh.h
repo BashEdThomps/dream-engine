@@ -38,6 +38,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <memory>
 #include <glm/glm.hpp>
 
 #include "../Material/MaterialRuntime.h"
@@ -49,6 +50,10 @@
 #include "ModelBone.h"
 #include "../../../Scene/SceneObject/BoundingBox.h"
 #include "ModelTasks.h"
+
+using std::vector;
+using std::shared_ptr;
+using std::string;
 
 namespace Dream
 {
@@ -109,6 +114,10 @@ namespace Dream
         GLuint getIBO() const;
         void setIBO(const GLuint& iBO);
         BoundingBox getBoundingBox() const;
+        void clearVertices();
+        void clearIndices();
+        size_t getIndicesCount();
+        size_t getVerticesCount();
 
     private:
         ModelRuntime* mParent;
@@ -121,8 +130,10 @@ namespace Dream
         vector<GLuint> mIndices;
         vector<SceneObjectRuntime*> mRuntimes;
         vector<SceneObjectRuntime*> mRuntimesInFrustum;
+        size_t mVerticesCount;
+        size_t mIndicesCount;
         BoundingBox mBoundingBox;
         ModelInitMeshTask mInitMeshTask;
-        ModelFreeMeshTask mFreeMeshTask;
+        shared_ptr<ModelFreeMeshTask> mFreeMeshTask;
     };
 }

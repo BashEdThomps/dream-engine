@@ -30,7 +30,7 @@ namespace Dream
         ModelMesh* mMesh;
     public:
         ModelInitMeshTask(ModelMesh* mesh);
-        void execute();
+        void execute() override;
     };
 
     class ModelFreeMeshTask : public GraphicsComponentDestructionTask
@@ -41,6 +41,6 @@ namespace Dream
     public:
        ModelFreeMeshTask();
        void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
-       void execute();
+       void execute() override;
     };
 }

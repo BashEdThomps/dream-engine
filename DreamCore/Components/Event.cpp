@@ -26,7 +26,7 @@ namespace Dream
 #endif
     }
 
-    CollisionData Event::getCollisionData() const
+    CollisionData& Event::getCollisionData()
     {
         return mCollisionData;
     }

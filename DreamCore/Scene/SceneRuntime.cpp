@@ -36,6 +36,8 @@
 #include "../Components/Path/PathRuntime.h"
 #include "../Components/Scroller/ScrollerRuntime.h"
 #include "../Components/Graphics/Shader/ShaderCache.h"
+#include "../Components/ObjectEmitter/ObjectEmitterRuntime.h"
+#include "../Components/ObjectEmitter/ObjectEmitterTasks.h"
 #include "../Project/ProjectRuntime.h"
 #include "../TaskManager/TaskManager.h"
 
@@ -683,7 +685,6 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
-
         // Poll Data
         inputComponent->setCurrentSceneRuntime(this);
         inputComponent->getPollDataTask()->clearState();
@@ -694,6 +695,11 @@ namespace Dream
         inputComponent->getExecuteScriptTask()->dependsOn(inputComponent->getPollDataTask());
         taskManager->pushTask(inputComponent->getExecuteScriptTask());
 
+        if (mInputScript->getConstructionTask()->getState() == TaskState::QUEUED)
+        {
+           taskManager->pushTask(mInputScript->getConstructionTask());
+        }
+
         // Process SceneObjects
         vector<Task*> physicsDependencies;
         mRootSceneObjectRuntime->applyToAll
@@ -701,7 +707,7 @@ namespace Dream
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
             [&](SceneObjectRuntime* rt)
             {
-                rt->lock();
+                //rt->lock();
                 LifetimeUpdateTask* lt = rt->getLifetimeUpdateTask();
                 // SceneObject
                 lt->clearState();
@@ -737,6 +743,7 @@ namespace Dream
                         auto ut = pObj->getAddObjectTask();
                         ut->clearState();
                         ut->dependsOn(lt);
+                        physicsDependencies.push_back(ut);
                         taskManager->pushTask(ut);
                     }
                 }
@@ -759,31 +766,55 @@ namespace Dream
                     taskManager->pushTask(ut);
                 }
 
+                // Object Emitter
+                if (rt->hasObjectEmitterRuntime())
+                {
+                    auto oe = rt->getObjectEmitterRuntime();
+                    auto ut = oe->getUpdateTask();
+                    ut->clearState();
+                    ut->dependsOn(lt);
+                    taskManager->pushTask(ut);
+                }
+
                 // Scripting
                 if (rt->hasScriptRuntime())
                 {
                     auto script = rt->getScriptRuntime();
-                    if (!script->getInitialised())
+                    auto load = script->getConstructionTask();
+                    if (load->getState() == TaskState::QUEUED)
                     {
-                        auto init = rt->getScriptOnInitTask();
-                        init->clearState();
-                        physicsDependencies.push_back(init);
-                        taskManager->pushTask(init);
+                        // Don't clear state of load
+                        load->dependsOn(lt);
+                        physicsDependencies.push_back(load);
+                        taskManager->pushTask(load);
                     }
-                    else
+                    else if (load->getState() == TaskState::COMPLETED)
                     {
-                        if (rt->hasEvents())
+                        if (!script->getInitialised(rt))
                         {
-                            auto event = rt->getScriptOnEventTask();
-                            event->clearState();
-                            physicsDependencies.push_back(event);
-                            taskManager->pushTask(event);
+                            auto init = rt->getScriptOnInitTask();
+                            init->clearState();
+                            init->dependsOn(lt);
+                            physicsDependencies.push_back(init);
+                            taskManager->pushTask(init);
                         }
+                        else
+                        {
+                            if (rt->hasEvents())
+                            {
+                                auto event = rt->getScriptOnEventTask();
+                                event->clearState();
+                                event->dependsOn(lt);
+                                physicsDependencies.push_back(event);
+                                taskManager->pushTask(event);
+                            }
 
-                        auto update = rt->getScriptOnUpdateTask();
-                        update->clearState();
-                        physicsDependencies.push_back(update);
-                        taskManager->pushTask(update);
+                            auto update = rt->getScriptOnUpdateTask();
+                            update->clearState();
+                            update->dependsOn(lt);
+                            physicsDependencies.push_back(update);
+                            taskManager->pushTask(update);
+                        }
                     }
                 }
 
@@ -792,7 +823,7 @@ namespace Dream
                 {
                    graphicsComponent->addToLightQueue(rt);
                 }
-                rt->unlock();
+                //rt->unlock();
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));

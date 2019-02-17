@@ -89,6 +89,24 @@ namespace Dream
             }
         }
 
+        void TaskManager::pushDestructionTask(const shared_ptr<DestructionTask>& dt)
+        {
+            while (true)
+            {
+                bool result = mThreadVector.at(mNextThread)->pushDestructionTask(dt);
+                mNextThread = (mNextThread +1) % mThreadVector.size();
+                if (result)
+                {
+                    #ifdef DREAM_LOG
+                    getLog()->critical("{} pushed to worker {}",dt->getClassName(),mNextThread);
+                    #endif
+                    break;
+                }
+                std::this_thread::yield();
+            }
+        }
+
+
         void TaskManager::clearFences()
         {
             #ifdef DREAM_LOG

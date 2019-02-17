@@ -14,7 +14,6 @@ namespace Dream
         TextureCache(ProjectRuntime* runtime);
         ~TextureCache() override;
         void clear() override;
-        void flushRawTextureImageData();
     protected:
         SharedAssetRuntime* loadRuntime(AssetDefinition* def) override;
     };

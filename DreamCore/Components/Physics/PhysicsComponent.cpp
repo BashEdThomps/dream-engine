@@ -330,17 +330,17 @@ namespace Dream
                         CollisionData aHitsBData;
                         aHitsBData.present = true;
                         aHitsBData.impulse = impulse;
-                        aHitsBData.position.x = ptB.x();
-                        aHitsBData.position.y = ptB.y();
-                        aHitsBData.position.z = ptB.z();
+                        aHitsBData.position.setX(ptB.x());
+                        aHitsBData.position.setY(ptB.y());
+                        aHitsBData.position.setZ(ptB.z());
                         aHitsB.setCollisionData(aHitsBData);
 
                         CollisionData bHitsAData;
                         bHitsAData.present = true;
                         bHitsAData.impulse = impulse;
-                        bHitsAData.position.x = ptA.x();
-                        bHitsAData.position.y = ptA.y();
-                        bHitsAData.position.z = ptA.z();
+                        bHitsAData.position.setX(ptA.x());
+                        bHitsAData.position.setY(ptA.y());
+                        bHitsAData.position.setZ(ptA.z());
                         bHitsA.setCollisionData(bHitsAData);
                      }
                     sObjB->addEvent(aHitsB);

@@ -30,12 +30,14 @@
 #endif
 
 #include <iostream>
+#include <memory>
 #include "../../SharedAssetRuntime.h"
 #include "../GraphicsComponentTask.h"
 #include "TextureTasks.h"
 
-using namespace std;
-
+using std::vector;
+using std::string;
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -54,7 +56,7 @@ namespace Dream
         int mChannels;
         unsigned char* mImage;
         TextureConstructionTask mTextureConstructionTask;
-        TextureDestructionTask mTextureDestructionTask;
+        shared_ptr<TextureDestructionTask> mTextureDestructionTask;
 
     public:
         TextureRuntime(TextureDefinition* def, ProjectRuntime*);

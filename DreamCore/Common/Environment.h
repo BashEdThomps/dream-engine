@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include <iostream>
+#include <string>
 #include "../Common/Constants.h"
 
-using namespace std;
+using std::string;
 
 namespace Dream
 {
@@ -28,5 +28,4 @@ namespace Dream
     public:
         static string getHomeDirectory();
     };
-
-} // End of Dream
+}

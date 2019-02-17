@@ -60,8 +60,6 @@ using namespace glm;
 
 namespace Dream
 {
-
-
     GraphicsComponent::GraphicsComponent
     (ProjectRuntime* pr, WindowComponent* windowComponent)
         : Component(pr),
@@ -142,9 +140,8 @@ namespace Dream
         }
 
         glEnable(GL_DEPTH_TEST);
-#ifndef DREAM_LOG // TODO Multisample kills line & tool rendering for some reason
-        glEnable(GL_MULTISAMPLE);
-#endif
+        // TODO Multisample kills line & tool rendering for some reason
+        //glEnable(GL_MULTISAMPLE);
         #ifdef DREAM_LOG
         getLog()->debug("Initialisation Done.");
         #endif
@@ -828,9 +825,9 @@ namespace Dream
     }
     void
     GraphicsComponent::pushDestructionTask
-    (const GraphicsComponentDestructionTask& t)
+    (const shared_ptr<GraphicsComponentDestructionTask>& t)
     {
-        mDestructionTaskQueue.push_back(std::move(t));
+        mDestructionTaskQueue.push_back(t);
     }
 
     void
@@ -886,14 +883,14 @@ namespace Dream
     {
         for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
         {
-            auto& t = (*itr);
-            t.setState(TaskState::ACTIVE);
-            t.execute();
+            const auto& t = (*itr);
+            t->setState(TaskState::ACTIVE);
+            t->execute();
         }
         mDestructionTaskQueue.clear();
     }
 
-    vector<GraphicsComponentTask*>&
+    const vector<GraphicsComponentTask*>&
     GraphicsComponent::getDebugTaskQueue
     ()
     {

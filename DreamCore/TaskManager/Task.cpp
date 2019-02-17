@@ -21,7 +21,7 @@ namespace Dream
     {
         return mTaskId;
     }
-    
+
     Task::Task()
         : DreamObject("Task"),
           mTaskId(TaskID++),

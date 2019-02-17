@@ -15,9 +15,7 @@
 #include <string>
 
 #include "../Common/DreamObject.h"
-#include <glm/vec3.hpp>
-
-using glm::vec3;
+#include "../Common/Math.h"
 
 namespace Dream
 {
@@ -27,7 +25,7 @@ namespace Dream
     {
         bool present = false;
         float impulse = 0.0;
-        vec3 position = vec3(0.0f);
+        Vector3 position = Vector3(0.0f);
     };
 
     class Event : public DreamObject
@@ -42,7 +40,7 @@ namespace Dream
 
         SceneObjectRuntime* getSender() const;
 
-        CollisionData getCollisionData() const;
+        CollisionData& getCollisionData();
         void setCollisionData(const CollisionData& collisionData);
     };
 }

@@ -17,6 +17,10 @@
 
 #include "../Common/DreamObject.h"
 #include "TaskThread.h"
+#include <memory>
+
+using std::vector;
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -30,6 +34,7 @@ namespace Dream
          void startAllThreads();
          void joinAllThreads();
          void pushTask(Task* t);
+         void pushDestructionTask(const shared_ptr<DestructionTask>& dt);
          void clearFences();
          void waitForFence();
          vector<TaskThread*> getThreadVector() const;

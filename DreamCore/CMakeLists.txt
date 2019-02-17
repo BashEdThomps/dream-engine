@@ -13,10 +13,10 @@ find_package(OpenAL REQUIRED)
 find_package(OPENGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(SPDLOG REQUIRED)
-find_package(ANGELSCRIPT REQUIRED)
+#find_package(ANGELSCRIPT REQUIRED)
 
 include_directories(
-    ${Angelscript_INCLUDE_DIRS}
+    #${Angelscript_INCLUDE_DIRS}
     ${ALUT_INCLUDE_DIR}
     ${ASSIMP_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIR}
@@ -45,7 +45,7 @@ endif()
 IF (WIN32)
     target_link_libraries(
         DreamCore
-        ${Angelscript_LIBRARIES}
+        #${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
@@ -59,7 +59,7 @@ ELSEIF (UNIX AND NOT APPLE) # Linux
          DreamCore
          -lpthread
          -ldl
-        ${Angelscript_LIBRARIES}
+        #${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARY_RELEASE}
         ${BULLET_LIBRARY}
@@ -74,7 +74,7 @@ ELSEIF(APPLE)
         -lpthread
         -ldl
         "-framework CoreFoundation"
-        ${Angelscript_LIBRARIES}
+        #${Angelscript_LIBRARIES}
         ${ALUT_LIBRARY}
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARY}

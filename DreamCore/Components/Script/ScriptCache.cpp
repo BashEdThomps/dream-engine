@@ -17,6 +17,8 @@
 #include "ScriptCache.h"
 
 #include "../../Common/File.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../TaskManager/TaskManager.h"
 #include "ScriptDefinition.h"
 #include "ScriptRuntime.h"
 
@@ -52,9 +54,6 @@ namespace Dream
         File scriptFile(absPath);
         newScript->setSource(scriptFile.readString());
         newScript->useDefinition();
-        #ifdef DREAM_LOG
-        getLog()->trace("Loaded Script Source\n{}\n",newScript->getSource());
-        #endif
         mRuntimes.push_back(newScript);
         return newScript;
     }

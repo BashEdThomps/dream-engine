@@ -69,7 +69,7 @@ namespace Dream
         vector<AssetDefinition*> getAssetDefinitionsVector(AssetType type);
         SceneDefinition* createNewSceneDefinition();
         AssetDefinition* createNewAssetDefinition(AssetType type);
-        map<AssetType,vector<AssetDefinition*>> getAssetDefinitionsMap();
+        map<AssetType,vector<AssetDefinition*> > getAssetDefinitionsMap();
 
         json getJson() override;
 
@@ -94,7 +94,7 @@ namespace Dream
         void loadAssetDefinitions();
         void loadAssetDefinition(const json& assetDefinition);
         void loadSceneDefinition(const json& sceneDefinition);
-        AssetDefinition* createAssetDefinitionRuntime(const json& assetDefinitionJs);
+        AssetDefinition* createAssetDefinition(const json& assetDefinitionJs);
         map<AssetType,vector<string> > mAssetDefinitionGroups;
     };
 }

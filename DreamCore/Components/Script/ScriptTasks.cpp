@@ -6,6 +6,40 @@
 
 namespace Dream
 {
+    ScriptConstructionTask::ScriptConstructionTask
+    ()
+        : Task()
+     {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptConstructionTask");
+        #endif
+     }
+
+    void
+    ScriptConstructionTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->createScript())
+        {
+            setState(TaskState::COMPLETED);
+            mScript->setLoaded(true);
+        }
+        else
+        {
+            setState(TaskState::WAITING);
+            mDeferralCount++;
+        }
+    }
+
+    void ScriptConstructionTask::setScript(ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+
      ScriptOnInitTask::ScriptOnInitTask
      (SceneObjectRuntime* rt)
          : Task(),
@@ -117,6 +151,46 @@ namespace Dream
     {
         mScript = rt;
     }
+
+//==================================================================================================
+
+    ScriptOnDestroyTask::ScriptOnDestroyTask
+    (uint32_t destroyed, SceneObjectRuntime* parent)
+        : DestructionTask(),
+          mDestroyedObject(destroyed),
+          mParentSceneObject(parent)
+    {
+        #ifdef DREAM_LOG
+        setLogClassName("ScriptOnDestroyTask");
+        #endif
+    }
+
+    void
+    ScriptOnDestroyTask::execute
+    ()
+    {
+        #ifdef DREAM_LOG
+        getLog()->critical("Executing on thread {}",mThreadId);
+        #endif
+
+        if(mScript->executeOnDestroy(mDestroyedObject, mParentSceneObject))
+        {
+            setState(TaskState::COMPLETED);
+        }
+        else
+        {
+            setState(TaskState::WAITING);
+            mDeferralCount++;
+        }
+    }
+
+    void
+    ScriptOnDestroyTask::setScript
+    (ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+
 //==================================================================================================
 
     ScriptOnNanoVGTask::ScriptOnNanoVGTask

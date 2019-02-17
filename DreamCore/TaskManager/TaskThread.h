@@ -4,17 +4,19 @@
 #include <vector>
 #include <mutex>
 #include <atomic>
+#include <memory>
 
 #include "../Common/DreamObject.h"
+#include "Task.h"
 
 using std::thread;
 using std::mutex;
 using std::vector;
 using std::atomic;
+using std::shared_ptr;
 
 namespace Dream
 {
-    class Task;
     class TaskThread : public DreamObject
     {
     protected:
@@ -22,6 +24,8 @@ namespace Dream
         vector<Task*> mDebugTaskQueue;
         vector<Task*> mTaskQueue;
         mutex mTaskQueueMutex;
+        vector< shared_ptr<DestructionTask> > mDestructionTaskQueue;
+        mutex mDestructionTaskQueueMutex;
         atomic<bool> mRunning;
         atomic<bool> mFence;
         int mThreadId;
@@ -34,6 +38,7 @@ namespace Dream
          void clearFence();
          bool getFence();
          bool pushTask(Task* t);
+         bool pushDestructionTask(const shared_ptr<DestructionTask>& dt);
          void setRunning(volatile bool running);
          int getThreadId();
          const vector<Task*>& getDebugTaskQueue();

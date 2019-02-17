@@ -128,6 +128,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_LIGHT = "light";
     const string Constants::ASSET_TYPE_FONT = "font";
     const string Constants::ASSET_TYPE_MODEL = "model";
+    const string Constants::ASSET_TYPE_OBJECT_EMITTER = "object_emitter";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
     const string Constants::ASSET_TYPE_SCROLLER = "scroller";
@@ -163,6 +164,7 @@ namespace Dream
     const string Constants::ASSET_TYPE_LIGHT_READABLE = "Light";
     const string Constants::ASSET_TYPE_FONT_READABLE = "Font";
     const string Constants::ASSET_TYPE_MODEL_READABLE = "Model";
+    const string Constants::ASSET_TYPE_OBJECT_EMITTER_READABLE = "Object Emitter";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
     const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
     const string Constants::ASSET_TYPE_SCROLLER_READABLE = "Scroller";
@@ -340,17 +342,26 @@ namespace Dream
     const string Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX = "refraction_index";
     const string Constants::ASSET_ATTR_MATERIAL_IGNORE = "ignore";
 
-    // Model ================================================================
+    // Object Emitter ==========================================================
+    const string Constants::OBJECT_EMITTER_UUID = "so_uuid";
+    const string Constants::OBJECT_EMITTER_OBJECT_COUNT = "object_count";
+    const string Constants::OBJECT_EMITTER_EMIT_INTERVAL = "emit_interval";
+    const string Constants::OBJECT_EMITTER_LOOP_INTERVAL = "loop_interval";
+    const string Constants::OBJECT_EMITTER_LOOPS = "loops";
+    const string Constants::OBJECT_EMITTER_VELOCITY = "velocity";
+
+    // Model ===================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_LIST = "material_list";
     const string Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL = "model_material";
     const string Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL = "dream_material";
 
-    // Lua ======================================================================
+    // Lua =====================================================================
     const string Constants::SCRIPT_INIT_FUNCTION   = "onInit";
     const string Constants::SCRIPT_UPDATE_FUNCTION = "onUpdate";
     const string Constants::SCRIPT_NANOVG_FUNCTION = "onNanoVG";
     const string Constants::SCRIPT_INPUT_FUNCTION  = "onInput";
     const string Constants::SCRIPT_EVENT_FUNCTION  = "onEvent";
+    const string Constants::SCRIPT_DESTROY_FUNCTION  = "onDestroy";
 
     // Scroller ================================================================
     const string Constants::SCROLLER_VELOCITY = "velocity";
@@ -361,7 +372,7 @@ namespace Dream
     const string Constants::SCROLLER_ITEM_INDEX = "index";
     const string Constants::SCROLLER_ITEM_ORIGIN = "origin";
 
-    // Shader ===================================================================
+    // Shader ==================================================================
     const string Constants::SHADER_FRAGMENT = ".frag";
     const string Constants::SHADER_VERTEX   = ".vert";
 
@@ -373,7 +384,7 @@ namespace Dream
         = Constants::ASSET_FORMAT_SHADER_GLSL +
           Constants::SHADER_VERTEX;
 
-    // Audio ====================================================================
+    // Audio ===================================================================
     const string Constants::ASSET_ATTR_SPECTRUM_ANALYSER = "spectrum_analyser";
     const string Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS = "event_markers";
     const string Constants::ASSET_ATTR_AUDIO_EM_INDEX = "index";
@@ -402,11 +413,11 @@ namespace Dream
     const string Constants::KEYFRAME_EASING_TYPE = "easing_type";
     const string Constants::ANIMATION_RELATIVE = "relative";
 
-    // Window ===================================================================
+    // Window ==================================================================
     const int Constants::DEFAULT_SCREEN_WIDTH  = 1280;
     const int Constants::DEFAULT_SCREEN_HEIGHT =  720;
 
-    // Camera ===================================================================
+    // Camera ==================================================================
     const unsigned int Constants::CAMERA_MOVEMENT_FORWARD  = 0;
     const unsigned int Constants::CAMERA_MOVEMENT_BACKWARD = 1;
     const unsigned int Constants::CAMERA_MOVEMENT_LEFT     = 2;
@@ -424,7 +435,7 @@ namespace Dream
     const float Constants::CAMERA_SENSITIVTY = 0.001f;
     const float Constants::CAMERA_ZOOM = 45.0f;
 
-    // Data =====================================================================
+    // Data ====================================================================
 
     map<AssetType,string> Constants::DREAM_ASSET_TYPES_MAP =
     {
@@ -434,6 +445,7 @@ namespace Dream
         {AssetType::LIGHT,            ASSET_TYPE_LIGHT},
         {AssetType::MATERIAL,         ASSET_TYPE_MATERIAL},
         {AssetType::MODEL,            ASSET_TYPE_MODEL},
+        {AssetType::OBJECT_EMITTER,   ASSET_TYPE_OBJECT_EMITTER},
         {AssetType::PARTICLE_EMITTER, ASSET_TYPE_PARTICLE_EMITTER},
         {AssetType::PATH,             ASSET_TYPE_PATH},
         {AssetType::PHYSICS_OBJECT,   ASSET_TYPE_PHYSICS_OBJECT},
@@ -451,6 +463,7 @@ namespace Dream
         ASSET_TYPE_LIGHT_READABLE,
         ASSET_TYPE_MATERIAL_READABLE,
         ASSET_TYPE_MODEL_READABLE,
+        ASSET_TYPE_OBJECT_EMITTER_READABLE,
         ASSET_TYPE_PARTICLE_EMITTER_READABLE,
         ASSET_TYPE_PATH_READABLE,
         ASSET_TYPE_PHYSICS_OBJECT_READABLE,
@@ -498,8 +511,13 @@ namespace Dream
         {
             AssetType::MODEL,
             {
-                //ASSET_FORMAT_MODEL_ASSIMP,
                 ASSET_FORMAT_MODEL_OBJ
+            }
+        },
+        {
+            AssetType::OBJECT_EMITTER,
+            {
+                ASSET_FORMAT_DREAM
             }
         },
         {
@@ -577,6 +595,8 @@ namespace Dream
                 return ASSET_TYPE_MATERIAL;
             case MODEL:
                 return ASSET_TYPE_MODEL;
+            case OBJECT_EMITTER:
+                return ASSET_TYPE_OBJECT_EMITTER;
             case PARTICLE_EMITTER:
                 return ASSET_TYPE_PARTICLE_EMITTER;
             case PHYSICS_OBJECT:
@@ -628,6 +648,11 @@ namespace Dream
         else if (type == ASSET_TYPE_MODEL || type == ASSET_TYPE_MODEL_READABLE)
         {
             retval = MODEL;
+        }
+
+        else if (type == ASSET_TYPE_OBJECT_EMITTER || type == ASSET_TYPE_OBJECT_EMITTER_READABLE)
+        {
+            retval = OBJECT_EMITTER;
         }
 
         else if (type == ASSET_TYPE_PARTICLE_EMITTER || type == ASSET_TYPE_PARTICLE_EMITTER_READABLE)
@@ -699,6 +724,11 @@ namespace Dream
         else if (type == ASSET_TYPE_MODEL)
         {
             return ASSET_TYPE_MODEL_READABLE;
+        }
+
+        else if (type == ASSET_TYPE_OBJECT_EMITTER)
+        {
+            return ASSET_TYPE_OBJECT_EMITTER_READABLE;
         }
 
         else if (type == ASSET_TYPE_PARTICLE_EMITTER)

@@ -17,96 +17,14 @@
 #pragma once
 
 #include "../Component.h"
-#include "InputMapping.h"
-#include "InputState.h"
+#include "Mouse.h"
+#include "Keyboard.h"
+#include "Joystick.h"
 #include "InputTasks.h"
-#include <glm/fwd.hpp>
 #include "../../Common/Math.h"
-
-using glm::mat4;
-using glm::quat;
 
 namespace Dream
 {
-
-    class JoystickNavigation3D
-    {
-        float mLeftVelocity;
-        float mRightVelocity;
-        float mLeftTheta;
-        float mRightTheta;
-        Vector2 mHeading;
-
-    public:
-        JoystickNavigation3D()
-            : mLeftVelocity(0.0f),
-              mRightVelocity(0.0f),
-              mLeftTheta(0.0f),
-              mRightTheta(0.0f)
-        {
-
-        }
-
-        JoystickNavigation3D
-        (float leftX, float leftY, float rightX, float rightY)
-        {
-            mLeftVelocity = sqrt((leftX*leftX)+(-leftY * -leftY));
-            mLeftTheta = atan2(-leftY,leftX);
-            if (mLeftTheta != 0.0f)
-            {
-               mLeftTheta -= (M_PI/2);
-            }
-
-            mRightVelocity = sqrt((rightX * rightX) + (-rightY * -rightY));
-            mRightTheta = atan2(-rightY,rightX);
-            if (mRightTheta != 0.0f)
-            {
-                    mRightTheta -= (M_PI/2);
-            }
-            //if (mRightTheta < 0.0f) mRightTheta;
-        }
-
-        void show()
-        {
-            cout << "JSNav3D ="
-                   " Lv: " << mLeftVelocity
-                << " Lt: " << mLeftTheta
-                << " Rv: " << mRightVelocity
-                << " Rt: " << mRightTheta
-                << endl;
-        }
-
-        float getRightVelocity() const
-        {
-            return mRightVelocity;
-        }
-
-        float getLeftTheta() const
-        {
-            return mLeftTheta;
-        }
-
-        float getRightTheta() const
-        {
-            return mRightTheta;
-        }
-
-        float getLeftVelocity() const
-        {
-            return mLeftVelocity;
-        }
-
-        void setHeading(const Vector2& h)
-        {
-            mHeading = h;
-        }
-
-        Vector2& getHeading()
-        {
-            return mHeading;
-        }
-    };
-
     class InputComponent : public Component
     {
         SceneRuntime* mCurrentSceneRuntime;
@@ -149,14 +67,8 @@ namespace Dream
         JoystickState& getJoystickState();
         void setJoystickState(const JoystickState& joystickState);
 
-        int getInputModeFlags() const;
-        void setInputModeFlags(const int inputMode);
-
-        float outsizeDeadzone(int axis);
         float mouseDeltaX();
         float mouseDeltaY();
-
-        float clearDeadzone(float val);
 
         InputPollDataTask* getPollDataTask();
         InputExecuteScriptTask* getExecuteScriptTask();

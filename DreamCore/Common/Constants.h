@@ -39,6 +39,7 @@ namespace Dream
         LIGHT,
         MATERIAL,
         MODEL,
+        OBJECT_EMITTER,
         PARTICLE_EMITTER,
         PATH,
         PHYSICS_OBJECT,
@@ -109,6 +110,7 @@ namespace Dream
         const static string ASSET_TYPE_LIGHT;
         const static string ASSET_TYPE_FONT;
         const static string ASSET_TYPE_MODEL;
+        const static string ASSET_TYPE_OBJECT_EMITTER;
         const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
@@ -121,20 +123,13 @@ namespace Dream
         // Formats
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_DREAM;
-
         const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
-
         const static string ASSET_FORMAT_MODEL_ASSIMP;
         const static string ASSET_FORMAT_MODEL_OBJ;
-
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
-
-
         const static string ASSET_FORMAT_FONT_TTF;
-
         const static string ASSET_FORMAT_SHADER_GLSL;
-
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
@@ -147,6 +142,7 @@ namespace Dream
         const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
         const static string ASSET_TYPE_MODEL_READABLE;
+        const static string ASSET_TYPE_OBJECT_EMITTER_READABLE;
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         const static string ASSET_TYPE_SCRIPT_READABLE;
         const static string ASSET_TYPE_SCROLLER_READABLE;
@@ -264,6 +260,13 @@ namespace Dream
         const static string PARTICLE_EMITTER_PER_SECOND;
         const static string PARTICLE_EMITTER_LIFETIME;
 
+        // Object Emitter ======================================================
+        const static string OBJECT_EMITTER_UUID;
+        const static string OBJECT_EMITTER_OBJECT_COUNT;
+        const static string OBJECT_EMITTER_EMIT_INTERVAL;
+        const static string OBJECT_EMITTER_LOOP_INTERVAL;
+        const static string OBJECT_EMITTER_LOOPS;
+        const static string OBJECT_EMITTER_VELOCITY;
 
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
@@ -344,23 +347,24 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
         const static string ASSET_ATTR_MATERIAL_IGNORE;
 
-        // Model ================================================================
+        // Model ===============================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_LIST;
         const static string ASSET_ATTR_MODEL_MODEL_MATERIAL;
         const static string ASSET_ATTR_MODEL_DREAM_MATERIAL;
 
-        // Shader ===============================================================
+        // Shader ==============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;
         const static string SHADER_FRAGMENT_FILE_NAME;
         const static string SHADER_VERTEX_FILE_NAME;
 
-        // Lua ==================================================================
+        // Script ==============================================================
         const static string SCRIPT_INIT_FUNCTION;
         const static string SCRIPT_UPDATE_FUNCTION;
         const static string SCRIPT_NANOVG_FUNCTION;
         const static string SCRIPT_INPUT_FUNCTION;
         const static string SCRIPT_EVENT_FUNCTION;
+        const static string SCRIPT_DESTROY_FUNCTION;
 
         // Scroller ============================================================
         const static string SCROLLER_VELOCITY;
@@ -371,8 +375,7 @@ namespace Dream
         const static string SCROLLER_ITEM_INDEX;
         const static string SCROLLER_ITEM_ORIGIN;
 
-        // Audio =================================================================
-        #define AUDIO_BUFFER_SIZE 32768
+        // Audio ================================================================
         const static string ASSET_ATTR_SPECTRUM_ANALYSER;
         const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
         const static string ASSET_ATTR_AUDIO_EM_INDEX;
@@ -381,7 +384,7 @@ namespace Dream
         const static string ASSET_ATTR_AUDIO_EM_REPEAT;
         const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
 
-        // Animation/Keyframe ===================================================
+        // Animation/Keyframe ==================================================
         const static string KEYFRAME_ID;
         const static string KEYFRAME_TIME;
         const static string KEYFRAME_TRANSLATION;
@@ -392,11 +395,11 @@ namespace Dream
         const static string KEYFRAME_EASING_TYPE;
         const static string ANIMATION_RELATIVE;
 
-        // Window ===============================================================
+        // Window ==============================================================
         const static int DEFAULT_SCREEN_WIDTH;
         const static int DEFAULT_SCREEN_HEIGHT;
 
-        // Camera ===============================================================
+        // Camera ==============================================================
         const static unsigned int CAMERA_MOVEMENT_FORWARD;
         const static unsigned int CAMERA_MOVEMENT_BACKWARD;
         const static unsigned int CAMERA_MOVEMENT_LEFT;
@@ -413,7 +416,7 @@ namespace Dream
         const static float CAMERA_SENSITIVTY;
         const static float CAMERA_ZOOM;
 
-        // Data Maps ============================================================
+        // Data Maps ===========================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;
         static map<AssetType,vector<string> > DREAM_ASSET_FORMATS_MAP;
@@ -427,9 +430,9 @@ namespace Dream
         static string getAssetFormatStringFromReadableName(const string& format);
         static string getAssetFormatReadableNameFromString(const string&);
 
-    #ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         static shared_ptr<spdlog::logger> logger;
-    #endif
+        #endif
     };
 }
 

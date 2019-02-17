@@ -1,6 +1,4 @@
 /*
-* ShaderRuntime
-*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -38,6 +36,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -51,9 +50,11 @@
 #include "../../../Common/DreamObject.h"
 #include "ShaderTasks.h"
 
-using namespace std;
-using namespace nlohmann;
-using namespace glm;
+using std::vector;
+using std::map;
+using std::shared_ptr;
+using std::string;
+using glm::mat4;
 
 namespace Dream
 {
@@ -182,6 +183,6 @@ namespace Dream
         ShaderCompileFragmentTask mCompileFragmentTask;
         ShaderCompileVertexTask mCompileVertexTask;
         ShaderLinkTask mLinkTask;
-        ShaderFreeTask mFreeTask;
+        shared_ptr<ShaderFreeTask> mFreeTask;
     };
 }

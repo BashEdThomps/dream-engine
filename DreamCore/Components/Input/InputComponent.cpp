@@ -15,11 +15,13 @@
 
 #include "InputComponent.h"
 #include "InputTasks.h"
+#include "../Time.h"
 #include "../Transform.h"
 #include "../Script/ScriptRuntime.h"
 #include "../Graphics/Camera.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -30,6 +32,7 @@ namespace Dream
         : Component (rt),
           mCurrentSceneRuntime(nullptr),
           mJoystickMapping(JsPsxMapping),
+          mJoystickNavigation3D(&mJoystickState,&mJoystickMapping),
           mPollDataTask(this),
           mExecuteScriptTask(this)
     {
@@ -67,14 +70,11 @@ namespace Dream
         if (mCurrentSceneRuntime)
         {
             auto playerObject = mCurrentSceneRuntime->getPlayerObject();
+            auto time = mCurrentSceneRuntime->getProjectRuntime()->getTime();
+
             if (playerObject)
             {
-                mJoystickNavigation3D = JoystickNavigation3D(
-                    mJoystickState.getAxisData(mJoystickMapping.AnalogLeftXAxis),
-                    mJoystickState.getAxisData(mJoystickMapping.AnalogLeftYAxis),
-                    mJoystickState.getAxisData(mJoystickMapping.AnalogRightXAxis),
-                    mJoystickState.getAxisData(mJoystickMapping.AnalogRightYAxis)
-                );
+                mJoystickNavigation3D.calculate();
 
                 static mat4 ident(1.0f);
                 static vec3 yAxis(0.0f,1.0f,0.0f);
@@ -83,10 +83,10 @@ namespace Dream
                 mat4 mtx = glm::translate(ident,translation.toGLM());
                 auto camera = mCurrentSceneRuntime->getCamera();
                 auto camYaw = camera->getYaw();
-                auto totalYaw =  mJoystickNavigation3D.getRightTheta()-camYaw;
+                auto totalYaw =  mJoystickNavigation3D.getLeftTheta()-camYaw;
                 mJoystickNavigation3D.setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
                 mtx = glm::rotate(mtx,totalYaw,yAxis);
-                mtx = glm::translate(mtx,vec3(mJoystickNavigation3D.getLeftVelocity(),0,0));
+                mtx = glm::translate(mtx,vec3(time->perSecond(10.0f),0,0));
                 playerTransform.setMatrix(mtx);
             }
 
@@ -169,21 +169,6 @@ namespace Dream
     ()
     {
         return mMouseState.PosY - mLastMouseState.PosY;
-    }
-
-    float
-    InputComponent::clearDeadzone
-    (float val)
-    {
-        if(val > mJoystickState.DeadZone)
-        {
-            return  val - mJoystickState.DeadZone;
-        }
-        else if (val < -mJoystickState.DeadZone)
-        {
-            return val+mJoystickState.DeadZone;
-        }
-        return 0.0f;
     }
 
     JoystickMapping&

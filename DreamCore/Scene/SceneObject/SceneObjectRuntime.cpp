@@ -41,6 +41,8 @@
 #include "../../Components/Script/ScriptDefinition.h"
 #include "../../Components/Script/ScriptComponent.h"
 #include "../../Components/Script/ScriptRuntime.h"
+#include "../../Components/ObjectEmitter/ObjectEmitterDefinition.h"
+#include "../../Components/ObjectEmitter/ObjectEmitterRuntime.h"
 #include "../../Project/Project.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Project/ProjectDefinition.h"
@@ -71,6 +73,7 @@ namespace Dream
         mScrollerRuntime(nullptr),
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
+        mObjectEmitterRuntime(nullptr),
         mBoundingBox(),
         mHasCameraFocus(false),
         mDeleted(false),
@@ -83,7 +86,8 @@ namespace Dream
         mLifetimeUpdateTask(this),
         mScriptOnInitTask(this),
         mScriptOnUpdateTask(this),
-        mScriptOnEventTask(this)
+        mScriptOnEventTask(this),
+        mScriptOnDestroyTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("SceneObjectRuntime");
@@ -123,6 +127,7 @@ namespace Dream
         removePathRuntime();
         removePhysicsObjectRuntime();
         removeScriptRuntime();
+        removeObjectEmitterRuntime();
     }
 
     void
@@ -179,7 +184,13 @@ namespace Dream
     SceneObjectRuntime::removeScriptRuntime
     ()
     {
-        //delete mScriptRuntime;
+        if (mScriptRuntime)
+        {
+            mSceneRuntime
+                ->getProjectRuntime()
+                ->getTaskManager()
+                ->pushDestructionTask(mScriptOnDestroyTask);
+        }
         mScriptRuntime = nullptr;
     }
 
@@ -205,7 +216,9 @@ namespace Dream
         }
     }
 
-    void SceneObjectRuntime::removeParticleEmitterRuntime()
+    void
+    SceneObjectRuntime::removeParticleEmitterRuntime
+    ()
     {
         if (mParticleEmitterRuntime != nullptr)
         {
@@ -214,7 +227,21 @@ namespace Dream
         }
     }
 
-    void SceneObjectRuntime::removeScrollerRuntime()
+    void
+    SceneObjectRuntime::removeObjectEmitterRuntime
+    ()
+    {
+        if (mObjectEmitterRuntime != nullptr)
+        {
+            delete mObjectEmitterRuntime;
+            mObjectEmitterRuntime = nullptr;
+        }
+    }
+
+
+    void
+    SceneObjectRuntime::removeScrollerRuntime
+    ()
     {
         if (mScrollerRuntime != nullptr)
         {
@@ -272,6 +299,13 @@ namespace Dream
        return mParticleEmitterRuntime;
     }
 
+    ObjectEmitterRuntime*
+    SceneObjectRuntime::getObjectEmitterRuntime
+    ()
+    {
+        return mObjectEmitterRuntime;
+    }
+
     ScrollerRuntime*
     SceneObjectRuntime::getScrollerRuntime
     ()
@@ -303,6 +337,8 @@ namespace Dream
                return getScrollerRuntime();
            case Dream::PARTICLE_EMITTER:
                return getParticleEmitterRuntime();
+           case Dream::OBJECT_EMITTER:
+               return getObjectEmitterRuntime();
            default:
                break;
        }
@@ -335,6 +371,13 @@ namespace Dream
     ()
     {
         return mScriptRuntime != nullptr;
+    }
+
+    bool
+    SceneObjectRuntime::hasObjectEmitterRuntime
+    ()
+    {
+        return mObjectEmitterRuntime != nullptr;
     }
 
     void
@@ -404,14 +447,10 @@ namespace Dream
     (const Event& event)
     {
         #ifdef DREAM_LOG
-        getLog()->trace
-        (
-            "Event posted from {} to {}",
-            event.getSender()->getNameAndUuidString(),
-            getNameAndUuidString()
-        );
+        getLog()->trace("Event posted from {} to {}",
+            event.getSender()->getNameAndUuidString(), getNameAndUuidString());
         #endif
-        mEventQueue.push_back(event);
+        mEventQueue.push_back(std::move(event));
     }
 
     vector<Event>&
@@ -535,6 +574,9 @@ namespace Dream
                 case AssetType::SCROLLER:
                     result = createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
                     break;
+                case AssetType::OBJECT_EMITTER:
+                    result = createObjectEmitterRuntime(static_cast<ObjectEmitterDefinition*>(def));
+                    break;
                 default:
                     return false;
             }
@@ -610,6 +652,8 @@ namespace Dream
                 return createScriptRuntime(static_cast<ScriptDefinition*>(def));
             case AssetType::SCROLLER:
                 return createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
+            case AssetType::OBJECT_EMITTER:
+                return createObjectEmitterRuntime(static_cast<ObjectEmitterDefinition*>(def));
             default:
                 return false;
         }
@@ -743,6 +787,8 @@ namespace Dream
                 mScriptOnInitTask.setScript(mScriptRuntime);
                 mScriptOnUpdateTask.setScript(mScriptRuntime);
                 mScriptOnEventTask.setScript(mScriptRuntime);
+                mScriptOnDestroyTask = make_shared<ScriptOnDestroyTask>(mUuid,mParentRuntime);
+                mScriptOnDestroyTask->setScript(mScriptRuntime);
                 return true;
             }
             else
@@ -771,6 +817,18 @@ namespace Dream
         return mLightRuntime->useDefinition();
     }
 
+    bool
+    SceneObjectRuntime::createObjectEmitterRuntime
+    (ObjectEmitterDefinition* definition)
+    {
+        removeObjectEmitterRuntime();
+        #ifdef DREAM_LOG
+        getLog()->trace( "Creating ObjectEmitter Asset Runtime." );
+        #endif
+        mObjectEmitterRuntime = new ObjectEmitterRuntime(definition,this);
+        return mObjectEmitterRuntime->useDefinition();
+    }
+
     SceneObjectRuntime*
     SceneObjectRuntime::getChildRuntimeByUuid
     (uint32_t uuid)
@@ -780,7 +838,6 @@ namespace Dream
             if (*it != nullptr)
             {
                 if ((*it)->hasUuid(uuid))
-
                 {
                     return *it;
                 }
@@ -836,7 +893,6 @@ namespace Dream
     {
        return static_cast<SceneObjectDefinition*>(getDefinition());
     }
-
 
     bool
     SceneObjectRuntime::loadChildrenFromDefinition
@@ -1199,7 +1255,6 @@ namespace Dream
                 }
             }
         }
-
         return nullptr;
     }
 

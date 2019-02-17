@@ -2,6 +2,11 @@
 
 namespace Dream
 {
+    struct KeyboardState
+    {
+        bool KeysDown[512] = {false};
+    };
+
     namespace KeyboardMapping
     {
         const static int KEY_UNKNOWN          =  -1;
@@ -126,109 +131,4 @@ namespace Dream
         const static int KEY_RIGHT_SUPER      =  347;
         const static int KEY_MENU             =  348;
     }
-
-    struct JoystickMapping
-    {
-    public:
-        // Axis
-        int AnalogLeftXAxis;
-        int AnalogLeftYAxis;
-        int AnalogRightXAxis;
-        int AnalogRightYAxis;
-        // Buttons
-        int FaceButtonNorth; // Y
-        int FaceButtonEast; // B
-        int FaceButtonSouth; // A
-        int FaceButtonWest; // X
-
-        int FaceButtonSelect;
-        int FaceButtonStart;
-        int FaceButtonHome;
-
-        int ShoulderLeft;
-        int ShoulderRight;
-
-        int TriggerLeftButton;
-        int TriggerRightButton;
-
-        int AnalogLeftButton;
-        int AnalogRightButton;
-
-        int DPadNorth;
-        int DPadWest;
-        int DPadSouth;
-        int DPadEast;
-    };
-
-    const static JoystickMapping JsPsxMapping
-    {
-        // Axis
-
-        0,    // AnalogLeftXAxis
-        1,    // AnalogLeftYAxis
-        2,    // AnalogRightXAxis
-        3,    // AnalogRightYAxis
-
-        // Buttons
-
-        12,   // FaceButtonNorth
-        13,   // FaceButtonEast
-        14,   // FaceButtonSouth
-        15,   // FaceButtonWest
-
-        0,   // FaceButtonSelect
-        3,   // FaceButtonStart
-        16,   // FaceButtonHome
-
-        10,   // ShoulderLeft
-        11,   // ShoulderRight
-
-        8,   // LeftTriggerButton
-        9,   // RighTriggerButton
-
-
-
-        1,   // AnalogLeftButton
-        2,   // AnalogRightButton
-
-        4,   // DPadNorth
-        5,   // DPadWest
-        6,   // DPadSouth
-        7    // DPadEast
-    };
-
-    const static JoystickMapping JsXboxMapping
-    {
-        // Axis
-
-        0, // AnalogLeftXAxis
-        1, // AnalogLeftYAxis
-        2, // AnalogRightXAxis
-        3, // AnalogRightYAxis
-
-        // Buttons
-
-        0, // Y
-        1, // B
-        2, // A
-        3, // X
-
-        8,  // FaceButtonSelect
-        9,  // FaceButtonStart
-        12, // FaceButtonHome
-
-        4, // ShoulderLeft
-        5, // ShoulderRight
-
-        6,  // LeftTriggerButton
-        7,  // RighTriggerButton
-
-        10, // AnalogLeftButton
-        11, // AnalogRightButton
-
-        13, // DPadNorth
-        14, // DPadWest
-        15, // DPadSouth
-        16  // DPadEast
-    };
 }

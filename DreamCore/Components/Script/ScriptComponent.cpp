@@ -44,6 +44,8 @@ using std::cout;
 using std::cerr;
 using std::string;
 
+
+
 static void whyYouFail(int r, int line)
 {
     if (r<0)
@@ -148,12 +150,12 @@ namespace Dream
         auto log = getLog();
         log->debug( "Initialising ScriptComponent" );
         #endif
-        int r = asPrepareMultithread();
-        assert( r >= 0 );
+        int r = asPrepareMultithread(); assert( r >= 0 );
         Engine = asCreateScriptEngine();
         r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
         assert( r >= 0 );
         RegisterStdString(Engine);
+        Engine->SetContextCallbacks(RequestContextCallback,ReturnContextToPool);
         #ifdef DREAM_LOG
         log->debug( "Got an AngelScript Engine");
         #endif
@@ -223,6 +225,9 @@ namespace Dream
     {
         debugRegisteringClass("ProjectRuntime");
         int r;
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "int getUuid()",asMETHOD(ProjectRuntime,getUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "string getName()",asMETHOD(ProjectRuntime,getName), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "string getNameAndUuidString()",asMETHOD(ProjectRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "Time@ getTime()",asMETHOD(ProjectRuntime,getTime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "AssetDefinition@ getAssetDefinitionByUuid()",asMETHOD(ProjectRuntime,getAssetDefinitionByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "SceneObjectRuntime@ getSceneObjectByUuid()",asMETHOD(ProjectRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -326,6 +331,9 @@ namespace Dream
     {
         debugRegisteringClass("SceneObjectRuntime");
         int r;
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "int getUuid()",asMETHOD(SceneObjectRuntime,getUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getName()",asMETHOD(SceneObjectRuntime,getName), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getNameAndUuidString()",asMETHOD(SceneObjectRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getSceneRuntime()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "Transform@ getTransform()",asMETHOD(SceneObjectRuntime,getTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ addChildFromTemplateUuid(int)",asMETHOD(SceneObjectRuntime,addChildFromTemplateUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -333,6 +341,7 @@ namespace Dream
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "PhysicsObjectRuntime@ getPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,getPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasAudioRuntime()",asMETHOD(SceneObjectRuntime,hasAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "AudioRuntime@ getAudioRuntime()",asMETHOD(SceneObjectRuntime,getAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setDeleted(bool)",asMETHOD(SceneObjectRuntime,setDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
     }
 
     void
@@ -369,6 +378,10 @@ namespace Dream
     {
         debugRegisteringClass("Event");
         int r;
+        r = Engine->RegisterObjectMethod("Event","CollisionData@ getCollisionData()",asMETHOD(Event,getCollisionData),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectProperty("CollisionData","bool present",asOFFSET(CollisionData,present)); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectProperty("CollisionData","float impulse",asOFFSET(CollisionData,impulse)); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectProperty("CollisionData","Vector3@ position",asOFFSET(CollisionData,position)); whyYouFail(r,__LINE__);
     }
 
     void
@@ -385,7 +398,6 @@ namespace Dream
         debugRegisteringClass("InputComponent");
         int r;
         // InputComponent
-        r = Engine->RegisterObjectMethod("InputComponent","void clearDeadzone()",asMETHOD(InputComponent,clearDeadzone),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","bool isKeyDown(int)",asMETHOD(InputComponent,isKeyDown),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","KeyboardState@ getKeyboardState()",asMETHOD(InputComponent,getKeyboardState),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","JoystickState@ getJoystickState()",asMETHOD(InputComponent,getJoystickState),asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -396,6 +408,7 @@ namespace Dream
         // Joystick State
         r = Engine->RegisterObjectMethod("JoystickState","float getAxisData(int)",asMETHOD(JoystickState,getAxisData),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("JoystickState","bool  getButtonData(int)",asMETHOD(JoystickState,getButtonData),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("JoystickState","bool clearsDeadzone(float)",asMETHOD(JoystickState,clearsDeadzone),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
         // JoystickNavigation3D
         r = Engine->RegisterObjectMethod("JoystickNavigation3D","Vector2@ getHeading()",asMETHOD(JoystickNavigation3D,getHeading),asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -697,6 +710,32 @@ namespace Dream
     ScriptPrintListener::~ScriptPrintListener(){}
 
     asIScriptEngine* ScriptComponent::Engine = nullptr;
+    vector<asIScriptContext*> ScriptComponent::ContextPool;
 
-    const string ScriptComponent::COMPONENTS_TBL = "Components";
+    asIScriptContext*
+    ScriptComponent::RequestContextCallback
+    (asIScriptEngine *engine, void *param)
+    {
+      // Get a context from the pool, or create a new
+      asIScriptContext *ctx = 0;
+      if( ContextPool.size() )
+      {
+        ctx = *ContextPool.rbegin();
+        ContextPool.pop_back();
+      }
+      else
+      {
+        ctx = Engine->CreateContext();
+      }
+      return ctx;
+    }
+
+    void
+    ScriptComponent::ReturnContextToPool
+    (asIScriptEngine *engine, asIScriptContext *ctx, void *param)
+    {
+      ContextPool.push_back(ctx);
+      // Unprepare the context to free non-reusable resources
+      ctx->Unprepare();
+    }
 }

@@ -292,27 +292,27 @@ namespace DreamTool
 
                     if (glfwJoystickPresent(id))
                     {
-                        js.Name = glfwGetJoystickName(id);
+                        js.setName(glfwGetJoystickName(id));
                         int numAxis, numButtons;
                         const float* axisData = glfwGetJoystickAxes(id,&numAxis);
                         const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
                         if (axisData != nullptr)
                         {
-                            js.AxisCount = numAxis;
-                            memcpy(&js.AxisData[0],axisData,sizeof(float)*numAxis);
+                            js.setAxisCount(numAxis);
+                            memcpy((void*)js.getAxisDataPointer(),axisData,sizeof(float)*numAxis);
                         }
                         else
                         {
-                            js.AxisCount = 0;
+                            js.setAxisCount(0);
                         }
                         if (buttonData != nullptr)
                         {
-                            js.ButtonCount = numButtons;
-                            memcpy(&js.ButtonData[0],buttonData,sizeof(unsigned char)*numButtons);
+                            js.setButtonCount(numButtons);
+                            memcpy((void*)js.getButtonDataPointer(),buttonData,sizeof(unsigned char)*numButtons);
                         }
                         else
                         {
-                            js.ButtonCount = 0;
+                            js.setButtonCount(0);
                         }
                     }
                 }

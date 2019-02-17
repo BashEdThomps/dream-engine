@@ -21,7 +21,6 @@ namespace Dream
 
     TextureCache::~TextureCache()
     {
-        flushRawTextureImageData();
     }
 
     SharedAssetRuntime*
@@ -50,52 +49,12 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug("Loading texture: {}",filename);
         #endif
-        for (auto runtime : mRuntimes)
-        {
-            auto nextTexture = static_cast<TextureRuntime*>(runtime);
-            if (nextTexture->getPath().compare(filename) == 0)
-            {
-                #ifdef DREAM_LOG
-                getLog()->debug("Found cached texture by filename");
-                #endif
-                return nextTexture;
-            }
-        }
 
         int width = 0;
         int height = 0;
         int channels = 0;
 
         unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
-
-        // Check image data against existing textures
-
-        // TODO - No longer necessary to retain raw image data
-
-        for (auto runtime : mRuntimes)
-        {
-            auto nextTexture = static_cast<TextureRuntime*>(runtime);
-            if (nextTexture->getWidth() == width &&
-                nextTexture->getHeight() == height &&
-                nextTexture->getChannels() == channels)
-            {
-                #ifdef DREAM_LOG
-                getLog()->debug("Found Similar Texture, comparing data");
-                #endif
-                if (nextTexture->getImage() != nullptr)
-                {
-                    int compare = memcmp(nextTexture->getImage(), image, static_cast<size_t>(width*height*channels));
-                    if (compare == 0)
-                    {
-                        #ifdef DREAM_LOG
-                        getLog()->debug("Found cached texture with data match for {}",filename);
-                        #endif
-                        SOIL_free_image_data(image);
-                        return nextTexture;
-                    }
-                }
-            }
-        }
 
         #ifdef DREAM_LOG
         getLog()->debug("Didn't find cached texture matching {}",filename);
@@ -116,25 +75,9 @@ namespace Dream
     }
 
     void
-    TextureCache::flushRawTextureImageData
-    ()
-    {
-       for (auto runtime : mRuntimes)
-       {
-           auto t = static_cast<TextureRuntime*>(runtime);
-           if (t->getImage() != nullptr)
-           {
-               SOIL_free_image_data(t->getImage());
-               t->setImage(nullptr);
-           }
-       }
-    }
-
-    void
     TextureCache::clear
     ()
     {
-        flushRawTextureImageData();
         for (auto* runtime : mRuntimes)
         {
             delete runtime;

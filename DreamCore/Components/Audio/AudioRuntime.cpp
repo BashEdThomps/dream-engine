@@ -418,6 +418,7 @@ namespace Dream
             alSourcei(mSource, AL_BUFFER, static_cast<ALint>(mBuffer));
 
             alSourcei(mSource, AL_LOOPING, mLooping ? 1 : 0 );
+            mAudioDataBuffer.clear();
         }
         else
         {

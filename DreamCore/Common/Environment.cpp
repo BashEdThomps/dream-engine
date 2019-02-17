@@ -24,22 +24,21 @@
 #include <pwd.h>
 #endif
 
-using namespace std;
+using std::string;
 
 namespace Dream
 {
     string Environment::getHomeDirectory()
     {
-#ifdef WIN32
-		return "";
-#else
+        #ifdef WIN32
+        return "";
+        #else
         char *homedir;
         if ((homedir = getenv("HOME")) == nullptr)
         {
             homedir = getpwuid(getuid())->pw_dir;
         }
         return string(homedir);
-#endif
+        #endif
     }
-
-} // End of Dream
+}

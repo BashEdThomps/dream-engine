@@ -21,7 +21,6 @@
 
 class asIScriptModule;
 class asIScriptFunction;
-class asIScriptContext;
 
 namespace Dream
 {
@@ -32,25 +31,38 @@ namespace Dream
 
     class ScriptRuntime : public SharedAssetRuntime
     {
+        bool mError;
+        string mSource;
+        string mUuidString;
+        ScriptConstructionTask mConstructionTask;
+        map<uint32_t, bool> mInitialised;
+        asIScriptModule* mScriptModule;
+
+        asIScriptFunction *mInitFunction;
+        asIScriptFunction *mEventFunction;
+        asIScriptFunction *mUpdateFunction;
+        asIScriptFunction *mDestroyFunction;
+        asIScriptFunction *mInputFunction;
+        asIScriptFunction *mNanoVGFunction;
     public:
+
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
         string getSource() const;
         void setSource(const string& source);
+        bool createScript();
 
-        bool executeOnInit(SceneObjectRuntime* state);
-        bool executeOnUpdate(SceneObjectRuntime* state);
-        bool executeOnEvent(SceneObjectRuntime* state);
+        bool executeOnInit(SceneObjectRuntime*);
+        bool executeOnUpdate(SceneObjectRuntime*);
+        bool executeOnEvent(SceneObjectRuntime*);
+        bool executeOnDestroy(uint32_t destroyedSo, SceneObjectRuntime* parent);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
         bool executeOnNanoVG(NanoVGComponent*, SceneRuntime*);
 
-        bool getInitialised() const;
-    private:
-        bool mError;
-        bool mInitialised;
-        string mSource;
-        string mUuidString;
+        bool getInitialised(SceneObjectRuntime* sor);
+        ScriptConstructionTask* getConstructionTask();
+        void removeInitialisedFlag(uint32_t);
     };
 }

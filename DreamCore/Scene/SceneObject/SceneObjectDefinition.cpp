@@ -33,18 +33,16 @@ namespace Dream
           mParentSceneObject(parent),
           mSceneDefinition(sceneDefinition)
     {
-
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("SceneObjectDefinition");
-        auto log = getLog();
-        log->trace( "Constructing {}",getNameAndUuidString());
-#endif
+        getLog()->trace( "Constructing {}",getNameAndUuidString());
+        #endif
         if (randomUuid)
         {
             mJson[Constants::UUID] = Uuid::generateUuid();
-#ifdef DREAM_LOG
-            log->trace( "With new UUID",getNameAndUuidString());
-#endif
+            #ifdef DREAM_LOG
+            getLog()->trace( "With new UUID",getNameAndUuidString());
+            #endif
         }
         mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
     }
@@ -52,10 +50,9 @@ namespace Dream
     SceneObjectDefinition::~SceneObjectDefinition
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destructing {}", getNameAndUuidString() );
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace( "Destructing {}", getNameAndUuidString() );
+        #endif
         deleteChildSceneObjectDefinitions();
     }
 
@@ -159,23 +156,20 @@ namespace Dream
     SceneObjectDefinition::removeChildDefinition
     (SceneObjectDefinition* child, bool andDelete)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto iter = begin(mChildDefinitions);
         auto endPos = end(mChildDefinitions);
         while (iter != endPos)
         {
             if ((*iter) == child)
             {
-#ifdef DREAM_LOG
-                log->debug
+                #ifdef DREAM_LOG
+                getLog()->debug
                 (
                     "Found child to {} remove from {}",
                     child->getNameAndUuidString(),
                     getNameAndUuidString()
                 );
-#endif
+                #endif
                 if (andDelete)
                 {
                     delete (*iter);
@@ -195,18 +189,17 @@ namespace Dream
     SceneObjectDefinition::createNewChildDefinition
     (json* fromJson)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Creating new child scene object");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->debug("Creating new child scene object");
+        #endif
 
         json defJson;
 
         if (fromJson == nullptr)
         {
-#ifdef DREAM_LOG
-            log->debug("from scratch");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("from scratch");
+            #endif
             defJson[Constants::NAME] = Constants::SCENE_OBJECT_DEFAULT_NAME;
 
             Transform transform;
@@ -214,9 +207,9 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            log->debug("from template copy");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->debug("from template copy");
+            #endif
             defJson = json::parse(fromJson->dump());
         }
 
@@ -333,8 +326,6 @@ namespace Dream
         return mJson[Constants::SCENE_OBJECT_HIDDEN];
     }
 
-
-
     SceneObjectDefinition*
     SceneObjectDefinition::getParentSceneObject
     () const
@@ -345,15 +336,12 @@ namespace Dream
     SceneObjectDefinition*
     SceneObjectDefinition::duplicate()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         // Nothing to assign duplicate to
         if (mParentSceneObject == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("Cannot Duplicate. No parent to assign duplicate to");
-#endif
+            #ifdef DREAM_LOG
+            getLog()->error("Cannot Duplicate. No parent to assign duplicate to");
+            #endif
             return nullptr;
         }
 
@@ -444,9 +432,6 @@ namespace Dream
     (AssetType type)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         if (mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_null() ||
             mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES].is_array())
         {
@@ -459,7 +444,7 @@ namespace Dream
         }
 
         #ifdef DREAM_LOG
-        log->trace("Found {} Runtime",typeStr);
+        getLog()->trace("Found {} Runtime",typeStr);
         #endif
         return mJson[Constants::SCENE_OBJECT_ASSET_INSTANCES][typeStr];
     }

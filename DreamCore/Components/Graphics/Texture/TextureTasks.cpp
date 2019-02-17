@@ -1,6 +1,6 @@
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
-
+#include "../../../deps/soil/SOIL.h"
 namespace Dream
 {
     TextureConstructionTask::TextureConstructionTask(TextureRuntime* rt)
@@ -70,6 +70,8 @@ namespace Dream
         #ifdef DREAM_LOG
         checkGLError();
         #endif
+        SOIL_free_image_data(mTextureRuntime->getImage());
+        mTextureRuntime->setImage(nullptr);
         setState(TaskState::COMPLETED);
     }
 

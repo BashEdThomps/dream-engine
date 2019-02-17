@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <angelscript.h>
+#include "../../deps/angelscript/angelscript.h"
 #include "ScriptRuntime.h"
 #include "ScriptDefinition.h"
 #include "ScriptComponent.h"
@@ -30,9 +30,15 @@ namespace Dream
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
           mError(false),
-          mInitialised(false),
           mSource(""),
-          mUuidString(std::to_string(mUuid))
+          mUuidString(std::to_string(mUuid)),
+          mScriptModule(nullptr),
+          mInitFunction(nullptr),
+          mEventFunction(nullptr),
+          mUpdateFunction(nullptr),
+          mDestroyFunction(nullptr),
+          mInputFunction(nullptr),
+          mNanoVGFunction(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptRuntime");
@@ -47,11 +53,24 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destructing {}", mDefinition->getNameAndUuidString());
         #endif
+        if (mScriptModule)
+        {
+            mScriptModule->Discard();
+            mScriptModule = nullptr;
+        }
     }
 
     bool
     ScriptRuntime::useDefinition
     ()
+    {
+        mConstructionTask.setScript(this);
+        mConstructionTask.setState(TaskState::QUEUED);
+        mLoaded = false;
+        return true;
+    }
+
+    bool ScriptRuntime::createScript()
     {
         auto path = getAssetFilePath();
         #ifdef DREAM_LOG
@@ -63,9 +82,12 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->debug("createState called for {}", getNameAndUuidString() );
             #endif
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_CREATE_IF_NOT_EXISTS);
-            scriptModule->AddScriptSection(mUuidString.c_str(),mSource.c_str());
-            int r = scriptModule->Build();
+            mScriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_CREATE_IF_NOT_EXISTS);
+            mScriptModule->AddScriptSection(mUuidString.c_str(),mSource.c_str());
+            #ifdef DREAM_LOG
+            getLog()->trace("Loaded Script Source\n{}\n",getSource());
+            #endif
+            int r = mScriptModule->Build();
             if(r < 0)
             {
                 #ifdef DREAM_LOG
@@ -102,24 +124,24 @@ namespace Dream
     {
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_ONLY_IF_EXISTS);
-            if (scriptModule)
+            if (mScriptModule)
             {
-                auto context = ScriptComponent::Engine->CreateContext();
-                if(context)
+                if (!mUpdateFunction)
                 {
-                    auto updateFunction = scriptModule->GetFunctionByName(Constants::SCRIPT_UPDATE_FUNCTION.c_str());
-                    if (updateFunction)
+                    mUpdateFunction = mScriptModule->GetFunctionByName
+                        (Constants::SCRIPT_UPDATE_FUNCTION.c_str());
+                }
+                if (mUpdateFunction)
+                {
+                    auto ctx = ScriptComponent::Engine->RequestContext();
+                    ctx->Prepare(mUpdateFunction);
+                    ctx->SetArgObject(0,sor);
+                    int r = ctx->Execute();
+                    if (r < 0)
                     {
-                        context->Prepare(updateFunction);
-                        context->SetArgObject(0,sor);
-                        int r = context->Execute();
-                        if (r < 0)
-                        {
-                            mError = true;
-                        }
-                        context->Release();
+                        mError = true;
                     }
+                    ScriptComponent::Engine->ReturnContext(ctx);
                 }
             }
             mProjectRuntime->getScriptComponent()->unlock();
@@ -127,6 +149,59 @@ namespace Dream
         }
         return false;
     }
+
+    bool
+    ScriptRuntime::executeOnDestroy
+    (uint32_t destroyedSo, SceneObjectRuntime* parent)
+    {
+        if (mError)
+        {
+           #ifdef DREAM_LOG
+            getLog()->error("Cannot run destroy, script for {} in error state.",destroyedSo);
+            #endif
+            return true;
+        }
+
+        if (!mInitialised[destroyedSo])
+        {
+            #ifdef DREAM_LOG
+            getLog()->trace("Attempted to destroy uninitialised object {}",destroyedSo);
+            #endif
+            assert(false);
+            return true;
+        }
+
+        if(mProjectRuntime->getScriptComponent()->tryLock())
+        {
+            if (mScriptModule)
+            {
+                if (!mDestroyFunction)
+                {
+                    mDestroyFunction = mScriptModule->GetFunctionByName
+                        (Constants::SCRIPT_DESTROY_FUNCTION.c_str());
+                }
+
+                if (mDestroyFunction)
+                {
+                    auto ctx = ScriptComponent::Engine->RequestContext();
+                    ctx->Prepare(mInitFunction);
+                    ctx->SetArgDWord(0,destroyedSo);
+                    ctx->SetArgObject(1,parent);
+                    int r = ctx->Execute();
+                    if (r < 0)
+                    {
+                        mError = true;
+                    }
+                    removeInitialisedFlag(destroyedSo);
+                    ScriptComponent::Engine->ReturnContext(ctx);
+                }
+            }
+            mProjectRuntime->getScriptComponent()->unlock();
+            return true;
+        }
+        return false;
+    }
+
 
     bool
     ScriptRuntime::executeOnInit
@@ -139,7 +214,8 @@ namespace Dream
             #endif
             return true;
         }
-        if (mInitialised)
+
+        if (mInitialised[sor->getUuid()])
         {
            #ifdef DREAM_LOG
             getLog()->trace("Script has all ready been initialised for {}",sor->getNameAndUuidString());
@@ -149,28 +225,28 @@ namespace Dream
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_ONLY_IF_EXISTS);
-            if (scriptModule)
+            if (mScriptModule)
             {
-                auto context = ScriptComponent::Engine->CreateContext();
-                if(context)
+                if (!mInitFunction)
                 {
-                    auto initFunction =  scriptModule->GetFunctionByName(Constants::SCRIPT_INIT_FUNCTION.c_str());
-                    if (initFunction)
+                    mInitFunction =  mScriptModule->GetFunctionByName
+                        (Constants::SCRIPT_INIT_FUNCTION.c_str());
+                }
+                if (mInitFunction)
+                {
+                    auto ctx = ScriptComponent::Engine->RequestContext();
+                    ctx->Prepare(mInitFunction);
+                    ctx->SetArgObject(0,sor);
+                    int r = ctx->Execute();
+                    if (r < 0)
                     {
-                        context->Prepare(initFunction);
-                        context->SetArgObject(0,sor);
-                        int r = context->Execute();
-                        if (r < 0)
-                        {
-                            mError = true;
-                        }
-                        else
-                        {
-                            mInitialised = true;
-                        }
-                        context->Release();
+                        mError = true;
                     }
+                    else
+                    {
+                        mInitialised[sor->getUuid()] = true;
+                    }
+                    ScriptComponent::Engine->ReturnContext(ctx);
                 }
             }
             mProjectRuntime->getScriptComponent()->unlock();
@@ -192,7 +268,7 @@ namespace Dream
             return true;
         }
 
-        if (!mInitialised)
+        if (!mInitialised[sor->getUuid()])
         {
             #ifdef DREAM_LOG
             getLog()->error("Script has not been initialised");
@@ -211,29 +287,29 @@ namespace Dream
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_ONLY_IF_EXISTS);
-            if (scriptModule)
+            if (mScriptModule)
             {
-                auto context = ScriptComponent::Engine->CreateContext();
-                if(context)
+                if (!mEventFunction)
                 {
-                    auto eventFunction =  scriptModule->GetFunctionByName(Constants::SCRIPT_EVENT_FUNCTION.c_str());
-                    if (eventFunction)
+                    mEventFunction = mScriptModule->GetFunctionByName
+                        (Constants::SCRIPT_EVENT_FUNCTION.c_str());
+                }
+                if (mEventFunction)
+                {
+                    for (Event e : sor->getEventQueue())
                     {
-                        for (Event e : sor->getEventQueue())
+                        auto ctx = ScriptComponent::Engine->RequestContext();
+                        ctx->Prepare(mEventFunction);
+                        ctx->SetArgObject(0,sor);
+                        ctx->SetArgObject(1,&e);
+                        int r = ctx->Execute();
+                        if (r < 0)
                         {
-                            context->Prepare(eventFunction);
-                            context->SetArgObject(0,sor);
-                            context->SetArgObject(1,&e);
-                            int r = context->Execute();
-                            if (r < 0)
-                            {
-                                mError = true;
-                                break;
-                            }
+                            mError = true;
+                            break;
                         }
+                        ScriptComponent::Engine->ReturnContext(ctx);
                     }
-                    context->Release();
                 }
             }
             sor->clearEventQueue();
@@ -253,25 +329,25 @@ namespace Dream
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_ONLY_IF_EXISTS);
-            if (scriptModule)
+            if (mScriptModule)
             {
-                auto context = ScriptComponent::Engine->CreateContext();
-                if(context)
+                if (!mInputFunction)
                 {
-                    auto inputFunction = scriptModule->GetFunctionByName(Constants::SCRIPT_INPUT_FUNCTION.c_str());
-                    if (inputFunction)
+                    mInputFunction = mScriptModule->GetFunctionByName
+                        (Constants::SCRIPT_INPUT_FUNCTION.c_str());
+                }
+                if (mInputFunction)
+                {
+                    auto ctx = ScriptComponent::Engine->RequestContext();
+                    ctx->Prepare(mInputFunction);
+                    ctx->SetArgObject(0,inputComp);
+                    ctx->SetArgObject(1,sr);
+                    int r = ctx->Execute();
+                    if (r < 0)
                     {
-                        context->Prepare(inputFunction);
-                        context->SetArgObject(0,inputComp);
-                        context->SetArgObject(1,sr);
-                        int r = context->Execute();
-                        if (r < 0)
-                        {
-                            mError = true;
-                        }
+                        mError = true;
                     }
-                    context->Release();
+                    ScriptComponent::Engine->ReturnContext(ctx);
                 }
             }
             mProjectRuntime->getScriptComponent()->unlock();
@@ -291,25 +367,24 @@ namespace Dream
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
-            auto scriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_ONLY_IF_EXISTS);
-            if (scriptModule)
+            if (mScriptModule)
             {
-                auto context = ScriptComponent::Engine->CreateContext();
-                if(context)
+                if (!mNanoVGFunction)
                 {
-                    auto nanoVGFunction = scriptModule->GetFunctionByName(Constants::SCRIPT_NANOVG_FUNCTION.c_str());
-                    if (nanoVGFunction)
+                    mNanoVGFunction = mScriptModule->GetFunctionByName(Constants::SCRIPT_NANOVG_FUNCTION.c_str());
+                }
+                if (mNanoVGFunction)
+                {
+                    auto ctx = ScriptComponent::Engine->RequestContext();
+                    ctx->Prepare(mNanoVGFunction);
+                    ctx->SetArgObject(0,nvg);
+                    ctx->SetArgObject(1,sr);
+                    int r = ctx->Execute();
+                    if (r < 0)
                     {
-                        context->Prepare(nanoVGFunction);
-                        context->SetArgObject(0,nvg);
-                        context->SetArgObject(1,sr);
-                        int r = context->Execute();
-                        if (r < 0)
-                        {
-                            mError = true;
-                        }
+                        mError = true;
                     }
-                    context->Release();
+                    ScriptComponent::Engine->ReturnContext(ctx);
                 }
             }
             mProjectRuntime->getScriptComponent()->unlock();
@@ -318,8 +393,27 @@ namespace Dream
         return false;
     }
 
-    bool ScriptRuntime::getInitialised() const
+    bool
+    ScriptRuntime::getInitialised
+    (SceneObjectRuntime* sor)
     {
-       return mInitialised;
+       return mInitialised[sor->getUuid()];
+    }
+
+    ScriptConstructionTask*
+    ScriptRuntime::getConstructionTask
+    ()
+    {
+        return &mConstructionTask;
+    }
+
+    void
+    ScriptRuntime::removeInitialisedFlag(uint32_t id)
+    {
+        auto itr = mInitialised.find(id);
+        if (itr != mInitialised.end())
+        {
+            mInitialised.erase(itr);
+        }
     }
 }

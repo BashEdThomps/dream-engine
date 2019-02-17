@@ -23,8 +23,9 @@
 #include "../Component.h"
 #include "GraphicsComponentTask.h"
 
-using namespace std;
-using namespace glm;
+using glm::mat4;
+using std::vector;
+using std::shared_ptr;
 
 typedef struct NVGcontext NVGcontext;
 typedef unsigned int GLuint;
@@ -53,7 +54,7 @@ namespace Dream
 
         vector<GraphicsComponentTask*> mTaskQueue;
         vector<GraphicsComponentTask*> mDebugTaskQueue;
-        vector<GraphicsComponentDestructionTask> mDestructionTaskQueue;
+        vector< shared_ptr<GraphicsComponentDestructionTask> > mDestructionTaskQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCache;
@@ -117,9 +118,9 @@ namespace Dream
         GLuint getGeometryPassIgnoreBuffer() const;
 
         void pushTask(GraphicsComponentTask* t);
-        void pushDestructionTask(const GraphicsComponentDestructionTask& t);
+        void pushDestructionTask(const shared_ptr<GraphicsComponentDestructionTask>& t);
         void executeTaskQueue();
         void executeDestructionTaskQueue();
-        vector<GraphicsComponentTask*>& getDebugTaskQueue();
+        const vector<GraphicsComponentTask*>& getDebugTaskQueue();
     };
 }

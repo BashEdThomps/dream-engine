@@ -86,7 +86,7 @@ namespace Dream
        return loadRuntime(getAssetDefinitionByUuid(id));
     }
 
-    vector<SharedAssetRuntime*>&
+    const vector<SharedAssetRuntime*>&
     Cache::getRuntimeVector
     ()
     {

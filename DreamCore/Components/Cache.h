@@ -2,8 +2,9 @@
 
 #include "../Common/LockableObject.h"
 #include <vector>
+#include <memory>
 
-using namespace std;
+using std::vector;
 
 namespace Dream
 {
@@ -21,7 +22,6 @@ namespace Dream
     class Cache : public LockableObject
     {
     public:
-
         /**
          * @brief Default Constructor.
          * @param parent ProjectRuntime that created this Cache.
@@ -57,7 +57,7 @@ namespace Dream
          * @return Reference to the vector of SharedAssetRuntimes managed by
          * this Cache.
          */
-        vector<SharedAssetRuntime*>& getRuntimeVector();
+        const vector<SharedAssetRuntime*>& getRuntimeVector();
 
         /**
          * @return std::string of the absolute path to the AssetDefinition's

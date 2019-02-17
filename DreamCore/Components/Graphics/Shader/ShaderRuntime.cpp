@@ -27,7 +27,7 @@
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
-using namespace glm;
+using std::make_shared;
 
 namespace Dream
 {
@@ -51,7 +51,7 @@ namespace Dream
           mCompileFragmentTask(this),
           mCompileVertexTask(this),
           mLinkTask(this),
-          mFreeTask()
+          mFreeTask(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("ShaderRuntime");
@@ -67,9 +67,10 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace( "Destroying Object" );
         #endif
-        mFreeTask.clearState();
-        mFreeTask.setState(TaskState::QUEUED);
-        mFreeTask.setShaderProgram(mShaderProgram);
+        mFreeTask = make_shared<ShaderFreeTask>();
+        mFreeTask->clearState();
+        mFreeTask->setState(TaskState::QUEUED);
+        mFreeTask->setShaderProgram(mShaderProgram);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mFreeTask);
     }
 

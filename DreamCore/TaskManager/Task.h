@@ -20,6 +20,10 @@ namespace Dream
         COMPLETED
     };
 
+    /**
+     * @brief A Task is a nugget of work that can will
+     * be dispatched to one of the TaskThread instances to run.
+     */
     class Task : public DreamObject
     {
         static int TaskID;
@@ -65,8 +69,12 @@ namespace Dream
         int getTaskId() const;
     };
 
-    class DestructionTask : public Task
-    {
-        inline void execute() {}
-    };
+    /**
+     * @brief The DestructionTask class is used for tasks that will exist beyond
+     * their owner's scope. These tasks are copied into the TaskThread's Execution
+     * Queue instead of being called by pointer.
+     *
+     * Must be stacked as shared pointers
+     */
+    class DestructionTask : public Task {};
 }

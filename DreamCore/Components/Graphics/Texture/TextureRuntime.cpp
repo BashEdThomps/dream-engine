@@ -4,6 +4,8 @@
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
+using std::make_shared;
+
 namespace Dream
 {
     TextureRuntime::TextureRuntime
@@ -16,18 +18,16 @@ namespace Dream
           mChannels(0),
           mImage(nullptr),
           mTextureConstructionTask(this),
-          mTextureDestructionTask()
+          mTextureDestructionTask(nullptr)
     {}
 
     TextureRuntime::~TextureRuntime
     ()
     {
-        mTextureDestructionTask.setGLID(mGLID);
-        mTextureDestructionTask.setState(TaskState::QUEUED);
+        mTextureDestructionTask = make_shared<TextureDestructionTask>();
+        mTextureDestructionTask->setGLID(mGLID);
+        mTextureDestructionTask->setState(TaskState::QUEUED);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
     }
 
     string

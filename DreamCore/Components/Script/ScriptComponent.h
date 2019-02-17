@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <angelscript.h>
+#include "../../deps/angelscript/angelscript.h"
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "../Component.h"
@@ -39,14 +39,15 @@ namespace Dream
         static vector<ScriptPrintListener*> PrintListeners;
         static void AddPrintListener(ScriptPrintListener* listener);
         static asIScriptEngine* Engine;
-
+        static vector<asIScriptContext*> ContextPool;
         ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
        ~ScriptComponent() override;
 
         bool init() override;
+        static asIScriptContext* RequestContextCallback(asIScriptEngine *engine, void *param);
+        static void ReturnContextToPool(asIScriptEngine *engine, asIScriptContext *ctx, void *param);
 
     private:
-        const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
 
         // API Exposure Methods ======================================================

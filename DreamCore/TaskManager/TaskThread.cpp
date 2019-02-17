@@ -2,7 +2,7 @@
 #include "Task.h"
 
 #include <algorithm>
-#include <angelscript.h>
+#include "../deps/angelscript/angelscript.h"
 
 using std::find;
 
@@ -90,6 +90,38 @@ namespace Dream
                     mTaskQueueMutex.unlock();
                 }
 
+                mDestructionTaskQueueMutex.lock();
+                vector< shared_ptr<DestructionTask> > completed;
+                for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
+                {
+                    auto& t = (*itr);
+                    if (t->isWaitingForDependencies())
+                    {
+                        t->incrementDeferralCount();
+                    }
+                    else
+                    {
+                        t->setState(TaskState::ACTIVE);
+                        t->execute();
+                    }
+
+                    if (t->getState() == TaskState::COMPLETED)
+                    {
+                       completed.push_back(t);
+                    }
+                }
+
+                for (auto t : completed)
+                {
+                    t->notifyDependents();
+                    auto itr = find(mDestructionTaskQueue.begin(),mDestructionTaskQueue.end(), t);
+                    if (itr != mDestructionTaskQueue.end())
+                    {
+                        mDestructionTaskQueue.erase(itr);
+                    }
+                }
+                mDestructionTaskQueueMutex.unlock();
+
                 #ifdef DREAM_LOG
                 getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
                 #endif
@@ -122,6 +154,18 @@ namespace Dream
                 mTaskQueue.push_back(t);
                 t->setThreadId(mThreadId);
                 mTaskQueueMutex.unlock();
+                return true;
+            }
+            return false;
+        }
+
+        bool TaskThread::pushDestructionTask(const shared_ptr<DestructionTask>& dt)
+        {
+            if(mDestructionTaskQueueMutex.try_lock())
+            {
+                dt->setThreadId(mThreadId);
+                mDestructionTaskQueue.push_back(dt);
+                mDestructionTaskQueueMutex.unlock();
                 return true;
             }
             return false;

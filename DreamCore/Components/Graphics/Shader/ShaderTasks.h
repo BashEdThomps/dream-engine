@@ -55,6 +55,6 @@ namespace Dream
     public:
         ShaderFreeTask();
         void setShaderProgram(GLuint rt);
-        void execute();
+        void execute() override;
     };
 }

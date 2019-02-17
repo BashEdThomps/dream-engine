@@ -28,6 +28,7 @@
 #include "../Components/Graphics/Texture/TextureDefinition.h"
 #include "../Components/Physics/PhysicsObjectDefinition.h"
 #include "../Components/Script/ScriptDefinition.h"
+#include "../Components/ObjectEmitter/ObjectEmitterDefinition.h"
 #include "../Common/Uuid.h"
 
 namespace Dream
@@ -169,7 +170,7 @@ namespace Dream
 
 
     AssetDefinition*
-    ProjectDefinition::createAssetDefinitionRuntime
+    ProjectDefinition::createAssetDefinition
     (const json &assetDefinitionJs)
     {
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
@@ -202,6 +203,8 @@ namespace Dream
                 return new ShaderDefinition(this, assetDefinitionJs);
             case TEXTURE:
                 return new TextureDefinition(this, assetDefinitionJs);
+            case OBJECT_EMITTER:
+                return new ObjectEmitterDefinition(this,assetDefinitionJs);
             case NONE:
                 #ifdef DREAM_LOG
                 auto log = getLog();
@@ -223,7 +226,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinition
     (const json &assetDefinitionJs)
     {
-        AssetDefinition* newDef = createAssetDefinitionRuntime(assetDefinitionJs);
+        AssetDefinition* newDef = createAssetDefinition(assetDefinitionJs);
         if (newDef != nullptr)
         {
             mAssetDefinitions.push_back(newDef);
@@ -455,9 +458,8 @@ namespace Dream
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
-        AssetDefinition* ad = createAssetDefinitionRuntime(assetDefinitionJson);
+        AssetDefinition* ad = createAssetDefinition(assetDefinitionJson);
         mAssetDefinitions.push_back(ad);
-
         return ad;
     }
 

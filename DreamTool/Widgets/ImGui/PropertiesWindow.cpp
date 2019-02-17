@@ -43,7 +43,8 @@
 #include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
 #include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
 #include "../../../DreamCore/Components/Script/ScriptDefinition.h"
-#include "../../../DreamCore/Components/Script/ScriptRuntime.h"
+#include "../../../DreamCore/Components/ObjectEmitter/ObjectEmitterDefinition.h"
+#include "../../../DreamCore/Components/ObjectEmitter/ObjectEmitterRuntime.h"
 
 namespace DreamTool
 {
@@ -58,9 +59,9 @@ namespace DreamTool
           mGizmoUseSnap(true),
           mGizmoSnap(1.0f,1.0f,1.0f)
     {
-#ifdef DREAM_LOG
+        #ifdef DREAM_LOG
         setLogClassName("Properties Window");
-#endif
+        #endif
     }
 
     PropertiesWindow::~PropertiesWindow
@@ -194,8 +195,7 @@ namespace DreamTool
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->error("Pushed target {}",mHistory.size());
+        getLog()->error("Pushed target {}",mHistory.size());
         #endif
         setPropertyType(type);
         setDefinition(def);
@@ -231,8 +231,7 @@ namespace DreamTool
         setDefinition(last.definition);
         setRuntime(last.runtime);
         #ifdef DREAM_LOG
-        auto log = getLog();
-        log->error("Popped target {}",mHistory.size());
+        getLog()->error("Popped target {}",mHistory.size());
         #endif
         mHistory.pop_back();
     }
@@ -372,9 +371,6 @@ namespace DreamTool
     PropertiesWindow::drawSceneProperties
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
         auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
 
@@ -638,7 +634,7 @@ namespace DreamTool
                 sceneDef->setLightingPassShader(uuid);
 
                 #ifdef DREAM_LOG
-                log->error("Switched lighting pass shader to {} {}", name, uuid);
+                getLog()->error("Switched lighting pass shader to {} {}", name, uuid);
                 #endif
             }
 
@@ -650,7 +646,7 @@ namespace DreamTool
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
                 #ifdef DREAM_LOG
-                log->error("Switched shadow pass shader to {} {}", name, uuid);
+                getLog()->error("Switched shadow pass shader to {} {}", name, uuid);
                 #endif
             }
         }
@@ -720,9 +716,6 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
 
         if (soDef == nullptr)
         {
@@ -1059,6 +1052,40 @@ namespace DreamTool
                 }
             }
 
+            // Object Emitter
+            int selectedObjectEmitterAsset = soDef->getSelectedAssetIndex(AssetType::OBJECT_EMITTER);
+            vector<string> oeAssets = projDef->getAssetNamesVector(AssetType::OBJECT_EMITTER);
+            if(ImGui::Button("-##ObjectEmitter"))
+            {
+                soDef->setAssetDefinition(AssetType::OBJECT_EMITTER,0);
+                if (soRuntime)
+                {
+                    soRuntime->removeObjectEmitterRuntime();
+                }
+            }
+            ImGui::SameLine();
+
+            if(ImGui::Button(">##ObjectEmitter"))
+            {
+                if (selectedObjectEmitterAsset < 0) return;
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::OBJECT_EMITTER,selectedObjectEmitterAsset);
+                pushPropertyTarget(PropertyType::Asset,asset,nullptr);
+                return;
+            }
+            ImGui::SameLine();
+            if(StringCombo("Object Emitter",&selectedObjectEmitterAsset,oeAssets,oeAssets.size()))
+            {
+                soDef->setSelectedAssetIndex(AssetType::OBJECT_EMITTER, selectedObjectEmitterAsset);
+                if (soRuntime)
+                {
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::OBJECT_EMITTER, selectedObjectEmitterAsset);
+                    if (selectedDef)
+                    {
+                        soRuntime->replaceAssetUuid(AssetType::OBJECT_EMITTER, selectedDef->getUuid());
+                    }
+                }
+            }
+
             // Particle Emitter
             int selectedParticleEmitterAsset = soDef->getSelectedAssetIndex(AssetType::PARTICLE_EMITTER);
             vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
@@ -1262,10 +1289,6 @@ namespace DreamTool
     PropertiesWindow::drawImGizmo
     ()
     {
-
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         float *matrix = nullptr;
         auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
         auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
@@ -1461,10 +1484,6 @@ namespace DreamTool
     PropertiesWindow::drawPhysicsImGizmo
     (CompoundChildDefinition ccd)
     {
-
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         float* matrix = ccd.transform.getMatrixFloatPointer();
 
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
@@ -1581,6 +1600,9 @@ namespace DreamTool
                 break;
             case AssetType::MODEL:
                 drawModelAssetProperties();
+                break;
+            case AssetType::OBJECT_EMITTER:
+                drawObjectEmitterProperties();
                 break;
             case AssetType::PHYSICS_OBJECT:
                 drawPhysicsObjectAssetProperties();
@@ -1812,9 +1834,6 @@ namespace DreamTool
     PropertiesWindow::drawAudioAssetProperties
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         bool selectAudioFile = ImGui::Button("Audio File...");
         auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
 
@@ -1825,13 +1844,13 @@ namespace DreamTool
             auto audioFilePath = openDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            log->error("Opening Audio File {}",audioFilePath);
+            getLog()->error("Opening Audio File {}",audioFilePath);
 #endif
             File audioFile(audioFilePath);
             mState->lastDirectory = audioFile.getDirectory();
 
 #ifdef DREAM_LOG
-            log->error("Setting last directory {}",mState->lastDirectory);
+            getLog()->error("Setting last directory {}",mState->lastDirectory);
 #endif
             auto audioData = audioFile.readBinary();
             mState->projectDirectory.writeAssetData(audioDef,audioData);
@@ -1895,10 +1914,6 @@ namespace DreamTool
     PropertiesWindow::drawFontAssetProperties
     ()
     {
-
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         bool selectFile = ImGui::Button("Font File...");
         auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
@@ -1909,7 +1924,7 @@ namespace DreamTool
             auto filePath = openDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            log->error("Opening Font File {}",filePath);
+            getLog()->error("Opening Font File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2343,9 +2358,6 @@ namespace DreamTool
     PropertiesWindow::drawModelAssetProperties
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto def = dynamic_cast<ModelDefinition*>(mDefinition);
 
         bool selectFile = ImGui::Button("Model File...");
@@ -2355,7 +2367,7 @@ namespace DreamTool
         {
             auto filePath = openDlg.getChosenPath();
 #ifdef DREAM_LOG
-            log->error("Opening Model File {}",filePath);
+            getLog()->error("Opening Model File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2376,7 +2388,7 @@ namespace DreamTool
             auto filePath = openAdditionalFileDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            log->error("Opening Additional Model File {}",filePath);
+            getLog()->error("Opening Additional Model File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2452,7 +2464,7 @@ namespace DreamTool
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
 
 #ifdef DREAM_LOG
-                log->error("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
+                getLog()->error("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
 #endif
             }
             ImGui::PopItemWidth();
@@ -2654,9 +2666,6 @@ namespace DreamTool
     PropertiesWindow::drawScriptProperties
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
 
         ImGui::PushItemWidth(-1);
@@ -2672,9 +2681,6 @@ namespace DreamTool
     PropertiesWindow::drawShaderAssetProperties
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
         auto projRunt = mState->project->getRuntime();
         ShaderRuntime* shaderInst = nullptr;
@@ -2986,9 +2992,6 @@ namespace DreamTool
             }
         }
 
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         bool selectFile = ImGui::Button("Texture File...");
         static ImGuiFs::Dialog openDlg;
         const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".png","Select Texture File");
@@ -2996,7 +2999,7 @@ namespace DreamTool
         {
             auto filePath = openDlg.getChosenPath();
             #ifdef DREAM_LOG
-            log->error("Opening Texture File {}",filePath);
+            getLog()->error("Opening Texture File {}",filePath);
             #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -3196,6 +3199,50 @@ namespace DreamTool
         }
 
         ImGui::Columns(1);
+    }
+
+    void
+    PropertiesWindow::drawObjectEmitterProperties
+    ()
+    {
+        auto projDef = mState->project->getDefinition();
+        auto oeDef = static_cast<ObjectEmitterDefinition*>(mDefinition);
+
+        int objectUuid = oeDef->getSceneObjectUuid();
+        if (ImGui::InputInt("Scene Object",&objectUuid))
+        {
+            oeDef->setSceneObjectUuid(objectUuid);
+        }
+
+        int count = oeDef->getObjectCount();
+        if (ImGui::DragInt("Object Count",&count))
+        {
+            oeDef->setObjectCount(count);
+        }
+
+        int frequency = oeDef->getEmitInterval();
+        if (ImGui::DragInt("Emit Interval",&frequency))
+        {
+            oeDef->setEmitInterval(frequency);
+        }
+
+        int repeats = oeDef->getLoops();
+        if (ImGui::DragInt("Loops",&repeats))
+        {
+            oeDef->setLoops(repeats);
+        }
+
+        int pause = oeDef->getLoopInterval();
+        if (ImGui::DragInt("Loop Interval",&pause))
+        {
+            oeDef->setLoopInterval(pause);
+        }
+
+        float velocity = oeDef->getObjectVelocity();
+        if (ImGui::DragFloat("Object Velocity",&velocity))
+        {
+            oeDef->setObjectVelocity(velocity);
+        }
     }
 
     int

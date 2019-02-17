@@ -24,6 +24,8 @@
 #include "../../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
+using std::make_shared;
+
 namespace Dream
 {
 
@@ -38,11 +40,13 @@ namespace Dream
           mVAO(0),
           mVBO(0),
           mIBO(0),
+          mIndicesCount(indices.size()),
+          mVerticesCount(vertices.size()),
           mVertices(vertices),
           mIndices(indices),
           mBoundingBox(bb),
           mInitMeshTask(this),
-          mFreeMeshTask()
+          mFreeMeshTask(nullptr)
     {
         #ifdef DREAM_LOG
         getLog()->trace("Constructing Mesh for {}", parent->getName());
@@ -56,9 +60,10 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Destroying Mesh for {}",mParent->getNameAndUuidString());
         #endif
-        mFreeMeshTask.clearState();
-        mFreeMeshTask.setState(TaskState::QUEUED);
-        mFreeMeshTask.setBuffers(mVAO,mVBO,mIBO);
+        mFreeMeshTask = make_shared<ModelFreeMeshTask>();
+        mFreeMeshTask->clearState();
+        mFreeMeshTask->setState(TaskState::QUEUED);
+        mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
         mParent->getProjectRuntime()->getGraphicsComponent()->pushDestructionTask(mFreeMeshTask);
     }
 
@@ -176,7 +181,7 @@ namespace Dream
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
         GLsizei size = mRuntimesInFrustum.size();
-        GLsizei indices = mIndices.size();
+        GLsizei indices = mIndicesCount;
         GLsizei tris = indices/3;
         MeshesDrawn += size;
         TrianglesDrawn += tris*size;
@@ -201,7 +206,7 @@ namespace Dream
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
         GLsizei size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
-        GLsizei indices = mIndices.size();
+        GLsizei indices = mIndicesCount;
         GLsizei tris = indices/3;
         ShadowMeshesDrawn += size;
         ShadowTrianglesDrawn += tris*size;
@@ -249,6 +254,32 @@ namespace Dream
     () const
     {
         return mBoundingBox;
+    }
+
+    void
+    ModelMesh::clearVertices
+    ()
+    {
+        mVertices.clear();
+    }
+
+    void
+    ModelMesh::clearIndices
+    ()
+    {
+        mIndices.clear();
+    }
+
+    size_t
+    ModelMesh::getIndicesCount()
+    {
+        return mIndicesCount;
+    }
+
+    size_t
+    ModelMesh::getVerticesCount()
+    {
+        return mVerticesCount;
     }
 
     long ModelMesh::DrawCalls = 0;

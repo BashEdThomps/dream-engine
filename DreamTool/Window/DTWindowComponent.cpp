@@ -124,7 +124,7 @@ namespace DreamTool
         }
 
         /* Create a windowed mode window and its OpenGL context */
-        //glfwWindowHint(GLFW_SAMPLES, 4);
+        //glfwWindowHint(GLFW_SAMPLES, 8);
         #ifdef WIN32
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         #endif

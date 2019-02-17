@@ -52,6 +52,8 @@ namespace Dream
             static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
         glBindVertexArray(0);
         setState(TaskState::COMPLETED);
+        mMesh->clearVertices();
+        mMesh->clearIndices();
     }
 
    ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentDestructionTask ()

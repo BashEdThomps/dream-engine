@@ -13,6 +13,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
@@ -24,6 +25,7 @@
 
 using std::vector;
 using std::function;
+using std::shared_ptr;
 using nlohmann::json;
 
 namespace Dream
@@ -53,6 +55,8 @@ namespace Dream
     class ParticleEmitterDefinition;
     class ScriptRuntime;
     class AssetRuntime;
+    class ObjectEmitterDefinition;
+    class ObjectEmitterRuntime;
 
     class SceneObjectRuntime : public Runtime
     {
@@ -65,6 +69,7 @@ namespace Dream
         ScriptRuntime* mScriptRuntime;
         ModelRuntime* mModelRuntime;
         ScrollerRuntime* mScrollerRuntime;
+        ObjectEmitterRuntime* mObjectEmitterRuntime;
 
         Transform mInitialTransform;
         Transform mTransform;
@@ -86,6 +91,7 @@ namespace Dream
         ScriptOnInitTask mScriptOnInitTask;
         ScriptOnUpdateTask mScriptOnUpdateTask;
         ScriptOnEventTask mScriptOnEventTask;
+        shared_ptr<ScriptOnDestroyTask> mScriptOnDestroyTask;
 
     public:
         SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr, bool randomUuid = false);
@@ -106,6 +112,7 @@ namespace Dream
         bool createParticleEmitterRuntime(ParticleEmitterDefinition*);
         bool createLightRuntime(LightDefinition*);
         bool createScrollerRuntime(ScrollerDefinition*);
+        bool createObjectEmitterRuntime(ObjectEmitterDefinition*);
 
         AnimationRuntime* getAnimationRuntime();
         PathRuntime*  getPathRuntime();
@@ -116,6 +123,7 @@ namespace Dream
         LightRuntime* getLightRuntime();
         ParticleEmitterRuntime* getParticleEmitterRuntime();
         ScrollerRuntime* getScrollerRuntime();
+        ObjectEmitterRuntime* getObjectEmitterRuntime();
         AssetRuntime* getAssetRuntime(AssetType);
 
         bool hasAnimationRuntime();
@@ -126,6 +134,7 @@ namespace Dream
         bool hasPhysicsObjectRuntime();
         bool hasLightRuntime();
         bool hasScrollerRuntime();
+        bool hasObjectEmitterRuntime();
 
         Transform& getTransform();
         Transform getInitialTransform();
@@ -175,6 +184,7 @@ namespace Dream
         void removePhysicsObjectRuntime();
         void removeParticleEmitterRuntime();
         void removeScrollerRuntime();
+        void removeObjectEmitterRuntime();
 
         bool replaceAssetUuid(AssetType type, uint32_t uuid);
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
@@ -214,7 +224,5 @@ namespace Dream
         ScriptOnInitTask* getScriptOnInitTask();
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();
-
-
     };
 }
