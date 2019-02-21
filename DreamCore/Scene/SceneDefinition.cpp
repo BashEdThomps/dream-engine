@@ -503,25 +503,6 @@ namespace Dream
        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
     }
 
-    uint32_t
-    SceneDefinition::getNanoVGScript
-    ()
-    {
-       if (!mJson[Constants::SCENE_NANOVG_SCRIPT].is_number())
-       {
-           mJson[Constants::SCENE_NANOVG_SCRIPT] = 0;
-       }
-       return  mJson[Constants::SCENE_NANOVG_SCRIPT];
-
-    }
-
-    void
-    SceneDefinition::setNanoVGScript
-    (uint32_t shader)
-    {
-       mJson[Constants::SCENE_NANOVG_SCRIPT] = shader;
-    }
-
     void
     SceneDefinition::setPlayerObject
     (uint32_t po)

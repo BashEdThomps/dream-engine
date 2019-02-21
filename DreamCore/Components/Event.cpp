@@ -17,38 +17,53 @@
 namespace Dream
 {
     Event::Event
-    (SceneObjectRuntime* sender) : DreamObject("Event"),
-        mSender(sender)
+    (const map<string,string>& attributes)
+        : DreamObject("Event"),
+          mAttributes(attributes),
+          mProcessed(false)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Creating");
-#endif
-    }
-
-    CollisionData& Event::getCollisionData()
-    {
-        return mCollisionData;
-    }
-
-    void Event::setCollisionData(const CollisionData& collisionData)
-    {
-        mCollisionData = collisionData;
+        #ifdef DREAM_LOG
+        getLog()->trace("Creating");
+        #endif
     }
 
     Event::~Event()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destroying");
-#endif
+        #ifdef DREAM_LOG
+        getLog()->trace("Destroying");
+        #endif
     }
 
-    SceneObjectRuntime*
-    Event::getSender
+    void
+    Event::setProcessed
+    (bool p)
+    {
+        mProcessed = p;
+    }
+
+    bool
+    Event::getProcessed
     ()
     const
     {
-        return mSender;
+       return mProcessed;
+    }
+
+    string
+    Event::getAttribute
+    (const string &key) const
+    {
+        if (mAttributes.count(key) > 0)
+        {
+            return mAttributes.at(key);
+        }
+        return "";
+    }
+
+    void
+    Event::setAttribute
+    (const string &key, const string &value)
+    {
+        mAttributes[key] = value;
     }
 }

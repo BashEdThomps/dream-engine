@@ -39,7 +39,7 @@ namespace Dream
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
-        atomic<uint32> mUuid;
+        uint32_t mUuid;
         /**
          * @brief Name of this Runtime, given by it's Definition.
          */
@@ -67,7 +67,8 @@ namespace Dream
         }
 
         /**
-         * @return The Runtime's UUID - same as it's Definition.
+         * @return The Runtime's UUID - Same as it's Definition, unless specified
+         * to be random, mDefinition was null.
          */
         inline uint32_t
         getUuid
@@ -75,6 +76,17 @@ namespace Dream
         const
         {
             return mUuid;
+        }
+        /**
+         * @return The Runtime's UUID as a std::string (used for dictionaries in
+         * scripting).
+         */
+        inline string
+        getUuidString
+        ()
+        const
+        {
+            return std::to_string(mUuid);
         }
 
         inline void

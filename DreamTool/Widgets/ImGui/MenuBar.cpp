@@ -320,7 +320,7 @@ namespace DreamTool
 #ifdef DREAM_LOG
                 if(ImGui::BeginMenu("Engine Logging"))
                 {
-                    static spdlog::level::level_enum mode = spdlog::level::off;
+                    spdlog::level::level_enum mode =  getLog()->level();
                     if (ImGui::RadioButton("Off", mode == spdlog::level::off))
                     {
                         mode = spdlog::level::off;

@@ -167,7 +167,7 @@ namespace DreamGLFW
         glfwSetCursorPosCallback(mWindow,CursorPositionCallback);
         glfwSetScrollCallback(mWindow,MouseWheelCallback);
 
-        glfwSwapInterval(0);
+        glfwSwapInterval(1);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
         #ifdef DREAM_LOG

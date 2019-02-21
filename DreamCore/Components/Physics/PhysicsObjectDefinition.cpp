@@ -435,4 +435,41 @@ namespace Dream
     {
         mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }
+
+    Vector3
+    PhysicsObjectDefinition::getLinearFactor
+    ()
+    {
+        if (!mJson[Constants::ASSET_ATTR_LINEAR_FACTOR].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_LINEAR_FACTOR] = wrapVector3(Vector3(0.0f));
+        }
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_FACTOR]);
+    }
+
+    void
+    PhysicsObjectDefinition::setLinearFactor
+    (const Vector3& lf)
+    {
+        mJson[Constants::ASSET_ATTR_LINEAR_FACTOR] = wrapVector3(lf);
+    }
+
+    Vector3
+    PhysicsObjectDefinition::getAngularFactor
+    ()
+    {
+        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR] = wrapVector3(Vector3(0.0f));
+        }
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR]);
+
+    }
+
+    void
+    PhysicsObjectDefinition::setAngularFactor
+    (const Vector3& af)
+    {
+        mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR] = wrapVector3(af);
+    }
 }

@@ -43,6 +43,9 @@ namespace Dream
         int mObjectCount;
         int mEmitInterval;
         float mObjectVelocity;
+        float mStartRadius;
+        float mStartTheta;
+        float mEndTheta;
         ObjectEmitterUpdateTask mUpdateTask;
 
         // Running state

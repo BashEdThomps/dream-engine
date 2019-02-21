@@ -93,6 +93,8 @@ namespace Dream
         getLog()->trace( "Constructing Object" );
         #endif
 
+        mEventQueue.reserve(10);
+
         if (mRandomUuid)
         {
             mUuid = Uuid::generateUuid();
@@ -102,6 +104,8 @@ namespace Dream
         {
             mSceneRuntime->setPlayerObject(this);
         }
+
+        setAttribute("uuid",getUuidString());
     }
 
     SceneObjectRuntime::~SceneObjectRuntime
@@ -445,18 +449,21 @@ namespace Dream
     SceneObjectRuntime::addEvent
     (const Event& event)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Event posted from {} to {}",
-            event.getSender()->getNameAndUuidString(), getNameAndUuidString());
-        #endif
-        mEventQueue.push_back(std::move(event));
+        if (!mDeleted)
+        {
+            #ifdef DREAM_LOG
+            getLog()->trace("Event posted from {} to {}",
+                event.getAttribute("uuid"), getNameAndUuidString());
+            #endif
+            mEventQueue.push_back(std::move(event));
+        }
     }
 
-    vector<Event>&
+    vector<Event>*
     SceneObjectRuntime::getEventQueue
     ()
     {
-        return mEventQueue;
+        return &mEventQueue;
     }
 
     void
@@ -466,7 +473,18 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->trace("Clearing event queue");
         #endif
-        mEventQueue.clear();
+
+        for (auto itr = mEventQueue.begin(); itr != mEventQueue.end();)
+        {
+            if ((*itr).getProcessed())
+            {
+                mEventQueue.erase(itr);
+            }
+            else
+            {
+                itr++;
+            }
+        }
     }
 
     void
@@ -503,6 +521,8 @@ namespace Dream
             );
             delete child;
         }
+
+        clearEventQueue();
     }
 
     bool
@@ -871,6 +891,7 @@ namespace Dream
     (SceneObjectRuntime* parent)
     {
         mParentRuntime = parent;
+        setAttribute("parent",mParentRuntime->getUuidString());
     }
 
     SceneObjectRuntime*
@@ -1365,5 +1386,32 @@ namespace Dream
                 setDeleted(true);
             }
         }
+    }
+
+    string
+    SceneObjectRuntime::getAttribute
+    (const string& key)
+    const
+    {
+       if (mAttributes.count(key) > 0)
+       {
+           return mAttributes.at(key);
+       }
+       return "";
+    }
+
+    void
+    SceneObjectRuntime::setAttribute
+    (const string& key, const string& value)
+    {
+       mAttributes[key] = value;
+    }
+
+    const map<string,string>&
+    SceneObjectRuntime::getAttributesMap
+    ()
+    const
+    {
+        return mAttributes;
     }
 }

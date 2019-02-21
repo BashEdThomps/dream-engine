@@ -665,16 +665,6 @@ namespace DreamTool
                 auto uuid = selected->getUuid();
                 sceneDef->setInputScript(uuid);
             }
-
-            uint32_t nvgScriptUuid = sceneDef->getNanoVGScript();
-            auto nvgScriptDef = pDef->getAssetDefinitionByUuid(nvgScriptUuid);
-            int nvgScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,nvgScriptDef);
-            if (StringCombo("NanoVG Script",&nvgScriptIndex,scriptAssets,scriptAssets.size()))
-            {
-                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,nvgScriptIndex);
-                auto uuid = selected->getUuid();
-                sceneDef->setNanoVGScript(uuid);
-            }
         }
 
         // Physics
@@ -706,6 +696,8 @@ namespace DreamTool
                     sceneRuntime->setGravity(grav);
                 }
             }
+
+
         }
     }
 
@@ -2539,12 +2531,41 @@ namespace DreamTool
             modified = true;
         }
 
+        float linearFactor[3] ={
+            pod->getLinearFactor().x(),
+            pod->getLinearFactor().y(),
+            pod->getLinearFactor().z()
+        };
+        if (ImGui::DragFloat3("Linear Factor", &linearFactor[0],0.1f))
+        {
+            Vector3 lf(linearFactor[0],linearFactor[1],linearFactor[2]);
+            if (pod)
+            {
+                pod->setLinearFactor(lf);
+                modified = true;
+            }
+        }
+
+        float angularFactor[3] ={
+            pod->getAngularFactor().x(),
+            pod->getAngularFactor().y(),
+            pod->getAngularFactor().z()
+        };
+        if (ImGui::DragFloat3("Angular Factor", &angularFactor[0],0.1f))
+        {
+            Vector3 af(angularFactor[0], angularFactor[1],angularFactor[2]);
+            if (pod)
+            {
+                pod->setAngularFactor(af);
+                modified = true;
+            }
+        }
+
         ImGui::Separator();
 
         if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
-            float halfExtents[3] =
-            {
+            float halfExtents[3] = {
                 pod->getHalfExtentsX(),
                 pod->getHalfExtentsY(),
                 pod->getHalfExtentsZ()
@@ -2613,14 +2634,10 @@ namespace DreamTool
                     if (shapeNameIndex >= 0)
                     {
                         auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,shapeNameIndex);
-                        pod->addCompoundChild(
-                                    CompoundChildDefinition
+                        pod->addCompoundChild(CompoundChildDefinition
                         {
-                                        pod,
-                                        Transform(),
-                                        childDef->getUuid()
-                                    }
-                                    );
+                            pod,Transform(),childDef->getUuid()
+                        });
                     }
                     modified = true;
                 }
@@ -3212,6 +3229,19 @@ namespace DreamTool
         if (ImGui::InputInt("Scene Object",&objectUuid))
         {
             oeDef->setSceneObjectUuid(objectUuid);
+        }
+
+        float thetas[2] = {glm::degrees(oeDef->getStartTheta()),glm::degrees(oeDef->getEndTheta())};
+        if (ImGui::DragFloat2("Start/End Theta",&thetas[0]))
+        {
+            oeDef->setStartTheta(glm::radians(thetas[0]));
+            oeDef->setEndTheta(glm::radians(thetas[1]));
+        }
+
+        float startRadius = oeDef->getStartRadius();
+        if (ImGui::DragFloat("Starting Radius",&startRadius))
+        {
+            oeDef->setStartRadius(startRadius);
         }
 
         int count = oeDef->getObjectCount();

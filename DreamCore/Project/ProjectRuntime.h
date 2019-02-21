@@ -36,7 +36,6 @@ namespace Dream
     class WindowComponent;
     class PhysicsComponent;
     class ScriptComponent;
-    class NanoVGComponent;
     class TaskManager;
 
     class SceneRuntime;
@@ -65,7 +64,6 @@ namespace Dream
         AudioComponent* mAudioComponent;
         InputComponent* mInputComponent;
         GraphicsComponent* mGraphicsComponent;
-        NanoVGComponent* mNanoVGComponent;
         PhysicsComponent* mPhysicsComponent;
         ScriptComponent* mScriptComponent;
         WindowComponent* mWindowComponent;
@@ -97,7 +95,6 @@ namespace Dream
         AudioComponent* getAudioComponent() const;
         PhysicsComponent* getPhysicsComponent() const;
         GraphicsComponent* getGraphicsComponent() const;
-        NanoVGComponent* getNanoVGComponent() const;
         WindowComponent* getWindowComponent() const;
         ScriptComponent* getScriptComponent() const;
         InputComponent* getInputComponent() const;
@@ -156,7 +153,6 @@ namespace Dream
         bool initInputComponent();
         bool initPhysicsComponent();
         bool initGraphicsComponent();
-        bool initNanoVGComponent();
         bool initWindowComponent();
         bool initScriptComponent();
         bool initTaskManager();

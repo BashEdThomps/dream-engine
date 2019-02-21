@@ -311,8 +311,8 @@ namespace Dream
                     getLog()->debug("Contact Manifold Found. Sending Event");
                     #endif
 
-                    Event aHitsB(sObjA);
-                    Event bHitsA(sObjB);
+                    Event aHitsB(sObjA->getAttributesMap());
+                    Event bHitsA(sObjB->getAttributesMap());
 
                     int numContacts = contactManifold->getNumContacts();
                     for (int j=0;j<numContacts;j++)
@@ -327,22 +327,19 @@ namespace Dream
                         auto ptB = pt.getPositionWorldOnB();
                         auto impulse = pt.getAppliedImpulse();
 
-                        CollisionData aHitsBData;
-                        aHitsBData.present = true;
-                        aHitsBData.impulse = impulse;
-                        aHitsBData.position.setX(ptB.x());
-                        aHitsBData.position.setY(ptB.y());
-                        aHitsBData.position.setZ(ptB.z());
-                        aHitsB.setCollisionData(aHitsBData);
+                        aHitsB.setAttribute("collision","true");
+                        aHitsB.setAttribute("collision.impulse",std::to_string(impulse));
+                        aHitsB.setAttribute("collision.pos.x",std::to_string(ptB.x()));
+                        aHitsB.setAttribute("collision.pos.y",std::to_string(ptB.y()));
+                        aHitsB.setAttribute("collision.pos.z",std::to_string(ptB.z()));
 
-                        CollisionData bHitsAData;
-                        bHitsAData.present = true;
-                        bHitsAData.impulse = impulse;
-                        bHitsAData.position.setX(ptA.x());
-                        bHitsAData.position.setY(ptA.y());
-                        bHitsAData.position.setZ(ptA.z());
-                        bHitsA.setCollisionData(bHitsAData);
-                     }
+                        bHitsA.setAttribute("collision","true");
+                        bHitsA.setAttribute("collision.impulse",std::to_string(impulse));
+                        bHitsA.setAttribute("collision.pos.x",std::to_string(ptA.x()));
+                        bHitsA.setAttribute("collision.pos.y",std::to_string(ptA.y()));
+                        bHitsA.setAttribute("collision.pos.z",std::to_string(ptA.z()));
+
+                    }
                     sObjB->addEvent(aHitsB);
                     sObjA->addEvent(bHitsA);
 

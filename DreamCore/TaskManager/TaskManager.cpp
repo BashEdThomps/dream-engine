@@ -51,7 +51,7 @@ namespace Dream
                 #ifdef DREAM_LOG
                 getLog()->critical("Spawning thread {}",i);
                 #endif
-                mThreadVector.emplace_back(new TaskThread(i));
+                mThreadVector.push_back(new TaskThread(i));
             }
         }
 
@@ -131,14 +131,14 @@ namespace Dream
                {
                    trys++;
                    #ifdef DREAM_LOG
-                   getLog()->critical("Trying for {} time",trys);
+                   getLog()->trace("Trying for {} time",trys);
                    #endif
 
                    result = result && t->getFence();
                    if (!result)
                    {
                        #ifdef DREAM_LOG
-                       getLog()->critical("Thread {} is still working",t->getThreadId());
+                       getLog()->trace("Thread {} is still working",t->getThreadId());
                        #endif
                        break;
                    }

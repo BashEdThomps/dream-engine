@@ -34,6 +34,7 @@ namespace Dream
 
     class ScriptComponent : public Component
     {
+        static void whyYouFail(int r, int line);
     public:
 
         static vector<ScriptPrintListener*> PrintListeners;
@@ -79,6 +80,5 @@ namespace Dream
         void exposeTransform();
         void exposeGLM();
         void exposeDefinition();
-        void exposeNanoVG();
     };
 }

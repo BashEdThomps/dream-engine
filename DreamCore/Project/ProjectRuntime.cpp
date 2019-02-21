@@ -29,7 +29,6 @@
 
 #include "../TaskManager/TaskManager.h"
 #include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Graphics/NanoVGComponent.h"
 #include "../Components/Graphics/Model/ModelMesh.h"
 #include "../Components/Physics/PhysicsComponent.h"
 #include "../Components/Window/WindowComponent.h"
@@ -69,7 +68,6 @@ namespace Dream
           mAudioComponent(nullptr),
           mInputComponent(nullptr),
           mGraphicsComponent(nullptr),
-          mNanoVGComponent(nullptr),
           mPhysicsComponent(nullptr),
           mScriptComponent(nullptr),
           mWindowComponent(windowComponent),
@@ -144,11 +142,6 @@ namespace Dream
         }
 
         if(!initGraphicsComponent())
-        {
-            return false;
-        }
-
-        if(!initNanoVGComponent())
         {
             return false;
         }
@@ -281,25 +274,6 @@ namespace Dream
     }
 
     bool
-    ProjectRuntime::initNanoVGComponent
-    ()
-    {
-        mNanoVGComponent = new NanoVGComponent(this,mWindowComponent);
-        mNanoVGComponent->lock();
-        mNanoVGComponent->setTime(mTime);
-        if (!mNanoVGComponent->init())
-        {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise Graphics Component." );
-            #endif
-            mNanoVGComponent->unlock();
-            return false;
-        }
-        mNanoVGComponent->unlock();
-        return true;
-    }
-
-    bool
     ProjectRuntime::initScriptComponent
     ()
     {
@@ -410,12 +384,6 @@ namespace Dream
             mGraphicsComponent = nullptr;
         }
 
-        if (mNanoVGComponent != nullptr)
-        {
-            delete mNanoVGComponent;
-            mNanoVGComponent = nullptr;
-        }
-
         if (mPhysicsComponent != nullptr)
         {
             delete mPhysicsComponent;
@@ -459,14 +427,6 @@ namespace Dream
     const
     {
         return mGraphicsComponent;
-    }
-
-    NanoVGComponent*
-    ProjectRuntime::getNanoVGComponent
-    ()
-    const
-    {
-        return mNanoVGComponent;
     }
 
     ScriptComponent*
@@ -529,7 +489,6 @@ namespace Dream
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
-        mNanoVGComponent->render(sr);
         mGraphicsComponent->executeDestructionTaskQueue();
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->setCamera(sr->getCamera());
@@ -614,8 +573,8 @@ namespace Dream
     {
         if (mSceneRuntimeVector.empty())
         {
-            //mTaskManager->clearFences();
-            //mTaskManager->waitForFence();
+            mTaskManager->clearFences();
+            mTaskManager->waitForFence();
             mGraphicsComponent->executeTaskQueue();
             mGraphicsComponent->executeDestructionTaskQueue();
         }
@@ -837,6 +796,8 @@ namespace Dream
     ProjectRuntime::clearAllCaches
     ()
     {
+        mTaskManager->clearFences();
+        mTaskManager->waitForFence();
         if (mAudioCache != nullptr)
         {
             mAudioCache->lock();

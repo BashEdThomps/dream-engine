@@ -278,21 +278,15 @@ int asCThreadManager::CleanupLocalData()
 asCThreadLocalData *asCThreadManager::GetLocalData()
 {
     if( threadManager == 0 )
-    {
-        printf("There is no ThreadManager\n");
         return 0;
-    }
 
 #ifndef AS_NO_THREADS
 #if defined AS_POSIX_THREADS
     asCThreadLocalData *tld = (asCThreadLocalData*)pthread_getspecific((pthread_key_t)threadManager->tlsKey);
-    printf("ThreadLocalData is %s\n",tld == 0 ? "null":"present");
     if( tld == 0 )
     {
-        printf("Creating new tld...\n");
         tld = asNEW(asCThreadLocalData)();
         pthread_key_t key = (pthread_key_t)threadManager->tlsKey;
-        printf("using key %lu\n",key);
         pthread_setspecific(key, tld);
     }
 #elif defined AS_WINDOWS_THREADS

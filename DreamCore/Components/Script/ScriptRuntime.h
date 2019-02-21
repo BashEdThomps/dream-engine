@@ -26,11 +26,11 @@ namespace Dream
 {
     class ScriptDefinition;
     class InputComponent;
-    class NanoVGComponent;
     class SceneRuntime;
 
     class ScriptRuntime : public SharedAssetRuntime
     {
+        static void whyYouFail(int,int);
         bool mError;
         string mSource;
         string mUuidString;
@@ -43,7 +43,6 @@ namespace Dream
         asIScriptFunction *mUpdateFunction;
         asIScriptFunction *mDestroyFunction;
         asIScriptFunction *mInputFunction;
-        asIScriptFunction *mNanoVGFunction;
     public:
 
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
@@ -59,7 +58,6 @@ namespace Dream
         bool executeOnDestroy(uint32_t destroyedSo, SceneObjectRuntime* parent);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
-        bool executeOnNanoVG(NanoVGComponent*, SceneRuntime*);
 
         bool getInitialised(SceneObjectRuntime* sor);
         ScriptConstructionTask* getConstructionTask();

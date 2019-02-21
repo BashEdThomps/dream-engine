@@ -32,6 +32,9 @@ namespace Dream
         mSceneObjectUuid(0),
         mEmitInterval(0),
         mObjectVelocity(0.0f),
+        mStartRadius(0.0f),
+        mStartTheta(0.0f),
+        mEndTheta(0.0f),
         mLoops(0),
         mObjectCount(0),
         mEmitIntervalTime(0),
@@ -63,7 +66,9 @@ namespace Dream
         mEmitInterval = def->getEmitInterval();
         mObjectCount = def->getObjectCount();
         mObjectVelocity = def->getObjectVelocity();
-
+        mStartRadius = def->getStartRadius();
+        mStartTheta = def->getStartTheta();
+        mEndTheta = def->getEndTheta();
         mLoopCount = mLoops;
         mLoaded = true;
         return mLoaded;
@@ -131,25 +136,26 @@ namespace Dream
         if (mSceneObjectUuid != 0)
         {
             getLog()->debug("Emitting Objects");
-            double deltaTheta = (M_PI*2)/mObjectCount;
+            double deltaTheta = (mEndTheta-mStartTheta)/mObjectCount;
+            float theta = mStartTheta;
 
-            for (int i=0; i < mObjectCount; i++)
+            for (int i = 0; i < mObjectCount; i++)
             {
-               double thisTheta = i*deltaTheta;
-               float x = cos(thisTheta);
-               float y = sin(thisTheta);
+                float x = cos(theta);
+                float y = sin(theta);
 
-               SceneObjectRuntime* newObj = mSceneObjectRuntime->addChildFromTemplateUuid(mSceneObjectUuid);
-               Vector3 startTx = mSceneObjectRuntime->getTransform().getTranslation();
-               if (newObj->hasPhysicsObjectRuntime())
+                SceneObjectRuntime* newObj = mSceneObjectRuntime->addChildFromTemplateUuid(mSceneObjectUuid);
+                Vector3 startTx = mSceneObjectRuntime->getTransform().getTranslation();
+                if (newObj->hasPhysicsObjectRuntime())
                 {
                     PhysicsObjectRuntime* po = newObj->getPhysicsObjectRuntime();
-                    float newX = startTx.x() + (mObjectVelocity*x);
-                    float newZ = startTx.z() + (mObjectVelocity*y);
+                    float newX = startTx.x() + (mStartRadius*x);
+                    float newZ = startTx.z() + (mStartRadius*y);
                     po->setCenterOfMassTransform(newX, startTx.y(), newZ);
                     po->setLinearFactor(1,0,1);
                     po->setLinearVelocity(mObjectVelocity * x, 0, mObjectVelocity * y);
                 }
+                theta += deltaTheta;
             }
         }
     }

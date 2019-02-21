@@ -63,7 +63,19 @@ main
 (int argc,char** argv)
 {
     #ifdef DREAM_LOG
-    spdlog::set_level(spdlog::level::trace);
+    string logLevel = "off";
+    for (int i=0; i<argc; i++)
+    {
+        if (string(argv[i]) == "-l")
+        {
+            if (argc >= i+1)
+            {
+                logLevel = string(argv[i+1]);
+            }
+        }
+    }
+    cout << "Using log level " << logLevel << endl;
+    spdlog::set_level(spdlog::level::from_str(logLevel));
     spdlog::set_pattern("%H:%M:%S (%l) %n %v");
     #endif
 

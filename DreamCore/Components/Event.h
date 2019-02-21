@@ -16,31 +16,25 @@
 
 #include "../Common/DreamObject.h"
 #include "../Common/Math.h"
+#include <map>
+using std::map;
 
 namespace Dream
 {
-    class SceneObjectRuntime;
-
-    struct CollisionData
-    {
-        bool present = false;
-        float impulse = 0.0;
-        Vector3 position = Vector3(0.0f);
-    };
-
     class Event : public DreamObject
     {
     private:
-        SceneObjectRuntime* mSender;
-        CollisionData mCollisionData;
+        map<string,string> mAttributes;
+        volatile bool mProcessed;
 
     public:
-        Event(SceneObjectRuntime*);
+        Event(const map<string,string>& attr);
         ~Event();
 
-        SceneObjectRuntime* getSender() const;
+        string getAttribute(const string& key) const;
 
-        CollisionData& getCollisionData();
-        void setCollisionData(const CollisionData& collisionData);
+        void setAttribute(const string& key, const string& value);
+        void setProcessed(bool p);
+        bool getProcessed() const;
     };
 }

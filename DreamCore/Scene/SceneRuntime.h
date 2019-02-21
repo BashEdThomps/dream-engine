@@ -46,7 +46,6 @@ namespace Dream
         ShaderRuntime* mLightingPassShader;
         ShaderRuntime* mShadowPassShader;
         ScriptRuntime* mInputScript;
-        ScriptRuntime* mNanoVGScript;
         Camera mCamera;
         unsigned long mSceneStartTime;
         unsigned long mSceneCurrentTime;
@@ -125,10 +124,6 @@ namespace Dream
          * @return Gets the ScriptRuntime that handles Input
          */
         ScriptRuntime* getInputScript() const;
-        /**
-         * @return Gets the ScriptRuntime that controls the NanoVG Overlay
-         */
-        ScriptRuntime* getNanoVGScript() const;
 
         /**
          * @return Gets the nearest SceneObject to the Camera's position excluding

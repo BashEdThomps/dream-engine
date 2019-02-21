@@ -97,6 +97,12 @@ namespace Dream
         uint32_t getCollisionModel();
         void setCollisionModel(uint32_t);
 
+        Vector3 getLinearFactor();
+        void setLinearFactor(const Vector3& lf);
+
+        Vector3 getAngularFactor();
+        void setAngularFactor(const Vector3& af);
+
     protected:
         void makeCompoundChildren();
         void makeHalfExtentsObject();

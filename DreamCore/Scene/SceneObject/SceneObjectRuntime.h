@@ -90,6 +90,7 @@ namespace Dream
         ScriptOnUpdateTask mScriptOnUpdateTask;
         ScriptOnEventTask mScriptOnEventTask;
         shared_ptr<ScriptOnDestroyTask> mScriptOnDestroyTask;
+        map<string,string> mAttributes;
 
     public:
         SceneObjectRuntime(SceneObjectDefinition* sd, SceneRuntime* sceneRuntime = nullptr, bool randomUuid = false);
@@ -147,7 +148,7 @@ namespace Dream
 
         bool hasEvents() const;
         void addEvent(const Event& event);
-        vector<Event>& getEventQueue();
+        vector<Event>* getEventQueue();
         void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeByUuid(uint32_t uuid);
@@ -221,5 +222,9 @@ namespace Dream
         ScriptOnInitTask* getScriptOnInitTask();
         ScriptOnEventTask* getScriptOnEventTask();
         ScriptOnUpdateTask* getScriptOnUpdateTask();
+
+        string getAttribute(const string& key) const;
+        void setAttribute(const string& key, const string& value);
+        const map<string,string>& getAttributesMap() const;
     };
 }

@@ -60,7 +60,12 @@ namespace Dream
                             }
                             auto* t = (*itr);
                             // Check if ready to execute
-                            if (t->isWaitingForDependencies())
+
+                            if (t->getState() == TaskState::EXPIRED)
+                            {
+                               t->setState(TaskState::COMPLETED);
+                            }
+                            else if (t->isWaitingForDependencies())
                             {
                                 t->incrementDeferralCount();
                             }

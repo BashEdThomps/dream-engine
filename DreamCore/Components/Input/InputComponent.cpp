@@ -74,7 +74,7 @@ namespace Dream
 
             if (playerObject)
             {
-                mJoystickNavigation3D.calculate();
+                mJoystickNavigation3D.update();
 
                 static mat4 ident(1.0f);
                 static vec3 yAxis(0.0f,1.0f,0.0f);
@@ -86,7 +86,7 @@ namespace Dream
                 auto totalYaw =  mJoystickNavigation3D.getLeftTheta()-camYaw;
                 mJoystickNavigation3D.setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
                 mtx = glm::rotate(mtx,totalYaw,yAxis);
-                mtx = glm::translate(mtx,vec3(time->perSecond(10.0f),0,0));
+                mtx = glm::translate(mtx,vec3(time->perSecond(mJoystickNavigation3D.getLeftVelocity()*10.0f),0,0));
                 playerTransform.setMatrix(mtx);
             }
 

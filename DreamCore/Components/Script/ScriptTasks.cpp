@@ -55,7 +55,7 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
+        getLog()->critical("Executing for SO {} script {} on thread {}",mSceneObject->getName(), mScript->getNameAndUuidString(), mThreadId);
         #endif
 
         if(mScript->executeOnInit(mSceneObject))
@@ -170,65 +170,32 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
+        getLog()->critical(
+            "Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
+            mScript->getNameAndUuidString(),mDestroyedObject,
+            mParentSceneObject->getNameAndUuidString(), mThreadId
+        );
         #endif
 
-        if(mScript->executeOnDestroy(mDestroyedObject, mParentSceneObject))
+        if (mScript != nullptr)
         {
-            setState(TaskState::COMPLETED);
+            if(mScript->executeOnDestroy(mDestroyedObject, mParentSceneObject))
+            {
+                setState(TaskState::COMPLETED);
+            }
+            else
+            {
+                setState(TaskState::WAITING);
+                mDeferralCount++;
+            }
         }
-        else
-        {
-            setState(TaskState::WAITING);
-            mDeferralCount++;
+        else {
+            setState(TaskState::COMPLETED);
         }
     }
 
     void
     ScriptOnDestroyTask::setScript
-    (ScriptRuntime *rt)
-    {
-        mScript = rt;
-    }
-
-//==================================================================================================
-
-    ScriptOnNanoVGTask::ScriptOnNanoVGTask
-    (SceneObjectRuntime* rt)
-        : GraphicsComponentTask(),
-          mSceneObject(rt)
-
-    {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptExecuteOnNanoVGTask");
-        #endif
-    }
-
-    void
-    ScriptOnNanoVGTask::execute
-    ()
-    {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
-
-        auto scene = mSceneObject->getSceneRuntime();
-        auto project = scene->getProjectRuntime();
-        auto nvg = project->getNanoVGComponent();
-
-        if(mScript->executeOnNanoVG(nvg,scene))
-        {
-            setState(TaskState::COMPLETED);
-        }
-        else
-        {
-            setState(TaskState::WAITING);
-            mDeferralCount++;
-        }
-    }
-
-    void
-    ScriptOnNanoVGTask::setScript
     (ScriptRuntime *rt)
     {
         mScript = rt;

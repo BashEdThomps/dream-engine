@@ -18,7 +18,8 @@ namespace Dream
         QUEUED,
         WAITING,
         ACTIVE,
-        COMPLETED
+        COMPLETED,
+        EXPIRED
     };
 
     /**

@@ -130,6 +130,12 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
+        Vector3 lf, af;
+        lf= pod->getLinearFactor();
+        af = pod->getAngularFactor();
+        setLinearFactor(lf.x(),lf.y(),lf.z());
+        setAngularFactor(af.x(),af.y(),af.z());
+
 
        if (pod->getControllableCharacter())
        {

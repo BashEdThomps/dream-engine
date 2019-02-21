@@ -40,5 +40,14 @@ namespace Dream
 
         float getObjectVelocity();
         void setObjectVelocity(float v);
+
+        float getStartTheta();
+        void setStartTheta(float t);
+
+        float getEndTheta();
+        void setEndTheta(float t);
+
+        float getStartRadius();
+        void setStartRadius(float r);
     };
 }

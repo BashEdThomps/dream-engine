@@ -210,7 +210,6 @@ namespace Dream
     const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
-    const string Constants::SCENE_NANOVG_SCRIPT = "nanovg_script";
 
     // SceneObject ==============================================================
     const string Constants::SCENE_OBJECT = "scene_object";
@@ -286,6 +285,8 @@ namespace Dream
     const string Constants::ASSET_ATTR_CCD_SPR = "ccd_spr";
     const string Constants::ASSET_ATTR_RESTITUTION = "restitution";
     const string Constants::ASSET_ATTR_FRICTION = "friction";
+    const string Constants::ASSET_ATTR_ANGULAR_FACTOR = "angular_factor";
+    const string Constants::ASSET_ATTR_LINEAR_FACTOR = "linear_factor";
 
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
     const string Constants::COLLISION_SHAPE_BOX = "btBoxShape";
@@ -349,6 +350,9 @@ namespace Dream
     const string Constants::OBJECT_EMITTER_LOOP_INTERVAL = "loop_interval";
     const string Constants::OBJECT_EMITTER_LOOPS = "loops";
     const string Constants::OBJECT_EMITTER_VELOCITY = "velocity";
+    const string Constants::OBJECT_EMITTER_START_THETA = "start_theta";
+    const string Constants::OBJECT_EMITTER_END_THETA = "end_theta";
+    const string Constants::OBJECT_EMITTER_START_RADIUS = "start_radius";
 
     // Model ===================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_LIST = "material_list";
@@ -358,7 +362,6 @@ namespace Dream
     // Lua =====================================================================
     const string Constants::SCRIPT_INIT_FUNCTION   = "onInit";
     const string Constants::SCRIPT_UPDATE_FUNCTION = "onUpdate";
-    const string Constants::SCRIPT_NANOVG_FUNCTION = "onNanoVG";
     const string Constants::SCRIPT_INPUT_FUNCTION  = "onInput";
     const string Constants::SCRIPT_EVENT_FUNCTION  = "onEvent";
     const string Constants::SCRIPT_DESTROY_FUNCTION  = "onDestroy";

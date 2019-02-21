@@ -23,7 +23,6 @@
 #include "../Graphics/Model/ModelRuntime.h"
 #include "../Graphics/Camera.h"
 #include "../Graphics/GraphicsComponent.h"
-#include "../Graphics/NanoVGComponent.h"
 #include "../Graphics/Light/LightRuntime.h"
 #include "../Graphics/Shader/ShaderRuntime.h"
 #include "../Input/InputComponent.h"
@@ -35,6 +34,8 @@
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../deps/angelscript/scriptstdstring/scriptstdstring.h"
 #include "../../deps/angelscript/scriptbuilder/scriptbuilder.h"
+#include "../../deps/angelscript/scriptdictionary/scriptdictionary.h"
+#include "../../deps/angelscript/scriptarray/scriptarray.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../Common/Math.h"
 
@@ -43,39 +44,6 @@ using std::exception;
 using std::cout;
 using std::cerr;
 using std::string;
-
-
-
-static void whyYouFail(int r, int line)
-{
-    if (r<0)
-    {
-        string errStr;
-        switch (r)
-        {
-            case asINVALID_DECLARATION:
-                errStr = "Invalid Declaration";
-                break;
-            case asINVALID_NAME:
-                errStr = "Invalid Name";
-                break;
-            case asNAME_TAKEN:
-                errStr = "Name Taken";
-                break;
-            case asERROR:
-                errStr = "Error: not a proper id";
-                break;
-            case asALREADY_REGISTERED:
-                errStr = "Already Registered";
-            break;
-            default:
-                errStr = "idk??";
-                break;
-        }
-        cout << "On line: " << line << " errNo: " << r << " Reason: " << errStr << endl;
-        assert(false);
-    }
-}
 
 static void PrintCallback(const string& in)
 {
@@ -113,6 +81,37 @@ static void MessageCallback(const asSMessageInfo *msg, void *param)
 
 namespace Dream
 {
+    void ScriptComponent::whyYouFail(int r, int line)
+    {
+        if (r<0)
+        {
+            string errStr;
+            switch (r)
+            {
+                case asINVALID_DECLARATION:
+                    errStr = "Invalid Declaration";
+                    break;
+                case asINVALID_NAME:
+                    errStr = "Invalid Name";
+                    break;
+                case asNAME_TAKEN:
+                    errStr = "Name Taken";
+                    break;
+                case asERROR:
+                    errStr = "Error: not a proper id";
+                    break;
+                case asALREADY_REGISTERED:
+                    errStr = "Already Registered";
+                break;
+                default:
+                    errStr = "idk??";
+                    break;
+            }
+            cout << "On line: " << line << " errNo: " << r << " Reason: " << errStr << endl;
+            assert(false);
+        }
+    }
+
     ScriptComponent::ScriptComponent
     (ProjectRuntime* runtime, ScriptCache* cache)
         : Component(runtime),
@@ -155,6 +154,8 @@ namespace Dream
         r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
         assert( r >= 0 );
         RegisterStdString(Engine);
+        RegisterScriptArray(Engine,true);
+        RegisterScriptDictionary(Engine);
         Engine->SetContextCallbacks(RequestContextCallback,ReturnContextToPool);
         #ifdef DREAM_LOG
         log->debug( "Got an AngelScript Engine");
@@ -177,7 +178,6 @@ namespace Dream
         r = Engine->RegisterObjectType("AudioComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("AudioRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("Camera", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectType("CollisionData", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("Definition", 0, asOBJ_REF | asOBJ_NOCOUNT);
         r = Engine->RegisterObjectType("Event", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("GraphicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
@@ -189,7 +189,6 @@ namespace Dream
         r = Engine->RegisterObjectType("MouseState", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("LightRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("ModelRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectType("NanoVGComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("PathRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("PhysicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("PhysicsObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
@@ -234,7 +233,6 @@ namespace Dream
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowWidth()",asMETHOD(ProjectRuntime,getWindowWidth), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowHeight()",asMETHOD(ProjectRuntime,getWindowHeight), asCALL_THISCALL);whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "Project@ getProject()",asMETHOD(ProjectRuntime,getProject),asCALL_THISCALL); whyYouFail(r,__LINE__);
-
     }
 
     void
@@ -332,16 +330,22 @@ namespace Dream
         debugRegisteringClass("SceneObjectRuntime");
         int r;
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "int getUuid()",asMETHOD(SceneObjectRuntime,getUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getUuidString()",asMETHOD(SceneObjectRuntime,getUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getName()",asMETHOD(SceneObjectRuntime,getName), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getNameAndUuidString()",asMETHOD(SceneObjectRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getSceneRuntime()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "Transform@ getTransform()",asMETHOD(SceneObjectRuntime,getTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setTransform(Transform@)",asMETHOD(SceneObjectRuntime,setTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ addChildFromTemplateUuid(int)",asMETHOD(SceneObjectRuntime,addChildFromTemplateUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,hasPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "PhysicsObjectRuntime@ getPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,getPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasAudioRuntime()",asMETHOD(SceneObjectRuntime,hasAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "AudioRuntime@ getAudioRuntime()",asMETHOD(SceneObjectRuntime,getAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setDeleted(bool)",asMETHOD(SceneObjectRuntime,setDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getAttribute(string)",asMETHOD(SceneObjectRuntime,getAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setAttribute(string,string)",asMETHOD(SceneObjectRuntime,setAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ getParentRuntime()",asMETHOD(SceneObjectRuntime,getParentRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+
     }
 
     void
@@ -378,10 +382,9 @@ namespace Dream
     {
         debugRegisteringClass("Event");
         int r;
-        r = Engine->RegisterObjectMethod("Event","CollisionData@ getCollisionData()",asMETHOD(Event,getCollisionData),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectProperty("CollisionData","bool present",asOFFSET(CollisionData,present)); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectProperty("CollisionData","float impulse",asOFFSET(CollisionData,impulse)); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectProperty("CollisionData","Vector3@ position",asOFFSET(CollisionData,position)); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("Event","string getAttribute(string)",asMETHOD(Event,getAttribute),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("Event","bool getProcessed()",asMETHOD(Event,getProcessed),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("Event","void setProcessed(bool)",asMETHOD(Event,setProcessed),asCALL_THISCALL); whyYouFail(r,__LINE__);
     }
 
     void
@@ -409,9 +412,12 @@ namespace Dream
         r = Engine->RegisterObjectMethod("JoystickState","float getAxisData(int)",asMETHOD(JoystickState,getAxisData),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("JoystickState","bool  getButtonData(int)",asMETHOD(JoystickState,getButtonData),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("JoystickState","bool clearsDeadzone(float)",asMETHOD(JoystickState,clearsDeadzone),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("JoystickState","void setAxisData(int, float)",asMETHOD(JoystickState,setAxisData),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("JoystickState","void setButtonData(int, bool)",asMETHOD(JoystickState,setButtonData),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
         // JoystickNavigation3D
         r = Engine->RegisterObjectMethod("JoystickNavigation3D","Vector2@ getHeading()",asMETHOD(JoystickNavigation3D,getHeading),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("JoystickNavigation3D","void update()",asMETHOD(JoystickNavigation3D,update),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
         // Joystick Mapping
         r = Engine->RegisterObjectProperty("JoystickMapping","int AnalogLeftXAxis",   asOFFSET(JoystickMapping,AnalogLeftXAxis)); whyYouFail(r,__LINE__);
@@ -585,19 +591,6 @@ namespace Dream
         debugRegisteringClass("AudioRuntime");
     }
 
-
-    void
-    ScriptComponent::exposeNanoVG
-    ()
-    {
-        debugRegisteringClass("NanoVG");
-        int r;
-        r = Engine->RegisterObjectMethod("NanoVGComponent","int CreateFont(string,string)",asMETHOD(NanoVGComponent,CreateFont),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("NanoVGComponent","void FontSize(float)",asMETHOD(NanoVGComponent,FontSize),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("NanoVGComponent","Vector4& TextBoxBounds(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBoxBounds,(float, float, float, string),Vector4),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("NanoVGComponent","void TextBox(float, float, float, string)",asMETHODPR(NanoVGComponent,TextBox,(float,float,float, string),void),asCALL_THISCALL); whyYouFail(r,__LINE__);
-    }
-
     void
     ScriptComponent::exposeSceneRuntime
     ()
@@ -685,7 +678,6 @@ namespace Dream
         exposeInputComponent();
         exposeGraphicsComponent();
         exposeWindowComponent();
-        exposeNanoVG();
         exposePhysicsComponent();
 
         exposeAnimationRuntime();

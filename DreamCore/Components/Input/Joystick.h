@@ -131,9 +131,19 @@ namespace Dream
            return mAxisData[idx];
         }
 
+        void setAxisData(unsigned int index, float data)
+        {
+            mAxisData[index] = data;
+        }
+
         bool getButtonData(int idx)
         {
             return mButtonData[idx] != 0;
+        }
+
+        void setButtonData(unsigned int index, bool data)
+        {
+            mButtonData[index] = data ? 1 : 0;
         }
 
         float getDeadZone() const
@@ -218,20 +228,12 @@ namespace Dream
               mRightVelocity(0.0f),
               mLeftTheta(0.0f),
               mRightTheta(0.0f),
-
-              mLastLeftVelocity(0.0f),
-              mLastRightVelocity(0.0f),
-              mLastLeftTheta(0.0f),
-              mLastRightTheta(0.0f),
-
               mJoystickState(state),
               mJoystickMapping(mapping)
         {}
 
-        void calculate()
+        void update()
         {
-            captureLast();
-
             float leftX = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftXAxis);
             float leftY = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftYAxis);
             float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
@@ -241,11 +243,6 @@ namespace Dream
             {
                 mLeftVelocity = fabs(sqrt((leftX*leftX)+(-leftY * -leftY)));
 
-                if (leftY < 0.0f)
-                {
-                    mLeftVelocity *= -1.0f;
-                }
-
                 mLeftTheta = atan2(-leftY,leftX);
 
                 if (mLeftTheta != 0.0f)
@@ -253,14 +250,14 @@ namespace Dream
                    mLeftTheta -= (M_PI/2);
                 }
             }
+            else
+            {
+                mLeftVelocity = 0.0f;
+            }
+
             if (mJoystickState->clearsDeadzone(rightX) || mJoystickState->clearsDeadzone(rightY))
             {
                 mRightVelocity = fabs(sqrt((rightX * rightX) + (-rightY * -rightY)));
-
-                if (rightY < 0.0f)
-                {
-                    mRightVelocity *= -1.0f;
-                }
 
                 mRightTheta = atan2(-rightY,rightX);
 
@@ -269,14 +266,10 @@ namespace Dream
                      mRightTheta -= (M_PI/2);
                 }
             }
-        }
-
-        void captureLast()
-        {
-            mLastLeftVelocity = mLeftVelocity;
-            mLastRightVelocity = mRightVelocity;
-            mLastLeftTheta = mLeftTheta;
-            mLastRightTheta = mRightTheta;
+            else
+            {
+                mRightVelocity = 0.0f;
+            }
         }
 
         void show()

@@ -158,7 +158,7 @@ namespace DreamTool
 
         // Resize callback
         glfwSetFramebufferSizeCallback(mWindow, FramebufferSizeCallback);
-        glfwSwapInterval(0);
+        glfwSwapInterval(1);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
 

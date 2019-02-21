@@ -60,15 +60,4 @@ namespace Dream
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
-
-    class ScriptOnNanoVGTask : public GraphicsComponentTask
-    {
-        SceneObjectRuntime* mSceneObject;
-        ScriptRuntime* mScript = nullptr;
-
-    public:
-        ScriptOnNanoVGTask(SceneObjectRuntime* rt);
-        void execute();
-        void setScript(ScriptRuntime* rt);
-    };
 }

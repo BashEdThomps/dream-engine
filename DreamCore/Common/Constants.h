@@ -188,7 +188,6 @@ namespace Dream
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
         const static string SCENE_INPUT_SCRIPT;
-        const static string SCENE_NANOVG_SCRIPT;
 
 
         // SceneObject ==========================================================
@@ -267,6 +266,9 @@ namespace Dream
         const static string OBJECT_EMITTER_LOOP_INTERVAL;
         const static string OBJECT_EMITTER_LOOPS;
         const static string OBJECT_EMITTER_VELOCITY;
+        const static string OBJECT_EMITTER_START_THETA;
+        const static string OBJECT_EMITTER_END_THETA;
+        const static string OBJECT_EMITTER_START_RADIUS;
 
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
@@ -283,6 +285,8 @@ namespace Dream
         const static string ASSET_ATTR_RESTITUTION;
         const static string ASSET_ATTR_FRICTION;
         const static string ASSET_ATTR_CCD_SPR;
+        const static string ASSET_ATTR_ANGULAR_FACTOR;
+        const static string ASSET_ATTR_LINEAR_FACTOR;
 
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;
@@ -361,7 +365,6 @@ namespace Dream
         // Script ==============================================================
         const static string SCRIPT_INIT_FUNCTION;
         const static string SCRIPT_UPDATE_FUNCTION;
-        const static string SCRIPT_NANOVG_FUNCTION;
         const static string SCRIPT_INPUT_FUNCTION;
         const static string SCRIPT_EVENT_FUNCTION;
         const static string SCRIPT_DESTROY_FUNCTION;

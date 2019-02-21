@@ -132,4 +132,59 @@ namespace Dream
     {
         mJson[Constants::OBJECT_EMITTER_VELOCITY] = v;
     }
+
+    float
+    ObjectEmitterDefinition::getStartTheta
+    ()
+    {
+        if (!mJson[Constants::OBJECT_EMITTER_START_THETA].is_number())
+        {
+            mJson[Constants::OBJECT_EMITTER_START_THETA] = 0;
+        }
+        return mJson[Constants::OBJECT_EMITTER_START_THETA];
+    }
+
+    void
+    ObjectEmitterDefinition::setStartTheta
+    (float t)
+    {
+        mJson[Constants::OBJECT_EMITTER_START_THETA] = t;
+    }
+
+    float
+    ObjectEmitterDefinition::getEndTheta
+    ()
+    {
+        if (!mJson[Constants::OBJECT_EMITTER_END_THETA].is_number())
+        {
+            mJson[Constants::OBJECT_EMITTER_END_THETA] = 0;
+        }
+        return mJson[Constants::OBJECT_EMITTER_END_THETA];
+    }
+
+    void
+    ObjectEmitterDefinition::setEndTheta
+    (float t)
+    {
+        mJson[Constants::OBJECT_EMITTER_END_THETA] = t;
+    }
+
+    float
+    ObjectEmitterDefinition::getStartRadius
+    ()
+    {
+        if (!mJson[Constants::OBJECT_EMITTER_START_RADIUS].is_number())
+        {
+            mJson[Constants::OBJECT_EMITTER_START_RADIUS] = 0;
+        }
+        return mJson[Constants::OBJECT_EMITTER_START_RADIUS];
+    }
+
+    void
+    ObjectEmitterDefinition::setStartRadius
+    (float t)
+    {
+        mJson[Constants::OBJECT_EMITTER_START_RADIUS] = t;
+    }
+
 }

@@ -19,13 +19,42 @@
 #include "ScriptComponent.h"
 
 #include "../Input/InputComponent.h"
-#include "../Graphics/NanoVGComponent.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 
 namespace Dream
 {
+    void ScriptRuntime::whyYouFail(int r, int line)
+    {
+        if (r<0)
+        {
+            string errStr;
+            switch (r)
+            {
+                case asINVALID_DECLARATION:
+                    errStr = "Invalid Declaration";
+                    break;
+                case asINVALID_NAME:
+                    errStr = "Invalid Name";
+                    break;
+                case asNAME_TAKEN:
+                    errStr = "Name Taken";
+                    break;
+                case asERROR:
+                    errStr = "Error: not a proper id";
+                    break;
+                case asALREADY_REGISTERED:
+                    errStr = "Already Registered";
+                break;
+                default:
+                    errStr = "Other, Go Check";
+                    break;
+            }
+            cout << "On line: " << line << " errNo: " << r << " Reason: " << errStr << endl;
+            //assert(false);
+        }
+    }
     ScriptRuntime::ScriptRuntime
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
@@ -37,8 +66,7 @@ namespace Dream
           mEventFunction(nullptr),
           mUpdateFunction(nullptr),
           mDestroyFunction(nullptr),
-          mInputFunction(nullptr),
-          mNanoVGFunction(nullptr)
+          mInputFunction(nullptr)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptRuntime");
@@ -55,7 +83,7 @@ namespace Dream
         #endif
         if (mScriptModule)
         {
-            mScriptModule->Discard();
+            //mScriptModule->Discard();
             mScriptModule = nullptr;
         }
     }
@@ -114,11 +142,13 @@ namespace Dream
             int r = mScriptModule->Build();
             if(r < 0)
             {
+                whyYouFail(r,__LINE__);
                 #ifdef DREAM_LOG
                 getLog()->error("Create script error");
                 mError = true;
                 #endif
             }
+            mLoaded = true;
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }
@@ -158,11 +188,13 @@ namespace Dream
                 if (mUpdateFunction)
                 {
                     auto ctx = ScriptComponent::Engine->RequestContext();
-                    ctx->Prepare(mUpdateFunction);
-                    ctx->SetArgObject(0,sor);
-                    int r = ctx->Execute();
+                    int r;
+                    r = ctx->Prepare(mUpdateFunction); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
+                    r = ctx->Execute(); whyYouFail(r,__LINE__);
                     if (r < 0)
                     {
+                        whyYouFail(r,__LINE__);
                         mError = true;
                     }
                     ScriptComponent::Engine->ReturnContext(ctx);
@@ -180,8 +212,16 @@ namespace Dream
     {
         if (mError)
         {
-           #ifdef DREAM_LOG
+            #ifdef DREAM_LOG
             getLog()->error("Cannot run destroy, script for {} in error state.",destroyedSo);
+            #endif
+            return true;
+        }
+
+        if (mInitialised.count(destroyedSo) == 0)
+        {
+            #ifdef DREAM_LOG
+            getLog()->error("Scrip {} probably removed before descruction could be called.",destroyedSo);
             #endif
             return true;
         }
@@ -191,7 +231,6 @@ namespace Dream
             #ifdef DREAM_LOG
             getLog()->trace("Attempted to destroy uninitialised object {}",destroyedSo);
             #endif
-            assert(false);
             return true;
         }
 
@@ -208,12 +247,14 @@ namespace Dream
                 if (mDestroyFunction)
                 {
                     auto ctx = ScriptComponent::Engine->RequestContext();
-                    ctx->Prepare(mInitFunction);
-                    ctx->SetArgDWord(0,destroyedSo);
-                    ctx->SetArgObject(1,parent);
-                    int r = ctx->Execute();
+                    int r;
+                    r = ctx->Prepare(mDestroyFunction); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgDWord(0,destroyedSo); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgObject(1,parent); whyYouFail(r,__LINE__);
+                    r = ctx->Execute(); whyYouFail(r,__LINE__);
                     if (r < 0)
                     {
+                        whyYouFail(r,__LINE__);
                         mError = true;
                     }
                     removeInitialisedFlag(destroyedSo);
@@ -259,11 +300,13 @@ namespace Dream
                 if (mInitFunction)
                 {
                     auto ctx = ScriptComponent::Engine->RequestContext();
-                    ctx->Prepare(mInitFunction);
-                    ctx->SetArgObject(0,sor);
-                    int r = ctx->Execute();
+                    int r;
+                    r = ctx->Prepare(mInitFunction); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
+                    r = ctx->Execute(); whyYouFail(r,__LINE__);
                     if (r < 0)
                     {
+                        whyYouFail(r,__LINE__);
                         mError = true;
                     }
                     else
@@ -320,15 +363,17 @@ namespace Dream
                 }
                 if (mEventFunction)
                 {
-                    for (Event e : sor->getEventQueue())
+                    for (Event& e : *sor->getEventQueue())
                     {
                         auto ctx = ScriptComponent::Engine->RequestContext();
-                        ctx->Prepare(mEventFunction);
-                        ctx->SetArgObject(0,sor);
-                        ctx->SetArgObject(1,&e);
-                        int r = ctx->Execute();
+                        int r;
+                        r = ctx->Prepare(mEventFunction); whyYouFail(r,__LINE__);
+                        r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
+                        r = ctx->SetArgObject(1,&e); whyYouFail(r,__LINE__);
+                        ctx->Execute(); whyYouFail(r,__LINE__);
                         if (r < 0)
                         {
+                            whyYouFail(r,__LINE__);
                             mError = true;
                             break;
                         }
@@ -336,7 +381,6 @@ namespace Dream
                     }
                 }
             }
-            sor->clearEventQueue();
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }
@@ -363,49 +407,14 @@ namespace Dream
                 if (mInputFunction)
                 {
                     auto ctx = ScriptComponent::Engine->RequestContext();
-                    ctx->Prepare(mInputFunction);
-                    ctx->SetArgObject(0,inputComp);
-                    ctx->SetArgObject(1,sr);
-                    int r = ctx->Execute();
+                    int r;
+                    r = ctx->Prepare(mInputFunction); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgObject(0,inputComp); whyYouFail(r,__LINE__);
+                    r = ctx->SetArgObject(1,sr); whyYouFail(r,__LINE__);
+                    r = ctx->Execute(); whyYouFail(r,__LINE__);
                     if (r < 0)
                     {
-                        mError = true;
-                    }
-                    ScriptComponent::Engine->ReturnContext(ctx);
-                }
-            }
-            mProjectRuntime->getScriptComponent()->unlock();
-            return true;
-        }
-        return false;
-    }
-
-
-    bool
-    ScriptRuntime::executeOnNanoVG
-    (NanoVGComponent* nvg, SceneRuntime* sr)
-    {
-        #ifdef DREAM_LOG
-        getLog()->info( "Calling onNanoVG for {}" , getNameAndUuidString() );
-        #endif
-
-        if(mProjectRuntime->getScriptComponent()->tryLock())
-        {
-            if (mScriptModule)
-            {
-                if (!mNanoVGFunction)
-                {
-                    mNanoVGFunction = mScriptModule->GetFunctionByName(Constants::SCRIPT_NANOVG_FUNCTION.c_str());
-                }
-                if (mNanoVGFunction)
-                {
-                    auto ctx = ScriptComponent::Engine->RequestContext();
-                    ctx->Prepare(mNanoVGFunction);
-                    ctx->SetArgObject(0,nvg);
-                    ctx->SetArgObject(1,sr);
-                    int r = ctx->Execute();
-                    if (r < 0)
-                    {
+                        whyYouFail(r,__LINE__);
                         mError = true;
                     }
                     ScriptComponent::Engine->ReturnContext(ctx);

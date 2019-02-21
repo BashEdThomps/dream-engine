@@ -61,7 +61,6 @@ namespace Dream
         mLightingPassShader(nullptr),
         mShadowPassShader(nullptr),
         mInputScript(nullptr),
-        mNanoVGScript(nullptr),
         mCamera(Camera(this)),
         mSceneStartTime(0),
         mSceneCurrentTime(0),
@@ -393,15 +392,6 @@ namespace Dream
             #endif
         }
 
-        auto nvgScriptUuid = sceneDefinition->getNanoVGScript();
-        mNanoVGScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(nvgScriptUuid));
-        if (!mNanoVGScript)
-        {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to load NanoVG Script {}",nvgScriptUuid);
-            #endif
-        }
-
          // Physics
          mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
 
@@ -597,14 +587,6 @@ namespace Dream
         return mInputScript;
     }
 
-    ScriptRuntime*
-    SceneRuntime::getNanoVGScript
-    ()
-    const
-    {
-        return mNanoVGScript;
-    }
-
     SceneObjectRuntime*
     SceneRuntime::getNearestToCamera
     ()
@@ -685,23 +667,32 @@ namespace Dream
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
 
-        // Poll Data
-        inputComponent->setCurrentSceneRuntime(this);
-        inputComponent->getPollDataTask()->clearState();
-        taskManager->pushTask(inputComponent->getPollDataTask());
-
-        // Process Input
-        inputComponent->getExecuteScriptTask()->clearState();
-        inputComponent->getExecuteScriptTask()->dependsOn(inputComponent->getPollDataTask());
-        taskManager->pushTask(inputComponent->getExecuteScriptTask());
-
-        if (mInputScript->getConstructionTask()->getState() == TaskState::QUEUED)
+        auto constructInput = mInputScript->getConstructionTask();
+        if (constructInput->getState() == TaskState::NEW)
         {
-           taskManager->pushTask(mInputScript->getConstructionTask());
+           constructInput->setState(TaskState::QUEUED);
+           taskManager->pushTask(constructInput);
+        }
+        else if (constructInput->getState() == TaskState::COMPLETED)
+        {
+            // Poll Data
+            inputComponent->setCurrentSceneRuntime(this);
+            auto poll = inputComponent->getPollDataTask();
+            poll->clearState();
+            taskManager->pushTask(poll);
+
+            // Process Input
+            auto exec =inputComponent->getExecuteScriptTask();
+            exec->clearState();
+            exec->dependsOn(inputComponent->getPollDataTask());
+            taskManager->pushTask(exec);
         }
 
+        auto physicsUpdate = physicsComponent->getUpdateWorldTask();
+        physicsUpdate->clearState();
+        taskManager->pushTask(physicsUpdate);
+
         // Process SceneObjects
-        vector<Task*> physicsDependencies;
         mRootSceneObjectRuntime->applyToAll
         (
             function<SceneObjectRuntime*(SceneObjectRuntime*)>(
@@ -733,7 +724,7 @@ namespace Dream
                     {
                         auto ut = pObj->getAddObjectTask();
                         ut->clearState();
-                        physicsDependencies.push_back(ut);
+                        ut->dependsOn(physicsUpdate);
                         taskManager->pushTask(ut);
                     }
                 }
@@ -771,8 +762,8 @@ namespace Dream
                     if (load->getState() == TaskState::NEW)
                     {
                         // Don't clear state of load
-                        taskManager->pushTask(load);
                         load->setState(TaskState::QUEUED);
+                        taskManager->pushTask(load);
                     }
                     else if (load->getState() == TaskState::COMPLETED)
                     {
@@ -807,14 +798,6 @@ namespace Dream
                 return static_cast<SceneObjectRuntime*>(nullptr);
             }
         ));
-
-        auto pt = physicsComponent->getUpdateWorldTask();
-        pt->clearState();
-        for (auto* task : physicsDependencies)
-        {
-            pt->dependsOn(task);
-        }
-        taskManager->pushTask(pt);
 
         if (physicsComponent->getDebug())
         {
