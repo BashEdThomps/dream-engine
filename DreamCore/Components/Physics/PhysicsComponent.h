@@ -50,14 +50,11 @@ namespace Dream
         btCollisionDispatcher *mDispatcher;
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
-        PhysicsObjectRuntime* mCharacter;
         PhysicsUpdateWorldTask mUpdateWorldTask;
         PhysicsDrawDebugTask mDrawDebugTask;
 
         bool mDebug;
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
-        bool recoverFromPenetration(btPersistentManifold* );
-        void recoverCharacter(btPersistentManifold*);
 
     public:
         PhysicsComponent(ProjectRuntime* pr);
@@ -68,7 +65,6 @@ namespace Dream
         bool getDebug();
         bool init() override;
         void addPhysicsObjectRuntime(PhysicsObjectRuntime*);
-        void setCharacter(PhysicsObjectRuntime*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectRuntime(PhysicsObjectRuntime*);

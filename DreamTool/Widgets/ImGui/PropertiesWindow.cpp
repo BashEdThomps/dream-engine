@@ -2561,6 +2561,37 @@ namespace DreamTool
             }
         }
 
+        float linearVelocity[3] ={
+            pod->getLinearVelocity().x(),
+            pod->getLinearVelocity().y(),
+            pod->getLinearVelocity().z()
+        };
+        if (ImGui::DragFloat3("Linear Velocity", &linearVelocity[0],0.1f))
+        {
+            Vector3 lf(linearVelocity[0],linearVelocity[1],linearVelocity[2]);
+            if (pod)
+            {
+                pod->setLinearVelocity(lf);
+                modified = true;
+            }
+        }
+
+        float angularVelocity[3] ={
+            pod->getAngularVelocity().x(),
+            pod->getAngularVelocity().y(),
+            pod->getAngularVelocity().z()
+        };
+        if (ImGui::DragFloat3("Angular Velocity", &angularVelocity[0],0.1f))
+        {
+            Vector3 af(angularVelocity[0], angularVelocity[1],angularVelocity[2]);
+            if (pod)
+            {
+                pod->setAngularVelocity(af);
+                modified = true;
+            }
+        }
+
+
         ImGui::Separator();
 
         if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BOX) == 0)
@@ -3097,14 +3128,6 @@ namespace DreamTool
 
         ImGui::Separator();
 
-        bool loop = scrDef->getLoop();
-        if (ImGui::Checkbox("Loop",&loop))
-        {
-            scrDef->setLoop(loop);
-        }
-
-        ImGui::Separator();
-
         ImGui::Text("Scroller Items");
         if(ImGui::Button("Add Item"))
         {
@@ -3123,7 +3146,6 @@ namespace DreamTool
         ImGui::NextColumn();
         ImGui::Text("Origin");
         ImGui::NextColumn();
-
 
         vector<ScrollerItem> items = scrDef->getItemsArray();
         vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
@@ -3184,7 +3206,7 @@ namespace DreamTool
             float originF[3] = {origin.x(),origin.y(),origin.z()};
             if (ImGui::DragFloat3("##Origin",&originF[0]))
             {
-                item.origin = origin;
+                item.origin = Vector3(&originF[0]);
                 updated = true;
             }
             ImGui::PopItemWidth();
@@ -3260,12 +3282,6 @@ namespace DreamTool
         if (ImGui::DragInt("Loops",&repeats))
         {
             oeDef->setLoops(repeats);
-        }
-
-        int pause = oeDef->getLoopInterval();
-        if (ImGui::DragInt("Loop Interval",&pause))
-        {
-            oeDef->setLoopInterval(pause);
         }
 
         float velocity = oeDef->getObjectVelocity();

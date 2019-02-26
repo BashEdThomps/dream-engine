@@ -363,21 +363,25 @@ namespace Dream
                 }
                 if (mEventFunction)
                 {
-                    for (Event& e : *sor->getEventQueue())
+                    if (sor->tryLockEventQueue())
                     {
-                        auto ctx = ScriptComponent::Engine->RequestContext();
-                        int r;
-                        r = ctx->Prepare(mEventFunction); whyYouFail(r,__LINE__);
-                        r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
-                        r = ctx->SetArgObject(1,&e); whyYouFail(r,__LINE__);
-                        ctx->Execute(); whyYouFail(r,__LINE__);
-                        if (r < 0)
+                        for (Event& e : *sor->getEventQueue())
                         {
-                            whyYouFail(r,__LINE__);
-                            mError = true;
-                            break;
+                            auto ctx = ScriptComponent::Engine->RequestContext();
+                            int r;
+                            r = ctx->Prepare(mEventFunction); whyYouFail(r,__LINE__);
+                            r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
+                            r = ctx->SetArgObject(1,&e); whyYouFail(r,__LINE__);
+                            ctx->Execute(); whyYouFail(r,__LINE__);
+                            if (r < 0)
+                            {
+                                whyYouFail(r,__LINE__);
+                                mError = true;
+                                break;
+                            }
+                            ScriptComponent::Engine->ReturnContext(ctx);
                         }
-                        ScriptComponent::Engine->ReturnContext(ctx);
+                        sor->unlockEventQueue();
                     }
                 }
             }

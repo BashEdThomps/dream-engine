@@ -16,12 +16,15 @@
 
 #pragma once
 
+#include <memory>
 #include "../Component.h"
 #include "Mouse.h"
 #include "Keyboard.h"
 #include "Joystick.h"
 #include "InputTasks.h"
 #include "../../Common/Math.h"
+
+using std::shared_ptr;
 
 namespace Dream
 {
@@ -35,12 +38,13 @@ namespace Dream
         MouseState mMouseState;
         MouseState mLastMouseState;
 
+        int mJoystickCount;
         JoystickState mJoystickState;
         JoystickState mLastJoystickState;
         JoystickMapping mJoystickMapping;
         InputPollDataTask mPollDataTask;
         InputExecuteScriptTask mExecuteScriptTask;
-        JoystickNavigation3D mJoystickNavigation3D;
+        shared_ptr<JoystickNavigation> mJoystickNavigation;
 
     public:
         InputComponent(ProjectRuntime* rt);
@@ -63,7 +67,7 @@ namespace Dream
         void setMouseState(const MouseState& mouseState);
 
         JoystickMapping& getJoystickMapping();
-        JoystickNavigation3D& getJoystickNavigation3D();
+        JoystickNavigation* getJoystickNavigation();
         JoystickState& getJoystickState();
         void setJoystickState(const JoystickState& joystickState);
 
@@ -75,5 +79,7 @@ namespace Dream
 
         SceneRuntime *getCurrentSceneRuntime() const;
         void setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime);
+        int getJoystickCount() const;
+        void setJoystickCount(int joystickCount);
     };
 }

@@ -32,9 +32,6 @@ namespace Dream
         int getEmitInterval();
         void setEmitInterval(int);
 
-        int getLoopInterval();
-        void setLoopInterval(int pause);
-
         int getLoops();
         void setLoops(int loops);
 

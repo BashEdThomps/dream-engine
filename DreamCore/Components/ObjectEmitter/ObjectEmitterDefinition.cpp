@@ -80,24 +80,6 @@ namespace Dream
     }
 
     int
-    ObjectEmitterDefinition::getLoopInterval
-    ()
-    {
-        if(!mJson[Constants::OBJECT_EMITTER_LOOP_INTERVAL].is_number())
-        {
-            mJson[Constants::OBJECT_EMITTER_LOOP_INTERVAL] = 1000;
-        }
-        return mJson[Constants::OBJECT_EMITTER_LOOP_INTERVAL];
-    }
-
-    void
-    ObjectEmitterDefinition::setLoopInterval
-    (int pause)
-    {
-        mJson[Constants::OBJECT_EMITTER_LOOP_INTERVAL] = pause;
-    }
-
-    int
     ObjectEmitterDefinition::getLoops
     ()
     {

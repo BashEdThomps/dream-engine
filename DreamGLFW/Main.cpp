@@ -228,11 +228,12 @@ handleSceneInput
             memcpy(ks.KeysDown, GLFWWindowComponent::KeysDown, sizeof(bool)*512);
 
             // Joystick
+            int joystickCount = 0;
             for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
             {
-
                 if (glfwJoystickPresent(id))
                 {
+                    joystickCount++;
                     js.setName(glfwGetJoystickName(id));
                     int numAxis, numButtons;
                     const float* axisData = glfwGetJoystickAxes(id,&numAxis);
@@ -257,6 +258,7 @@ handleSceneInput
                     }
                 }
             }
+            inputComp->setJoystickCount(joystickCount);
         }
     }
 }

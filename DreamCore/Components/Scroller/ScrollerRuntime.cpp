@@ -30,10 +30,9 @@ namespace Dream
         ScrollerDefinition* definition,
         SceneObjectRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
-        mVelocity(0),
-        mRangeBegin(0),
-        mRangeEnd(0),
-        mLoop(false),
+        mVelocity(0.0f),
+        mRangeBegin(0.0f),
+        mRangeEnd(0.0f),
         mUpdateTask(this)
     {
         #ifdef DREAM_LOG
@@ -65,7 +64,6 @@ namespace Dream
         mVelocity = scrollerDef->getVelocity();
         mRangeBegin =  scrollerDef->getRangeBegin();
         mRangeEnd =  scrollerDef->getRangeEnd();
-        mLoop = scrollerDef->getLoop();
 
         for (const ScrollerItem& item : items)
         {

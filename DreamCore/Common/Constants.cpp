@@ -287,6 +287,9 @@ namespace Dream
     const string Constants::ASSET_ATTR_FRICTION = "friction";
     const string Constants::ASSET_ATTR_ANGULAR_FACTOR = "angular_factor";
     const string Constants::ASSET_ATTR_LINEAR_FACTOR = "linear_factor";
+    const string Constants::ASSET_ATTR_ANGULAR_VELOCITY = "angular_velocity";
+    const string Constants::ASSET_ATTR_LINEAR_VELOCITY = "linear_velocity";
+
 
     const string Constants::COLLISION_SHAPE_SPHERE = "btShpereShape";
     const string Constants::COLLISION_SHAPE_BOX = "btBoxShape";

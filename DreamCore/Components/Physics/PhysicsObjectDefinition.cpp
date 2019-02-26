@@ -472,4 +472,41 @@ namespace Dream
     {
         mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR] = wrapVector3(af);
     }
+
+    Vector3
+    PhysicsObjectDefinition::getLinearVelocity
+    ()
+    {
+        if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(Vector3(0.0f));
+        }
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
+    }
+
+    void
+    PhysicsObjectDefinition::setLinearVelocity
+    (const Vector3& lf)
+    {
+        mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(lf);
+    }
+
+    Vector3
+    PhysicsObjectDefinition::getAngularVelocity
+    ()
+    {
+        if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(Vector3(0.0f));
+        }
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
+
+    }
+
+    void
+    PhysicsObjectDefinition::setAngularVelocity
+    (const Vector3& af)
+    {
+        mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(af);
+    }
 }

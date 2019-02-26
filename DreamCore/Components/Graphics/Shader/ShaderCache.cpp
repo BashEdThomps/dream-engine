@@ -83,11 +83,13 @@ namespace Dream
         {
             auto shader = static_cast<ShaderRuntime*>(runtime);
             if (shader->countMaterials() == 0) continue;
-            shader->use();
-            shader->setViewMatrix(camera->getViewMatrix());
-            shader->setProjectionMatrix(camera->getProjectionMatrix());
-            shader->setViewerPosition(camera->getTranslation());
-            shader->drawGeometryPass(camera);
+            if(shader->use())
+            {
+                shader->setViewMatrix(camera->getViewMatrix());
+                shader->setProjectionMatrix(camera->getProjectionMatrix());
+                shader->setViewerPosition(camera->getTranslation());
+                shader->drawGeometryPass(camera);
+            }
         }
     }
 
@@ -95,13 +97,15 @@ namespace Dream
     ShaderCache::drawShadowPass
     (mat4 matrix, ShaderRuntime* shader)
     {
-        shader->use();
-        auto lsUniform = shader->getUniformLocation("lightSpaceMatrix");
-        glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
-        for (auto runtime : mRuntimes)
+        if(shader->use())
         {
-            auto s = static_cast<ShaderRuntime*>(runtime);
-            s->drawShadowPass(shader);
+            auto lsUniform = shader->getUniformLocation("lightSpaceMatrix");
+            glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(matrix));
+            for (auto runtime : mRuntimes)
+            {
+                auto s = static_cast<ShaderRuntime*>(runtime);
+                s->drawShadowPass(shader);
+            }
         }
     }
 }

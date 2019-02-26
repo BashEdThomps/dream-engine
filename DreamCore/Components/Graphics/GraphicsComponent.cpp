@@ -504,58 +504,60 @@ namespace Dream
             return;
         }
 
-        mLightingPassShader->use();
+        if (mLightingPassShader->use())
+        {
 
-        // Setup source textures
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
-        ShaderRuntime::CurrentTexture0 = mGeometryPassPositionBuffer;
+            // Setup source textures
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
+            ShaderRuntime::CurrentTexture0 = mGeometryPassPositionBuffer;
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
-        ShaderRuntime::CurrentTexture1 = mGeometryPassNormalBuffer;
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
+            ShaderRuntime::CurrentTexture1 = mGeometryPassNormalBuffer;
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
-        ShaderRuntime::CurrentTexture2 = mGeometryPassAlbedoBuffer;
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
+            ShaderRuntime::CurrentTexture2 = mGeometryPassAlbedoBuffer;
 
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
-        ShaderRuntime::CurrentTexture3 = mShadowPassDepthBuffer;
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
+            ShaderRuntime::CurrentTexture3 = mShadowPassDepthBuffer;
 
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
-        ShaderRuntime::CurrentTexture4 = mGeometryPassIgnoreBuffer;
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
+            ShaderRuntime::CurrentTexture4 = mGeometryPassIgnoreBuffer;
 
-        GLuint pos, norm, alb, shadow, ignore, depth;
-        pos = 0;
-        norm = 1;
-        alb  = 2;
-        shadow = 3;
-        ignore = 4;
-        mLightingPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
-        mLightingPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
-        mLightingPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
-        mLightingPassShader->addUniform(INT1,"gShadow"    ,1, &shadow);
-        mLightingPassShader->addUniform(INT1,"gIgnore"    ,1, &ignore);
+            GLuint pos, norm, alb, shadow, ignore, depth;
+            pos = 0;
+            norm = 1;
+            alb  = 2;
+            shadow = 3;
+            ignore = 4;
+            mLightingPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
+            mLightingPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
+            mLightingPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
+            mLightingPassShader->addUniform(INT1,"gShadow"    ,1, &shadow);
+            mLightingPassShader->addUniform(INT1,"gIgnore"    ,1, &ignore);
 
-        auto shadowMtx = mLightingPassShader->getUniformLocation("shadowSpaceMatrix");
-        glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
+            auto shadowMtx = mLightingPassShader->getUniformLocation("shadowSpaceMatrix");
+            glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
 
-        mLightingPassShader->setViewerPosition(sr->getCamera()->getTranslation());
-        mLightingPassShader->bindLightQueue(mLightQueue);
-        mLightingPassShader->syncUniforms();
+            mLightingPassShader->setViewerPosition(sr->getCamera()->getTranslation());
+            mLightingPassShader->bindLightQueue(mLightQueue);
+            mLightingPassShader->syncUniforms();
 
-        mLightingPassShader->bindVertexArray(mScreenQuadVAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            mLightingPassShader->bindVertexArray(mScreenQuadVAO);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // Copy content of geometry's depth buffer to default framebuffer's depth buffer
-        auto width = mWindowComponent->getWidth();
-        auto height = mWindowComponent->getHeight();
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-        mWindowComponent->bindDefaultFrameBuffer();
+            // Copy content of geometry's depth buffer to default framebuffer's depth buffer
+            auto width = mWindowComponent->getWidth();
+            auto height = mWindowComponent->getHeight();
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+            glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+            mWindowComponent->bindDefaultFrameBuffer();
+        }
         clearLightQueue();
     }
 

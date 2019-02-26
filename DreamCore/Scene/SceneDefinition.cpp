@@ -358,7 +358,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
     }
@@ -367,7 +367,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
     }
@@ -376,7 +376,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
     }
@@ -385,7 +385,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
     }
@@ -394,7 +394,7 @@ namespace Dream
     {
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0));
+           setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
     }

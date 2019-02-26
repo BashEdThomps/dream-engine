@@ -103,6 +103,12 @@ namespace Dream
         Vector3 getAngularFactor();
         void setAngularFactor(const Vector3& af);
 
+        Vector3 getLinearVelocity();
+        void    setLinearVelocity(const Vector3& lf);
+        Vector3 getAngularVelocity();
+        void    setAngularVelocity(const Vector3& af);
+
+
     protected:
         void makeCompoundChildren();
         void makeHalfExtentsObject();

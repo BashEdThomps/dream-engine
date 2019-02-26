@@ -72,6 +72,7 @@ namespace Dream
 
         Transform mInitialTransform;
         Transform mTransform;
+        mutex mEventQueueMutex;
         vector<Event> mEventQueue;
         map<AssetType,uint32_t> mAssetDefinitions;
         vector<SceneObjectRuntime*> mChildRuntimes;
@@ -146,9 +147,12 @@ namespace Dream
         bool getHasCameraFocus() const;
         void setHasCameraFocus(bool);
 
-        bool hasEvents() const;
+        bool isPlayerObject() const;
+        bool hasEvents();
         void addEvent(const Event& event);
         vector<Event>* getEventQueue();
+        bool tryLockEventQueue();
+        void unlockEventQueue();
         void clearEventQueue();
 
         SceneObjectRuntime* getChildRuntimeByUuid(uint32_t uuid);

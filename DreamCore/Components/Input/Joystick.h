@@ -1,13 +1,21 @@
 #pragma once
 #include <string>
-#include "../../Common/Math.h"
 #include <glm/fwd.hpp>
+#include <glm/vec3.hpp>
+#include "../Time.h"
+#include "../Transform.h"
+#include "../../Project/ProjectRuntime.h"
+#include "../../Scene/SceneRuntime.h"
+#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Graphics/Camera.h"
 
 using glm::mat4;
 using glm::quat;
 using std::string;
 using std::cout;
 using std::endl;
+using glm::mat4;
+using glm::vec3;
 
 namespace Dream
 {
@@ -205,7 +213,71 @@ namespace Dream
         }
     };
 
-    class JoystickNavigation3D
+    class JoystickNavigation
+    {
+    protected:
+        JoystickState* mJoystickState;
+        JoystickMapping* mJoystickMapping;
+        Vector2 mHeading;
+    public:
+        JoystickNavigation(JoystickState* state, JoystickMapping* mapping)
+            : mJoystickState(state), mJoystickMapping(mapping)
+        {
+
+        }
+
+        virtual void update(SceneRuntime* rt) = 0;
+
+        void setHeading(const Vector2& h)
+        {
+            mHeading = h;
+        }
+
+        Vector2& getHeading()
+        {
+            return mHeading;
+        }
+    };
+
+    class JoystickFaceForwardNavigation : public JoystickNavigation
+    {
+    public:
+        JoystickFaceForwardNavigation(JoystickState* state, JoystickMapping* mapping)
+            : JoystickNavigation(state,mapping) {}
+
+        void update(SceneRuntime* rt) override
+        {
+            if (!rt) return;
+
+            float leftX = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftXAxis);
+            float leftY = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftYAxis);
+            float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
+            float rightY = mJoystickState->getAxisData(mJoystickMapping->AnalogRightYAxis);
+
+            auto playerObject = rt->getPlayerObject();
+            if (playerObject)
+            {
+                auto& playerTransform = playerObject->getTransform();
+                auto time = rt->getProjectRuntime()->getTime();
+                auto camera = rt->getCamera();
+                static mat4 ident(1.0f);
+                Vector3 translation = playerTransform.getTranslation();
+                mat4 mtx = glm::translate(ident,translation.toGLM());
+                auto totalYaw = 0.0f;
+                setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
+                mtx = glm::translate(mtx,vec3(time->perSecond(-leftY)*10.0f,0,time->perSecond(leftX)*10.0f));
+                playerTransform.setMatrix(mtx);
+            }
+            else
+            {
+                cout << "No player object" << endl;
+            }
+
+
+        }
+    };
+
+    class Joystick2DPlaneNavigation : public JoystickNavigation
     {
         float mLeftVelocity;
         float mRightVelocity;
@@ -217,23 +289,21 @@ namespace Dream
         float mLastLeftTheta;
         float mLastRightTheta;
 
-        Vector2 mHeading;
-        JoystickState* mJoystickState;
-        JoystickMapping* mJoystickMapping;
 
     public:
-        JoystickNavigation3D
+        Joystick2DPlaneNavigation
         (JoystickState* state, JoystickMapping* mapping)
-            : mLeftVelocity(0.0f),
+            : JoystickNavigation(state,mapping),
+              mLeftVelocity(0.0f),
               mRightVelocity(0.0f),
               mLeftTheta(0.0f),
-              mRightTheta(0.0f),
-              mJoystickState(state),
-              mJoystickMapping(mapping)
+              mRightTheta(0.0f)
         {}
 
-        void update()
+        void update(SceneRuntime* rt) override
         {
+            if (!rt) return;
+
             float leftX = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftXAxis);
             float leftY = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftYAxis);
             float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
@@ -270,6 +340,28 @@ namespace Dream
             {
                 mRightVelocity = 0.0f;
             }
+
+            auto playerObject = rt->getPlayerObject();
+            if (playerObject)
+            {
+                auto& playerTransform = playerObject->getTransform();
+                auto time = rt->getProjectRuntime()->getTime();
+                auto camera = rt->getCamera();
+                static mat4 ident(1.0f);
+                static vec3 yAxis(0.0f,1.0f,0.0f);
+                Vector3 translation = playerTransform.getTranslation();
+                mat4 mtx = glm::translate(ident,translation.toGLM());
+                auto camYaw = camera->getYaw();
+                auto totalYaw = getLeftTheta()-camYaw;
+                setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
+                mtx = glm::rotate(mtx,totalYaw,yAxis);
+                mtx = glm::translate(mtx,vec3(time->perSecond(getLeftVelocity()*10.0f),0,0));
+                playerTransform.setMatrix(mtx);
+            }
+            else
+            {
+                cout << "No player object" << endl;
+            }
         }
 
         void show()
@@ -300,16 +392,6 @@ namespace Dream
         float getLeftVelocity() const
         {
             return mLeftVelocity;
-        }
-
-        void setHeading(const Vector2& h)
-        {
-            mHeading = h;
-        }
-
-        Vector2& getHeading()
-        {
-            return mHeading;
         }
     };
 }

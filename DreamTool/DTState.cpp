@@ -287,11 +287,12 @@ namespace DreamTool
                 memcpy(ks.KeysDown, &io.KeysDown[0], sizeof(bool)*512);
 
                 // Joystick
+                int jsCount = 0;
                 for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
                 {
-
                     if (glfwJoystickPresent(id))
                     {
+                        jsCount++;
                         js.setName(glfwGetJoystickName(id));
                         int numAxis, numButtons;
                         const float* axisData = glfwGetJoystickAxes(id,&numAxis);
@@ -316,6 +317,7 @@ namespace DreamTool
                         }
                     }
                 }
+                inputComp->setJoystickCount(jsCount);
             }
         }
     }

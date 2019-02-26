@@ -418,6 +418,9 @@ namespace Dream
         auto focused = getSceneObjectRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
         mCamera.setFocusedSceneObejct(focused);
 
+        auto player = getSceneObjectRuntimeByUuid(sceneDefinition->getPlayerObject());
+        setPlayerObject(player);
+
         return true;
     }
 
@@ -666,6 +669,7 @@ namespace Dream
         auto physicsComponent = mProjectRuntime->getPhysicsComponent();
         auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
         auto inputComponent = mProjectRuntime->getInputComponent();
+        auto scriptComponent = mProjectRuntime->getScriptComponent();
 
         auto constructInput = mInputScript->getConstructionTask();
         if (constructInput->getState() == TaskState::NEW)
@@ -688,9 +692,13 @@ namespace Dream
             taskManager->pushTask(exec);
         }
 
-        auto physicsUpdate = physicsComponent->getUpdateWorldTask();
-        physicsUpdate->clearState();
-        taskManager->pushTask(physicsUpdate);
+        PhysicsUpdateWorldTask* physicsUpdate = nullptr;
+        if (physicsComponent->getEnabled())
+        {
+            physicsUpdate = physicsComponent->getUpdateWorldTask();
+            physicsUpdate->clearState();
+            taskManager->pushTask(physicsUpdate);
+        }
 
         // Process SceneObjects
         mRootSceneObjectRuntime->applyToAll
@@ -717,7 +725,7 @@ namespace Dream
                 }
 
                 // Physics
-                if (rt->hasPhysicsObjectRuntime())
+                if (physicsComponent->getEnabled() && rt->hasPhysicsObjectRuntime())
                 {
                     auto pObj = rt->getPhysicsObjectRuntime();
                     if (!pObj->isInPhysicsWorld())
@@ -755,7 +763,7 @@ namespace Dream
                 }
 
                 // Scripting
-                if (rt->hasScriptRuntime())
+                if (scriptComponent->getEnabled() && rt->hasScriptRuntime())
                 {
                     auto script = rt->getScriptRuntime();
                     auto load = script->getConstructionTask();
@@ -779,6 +787,7 @@ namespace Dream
                             {
                                 auto event = rt->getScriptOnEventTask();
                                 event->clearState();
+                                event->dependsOn(physicsUpdate);
                                 taskManager->pushTask(event);
                             }
 
@@ -801,7 +810,9 @@ namespace Dream
 
         if (physicsComponent->getDebug())
         {
-            //graphicsComponent->pushTask(mDrawDebugTask);
+            auto drawDebug = physicsComponent->getDrawDebugTask();
+            drawDebug->clearState();
+            graphicsComponent->pushTask(drawDebug);
         }
     }
 

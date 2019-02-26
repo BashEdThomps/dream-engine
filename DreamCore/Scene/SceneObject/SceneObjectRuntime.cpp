@@ -93,7 +93,9 @@ namespace Dream
         getLog()->trace( "Constructing Object" );
         #endif
 
+        mEventQueueMutex.lock();
         mEventQueue.reserve(10);
+        mEventQueueMutex.unlock();
 
         if (mRandomUuid)
         {
@@ -440,9 +442,12 @@ namespace Dream
     bool
     SceneObjectRuntime::hasEvents
     ()
-    const
     {
-        return !mEventQueue.empty();
+        bool retval = false;
+        mEventQueueMutex.lock();
+        retval = !mEventQueue.empty();
+        mEventQueueMutex.unlock();
+        return retval;
     }
 
     void
@@ -455,8 +460,20 @@ namespace Dream
             getLog()->trace("Event posted from {} to {}",
                 event.getAttribute("uuid"), getNameAndUuidString());
             #endif
+            mEventQueueMutex.lock();
             mEventQueue.push_back(std::move(event));
+            mEventQueueMutex.unlock();
         }
+    }
+
+    bool SceneObjectRuntime::tryLockEventQueue()
+    {
+       return mEventQueueMutex.try_lock();
+    }
+
+    void SceneObjectRuntime::unlockEventQueue()
+    {
+       mEventQueueMutex.unlock();
     }
 
     vector<Event>*
@@ -474,17 +491,21 @@ namespace Dream
         getLog()->trace("Clearing event queue");
         #endif
 
-        for (auto itr = mEventQueue.begin(); itr != mEventQueue.end();)
+        if(tryLockEventQueue())
         {
-            if ((*itr).getProcessed())
+            for (auto itr = mEventQueue.begin(); itr != mEventQueue.end();)
             {
-                mEventQueue.erase(itr);
-            }
-            else
-            {
-                itr++;
+                if ((*itr).getProcessed())
+                {
+                    mEventQueue.erase(itr);
+                }
+                else
+                {
+                    itr++;
+                }
             }
         }
+        unlockEventQueue();
     }
 
     void
@@ -1413,5 +1434,13 @@ namespace Dream
     const
     {
         return mAttributes;
+    }
+
+    bool
+    SceneObjectRuntime::isPlayerObject
+    ()
+    const
+    {
+        return mSceneRuntime->getPlayerObject() == this;
     }
 }

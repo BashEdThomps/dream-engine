@@ -182,7 +182,7 @@ namespace Dream
         r = Engine->RegisterObjectType("Event", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("GraphicsComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("InputComponent", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectType("JoystickNavigation3D",0,asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectType("JoystickNavigation",0,asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("JoystickMapping",0,asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("JoystickState",0,asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("KeyboardState", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
@@ -342,6 +342,7 @@ namespace Dream
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasAudioRuntime()",asMETHOD(SceneObjectRuntime,hasAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "AudioRuntime@ getAudioRuntime()",asMETHOD(SceneObjectRuntime,getAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setDeleted(bool)",asMETHOD(SceneObjectRuntime,setDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool getDeleted()",asMETHOD(SceneObjectRuntime,getDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getAttribute(string)",asMETHOD(SceneObjectRuntime,getAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setAttribute(string,string)",asMETHOD(SceneObjectRuntime,setAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ getParentRuntime()",asMETHOD(SceneObjectRuntime,getParentRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -356,7 +357,6 @@ namespace Dream
         int r;
         r = Engine->RegisterObjectMethod("Transform", "void translate3f(float,float,float)",asMETHOD(Transform,translate3f), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("Transform","Vector3@ getTranslation()",asMETHOD(Transform,getTranslation),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        //r = Engine->RegisterObjectMethod("Transform","mat4 getMatrix()",asMETHOD(Transform,getMatrix),asCALL_THISCALL); whyYouFail(r,__LINE__);
     }
 
     void
@@ -405,8 +405,9 @@ namespace Dream
         r = Engine->RegisterObjectMethod("InputComponent","KeyboardState@ getKeyboardState()",asMETHOD(InputComponent,getKeyboardState),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","JoystickState@ getJoystickState()",asMETHOD(InputComponent,getJoystickState),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","MouseState@ getMouseState()",asMETHOD(InputComponent,getMouseState),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("InputComponent","JoystickNavigation3D@ getJoystickNavigation3D()",asMETHOD(InputComponent,getJoystickNavigation3D),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("InputComponent","JoystickNavigation@ getJoystickNavigation()",asMETHOD(InputComponent,getJoystickNavigation),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("InputComponent","JoystickMapping@ getJoystickMapping()",asMETHOD(InputComponent,getJoystickMapping),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("InputComponent","int getJoystickCount()",asMETHOD(InputComponent,getJoystickCount),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
         // Joystick State
         r = Engine->RegisterObjectMethod("JoystickState","float getAxisData(int)",asMETHOD(JoystickState,getAxisData),asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -415,9 +416,9 @@ namespace Dream
         r = Engine->RegisterObjectMethod("JoystickState","void setAxisData(int, float)",asMETHOD(JoystickState,setAxisData),asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("JoystickState","void setButtonData(int, bool)",asMETHOD(JoystickState,setButtonData),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
-        // JoystickNavigation3D
-        r = Engine->RegisterObjectMethod("JoystickNavigation3D","Vector2@ getHeading()",asMETHOD(JoystickNavigation3D,getHeading),asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("JoystickNavigation3D","void update()",asMETHOD(JoystickNavigation3D,update),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        // JoystickNavigation
+        r = Engine->RegisterObjectMethod("JoystickNavigation","Vector2@ getHeading()",asMETHOD(JoystickNavigation,getHeading),asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("JoystickNavigation","void update()",asMETHOD(JoystickNavigation,update),asCALL_THISCALL); whyYouFail(r,__LINE__);
 
         // Joystick Mapping
         r = Engine->RegisterObjectProperty("JoystickMapping","int AnalogLeftXAxis",   asOFFSET(JoystickMapping,AnalogLeftXAxis)); whyYouFail(r,__LINE__);

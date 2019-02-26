@@ -57,7 +57,6 @@ namespace Dream
         vector<SceneObjectRuntime*> mInRange;
         vector<SceneObjectRuntime*> mPostRange;
         map<uint32_t,uint32_t> mAssetsMap;
-        bool mLoop;
         ScrollerUpdateTask mUpdateTask;
     };
 }

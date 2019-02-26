@@ -32,9 +32,6 @@ namespace Dream
         Vector3 getVelocity();
         void setVelocity(const Vector3&);
 
-        bool getLoop();
-        void setLoop(bool loop);
-
         Vector3 getRangeBegin();
         void setRangeBegin(const Vector3&);
 

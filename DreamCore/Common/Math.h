@@ -41,6 +41,7 @@ namespace Dream
 
     public:
         Vector2(float f = 0.0f) : _x(f), _y(f) {}
+        Vector2(const float* fp) : _x(fp[0]), _y(fp[1]) {}
         Vector2(float x, float y) : _x(x), _y(y) {}
 
         glm::vec2 toGLM() const
@@ -109,6 +110,7 @@ namespace Dream
     public:
         Vector3(float f = 0.0f) : _x(f), _y(f), _z(f) {}
         Vector3(float x, float y, float z) : _x(x), _y(y), _z(z) {}
+        Vector3(const float* fp) : _x(fp[0]), _y(fp[1]), _z(fp[2]) {}
         Vector3(const glm::vec3& v) : _x(v.x), _y(v.y), _z(v.z) {}
         Vector3(const btVector3& v) : _x(v.x()), _y(v.y()), _z(v.z()) {}
 
@@ -222,6 +224,7 @@ namespace Dream
 
     public:
         Vector4(float f = 0.0f) : _x(f), _y(f), _z(f), _w(f) {}
+        Vector4(const float* fp) : _x(fp[0]), _y(fp[1]), _z(fp[2]), _w(fp[3]) {}
         Vector4(float x, float y, float z, float w)
             : _x(x), _y(y), _z(z), _w(w) {}
 

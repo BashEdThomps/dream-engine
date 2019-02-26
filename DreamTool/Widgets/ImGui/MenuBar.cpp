@@ -17,6 +17,7 @@
 #include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
 #include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../../DreamCore/Components/Audio/AudioComponent.h"
+#include "../../../DreamCore/Components/Physics/PhysicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
 
 namespace DreamTool
@@ -233,6 +234,19 @@ namespace DreamTool
                         if(pRuntime)
                         {
                             pRuntime->getScriptComponent()->setEnabled(scripting);
+                        }
+                    }
+
+                    bool physics = false;
+                    if (pRuntime)
+                    {
+                        physics = pRuntime->getPhysicsComponent()->getEnabled();
+                    }
+                    if(ImGui::Checkbox("Physics",&physics))
+                    {
+                        if(pRuntime)
+                        {
+                            pRuntime->getPhysicsComponent()->setEnabled(physics);
                         }
                     }
 

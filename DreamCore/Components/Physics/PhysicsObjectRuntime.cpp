@@ -130,12 +130,16 @@ namespace Dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
-        Vector3 lf, af;
-        lf= pod->getLinearFactor();
+        Vector3 lf, lv, af, av;
+        lf = pod->getLinearFactor();
+        lv = pod->getLinearVelocity();
         af = pod->getAngularFactor();
-        setLinearFactor(lf.x(),lf.y(),lf.z());
-        setAngularFactor(af.x(),af.y(),af.z());
+        av = pod->getAngularVelocity();
 
+        setLinearFactor(lf.x(),lf.y(),lf.z());
+        setLinearVelocity(lv.x(),lv.y(),lv.z());
+        setAngularFactor(af.x(),af.y(),af.z());
+        setAngularVelocity(av.x(),av.y(),av.z());
 
        if (pod->getControllableCharacter())
        {
@@ -162,7 +166,7 @@ namespace Dream
         mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
         mRigidBody->setActivationState(DISABLE_DEACTIVATION);
         mRigidBody->setAngularFactor(btVector3(0,1,0));
-    }
+     }
 
 
     void

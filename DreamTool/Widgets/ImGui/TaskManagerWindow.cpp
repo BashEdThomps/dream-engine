@@ -44,7 +44,11 @@ namespace DreamTool
                     ImGui::Text("Worker Thread %d (%3lu Tasks)", t->getThreadId(),debugQueue.size());
                     for (Task* task : debugQueue)
                     {
-                       ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                        #ifdef DREAM_LOG
+                        ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                        #else
+                        ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
+                        #endif
                     }
                     ImGui::NextColumn();
                 }
@@ -55,7 +59,11 @@ namespace DreamTool
                 auto gfxTaskQueue = gfxComponent->getDebugTaskQueue();
                 for (GraphicsComponentTask* task : gfxTaskQueue)
                 {
+                    #ifdef DREAM_LOG
                     ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
+                    #else
+                    ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
+                    #endif
                 }
             }
             else

@@ -39,7 +39,6 @@ namespace Dream
           mDispatcher(nullptr),
           mSolver(nullptr),
           mProjectionMatrix(mat4(1.0f)),
-          mCharacter(nullptr),
           mUpdateWorldTask(this),
           mDrawDebugTask(this),
           mDebug(false)
@@ -249,13 +248,6 @@ namespace Dream
     {
         auto rb = physicsObjejct->getRigidBody();
         addRigidBody(rb);
-        if (
-            (rb->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT)
-            == btCollisionObject::CF_CHARACTER_OBJECT
-        )
-        {
-            mCharacter = physicsObjejct;
-        }
     }
 
     void
@@ -327,6 +319,15 @@ namespace Dream
                         auto ptB = pt.getPositionWorldOnB();
                         auto impulse = pt.getAppliedImpulse();
 
+                        if (sObjA->isPlayerObject())
+                        {
+                           aHitsB.setAttribute("character","true");
+                        }
+                        else if (sObjB->isPlayerObject())
+                        {
+                           bHitsA.setAttribute("character","true");
+                        }
+
                         aHitsB.setAttribute("collision","true");
                         aHitsB.setAttribute("collision.impulse",std::to_string(impulse));
                         aHitsB.setAttribute("collision.pos.x",std::to_string(ptB.x()));
@@ -342,16 +343,6 @@ namespace Dream
                     }
                     sObjB->addEvent(aHitsB);
                     sObjA->addEvent(bHitsA);
-
-                    // Recover
-                    if (sObjA->getPhysicsObjectRuntime() == mCharacter)
-                    {
-                       recoverCharacter(contactManifold);
-                    }
-                    else if (sObjB->getPhysicsObjectRuntime() == mCharacter)
-                    {
-                       recoverCharacter(contactManifold);
-                    }
                 }
                 else
                 {
@@ -400,76 +391,7 @@ namespace Dream
         mDebugDrawer->drawAll();
     }
 
-    bool
-    PhysicsComponent::recoverFromPenetration
-    (btPersistentManifold* manifold)
-    {
-        bool penetration = false;
-        auto body =  mCharacter->getRigidBody();
-        auto currentPosition = body->getWorldTransform().getOrigin();
-        float maxPenDepth = 0.01f;
-        btScalar directionSign = manifold->getBody0() == body ? btScalar(-1.0) : btScalar(1.0);
-        for (int p = 0; p < manifold->getNumContacts(); p++)
-        {
-            const btManifoldPoint& pt = manifold->getContactPoint(p);
-            btScalar dist = pt.getDistance();
-
-            #ifdef DREAM_LOG
-            getLog()->trace("dist: {} dirSign: {} mpd: {}",dist,directionSign,maxPenDepth);
-            #endif
-            if (dist < -maxPenDepth)
-            {
-
-                #ifdef DREAM_LOG
-                getLog()->trace("recovered");
-                #endif
-                currentPosition += pt.m_normalWorldOnB * directionSign * dist * btScalar(0.2);
-                penetration = true;
-            }
-        }
-        btTransform newTrans = body->getWorldTransform();
-        newTrans.setOrigin(currentPosition);
-        body->setWorldTransform(newTrans);
-        return penetration;
-    }
-
-    bool
-    PhysicsComponent::needsCollision
-    (const btCollisionObject* body0, const btCollisionObject* body1)
-    {
-        bool collides = (body0->getBroadphaseHandle()->m_collisionFilterGroup & body1->getBroadphaseHandle()->m_collisionFilterMask) != 0;
-        collides = collides && (body1->getBroadphaseHandle()->m_collisionFilterGroup & body0->getBroadphaseHandle()->m_collisionFilterMask);
-        return collides;
-    }
-
-    void PhysicsComponent::recoverCharacter(btPersistentManifold* manifold)
-    {
-        if (mCharacter)
-        {
-            int recoveryLoops = 0;
-            do
-            {
-                if (!recoverFromPenetration(manifold))
-                {
-                    recoveryLoops++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            while(recoveryLoops < 10);
-        }
-    }
-
-    void
-    PhysicsComponent::setCharacter
-    (PhysicsObjectRuntime* character)
-    {
-        mCharacter=character;
-    }
-
-    PhysicsDebugDrawer*PhysicsComponent::getDebugDrawer()
+    PhysicsDebugDrawer* PhysicsComponent::getDebugDrawer()
     {
         return mDebugDrawer;
     }

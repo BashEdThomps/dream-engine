@@ -87,6 +87,7 @@ namespace Dream
         void setAssetDefinition(AssetType type, uint32_t uuid);
         map<AssetType, uint32_t> getAssetDefinitionsMap();
 
+
     private:
         void deleteChildSceneObjectDefinitions();
         void setEmptyAssetsObject();

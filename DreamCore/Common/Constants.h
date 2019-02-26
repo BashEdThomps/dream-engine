@@ -287,6 +287,9 @@ namespace Dream
         const static string ASSET_ATTR_CCD_SPR;
         const static string ASSET_ATTR_ANGULAR_FACTOR;
         const static string ASSET_ATTR_LINEAR_FACTOR;
+        const static string ASSET_ATTR_ANGULAR_VELOCITY;
+        const static string ASSET_ATTR_LINEAR_VELOCITY;
+
 
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;

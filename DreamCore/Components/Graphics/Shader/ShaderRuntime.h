@@ -116,7 +116,7 @@ namespace Dream
         bool useDefinition() override;
         void deleteUniforms();
 
-        void use();
+        bool use();
         void unbind();
         GLuint getShaderProgram() const;
         void setShaderProgram(GLuint sp);

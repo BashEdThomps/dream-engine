@@ -135,7 +135,9 @@ namespace Dream
     {
         if (mSceneObjectUuid != 0)
         {
+            #ifdef DREAM_LOG
             getLog()->debug("Emitting Objects");
+            #endif
             double deltaTheta = (mEndTheta-mStartTheta)/mObjectCount;
             float theta = mStartTheta;
 

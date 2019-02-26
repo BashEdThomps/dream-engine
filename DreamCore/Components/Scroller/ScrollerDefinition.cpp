@@ -38,24 +38,6 @@ namespace Dream
         mJson[Constants::SCROLLER_VELOCITY] = wrapVector3(vel);
     }
 
-    bool
-    ScrollerDefinition::getLoop
-    ()
-    {
-       if (!mJson[Constants::SCROLLER_LOOP].is_boolean())
-       {
-           mJson[Constants::SCROLLER_LOOP] = false;
-       }
-       return mJson[Constants::SCROLLER_LOOP];
-    }
-
-    void
-    ScrollerDefinition::setLoop
-    (bool loop)
-    {
-        mJson[Constants::SCROLLER_LOOP] = loop;
-    }
-
     Vector3 ScrollerDefinition::getRangeBegin()
     {
        if (!mJson[Constants::SCROLLER_RANGE_BEGIN].is_object())

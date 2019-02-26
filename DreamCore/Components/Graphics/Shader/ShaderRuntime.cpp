@@ -234,23 +234,28 @@ namespace Dream
        return true;
    }
 
-   void
-   ShaderRuntime::use
-   ()
-   {
-       mPointLightCount = 0;
-       mSpotLightCount = 0;
-       mDirectionalLightCount = 0;
-        if (CurrentShaderProgram != mShaderProgram)
+    bool
+    ShaderRuntime::use
+    ()
+    {
+        if (mShaderProgram != 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->info("Switching Shader Program from {} to {} for {}",
-                CurrentShaderProgram,mShaderProgram,getNameAndUuidString()
-            );
-            #endif
-            glUseProgram(mShaderProgram);
-            CurrentShaderProgram = mShaderProgram;
+            mPointLightCount = 0;
+            mSpotLightCount = 0;
+            mDirectionalLightCount = 0;
+            if (CurrentShaderProgram != mShaderProgram)
+            {
+                #ifdef DREAM_LOG
+                 getLog()->info("Switching Shader Program from {} to {} for {}",
+                    CurrentShaderProgram,mShaderProgram,getNameAndUuidString()
+                 );
+                 #endif
+                 glUseProgram(mShaderProgram);
+                 CurrentShaderProgram = mShaderProgram;
+            }
+            return true;
         }
+        return false;
     }
 
     // API Setters =============================================================
