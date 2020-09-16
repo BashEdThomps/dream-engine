@@ -5,7 +5,7 @@
 
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
-#include "../../deps/ImFileSystem/imguifilesystem.h"
+#include "ImFileSystem/imguifilesystem.h"
 #include <sstream>
 #include "../../DTState.h"
 

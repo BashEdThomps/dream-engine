@@ -1,20 +1,6 @@
 #pragma once
 
-#ifdef WIN32
-    #include <Windows.h>
-    #include <GL/glew.h>
-#endif
-
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl3.h>
-#endif
-
-#ifdef __linux__
-    #include <GL/glew.h>
-    #include <GL/gl.h>
-#endif
+#include "../DreamCore/Common/GLHeader.h"
 
 #include "../DreamCore/Common/DreamObject.h"
 #include "Window/DTWindowComponent.h"

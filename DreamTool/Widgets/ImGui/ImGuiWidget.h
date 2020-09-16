@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../DTWidget.h"
-#include "../../deps/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
 namespace DreamTool
 {

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../../deps/angelscript/angelscript.h"
+#include "angelscript/angelscript.h"
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "../Component.h"

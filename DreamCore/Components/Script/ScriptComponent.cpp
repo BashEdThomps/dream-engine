@@ -32,10 +32,10 @@
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
-#include "../../deps/angelscript/scriptstdstring/scriptstdstring.h"
-#include "../../deps/angelscript/scriptbuilder/scriptbuilder.h"
-#include "../../deps/angelscript/scriptdictionary/scriptdictionary.h"
-#include "../../deps/angelscript/scriptarray/scriptarray.h"
+#include "angelscript/scriptstdstring/scriptstdstring.h"
+#include "angelscript/scriptbuilder/scriptbuilder.h"
+#include "angelscript/scriptdictionary/scriptdictionary.h"
+#include "angelscript/scriptarray/scriptarray.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../Common/Math.h"
 

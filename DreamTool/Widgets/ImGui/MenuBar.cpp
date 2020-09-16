@@ -4,8 +4,8 @@
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
 #include "../../DTState.h"
-#include "../../deps/ImGui/imgui_internal.h"
-#include "../../deps/ImFileSystem/imguifilesystem.h"
+#include "ImGui/imgui_internal.h"
+#include "ImFileSystem/imguifilesystem.h"
 #include <sstream>
 
 #include "../../../DreamCore/Project/Project.h"

@@ -6,7 +6,7 @@
 #include "../../SharedAssetRuntime.h"
 #include "../../../Common/File.h"
 #include "../../../Project/ProjectRuntime.h"
-#include "../../../deps/soil/SOIL.h"
+#include "soil/SOIL.h"
 
 namespace Dream
 {

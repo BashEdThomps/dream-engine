@@ -21,7 +21,7 @@
 #include <assimp/postprocess.h>
 
 #include <glm/glm.hpp>
-#include "../../../deps/soil/SOIL.h"
+#include "soil/SOIL.h"
 
 #include "ModelMesh.h"
 #include "../Texture/TextureRuntime.h"

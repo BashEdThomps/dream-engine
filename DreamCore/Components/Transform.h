@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "../Common/Math.h"
-#include "../deps/json/json.hpp"
 #include <string>
-#include <glm/gtc/quaternion.hpp>
+#include "../Common/Math.h"
+#include "json/json.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>

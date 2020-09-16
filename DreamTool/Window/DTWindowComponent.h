@@ -20,13 +20,13 @@
 
 #include <vector>
 
-#define IMGUI_IMPL_OPENGL_LOADER_GLEW
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
 // Maintain include order for GL
 #include <GLFW/glfw3.h>
-#include "../deps/ImGui/imgui.h"
-#include "../deps/ImGui/imgui_impl_glfw.h"
-#include "../deps/ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 #include "../../DreamCore/Components/Window/WindowComponent.h"
 
 using namespace std;
@@ -36,8 +36,8 @@ namespace DreamTool
 {
     class GLWidget;
     class ImGuiWidget;
-    class DTWindowComponent
-            : public WindowComponent
+
+    class DTWindowComponent : public WindowComponent
     {
     public:
         DTWindowComponent();

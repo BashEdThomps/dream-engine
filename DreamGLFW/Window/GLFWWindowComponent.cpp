@@ -11,8 +11,7 @@
  */
 
 
-#define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
+#include "../../DreamCore/Common/GLHeader.h"
 #include "GLFWWindowComponent.h"
 #include "../../DreamCore/Scene/SceneRuntime.h"
 
@@ -184,16 +183,11 @@ namespace DreamGLFW
         getLog()->debug("Initialising GLFW::OpenGL");
         #endif
 
-        glewExperimental = GL_TRUE;
-        GLenum glewInitResult = glewInit();
-
-        if (glewInitResult != GLEW_OK)
-        {
-            #ifdef DREAM_LOG
-            getLog()->error("GLEW failed to initialise");
-            #endif
-            return false;
-        }
+        if(!gladLoadGL())
+		{
+			getLog()->error("Window: Error initialising GLAD!\n");
+			return false;
+		}
 
         #ifdef DREAM_LOG
         checkGLError();

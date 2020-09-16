@@ -1,13 +1,4 @@
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#include <GL/glew.h>
-#endif
+#include "../DreamCore/Common/GLHeader.h"
 
 #include <iostream>
 #include <thread>

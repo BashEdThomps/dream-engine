@@ -5,9 +5,9 @@
 #endif
 
 #include "PropertiesWindow.h"
-#include <glm/gtc/type_ptr.hpp>
-#include "../../deps/ImFileSystem/imguifilesystem.h"
-#include "../../deps/ImGuizmo/ImGuizmo.h"
+#include "glm/gtc/type_ptr.hpp"
+#include "ImFileSystem/imguifilesystem.h"
+#include "ImGuizmo/ImGuizmo.h"
 #include "../../DTState.h"
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"

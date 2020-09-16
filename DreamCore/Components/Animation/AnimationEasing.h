@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../deps/tweeny/tweeny.h"
+#include "tweeny/tweeny.h"
 #include <string>
 #include <vector>
 

@@ -11,37 +11,20 @@
  */
 
 #include "Constants.h"
-
-
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl3.h>
-#endif
-
-#ifdef __linux__
-    #include <GL/gl.h>
-#endif
-
-#ifdef _WIN32
-    #ifndef NOMINMAX
-        #define NOMINMAX // prevent windows redefining min/max
-    #endif
-
-    #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-    #endif
-
-    #include <windows.h>
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#endif
-
+#include "GLHeader.h"
 
 using namespace std;
 
 namespace Dream
 {
+
+    /**
+* @brief Used to check for OpenGL Runtime Errors. This will display the
+* file and line from which the error was detected. This function should
+* not be called directly. Instead use the macro GLCheckError.
+*
+* @return True if an error was detected.
+*/
 
 #ifdef DREAM_LOG
     bool

@@ -14,33 +14,20 @@
 */
 
 #include "GraphicsComponent.h"
-
-#ifdef WIN32
-    #include <windows.h>
-#endif
-
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl3.h>
-#else
-    #include <GL/glew.h>
-    #include <GL/glu.h>
-#endif
-
+#include "../../Common/GLHeader.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 
 #include <functional>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/matrix.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/euler_angles.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/matrix.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/euler_angles.hpp"
 #include "Camera.h"
 #include "Light/LightRuntime.h"
 #include "Model/ModelRuntime.h"

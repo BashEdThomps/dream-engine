@@ -12,22 +12,7 @@
 
 #pragma once
 
-#ifdef WIN32
-    #include <windows.h>
-    #include <GL/glew.h>
-    #include <GL/glu.h>
-#endif
-
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl3.h>
-#endif
-
-#ifdef __linux__
-    #include <GL/glew.h>
-    #include <GL/glu.h>
-#endif
+#include "../../../Common/GLHeader.h"
 
 #include <iostream>
 #include <memory>
@@ -37,7 +22,6 @@
 
 using std::vector;
 using std::string;
-using std::shared_ptr;
 
 namespace Dream
 {

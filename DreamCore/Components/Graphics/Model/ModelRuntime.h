@@ -15,22 +15,7 @@
 
 #pragma once
 
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #include <GL/glew.h>
-    #include <OpenGL/gl3.h>
-#endif
-
-#ifdef __linux__
-    #include <GL/glew.h>
-    #include <GL/gl.h>
-#endif
-
-#ifdef WIN32
-    #include <Windows.h>
-    #include <GL/glew.h>
-    #include <gl/GLU.h>
-#endif
+#include "../../../Common/GLHeader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
@@ -38,7 +23,7 @@
 #include <string>
 #include <map>
 
-#include <glm/matrix.hpp>
+#include "glm/matrix.hpp"
 
 #include "../../SharedAssetRuntime.h"
 #include "../../../Scene/SceneObject/BoundingBox.h"

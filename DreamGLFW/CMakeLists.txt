@@ -1,14 +1,11 @@
-cmake_minimum_required (VERSION 2.8.0)
+cmake_minimum_required (VERSION 3.0)
 project(DreamGLFW)
 
 file(GLOB_RECURSE SRC "*.h" "*.cpp")
 
 find_package(ASSIMP     REQUIRED)
 find_package(BULLET     REQUIRED)
-find_package(GLEW       REQUIRED)
 find_package(GLFW       REQUIRED)
-find_package(GLM        REQUIRED)
-find_package(Lua        REQUIRED)
 find_package(OPENGL     REQUIRED)
 find_package(SPDLOG     REQUIRED)
 
@@ -16,11 +13,16 @@ include_directories(
     ${DreamCore_INCLUDE_DIRS}
     ${ASSIMP_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIR}
-    ${GLEW_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${SPDLOG_INCLUDE_DIR}
+
+	${DEP_ANGELSCRIPT_INC_DIR}
+	${DEP_GLAD_INC_DIR}
+	${DEP_GLM_INC_DIR}
+	${DEP_JSON_INC_DIR}
+
 )
 
 add_executable (
@@ -34,7 +36,6 @@ if (WIN32)
         DreamCore
                 ${ASSIMP_LIBRARIES}
                 ${BULLET_LIBRARY}
-                ${GLEW_LIBRARY}
                 ${GLFW_LIBRARY}
     )
 elseif(UNIX AND NOT APPLE) # Linux
@@ -45,7 +46,6 @@ elseif(UNIX AND NOT APPLE) # Linux
         -ldl
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARY}
-        ${GLEW_LIBRARY}
         ${GLFW_LIBRARY}
     )
 elseif(APPLE)
@@ -56,7 +56,6 @@ elseif(APPLE)
         -ldl
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARY}
-        ${GLEW_LIBRARY}
         ${GLFW_LIBRARY}
     )
 endif()

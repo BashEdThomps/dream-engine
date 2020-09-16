@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "../Common/DreamObject.h"
-#include "../deps/json/json.hpp"
+#include "json/json.hpp"
 
 using std::string;
 using std::shared_ptr;

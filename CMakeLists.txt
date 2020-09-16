@@ -1,16 +1,16 @@
-cmake_minimum_required (VERSION 2.8.0)
+cmake_minimum_required (VERSION 3.0)
 
 project (Dream C CXX)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("****************************************")
-    message("             DEBUB Build!")
+    message("             DEBUB Build!               ")
     message("****************************************")
     set(DREAM_LOG ON)
     set(CMAKE_VERBOSE_MAKEFILE OFF)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     message("****************************************")
-    message("             Release Build!")
+    message("             Release Build!             ")
     message("****************************************")
     set(DREAM_LOG OFF)
     set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -43,10 +43,10 @@ if (WIN32)
   message("MSVC Version: ${MSVC_VERSION} | Toolset: ${MSVC_TOOLSET_VERSION}")
 endif()
 
-set(RELAX_CLANG ON)
+set(RELAX_CLANG OFF)
 
 if (APPLE)
-    message(status "Building for MacOS X")
+    message("Building for MacOS X")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++1z")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
     set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
@@ -77,6 +77,11 @@ if (DREAM_LOG)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDREAM_LOG")
     endif()
 endif()
+
+
+# Find In-Source Dependencies
+include("Dependencies/CMakeLists.txt")
+
 # DreamCore Library
 if (DREAM_BUILD_CORE)
     add_subdirectory (DreamCore)

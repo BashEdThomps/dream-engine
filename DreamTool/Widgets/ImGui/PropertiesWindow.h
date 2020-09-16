@@ -3,7 +3,7 @@
 #include "ImGuiWidget.h"
 #include "PropertyType.h"
 
-#include <glm/vec3.hpp>
+#include "glm/vec3.hpp"
 #include "../../../DreamCore/Components/Path/PathDefinition.h"
 #include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
 #include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"

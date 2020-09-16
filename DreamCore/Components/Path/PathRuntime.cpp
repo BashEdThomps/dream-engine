@@ -18,16 +18,16 @@
 
 #include "PathRuntime.h"
 
-#include <glm/glm.hpp>
-#include <glm/matrix.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/matrix.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "PathTasks.h"
 #include "../Transform.h"
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Scene/SceneObject/SceneObjectRuntime.h"
 #include "../../Project/ProjectRuntime.h"
-#include "../../deps/tinyspline/tinyspline.h"
+#include "tinyspline/tinyspline.h"
 
 namespace Dream
 {

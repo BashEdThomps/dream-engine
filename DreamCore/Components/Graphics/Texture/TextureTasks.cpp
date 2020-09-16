@@ -1,6 +1,6 @@
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
-#include "../../../deps/soil/SOIL.h"
+#include "soil/SOIL.h"
 namespace Dream
 {
     TextureConstructionTask::TextureConstructionTask(TextureRuntime* rt)

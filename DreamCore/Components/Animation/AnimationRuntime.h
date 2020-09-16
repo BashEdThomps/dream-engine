@@ -25,7 +25,7 @@
 #ifdef min
 #undef min
 #endif
-#include "../../deps/tweeny/tweeny.h"
+#include "tweeny/tweeny.h"
 
 using namespace tweeny;
 

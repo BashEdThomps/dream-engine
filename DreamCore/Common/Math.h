@@ -11,10 +11,12 @@
  */
 
 #pragma once
-#include <math.h>
-#include <glm/common.hpp>
-#include <bullet/LinearMath/btVector3.h>
 #include <iostream>
+#include <math.h>
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include <bullet/LinearMath/btVector3.h>
 
 using namespace std;
 

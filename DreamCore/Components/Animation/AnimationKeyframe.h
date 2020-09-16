@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/vec3.hpp>
+#include "glm/vec3.hpp"
 #include "../../Common/DreamObject.h"
-#include "../../deps/json/json.hpp"
+#include "json/json.hpp"
 #include "AnimationEasing.h"
 
 using namespace nlohmann;

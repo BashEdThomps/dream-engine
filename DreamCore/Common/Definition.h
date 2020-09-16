@@ -14,7 +14,7 @@
 
 #include <sstream>
 #include "LockableObject.h"
-#include "../deps/json/json.hpp"
+#include "json/json.hpp"
 #include "../Components/Transform.h"
 #include "Math.h"
 #include "Uuid.h"

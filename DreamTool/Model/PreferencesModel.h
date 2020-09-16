@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../DreamCore/Common/DreamObject.h"
-#include "../../DreamCore/deps/json/json.hpp"
+#include "json/json.hpp"
 #include <sstream>
 
 using namespace Dream;
