@@ -5,7 +5,7 @@
 
 namespace Dream
 {
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class ScriptRuntime;
 
     class ScriptConstructionTask : public Task
@@ -19,44 +19,44 @@ namespace Dream
 
     class ScriptOnInitTask : public Task
     {
-        SceneObjectRuntime* mSceneObject;
+        ActorRuntime* mActor;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnInitTask(SceneObjectRuntime* rt);
+        ScriptOnInitTask(ActorRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnUpdateTask : public Task
     {
-        SceneObjectRuntime* mSceneObject;
+        ActorRuntime* mActor;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnUpdateTask(SceneObjectRuntime* rt);
+        ScriptOnUpdateTask(ActorRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnEventTask : public Task
     {
-        SceneObjectRuntime* mSceneObject;
+        ActorRuntime* mActor;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnEventTask(SceneObjectRuntime* rt);
+        ScriptOnEventTask(ActorRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnDestroyTask : public DestructionTask
     {
-        SceneObjectRuntime* mParentSceneObject;
+        ActorRuntime* mParentActor;
         ScriptRuntime* mScript = nullptr;
         uint32_t mDestroyedObject;
     public:
-        ScriptOnDestroyTask(uint32_t destroyed, SceneObjectRuntime* rt);
+        ScriptOnDestroyTask(uint32_t destroyed, ActorRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };

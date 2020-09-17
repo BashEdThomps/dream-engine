@@ -16,7 +16,7 @@
 
 #include "ObjectEmitterRuntime.h"
 #include "ObjectEmitterDefinition.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../Physics/PhysicsObjectRuntime.h"
@@ -27,9 +27,9 @@ namespace Dream
     ObjectEmitterRuntime::ObjectEmitterRuntime
     (
         ObjectEmitterDefinition* definition,
-        SceneObjectRuntime* transform
+        ActorRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform),
-        mSceneObjectUuid(0),
+        mActorUuid(0),
         mEmitInterval(0),
         mObjectVelocity(0.0f),
         mStartRadius(0.0f),
@@ -61,7 +61,7 @@ namespace Dream
     ()
     {
         auto def = static_cast<ObjectEmitterDefinition*>(mDefinition);
-        mSceneObjectUuid = def->getSceneObjectUuid();
+        mActorUuid = def->getActorUuid();
         mLoops = def->getLoops();
         mEmitInterval = def->getEmitInterval();
         mObjectCount = def->getObjectCount();
@@ -84,9 +84,9 @@ namespace Dream
     bool
     ObjectEmitterRuntime::update()
     {
-       if (mSceneObjectRuntime->tryLock())
+       if (mActorRuntime->tryLock())
        {
-           auto time = mSceneObjectRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
+           auto time = mActorRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
            long frameDelta = time->getFrameTimeDelta();
 
            switch (mState)
@@ -123,7 +123,7 @@ namespace Dream
                case Done:
                    break;
            }
-           mSceneObjectRuntime->unlock();
+           mActorRuntime->unlock();
            return true;
        }
        return false;
@@ -133,7 +133,7 @@ namespace Dream
     ObjectEmitterRuntime::emitObjects
     ()
     {
-        if (mSceneObjectUuid != 0)
+        if (mActorUuid != 0)
         {
             #ifdef DREAM_LOG
             getLog()->debug("Emitting Objects");
@@ -146,8 +146,8 @@ namespace Dream
                 float x = cos(theta);
                 float y = sin(theta);
 
-                SceneObjectRuntime* newObj = mSceneObjectRuntime->addChildFromTemplateUuid(mSceneObjectUuid);
-                Vector3 startTx = mSceneObjectRuntime->getTransform().getTranslation();
+                ActorRuntime* newObj = mActorRuntime->addChildFromTemplateUuid(mActorUuid);
+                Vector3 startTx = mActorRuntime->getTransform().getTranslation();
                 if (newObj->hasPhysicsObjectRuntime())
                 {
                     PhysicsObjectRuntime* po = newObj->getPhysicsObjectRuntime();

@@ -12,7 +12,7 @@
 
 #include "SceneDefinition.h"
 #include "SceneDefinition.h"
-#include "SceneObject/SceneObjectDefinition.h"
+#include "Actor/ActorDefinition.h"
 #include "../Components/Transform.h"
 #include "../Project/ProjectDefinition.h"
 #include "../Common/Uuid.h"
@@ -22,7 +22,7 @@ namespace Dream
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinition, const json& data)
         : Definition(data),
-          mRootSceneObjectDefinition(nullptr),
+          mRootActorDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
         #ifdef DREAM_LOG
@@ -39,34 +39,34 @@ namespace Dream
         auto log = getLog();
         log->trace( "Destructing {}", getNameAndUuidString() );
         #endif
-        if (mRootSceneObjectDefinition != nullptr)
+        if (mRootActorDefinition != nullptr)
         {
-            delete mRootSceneObjectDefinition;
-            mRootSceneObjectDefinition = nullptr;
+            delete mRootActorDefinition;
+            mRootActorDefinition = nullptr;
         }
     }
 
     void
-    SceneDefinition::loadRootSceneObjectDefinition
+    SceneDefinition::loadRootActorDefinition
     ()
     {
-        json rsoJson = mJson[Constants::SCENE_ROOT_SCENE_OBJECT];
+        json rsoJson = mJson[Constants::SCENE_ROOT_ACTOR];
         if (rsoJson.is_null())
         {
             #ifdef DREAM_LOG
             auto log = getLog();
-            log->error( "No root SceneObject found!!" );
+            log->error( "No root Actor found!!" );
             #endif
             return;
         }
 
-        mRootSceneObjectDefinition = new SceneObjectDefinition
+        mRootActorDefinition = new ActorDefinition
         (
             nullptr,
             this,
             rsoJson
         );
-        mRootSceneObjectDefinition->loadChildSceneObjectDefinitions();
+        mRootActorDefinition->loadChildActorDefinitions();
     }
 
     void
@@ -121,17 +121,17 @@ namespace Dream
 
     void
     SceneDefinition::addTemplate
-    (SceneObjectDefinition* _template)
+    (ActorDefinition* _template)
     {
         mTemplates.push_back(_template);
     }
 
 
-    SceneObjectDefinition*
+    ActorDefinition*
     SceneDefinition::getTemplateByUuid
     (uint32_t uuid)
     {
-        for (SceneObjectDefinition* next : mTemplates)
+        for (ActorDefinition* next : mTemplates)
         {
             if (next->getUuid() == uuid)
             {
@@ -277,11 +277,11 @@ namespace Dream
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
     }
 
-    SceneObjectDefinition*
-    SceneDefinition::getRootSceneObjectDefinition
+    ActorDefinition*
+    SceneDefinition::getRootActorDefinition
     ()
     {
-        return mRootSceneObjectDefinition;
+        return mRootActorDefinition;
     }
 
     ProjectDefinition*
@@ -291,29 +291,29 @@ namespace Dream
         return mProjectDefinition;
     }
 
-    SceneObjectDefinition*
-    SceneDefinition::createNewRootSceneObjectDefinition
+    ActorDefinition*
+    SceneDefinition::createNewRootActorDefinition
     ()
     {
         json rootDefJson;
-        rootDefJson[Constants::NAME] = Constants::SCENE_OBJECT_ROOT_NAME;
+        rootDefJson[Constants::NAME] = Constants::ACTOR_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        mRootSceneObjectDefinition = new SceneObjectDefinition
+        mRootActorDefinition = new ActorDefinition
         (
             nullptr,
             this,
             rootDefJson
         );
-        return mRootSceneObjectDefinition;
+        return mRootActorDefinition;
     }
 
     json
     SceneDefinition::getJson
     ()
     {
-        mJson[Constants::SCENE_ROOT_SCENE_OBJECT] = mRootSceneObjectDefinition->getJson();
+        mJson[Constants::SCENE_ROOT_ACTOR] = mRootActorDefinition->getJson();
         return mJson;
     }
 
@@ -507,15 +507,15 @@ namespace Dream
     SceneDefinition::setPlayerObject
     (uint32_t po)
     {
-        mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT] = po;
+        mJson[Constants::ACTOR_PLAYER_OBJECT] = po;
     }
 
     uint32_t SceneDefinition::getPlayerObject()
     {
-        if (!mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT].is_number())
+        if (!mJson[Constants::ACTOR_PLAYER_OBJECT].is_number())
         {
-            mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT] = 0;
+            mJson[Constants::ACTOR_PLAYER_OBJECT] = 0;
         }
-        return mJson[Constants::SCENE_OBJECT_PLAYER_OBJECT];
+        return mJson[Constants::ACTOR_PLAYER_OBJECT];
     }
 }

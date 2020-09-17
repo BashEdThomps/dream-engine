@@ -34,7 +34,7 @@ namespace Dream
     class AnimationRuntime : public DiscreteAssetRuntime
     {
     public:
-        AnimationRuntime(AnimationDefinition*, SceneObjectRuntime*);
+        AnimationRuntime(AnimationDefinition*, ActorRuntime*);
         ~AnimationRuntime() override;
         bool useDefinition() override;
 

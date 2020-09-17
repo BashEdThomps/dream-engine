@@ -21,7 +21,7 @@
 #include "../Camera.h"
 #include "../Shader/ShaderRuntime.h"
 #include "../GraphicsComponent.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
 using std::make_shared;
@@ -118,7 +118,7 @@ namespace Dream
 
     void
     ModelMesh::addRuntime
-    (SceneObjectRuntime* runt)
+    (ActorRuntime* runt)
     {
         #ifdef DREAM_LOG
         getLog()->debug("Adding Runtime of mesh for {}", runt->getNameAndUuidString());
@@ -128,7 +128,7 @@ namespace Dream
 
     void
     ModelMesh::removeRuntime
-    (SceneObjectRuntime* runt)
+    (ActorRuntime* runt)
     {
         #ifdef DREAM_LOG
         getLog()->debug("Removing Runtime of mesh for {}", runt->getNameAndUuidString());

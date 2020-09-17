@@ -13,8 +13,8 @@
 #include "SceneRuntime.h"
 #include <iostream>
 #include "SceneDefinition.h"
-#include "SceneObject/SceneObjectDefinition.h"
-#include "SceneObject/SceneObjectRuntime.h"
+#include "Actor/ActorDefinition.h"
+#include "Actor/ActorRuntime.h"
 #include "../Components/Audio/AudioComponent.h"
 #include "../Components/Graphics/GraphicsComponent.h"
 #include "../Components/Physics/PhysicsComponent.h"
@@ -57,7 +57,7 @@ namespace Dream
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour(Vector3(0.0f)),
         mProjectRuntime(project),
-        mRootSceneObjectRuntime(nullptr),
+        mRootActorRuntime(nullptr),
         mLightingPassShader(nullptr),
         mShadowPassShader(nullptr),
         mInputScript(nullptr),
@@ -95,14 +95,14 @@ namespace Dream
         getLog()->debug("Destroying runtime {}",getNameAndUuidString());
         #endif
 
-        if (mRootSceneObjectRuntime != nullptr)
+        if (mRootActorRuntime != nullptr)
         {
-            delete mRootSceneObjectRuntime;
-            mRootSceneObjectRuntime = nullptr;
+            delete mRootActorRuntime;
+            mRootActorRuntime = nullptr;
         }
 
         mLightingPassShader = nullptr;
-        mSceneObjectRuntimeCleanUpQueue.clear();
+        mActorRuntimeCleanUpQueue.clear();
         mState = SceneState::SCENE_STATE_DESTROYED;
     }
 
@@ -167,84 +167,84 @@ namespace Dream
         mClearColour = clearColour;
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getSceneObjectRuntimeByUuid
+    ActorRuntime*
+    SceneRuntime::getActorRuntimeByUuid
     (uint32_t uuid)
     const
     {
-        if (!mRootSceneObjectRuntime)
+        if (!mRootActorRuntime)
         {
             return nullptr;
         }
 
-        return mRootSceneObjectRuntime->applyToAll
+        return mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime* currentRuntime)
+                [&](ActorRuntime* currentRuntime)
                 {
                     if (!currentRuntime)
                     {
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+                        return static_cast<ActorRuntime*>(nullptr);
                     }
                     if (currentRuntime->hasUuid(uuid))
                     {
                         return currentRuntime;
                     }
-                    return static_cast<SceneObjectRuntime*>(nullptr);
+                    return static_cast<ActorRuntime*>(nullptr);
                 }
             )
         );
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getSceneObjectRuntimeByName
+    ActorRuntime*
+    SceneRuntime::getActorRuntimeByName
     (const string& name)
     const
     {
-        if (!mRootSceneObjectRuntime)
+        if (!mRootActorRuntime)
         {
             return nullptr;
         }
-        return mRootSceneObjectRuntime->applyToAll
+        return mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime* currentRuntime)
+                [&](ActorRuntime* currentRuntime)
                 {
                     if (!currentRuntime)
                     {
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+                        return static_cast<ActorRuntime*>(nullptr);
                     }
 
                     if (currentRuntime->hasName(name))
                     {
                         return currentRuntime;
                     }
-                    return static_cast<SceneObjectRuntime*>(nullptr);
+                    return static_cast<ActorRuntime*>(nullptr);
                 }
             )
         );
     }
 
     int
-    SceneRuntime::countSceneObjectRuntimes
+    SceneRuntime::countActorRuntimes
     ()
     const
     {
-        if (!mRootSceneObjectRuntime)
+        if (!mRootActorRuntime)
         {
             return 0;
         }
         int count = 0;
-        mRootSceneObjectRuntime->applyToAll
+        mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime*)
+                [&](ActorRuntime*)
                 {
                     count++;
-                    return static_cast<SceneObjectRuntime*>(nullptr);
+                    return static_cast<ActorRuntime*>(nullptr);
                 }
             )
         );
@@ -257,17 +257,17 @@ namespace Dream
     ()
     const
     {
-        if (!mRootSceneObjectRuntime)
+        if (!mRootActorRuntime)
         {
-            getLog()->debug( "Scenegraph is empty (no root SceneObjectRuntime)" );
+            getLog()->debug( "Scenegraph is empty (no root ActorRuntime)" );
             return;
         }
 
-        mRootSceneObjectRuntime->applyToAll
+        mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime*)
+                [&](ActorRuntime*)
                 {
                     getLog()->debug("showScenegraph not implemented");
                     //obj->showStatus();
@@ -279,18 +279,18 @@ namespace Dream
     #endif
 
     void
-    SceneRuntime::setRootSceneObjectRuntime
-    (SceneObjectRuntime* root)
+    SceneRuntime::setRootActorRuntime
+    (ActorRuntime* root)
     {
-        mRootSceneObjectRuntime = root;
+        mRootActorRuntime = root;
     }
 
-    SceneObjectRuntime*
-    SceneRuntime::getRootSceneObjectRuntime
+    ActorRuntime*
+    SceneRuntime::getRootActorRuntime
     ()
     const
     {
-        return mRootSceneObjectRuntime;
+        return mRootActorRuntime;
     }
 
     void
@@ -300,14 +300,14 @@ namespace Dream
         #ifdef DREAM_LOG
         getLog()->debug( "Collecting Garbage {}" , getNameAndUuidString() );
         #endif
-        mRootSceneObjectRuntime->applyToAll
+        mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime* runt)
+                [&](ActorRuntime* runt)
                 {
                     runt->collectGarbage();
-                    return static_cast<SceneObjectRuntime*>(nullptr);
+                    return static_cast<ActorRuntime*>(nullptr);
                 }
             )
         );
@@ -322,11 +322,11 @@ namespace Dream
     }
 
     bool
-    SceneRuntime::hasRootSceneObjectRuntime
+    SceneRuntime::hasRootActorRuntime
     ()
     const
     {
-        return mRootSceneObjectRuntime != nullptr;
+        return mRootActorRuntime != nullptr;
     }
 
     bool
@@ -395,9 +395,9 @@ namespace Dream
          // Physics
          mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
 
-        // Create Root SceneObjectRuntime
-        auto sod = sceneDefinition->getRootSceneObjectDefinition();
-        auto sor = new SceneObjectRuntime(sod,this);
+        // Create Root ActorRuntime
+        auto sod = sceneDefinition->getRootActorDefinition();
+        auto sor = new ActorRuntime(sod,this);
         if (!sor->useDefinition())
         {
             #ifdef DREAM_LOG
@@ -409,16 +409,16 @@ namespace Dream
         }
 
 
-        setRootSceneObjectRuntime(sor);
+        setRootActorRuntime(sor);
         setState(SceneState::SCENE_STATE_LOADED);
         #ifdef DREAM_LOG
         mProjectRuntime->getShaderCache()->logShaders();
         #endif
 
-        auto focused = getSceneObjectRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
+        auto focused = getActorRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
         mCamera.setFocusedSceneObejct(focused);
 
-        auto player = getSceneObjectRuntimeByUuid(sceneDefinition->getPlayerObject());
+        auto player = getActorRuntimeByUuid(sceneDefinition->getPlayerObject());
         setPlayerObject(player);
 
         return true;
@@ -504,20 +504,20 @@ namespace Dream
     const
     {
         vector<AssetRuntime*> runtimes;
-        if (mRootSceneObjectRuntime)
+        if (mRootActorRuntime)
         {
-            mRootSceneObjectRuntime->applyToAll
+            mRootActorRuntime->applyToAll
             (
-                function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                function<ActorRuntime*(ActorRuntime*)>
                 (
-                    [&](SceneObjectRuntime* currentRuntime)
+                    [&](ActorRuntime* currentRuntime)
                     {
                         AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
                         if (inst)
                         {
                             runtimes.push_back(inst);
                         }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+                        return static_cast<ActorRuntime*>(nullptr);
                     }
                 )
             );
@@ -525,26 +525,26 @@ namespace Dream
         return runtimes;
     }
 
-    vector<SceneObjectRuntime*>
-    SceneRuntime::getSceneObjectsWithRuntimeOf
+    vector<ActorRuntime*>
+    SceneRuntime::getActorsWithRuntimeOf
     (AssetDefinition* def)
     const
     {
-        vector<SceneObjectRuntime*> runtimes;
-        if (mRootSceneObjectRuntime)
+        vector<ActorRuntime*> runtimes;
+        if (mRootActorRuntime)
         {
-            mRootSceneObjectRuntime->applyToAll
+            mRootActorRuntime->applyToAll
             (
-                function<SceneObjectRuntime*(SceneObjectRuntime*)>
+                function<ActorRuntime*(ActorRuntime*)>
                 (
-                    [&](SceneObjectRuntime* currentRuntime)
+                    [&](ActorRuntime* currentRuntime)
                     {
                         AssetRuntime* inst = currentRuntime->getAssetRuntime(def->getAssetType());
                         if (inst && inst->getUuid() == def->getUuid())
                         {
                             runtimes.push_back(currentRuntime);
                         }
-                        return static_cast<SceneObjectRuntime*>(nullptr);
+                        return static_cast<ActorRuntime*>(nullptr);
                     }
                 )
             );
@@ -590,26 +590,26 @@ namespace Dream
         return mInputScript;
     }
 
-    SceneObjectRuntime*
+    ActorRuntime*
     SceneRuntime::getNearestToCamera
     ()
     const
     {
-        if (!mRootSceneObjectRuntime)
+        if (!mRootActorRuntime)
         {
             return nullptr;
         }
 
         float distance = std::numeric_limits<float>::max();
         Vector3 camTrans = mCamera.getTranslation();
-        SceneObjectRuntime* nearest = mRootSceneObjectRuntime;
-        SceneObjectRuntime* focused = mCamera.getFocusedSceneObject();
+        ActorRuntime* nearest = mRootActorRuntime;
+        ActorRuntime* focused = mCamera.getFocusedActor();
 
-        mRootSceneObjectRuntime->applyToAll
+        mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime* next)
+                [&](ActorRuntime* next)
                 {
                     if (next == focused)
                     {
@@ -700,11 +700,11 @@ namespace Dream
             taskManager->pushTask(physicsUpdate);
         }
 
-        // Process SceneObjects
-        mRootSceneObjectRuntime->applyToAll
+        // Process Actors
+        mRootActorRuntime->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-            [&](SceneObjectRuntime* rt)
+            function<ActorRuntime*(ActorRuntime*)>(
+            [&](ActorRuntime* rt)
             {
                 rt->updateLifetime();
                 // Animation
@@ -804,7 +804,7 @@ namespace Dream
                    graphicsComponent->addToLightQueue(rt);
                 }
                 //rt->unlock();
-                return static_cast<SceneObjectRuntime*>(nullptr);
+                return static_cast<ActorRuntime*>(nullptr);
             }
         ));
 
@@ -836,12 +836,12 @@ namespace Dream
 
     void
     SceneRuntime::setPlayerObject
-    (SceneObjectRuntime* po)
+    (ActorRuntime* po)
     {
         mPlayerObject = po;
     }
 
-    SceneObjectRuntime*
+    ActorRuntime*
     SceneRuntime::getPlayerObject
     () const
     {

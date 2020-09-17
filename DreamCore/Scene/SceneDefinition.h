@@ -21,22 +21,22 @@ using namespace std;
 namespace Dream
 {
     class ProjectDefinition;
-    class SceneObject;
-    class SceneObjectDefinition;
+    class Actor;
+    class ActorDefinition;
 
     class SceneDefinition : public Definition
     {
 
     private:
-        vector<SceneObjectDefinition*> mTemplates;
-        SceneObjectDefinition* mRootSceneObjectDefinition;
+        vector<ActorDefinition*> mTemplates;
+        ActorDefinition* mRootActorDefinition;
         ProjectDefinition* mProjectDefinition;
 
     public:
         SceneDefinition(ProjectDefinition* project, const json& data);
         ~SceneDefinition() override;
 
-        void loadRootSceneObjectDefinition();
+        void loadRootActorDefinition();
 
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();
@@ -47,8 +47,8 @@ namespace Dream
         void setMeshCullDistance(float mcd);
         float getMeshCullDistance();
 
-        void addTemplate(SceneObjectDefinition* _template);
-        SceneObjectDefinition* getTemplateByUuid(uint32_t uuid);
+        void addTemplate(ActorDefinition* _template);
+        ActorDefinition* getTemplateByUuid(uint32_t uuid);
 
         void setMinDrawDistance(float mdd);
         float getMinDrawDistance();
@@ -74,9 +74,9 @@ namespace Dream
         void setClearColourG(float);
         void setClearColourB(float);
 
-        SceneObjectDefinition* getRootSceneObjectDefinition();
+        ActorDefinition* getRootActorDefinition();
         ProjectDefinition* getProjectDefinition();
-        SceneObjectDefinition* createNewRootSceneObjectDefinition();
+        ActorDefinition* createNewRootActorDefinition();
 
         json getJson() override;
 

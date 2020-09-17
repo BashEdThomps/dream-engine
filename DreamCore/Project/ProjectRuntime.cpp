@@ -18,7 +18,7 @@
 
 #include "../Scene/SceneRuntime.h"
 #include "../Scene/SceneDefinition.h"
-#include "../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../Scene/Actor/ActorRuntime.h"
 
 #include "../Components/AssetDefinition.h"
 #include "../Components/Time.h"
@@ -853,8 +853,8 @@ namespace Dream
         return nullptr;
     }
 
-    SceneObjectRuntime*
-    ProjectRuntime::getSceneObjectRuntimeByUuid
+    ActorRuntime*
+    ProjectRuntime::getActorRuntimeByUuid
     (SceneRuntime* rt, uint32_t uuid)
     const
     {
@@ -863,7 +863,7 @@ namespace Dream
             return nullptr;
         }
 
-        return rt->getSceneObjectRuntimeByUuid(uuid);
+        return rt->getActorRuntimeByUuid(uuid);
     }
 
     bool

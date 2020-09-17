@@ -26,7 +26,7 @@
 #include "glm/matrix.hpp"
 
 #include "../../SharedAssetRuntime.h"
-#include "../../../Scene/SceneObject/BoundingBox.h"
+#include "../../../Scene/Actor/BoundingBox.h"
 #include "ModelBone.h"
 #include "ModelAnimation.h"
 
@@ -47,7 +47,7 @@ namespace Dream
     struct Vertex;
     class Texture;
     class MaterialRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
 
     class ModelRuntime : public SharedAssetRuntime
     {
@@ -59,8 +59,8 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
 
-        void addRuntime(SceneObjectRuntime*);
-        void removeRuntime(SceneObjectRuntime*);
+        void addRuntime(ActorRuntime*);
+        void removeRuntime(ActorRuntime*);
 
         vector<string> getMaterialNames();
         vector<ModelMesh*> getMeshes() const;

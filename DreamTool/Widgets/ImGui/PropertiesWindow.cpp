@@ -15,8 +15,8 @@
 #include "../../../DreamCore/Project/ProjectDirectory.h"
 #include "../../../DreamCore/Scene/SceneDefinition.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/SceneObject/SceneObjectDefinition.h"
-#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../DreamCore/Scene/Actor/ActorDefinition.h"
+#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
 #include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
 #include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
 #include "../../../DreamCore/Components/Animation/AnimationRuntime.h"
@@ -91,8 +91,8 @@ namespace DreamTool
                 case PropertyType::Scene:
                     drawSceneProperties();
                     break;
-                case PropertyType::SceneObject:
-                    drawSceneObjectProperties();
+                case PropertyType::Actor:
+                    drawActorProperties();
                     break;
                 case PropertyType::Asset:
                     drawAssetProperties();
@@ -103,16 +103,16 @@ namespace DreamTool
     }
 
     bool
-    PropertiesWindow::drawDeleteSceneObjectButton
+    PropertiesWindow::drawDeleteActorButton
     ()
     {
-        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
+        auto soRuntime = dynamic_cast<ActorRuntime*>(mRuntime);
         if (ImGui::Button("Delete"))
         {
             if (soDef)
             {
-                auto parent = soDef->getParentSceneObject();
+                auto parent = soDef->getParentActor();
                 if (parent)
                 {
                     parent->removeChildDefinition(soDef);
@@ -505,7 +505,7 @@ namespace DreamTool
             string focusedStr = "None";
             if (sceneRuntime)
             {
-                auto focusedObj = sceneRuntime->getSceneObjectRuntimeByUuid(focused);
+                auto focusedObj = sceneRuntime->getActorRuntimeByUuid(focused);
                 if (focusedObj)
                 {
                     focusedStr = focusedObj->getNameAndUuidString();
@@ -528,7 +528,7 @@ namespace DreamTool
 
             if (sceneRuntime)
             {
-                auto* po = sceneRuntime->getSceneObjectRuntimeByUuid(sceneDef->getPlayerObject());
+                auto* po = sceneRuntime->getActorRuntimeByUuid(sceneDef->getPlayerObject());
                 if (po)
                 {
                     ImGui::Text("PlayerObject: %s",po->getNameAndUuidString().c_str());
@@ -540,7 +540,7 @@ namespace DreamTool
             }
 
             string nearestStr = "None";
-            SceneObjectRuntime* nearest = nullptr;
+            ActorRuntime* nearest = nullptr;
             if (sceneRuntime)
             {
                 nearest = sceneRuntime->getNearestToCamera();
@@ -702,23 +702,23 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::drawSceneObjectProperties
+    PropertiesWindow::drawActorProperties
     ()
     {
         auto projDef = mState->project->getDefinition();
-        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<SceneObjectRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
+        auto soRuntime = dynamic_cast<ActorRuntime*>(mRuntime);
 
         if (soDef == nullptr)
         {
             return;
         }
 
-        if (soDef->getParentSceneObject() != nullptr)
+        if (soDef->getParentActor() != nullptr)
         {
 
             ImGui::SameLine();
-            if (drawDeleteSceneObjectButton())
+            if (drawDeleteActorButton())
             {
                 return;
             }
@@ -729,27 +729,27 @@ namespace DreamTool
             auto newChildDef = soDef->createNewChildDefinition();
             mat4 cursorTx = glm::translate(mat4(1.0f),mState->cursor.getPosition());
             newChildDef->getTransform().setMatrix(cursorTx);
-            SceneObjectRuntime* newRt = nullptr;
+            ActorRuntime* newRt = nullptr;
             if (soRuntime)
             {
                 newRt = soRuntime->createAndAddChildRuntime(newChildDef);
                 newRt->getTransform().setMatrix(cursorTx);
             }
-            pushPropertyTarget(PropertyType::SceneObject,newChildDef,newRt);
+            pushPropertyTarget(PropertyType::Actor,newChildDef,newRt);
         }
 
-        if (soDef->getParentSceneObject() != nullptr)
+        if (soDef->getParentActor() != nullptr)
         {
             ImGui::SameLine();
             if (ImGui::Button("Duplicate"))
             {
                 auto dup = soDef->duplicate();
-                SceneObjectRuntime* newRt = nullptr;
+                ActorRuntime* newRt = nullptr;
                 if (soRuntime)
                 {
                     newRt = soRuntime->createAndAddChildRuntime(dup);
                 }
-                pushPropertyTarget(PropertyType::SceneObject,dup,newRt);
+                pushPropertyTarget(PropertyType::Actor,dup,newRt);
             }
         }
 
@@ -1282,8 +1282,8 @@ namespace DreamTool
     ()
     {
         float *matrix = nullptr;
-        auto soRunt = dynamic_cast<SceneObjectRuntime*>(mRuntime);
-        auto soDef = dynamic_cast<SceneObjectDefinition*>(mDefinition);
+        auto soRunt = dynamic_cast<ActorRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
 
         if (soRunt)
         {
@@ -1377,15 +1377,15 @@ namespace DreamTool
                     {
                         soRunt->applyToAll
                                 (
-                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                                        [&](SceneObjectRuntime* rt)
+                                    function<ActorRuntime*(ActorRuntime*)>(
+                                        [&](ActorRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
-                                            auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                            auto d = dynamic_cast<ActorDefinition*>(rt->getDefinition());
                                             d->setTransform(rt->getTransform());
                                         }
-                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                        return static_cast<ActorRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1403,16 +1403,16 @@ namespace DreamTool
                     {
                         soRunt->applyToAll
                                 (
-                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                                        [&](SceneObjectRuntime* rt)
+                                    function<ActorRuntime*(ActorRuntime*)>(
+                                        [&](ActorRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
-                                            auto d = dynamic_cast<SceneObjectDefinition*>(rt->getDefinition());
+                                            auto d = dynamic_cast<ActorDefinition*>(rt->getDefinition());
                                             auto tmp = d->getTransform();
                                             rt->setTransform(&tmp);
                                         }
-                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                        return static_cast<ActorRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1456,14 +1456,14 @@ namespace DreamTool
                         Vector3 tx(delta[3][0],delta[3][1],delta[3][2]);
                         soRunt->applyToAll
                                 (
-                                    function<SceneObjectRuntime*(SceneObjectRuntime*)>(
-                                        [&](SceneObjectRuntime* rt)
+                                    function<ActorRuntime*(ActorRuntime*)>(
+                                        [&](ActorRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
                                             rt->getTransform().preTranslate(tx);
                                         }
-                                        return static_cast<SceneObjectRuntime*>(nullptr);
+                                        return static_cast<ActorRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1558,7 +1558,7 @@ namespace DreamTool
         {
             auto dup = assetDef->duplicate();
             auto projDef = mState->project->getDefinition();
-            pushPropertyTarget(PropertyType::SceneObject,dup,nullptr);
+            pushPropertyTarget(PropertyType::Actor,dup,nullptr);
         }
 
 
@@ -1631,7 +1631,7 @@ namespace DreamTool
                 ImGui::Columns(1);
                 if(ImGui::CollapsingHeader("Active Runtimes"))
                 {
-                    auto runtimes = activeScene->getSceneObjectsWithRuntimeOf(assetDef);
+                    auto runtimes = activeScene->getActorsWithRuntimeOf(assetDef);
                     for (auto runtime : runtimes)
                     {
                         ImGui::Text("%s",runtime->getNameAndUuidString().c_str());
@@ -3247,10 +3247,10 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto oeDef = static_cast<ObjectEmitterDefinition*>(mDefinition);
 
-        int objectUuid = oeDef->getSceneObjectUuid();
+        int objectUuid = oeDef->getActorUuid();
         if (ImGui::InputInt("Scene Object",&objectUuid))
         {
-            oeDef->setSceneObjectUuid(objectUuid);
+            oeDef->setActorUuid(objectUuid);
         }
 
         float thetas[2] = {glm::degrees(oeDef->getStartTheta()),glm::degrees(oeDef->getEndTheta())};
@@ -3316,7 +3316,7 @@ namespace DreamTool
             auto sRunt = pRunt->getActiveSceneRuntime();
             if (sRunt)
             {
-                auto runts = sRunt->getSceneObjectsWithRuntimeOf(assetDef);
+                auto runts = sRunt->getActorsWithRuntimeOf(assetDef);
                 for (auto soRunt : runts)
                 {
                     soRunt->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());

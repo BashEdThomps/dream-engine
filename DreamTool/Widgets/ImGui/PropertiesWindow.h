@@ -47,12 +47,12 @@ namespace DreamTool
         void drawPathControlPointImGuizmo(PathDefinition* pDef, PathControlPoint);
         void drawAnimationKeyframeImGuizmo(AnimationDefinition* pDef, AnimationKeyframe);
         int getStringIndexInVector(string str, vector<string> vec);
-        bool drawDeleteSceneObjectButton();
+        bool drawDeleteActorButton();
         bool drawDeleteSceneButton();
         void drawNameAndIdProperties();
         void drawProjectProperties();
         void drawSceneProperties();
-        void drawSceneObjectProperties();
+        void drawActorProperties();
         void drawAssetProperties();
         void drawAnimationAssetProperties();
         void drawAudioAssetProperties();

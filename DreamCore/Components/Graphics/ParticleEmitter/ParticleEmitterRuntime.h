@@ -39,7 +39,7 @@ namespace Dream
     class ParticleEmitterRuntime : public DiscreteAssetRuntime
     {
     public:
-        ParticleEmitterRuntime(ParticleEmitterDefinition*, SceneObjectRuntime*);
+        ParticleEmitterRuntime(ParticleEmitterDefinition*, ActorRuntime*);
         ~ParticleEmitterRuntime() override;
         bool useDefinition() override;
 

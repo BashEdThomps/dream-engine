@@ -73,7 +73,7 @@ namespace Dream
         LightType mType;
 
     public:
-        LightRuntime(LightDefinition*,SceneObjectRuntime*);
+        LightRuntime(LightDefinition*,ActorRuntime*);
         ~LightRuntime() override;
 
         bool useDefinition() override;

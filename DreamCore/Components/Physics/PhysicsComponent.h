@@ -37,7 +37,7 @@ namespace Dream
 {
     class PhysicsObjectRuntime;
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class Camera;
 
     class PhysicsComponent : public Component
@@ -70,7 +70,7 @@ namespace Dream
         void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCamera(Camera* cam);
         void checkContactManifolds();
-        SceneObjectRuntime* getSceneObjectRuntime(SceneRuntime* scene, const btCollisionObject*);
+        ActorRuntime* getActorRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();

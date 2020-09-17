@@ -44,7 +44,7 @@ namespace Dream
     }
 
     uint32_t
-    ObjectEmitterDefinition::getSceneObjectUuid
+    ObjectEmitterDefinition::getActorUuid
     ()
     {
         if(!mJson[Constants::OBJECT_EMITTER_UUID].is_number())
@@ -55,7 +55,7 @@ namespace Dream
     }
 
     void
-    ObjectEmitterDefinition::setSceneObjectUuid
+    ObjectEmitterDefinition::setActorUuid
     (uint32_t uuid)
     {
         mJson[Constants::OBJECT_EMITTER_UUID] = uuid;

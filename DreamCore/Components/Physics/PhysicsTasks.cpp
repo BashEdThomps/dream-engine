@@ -24,7 +24,7 @@ namespace Dream
         {
             #ifdef DREAM_LOG
             getLog()->critical("Executing on thread {}",mThreadId);
-            getLog()->trace("Adding SceneObject to physics world");
+            getLog()->trace("Adding Actor to physics world");
             #endif
 
             if(mComponent->tryLock())

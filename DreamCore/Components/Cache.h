@@ -15,7 +15,7 @@ namespace Dream
     /**
      * @brief Cache is an abstract class that is used to define a common
      * interface for a instanciating and storing SharedAssetRuntime objects.
-     * SharedAssetRuntime objects are used by more than one SceneObjectRuntime
+     * SharedAssetRuntime objects are used by more than one ActorRuntime
      * or other AssetRuntime objects. These AssetRuntime objects are cached to
      * reduce the SceneRuntime memory footprint.
      */

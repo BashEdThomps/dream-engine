@@ -126,7 +126,7 @@ namespace Dream
 
         void bindMaterial(MaterialRuntime* material);
         void bindLightQueue(const vector<LightRuntime*>& lightQueue);
-        void bindRuntimes(const vector<SceneObjectRuntime*>& runtimes);
+        void bindRuntimes(const vector<ActorRuntime*>& runtimes);
 
         void addMaterial(MaterialRuntime* material);
 

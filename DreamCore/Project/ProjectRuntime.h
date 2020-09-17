@@ -39,7 +39,7 @@ namespace Dream
     class TaskManager;
 
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
 
     class SceneDefinition;
 
@@ -134,7 +134,7 @@ namespace Dream
 
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
 
-        SceneObjectRuntime* getSceneObjectRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
+        ActorRuntime* getActorRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
         SceneRuntime* getActiveSceneRuntime() const;
         SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid) const;
 

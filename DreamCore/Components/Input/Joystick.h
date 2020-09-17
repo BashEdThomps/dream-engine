@@ -6,7 +6,7 @@
 #include "../Transform.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../Graphics/Camera.h"
 
 using glm::mat4;

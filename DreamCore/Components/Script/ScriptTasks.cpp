@@ -1,7 +1,7 @@
 ﻿#include "ScriptTasks.h"
 #include "ScriptRuntime.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 
 namespace Dream
@@ -41,9 +41,9 @@ namespace Dream
     }
 
      ScriptOnInitTask::ScriptOnInitTask
-     (SceneObjectRuntime* rt)
+     (ActorRuntime* rt)
          : Task(),
-           mSceneObject(rt)
+           mActor(rt)
      {
         #ifdef DREAM_LOG
         setLogClassName("ScriptExecuteOnInitTask");
@@ -55,10 +55,10 @@ namespace Dream
     ()
     {
         #ifdef DREAM_LOG
-        getLog()->critical("Executing for SO {} script {} on thread {}",mSceneObject->getName(), mScript->getNameAndUuidString(), mThreadId);
+        getLog()->critical("Executing for SO {} script {} on thread {}",mActor->getName(), mScript->getNameAndUuidString(), mThreadId);
         #endif
 
-        if(mScript->executeOnInit(mSceneObject))
+        if(mScript->executeOnInit(mActor))
         {
             setState(TaskState::COMPLETED);
         }
@@ -79,9 +79,9 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnUpdateTask::ScriptOnUpdateTask
-    (SceneObjectRuntime* rt)
+    (ActorRuntime* rt)
         : Task(),
-          mSceneObject(rt)
+          mActor(rt)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptExecuteOnUpdateTask");
@@ -96,7 +96,7 @@ namespace Dream
         getLog()->critical("Executing on thread {}",mThreadId);
         #endif
 
-        if(mScript->executeOnUpdate(mSceneObject))
+        if(mScript->executeOnUpdate(mActor))
         {
             setState(TaskState::COMPLETED);
         }
@@ -117,9 +117,9 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnEventTask::ScriptOnEventTask
-    (SceneObjectRuntime* rt)
+    (ActorRuntime* rt)
         : Task(),
-          mSceneObject(rt)
+          mActor(rt)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptOnEventTask");
@@ -134,7 +134,7 @@ namespace Dream
         getLog()->critical("Executing on thread {}",mThreadId);
         #endif
 
-        if(mScript->executeOnEvent(mSceneObject))
+        if(mScript->executeOnEvent(mActor))
         {
             setState(TaskState::COMPLETED);
         }
@@ -155,10 +155,10 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnDestroyTask::ScriptOnDestroyTask
-    (uint32_t destroyed, SceneObjectRuntime* parent)
+    (uint32_t destroyed, ActorRuntime* parent)
         : DestructionTask(),
           mDestroyedObject(destroyed),
-          mParentSceneObject(parent)
+          mParentActor(parent)
     {
         #ifdef DREAM_LOG
         setLogClassName("ScriptOnDestroyTask");
@@ -173,13 +173,13 @@ namespace Dream
         getLog()->critical(
             "Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
             mScript->getNameAndUuidString(),mDestroyedObject,
-            mParentSceneObject->getNameAndUuidString(), mThreadId
+            mParentActor->getNameAndUuidString(), mThreadId
         );
         #endif
 
         if (mScript != nullptr)
         {
-            if(mScript->executeOnDestroy(mDestroyedObject, mParentSceneObject))
+            if(mScript->executeOnDestroy(mDestroyedObject, mParentActor))
             {
                 setState(TaskState::COMPLETED);
             }

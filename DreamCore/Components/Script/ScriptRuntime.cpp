@@ -20,7 +20,7 @@
 
 #include "../Input/InputComponent.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 
 namespace Dream
@@ -100,7 +100,7 @@ namespace Dream
 
     bool
     ScriptRuntime::getInitialised
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     {
        return mInitialised[sor->getUuid()];
     }
@@ -174,7 +174,7 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnUpdate
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     {
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
@@ -208,7 +208,7 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnDestroy
-    (uint32_t destroyedSo, SceneObjectRuntime* parent)
+    (uint32_t destroyedSo, ActorRuntime* parent)
     {
         if (mError)
         {
@@ -270,7 +270,7 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnInit
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     {
         if (mError)
         {
@@ -324,7 +324,7 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnEvent
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     {
         if (mError)
         {

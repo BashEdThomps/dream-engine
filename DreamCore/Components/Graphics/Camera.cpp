@@ -18,7 +18,7 @@
 #include "../Window/WindowComponent.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include <glm/common.hpp>
 
 namespace Dream
@@ -36,7 +36,7 @@ namespace Dream
           mMovementSpeed(Constants::CAMERA_SPEED),
           mProjectionMatrix(mat4(1.0f)),
           mFrustum(Frustum(this)),
-          mFocusedSceneObject(nullptr),
+          mFocusedActor(nullptr),
           mFocusTranslation(0.0f),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -79,11 +79,11 @@ namespace Dream
     ()
     const
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
             return lookAt(
                 mFocusTranslation.toGLM(),
-                vec3(mFocusedSceneObject->getTransform().getMatrix()[3]),
+                vec3(mFocusedActor->getTransform().getMatrix()[3]),
                 mUp.toGLM()
             );
         }
@@ -134,7 +134,7 @@ namespace Dream
     Camera::flyForward
     (float scalar)
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
            mTranslation.setZ(mTranslation.z() - (mMovementSpeed*scalar));
            if (mTranslation.z() < 0.0f)
@@ -154,7 +154,7 @@ namespace Dream
     Camera::flyBackward
     (float scalar)
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
            mTranslation.setZ(mTranslation.z() + (mMovementSpeed*scalar));
         }
@@ -170,7 +170,7 @@ namespace Dream
     Camera::flyLeft
     (float scalar)
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
             mYaw -= mMovementSpeed*scalar;
         }
@@ -186,7 +186,7 @@ namespace Dream
     Camera::flyRight
     (float scalar)
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
             mYaw += mMovementSpeed*scalar;
         }
@@ -224,12 +224,12 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
             Vector3 tx(
-                mFocusedSceneObject->getTransform().getMatrix()[3][0],
-                mFocusedSceneObject->getTransform().getMatrix()[3][1],
-                mFocusedSceneObject->getTransform().getMatrix()[3][2]
+                mFocusedActor->getTransform().getMatrix()[3][0],
+                mFocusedActor->getTransform().getMatrix()[3][1],
+                mFocusedActor->getTransform().getMatrix()[3][2]
             );
             setFocusTranslationFromTarget(tx);
             mFront = Vector3::normalize(tx);
@@ -309,9 +309,9 @@ namespace Dream
     ()
     const
     {
-        if (mFocusedSceneObject)
+        if (mFocusedActor)
         {
-            vec3 objTx = mFocusedSceneObject->getTransform().getMatrix()[3];
+            vec3 objTx = mFocusedActor->getTransform().getMatrix()[3];
             float x = mFocusTranslation.x() - objTx.x;
             float z = mFocusTranslation.z() - objTx.z;
             return atan2(x,z);
@@ -321,7 +321,7 @@ namespace Dream
 
     bool
     Camera::containedInFrustum
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     const
     {
         return mFrustum.testIntersection(
@@ -341,7 +341,7 @@ namespace Dream
 
     bool
     Camera::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, SceneObjectRuntime* sor, const Vector3& tx)
+    (Frustum::Plane plane, ActorRuntime* sor, const Vector3& tx)
     const
     {
         auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
@@ -350,7 +350,7 @@ namespace Dream
 
     bool
     Camera::containedInFrustumAfterTransform
-    (SceneObjectRuntime* sor, const mat4& tx)
+    (ActorRuntime* sor, const mat4& tx)
     const
     {
         return mFrustum.testIntersection(
@@ -362,7 +362,7 @@ namespace Dream
 
     bool
     Camera::visibleInFrustum
-    (SceneObjectRuntime* sor)
+    (ActorRuntime* sor)
     const
     {
         return mFrustum.testIntersection(
@@ -405,16 +405,16 @@ namespace Dream
 
     void
     Camera::setFocusedSceneObejct
-    (SceneObjectRuntime* rt)
+    (ActorRuntime* rt)
     {
-        mFocusedSceneObject = rt;
+        mFocusedActor = rt;
     }
 
-    SceneObjectRuntime*
-    Camera::getFocusedSceneObject
+    ActorRuntime*
+    Camera::getFocusedActor
     () const
     {
-        return mFocusedSceneObject;
+        return mFocusedActor;
     }
 
     float

@@ -52,14 +52,14 @@ namespace Dream
         void setSource(const string& source);
         bool createScript();
 
-        bool executeOnInit(SceneObjectRuntime*);
-        bool executeOnUpdate(SceneObjectRuntime*);
-        bool executeOnEvent(SceneObjectRuntime*);
-        bool executeOnDestroy(uint32_t destroyedSo, SceneObjectRuntime* parent);
+        bool executeOnInit(ActorRuntime*);
+        bool executeOnUpdate(ActorRuntime*);
+        bool executeOnEvent(ActorRuntime*);
+        bool executeOnDestroy(uint32_t destroyedSo, ActorRuntime* parent);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
 
-        bool getInitialised(SceneObjectRuntime* sor);
+        bool getInitialised(ActorRuntime* sor);
         ScriptConstructionTask* getConstructionTask();
         void removeInitialisedFlag(uint32_t);
     };

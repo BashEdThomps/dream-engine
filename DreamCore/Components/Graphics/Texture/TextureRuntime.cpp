@@ -1,7 +1,7 @@
 #include "TextureRuntime.h"
 #include "TextureDefinition.h"
 #include "../GraphicsComponent.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
 using std::make_shared;

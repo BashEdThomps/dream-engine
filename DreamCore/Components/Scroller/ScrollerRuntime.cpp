@@ -20,7 +20,7 @@
 #include "ScrollerTasks.h"
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 namespace Dream
 {
@@ -28,7 +28,7 @@ namespace Dream
     ScrollerRuntime::ScrollerRuntime
     (
         ScrollerDefinition* definition,
-        SceneObjectRuntime* runtime
+        ActorRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
         mVelocity(0.0f),
         mRangeBegin(0.0f),
@@ -57,7 +57,7 @@ namespace Dream
     {
         #ifdef DREAM_LOG
         auto log = getLog();
-        log->debug("Creating ScrollerRuntime Children for {}", mSceneObjectRuntime->getNameAndUuidString());
+        log->debug("Creating ScrollerRuntime Children for {}", mActorRuntime->getNameAndUuidString());
         #endif
         auto scrollerDef = static_cast<ScrollerDefinition*>(mDefinition);
         auto items = scrollerDef->getItemsArray();
@@ -77,14 +77,14 @@ namespace Dream
 
     void
     ScrollerRuntime::addAssets
-    (SceneObjectRuntime* runt)
+    (ActorRuntime* runt)
     {
         runt->replaceAssetUuid(AssetType::MODEL,mAssetsMap[runt->getUuid()]);
     }
 
     ScrollerRuntime::Range
     ScrollerRuntime::checkRange
-    (SceneObjectRuntime* runt)
+    (ActorRuntime* runt)
     const
     {
         Range inRangeX = None;
@@ -135,17 +135,17 @@ namespace Dream
         return inRangeX;
     }
 
-    SceneObjectRuntime*
+    ActorRuntime*
     ScrollerRuntime::createChlidRuntime
     (const ScrollerItem& item)
     {
-        SceneObjectRuntime* newChild = new SceneObjectRuntime(nullptr,mSceneObjectRuntime->getSceneRuntime(),true);
-        newChild->setParentRuntime(mSceneObjectRuntime);
-        newChild->setName(mSceneObjectRuntime->getName()+"_Scroller_Child_"+std::to_string(item.index));
+        ActorRuntime* newChild = new ActorRuntime(nullptr,mActorRuntime->getSceneRuntime(),true);
+        newChild->setParentRuntime(mActorRuntime);
+        newChild->setName(mActorRuntime->getName()+"_Scroller_Child_"+std::to_string(item.index));
         newChild->initTransform();
         newChild->getInitialTransform().translate(item.origin);
         newChild->getTransform().translate(item.origin);
-        mSceneObjectRuntime->addChildRuntime(newChild);
+        mActorRuntime->addChildRuntime(newChild);
         return newChild;
     }
 
@@ -158,7 +158,7 @@ namespace Dream
         log->trace("Updating Runtime");
         #endif
         auto time =
-            mSceneObjectRuntime
+            mActorRuntime
                 ->getSceneRuntime()
                 ->getProjectRuntime()
                 ->getTime();
@@ -174,8 +174,8 @@ namespace Dream
            time->perSecond(mVelocity.z())
         );
 
-        mSceneObjectRuntime->lock();
-        auto children = mSceneObjectRuntime->getChildRuntimes();
+        mActorRuntime->lock();
+        auto children = mActorRuntime->getChildRuntimes();
         #ifdef DREAM_LOG
         log->trace("Child has {} children", children.size());
         #endif
@@ -188,7 +188,7 @@ namespace Dream
             child->getTransform().translate(delta);
             child->unlock();
         }
-        mSceneObjectRuntime->unlock();
+        mActorRuntime->unlock();
 
         for (auto iter = mPreRange.begin(); iter != mPreRange.end();)
         {
@@ -229,18 +229,18 @@ namespace Dream
     ScrollerRuntime::collectGarbage
     ()
     {
-        mSceneObjectRuntime->lock();
-        for (SceneObjectRuntime* runt : mPostRange)
+        mActorRuntime->lock();
+        for (ActorRuntime* runt : mPostRange)
         {
             runt->lock();
             #ifdef DREAM_LOG
             getLog()->error("Garbage! {}",runt->getNameAndUuidString());
             #endif
-            mSceneObjectRuntime->removeChildRuntime(runt);
+            mActorRuntime->removeChildRuntime(runt);
             runt->unlock();
         }
         mPostRange.clear();
-        mSceneObjectRuntime->unlock();
+        mActorRuntime->unlock();
     }
 
     ScrollerUpdateTask* ScrollerRuntime::getUpdateTask()

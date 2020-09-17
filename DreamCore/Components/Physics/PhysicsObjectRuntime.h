@@ -36,7 +36,7 @@ namespace Dream
     class PhysicsComponent;
     class ModelCache;
     class ModelRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
 
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
@@ -56,7 +56,7 @@ namespace Dream
     public:
         PhysicsObjectRuntime(
             PhysicsObjectDefinition*, PhysicsComponent*,
-            ModelCache*, SceneObjectRuntime*
+            ModelCache*, ActorRuntime*
         );
         ~PhysicsObjectRuntime() override;
         bool useDefinition() override;

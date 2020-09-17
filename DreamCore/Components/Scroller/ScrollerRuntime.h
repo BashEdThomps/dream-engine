@@ -36,7 +36,7 @@ namespace Dream
         };
 
     public:
-        ScrollerRuntime(ScrollerDefinition*,SceneObjectRuntime*);
+        ScrollerRuntime(ScrollerDefinition*,ActorRuntime*);
         ~ScrollerRuntime() override;
         bool useDefinition() override;
         void update();
@@ -45,17 +45,17 @@ namespace Dream
         ScrollerUpdateTask* getUpdateTask();
 
     protected:
-        SceneObjectRuntime* createChlidRuntime(const ScrollerItem& item);
+        ActorRuntime* createChlidRuntime(const ScrollerItem& item);
         bool removeChlidRuntime(const ScrollerItem& item);
-        void addAssets(SceneObjectRuntime* runt);
-        Range checkRange(SceneObjectRuntime* runt) const;
+        void addAssets(ActorRuntime* runt);
+        Range checkRange(ActorRuntime* runt) const;
 
         Vector3 mVelocity;
         Vector3 mRangeBegin;
         Vector3 mRangeEnd;
-        vector<SceneObjectRuntime*> mPreRange;
-        vector<SceneObjectRuntime*> mInRange;
-        vector<SceneObjectRuntime*> mPostRange;
+        vector<ActorRuntime*> mPreRange;
+        vector<ActorRuntime*> mInRange;
+        vector<ActorRuntime*> mPostRange;
         map<uint32_t,uint32_t> mAssetsMap;
         ScrollerUpdateTask mUpdateTask;
     };

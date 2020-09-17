@@ -38,7 +38,7 @@ namespace Dream
             Done
         };
 
-        uint32_t mSceneObjectUuid;
+        uint32_t mActorUuid;
         int mLoops;
         int mObjectCount;
         int mEmitInterval;
@@ -54,7 +54,7 @@ namespace Dream
         int mEmitIntervalTime;
 
     public:
-        ObjectEmitterRuntime(ObjectEmitterDefinition*, SceneObjectRuntime*);
+        ObjectEmitterRuntime(ObjectEmitterDefinition*, ActorRuntime*);
         ~ObjectEmitterRuntime() override;
         bool useDefinition() override;
         ObjectEmitterUpdateTask* getUpdateTask();

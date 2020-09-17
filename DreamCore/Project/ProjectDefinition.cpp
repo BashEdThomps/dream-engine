@@ -313,7 +313,7 @@ namespace Dream
     (const json &scene)
     {
         auto so = new SceneDefinition(this, scene);
-        so->loadRootSceneObjectDefinition();
+        so->loadRootActorDefinition();
         mSceneDefinitions.push_back(so);
     }
 
@@ -437,7 +437,7 @@ namespace Dream
         Transform camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
         auto sd = new SceneDefinition(this, scene);
-        sd->createNewRootSceneObjectDefinition();
+        sd->createNewRootActorDefinition();
         mSceneDefinitions.push_back(sd);
         return sd;
     }

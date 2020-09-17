@@ -167,7 +167,7 @@ namespace Dream
 
         // Scene ================================================================
         const static string SCENE_NOTES;
-        const static string SCENE_ROOT_SCENE_OBJECT;
+        const static string SCENE_ROOT_ACTOR;
         const static string SCENE_CAMERA_TRANSFORM;
         const static string SCENE_CAMERA_MOVEMENT_SPEED;
         const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
@@ -190,19 +190,19 @@ namespace Dream
         const static string SCENE_INPUT_SCRIPT;
 
 
-        // SceneObject ==========================================================
-        const static string SCENE_OBJECT;
-        const static string SCENE_OBJECT_ROOT_NAME;
-        const static string SCENE_OBJECT_DEFAULT_NAME;
-        const static string SCENE_OBJECT_CHILDREN;
-        const static string SCENE_OBJECT_HAS_CAMERA_FOCUS;
-        const static string SCENE_OBJECT_ASSET_INSTANCES;
-        const static string SCENE_OBJECT_ALWAYS_DRAW;
-        const static string SCENE_OBJECT_TEMPLATE;
-        const static string SCENE_OBJECT_HIDDEN;
-        const static string SCENE_OBJECT_DEFERRED;
-        const static string SCENE_OBJECT_DIE_AFTER;
-        const static string SCENE_OBJECT_PLAYER_OBJECT;
+        // Actor ==========================================================
+        const static string ACTOR;
+        const static string ACTOR_ROOT_NAME;
+        const static string ACTOR_DEFAULT_NAME;
+        const static string ACTOR_CHILDREN;
+        const static string ACTOR_HAS_CAMERA_FOCUS;
+        const static string ACTOR_ASSET_INSTANCES;
+        const static string ACTOR_ALWAYS_DRAW;
+        const static string ACTOR_TEMPLATE;
+        const static string ACTOR_HIDDEN;
+        const static string ACTOR_DEFERRED;
+        const static string ACTOR_DIE_AFTER;
+        const static string ACTOR_PLAYER_OBJECT;
 
         // Transform ============================================================
         const static string TRANSFORM;

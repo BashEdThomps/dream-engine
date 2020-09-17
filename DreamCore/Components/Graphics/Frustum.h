@@ -3,7 +3,7 @@
 #include <glm/matrix.hpp>
 #include "../../Common/DreamObject.h"
 #include "../../Common/Math.h"
-#include "../../Scene/SceneObject/BoundingBox.h"
+#include "../../Scene/Actor/BoundingBox.h"
 
 using namespace glm;
 

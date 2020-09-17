@@ -21,7 +21,7 @@ namespace Dream
 {
     class Time;
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class ProjectRuntime;
 
     class Component : public LockableObject

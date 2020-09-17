@@ -175,7 +175,7 @@ namespace Dream
     AudioRuntime::generateEventList
     ()
     {
-        // TODO = Rethink, SharedAssetRuntime has no SceneObjectRuntime to send
+        // TODO = Rethink, SharedAssetRuntime has no ActorRuntime to send
         // Events to :thinking:
 
         /*
@@ -200,7 +200,7 @@ namespace Dream
 
             auto next = markerStart;
             getLog()->trace("Marker {}'s is : ", markerIndex, next);
-            Event e(mSceneObjectRuntime,"audio");
+            Event e(mActorRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
             mMarkerEvents.push_back(e);
@@ -210,7 +210,7 @@ namespace Dream
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
                 getLog()->trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
-                Event e(mSceneObjectRuntime,"audio");
+                Event e(mActorRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
                 mMarkerEvents.push_back(e);
@@ -254,7 +254,7 @@ namespace Dream
             auto time = (*it).getNumber("time");
             if (currentSample > time)
             {
-                mSceneObjectRuntime->addEvent((*it));
+                mActorRuntime->addEvent((*it));
                 it++;
                 mMarkerEvents.pop_front();
             }

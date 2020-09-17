@@ -173,7 +173,7 @@ namespace Dream
 
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
-    const string Constants::SCENE_ROOT_SCENE_OBJECT = "root";
+    const string Constants::SCENE_ROOT_ACTOR = "root";
     const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
     const string Constants::SCENE_CAMERA_MOVEMENT_SPEED = "cameraMovementSpeed";
     const string Constants::SCENE_CAMERA_TRANSFORM = "cameraTransform";
@@ -194,19 +194,19 @@ namespace Dream
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
 
-    // SceneObject ==============================================================
-    const string Constants::SCENE_OBJECT = "scene_object";
-    const string Constants::SCENE_OBJECT_ROOT_NAME = "Root";
-    const string Constants::SCENE_OBJECT_DEFAULT_NAME = "New Scene Object";
-    const string Constants::SCENE_OBJECT_CHILDREN = "children";
-    const string Constants::SCENE_OBJECT_HAS_CAMERA_FOCUS = "camera_focus";
-    const string Constants::SCENE_OBJECT_ASSET_INSTANCES = "assetInstances";
-    const string Constants::SCENE_OBJECT_ALWAYS_DRAW = "always_draw";
-    const string Constants::SCENE_OBJECT_TEMPLATE = "template";
-    const string Constants::SCENE_OBJECT_HIDDEN = "hidden";
-    const string Constants::SCENE_OBJECT_DEFERRED = "deferred";
-    const string Constants::SCENE_OBJECT_DIE_AFTER = "die_after";
-    const string Constants::SCENE_OBJECT_PLAYER_OBJECT = "player_object";
+    // Actor ==============================================================
+    const string Constants::ACTOR = "actor";
+    const string Constants::ACTOR_ROOT_NAME = "Root Actor";
+    const string Constants::ACTOR_DEFAULT_NAME = "New Actor";
+    const string Constants::ACTOR_CHILDREN = "children";
+    const string Constants::ACTOR_HAS_CAMERA_FOCUS = "camera_focus";
+    const string Constants::ACTOR_ASSET_INSTANCES = "assetInstances";
+    const string Constants::ACTOR_ALWAYS_DRAW = "always_draw";
+    const string Constants::ACTOR_TEMPLATE = "template";
+    const string Constants::ACTOR_HIDDEN = "hidden";
+    const string Constants::ACTOR_DEFERRED = "deferred";
+    const string Constants::ACTOR_DIE_AFTER = "die_after";
+    const string Constants::ACTOR_PLAYER_OBJECT = "player_object";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";

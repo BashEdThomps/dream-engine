@@ -39,8 +39,8 @@
 #include "../Time.h"
 #include "../Window/WindowComponent.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectDefinition.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorDefinition.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Common/Math.h"
 
 using namespace glm;
@@ -708,7 +708,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (SceneObjectRuntime* runt)
+    (ActorRuntime* runt)
     {
         auto light = runt->getLightRuntime();
         if (light->getType() == LightType::LT_DIRECTIONAL)

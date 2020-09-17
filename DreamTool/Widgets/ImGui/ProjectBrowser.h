@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-    class SceneObjectDefinition;
+    class ActorDefinition;
     class Definition;
 }
 
@@ -14,10 +14,10 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    struct SceneObjectDragSource
+    struct ActorDragSource
     {
-       SceneObjectDefinition* parentDef = nullptr;
-       SceneObjectDefinition* objectDef = nullptr;
+       ActorDefinition* parentDef = nullptr;
+       ActorDefinition* objectDef = nullptr;
     };
 
 
@@ -31,10 +31,10 @@ namespace DreamTool
     private:
         void drawAssetTree();
         void drawProjectTree();
-        void addSceneObject(SceneObjectDefinition* def);
+        void addActor(ActorDefinition* def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
         vector<Definition*> mSelectedNodes;
-        SceneObjectDragSource mDragDropSource;
+        ActorDragSource mDragDropSource;
     };
 }

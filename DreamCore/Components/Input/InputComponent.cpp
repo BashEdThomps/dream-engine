@@ -20,7 +20,7 @@
 #include "../Script/ScriptRuntime.h"
 #include "../Graphics/Camera.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 
 using std::make_shared;

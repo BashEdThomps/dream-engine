@@ -16,14 +16,14 @@
 
 #include "LightRuntime.h"
 #include "LightDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 
 namespace Dream
 {
     LightRuntime::LightRuntime
     (
         LightDefinition* definition,
-        SceneObjectRuntime* transform
+        ActorRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform),
         mAmbient(0.0f),
         mDiffuse(0.0f),
@@ -170,9 +170,9 @@ namespace Dream
     const
     {
         Vector3 tx(
-            mSceneObjectRuntime->getTransform().getMatrix()[3][0],
-            mSceneObjectRuntime->getTransform().getMatrix()[3][1],
-            mSceneObjectRuntime->getTransform().getMatrix()[3][2]);
+            mActorRuntime->getTransform().getMatrix()[3][0],
+            mActorRuntime->getTransform().getMatrix()[3][1],
+            mActorRuntime->getTransform().getMatrix()[3][2]);
         return PointLight
         {
             tx,
@@ -190,7 +190,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition decomp = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition decomp = mActorRuntime->getTransform().decomposeMatrix();
         Vector3 tx(
             decomp.translation.x,
             decomp.translation.y,
@@ -219,7 +219,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition decomp = mSceneObjectRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition decomp = mActorRuntime->getTransform().decomposeMatrix();
         auto e = eulerAngles(decomp.rotation);
         Vector3 euler(e.x,e.y,e.z);
         return DirLight

@@ -24,7 +24,7 @@
 #include "../../Scene/SceneRuntime.h"
 #include "../../Project/ProjectDefinition.h"
 #include "../../Project/ProjectRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../Graphics/Model/ModelCache.h"
 #include "../Graphics/Model/ModelRuntime.h"
 #include "../Graphics/Model/ModelMesh.h"
@@ -37,7 +37,7 @@ namespace Dream
         PhysicsObjectDefinition* definition,
         PhysicsComponent* comp,
         ModelCache* modelCache,
-        SceneObjectRuntime* transform)
+        ActorRuntime* transform)
         : DiscreteAssetRuntime(definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
@@ -116,7 +116,7 @@ namespace Dream
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(&mSceneObjectRuntime->getTransform());
+        mMotionState = new PhysicsMotionState(&mActorRuntime->getTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
@@ -239,7 +239,7 @@ namespace Dream
         else if (format == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
         {
             // Load Collision Data
-            auto sceneRt = mSceneObjectRuntime->getSceneRuntime();
+            auto sceneRt = mActorRuntime->getSceneRuntime();
             if (sceneRt)
             {
                 auto modelUuid = pod->getCollisionModel();

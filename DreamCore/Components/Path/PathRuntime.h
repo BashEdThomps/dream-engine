@@ -31,7 +31,7 @@ namespace Dream
     {
 
     public:
-        PathRuntime(PathDefinition*,SceneObjectRuntime*);
+        PathRuntime(PathDefinition*,ActorRuntime*);
         ~PathRuntime() override;
         bool useDefinition() override;
 

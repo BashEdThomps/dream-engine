@@ -31,7 +31,7 @@
 #include "../Window/WindowComponent.h"
 #include "../../Project/ProjectRuntime.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "angelscript/scriptstdstring/scriptstdstring.h"
 #include "angelscript/scriptbuilder/scriptbuilder.h"
 #include "angelscript/scriptdictionary/scriptdictionary.h"
@@ -195,7 +195,7 @@ namespace Dream
         r = Engine->RegisterObjectType("Project", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("ProjectDirectory", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("ProjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectType("SceneObjectRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectType("ActorRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("SceneRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("ScriptRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectType("ShaderRuntime", 0, asOBJ_REF | asOBJ_NOCOUNT); whyYouFail(r,__LINE__);
@@ -229,7 +229,7 @@ namespace Dream
         r = Engine->RegisterObjectMethod("ProjectRuntime", "string getNameAndUuidString()",asMETHOD(ProjectRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "Time@ getTime()",asMETHOD(ProjectRuntime,getTime), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "AssetDefinition@ getAssetDefinitionByUuid()",asMETHOD(ProjectRuntime,getAssetDefinitionByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("ProjectRuntime", "SceneObjectRuntime@ getSceneObjectByUuid()",asMETHOD(ProjectRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ProjectRuntime", "ActorRuntime@ getActorByUuid()",asMETHOD(ProjectRuntime,getActorRuntimeByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowWidth()",asMETHOD(ProjectRuntime,getWindowWidth), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "int getWindowHeight()",asMETHOD(ProjectRuntime,getWindowHeight), asCALL_THISCALL);whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("ProjectRuntime", "Project@ getProject()",asMETHOD(ProjectRuntime,getProject),asCALL_THISCALL); whyYouFail(r,__LINE__);
@@ -324,28 +324,28 @@ namespace Dream
     }
 
     void
-    ScriptComponent::exposeSceneObjectRuntime
+    ScriptComponent::exposeActorRuntime
     ()
     {
-        debugRegisteringClass("SceneObjectRuntime");
+        debugRegisteringClass("ActorRuntime");
         int r;
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "int getUuid()",asMETHOD(SceneObjectRuntime,getUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getUuidString()",asMETHOD(SceneObjectRuntime,getUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getName()",asMETHOD(SceneObjectRuntime,getName), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getNameAndUuidString()",asMETHOD(SceneObjectRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneRuntime@ getSceneRuntime()",asMETHOD(SceneObjectRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "Transform@ getTransform()",asMETHOD(SceneObjectRuntime,getTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setTransform(Transform@)",asMETHOD(SceneObjectRuntime,setTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ addChildFromTemplateUuid(int)",asMETHOD(SceneObjectRuntime,addChildFromTemplateUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,hasPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "PhysicsObjectRuntime@ getPhysicsObjectRuntime()",asMETHOD(SceneObjectRuntime,getPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool hasAudioRuntime()",asMETHOD(SceneObjectRuntime,hasAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "AudioRuntime@ getAudioRuntime()",asMETHOD(SceneObjectRuntime,getAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setDeleted(bool)",asMETHOD(SceneObjectRuntime,setDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "bool getDeleted()",asMETHOD(SceneObjectRuntime,getDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "string getAttribute(string)",asMETHOD(SceneObjectRuntime,getAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "void setAttribute(string,string)",asMETHOD(SceneObjectRuntime,setAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneObjectRuntime", "SceneObjectRuntime@ getParentRuntime()",asMETHOD(SceneObjectRuntime,getParentRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "int getUuid()",asMETHOD(ActorRuntime,getUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "string getUuidString()",asMETHOD(ActorRuntime,getUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "string getName()",asMETHOD(ActorRuntime,getName), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "string getNameAndUuidString()",asMETHOD(ActorRuntime,getNameAndUuidString), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "SceneRuntime@ getSceneRuntime()",asMETHOD(ActorRuntime,getSceneRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "Transform@ getTransform()",asMETHOD(ActorRuntime,getTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "void setTransform(Transform@)",asMETHOD(ActorRuntime,setTransform), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "ActorRuntime@ addChildFromTemplateUuid(int)",asMETHOD(ActorRuntime,addChildFromTemplateUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "bool hasPhysicsObjectRuntime()",asMETHOD(ActorRuntime,hasPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "PhysicsObjectRuntime@ getPhysicsObjectRuntime()",asMETHOD(ActorRuntime,getPhysicsObjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "bool hasAudioRuntime()",asMETHOD(ActorRuntime,hasAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "AudioRuntime@ getAudioRuntime()",asMETHOD(ActorRuntime,getAudioRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "void setDeleted(bool)",asMETHOD(ActorRuntime,setDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "bool getDeleted()",asMETHOD(ActorRuntime,getDeleted), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "string getAttribute(string)",asMETHOD(ActorRuntime,getAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "void setAttribute(string,string)",asMETHOD(ActorRuntime,setAttribute), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("ActorRuntime", "ActorRuntime@ getParentRuntime()",asMETHOD(ActorRuntime,getParentRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
 
     }
 
@@ -599,7 +599,7 @@ namespace Dream
         debugRegisteringClass("SceneRuntime");
         int r;
         r = Engine->RegisterObjectMethod("SceneRuntime", "Camera@ getCamera()",asMETHOD(SceneRuntime,getCamera), asCALL_THISCALL); whyYouFail(r,__LINE__);
-        r = Engine->RegisterObjectMethod("SceneRuntime", "SceneObjectRuntime@ getSceneObjectByUuid(int)",asMETHOD(SceneRuntime,getSceneObjectRuntimeByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
+        r = Engine->RegisterObjectMethod("SceneRuntime", "ActorRuntime@ getActorByUuid(int)",asMETHOD(SceneRuntime,getActorRuntimeByUuid), asCALL_THISCALL); whyYouFail(r,__LINE__);
         r = Engine->RegisterObjectMethod("SceneRuntime", "ProjectRuntime@ getProjectRuntime()",asMETHOD(SceneRuntime,getProjectRuntime), asCALL_THISCALL); whyYouFail(r,__LINE__);
     }
 
@@ -669,7 +669,7 @@ namespace Dream
         exposeProjectDirectory();
 
         exposeSceneRuntime();
-        exposeSceneObjectRuntime();
+        exposeActorRuntime();
 
         exposeTransform();
         exposeCamera();

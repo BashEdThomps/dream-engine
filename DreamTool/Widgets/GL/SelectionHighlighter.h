@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-    class SceneObjectRuntime;
+    class ActorRuntime;
 }
 
 using namespace Dream;
@@ -17,7 +17,7 @@ namespace DreamTool
     public:
         SelectionHighlighter(DTState* project);
         ~SelectionHighlighter() override;
-        void setSelectedSceneObject(SceneObjectRuntime* selected);
+        void setSelectedActor(ActorRuntime* selected);
         void draw() override;
         void init();
         void updateGeometry();
@@ -26,7 +26,7 @@ namespace DreamTool
         void clearSelection();
 
     protected:
-        SceneObjectRuntime* mSelectedSceneObjectRuntime;
+        ActorRuntime* mSelectedActorRuntime;
         vec3 mSelectionColour;
         float mOffset;
         vec3 mXColour;

@@ -24,7 +24,7 @@
 #include "../Event.h"
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 
 namespace Dream
@@ -294,8 +294,8 @@ namespace Dream
 
             if (objA != nullptr && objB != nullptr)
             {
-                auto* sObjA = getSceneObjectRuntime(scene, objA);
-                auto* sObjB = getSceneObjectRuntime(scene, objB);
+                auto* sObjA = getActorRuntime(scene, objA);
+                auto* sObjB = getActorRuntime(scene, objB);
 
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
@@ -347,7 +347,7 @@ namespace Dream
                 else
                 {
                     #ifdef DREAM_LOG
-                    getLog()->error("Contact Manifold Found but SceneObjects are nullptr");
+                    getLog()->error("Contact Manifold Found but Actors are nullptr");
                     #endif
                 }
             }
@@ -360,15 +360,15 @@ namespace Dream
         }
     }
 
-    SceneObjectRuntime*
-    PhysicsComponent::getSceneObjectRuntime
+    ActorRuntime*
+    PhysicsComponent::getActorRuntime
     (SceneRuntime* scene, const btCollisionObject* collObj)
     {
-        return scene->getRootSceneObjectRuntime()->applyToAll
+        return scene->getRootActorRuntime()->applyToAll
         (
-            function<SceneObjectRuntime*(SceneObjectRuntime*)>
+            function<ActorRuntime*(ActorRuntime*)>
             (
-                [&](SceneObjectRuntime* next)
+                [&](ActorRuntime* next)
                 {
                     if (next->hasPhysicsObjectRuntime())
                     {
@@ -378,7 +378,7 @@ namespace Dream
                             return next;
                         }
                     }
-                    return static_cast<SceneObjectRuntime*>(nullptr);
+                    return static_cast<ActorRuntime*>(nullptr);
                 }
             )
         );

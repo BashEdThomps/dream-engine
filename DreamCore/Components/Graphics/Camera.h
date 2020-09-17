@@ -28,7 +28,7 @@
 #include <cmath>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include "../../Scene/SceneObject/BoundingBox.h"
+#include "../../Scene/Actor/BoundingBox.h"
 #include "../../Common/DreamObject.h"
 #include "../../Common/Math.h"
 #include "../Transform.h"
@@ -39,7 +39,7 @@ using namespace glm;
 namespace Dream
 {
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
 
     /**
      * @brief Implements a Camera in 3D Space.
@@ -62,7 +62,7 @@ namespace Dream
         mat4 mProjectionMatrix;
         Frustum mFrustum;
         // Focus on SO
-        SceneObjectRuntime* mFocusedSceneObject;
+        ActorRuntime* mFocusedActor;
         Vector3  mFocusTranslation;
         float mMinimumDraw;
         float mMaximumDraw;
@@ -102,19 +102,19 @@ namespace Dream
         float getPitch() const;
         void setPitch(float pitch);
 
-        bool containedInFrustum(SceneObjectRuntime*) const;
+        bool containedInFrustum(ActorRuntime*) const;
         bool containedInFrustum(const BoundingBox&) const;
-        bool containedInFrustumAfterTransform(SceneObjectRuntime*,const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, SceneObjectRuntime*sor, const Vector3& tx) const;
+        bool containedInFrustumAfterTransform(ActorRuntime*,const mat4& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, ActorRuntime*sor, const Vector3& tx) const;
 
-        bool visibleInFrustum(SceneObjectRuntime*)const;
+        bool visibleInFrustum(ActorRuntime*)const;
         bool visibleInFrustum(const BoundingBox&) const;
 
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
 
-        void setFocusedSceneObejct(SceneObjectRuntime*);
-        SceneObjectRuntime* getFocusedSceneObject() const;
+        void setFocusedSceneObejct(ActorRuntime*);
+        ActorRuntime* getFocusedActor() const;
 
         float getFocusPitch() const;
         void setFocusPitch(float focusPitch);

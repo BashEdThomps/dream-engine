@@ -30,7 +30,7 @@
 #include "../Shader/ShaderRuntime.h"
 #include "../Shader/ShaderCache.h"
 #include "../Shader/ShaderDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 #include "ModelDefinition.h"
 
 #include "../Material/MaterialRuntime.h"
@@ -307,7 +307,7 @@ namespace Dream
 
     void
     ModelRuntime::addRuntime
-    (SceneObjectRuntime* inst)
+    (ActorRuntime* inst)
     {
         for (auto mesh : mMeshes)
         {
@@ -317,7 +317,7 @@ namespace Dream
 
     void
     ModelRuntime::removeRuntime
-    (SceneObjectRuntime* inst)
+    (ActorRuntime* inst)
     {
         for (auto mesh : mMeshes)
         {

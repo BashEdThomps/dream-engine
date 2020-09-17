@@ -26,8 +26,8 @@ namespace Dream
         int getObjectCount();
         void setObjectCount(int count);
 
-        uint32_t getSceneObjectUuid();
-        void setSceneObjectUuid(uint32_t);
+        uint32_t getActorUuid();
+        void setActorUuid(uint32_t);
 
         int getEmitInterval();
         void setEmitInterval(int);

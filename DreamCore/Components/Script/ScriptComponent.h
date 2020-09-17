@@ -21,7 +21,7 @@
 namespace Dream
 {
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class Event;
     class ScriptCache;
 
@@ -75,7 +75,7 @@ namespace Dream
         void exposePhysicsObjectRuntime();
         void exposeShaderRuntime();
         void exposeSceneRuntime();
-        void exposeSceneObjectRuntime();
+        void exposeActorRuntime();
         void exposeTime();
         void exposeTransform();
         void exposeGLM();

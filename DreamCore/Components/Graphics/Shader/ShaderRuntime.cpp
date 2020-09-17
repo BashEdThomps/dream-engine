@@ -24,7 +24,7 @@
 #include "../Material/MaterialRuntime.h"
 #include "../Texture/TextureRuntime.h"
 #include "../../../Common/File.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 
 using std::make_shared;
@@ -722,7 +722,7 @@ namespace Dream
 
     void
     ShaderRuntime::bindRuntimes
-    (const vector<SceneObjectRuntime*>& runtimes)
+    (const vector<ActorRuntime*>& runtimes)
     {
         static mat4 data[100];
         size_t nRuntimes = runtimes.size();

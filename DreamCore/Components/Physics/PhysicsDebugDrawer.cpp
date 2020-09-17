@@ -16,7 +16,7 @@
 
 #include <algorithm>
 #include "PhysicsDebugDrawer.h"
-#include "../../Scene/SceneObject/BoundingBox.h"
+#include "../../Scene/Actor/BoundingBox.h"
 #include "../Graphics/Camera.h"
 
 namespace Dream

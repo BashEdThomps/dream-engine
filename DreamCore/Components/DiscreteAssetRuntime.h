@@ -18,10 +18,10 @@
 
 namespace Dream
 {
-    class SceneObjectRuntime;
+    class ActorRuntime;
 
     /**
-     * @brief A DiscreteAssetRuntime is unique to a single SceneObjectRuntime
+     * @brief A DiscreteAssetRuntime is unique to a single ActorRuntime
      */
     class DiscreteAssetRuntime : public AssetRuntime
     {
@@ -30,14 +30,14 @@ namespace Dream
          * @param def Definition from which to create Runtime.
          * @param runtime Owner of this AssetRuntime.
          */
-        DiscreteAssetRuntime(AssetDefinition* def, SceneObjectRuntime* runtime);
+        DiscreteAssetRuntime(AssetDefinition* def, ActorRuntime* runtime);
         ~DiscreteAssetRuntime() override;
 
-        SceneObjectRuntime* getSceneObjectRuntime();
+        ActorRuntime* getActorRuntime();
         string getAssetFilePath(string fmt = "") override;
         string getAssetDirectoryPath() override;
 
     protected:
-        SceneObjectRuntime* mSceneObjectRuntime;
+        ActorRuntime* mActorRuntime;
     };
 }

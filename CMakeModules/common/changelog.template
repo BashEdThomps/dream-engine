@@ -1,5 +1,0 @@
-# To generate changelog files use these commands :
-# hg log -M --style $CMAKE_MODULE_PATH/common/changelog.template neolib > neolib/changelog
-
-header = '\n{date|shortdate} {author}\n\n'
-changeset = '\t* {desc|tabindent|strip} [r{rev}]\n'

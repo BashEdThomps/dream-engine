@@ -17,7 +17,7 @@
 
 #include "AnimationRuntime.h"
 #include "../Time.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Scene/SceneRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 #include <glm/glm.hpp>
@@ -30,7 +30,7 @@ namespace Dream
     AnimationRuntime::AnimationRuntime
     (
         AnimationDefinition* definition,
-        SceneObjectRuntime* runtime
+        ActorRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
         mRunning(false),
         mCurrentTime(0),
@@ -231,7 +231,7 @@ namespace Dream
         }
         matrix = matrix*mat4_cast(quat(newRx));
         matrix = glm::scale(matrix,newSx);
-        mSceneObjectRuntime->getTransform().setMatrix(matrix);
+        mActorRuntime->getTransform().setMatrix(matrix);
     }
 
     long
@@ -251,7 +251,7 @@ namespace Dream
     void AnimationRuntime::update()
     {
        auto timeDelta =
-            mSceneObjectRuntime
+            mActorRuntime
                ->getSceneRuntime()
                ->getProjectRuntime()
                ->getTime()

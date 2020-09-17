@@ -4,7 +4,7 @@
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
@@ -14,7 +14,7 @@ namespace DreamTool
     SelectionHighlighter::SelectionHighlighter
     (DTState* project)
         :GLWidget (project,false),
-          mSelectedSceneObjectRuntime(nullptr),
+          mSelectedActorRuntime(nullptr),
           mSelectionColour(vec3(0.0,1.0f,0.40f)),
           mOffset(0.25f),
           mXColour(vec3(1.0f, 0.0f, 0.0f)),
@@ -37,12 +37,12 @@ namespace DreamTool
     }
 
     void
-    SelectionHighlighter::setSelectedSceneObject
-    (SceneObjectRuntime* selected)
+    SelectionHighlighter::setSelectedActor
+    (ActorRuntime* selected)
     {
-        mSelectedSceneObjectRuntime = selected;
+        mSelectedActorRuntime = selected;
         #ifdef DREAM_LOG
-        getLog()->error("SelectedSceneObject changed to {}",mSelectedSceneObjectRuntime->getNameAndUuidString());
+        getLog()->error("SelectedActor changed to {}",mSelectedActorRuntime->getNameAndUuidString());
         #endif
         updateGeometry();
     }
@@ -60,12 +60,12 @@ namespace DreamTool
         auto log = getLog();
         log->error("Updating");
         #endif
-        if (mSelectedSceneObjectRuntime == nullptr)
+        if (mSelectedActorRuntime == nullptr)
         {
             return;
         }
 
-        BoundingBox bounds = mSelectedSceneObjectRuntime->getBoundingBox();
+        BoundingBox bounds = mSelectedActorRuntime->getBoundingBox();
         #ifdef DREAM_LOG
         log->error("Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
         log->error("Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
@@ -229,7 +229,7 @@ namespace DreamTool
         checkGLError();
         #endif
 
-        if (!mSelectedSceneObjectRuntime)
+        if (!mSelectedActorRuntime)
         {
             return;
         }
@@ -321,7 +321,7 @@ namespace DreamTool
 #endif
             }
 
-            mModelMatrix = mSelectedSceneObjectRuntime->getTransform().getMatrix();
+            mModelMatrix = mSelectedActorRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {
@@ -409,6 +409,6 @@ namespace DreamTool
     SelectionHighlighter::clearSelection
     ()
     {
-       mSelectedSceneObjectRuntime =  nullptr;
+       mSelectedActorRuntime =  nullptr;
     }
 }

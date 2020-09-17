@@ -38,7 +38,7 @@ namespace Dream
     class ShaderRuntime;
     class LightRuntime;
     class SceneRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class Texture;
     class ModelMesh;
     class MaterialRuntime;
@@ -67,7 +67,7 @@ namespace Dream
         GLuint mGeometryPassIgnoreBuffer;
 
         // Shadow
-        SceneObjectRuntime* mShadowLight;
+        ActorRuntime* mShadowLight;
         ShaderRuntime* mShadowPassShader;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
@@ -86,7 +86,7 @@ namespace Dream
 
         bool init() override;
 
-        void addToLightQueue(SceneObjectRuntime*);
+        void addToLightQueue(ActorRuntime*);
         void clearLightQueue();
         bool setupScreenQuad();
         void renderLightingPass(SceneRuntime* sr);

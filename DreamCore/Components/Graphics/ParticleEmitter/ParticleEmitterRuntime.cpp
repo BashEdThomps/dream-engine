@@ -16,7 +16,7 @@
 
 #include "ParticleEmitterRuntime.h"
 #include "ParticleEmitterDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 #include "../../../Scene/SceneRuntime.h"
 #include "../../../Project/ProjectRuntime.h"
 #include "../../Time.h"
@@ -26,7 +26,7 @@ namespace Dream
     ParticleEmitterRuntime::ParticleEmitterRuntime
     (
         ParticleEmitterDefinition* definition,
-        SceneObjectRuntime* transform
+        ActorRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform)
     {
         #ifdef DREAM_LOG
@@ -40,7 +40,7 @@ namespace Dream
     ()
     {
         // Update Velocity
-        auto time = mSceneObjectRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
+        auto time = mActorRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
         for (Particle p : mParticles)
         {
             p.mVelocity.x += time->perSecond(p.mVelocity.x);

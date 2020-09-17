@@ -18,7 +18,7 @@
 #include <vorbis/vorbisfile.h>
 
 #include "../AudioDefinition.h"
-#include "../../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../Scene/Actor/ActorRuntime.h"
 
 #define AUDIO_BUFFER_SIZE 1024
 

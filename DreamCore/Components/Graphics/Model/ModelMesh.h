@@ -31,7 +31,7 @@
 #include "../../../Common/DreamObject.h"
 #include "../Light/LightRuntime.h"
 #include "ModelBone.h"
-#include "../../../Scene/SceneObject/BoundingBox.h"
+#include "../../../Scene/Actor/BoundingBox.h"
 #include "ModelTasks.h"
 
 using std::vector;
@@ -44,7 +44,7 @@ namespace Dream
     class MaterialRuntime;
     class TextureRuntime;
     class ShaderRuntime;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class Camera;
 
     class ModelMesh : public DreamObject
@@ -76,8 +76,8 @@ namespace Dream
         #ifdef DREAM_LOG
         void logRuntimes();
         #endif
-        void addRuntime(SceneObjectRuntime* runt);
-        void removeRuntime(SceneObjectRuntime* runt);
+        void addRuntime(ActorRuntime* runt);
+        void removeRuntime(ActorRuntime* runt);
 
         MaterialRuntime* getMaterial();
 
@@ -111,8 +111,8 @@ namespace Dream
         GLuint mIBO;
         vector<Vertex> mVertices;
         vector<GLuint> mIndices;
-        vector<SceneObjectRuntime*> mRuntimes;
-        vector<SceneObjectRuntime*> mRuntimesInFrustum;
+        vector<ActorRuntime*> mRuntimes;
+        vector<ActorRuntime*> mRuntimesInFrustum;
         size_t mVerticesCount;
         size_t mIndicesCount;
         BoundingBox mBoundingBox;

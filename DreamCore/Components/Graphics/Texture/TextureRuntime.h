@@ -26,7 +26,7 @@ using std::string;
 namespace Dream
 {
     class TextureDefinition;
-    class SceneObjectRuntime;
+    class ActorRuntime;
     class TextureDestructionTask;
     class TextureConstructionTask;
 

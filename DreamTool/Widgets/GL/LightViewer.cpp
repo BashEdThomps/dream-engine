@@ -5,7 +5,7 @@
 #include "../../../DreamCore/Project/Project.h"
 #include "../../../DreamCore/Project/ProjectRuntime.h"
 #include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
 #include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
 #include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
 
@@ -137,7 +137,7 @@ namespace DreamTool
             for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getSceneObjectRuntime()->getTransform().getMatrix();
+                mModelMatrix = light->getActorRuntime()->getTransform().getMatrix();
                 Vector3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)

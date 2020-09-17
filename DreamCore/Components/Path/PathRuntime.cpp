@@ -25,7 +25,7 @@
 #include "../Transform.h"
 #include "../Time.h"
 #include "../../Scene/SceneRuntime.h"
-#include "../../Scene/SceneObject/SceneObjectRuntime.h"
+#include "../../Scene/Actor/ActorRuntime.h"
 #include "../../Project/ProjectRuntime.h"
 #include "tinyspline/tinyspline.h"
 
@@ -33,7 +33,7 @@ namespace Dream
 {
 
     PathRuntime::PathRuntime
-    (PathDefinition* definition, SceneObjectRuntime* runtime)
+    (PathDefinition* definition, ActorRuntime* runtime)
         : DiscreteAssetRuntime(definition,runtime),
           mWrapPath(false),
           mCurrentIndex(0),
@@ -62,7 +62,7 @@ namespace Dream
     ()
     {
         auto transform = stepPath();
-        mSceneObjectRuntime->getTransform().setMatrix(transform);
+        mActorRuntime->getTransform().setMatrix(transform);
     }
 
     bool
@@ -272,7 +272,7 @@ namespace Dream
             float distanceToNext = 0.0f;
             if (mCurrentIndex != mSplinePoints.size()-1)
             {
-                mDistanceToTravel += mSceneObjectRuntime
+                mDistanceToTravel += mActorRuntime
                     ->getSceneRuntime()
                     ->getProjectRuntime()
                     ->getTime()
