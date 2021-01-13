@@ -16,29 +16,31 @@
 #include "ProjectDefinition.h"
 #include "ProjectDirectory.h"
 
-#include "../Scene/SceneRuntime.h"
-#include "../Scene/SceneDefinition.h"
-#include "../Scene/Actor/ActorRuntime.h"
+#include "Common/Logger.h"
 
-#include "../Components/AssetDefinition.h"
-#include "../Components/Time.h"
-#include "../Components/Transform.h"
-#include "../Components/Audio/AudioComponent.h"
-#include "../Components/Audio/AudioCache.h"
-#include "../Components/Input/InputComponent.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/SceneDefinition.h"
+#include "Scene/Entity/EntityRuntime.h"
 
-#include "../TaskManager/TaskManager.h"
-#include "../Components/Graphics/GraphicsComponent.h"
-#include "../Components/Graphics/Model/ModelMesh.h"
-#include "../Components/Physics/PhysicsComponent.h"
-#include "../Components/Window/WindowComponent.h"
-#include "../Components/Script/ScriptComponent.h"
+#include "Components/AssetDefinition.h"
+#include "Components/Time.h"
+#include "Components/Transform.h"
+#include "Components/Audio/AudioComponent.h"
+#include "Components/Audio/AudioCache.h"
+#include "Components/Input/InputComponent.h"
 
-#include "../Components/Graphics/Model/ModelCache.h"
-#include "../Components/Graphics/Material/MaterialCache.h"
-#include "../Components/Graphics/Shader/ShaderCache.h"
-#include "../Components/Graphics/Shader/ShaderRuntime.h"
-#include "../Components/Graphics/Texture/TextureCache.h"
+#include "TaskManager/TaskManager.h"
+#include "Components/Graphics/GraphicsComponent.h"
+#include "Components/Graphics/Model/ModelMesh.h"
+#include "Components/Physics/PhysicsComponent.h"
+#include "Components/Window/WindowComponent.h"
+#include "Components/Script/ScriptComponent.h"
+
+#include "Components/Graphics/Model/ModelCache.h"
+#include "Components/Graphics/Material/MaterialCache.h"
+#include "Components/Graphics/Shader/ShaderCache.h"
+#include "Components/Graphics/Shader/ShaderRuntime.h"
+#include "Components/Graphics/Texture/TextureCache.h"
 
 #include <thread>
 
@@ -79,19 +81,14 @@ namespace Dream
           mShaderCache(nullptr),
           mScriptCache(nullptr)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ProjectRuntime");
-        getLog()->debug( "Constructing" );
-        #endif
+        LOG_DEBUG( "Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
     }
 
     ProjectRuntime::~ProjectRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug( "Destructing" );
-        #endif
+        LOG_DEBUG( "Destructing" );
         deleteCaches();
         deleteComponents();
 
@@ -130,9 +127,7 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug( "Initialising Components..." );
-        #endif
+        LOG_DEBUG( "Initialising Components..." );
 
         mTime = new Time();
 
@@ -171,9 +166,7 @@ namespace Dream
             return false;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug( "Successfuly created Components." );
-        #endif
+        LOG_DEBUG( "Successfuly created Components." );
 
         return true;
     }
@@ -184,9 +177,7 @@ namespace Dream
     {
         if (!mWindowComponent)
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Window component is null");
-            #endif
+            LOG_CRITICAL("Window component is null");
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
@@ -204,9 +195,7 @@ namespace Dream
         mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise AudioComponent." );
-            #endif
+            LOG_ERROR( "Unable to initialise AudioComponent." );
             mAudioComponent->unlock();
             return false;
         }
@@ -224,9 +213,7 @@ namespace Dream
 
         if (!mInputComponent->init())
         {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise InputComponent." );
-            #endif
+            LOG_ERROR( "Unable to initialise InputComponent." );
             mInputComponent->unlock();
             return false;
         }
@@ -243,9 +230,7 @@ namespace Dream
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise PhysicsComponent." );
-            #endif
+            LOG_ERROR( "Unable to initialise PhysicsComponent." );
             mPhysicsComponent->unlock();
             return false;
         }
@@ -263,9 +248,7 @@ namespace Dream
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
         {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise Graphics Component." );
-            #endif
+            LOG_ERROR( "Unable to initialise Graphics Component." );
             mGraphicsComponent->unlock();
             return false;
         }
@@ -281,9 +264,7 @@ namespace Dream
         mScriptComponent->lock();
         if(!mScriptComponent->init())
         {
-            #ifdef DREAM_LOG
-            getLog()->error( "Unable to initialise Script Engine." );
-            #endif
+            LOG_ERROR( "Unable to initialise Script Engine." );
             mScriptComponent->unlock();
             return false;
         }
@@ -303,9 +284,7 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("initialising caches");
-        #endif
+        LOG_TRACE("initialising caches");
         mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
         mShaderCache  = new ShaderCache(this);
@@ -449,13 +428,11 @@ namespace Dream
     ProjectRuntime::updateLogic
     (SceneRuntime* sr)
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("\n"
+        LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Logic called @ {}\n"
         "=======================================================================\n",
         mTime->getAbsoluteTime());
-        #endif
 
         mTime->updateFrameTime();
         mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
@@ -475,13 +452,11 @@ namespace Dream
     ProjectRuntime::updateGraphics
     (SceneRuntime* sr)
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("\n"
+        LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Graphics called @ {}\n"
         "=======================================================================\n",
         mTime->getAbsoluteTime());
-        #endif
         // Draw 3D/PhysicsDebug/2D
         ModelMesh::ClearCounters();
         mGraphicsComponent->executeTaskQueue();
@@ -543,13 +518,11 @@ namespace Dream
     ProjectRuntime::collectGarbage
     (SceneRuntime* rt)
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("\n"
+        LOG_DEBUG("\n"
         "=======================================================================\n"
         "CollectGarbage Called @ {}\n"
         "=======================================================================",
         mTime->getAbsoluteTime());
-        #endif
         rt->collectGarbage();
     }
 
@@ -694,9 +667,7 @@ namespace Dream
     ProjectRuntime::constructSceneRuntime
     (SceneRuntime* rt)
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Constructing Scene Runtime");
-        #endif
+        LOG_DEBUG("Constructing Scene Runtime");
         return rt->useDefinition();
     }
 
@@ -853,8 +824,8 @@ namespace Dream
         return nullptr;
     }
 
-    ActorRuntime*
-    ProjectRuntime::getActorRuntimeByUuid
+    EntityRuntime*
+    ProjectRuntime::getEntityRuntimeByUuid
     (SceneRuntime* rt, uint32_t uuid)
     const
     {
@@ -863,7 +834,7 @@ namespace Dream
             return nullptr;
         }
 
-        return rt->getActorRuntimeByUuid(uuid);
+        return rt->getEntityRuntimeByUuid(uuid);
     }
 
     bool

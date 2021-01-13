@@ -1,8 +1,8 @@
 #include "Cache.h"
 
-#include "../Project/Project.h"
-#include "../Project/ProjectDirectory.h"
-#include "../Project/ProjectRuntime.h"
+#include "Project/Project.h"
+#include "Project/ProjectDirectory.h"
+#include "Project/ProjectRuntime.h"
 #include "SharedAssetRuntime.h"
 #include "AssetDefinition.h"
 
@@ -10,7 +10,7 @@ namespace Dream
 {
     Cache::Cache
     (ProjectRuntime* parent)
-        : LockableObject ("Cache"),
+        : LockableObject (),
           mProjectRuntime(parent)
     {
 

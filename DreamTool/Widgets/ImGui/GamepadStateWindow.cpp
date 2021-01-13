@@ -1,19 +1,15 @@
 #include "GamepadStateWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Components/Input/InputComponent.h"
+#include "DTContext.h"
+#include <DreamCore.h>
+
 
 
 namespace DreamTool
 {
     GamepadStateWindow::GamepadStateWindow
-    (DTState* state, bool visible)
+    (DTContext* state, bool visible)
         : ImGuiWidget (state,visible)
     {
-#ifdef DREAM_LOG
-        setLogClassName("GamepadStateWindow");
-#endif
     }
 
     GamepadStateWindow::~GamepadStateWindow

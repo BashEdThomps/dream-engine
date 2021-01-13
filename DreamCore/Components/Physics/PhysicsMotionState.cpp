@@ -12,11 +12,11 @@
 
 #include "PhysicsMotionState.h"
 
-#include <iostream>
+#include "Common/Logger.h"
 
+#include <iostream>
 #include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -26,22 +26,15 @@ namespace Dream
     PhysicsMotionState::PhysicsMotionState
     (Transform* dreamTransform)
         : btMotionState(),
-          DreamObject("PhysicsMotionState"),
           mDreamTransform(dreamTransform)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Constructor called" );
-        #endif
+        LOG_TRACE( "Constructor called" );
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destroying Object" );
-        #endif
+        LOG_TRACE( "Destroying Object" );
     }
 
     void
@@ -57,10 +50,7 @@ namespace Dream
     (const btTransform &worldTrans)
     {
 
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "setWorldTransform called" );
-        #endif
+        LOG_DEBUG( "setWorldTransform called" );
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
         mDreamTransform->setMatrix(glm::make_mat4(mtx));
@@ -70,10 +60,7 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug( "setKinematicPos called" );
-        #endif
+        LOG_DEBUG( "setKinematicPos called" );
         setWorldTransform(trans);
     }
 }

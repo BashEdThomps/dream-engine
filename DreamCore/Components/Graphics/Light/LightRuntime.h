@@ -18,7 +18,7 @@
 
 #include <glm/glm.hpp>
 #include "LightDefinition.h"
-#include "../../DiscreteAssetRuntime.h"
+#include "Components/DiscreteAssetRuntime.h"
 
 using namespace glm;
 
@@ -73,7 +73,7 @@ namespace Dream
         LightType mType;
 
     public:
-        LightRuntime(LightDefinition*,ActorRuntime*);
+        LightRuntime(LightDefinition*,EntityRuntime*);
         ~LightRuntime() override;
 
         bool useDefinition() override;

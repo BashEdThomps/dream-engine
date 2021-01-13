@@ -1,12 +1,18 @@
 #pragma once
 
-#include "../../DreamCore/Common/DreamObject.h"
+#include <DreamCore.h>
 
-using namespace Dream;
+#include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
+using Dream::Directory;
+using Dream::AssetType;
 
 namespace DreamTool
 {
-    class TemplatesModel : public DreamObject
+    class TemplatesModel
     {
     public:
         TemplatesModel();

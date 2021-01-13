@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../TaskManager/Task.h"
-#include "../Graphics/GraphicsComponentTask.h"
+#include "TaskManager/Task.h"
+#include "Components/Graphics/GraphicsComponentTask.h"
 
 namespace Dream
 {

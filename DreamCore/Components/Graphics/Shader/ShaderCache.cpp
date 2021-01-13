@@ -16,10 +16,11 @@
  * this file belongs to.
  */
 #include "ShaderCache.h"
+
 #include "ShaderDefinition.h"
 #include "ShaderRuntime.h"
-#include "../../../Project/ProjectRuntime.h"
-#include "../Camera.h"
+#include "Components/Graphics/Camera.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -27,20 +28,13 @@ namespace Dream
     (ProjectRuntime* rt)
         : Cache(rt)
     {
-#ifdef DREAM_LOG
-        setLogClassName("ShaderCache");
-        auto log = getLog();
-        log->trace( "Constructing" );
-#endif
+        LOG_TRACE( "Constructing" );
     }
 
     ShaderCache::~ShaderCache
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destructing" );
-#endif
+        LOG_TRACE( "Destructing" );
     }
 
     SharedAssetRuntime*
@@ -51,29 +45,24 @@ namespace Dream
 
         if (!shaderRuntime->useDefinition())
         {
-#ifdef DREAM_LOG
-            getLog()->error("Error while loading shader {}", def->getUuid());
-#endif
+            LOG_ERROR("Error while loading shader {}", def->getUuid());
         }
         mRuntimes.push_back(shaderRuntime);
         return shaderRuntime;
     }
 
-#ifdef DREAM_LOG
     void
     ShaderCache::logShaders
     ()
     {
-        auto log = getLog();
-        log->debug("Contents of shader cache");
+        LOG_DEBUG("Contents of shader cache");
         for (auto runtime : mRuntimes)
         {
             auto shader = static_cast<ShaderRuntime*>(runtime);
-            log->debug("{}",shader->getNameAndUuidString());
+            LOG_DEBUG("{}",shader->getNameAndUuidString());
             shader->logMaterials();
         }
     }
-#endif
 
     void
     ShaderCache::drawGeometryPass

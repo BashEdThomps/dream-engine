@@ -1,16 +1,13 @@
 #include "ToolPropertiesWindow.h"
-#include "../../DTState.h"
+#include "DTContext.h"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace DreamTool
 {
     ToolPropertiesWindow::ToolPropertiesWindow
-    (DTState* p)
+    (DTContext* p)
         : ImGuiWidget(p,false)
     {
-#ifdef DREAM_LOG
-        setLogClassName("GridPropertiesWidget");
-#endif
     }
 
     ToolPropertiesWindow::~ToolPropertiesWindow()

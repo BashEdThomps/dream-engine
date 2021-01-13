@@ -12,14 +12,15 @@
 
 #pragma once
 
+#include "Common/Math.h"
+#include "Common/LockableObject.h"
+
 #include <string>
-#include "../Common/Math.h"
-#include "json/json.hpp"
+#include <json.hpp>
 #include "glm/gtc/quaternion.hpp"
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
-#include "../Common/LockableObject.h"
 
 
 using namespace std;

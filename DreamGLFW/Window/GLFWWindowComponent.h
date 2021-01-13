@@ -17,19 +17,16 @@
 #include <Windows.h>
 #endif
 
-#include <vector>
-
+#include <DreamCore.h>
 #include <GLFW/glfw3.h>
-#include "../../DreamCore/Components/Window/WindowComponent.h"
 
-using namespace std;
-using namespace Dream;
+using Dream::WindowComponent;
+using Dream::SceneRuntime;
 
 namespace DreamGLFW
 {
     class GLWidget;
-    class GLFWWindowComponent
-        : public WindowComponent
+    class GLFWWindowComponent : public WindowComponent
     {
     public:
         GLFWWindowComponent();

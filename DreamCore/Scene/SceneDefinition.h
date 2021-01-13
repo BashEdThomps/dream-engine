@@ -13,30 +13,30 @@
 #pragma once
 
 #include <vector>
-#include "../Common/Definition.h"
-#include "../Components/Transform.h"
+#include "Common/Definition.h"
+#include "Components/Transform.h"
 
 using namespace std;
 
 namespace Dream
 {
     class ProjectDefinition;
-    class Actor;
-    class ActorDefinition;
+    class Entity;
+    class EntityDefinition;
 
     class SceneDefinition : public Definition
     {
 
     private:
-        vector<ActorDefinition*> mTemplates;
-        ActorDefinition* mRootActorDefinition;
+        vector<EntityDefinition*> mTemplates;
+        EntityDefinition* mRootEntityDefinition;
         ProjectDefinition* mProjectDefinition;
 
     public:
         SceneDefinition(ProjectDefinition* project, const json& data);
         ~SceneDefinition() override;
 
-        void loadRootActorDefinition();
+        void loadRootEntityDefinition();
 
         void setCameraMovementSpeed(float speed);
         float getCameraMovementSpeed();
@@ -47,8 +47,8 @@ namespace Dream
         void setMeshCullDistance(float mcd);
         float getMeshCullDistance();
 
-        void addTemplate(ActorDefinition* _template);
-        ActorDefinition* getTemplateByUuid(uint32_t uuid);
+        void addTemplate(EntityDefinition* _template);
+        EntityDefinition* getTemplateByUuid(uint32_t uuid);
 
         void setMinDrawDistance(float mdd);
         float getMinDrawDistance();
@@ -74,9 +74,9 @@ namespace Dream
         void setClearColourG(float);
         void setClearColourB(float);
 
-        ActorDefinition* getRootActorDefinition();
+        EntityDefinition* getRootEntityDefinition();
         ProjectDefinition* getProjectDefinition();
-        ActorDefinition* createNewRootActorDefinition();
+        EntityDefinition* createNewRootEntityDefinition();
 
         json getJson() override;
 

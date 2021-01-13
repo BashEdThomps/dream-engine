@@ -1,6 +1,7 @@
 #pragma once
 
-#include "tweeny/tweeny.h"
+#include <tweeny.h>
+
 #include <string>
 #include <vector>
 

@@ -1,23 +1,15 @@
 #include "ScriptEditorWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Components/Script/ScriptDefinition.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectDefinition.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Project/ProjectDirectory.h"
+#include "DTContext.h"
 
 namespace DreamTool
 {
 
     ScriptEditorWindow::ScriptEditorWindow
-    (DTState* state)
+    (DTContext* state)
         : ImGuiWidget (state),
           mScriptDefinition(nullptr)
     {
 
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptEditorWidget");
-        #endif
         mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::AngelScript());
     }
 
@@ -100,7 +92,7 @@ namespace DreamTool
                     if (currentTemplateIndex < 0)
                     {
                         #ifdef DREAM_LOG
-                        getLog()->error("Cannot load Script template at index {}",currentTemplateIndex);
+                        LOG_ERROR("Cannot load Script template at index {}",currentTemplateIndex);
                         #endif
                     }
                     else
@@ -115,7 +107,7 @@ namespace DreamTool
                         else
                         {
                             #ifdef DREAM_LOG
-                            getLog()->error("Cannot set from template, script Runtime is null");
+                            LOG_ERROR("Cannot set from template, script Runtime is null");
                             #endif
                         }
                     }

@@ -6,50 +6,15 @@
 
 #include "PropertiesWindow.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "ImFileSystem/imguifilesystem.h"
-#include "ImGuizmo/ImGuizmo.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Project/ProjectDefinition.h"
-#include "../../../DreamCore/Project/ProjectDirectory.h"
-#include "../../../DreamCore/Scene/SceneDefinition.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/Actor/ActorDefinition.h"
-#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
-#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
-#include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
-#include "../../../DreamCore/Components/Animation/AnimationRuntime.h"
-#include "../../../DreamCore/Components/Audio/AudioCache.h"
-#include "../../../DreamCore/Components/Audio/AudioRuntime.h"
-#include "../../../DreamCore/Components/Audio/AudioDefinition.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Font/FontDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelCache.h"
-#include "../../../DreamCore/Components/Graphics/Light/LightDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Light/LightRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Material/MaterialDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Material/MaterialRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Texture/TextureRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Texture/TextureDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
-#include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-#include "../../../DreamCore/Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
-#include "../../../DreamCore/Components/Scroller/ScrollerDefinition.h"
-#include "../../../DreamCore/Components/Physics/PhysicsObjectDefinition.h"
-#include "../../../DreamCore/Components/Script/ScriptDefinition.h"
-#include "../../../DreamCore/Components/ObjectEmitter/ObjectEmitterDefinition.h"
-#include "../../../DreamCore/Components/ObjectEmitter/ObjectEmitterRuntime.h"
+#include <ImFileSystem.h>
+#include <ImGuizmo.h>
+#include "DTContext.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
     PropertiesWindow::PropertiesWindow
-    (DTState* proj)
+    (DTContext* proj)
         : ImGuiWidget (proj),
           mType(None),
           mDefinition(nullptr),
@@ -59,9 +24,6 @@ namespace DreamTool
           mGizmoUseSnap(true),
           mGizmoSnap(1.0f,1.0f,1.0f)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("Properties Window");
-        #endif
     }
 
     PropertiesWindow::~PropertiesWindow
@@ -91,8 +53,8 @@ namespace DreamTool
                 case PropertyType::Scene:
                     drawSceneProperties();
                     break;
-                case PropertyType::Actor:
-                    drawActorProperties();
+                case PropertyType::Entity:
+                    drawEntityProperties();
                     break;
                 case PropertyType::Asset:
                     drawAssetProperties();
@@ -103,16 +65,16 @@ namespace DreamTool
     }
 
     bool
-    PropertiesWindow::drawDeleteActorButton
+    PropertiesWindow::drawDeleteEntityButton
     ()
     {
-        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<ActorRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
+        auto soRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
         if (ImGui::Button("Delete"))
         {
             if (soDef)
             {
-                auto parent = soDef->getParentActor();
+                auto parent = soDef->getParentEntity();
                 if (parent)
                 {
                     parent->removeChildDefinition(soDef);
@@ -195,7 +157,7 @@ namespace DreamTool
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
         #ifdef DREAM_LOG
-        getLog()->error("Pushed target {}",mHistory.size());
+        LOG_ERROR("Pushed target {}",mHistory.size());
         #endif
         setPropertyType(type);
         setDefinition(def);
@@ -231,7 +193,7 @@ namespace DreamTool
         setDefinition(last.definition);
         setRuntime(last.runtime);
         #ifdef DREAM_LOG
-        getLog()->error("Popped target {}",mHistory.size());
+        LOG_ERROR("Popped target {}",mHistory.size());
         #endif
         mHistory.pop_back();
     }
@@ -505,7 +467,7 @@ namespace DreamTool
             string focusedStr = "None";
             if (sceneRuntime)
             {
-                auto focusedObj = sceneRuntime->getActorRuntimeByUuid(focused);
+                auto focusedObj = sceneRuntime->getEntityRuntimeByUuid(focused);
                 if (focusedObj)
                 {
                     focusedStr = focusedObj->getNameAndUuidString();
@@ -528,7 +490,7 @@ namespace DreamTool
 
             if (sceneRuntime)
             {
-                auto* po = sceneRuntime->getActorRuntimeByUuid(sceneDef->getPlayerObject());
+                auto* po = sceneRuntime->getEntityRuntimeByUuid(sceneDef->getPlayerObject());
                 if (po)
                 {
                     ImGui::Text("PlayerObject: %s",po->getNameAndUuidString().c_str());
@@ -540,7 +502,7 @@ namespace DreamTool
             }
 
             string nearestStr = "None";
-            ActorRuntime* nearest = nullptr;
+            EntityRuntime* nearest = nullptr;
             if (sceneRuntime)
             {
                 nearest = sceneRuntime->getNearestToCamera();
@@ -634,7 +596,7 @@ namespace DreamTool
                 sceneDef->setLightingPassShader(uuid);
 
                 #ifdef DREAM_LOG
-                getLog()->error("Switched lighting pass shader to {} {}", name, uuid);
+                LOG_ERROR("Switched lighting pass shader to {} {}", name, uuid);
                 #endif
             }
 
@@ -646,7 +608,7 @@ namespace DreamTool
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
                 #ifdef DREAM_LOG
-                getLog()->error("Switched shadow pass shader to {} {}", name, uuid);
+                LOG_ERROR("Switched shadow pass shader to {} {}", name, uuid);
                 #endif
             }
         }
@@ -702,23 +664,23 @@ namespace DreamTool
     }
 
     void
-    PropertiesWindow::drawActorProperties
+    PropertiesWindow::drawEntityProperties
     ()
     {
         auto projDef = mState->project->getDefinition();
-        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<ActorRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
+        auto soRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
 
         if (soDef == nullptr)
         {
             return;
         }
 
-        if (soDef->getParentActor() != nullptr)
+        if (soDef->getParentEntity() != nullptr)
         {
 
             ImGui::SameLine();
-            if (drawDeleteActorButton())
+            if (drawDeleteEntityButton())
             {
                 return;
             }
@@ -729,27 +691,27 @@ namespace DreamTool
             auto newChildDef = soDef->createNewChildDefinition();
             mat4 cursorTx = glm::translate(mat4(1.0f),mState->cursor.getPosition());
             newChildDef->getTransform().setMatrix(cursorTx);
-            ActorRuntime* newRt = nullptr;
+            EntityRuntime* newRt = nullptr;
             if (soRuntime)
             {
                 newRt = soRuntime->createAndAddChildRuntime(newChildDef);
                 newRt->getTransform().setMatrix(cursorTx);
             }
-            pushPropertyTarget(PropertyType::Actor,newChildDef,newRt);
+            pushPropertyTarget(PropertyType::Entity,newChildDef,newRt);
         }
 
-        if (soDef->getParentActor() != nullptr)
+        if (soDef->getParentEntity() != nullptr)
         {
             ImGui::SameLine();
             if (ImGui::Button("Duplicate"))
             {
                 auto dup = soDef->duplicate();
-                ActorRuntime* newRt = nullptr;
+                EntityRuntime* newRt = nullptr;
                 if (soRuntime)
                 {
                     newRt = soRuntime->createAndAddChildRuntime(dup);
                 }
-                pushPropertyTarget(PropertyType::Actor,dup,newRt);
+                pushPropertyTarget(PropertyType::Entity,dup,newRt);
             }
         }
 
@@ -1282,8 +1244,8 @@ namespace DreamTool
     ()
     {
         float *matrix = nullptr;
-        auto soRunt = dynamic_cast<ActorRuntime*>(mRuntime);
-        auto soDef = dynamic_cast<ActorDefinition*>(mDefinition);
+        auto soRunt = dynamic_cast<EntityRuntime*>(mRuntime);
+        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
 
         if (soRunt)
         {
@@ -1321,9 +1283,9 @@ namespace DreamTool
             float matrixTranslation[3], matrixRotation[3], matrixScale[3];
             ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
 
-            ImGui::InputFloat3("Translation", matrixTranslation, 3);
-            ImGui::InputFloat3("Rotation", matrixRotation, 3);
-            ImGui::InputFloat3("Scale", matrixScale, 3);
+            ImGui::InputFloat3("Translation", matrixTranslation);
+            ImGui::InputFloat3("Rotation", matrixRotation);
+            ImGui::InputFloat3("Scale", matrixScale);
 
             ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
@@ -1377,15 +1339,15 @@ namespace DreamTool
                     {
                         soRunt->applyToAll
                                 (
-                                    function<ActorRuntime*(ActorRuntime*)>(
-                                        [&](ActorRuntime* rt)
+                                    function<EntityRuntime*(EntityRuntime*)>(
+                                        [&](EntityRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
-                                            auto d = dynamic_cast<ActorDefinition*>(rt->getDefinition());
+                                            auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
                                             d->setTransform(rt->getTransform());
                                         }
-                                        return static_cast<ActorRuntime*>(nullptr);
+                                        return static_cast<EntityRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1403,16 +1365,16 @@ namespace DreamTool
                     {
                         soRunt->applyToAll
                                 (
-                                    function<ActorRuntime*(ActorRuntime*)>(
-                                        [&](ActorRuntime* rt)
+                                    function<EntityRuntime*(EntityRuntime*)>(
+                                        [&](EntityRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
-                                            auto d = dynamic_cast<ActorDefinition*>(rt->getDefinition());
+                                            auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
                                             auto tmp = d->getTransform();
                                             rt->setTransform(&tmp);
                                         }
-                                        return static_cast<ActorRuntime*>(nullptr);
+                                        return static_cast<EntityRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1456,14 +1418,14 @@ namespace DreamTool
                         Vector3 tx(delta[3][0],delta[3][1],delta[3][2]);
                         soRunt->applyToAll
                                 (
-                                    function<ActorRuntime*(ActorRuntime*)>(
-                                        [&](ActorRuntime* rt)
+                                    function<EntityRuntime*(EntityRuntime*)>(
+                                        [&](EntityRuntime* rt)
                         {
                                         if (rt != soRunt)
                                         {
                                             rt->getTransform().preTranslate(tx);
                                         }
-                                        return static_cast<ActorRuntime*>(nullptr);
+                                        return static_cast<EntityRuntime*>(nullptr);
                                     }
                                     ));
                     }
@@ -1483,14 +1445,14 @@ namespace DreamTool
         float matrixTranslation[3], matrixRotation[3], matrixScale[3];
         ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
 
-        ImGui::InputFloat3("##Translation", matrixTranslation, 3);
+        ImGui::InputFloat3("##Translation", matrixTranslation);
         ImGui::SameLine();
         if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE))
         {
             currentGizmoOperation = ImGuizmo::TRANSLATE;
         }
 
-        ImGui::InputFloat3("##Rotation", matrixRotation, 3);
+        ImGui::InputFloat3("##Rotation", matrixRotation);
         ImGui::SameLine();
         if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE))
         {
@@ -1558,7 +1520,7 @@ namespace DreamTool
         {
             auto dup = assetDef->duplicate();
             auto projDef = mState->project->getDefinition();
-            pushPropertyTarget(PropertyType::Actor,dup,nullptr);
+            pushPropertyTarget(PropertyType::Entity,dup,nullptr);
         }
 
 
@@ -1631,7 +1593,7 @@ namespace DreamTool
                 ImGui::Columns(1);
                 if(ImGui::CollapsingHeader("Active Runtimes"))
                 {
-                    auto runtimes = activeScene->getActorsWithRuntimeOf(assetDef);
+                    auto runtimes = activeScene->getEntitysWithRuntimeOf(assetDef);
                     for (auto runtime : runtimes)
                     {
                         ImGui::Text("%s",runtime->getNameAndUuidString().c_str());
@@ -1836,13 +1798,13 @@ namespace DreamTool
             auto audioFilePath = openDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            getLog()->error("Opening Audio File {}",audioFilePath);
+            LOG_ERROR("Opening Audio File {}",audioFilePath);
 #endif
             File audioFile(audioFilePath);
             mState->lastDirectory = audioFile.getDirectory();
 
 #ifdef DREAM_LOG
-            getLog()->error("Setting last directory {}",mState->lastDirectory);
+            LOG_ERROR("Setting last directory {}",mState->lastDirectory);
 #endif
             auto audioData = audioFile.readBinary();
             mState->projectDirectory.writeAssetData(audioDef,audioData);
@@ -1916,7 +1878,7 @@ namespace DreamTool
             auto filePath = openDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            getLog()->error("Opening Font File {}",filePath);
+            LOG_ERROR("Opening Font File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2359,7 +2321,7 @@ namespace DreamTool
         {
             auto filePath = openDlg.getChosenPath();
 #ifdef DREAM_LOG
-            getLog()->error("Opening Model File {}",filePath);
+            LOG_ERROR("Opening Model File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2380,7 +2342,7 @@ namespace DreamTool
             auto filePath = openAdditionalFileDlg.getChosenPath();
 
 #ifdef DREAM_LOG
-            getLog()->error("Opening Additional Model File {}",filePath);
+            LOG_ERROR("Opening Additional Model File {}",filePath);
 #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -2456,7 +2418,7 @@ namespace DreamTool
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
 
 #ifdef DREAM_LOG
-                getLog()->error("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
+                LOG_ERROR("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
 #endif
             }
             ImGui::PopItemWidth();
@@ -2641,7 +2603,7 @@ namespace DreamTool
                 pod->getNormalZ()
             };
 
-            if (ImGui::InputFloat3("Plane Normal",&normal[0], 3))
+            if (ImGui::InputFloat3("Plane Normal",&normal[0]))
             {
                 pod->setNormalX(normal[0]);
                 pod->setNormalY(normal[1]);
@@ -3047,7 +3009,7 @@ namespace DreamTool
         {
             auto filePath = openDlg.getChosenPath();
             #ifdef DREAM_LOG
-            getLog()->error("Opening Texture File {}",filePath);
+            LOG_ERROR("Opening Texture File {}",filePath);
             #endif
             File file(filePath);
             mState->lastDirectory = file.getDirectory();
@@ -3247,10 +3209,10 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         auto oeDef = static_cast<ObjectEmitterDefinition*>(mDefinition);
 
-        int objectUuid = oeDef->getActorUuid();
+        int objectUuid = oeDef->getEntityUuid();
         if (ImGui::InputInt("Scene Object",&objectUuid))
         {
-            oeDef->setActorUuid(objectUuid);
+            oeDef->setEntityUuid(objectUuid);
         }
 
         float thetas[2] = {glm::degrees(oeDef->getStartTheta()),glm::degrees(oeDef->getEndTheta())};
@@ -3316,7 +3278,7 @@ namespace DreamTool
             auto sRunt = pRunt->getActiveSceneRuntime();
             if (sRunt)
             {
-                auto runts = sRunt->getActorsWithRuntimeOf(assetDef);
+                auto runts = sRunt->getEntitysWithRuntimeOf(assetDef);
                 for (auto soRunt : runts)
                 {
                     soRunt->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());

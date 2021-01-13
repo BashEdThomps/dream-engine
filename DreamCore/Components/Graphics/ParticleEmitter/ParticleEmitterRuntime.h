@@ -19,8 +19,8 @@
 #include <deque>
 #include <glm/glm.hpp>
 
-#include "../../DiscreteAssetRuntime.h"
-#include "../../Transform.h"
+#include "Components/DiscreteAssetRuntime.h"
+#include "Components/Transform.h"
 
 using namespace glm;
 using std::deque;
@@ -39,7 +39,7 @@ namespace Dream
     class ParticleEmitterRuntime : public DiscreteAssetRuntime
     {
     public:
-        ParticleEmitterRuntime(ParticleEmitterDefinition*, ActorRuntime*);
+        ParticleEmitterRuntime(ParticleEmitterDefinition*, EntityRuntime*);
         ~ParticleEmitterRuntime() override;
         bool useDefinition() override;
 

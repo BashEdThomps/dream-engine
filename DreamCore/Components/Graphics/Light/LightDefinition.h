@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../../AssetDefinition.h"
+#include "Components/AssetDefinition.h"
 
 namespace Dream
 {

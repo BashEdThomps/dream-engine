@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-    class ActorRuntime;
+    class EntityRuntime;
 }
 
 using namespace Dream;
@@ -15,9 +15,9 @@ namespace DreamTool
             : public GLWidget
     {
     public:
-        SelectionHighlighter(DTState* project);
+        SelectionHighlighter(DTContext* project);
         ~SelectionHighlighter() override;
-        void setSelectedActor(ActorRuntime* selected);
+        void setSelectedEntity(EntityRuntime* selected);
         void draw() override;
         void init();
         void updateGeometry();
@@ -26,7 +26,7 @@ namespace DreamTool
         void clearSelection();
 
     protected:
-        ActorRuntime* mSelectedActorRuntime;
+        EntityRuntime* mSelectedEntityRuntime;
         vec3 mSelectionColour;
         float mOffset;
         vec3 mXColour;

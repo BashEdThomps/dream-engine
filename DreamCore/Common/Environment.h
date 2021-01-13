@@ -17,7 +17,7 @@
 #pragma once
 
 #include <string>
-#include "../Common/Constants.h"
+#include "Common/Constants.h"
 
 using std::string;
 

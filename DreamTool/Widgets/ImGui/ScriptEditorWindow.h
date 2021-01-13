@@ -1,20 +1,17 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "ImTextEditor/TextEditor.h"
+#include <TextEditor.h>
+#include <DreamCore.h>
 
-
-namespace Dream
-{
-    class ScriptDefinition;
-}
+using Dream::ScriptDefinition;
 
 namespace DreamTool
 {
     class ScriptEditorWindow : public ImGuiWidget
     {
     public:
-        ScriptEditorWindow(DTState* state);
+        ScriptEditorWindow(DTContext* state);
         ~ScriptEditorWindow() override;
 
         void draw() override;

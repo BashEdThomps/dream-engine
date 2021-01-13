@@ -10,60 +10,38 @@
  * this file belongs to.
  */
 
-#define GL_SILENCE_DEPRECATION
-#ifdef WIN32
-#include <windows.h>
-#include <GL/glew.h>
-#endif
 #include <iostream>
 #include <thread>
 #include <memory>
 #include <sstream>
 
-#ifdef DREAM_LOG
-#include <spdlog/spdlog.h>
-    #ifdef WIN32
-        #include <spdlog/sinks/stdout_color_sinks.h>
-    #endif
-    #ifdef __APPLE__
-        #include <spdlog/sinks/stdout_color_sinks.h>
-    #endif
-    #ifdef __linux__
-        #include <spdlog/sinks/stdout_sinks.h>
-    #endif
-#endif
-
-#include "../DreamCore/Scene/SceneRuntime.h"
-#include "../DreamCore/Components/Input/InputComponent.h"
-#include "../DreamCore/Project/ProjectDirectory.h"
-#include "../DreamCore/Project/ProjectDefinition.h"
-#include "../DreamCore/Project/ProjectRuntime.h"
-#include "../DreamCore/Project/Project.h"
+#include <DreamCore.h>
 #include "Window/GLFWWindowComponent.h"
 
 #define MINIMUM_ARGUMENTS 3
 
-
-
-using namespace std;
-using namespace Dream;
-using namespace DreamGLFW;
-
-#ifdef DREAM_LOG
-shared_ptr<spdlog::logger> _log = spdlog::stdout_color_mt("Main");
-#endif
+using std::shared_ptr;
+using Dream::Project;
+using Dream::WindowComponent;
+using Dream::ProjectDirectory;
+using Dream::ProjectDefinition;
+using Dream::ProjectRuntime;
+using Dream::SceneDefinition;
+using Dream::SceneRuntime;
+using Dream::MouseState;
+using Dream::KeyboardState;
+using Dream::JoystickState;
+using DreamGLFW::GLFWWindowComponent;
 
 void run(int,char**);
 Project* openProject(ProjectDirectory&, string, WindowComponent&);
 void handleSceneInput(Project*);
 
-
 int
 main
 (int argc,char** argv)
 {
-    #ifdef DREAM_LOG
-    string logLevel = "off";
+    string logLevel = "trace";
     for (int i=0; i<argc; i++)
     {
         if (string(argv[i]) == "-l")
@@ -75,19 +53,17 @@ main
         }
     }
     cout << "Using log level " << logLevel << endl;
-    spdlog::set_level(spdlog::level::from_str(logLevel));
-    spdlog::set_pattern("%H:%M:%S (%l) %n %v");
-    #endif
+    LOG_LEVEL(spdlog::level::from_str(logLevel));
+    //spdlog::set_pattern("[source %s] [function %!] [line %#] %v");
+    spdlog::set_pattern("%H:%M:%S (%l) %n: %v");
 
     if(argc < 2)
     {
-        #ifdef DREAM_LOG
         for (int i = 0; i < argc; i++)
         {
-            _log->error("Arg {}: {}", i, argv[i]);
+            LOG_ERROR("DreamGLFW: Arg {}: {}", i, argv[i]);
         }
-        _log->error("No Project Argument.");
-        #endif
+        LOG_ERROR("DreamGLFW: No Project Argument.");
         return 1;
     }
 
@@ -96,13 +72,9 @@ main
     return 0;
 }
 
-Project*
-openProject
-(ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
+Project* openProject(ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
 {
-    #ifdef DREAM_LOG
-    _log->debug("Opening project {}",dir);
-    #endif
+    LOG_DEBUG("DreamGLFW: Opening project {}",dir);
     auto project = projectDirectory.openFromDirectory(dir);
     if(project)
     {
@@ -113,9 +85,7 @@ openProject
     return nullptr;
 }
 
-void
-run
-(int argc, char** argv)
+void run(int argc, char** argv)
 {
     bool MainLoopDone = false;
     ProjectDirectory projectDirectory;
@@ -125,15 +95,11 @@ run
     SceneDefinition* startupSceneDefinition = nullptr;
     SceneRuntime* activeSceneRuntime = nullptr;
 
-    #ifdef DREAM_LOG
-    _log->trace("Starting...");
-    #endif
+    LOG_INFO("DreamGLFW: Starting...");
 
     if(!windowComponent.init())
     {
-        #ifdef DREAM_LOG
-        _log->error("Could not initialise window component");
-        #endif
+        LOG_ERROR("DreamGLFW: Could not initialise window component");
         return;
     }
 
@@ -159,9 +125,7 @@ run
             }
             else
             {
-                #ifdef DREAM_LOG
-                _log->error("Unable to use startup scene runtime");
-                #endif
+                LOG_ERROR("DreamGLFW: Unable to use startup scene runtime");
                 delete activeSceneRuntime;
                 activeSceneRuntime = nullptr;
             }
@@ -194,9 +158,7 @@ run
         //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
     }
 
-    #ifdef DREAM_LOG
-    _log->info("Run is done. Cleaning up");
-    #endif
+    LOG_INFO("DreamGLFW: Run is done. Cleaning up");
 
     if (activeSceneRuntime)
     {

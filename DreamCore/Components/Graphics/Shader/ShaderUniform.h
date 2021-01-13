@@ -16,9 +16,8 @@
 
 #pragma once
 
-#include "../../../Common/GLHeader.h"
-#include "../../../Common/DreamObject.h"
-#include "glm/glm.hpp"
+#include "Common/GLHeader.h"
+#include <glm/glm.hpp>
 
 using namespace glm;
 
@@ -43,12 +42,12 @@ namespace Dream
         FLOAT4,
     };
 
-    class ShaderUniform : public DreamObject
+    class ShaderUniform
     {
     public:
         ShaderUniform(UniformType type, string name, int count, void* data);
         ShaderUniform(const ShaderUniform&) = delete;
-        ~ShaderUniform() override;
+        ~ShaderUniform();
 
         bool operator==(const ShaderUniform& other) const;
 

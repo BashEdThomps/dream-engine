@@ -15,11 +15,10 @@
 
 #pragma once
 
+
 #include <string>
 #include <vector>
-
-#include "../Common/DreamObject.h"
-#include "json/json.hpp"
+#include <json.hpp>
 
 using std::string;
 using std::shared_ptr;
@@ -36,8 +35,7 @@ namespace Dream
     class WindowComponent;
     class ProjectDirectory;
 
-    class Project :
-        public DreamObject
+    class Project
     {
         // Variables
     private:

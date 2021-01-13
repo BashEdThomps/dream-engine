@@ -15,20 +15,18 @@
 
 
 #include "ShaderUniform.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
   ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
-        : DreamObject ("ShaderUniform"),
-          mType(type),
+        : mType(type),
           mName(name),
           mCount(count),
           mLocation(0),
           mNeedsUpdate(true)
     {
-#ifdef DREAM_LOG
-        getLog()->debug("Constructing uniform {}, count {}",mName,count);
-#endif
+        LOG_DEBUG("Constructing uniform {}, count {}",mName,count);
         switch (type)
         {
             case Dream::INT1:
@@ -86,10 +84,7 @@ namespace Dream
 
     ShaderUniform::~ShaderUniform()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing {} {}", mName, mCount);
-#endif
+        LOG_TRACE("Destructing {} {}", mName, mCount);
         switch (mType)
         {
             case Dream::INT1:

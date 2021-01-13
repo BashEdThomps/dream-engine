@@ -1,12 +1,13 @@
 #include "AnimationKeyframe.h"
 #include "AnimationRuntime.h"
+#include "Common/Constants.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
     AnimationKeyframe::AnimationKeyframe
     (int id)
-        : DreamObject("AnimationKeyframe"),
-          mID(id),
+        : mID(id),
           mTime(0),
           mTranslation(vec3(0.0f)),
           mRotation(vec3(0.0f)),
@@ -19,9 +20,7 @@ namespace Dream
     AnimationKeyframe::~AnimationKeyframe
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     long

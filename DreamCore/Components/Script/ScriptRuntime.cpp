@@ -13,15 +13,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "angelscript/angelscript.h"
 #include "ScriptRuntime.h"
 #include "ScriptDefinition.h"
 #include "ScriptComponent.h"
 
-#include "../Input/InputComponent.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Project/ProjectRuntime.h"
+#include "Common/Logger.h"
+#include "Components/Input/InputComponent.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+#include <angelscript.h>
 
 namespace Dream
 {
@@ -52,9 +54,10 @@ namespace Dream
                     break;
             }
             cout << "On line: " << line << " errNo: " << r << " Reason: " << errStr << endl;
-            //assert(false);
+            assert(false);
         }
     }
+
     ScriptRuntime::ScriptRuntime
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
@@ -68,22 +71,17 @@ namespace Dream
           mDestroyFunction(nullptr),
           mInputFunction(nullptr)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptRuntime");
-        getLog()->trace( "Constructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE( "Constructing {}", getNameAndUuidString());
         return;
     }
 
     ScriptRuntime::~ScriptRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing {}", mDefinition->getNameAndUuidString());
-        #endif
+        LOG_TRACE("Destructing {}", mDefinition->getNameAndUuidString());
         if (mScriptModule)
         {
-            //mScriptModule->Discard();
+            mScriptModule->Discard();
             mScriptModule = nullptr;
         }
     }
@@ -100,7 +98,7 @@ namespace Dream
 
     bool
     ScriptRuntime::getInitialised
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     {
        return mInitialised[sor->getUuid()];
     }
@@ -125,28 +123,20 @@ namespace Dream
     bool ScriptRuntime::createScript()
     {
         auto path = getAssetFilePath();
-        #ifdef DREAM_LOG
-        getLog()->debug( "Creating Script at {}" , path);
-        #endif
+        LOG_DEBUG( "Creating Script at {}" , path);
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("createState called for {}", getNameAndUuidString() );
-            #endif
+            LOG_DEBUG("createState called for {}", getNameAndUuidString() );
             mScriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_CREATE_IF_NOT_EXISTS);
             mScriptModule->AddScriptSection(mUuidString.c_str(),mSource.c_str());
-            #ifdef DREAM_LOG
-            getLog()->trace("Loaded Script Source\n{}\n",getSource());
-            #endif
+            LOG_TRACE("Loaded Script Source\n{}\n",getSource());
             int r = mScriptModule->Build();
             if(r < 0)
             {
                 whyYouFail(r,__LINE__);
-                #ifdef DREAM_LOG
-                getLog()->error("Create script error");
+                LOG_ERROR("Create script error");
                 mError = true;
-                #endif
             }
             mLoaded = true;
             mProjectRuntime->getScriptComponent()->unlock();
@@ -174,7 +164,7 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnUpdate
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     {
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
@@ -208,29 +198,23 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnDestroy
-    (uint32_t destroyedSo, ActorRuntime* parent)
+    (uint32_t destroyedSo, EntityRuntime* parent)
     {
         if (mError)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Cannot run destroy, script for {} in error state.",destroyedSo);
-            #endif
+            LOG_ERROR("Cannot run destroy, script for {} in error state.",destroyedSo);
             return true;
         }
 
         if (mInitialised.count(destroyedSo) == 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Scrip {} probably removed before descruction could be called.",destroyedSo);
-            #endif
+            LOG_ERROR("Scrip {} probably removed before descruction could be called.",destroyedSo);
             return true;
         }
 
         if (!mInitialised[destroyedSo])
         {
-            #ifdef DREAM_LOG
-            getLog()->trace("Attempted to destroy uninitialised object {}",destroyedSo);
-            #endif
+            LOG_TRACE("Attempted to destroy uninitialised object {}",destroyedSo);
             return true;
         }
 
@@ -270,21 +254,17 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnInit
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     {
         if (mError)
         {
-           #ifdef DREAM_LOG
-            getLog()->error("Cannot init, script for {} in error state.",sor->getNameAndUuidString());
-            #endif
+            LOG_ERROR("Cannot init, script for {} in error state.",sor->getNameAndUuidString());
             return true;
         }
 
         if (mInitialised[sor->getUuid()])
         {
-           #ifdef DREAM_LOG
-            getLog()->trace("Script has all ready been initialised for {}",sor->getNameAndUuidString());
-            #endif
+            LOG_TRACE("Script has all ready been initialised for {}",sor->getNameAndUuidString());
             return true;
         }
 
@@ -324,22 +304,18 @@ namespace Dream
 
     bool
     ScriptRuntime::executeOnEvent
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     {
         if (mError)
         {
-           #ifdef DREAM_LOG
-            getLog()->error( "Cannot execute {} in error state ",  getNameAndUuidString());
-            #endif
+            LOG_ERROR( "Cannot execute {} in error state ",  getNameAndUuidString());
             sor->clearEventQueue();
             return true;
         }
 
         if (!mInitialised[sor->getUuid()])
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Script has not been initialised");
-            #endif
+            LOG_ERROR("Script has not been initialised");
             return true;
         }
 
@@ -348,9 +324,7 @@ namespace Dream
             return true;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug( "Calling onEvent for {}", sor->getNameAndUuidString());
-        #endif
+        LOG_DEBUG( "Calling onEvent for {}", sor->getNameAndUuidString());
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
@@ -395,9 +369,7 @@ namespace Dream
     ScriptRuntime::executeOnInput
     (InputComponent* inputComp, SceneRuntime* sr)
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing onInput function with {}",getUuid());
-        #endif
+        LOG_CRITICAL("Executing onInput function with {}",getUuid());
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {

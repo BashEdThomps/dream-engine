@@ -1,20 +1,20 @@
 #pragma once
 
-#include "glm/vec3.hpp"
-#include "../../Common/DreamObject.h"
-#include "json/json.hpp"
 #include "AnimationEasing.h"
 
-using namespace nlohmann;
-using namespace glm;
+#include <json.hpp>
+#include <glm/vec3.hpp>
+
+using nlohmann::json;
+using glm::vec3;
 
 namespace Dream
 {
-    class AnimationKeyframe : public DreamObject
+    class AnimationKeyframe
     {
     public:
         AnimationKeyframe(int id);
-        ~AnimationKeyframe() override;
+        ~AnimationKeyframe();
 
         long getTime() const;
         void setTime(long time);

@@ -20,7 +20,7 @@
 #include <vector>
 
 #include <glm/matrix.hpp>
-#include "../Component.h"
+#include "Components/Component.h"
 #include "GraphicsComponentTask.h"
 
 using glm::mat4;
@@ -38,7 +38,7 @@ namespace Dream
     class ShaderRuntime;
     class LightRuntime;
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
     class Texture;
     class ModelMesh;
     class MaterialRuntime;
@@ -67,7 +67,7 @@ namespace Dream
         GLuint mGeometryPassIgnoreBuffer;
 
         // Shadow
-        ActorRuntime* mShadowLight;
+        EntityRuntime* mShadowLight;
         ShaderRuntime* mShadowPassShader;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
@@ -86,7 +86,7 @@ namespace Dream
 
         bool init() override;
 
-        void addToLightQueue(ActorRuntime*);
+        void addToLightQueue(EntityRuntime*);
         void clearLightQueue();
         bool setupScreenQuad();
         void renderLightingPass(SceneRuntime* sr);

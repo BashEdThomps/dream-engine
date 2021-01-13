@@ -13,19 +13,22 @@
 
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
-#include "../../../DreamCore/Components/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Path/PathRuntime.h"
+
+namespace Dream
+{
+	class PathDefinition;
+	class PathRuntime;
+}
 
 using glm::vec3;
-using Dream::PathDefinition;
 
 namespace DreamTool
 {
-    class DTState;
+    class DTContext;
     class PathViewer : public GLWidget
     {
     public:
-        PathViewer(DTState* state, bool visible = false);
+        PathViewer(DTContext* state, bool visible = false);
         ~PathViewer() override;
 
         void setPathDefinition(PathDefinition* object);

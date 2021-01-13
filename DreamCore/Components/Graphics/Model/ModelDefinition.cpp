@@ -17,6 +17,9 @@
  */
 #include "ModelDefinition.h"
 
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+
 using nlohmann::json;
 
 namespace Dream
@@ -25,9 +28,7 @@ namespace Dream
     (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Constructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE("Constructing {}", getNameAndUuidString());
     }
 
     ModelDefinition::~ModelDefinition()
@@ -91,16 +92,12 @@ namespace Dream
                 string materialNameStr = materialName;
                 if (material == materialNameStr)
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->debug("Removing material form {} shader map {}",getName(),material);
-                    #endif
+                    LOG_DEBUG("Removing material form {} shader map {}",getName(),material);
                     shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }
         }
-        #ifdef DREAM_LOG
-        getLog()->error("Could not remove {} from {} shader map, object not found",getName(), material);
-        #endif
+        LOG_ERROR("Could not remove {} from {} shader map, object not found",getName(), material);
     }
 
     void

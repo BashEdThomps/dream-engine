@@ -13,16 +13,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#ifdef __APPLE__
-    #include <OpenAL/al.h>
-    #include <OpenAL/alc.h>
-#else
-    #include <al.h>
-    #include <alc.h>
-#endif
-
 #include "AudioRuntime.h"
+
+#include "Common/Logger.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
 
@@ -42,9 +35,6 @@ namespace Dream
           mDurationInSamples(-1),
           mMarkersUpdateTask(this)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AudioRuntime");
-        #endif
         setLooping(false);
         setBuffer(0);
         setSource(0);
@@ -131,9 +121,7 @@ namespace Dream
     AudioRuntime::play
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug(  "Playing source {}" , mSource);
-        #endif
+        LOG_DEBUG(  "Playing source {}" , mSource);
         alSourcePlay(mSource);
     }
 
@@ -141,9 +129,7 @@ namespace Dream
     AudioRuntime::stop
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug(  "Stopping source {}" , mSource);
-        #endif
+        LOG_DEBUG(  "Stopping source {}" , mSource);
         alSourceStop(mSource);
     }
 
@@ -151,9 +137,7 @@ namespace Dream
     AudioRuntime::pause
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug(  "Pausing source {}" , mSource);
-        #endif
+        LOG_DEBUG(  "Pausing source {}" , mSource);
         alSourcePause(mSource);
     }
 
@@ -175,7 +159,7 @@ namespace Dream
     AudioRuntime::generateEventList
     ()
     {
-        // TODO = Rethink, SharedAssetRuntime has no ActorRuntime to send
+        // TODO = Rethink, SharedAssetRuntime has no EntityRuntime to send
         // Events to :thinking:
 
         /*
@@ -192,15 +176,15 @@ namespace Dream
         for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
         {
             auto log = getLog();
-            getLog()->trace("Generating events for marker {}", markerIndex);
+            LOG_trace("Generating events for marker {}", markerIndex);
             auto markerStart = ad->getMarkerSampleIndex(markerIndex);
             auto count = ad->getMarkerRepeat(markerIndex);
             auto step = ad->getMarkerRepeatPeriod(markerIndex);
             auto markerName = ad->getMarkerName(markerIndex);
 
             auto next = markerStart;
-            getLog()->trace("Marker {}'s is : ", markerIndex, next);
-            Event e(mActorRuntime,"audio");
+            LOG_trace("Marker {}'s is : ", markerIndex, next);
+            Event e(mEntityRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
             mMarkerEvents.push_back(e);
@@ -209,8 +193,8 @@ namespace Dream
             {
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                getLog()->trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
-                Event e(mActorRuntime,"audio");
+                LOG_trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
+                Event e(mEntityRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
                 mMarkerEvents.push_back(e);
@@ -245,7 +229,7 @@ namespace Dream
         // has just looped, restore cached events
         if (mLooping && mLastSampleOffset > currentSample)
         {
-            getLog()->debug("Just Looped");
+            LOG_debug("Just Looped");
            mMarkerEvents = mMarkerEventsCache;
         }
 
@@ -254,7 +238,7 @@ namespace Dream
             auto time = (*it).getNumber("time");
             if (currentSample > time)
             {
-                mActorRuntime->addEvent((*it));
+                mEntityRuntime->addEvent((*it));
                 it++;
                 mMarkerEvents.pop_front();
             }
@@ -305,9 +289,7 @@ namespace Dream
             case AL_PAUSED:
                 return PAUSED;
             default:
-                #if DREAM_LOG
-                getLog()->error("Unknown Audio State for {} " , getNameAndUuidString());
-                #endif
+                LOG_ERROR("Unknown Audio State for {} " , getNameAndUuidString());
                 return UNKNOWN;
         }
     }
@@ -397,9 +379,7 @@ namespace Dream
     AudioRuntime::loadIntoAL
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->error("Loading Into AL {}",getNameAndUuidString());
-        #endif
+        LOG_ERROR("Loading Into AL {}",getNameAndUuidString());
 
         if (mSource == 0 && mBuffer == 0)
         {
@@ -408,9 +388,7 @@ namespace Dream
 
             if (mAudioDataBuffer.empty())
             {
-                #ifdef DREAM_LOG
-                getLog()->error("Unable to load audio data: Empty Buffer");
-                #endif
+                LOG_ERROR("Unable to load audio data: Empty Buffer");
                 return false;
             }
 
@@ -422,15 +400,11 @@ namespace Dream
         }
         else
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to load audio, source or buffer is empty");
-            #endif
+            LOG_ERROR("Unable to load audio, source or buffer is empty");
             return false;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Pushed audio asset to play queue");
-        #endif
+        LOG_DEBUG("Pushed audio asset to play queue");
         return true;
     }
 }

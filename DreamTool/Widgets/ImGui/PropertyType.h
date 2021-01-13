@@ -7,7 +7,7 @@ namespace DreamTool
         None,
         Project,
         Scene,
-        Actor,
+        Entity,
         Asset
     };
 }

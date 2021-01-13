@@ -10,7 +10,7 @@
  * this file belongs to.
  */
 
-#include "../../AssetDefinition.h"
+#include "Components/AssetDefinition.h"
 
 namespace Dream
 {

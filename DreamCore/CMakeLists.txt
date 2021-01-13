@@ -1,94 +1,171 @@
 cmake_minimum_required (VERSION 3.0)
 
-project(DreamCore)
-
-file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp" "*.h" "*.hpp")
-
-find_package(ALUT REQUIRED)
-find_package(ASSIMP REQUIRED)
-find_package(BULLET REQUIRED)
-find_package(OggVorbis REQUIRED)
-find_package(OpenAL REQUIRED)
-find_package(OPENGL REQUIRED)
-
-
-include_directories(
-    ${ALUT_INCLUDE_DIR}
-	${ASSIMP_INCLUDE_DIRS}
-    ${BULLET_INCLUDE_DIR}
-    ${OPENAL_INCLUDE_DIR}
-    ${OPENGL_INCLUDE_DIR}
-    ${OGG_INCLUDE_DIR}
-    ${VORBIS_INCLUDE_DIR}
-
-	${DEP_ANGELSCRIPT_INC_DIR}
-	${DEP_ASSIMP_INC_DIR}
-	${DEP_GLAD_INC_DIR}
-    ${DEP_GLM_INC_DIR}
-	${DEP_JSON_INC_DIR}
-	${DEP_SOIL_INC_DIR}
-    ${DEP_SPDLOG_INC_DIR}
-	${DEP_TWEENY_INC_DIR}
-	${DEP_TINYSPLINE_INC_DIR}
+project(
+    DreamCore
+    LANGUAGES CXX
+    VERSION 1.0.0
+    DESCRIPTION "DreamCore Library"
 )
 
-if (WIN32)
-    add_library(
-        DreamCore
-        ${SRC_FILES}
+include(GNUInstallDirs)
 
-	    ${DEP_ANGELSCRIPT_SRC_FILES}
-		${DEP_GLAD_SRC_FILES}
-		${DEP_SOIL_SRC_FILES}
-		${DEP_TINYSPLINE_SRC_FILES}
-		${DEP_SPDLOG_SRC_FIELS}
-    )
-else()
-    add_library(
-        DreamCore
-        SHARED
-        ${SRC_FILES}
-		${DEP_ANGELSCRIPT_SRC_FILES}
-		${DEP_GLAD_SRC_FILES}
-		${DEP_SOIL_SRC_FILES}
-		${DEP_TINYSPLINE_SRC_FILES}
-		${DEP_SPDLOG_SRC_FIELS}
-    )
-endif()
+
+
+# Targets #####################################################################
+
+add_library(
+    DreamCore
+    SHARED
+	TaskManager/TaskManager.cpp
+	TaskManager/TaskThread.cpp
+	TaskManager/Task.cpp
+	Project/ProjectDirectory.cpp
+	Project/Project.cpp
+	Project/ProjectDefinition.cpp
+	Project/ProjectRuntime.cpp
+	Components/AssetRuntime.cpp
+	Components/DiscreteAssetRuntime.cpp
+	Components/AssetDefinition.cpp
+	Components/Input/InputComponent.cpp
+	Components/Input/InputTasks.cpp
+	Components/ObjectEmitter/ObjectEmitterRuntime.cpp
+	Components/ObjectEmitter/ObjectEmitterDefinition.cpp
+	Components/ObjectEmitter/ObjectEmitterTasks.cpp
+	Components/Component.cpp
+	Components/Path/PathTasks.cpp
+	Components/Path/PathRuntime.cpp
+	Components/Path/PathDefinition.cpp
+	Components/SharedAssetRuntime.cpp
+	Components/Animation/AnimationTasks.cpp
+	Components/Animation/AnimationKeyframe.cpp
+	Components/Animation/AnimationRuntime.cpp
+	Components/Animation/AnimationEasing.cpp
+	Components/Animation/AnimationDefinition.cpp
+	Components/Script/ScriptTasks.cpp
+	Components/Script/ScriptCache.cpp
+	Components/Script/ScriptRuntime.cpp
+	Components/Script/ScriptComponent.cpp
+	Components/Script/ScriptDefinition.cpp
+	Components/Cache.cpp
+	Components/Audio/AudioComponent.cpp
+	Components/Audio/Ogg/OggAudioRuntime.cpp
+	Components/Audio/Wav/WavAudioRuntime.cpp
+	Components/Audio/AudioRuntime.cpp
+	Components/Audio/AudioDefinition.cpp
+	Components/Audio/AudioCache.cpp
+	Components/Audio/AudioTasks.cpp
+	Components/Transform.cpp
+	Components/Window/WindowComponent.cpp
+	Components/Physics/PhysicsComponent.cpp
+	Components/Physics/PhysicsTasks.cpp
+	Components/Physics/PhysicsObjectDefinition.cpp
+	Components/Physics/PhysicsObjectRuntime.cpp
+	Components/Physics/PhysicsMotionState.cpp
+	Components/Physics/PhysicsDebugDrawer.cpp
+	Components/Event.cpp
+	Components/Scroller/ScrollerDefinition.cpp
+	Components/Scroller/ScrollerTasks.cpp
+	Components/Scroller/ScrollerRuntime.cpp
+	Components/Graphics/Camera.cpp
+	Components/Graphics/Frustum.cpp
+	Components/Graphics/GraphicsComponent.cpp
+	Components/Graphics/Model/ModelAnimation.cpp
+	Components/Graphics/Model/ModelRuntime.cpp
+	Components/Graphics/Model/ModelCache.cpp
+	Components/Graphics/Model/ModelTasks.cpp
+	Components/Graphics/Model/ModelDefinition.cpp
+	Components/Graphics/Model/ModelMesh.cpp
+	Components/Graphics/Texture/TextureRuntime.cpp
+	Components/Graphics/Texture/TextureTasks.cpp
+	Components/Graphics/Texture/TextureCache.cpp
+	Components/Graphics/Texture/TextureDefinition.cpp
+	Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.cpp
+	Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.cpp
+	Components/Graphics/Shader/ShaderTasks.cpp
+	Components/Graphics/Shader/ShaderCache.cpp
+	Components/Graphics/Shader/ShaderDefinition.cpp
+	Components/Graphics/Shader/ShaderRuntime.cpp
+	Components/Graphics/Shader/ShaderUniform.cpp
+	Components/Graphics/Light/LightRuntime.cpp
+	Components/Graphics/Light/LightDefinition.cpp
+	Components/Graphics/Font/FontDefinition.cpp
+	Components/Graphics/Material/MaterialCache.cpp
+	Components/Graphics/Material/MaterialRuntime.cpp
+	Components/Graphics/Material/MaterialDefinition.cpp
+	Components/Time.cpp
+	Common/Environment.cpp
+	Common/Constants.cpp
+	Common/ArgumentParser.cpp
+	Common/Directory.cpp
+	Common/Uuid.cpp
+	Common/File.cpp
+	Scene/SceneRuntime.cpp
+	Scene/SceneDefinition.cpp
+	Scene/Entity/EntityRuntime.cpp
+	Scene/Entity/EntityDefinition.cpp
+	Scene/Entity/BoundingBox.cpp
+)
 
 IF (WIN32)
     target_link_libraries(
         DreamCore
-        ${ALUT_LIBRARY}
-		${ASSIMP_LIBRARIES}
-        ${BULLET_LIBRARY}
-        ${OGGVORBIS_LIBRARIES}
-        ${OPENAL_LIBRARY}
-        ${OPENGL_LIBRARIES}
     )
+ELSEIF(ANDROID)
+    #Soon
 ELSEIF (UNIX AND NOT APPLE) # Linux
     target_link_libraries(
          DreamCore
          -lpthread
          -ldl
-        ${ALUT_LIBRARY}
-		${ASSIMP_LIBRARIES}
-        ${BULLET_LIBRARY}
-        ${OGGVORBIS_LIBRARIES}
-        ${OPENAL_LIBRARY}
-        ${OPENGL_LIBRARIES}
     )
 ELSEIF(APPLE)
     target_link_libraries(
         DreamCore
         -lpthread
         -ldl
+		angelscript
+		assimp
+		BulletCollision
+		BulletDynamics
+		glad
+		LinearMath
+		ogg
+		soil
+		spdlog
+		tinyspline
+		vorbis
+		vorbisfile
+		"-framework OpenAL"
         "-framework CoreFoundation"
-        ${ALUT_LIBRARY}
-		${ASSIMP_LIBRARIES}
-        ${BULLET_LIBRARY}
-        ${OGGVORBIS_LIBRARIES}
-        ${OPENAL_LIBRARY}
-        ${OPENGL_LIBRARIES}
     )
 ENDIF()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/DreamCore.h)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+
+target_include_directories(
+	${PROJECT_NAME}
+	PUBLIC
+	.
+)
+
+target_link_directories(
+	${PROJECT_NAME}
+	PRIVATE
+	${glad_output_dir}
+	${glm_output_dir}
+	${freetype_output_dir}
+	${lua_output_dir}
+	${spdlog_output_dir}
+	${tweeny_output_dir}
+	${ogg_output_dir}
+)
+
+install(
+	TARGETS ${PROJECT_NAME}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+

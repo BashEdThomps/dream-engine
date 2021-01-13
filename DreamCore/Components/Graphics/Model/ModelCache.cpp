@@ -19,7 +19,7 @@
 #include "ModelCache.h"
 #include "ModelRuntime.h"
 #include "ModelDefinition.h"
-#include "../../../Project/ProjectRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -29,30 +29,20 @@ namespace Dream
           mShaderCache(shaderCache),
           mMaterialCache(matCache)
     {
-#ifdef DREAM_LOG
-        setLogClassName("ModelCache");
-        auto log = getLog();
-        log->debug("Contructing" );
-#endif
+        LOG_DEBUG("Contructing" );
     }
 
     ModelCache::~ModelCache
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Destructing" );
-#endif
+        LOG_DEBUG("Destructing" );
     }
 
     SharedAssetRuntime*
     ModelCache::loadRuntime
     (AssetDefinition* def)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading {} from disk",  def->getUuid());
-#endif
+        LOG_DEBUG("Loading {} from disk",  def->getUuid());
         auto model = new ModelRuntime(mShaderCache, mMaterialCache,def,mProjectRuntime);
         if (model->useDefinition())
         {
@@ -60,9 +50,7 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            log->error("Unable to create runtime for model {}", def->getNameAndUuidString());
-#endif
+            LOG_ERROR("Unable to create runtime for model {}", def->getNameAndUuidString());
             delete model;
             model = nullptr;
         }

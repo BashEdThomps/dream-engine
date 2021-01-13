@@ -440,29 +440,29 @@ namespace Dream
     PhysicsObjectDefinition::getLinearFactor
     ()
     {
-        if (!mJson[Constants::ASSET_ATTR_LINEAR_FACTOR].is_object())
+        if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_LINEAR_FACTOR] = wrapVector3(Vector3(0.0f));
+            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(Vector3(0.0f));
         }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_FACTOR]);
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
     }
 
     void
     PhysicsObjectDefinition::setLinearFactor
     (const Vector3& lf)
     {
-        mJson[Constants::ASSET_ATTR_LINEAR_FACTOR] = wrapVector3(lf);
+        mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(lf);
     }
 
     Vector3
     PhysicsObjectDefinition::getAngularFactor
     ()
     {
-        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR].is_object())
+        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR] = wrapVector3(Vector3(0.0f));
+            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(Vector3(0.0f));
         }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR]);
+        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
 
     }
 
@@ -470,7 +470,7 @@ namespace Dream
     PhysicsObjectDefinition::setAngularFactor
     (const Vector3& af)
     {
-        mJson[Constants::ASSET_ATTR_ANGULAR_FACTOR] = wrapVector3(af);
+        mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(af);
     }
 
     Vector3

@@ -1,5 +1,7 @@
 #include "ModelTasks.h"
+
 #include "ModelMesh.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
@@ -7,16 +9,11 @@ namespace Dream
         : GraphicsComponentTask(),
           mMesh(mesh)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ModelInitMeshTask");
-        #endif
     }
 
     void ModelInitMeshTask::execute()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
         GLuint vao, vbo, ibo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -33,48 +30,43 @@ namespace Dream
         // Vertex Positions
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
+                              static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
         // Vertex Normals
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
+                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
         // Vertex Texture Coords
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
+                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
         // Vertex Tangents
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
+                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
         // Vertex Bitangents
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-            static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
+                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
         glBindVertexArray(0);
         setState(TaskState::COMPLETED);
         mMesh->clearVertices();
         mMesh->clearIndices();
     }
 
-   ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentDestructionTask ()
-   {
-       #ifdef DREAM_LOG
-       setLogClassName("ModelFreeMeshTask");
-       #endif
-   }
+    ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentDestructionTask ()
+    {
+    }
 
-   void ModelFreeMeshTask::setBuffers(GLuint vao, GLuint vbo, GLuint ibo)
-   {
-       mVAO = vao;
-       mVBO = vbo;
-       mIBO = ibo;
-   }
+    void ModelFreeMeshTask::setBuffers(GLuint vao, GLuint vbo, GLuint ibo)
+    {
+        mVAO = vao;
+        mVBO = vbo;
+        mIBO = ibo;
+    }
 
-   void ModelFreeMeshTask::execute()
-   {
-       #ifdef DREAM_LOG
-       getLog()->critical("Executing on thread {}",mThreadId);
-       #endif
+    void ModelFreeMeshTask::execute()
+    {
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
 
         if (mVAO > 0)
         {
@@ -91,5 +83,5 @@ namespace Dream
             glDeleteBuffers(1,&mIBO);
         }
         setState(TaskState::COMPLETED);
-   }
+    }
 }

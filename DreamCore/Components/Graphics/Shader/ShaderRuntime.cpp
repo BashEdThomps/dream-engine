@@ -19,13 +19,13 @@
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
 #include "ShaderTasks.h"
-#include "../GraphicsComponent.h"
-#include "../Light/LightRuntime.h"
-#include "../Material/MaterialRuntime.h"
-#include "../Texture/TextureRuntime.h"
-#include "../../../Common/File.h"
-#include "../../../Scene/Actor/ActorRuntime.h"
-#include "../../../Project/ProjectRuntime.h"
+#include "Common/File.h"
+#include "Components/Graphics/GraphicsComponent.h"
+#include "Components/Graphics/Light/LightRuntime.h"
+#include "Components/Graphics/Material/MaterialRuntime.h"
+#include "Components/Graphics/Texture/TextureRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 using std::make_shared;
 
@@ -53,10 +53,7 @@ namespace Dream
           mLinkTask(this),
           mFreeTask(nullptr)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ShaderRuntime");
-        getLog()->trace( "Constructing Object" );
-        #endif
+        LOG_TRACE( "Constructing Object" );
         mRuntimeMatricies.reserve(MAX_RUNTIMES);
     }
 
@@ -64,9 +61,7 @@ namespace Dream
     ()
     {
         deleteUniforms();
-        #ifdef DREAM_LOG
-        getLog()->trace( "Destroying Object" );
-        #endif
+        LOG_TRACE( "Destroying Object" );
         mFreeTask = make_shared<ShaderFreeTask>();
         mFreeTask->clearState();
         mFreeTask->setState(TaskState::QUEUED);
@@ -104,9 +99,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            #ifdef DREAM_LOG
-            getLog()->info( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
-            #endif
+            LOG_INFO( "Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
             return false;
         }
 
@@ -123,9 +116,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            #ifdef DREAM_LOG
-            getLog()->info( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-            #endif
+            LOG_INFO( "Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
@@ -140,15 +131,11 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            #ifdef DREAM_LOG
-            getLog()->info( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-            #endif
+            LOG_INFO( "Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         return true;
     }
 
@@ -160,15 +147,11 @@ namespace Dream
 
         if (uCamPos == UNIFORM_NOT_FOUND)
         {
-            #ifdef DREAM_LOG
-            getLog()->info( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
-            #endif
+            LOG_INFO( "Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
             return false;
         }
         glUniform3fv(uCamPos,1,value_ptr(value.toGLM()));
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         return true;
     }
 
@@ -190,11 +173,9 @@ namespace Dream
         string absVertexPath = getAssetFilePath(Constants::SHADER_VERTEX_FILE_NAME);
         File vertexReader(absVertexPath);
         setVertexSource(vertexReader.readString());
-        #ifdef DREAM_LOG
-        getLog()->trace("Loading Vertex Shader for {} from {}\n{}\n",
+        LOG_TRACE("Loading Vertex Shader for {} from {}\n{}\n",
             mDefinition->getNameAndUuidString(),absVertexPath, mVertexSource
         );
-        #endif
         // 2. Compile shaders
         mCompileVertexTask.clearState();
         mCompileVertexTask.setState(TaskState::QUEUED);
@@ -210,11 +191,9 @@ namespace Dream
         string absFragmentPath = getAssetFilePath(Constants::SHADER_FRAGMENT_FILE_NAME);
         File fragmentReader(absFragmentPath);
         setFragmentSource(fragmentReader.readString());
-        #ifdef DREAM_LOG
-        getLog()->trace("Loading Fragment Shader for {} from {}\n{}\n",
+        LOG_TRACE("Loading Fragment Shader for {} from {}\n{}\n",
             mDefinition->getNameAndUuidString(),absFragmentPath, mFragmentSource
         );
-        #endif
         // 2. Compile shaders
         mCompileFragmentTask.clearState();
         mCompileFragmentTask.setState(TaskState::QUEUED);
@@ -245,11 +224,9 @@ namespace Dream
             mDirectionalLightCount = 0;
             if (CurrentShaderProgram != mShaderProgram)
             {
-                #ifdef DREAM_LOG
-                 getLog()->info("Switching Shader Program from {} to {} for {}",
+                 LOG_INFO("Switching Shader Program from {} to {} for {}",
                     CurrentShaderProgram,mShaderProgram,getNameAndUuidString()
                  );
-                 #endif
                  glUseProgram(mShaderProgram);
                  CurrentShaderProgram = mShaderProgram;
             }
@@ -300,16 +277,12 @@ namespace Dream
         {
             if (uniform->getName() == name)
             {
-                #ifdef DREAM_LOG
-                getLog()->info("Updating uniform {}", uniform->getName());
-                #endif
+                LOG_INFO("Updating uniform {}", uniform->getName());
                 uniform->setData(data);
                 return;
             }
         }
-        #ifdef DREAM_LOG
-        getLog()->info("Creating uniform {}", name);
-        #endif
+        LOG_INFO("Creating uniform {}", name);
         auto newUniform = new ShaderUniform(type,name,count,data);
         newUniform->setLocation(glGetUniformLocation(mShaderProgram, name.c_str()));
         mUniformVector.push_back(newUniform);
@@ -323,9 +296,7 @@ namespace Dream
         if (material == nullptr)
         {
 
-            #ifdef DREAM_LOG
-            getLog()->error("Attempted to bind a null material, weird");
-            #endif
+            LOG_ERROR("Attempted to bind a null material, weird");
             return;
         }
 
@@ -335,17 +306,11 @@ namespace Dream
             id = diffuse->getGLID();
             if (CurrentTexture0 != id)
             {
-                #ifdef DREAM_LOG
-                getLog()->info("Found Diffuse Texture, binding {}",id);
-                #endif
+                LOG_INFO("Found Diffuse Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE0);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 glBindTexture(GL_TEXTURE_2D, id);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 GLuint diffuseIndex = 0;
                 addUniform(INT1, "material.diffuse", 1, &diffuseIndex);
                 CurrentTexture0 = id;
@@ -362,17 +327,11 @@ namespace Dream
             id =  specular->getGLID();
             if (CurrentTexture1 != id)
             {
-                #ifdef DREAM_LOG
-                getLog()->info("Found Specular Texture, binding {}",id);
-                #endif
+                LOG_INFO("Found Specular Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE1);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 glBindTexture(GL_TEXTURE_2D, id);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 GLuint specularIndex = 1;
                 addUniform(INT1, "material.specular", 1, &specularIndex);
                 CurrentTexture1 = id;
@@ -391,18 +350,12 @@ namespace Dream
             id =  normal->getGLID();
             if (CurrentTexture2 != id)
             {
-                #ifdef DREAM_LOG
-                getLog()->info("Found Normal Texture, binding {}",id);
-                #endif
+                LOG_INFO("Found Normal Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE2);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 glBindTexture(GL_TEXTURE_2D, id);
 
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 GLuint normalIndex = 2;
                 addUniform(INT1, "material.normal", 1, &normalIndex);
                 CurrentTexture2 = id;
@@ -415,18 +368,12 @@ namespace Dream
             id = displacement->getGLID();
             if (CurrentTexture3 != id)
             {
-                #ifdef DREAM_LOG
-                getLog()->info("Found Normal Texture, binding {}",id);
-                #endif
+                LOG_INFO("Found Normal Texture, binding {}",id);
                 glActiveTexture(GL_TEXTURE3);
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 glBindTexture(GL_TEXTURE_2D, id);
 
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
                 GLuint normalIndex = 3;
                 addUniform(INT1, "material.displacement", 1, &normalIndex);
                 CurrentTexture3 = id;
@@ -435,18 +382,14 @@ namespace Dream
 
         float ignore = material->getIgnore() ? 1.0f : 0.0f;
         addUniform(FLOAT1, "material.ignore", 1, &ignore);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
     }
 
     void
     ShaderRuntime::bindLight
     (LightRuntime* light)
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
-        #endif
+        LOG_DEBUG("Binding light {} ({})",light->getNameAndUuidString(),light->getType());
         DirLight dirData;
         SpotLight spotData;
         PointLight pointData;
@@ -456,14 +399,10 @@ namespace Dream
             case LT_DIRECTIONAL:
                 if (mDirectionalLightCount == MAX_LIGHTS)
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->error("Max dir lights bound");
-                    #endif
+                    LOG_ERROR("Max dir lights bound");
                     return;
                 }
-                #ifdef DREAM_LOG
-                getLog()->debug("Binding dir light {}", mDirectionalLightCount);
-                #endif
+                LOG_DEBUG("Binding dir light {}", mDirectionalLightCount);
                 dirData = light->getDirectionalLightData();
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].direction",1, &dirData.direction);
                 addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].ambient",1,   &dirData.ambient);
@@ -475,15 +414,11 @@ namespace Dream
             case LT_POINT:
                 if (mPointLightCount == MAX_LIGHTS)
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->error("Max point lights bound");
-                    #endif
+                    LOG_ERROR("Max point lights bound");
                     return;
                 }
 
-                #ifdef DREAM_LOG
-                getLog()->debug("Binding point light {}", mPointLightCount);
-                #endif
+                LOG_DEBUG("Binding point light {}", mPointLightCount);
                 pointData = light->getPointLightData();
                 addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].ambient",1,   &pointData.ambient);
                 addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].diffuse",1,   &pointData.diffuse);
@@ -498,14 +433,10 @@ namespace Dream
             case LT_SPOTLIGHT:
                 if (mSpotLightCount == MAX_LIGHTS)
                 {
-#ifdef DREAM_LOG
-                    getLog()->error("Max spot lights bound");
-#endif
+                    LOG_ERROR("Max spot lights bound");
                     return;
                 }
-#ifdef DREAM_LOG
-                getLog()->debug("Binding spot light {}", mSpotLightCount);
-#endif
+                LOG_DEBUG("Binding spot light {}", mSpotLightCount);
                 spotData = light->getSpotLightData();
                 addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].ambient",1,     &spotData.ambient);
                 addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].diffuse",1,     &spotData.diffuse);
@@ -520,9 +451,7 @@ namespace Dream
                 break;
 
             case LT_NONE:
-#ifdef DREAM_LOG
-                getLog()->error("Cannot bind light with type NONE");
-#endif
+                LOG_ERROR("Cannot bind light with type NONE");
                 break;
         }
     }
@@ -540,10 +469,8 @@ namespace Dream
     ShaderRuntime::syncUniforms
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Synchronising uniforms for {}",getNameAndUuidString());
-        checkGLError();
-        #endif
+        LOG_DEBUG("Synchronising uniforms for {}",getNameAndUuidString());
+        GLCheckError();
         GLuint prog = getShaderProgram();
 
         // Sync lighting uniforms
@@ -551,45 +478,33 @@ namespace Dream
         if (mPointLightCountLocation != UNIFORM_NOT_FOUND)
         {
             glUniform1i(mPointLightCountLocation,mPointLightCount);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         else if (mPointLightCount > 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->info("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
-            #endif
+            LOG_INFO("Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
         {
             glUniform1i(mSpotLightCountLocation,mSpotLightCount);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
         else if (mSpotLightCount > 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->info("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
-            #endif
+            LOG_INFO("Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
         {
             glUniform1i(mDirectionalLightCountLocation,mDirectionalLightCount);
 
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
         else if (mDirectionalLightCount > 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->info("Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
-            #endif
+            LOG_INFO("Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
         }
 
         // Sync user uniforms
@@ -601,17 +516,14 @@ namespace Dream
                 continue;
             }
 
-            #ifdef DREAM_LOG
-            getLog()->trace("Uniform {} needs update",uniform->getName());
-            #endif
+            LOG_TRACE("Uniform {} needs update",uniform->getName());
 
             if (uniform->getCount() == 0)
             {
                 continue;
             }
 
-            #ifdef DREAM_LOG
-            getLog()->trace
+            LOG_TRACE
             (
                 "Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
                 getUuid(),
@@ -620,14 +532,11 @@ namespace Dream
                 uniform->getLocation(),
                 uniform->getCount()
             );
-            #endif
 
             auto location = uniform->getLocation();
             if (location == UNIFORM_NOT_FOUND)
             {
-                #ifdef DREAM_LOG
-                getLog()->info( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
-                #endif
+                LOG_INFO( "Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
                 continue;
             }
             else
@@ -676,9 +585,7 @@ namespace Dream
                         glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
                         break;
                 }
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
             }
             uniform->setNeedsUpdate(false);
         }
@@ -722,7 +629,7 @@ namespace Dream
 
     void
     ShaderRuntime::bindRuntimes
-    (const vector<ActorRuntime*>& runtimes)
+    (const vector<EntityRuntime*>& runtimes)
     {
         static mat4 data[100];
         size_t nRuntimes = runtimes.size();
@@ -736,9 +643,7 @@ namespace Dream
 
         if (location == UNIFORM_NOT_FOUND)
         {
-            #ifdef DREAM_LOG
-            getLog()->warn( "Unable to find model matrix uinform model[0] in {}", getNameAndUuidString());
-            #endif
+            LOG_WARN( "Unable to find model matrix uinform model[0] in {}", getNameAndUuidString());
             return;
         }
         glUniformMatrix4fv(location,runtimes.size(),GL_FALSE,(float*)&data[0]);
@@ -751,41 +656,35 @@ namespace Dream
         // not in map
         if (find(mMaterials.begin(), mMaterials.end(), material) == mMaterials.end())
         {
-            #ifdef DREAM_LOG
-            getLog()->debug(
+            LOG_DEBUG(
                 "Adding Material {} to shader {}",
                 material->getName(),
                 getNameAndUuidString()
             );
-            #endif
             mMaterials.push_back(material);
         }
-        #ifdef DREAM_LOG
         else
         {
-            getLog()->debug
+            LOG_DEBUG
             (
                 "Material {} already registered to shader {}",
                 material->getName(),
                 getNameAndUuidString()
             );
         }
-        #endif
     }
 
-    #ifdef DREAM_LOG
     void
     ShaderRuntime::logMaterials
     ()
     {
-       getLog()->debug("Materials for {}",getNameAndUuidString());
+       LOG_DEBUG("Materials for {}",getNameAndUuidString());
        for (auto material : mMaterials)
        {
-           getLog()->debug("\t{}",material->getName());
+           LOG_DEBUG("\t{}",material->getName());
            material->logMeshes();
        }
     }
-    #endif
 
     void
     ShaderRuntime::drawGeometryPass

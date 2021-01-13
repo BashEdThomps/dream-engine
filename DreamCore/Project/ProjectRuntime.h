@@ -16,7 +16,7 @@
 #include <vector>
 #include <deque>
 
-#include "../Common/Runtime.h"
+#include "Common/Runtime.h"
 
 using std::string;
 using std::vector;
@@ -39,7 +39,7 @@ namespace Dream
     class TaskManager;
 
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
 
     class SceneDefinition;
 
@@ -134,7 +134,7 @@ namespace Dream
 
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
 
-        ActorRuntime* getActorRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
+        EntityRuntime* getEntityRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
         SceneRuntime* getActiveSceneRuntime() const;
         SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid) const;
 

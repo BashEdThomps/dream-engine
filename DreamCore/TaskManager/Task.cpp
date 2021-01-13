@@ -1,6 +1,7 @@
 #include "Task.h"
 
 #include <algorithm>
+#include "Common/Logger.h"
 
 using std::find;
 
@@ -23,10 +24,9 @@ namespace Dream
     }
 
     Task::Task()
-        : DreamObject("Task"),
-          mTaskId(TaskID++),
-            mThreadId(-1),
-            mDeferralCount(0)
+    	: mTaskId(TaskID++),
+		  mThreadId(-1),
+		  mDeferralCount(0)
         {
             clearState();
             TaskStatesMutex.lock();
@@ -52,8 +52,7 @@ namespace Dream
         }
 
         Task::Task(const Task& other)
-            : DreamObject ("Task"),
-            mTaskId(other.mTaskId),
+            : mTaskId(other.mTaskId),
             mThreadId(other.mThreadId),
             mDeferralCount(other.mDeferralCount)
         {
@@ -112,9 +111,7 @@ namespace Dream
             }
             else
             {
-                #ifdef DREAM_LOG
-                getLog()->critical("*** WHAT THE F JEFF!!! *** {} was not waiting for {}",getClassName(), t->getClassName());
-                #endif
+                LOG_CRITICAL("Tash: *** WHAT THE F JEFF!!! *** Task was not waiting for target");
             }
             WaitingForMutex.unlock();
         }
@@ -124,9 +121,7 @@ namespace Dream
             WaitingForMeMutex.lock();
            for (Task* t : WaitingForMe[mTaskId])
            {
-               #ifdef DREAM_LOG
-               getLog()->critical("is notifying dependant {} of completion",t->getClassName());
-               #endif
+               LOG_CRITICAL("Task: is notifying dependant task of completion");
                t->clearDependency(this);
            }
            WaitingForMe[mTaskId].clear();
@@ -137,15 +132,13 @@ namespace Dream
         {
             WaitingForMutex.lock();
             bool retval = !WaitingFor[mTaskId].empty();
-            #ifdef DREAM_LOG
             if (retval)
             {
                 TaskStatesMutex.lock();
                 TaskStates[mTaskId] = TaskState::WAITING;
                 TaskStatesMutex.unlock();
-                getLog()->critical("is waiting for {} dependencies to finish",WaitingFor[mTaskId].size());
+                LOG_CRITICAL("is waiting for {} dependencies to finish",WaitingFor[mTaskId].size());
             }
-            #endif
             WaitingForMutex.unlock();
             return retval;
         }

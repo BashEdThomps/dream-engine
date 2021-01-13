@@ -4,7 +4,7 @@
 
 namespace Dream
 {
-    class ActorDefinition;
+    class EntityDefinition;
     class Definition;
 }
 
@@ -14,27 +14,27 @@ using namespace Dream;
 
 namespace DreamTool
 {
-    struct ActorDragSource
+    struct EntityDragSource
     {
-       ActorDefinition* parentDef = nullptr;
-       ActorDefinition* objectDef = nullptr;
+       EntityDefinition* parentDef = nullptr;
+       EntityDefinition* objectDef = nullptr;
     };
 
 
     class ProjectBrowser : public ImGuiWidget
     {
     public:
-        ProjectBrowser(DTState* proj);
+        ProjectBrowser(DTContext* proj);
         ~ProjectBrowser() override;
         void draw() override;
 
     private:
         void drawAssetTree();
         void drawProjectTree();
-        void addActor(ActorDefinition* def);
+        void addEntity(EntityDefinition* def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
         vector<Definition*> mSelectedNodes;
-        ActorDragSource mDragDropSource;
+        EntityDragSource mDragDropSource;
     };
 }

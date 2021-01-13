@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "../../../Common/GLHeader.h"
+#include "Common/GLHeader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
@@ -25,8 +25,8 @@
 
 #include "glm/matrix.hpp"
 
-#include "../../SharedAssetRuntime.h"
-#include "../../../Scene/Actor/BoundingBox.h"
+#include "Components/SharedAssetRuntime.h"
+#include "Scene/Entity/BoundingBox.h"
 #include "ModelBone.h"
 #include "ModelAnimation.h"
 
@@ -47,7 +47,7 @@ namespace Dream
     struct Vertex;
     class Texture;
     class MaterialRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
 
     class ModelRuntime : public SharedAssetRuntime
     {
@@ -59,8 +59,8 @@ namespace Dream
 
         BoundingBox& getBoundingBox();
 
-        void addRuntime(ActorRuntime*);
-        void removeRuntime(ActorRuntime*);
+        void addRuntime(EntityRuntime*);
+        void removeRuntime(EntityRuntime*);
 
         vector<string> getMaterialNames();
         vector<ModelMesh*> getMeshes() const;

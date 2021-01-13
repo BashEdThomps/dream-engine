@@ -2,22 +2,18 @@
 
 #include "ImGuiWidget.h"
 #include "PropertyType.h"
-
 #include "glm/vec3.hpp"
-#include "../../../DreamCore/Components/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
-#include "../../../DreamCore/Components/Animation/AnimationKeyframe.h"
+#include <DreamCore.h>
 
-namespace Dream
-{
-    class Definition;
-    class Runtime;
-    class CompoundChildDefinition;
-    class AssetDefinition;
-}
+using Dream::Definition;
+using Dream::Runtime;
+using Dream::PathDefinition;
+using Dream::AnimationDefinition;
+using Dream::CompoundChildDefinition;
+using Dream::AssetDefinition;
+using Dream::AnimationKeyframe;
+using Dream::PathControlPoint;
 
-using namespace glm;
-using namespace Dream;
 
 namespace DreamTool
 {
@@ -33,7 +29,7 @@ namespace DreamTool
     class PropertiesWindow : public ImGuiWidget
     {
     public:
-        PropertiesWindow(DTState*);
+        PropertiesWindow(DTContext*);
         ~PropertiesWindow() override;
 
         void draw() override;
@@ -47,12 +43,12 @@ namespace DreamTool
         void drawPathControlPointImGuizmo(PathDefinition* pDef, PathControlPoint);
         void drawAnimationKeyframeImGuizmo(AnimationDefinition* pDef, AnimationKeyframe);
         int getStringIndexInVector(string str, vector<string> vec);
-        bool drawDeleteActorButton();
+        bool drawDeleteEntityButton();
         bool drawDeleteSceneButton();
         void drawNameAndIdProperties();
         void drawProjectProperties();
         void drawSceneProperties();
-        void drawActorProperties();
+        void drawEntityProperties();
         void drawAssetProperties();
         void drawAnimationAssetProperties();
         void drawAudioAssetProperties();

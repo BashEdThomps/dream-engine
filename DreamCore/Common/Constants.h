@@ -13,16 +13,9 @@
 
 #pragma once
 
-
-
 #include <iostream>
 #include <map>
 #include <vector>
-
-#ifdef DREAM_LOG
-    #include <spdlog/spdlog.h>
-    #include <spdlog/sinks/stdout_sinks.h>
-#endif
 
 using namespace std;
 
@@ -56,20 +49,6 @@ namespace Dream
     class Constants
     {
     public:
-
-    #ifdef DREAM_LOG
-        // Debug ================================================================
-        /**
-         * @brief Used to check for OpenGL Runtime Errors. This will display the
-         * file and line from which the error was detected. This function should
-         * not be called directly. Instead use the macro checkGLError.
-         *
-         * @return True if an error was detected.
-         */
-        static bool checkGLError_(const string &, int);
-
-        #define checkGLError() Constants::checkGLError_(__FILE__, __LINE__)
-    #endif
 
         // Misc =================================================================
         const static string DIR_PATH_SEP;
@@ -167,7 +146,7 @@ namespace Dream
 
         // Scene ================================================================
         const static string SCENE_NOTES;
-        const static string SCENE_ROOT_ACTOR;
+        const static string SCENE_ROOT_ENTITY;
         const static string SCENE_CAMERA_TRANSFORM;
         const static string SCENE_CAMERA_MOVEMENT_SPEED;
         const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
@@ -190,19 +169,19 @@ namespace Dream
         const static string SCENE_INPUT_SCRIPT;
 
 
-        // Actor ==========================================================
-        const static string ACTOR;
-        const static string ACTOR_ROOT_NAME;
-        const static string ACTOR_DEFAULT_NAME;
-        const static string ACTOR_CHILDREN;
-        const static string ACTOR_HAS_CAMERA_FOCUS;
-        const static string ACTOR_ASSET_INSTANCES;
-        const static string ACTOR_ALWAYS_DRAW;
-        const static string ACTOR_TEMPLATE;
-        const static string ACTOR_HIDDEN;
-        const static string ACTOR_DEFERRED;
-        const static string ACTOR_DIE_AFTER;
-        const static string ACTOR_PLAYER_OBJECT;
+        // Entity ==========================================================
+        const static string ENTITY;
+        const static string ENTITY_ROOT_NAME;
+        const static string ENTITY_DEFAULT_NAME;
+        const static string ENTITY_CHILDREN;
+        const static string ENTITY_HAS_CAMERA_FOCUS;
+        const static string ENTITY_ASSET_INSTANCES;
+        const static string ENTITY_ALWAYS_DRAW;
+        const static string ENTITY_TEMPLATE;
+        const static string ENTITY_HIDDEN;
+        const static string ENTITY_DEFERRED;
+        const static string ENTITY_DIE_AFTER;
+        const static string ENTITY_PLAYER_OBJECT;
 
         // Transform ============================================================
         const static string TRANSFORM;
@@ -285,8 +264,8 @@ namespace Dream
         const static string ASSET_ATTR_RESTITUTION;
         const static string ASSET_ATTR_FRICTION;
         const static string ASSET_ATTR_CCD_SPR;
-        const static string ASSET_ATTR_ANGULAR_FACTOR;
-        const static string ASSET_ATTR_LINEAR_FACTOR;
+        const static string ASSET_ATTR_ANGULAR_FENTITY;
+        const static string ASSET_ATTR_LINEAR_FENTITY;
         const static string ASSET_ATTR_ANGULAR_VELOCITY;
         const static string ASSET_ATTR_LINEAR_VELOCITY;
 
@@ -435,10 +414,6 @@ namespace Dream
 
         static string getAssetFormatStringFromReadableName(const string& format);
         static string getAssetFormatReadableNameFromString(const string&);
-
-        #ifdef DREAM_LOG
-        static shared_ptr<spdlog::logger> logger;
-        #endif
     };
 }
 

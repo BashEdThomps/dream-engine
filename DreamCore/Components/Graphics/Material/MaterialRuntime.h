@@ -16,12 +16,13 @@
 
 #pragma once
 
+#include "Components/SharedAssetRuntime.h"
+
 #include <vector>
 #include <glm/vec3.hpp>
-#include "../../SharedAssetRuntime.h"
 
-using namespace std;
-using namespace glm;
+using std::vector;
+using glm::vec3;
 
 namespace Dream
 {
@@ -44,10 +45,9 @@ namespace Dream
 
         bool operator==(MaterialRuntime& other);
 
-#ifdef DREAM_LOG
         void debug();
         void logMeshes();
-#endif
+
         void drawGeometryPass(Camera*);
         void drawShadowPass(ShaderRuntime* shader);
 

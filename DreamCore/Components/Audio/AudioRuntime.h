@@ -19,16 +19,9 @@
 #include <deque>
 #include "AudioStatus.h"
 #include "AudioTasks.h"
-#include "../SharedAssetRuntime.h"
-#include "../Event.h"
-
-#ifdef __APPLE__
-    #include <OpenAL/al.h>
-    #include <OpenAL/alc.h>
-#else
-    #include <al.h>
-    #include <alc.h>
-#endif
+#include "Components/SharedAssetRuntime.h"
+#include "Components/Event.h"
+#include "Common/ALHeader.h"
 
 using namespace std;
 

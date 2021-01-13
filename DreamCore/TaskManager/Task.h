@@ -1,9 +1,11 @@
 #pragma once
-#include "../Common/DreamObject.h"
+
 #include <vector>
 #include <atomic>
 #include <mutex>
+#include <map>
 
+using std::map;
 using std::mutex;
 using std::atomic;
 using std::vector;
@@ -26,7 +28,7 @@ namespace Dream
      * @brief A Task is a nugget of work that can will
      * be dispatched to one of the TaskThread instances to run.
      */
-    class Task : public DreamObject
+    class Task
     {
         static int TaskID;
 

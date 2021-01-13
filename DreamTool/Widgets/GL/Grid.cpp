@@ -17,8 +17,7 @@
  */
 #include "Grid.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
+#include <DreamCore.h>
 
 using namespace Dream;
 namespace DreamTool
@@ -26,7 +25,7 @@ namespace DreamTool
 
     Grid::Grid
     (
-            DTState* p,
+            DTContext* p,
             AxisPair xp,
             glm::vec3 position,
             float majorSpacing,
@@ -45,22 +44,13 @@ namespace DreamTool
           mMinorColour(minorColour)
 
     {
-
-#ifdef DREAM_LOG
-        setLogClassName("Grid");
-        auto log = getLog();
-        log->debug("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
-#endif
+        LOG_DEBUG("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
     }
 
     Grid::~Grid
     ()
     {
-
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Destructing");
-#endif
+        LOG_DEBUG("Destructing");
     }
 
     void
@@ -75,10 +65,7 @@ namespace DreamTool
     Grid::initMajorGridData
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Init Major Data");
-#endif
+        LOG_DEBUG("Init Major Data");
         float halfSize = mSize/2.0f;
 
         // Major Grid
@@ -160,10 +147,7 @@ namespace DreamTool
     Grid::initMinorGridData
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Init Minor Data");
-#endif
+        LOG_DEBUG("Init Minor Data");
         float halfSize = (mSize/2.0f);
 
         // Major Grid
@@ -396,18 +380,12 @@ namespace DreamTool
         // Vertex Array
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBindVertexArray(0);
     }
 }

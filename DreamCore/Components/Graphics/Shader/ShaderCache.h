@@ -13,8 +13,8 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
-#include "../../Cache.h"
-#include "../Light/LightRuntime.h"
+#include "Components/Cache.h"
+#include "Components/Graphics/Light/LightRuntime.h"
 
 using namespace std;
 using namespace glm;
@@ -30,9 +30,7 @@ namespace Dream
     public:
         ShaderCache(ProjectRuntime* rt);
         ~ShaderCache() override;
-#ifdef DREAM_LOG
         void logShaders();
-#endif
         void drawGeometryPass(Camera*);
         void drawShadowPass(mat4, ShaderRuntime*);
 

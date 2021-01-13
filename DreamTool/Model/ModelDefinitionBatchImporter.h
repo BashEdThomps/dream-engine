@@ -1,19 +1,16 @@
 #pragma once
 
-#include "../../DreamCore/Common/DreamObject.h"
-#include "../../DreamCore/Common/Directory.h"
+#include <DreamCore.h>
 
-namespace Dream
-{
-    class ProjectDefinition;
-    class ModelDefinition;
-}
 
-using namespace Dream;
+using Dream::Directory;
+using Dream::ProjectDefinition;
+using Dream::ModelDefinition;
 
 namespace DreamTool
 {
-    class DTState;
+    class DTContext;
+
     enum ModelImportResult
     {
         CREATED,
@@ -27,10 +24,10 @@ namespace DreamTool
         ModelImportResult result;
     };
 
-    class ModelDefinitionBatchImporter : public DreamObject
+    class ModelDefinitionBatchImporter
     {
     public:
-        ModelDefinitionBatchImporter(DTState* state);
+        ModelDefinitionBatchImporter(DTContext* state);
         ~ModelDefinitionBatchImporter();
         void findModels();
 
@@ -57,7 +54,7 @@ namespace DreamTool
         static string resultString(ModelImportResult result);
 
     private:
-        DTState* mState;
+        DTContext* mState;
         Directory mDirectory;
         vector<string> mModelsFound;
         vector<ModelDefinitionBatchImportResult> mImportResults;

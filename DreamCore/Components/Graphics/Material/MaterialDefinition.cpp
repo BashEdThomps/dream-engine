@@ -18,6 +18,8 @@
 
 #include "MaterialDefinition.h"
 
+#include "Common/Logger.h"
+#include "Common/Constants.h"
 
 namespace Dream
 {
@@ -25,17 +27,12 @@ namespace Dream
     (ProjectDefinition* pd, const json &js)
         :AssetDefinition(pd,js)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("MaterialDefinition");
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     MaterialDefinition::~MaterialDefinition()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     // Shader

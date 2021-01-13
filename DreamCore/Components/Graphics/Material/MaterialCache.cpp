@@ -17,18 +17,18 @@
  */
 
 #include "MaterialCache.h"
+
 #include "MaterialDefinition.h"
 #include "MaterialRuntime.h"
-
-#include "../../../Project/Project.h"
-#include "../../../Project/ProjectDirectory.h"
-
-#include "../Texture/TextureDefinition.h"
-#include "../Texture/TextureRuntime.h"
-#include "../Texture/TextureCache.h"
-#include "../Shader/ShaderRuntime.h"
-#include "../Shader/ShaderCache.h"
-#include "../.././../Project/ProjectRuntime.h"
+#include "Common/Logger.h"
+#include "Components/Graphics/Texture/TextureDefinition.h"
+#include "Components/Graphics/Texture/TextureRuntime.h"
+#include "Components/Graphics/Texture/TextureCache.h"
+#include "Components/Graphics/Shader/ShaderRuntime.h"
+#include "Components/Graphics/Shader/ShaderCache.h"
+#include "Project/Project.h"
+#include "Project/ProjectDirectory.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -38,35 +38,22 @@ namespace Dream
           mShaderCache(shaderCache),
           mTextureCache(textureCache)
     {
-#ifdef DREAM_LOG
-        setLogClassName("MaterialCache");
-        auto log = getLog();
-        log->trace( "Constructing" );
-#endif
+        LOG_TRACE( "Constructing" );
     }
 
     MaterialCache::~MaterialCache
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destructing" );
-#endif
+        LOG_TRACE( "Destructing" );
     }
 
     SharedAssetRuntime*
     MaterialCache::loadRuntime
     (AssetDefinition* def)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         if (!def)
         {
-
-#ifdef DREAM_LOG
-            log->error("Material Definition is null");
-#endif
+            LOG_ERROR("Material Definition is null");
             return nullptr;
         }
         auto matDef = static_cast<MaterialDefinition*>(def);
@@ -74,9 +61,7 @@ namespace Dream
 
         if (shader == nullptr)
         {
-#ifdef DREAM_LOG
-            log->error("Cannot create material {} with null shader", matDef->getNameAndUuidString());
-#endif
+            LOG_ERROR("Cannot create material {} with null shader", matDef->getNameAndUuidString());
             return nullptr;
         }
 

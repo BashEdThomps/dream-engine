@@ -19,8 +19,8 @@
 #include <deque>
 #include <glm/glm.hpp>
 
-#include "../DiscreteAssetRuntime.h"
-#include "../Transform.h"
+#include "Components/DiscreteAssetRuntime.h"
+#include "Components/Transform.h"
 #include "ObjectEmitterTasks.h"
 
 using namespace glm;
@@ -38,7 +38,7 @@ namespace Dream
             Done
         };
 
-        uint32_t mActorUuid;
+        uint32_t mEntityUuid;
         int mLoops;
         int mObjectCount;
         int mEmitInterval;
@@ -54,7 +54,7 @@ namespace Dream
         int mEmitIntervalTime;
 
     public:
-        ObjectEmitterRuntime(ObjectEmitterDefinition*, ActorRuntime*);
+        ObjectEmitterRuntime(ObjectEmitterDefinition*, EntityRuntime*);
         ~ObjectEmitterRuntime() override;
         bool useDefinition() override;
         ObjectEmitterUpdateTask* getUpdateTask();

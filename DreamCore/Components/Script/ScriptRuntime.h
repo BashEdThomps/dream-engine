@@ -16,8 +16,8 @@
 #pragma once
 
 #include "ScriptTasks.h"
-#include "../SharedAssetRuntime.h"
-#include "../Event.h"
+#include "Components/SharedAssetRuntime.h"
+#include "Components/Event.h"
 
 class asIScriptModule;
 class asIScriptFunction;
@@ -52,14 +52,14 @@ namespace Dream
         void setSource(const string& source);
         bool createScript();
 
-        bool executeOnInit(ActorRuntime*);
-        bool executeOnUpdate(ActorRuntime*);
-        bool executeOnEvent(ActorRuntime*);
-        bool executeOnDestroy(uint32_t destroyedSo, ActorRuntime* parent);
+        bool executeOnInit(EntityRuntime*);
+        bool executeOnUpdate(EntityRuntime*);
+        bool executeOnEvent(EntityRuntime*);
+        bool executeOnDestroy(uint32_t destroyedSo, EntityRuntime* parent);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
 
-        bool getInitialised(ActorRuntime* sor);
+        bool getInitialised(EntityRuntime* sor);
         ScriptConstructionTask* getConstructionTask();
         void removeInitialisedFlag(uint32_t);
     };

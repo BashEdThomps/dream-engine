@@ -9,7 +9,7 @@ namespace DreamTool
     class CacheContentWindow : public ImGuiWidget
     {
     public:
-        CacheContentWindow(DTState* proj);
+        CacheContentWindow(DTContext* proj);
         ~CacheContentWindow() override;
         void draw() override;
     };

@@ -7,17 +7,15 @@
 
 #pragma once
 
-#include "../../DreamCore/Common/DreamObject.h"
-
-using namespace Dream;
+#include <DreamCore.h>
 
 namespace DreamTool
 {
-    class DTState;
-    class DTWidget : public DreamObject
+    class DTContext;
+    class DTWidget
     {
     public:
-        DTWidget(DTState* state, bool visible = true);
+        DTWidget(DTContext* state, bool visible = true);
         virtual ~DTWidget();
         virtual void draw() = 0;
 
@@ -25,7 +23,7 @@ namespace DreamTool
         void setVisible(bool);
 
     protected:
-        DTState* mState;
+        DTContext* mState;
         bool mVisible;
     };
 }

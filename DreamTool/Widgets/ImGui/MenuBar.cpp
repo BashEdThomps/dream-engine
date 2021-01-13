@@ -3,31 +3,20 @@
 #include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
 #include "SceneStateWindow.h"
-#include "../../DTState.h"
-#include "ImGui/imgui_internal.h"
-#include "ImFileSystem/imguifilesystem.h"
+#include "DTContext.h"
+
+#include <DreamCore.h>
+#include <imgui_internal.h>
+#include <ImFileSystem.h>
 #include <sstream>
 
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectDefinition.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Project/ProjectDirectory.h"
-#include "../../../DreamCore/Scene/SceneDefinition.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/Actor/ActorDefinition.h"
-#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
-#include "../../../DreamCore/Components/Audio/AudioComponent.h"
-#include "../../../DreamCore/Components/Physics/PhysicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
+
 
 namespace DreamTool
 {
-    MenuBar::MenuBar(DTState* def)
+    MenuBar::MenuBar(DTContext* def)
         : ImGuiWidget(def)
     {
-#ifdef DREAM_LOG
-        setLogClassName("MenuBar");
-#endif
     }
 
     MenuBar::~MenuBar
@@ -39,10 +28,6 @@ namespace DreamTool
     MenuBar::draw
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
-
         bool showQuitDialog = false;
         bool newButtonClicked = false;
         bool openButtonClicked = false;
@@ -195,15 +180,15 @@ namespace DreamTool
                 {
                     if (ImGui::BeginMenu("Input"))
                     {
-                        DTState::InputTarget mode = mState->inputTarget;
-                        if (ImGui::RadioButton("To Editor",mode == DTState::InputTarget::EDITOR))
+                        DTContext::InputTarget mode = mState->inputTarget;
+                        if (ImGui::RadioButton("To Editor",mode == DTContext::InputTarget::EDITOR))
                         {
-                            mState->inputTarget = DTState::InputTarget::EDITOR;
+                            mState->inputTarget = DTContext::InputTarget::EDITOR;
                         }
 
-                        if (ImGui::RadioButton("To Scene", mode == DTState::InputTarget::SCENE))
+                        if (ImGui::RadioButton("To Scene", mode == DTContext::InputTarget::SCENE))
                         {
-                            mState->inputTarget = DTState::InputTarget::SCENE;
+                            mState->inputTarget = DTContext::InputTarget::SCENE;
                         }
                         ImGui::EndMenu();
                     }
@@ -331,57 +316,47 @@ namespace DreamTool
                 }
                 }
 
-#ifdef DREAM_LOG
                 if(ImGui::BeginMenu("Engine Logging"))
                 {
-                    spdlog::level::level_enum mode =  getLog()->level();
-                    if (ImGui::RadioButton("Off", mode == spdlog::level::off))
+                    spdlog::level::level_enum mode =  LOG_GET_LEVEL();
+                    if (ImGui::RadioButton("Off", mode == LOG_LEVEL_OFF))
                     {
-                        mode = spdlog::level::off;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_OFF;
                     }
-
-                    if (ImGui::RadioButton("Critical", mode == spdlog::level::critical))
+                    if (ImGui::RadioButton("Critical", mode == LOG_LEVEL_CRITICAL))
                     {
-                        mode = spdlog::level::critical;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_CRITICAL;
                     }
-
-                    if (ImGui::RadioButton("Error", mode == spdlog::level::err))
+                    if (ImGui::RadioButton("Error", mode == LOG_LEVEL_ERROR))
                     {
-                        mode = spdlog::level::err;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_ERROR;
                     }
-                    if (ImGui::RadioButton("Warning", mode == spdlog::level::warn))
+                    if (ImGui::RadioButton("Warning", mode == LOG_LEVEL_WARN))
                     {
-                        mode = spdlog::level::warn;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_WARN;
                     }
-                    if (ImGui::RadioButton("Info", mode == spdlog::level::info))
+                    if (ImGui::RadioButton("Info", mode == LOG_LEVEL_INFO))
                     {
-                        mode = spdlog::level::info;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_INFO;
                     }
-                    if (ImGui::RadioButton("Debug", mode == spdlog::level::debug))
+                    if (ImGui::RadioButton("Debug", mode == LOG_LEVEL_DEBUG))
                     {
-                        mode = spdlog::level::debug;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_DEBUG;
                     }
-                    if (ImGui::RadioButton("Trace", mode == spdlog::level::trace))
+                    if (ImGui::RadioButton("Trace", mode == LOG_LEVEL_TRACE))
                     {
-                        mode = spdlog::level::trace;
-                        spdlog::set_level(mode);
+                        mode = LOG_LEVEL_TRACE;
                     }
+                    LOG_LEVEL(mode);
                     ImGui::EndMenu();
                 }
-#endif
                 ImGui::EndMenu();
             }
 
             static char msgBuf[128] = {0};
             snprintf(msgBuf,128,"%s | Input to %s",
                 mMessageString.c_str(),
-                (mState->inputTarget==DTState::InputTarget::EDITOR?"Editor":"Scene"));
+                (mState->inputTarget==DTContext::InputTarget::EDITOR?"Editor":"Scene"));
 
             auto maxX = ImGui::GetWindowContentRegionMax().x;
             ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);

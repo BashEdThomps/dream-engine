@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "ImTextEditor/TextEditor.h"
+#include <TextEditor.h>
 
 namespace Dream
 {
@@ -15,7 +15,7 @@ namespace DreamTool
     class ShaderEditorWindow : public ImGuiWidget
     {
     public:
-        ShaderEditorWindow(DTState* state);
+        ShaderEditorWindow(DTContext* state);
         ~ShaderEditorWindow() override;
 
         void draw() override;

@@ -1,23 +1,15 @@
 #include "Cursor.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Common/Constants.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
-    Cursor::Cursor(DTState* state)
+    Cursor::Cursor(DTContext* state)
         : GLWidget(state,false),
           mStepMajor(false),
           mOrientation(mat4(1.0f))
     {
-#ifdef DREAM_LOG
-        setLogClassName("Cursor");
-        getLog()->trace("Constructing");
-#endif
+        LOG_TRACE("Constructing");
         for (auto index : ModelIndices)
         {
             mVertexBuffer.push_back(ModelVertices.at(index));
@@ -26,18 +18,13 @@ namespace DreamTool
 
     Cursor::~Cursor()
     {
-#ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-#endif
+        LOG_TRACE("Destructing");
     }
 
     void
     Cursor::draw
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
 
         if (mState->project)
         {
@@ -59,107 +46,65 @@ namespace DreamTool
 
         if (!mVertexBuffer.empty())
         {
-#ifndef __APPLE__
-            glEnable(GL_LINE_SMOOTH);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            glLineWidth(3.0f);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            #endif
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
             if (mProjectionUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for projection");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for projection");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
             // Set the view matrix
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
             if (mViewUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for view");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for view");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
             // Set the projection matrix
             if (mModelUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for model");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for model");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
             // Draw
             glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
-            // Revert State
-#ifndef __APPLE__
-            glDisable(GL_LINE_SMOOTH);
-            glLineWidth(1.0f);
-    #ifdef DREAM_LOG
-                checkGLError();
-    #endif
-#endif
             glDisable(GL_BLEND);
         }
     }
@@ -170,22 +115,14 @@ namespace DreamTool
         // Vertex Array
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         glBindVertexArray(0);
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
     }
 
     void

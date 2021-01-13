@@ -12,18 +12,22 @@
 
 #pragma once
 
-#include "angelscript/angelscript.h"
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
-#include "../Component.h"
-#include "../../Project/ProjectDirectory.h"
+#include "Components/Component.h"
+#include "Project/ProjectDirectory.h"
+
+class asScriptModule;
+class asIScriptContext;
+class asIScriptEngine;
 
 namespace Dream
 {
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
     class Event;
     class ScriptCache;
+
 
     class ScriptPrintListener
     {
@@ -75,7 +79,7 @@ namespace Dream
         void exposePhysicsObjectRuntime();
         void exposeShaderRuntime();
         void exposeSceneRuntime();
-        void exposeActorRuntime();
+        void exposeEntityRuntime();
         void exposeTime();
         void exposeTransform();
         void exposeGLM();

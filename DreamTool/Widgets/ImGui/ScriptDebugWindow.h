@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "../../../DreamCore/Components/Script/ScriptComponent.h"
+#include <DreamCore.h>
 
 using namespace Dream;
 
@@ -12,7 +12,7 @@ namespace DreamTool
               public ScriptPrintListener
     {
     public:
-        ScriptDebugWindow(DTState* proj);
+        ScriptDebugWindow(DTContext* proj);
         ~ScriptDebugWindow() override;
 
         void draw() override;

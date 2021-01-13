@@ -1,8 +1,11 @@
 #include "Directory.h"
+
 #include "File.h"
+#include "Common/Logger.h"
+#include "Common/Constants.h"
 
 #ifdef WIN32
-#include "../deps/dirent.h"
+#include <dirent.h>
 #include <direct.h>
 #else
 #include <dirent.h>
@@ -14,12 +17,13 @@
 #include <sstream>
 
 using std::regex;
+using std::stringstream;
+using std::cmatch;
 
 namespace Dream
 {
 
     Directory::Directory(string dir):
-        DreamObject("Directory"),
         mPath(dir)
     {
 
@@ -65,9 +69,7 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            getLog()->error( "Unable to open directory {}", mPath );
-#endif
+            LOG_ERROR( "Unable to open directory {}", mPath );
             return directoryContents;
         }
         return directoryContents;
@@ -92,7 +94,7 @@ namespace Dream
                 if (fileName[0] == '.') continue;
                 stringstream abs;
                 abs << mPath << Constants::DIR_PATH_SEP << fileName;
-                const char* absPath = abs.str().c_str();
+                string absPath = abs.str();
 
                 Directory subDir(absPath);
                 if (!subDir.isDirectory())
@@ -116,9 +118,7 @@ namespace Dream
         }
         else
         {
-#ifdef DREAM_LOG
-            getLog()->error( "Unable to open directory {}", mPath );
-#endif
+            LOG_ERROR( "Unable to open directory {}", mPath );
             return directoryContents;
         }
         return directoryContents;
@@ -175,10 +175,7 @@ namespace Dream
 
     bool Directory::deleteDirectory()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Deleting directory {}",mPath);
-#endif
+        LOG_DEBUG("Deleting directory {}",mPath);
         auto files = list();
         for (auto file : files)
         {
@@ -202,9 +199,7 @@ namespace Dream
         }
         if (rmdir(mPath.c_str()) != 0)
         {
-#ifdef DREAM_LOG
-            log->error("Unable to delete directory {}",mPath);
-#endif
+            LOG_ERROR("Unable to delete directory {}",mPath);
             return false;
         }
         return true;
@@ -227,14 +222,7 @@ namespace Dream
         {
             result = true;
         }
-#ifdef DREAM_LOG
-        getLog()->error
-        (
-           "{} Directory {}",
-           result? "Is a" : "Not a",
-           mPath
-        );
-#endif
+        LOG_ERROR("{} Directory {}",result? "Is a" : "Not a", mPath );
         return result;
     }
 }

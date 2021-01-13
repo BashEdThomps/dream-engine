@@ -17,8 +17,8 @@
 
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
-#include "../Component.h"
-#include "../../Common/Math.h"
+#include "Components/Component.h"
+#include "Common/Math.h"
 #include "PhysicsTasks.h"
 
 using glm::mat4;
@@ -37,7 +37,7 @@ namespace Dream
 {
     class PhysicsObjectRuntime;
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
     class Camera;
 
     class PhysicsComponent : public Component
@@ -70,7 +70,7 @@ namespace Dream
         void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
         void setCamera(Camera* cam);
         void checkContactManifolds();
-        ActorRuntime* getActorRuntime(SceneRuntime* scene, const btCollisionObject*);
+        EntityRuntime* getEntityRuntime(SceneRuntime* scene, const btCollisionObject*);
         void drawDebug();
         void stepSimulation();
         PhysicsDebugDrawer* getDebugDrawer();

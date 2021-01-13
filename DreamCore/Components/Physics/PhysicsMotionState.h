@@ -12,13 +12,13 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
-#include "../Transform.h"
+#include "Components/Transform.h"
 
 class btTransform;
 
 namespace Dream
 {
-    class PhysicsMotionState : public btMotionState, DreamObject
+    class PhysicsMotionState : public btMotionState
     {
     protected:
         Transform* mDreamTransform;

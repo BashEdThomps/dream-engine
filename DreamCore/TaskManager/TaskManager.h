@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include "../Common/DreamObject.h"
 #include "TaskThread.h"
 #include <memory>
 
@@ -24,7 +23,7 @@ using std::shared_ptr;
 
 namespace Dream
 {
-    class TaskManager : public DreamObject
+    class TaskManager
     {
         vector<TaskThread*> mThreadVector;
         atomic<size_t> mNextThread;

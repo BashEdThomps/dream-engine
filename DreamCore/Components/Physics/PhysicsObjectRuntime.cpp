@@ -20,15 +20,16 @@
 #include "PhysicsMotionState.h"
 #include "PhysicsComponent.h"
 #include "PhysicsObjectDefinition.h"
-
-#include "../../Scene/SceneRuntime.h"
-#include "../../Project/ProjectDefinition.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../Graphics/Model/ModelCache.h"
-#include "../Graphics/Model/ModelRuntime.h"
-#include "../Graphics/Model/ModelMesh.h"
 #include "PhysicsTasks.h"
+
+#include "Common/Constants.h"
+#include "Components/Graphics/Model/ModelCache.h"
+#include "Components/Graphics/Model/ModelRuntime.h"
+#include "Components/Graphics/Model/ModelMesh.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectDefinition.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -37,7 +38,7 @@ namespace Dream
         PhysicsObjectDefinition* definition,
         PhysicsComponent* comp,
         ModelCache* modelCache,
-        ActorRuntime* transform)
+        EntityRuntime* transform)
         : DiscreteAssetRuntime(definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
@@ -48,20 +49,13 @@ namespace Dream
          mModelCache(modelCache),
          mAddObjectTask(mPhysicsComponent,this)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("PhysicsObjectRuntime");
-        auto log = getLog();
-        log->trace( "Constructing" );
-        #endif
+        LOG_TRACE( "Constructing" );
     }
 
     PhysicsObjectRuntime::~PhysicsObjectRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destroying" );
-        #endif
+        LOG_TRACE( "Destroying" );
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -102,21 +96,16 @@ namespace Dream
     PhysicsObjectRuntime::useDefinition
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        #endif
         auto pod = static_cast<PhysicsObjectDefinition*>(mDefinition);
         mCollisionShape = createCollisionShape(pod);
         if (!mCollisionShape)
         {
-            #ifdef DREAM_LOG
-            log->error( "Unable to create collision shape" );
-            #endif
+            LOG_ERROR( "Unable to create collision shape" );
             return false;
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
-        mMotionState = new PhysicsMotionState(&mActorRuntime->getTransform());
+        mMotionState = new PhysicsMotionState(&mEntityRuntime->getTransform());
         // Mass, MotionState, Shape and LocalInertia
         btVector3 inertia(0, 0, 0);
         mCollisionShape->calculateLocalInertia(mass, inertia);
@@ -239,7 +228,7 @@ namespace Dream
         else if (format == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
         {
             // Load Collision Data
-            auto sceneRt = mActorRuntime->getSceneRuntime();
+            auto sceneRt = mEntityRuntime->getSceneRuntime();
             if (sceneRt)
             {
                 auto modelUuid = pod->getCollisionModel();

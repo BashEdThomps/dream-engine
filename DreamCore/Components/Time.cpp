@@ -16,12 +16,14 @@
 
 #include "Time.h"
 
+#include "Common/Logger.h"
+
 #include <iostream>
 
 namespace Dream
 {
     Time::Time
-    () : LockableObject("Time")
+    () : LockableObject()
     {
         mCurrentFrameTime = 0;
         mLastFrameTime = 0;
@@ -37,9 +39,7 @@ namespace Dream
     Time::updateFrameTime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug( "Update Called" );
-        #endif
+        LOG_DEBUG( "Update Called" );
         mLastFrameTime = mCurrentFrameTime;
         mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
         (steady_clock::now().time_since_epoch()).count();
@@ -49,17 +49,14 @@ namespace Dream
         {
             mLastFrameTime = mCurrentFrameTime;
         }
-        #ifdef DREAM_LOG
         show();
-        #endif
     }
 
-    #ifdef DREAM_LOG
     void
     Time::show
     ()
     {
-        getLog()->trace
+        LOG_TRACE
         (
            "CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
            getCurrentFrameTime(),
@@ -67,7 +64,6 @@ namespace Dream
            getFrameTimeDelta()
         );
     }
-    #endif
 
     long
     Time::getCurrentFrameTime
@@ -96,9 +92,7 @@ namespace Dream
     {
         double scalar = getFrameTimeDelta()/1000.0;
         double ret = value*scalar;
-        #ifdef DREAM_LOG
-        getLog()->trace("Scaled by time {} to {} with {}",value,ret,scalar);
-        #endif
+        LOG_TRACE("Scaled by time {} to {} with {}",value,ret,scalar);
         return ret;
     }
 

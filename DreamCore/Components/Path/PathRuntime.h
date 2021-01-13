@@ -20,7 +20,7 @@
 
 #include "PathDefinition.h"
 #include "PathTasks.h"
-#include "../DiscreteAssetRuntime.h"
+#include "Components/DiscreteAssetRuntime.h"
 
 using namespace tinyspline;
 using namespace std;
@@ -31,7 +31,7 @@ namespace Dream
     {
 
     public:
-        PathRuntime(PathDefinition*,ActorRuntime*);
+        PathRuntime(PathDefinition*,EntityRuntime*);
         ~PathRuntime() override;
         bool useDefinition() override;
 

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "../../DreamCore/Common/DreamObject.h"
-#include "json/json.hpp"
-#include <sstream>
+#include <DreamCore.h>
+#include <json.hpp>
+#include <string>
 
-using namespace Dream;
-using namespace nlohmann;
+using nlohmann::json;
+using std::string;
 
 namespace DreamTool
 {
-    class PreferencesModel : public DreamObject
+    class PreferencesModel
     {
     public:
         const static string PREFS_FILE_NAME;
         PreferencesModel();
-        ~PreferencesModel() override;
+        ~PreferencesModel();
         bool load(string projectPath);
         bool save();
     private:

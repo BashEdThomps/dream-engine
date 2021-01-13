@@ -17,12 +17,12 @@
 #pragma once
 
 #include <memory>
-#include "../Component.h"
+#include "Components/Component.h"
 #include "Mouse.h"
 #include "Keyboard.h"
 #include "Joystick.h"
 #include "InputTasks.h"
-#include "../../Common/Math.h"
+#include "Common/Math.h"
 
 using std::shared_ptr;
 

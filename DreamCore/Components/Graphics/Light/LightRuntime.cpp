@@ -15,15 +15,18 @@
 
 
 #include "LightRuntime.h"
+
 #include "LightDefinition.h"
-#include "../../../Scene/Actor/ActorRuntime.h"
+#include "Common/Constants.h"
+#include "Common/Logger.h"
+#include "Scene/Entity/EntityRuntime.h"
 
 namespace Dream
 {
     LightRuntime::LightRuntime
     (
         LightDefinition* definition,
-        ActorRuntime* transform
+        EntityRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform),
         mAmbient(0.0f),
         mDiffuse(0.0f),
@@ -36,17 +39,12 @@ namespace Dream
         mType(LightType::LT_NONE)
 
     {
-        #ifdef DREAM_LOG
-        setLogClassName("LightRuntime");
-        #endif
     }
 
     LightRuntime::~LightRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Destroying Object" );
-        #endif
+        LOG_DEBUG("Destroying Object" );
     }
 
     Vector3
@@ -170,9 +168,9 @@ namespace Dream
     const
     {
         Vector3 tx(
-            mActorRuntime->getTransform().getMatrix()[3][0],
-            mActorRuntime->getTransform().getMatrix()[3][1],
-            mActorRuntime->getTransform().getMatrix()[3][2]);
+            mEntityRuntime->getTransform().getMatrix()[3][0],
+            mEntityRuntime->getTransform().getMatrix()[3][1],
+            mEntityRuntime->getTransform().getMatrix()[3][2]);
         return PointLight
         {
             tx,
@@ -190,7 +188,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition decomp = mActorRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition decomp = mEntityRuntime->getTransform().decomposeMatrix();
         Vector3 tx(
             decomp.translation.x,
             decomp.translation.y,
@@ -219,7 +217,7 @@ namespace Dream
     ()
     const
     {
-        MatrixDecomposition decomp = mActorRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition decomp = mEntityRuntime->getTransform().decomposeMatrix();
         auto e = eulerAngles(decomp.rotation);
         Vector3 euler(e.x,e.y,e.z);
         return DirLight

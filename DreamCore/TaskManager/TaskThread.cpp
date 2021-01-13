@@ -1,5 +1,6 @@
 #include "TaskThread.h"
 #include "Task.h"
+#include "Common/Logger.h"
 
 #include <algorithm>
 
@@ -15,8 +16,7 @@ namespace Dream
     }
 
     TaskThread::TaskThread (int id)
-        : DreamObject ("TaskThread"),
-          mThread(thread(&TaskThread::executeTaskQueue,this)),
+        : mThread(thread(&TaskThread::executeTaskQueue,this)),
               mRunning(false),
               mFence(false),
               mThreadId(id)
@@ -25,9 +25,7 @@ namespace Dream
 
         void TaskThread::join()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Joining Thread {}",mThreadId);
-            #endif
+            LOG_CRITICAL("Joining Thread {}",mThreadId);
             mThread.join();
         }
 
@@ -48,9 +46,7 @@ namespace Dream
                 {
                     while (!mTaskQueue.empty())
                     {
-                        #ifdef DREAM_LOG
-                        getLog()->critical("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
-                        #endif
+                        LOG_CRITICAL("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
                         for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
                         {
                             if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),(*itr)) == mDebugTaskQueue.end())
@@ -128,23 +124,17 @@ namespace Dream
                     mDestructionTaskQueueMutex.unlock();
                 }
 
-                #ifdef DREAM_LOG
-                getLog()->critical("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
-                #endif
+                LOG_CRITICAL("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
                 mFence = true;
                 std::this_thread::yield();
             }
-            #ifdef DREAM_LOG
-            getLog()->critical("---------- Worker {} is ending it's task queue",getThreadId());
-            #endif
+            LOG_CRITICAL("---------- Worker {} is ending it's task queue",getThreadId());
         }
 
         void TaskThread::clearFence()
         {
             assert(mFence);
-            #ifdef DREAM_LOG
-            getLog()->critical("Clearing fence for thread {}",getThreadId());
-            #endif
+            LOG_CRITICAL("Clearing fence for thread {}",getThreadId());
             mFence = false;
         }
 

@@ -1,22 +1,18 @@
 #include "ModelAnimation.h"
 
+#include "Common/Logger.h"
 
 namespace Dream
 {
     ModelAnimation::ModelAnimation
     ()
-        :DreamObject ("ModelAnimation")
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     ModelAnimation::~ModelAnimation
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 }

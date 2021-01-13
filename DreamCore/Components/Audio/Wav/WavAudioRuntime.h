@@ -17,7 +17,7 @@
 
 #include <fstream>
 
-#include "../AudioRuntime.h"
+#include "Components/Audio/AudioRuntime.h"
 #include "WavHeader.h"
 
 namespace Dream

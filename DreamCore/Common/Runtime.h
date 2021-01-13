@@ -51,7 +51,7 @@ namespace Dream
          */
         Runtime
         (Definition* def)
-            : LockableObject("Runtime"),
+            : LockableObject(),
               mDefinition(def),
               mUuid(def == nullptr ? 0 : def->getUuid()),
               mName(def == nullptr ? "" : def->getName()) {}

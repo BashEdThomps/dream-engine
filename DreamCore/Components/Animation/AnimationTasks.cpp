@@ -1,5 +1,7 @@
-#include "../../TaskManager/Task.h"
-#include "../Animation/AnimationRuntime.h"
+#include "AnimationRuntime.h"
+
+#include "TaskManager/Task.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
@@ -8,26 +10,22 @@ namespace Dream
         : Task(),
           mAnimationRuntime(rt)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AnimationUpdateTask");
-        #endif
     }
 
     void AnimationUpdateTask::execute()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
-         if(mAnimationRuntime->tryLock())
-         {
-             mAnimationRuntime->update();
-             mAnimationRuntime->unlock();
-             setState(TaskState::COMPLETED);
-         }
-         else
-         {
-             setState(TaskState::WAITING);
-             mDeferralCount++;
-         }
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
+
+        if(mAnimationRuntime->tryLock())
+        {
+            mAnimationRuntime->update();
+            mAnimationRuntime->unlock();
+            setState(TaskState::COMPLETED);
+        }
+        else
+        {
+            setState(TaskState::WAITING);
+            mDeferralCount++;
+        }
     }
 }

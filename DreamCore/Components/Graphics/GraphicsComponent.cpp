@@ -14,10 +14,28 @@
 */
 
 #include "GraphicsComponent.h"
-#include "../../Common/GLHeader.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
+
+
+
+#include "Camera.h"
+#include "Common/GLHeader.h"
+#include "Common/Logger.h"
+#include "Common/Math.h"
+#include "Components/Transform.h"
+#include "Components/Time.h"
+#include "Components/Window/WindowComponent.h"
+#include "Light/LightRuntime.h"
+#include "Model/ModelRuntime.h"
+#include "Model/ModelMesh.h"
+#include "Material/MaterialCache.h"
+#include "Shader/ShaderRuntime.h"
+#include "Shader/ShaderCache.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityDefinition.h"
+#include "Scene/Entity/EntityRuntime.h"
 
 #include <functional>
 #include "glm/glm.hpp"
@@ -28,20 +46,6 @@
 #include "glm/matrix.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/euler_angles.hpp"
-#include "Camera.h"
-#include "Light/LightRuntime.h"
-#include "Model/ModelRuntime.h"
-#include "Model/ModelMesh.h"
-#include "Material/MaterialCache.h"
-#include "Shader/ShaderRuntime.h"
-#include "Shader/ShaderCache.h"
-#include "../Transform.h"
-#include "../Time.h"
-#include "../Window/WindowComponent.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorDefinition.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Common/Math.h"
 
 using namespace glm;
 
@@ -69,19 +73,14 @@ namespace Dream
           mScreenQuadVAO(0),
           mScreenQuadVBO(0)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("GraphicsComponent");
-        getLog()->trace("Constructing");
-        checkGLError();
-        #endif
+        LOG_TRACE("Constructing");
+        GLCheckError();
     }
 
     GraphicsComponent::~GraphicsComponent
     (void)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying Object");
-        #endif
+        LOG_TRACE("Destroying Object");
         clearLightQueue();
         freeGeometryBuffers();
         freeShadowBuffers();
@@ -93,45 +92,33 @@ namespace Dream
     GraphicsComponent::init
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising");
-        #endif
+        LOG_DEBUG("Initialising");
 
         onWindowDimensionsChanged();
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         if (!setupGeometryBuffers())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to create geometry buffers");
-            #endif
+            LOG_ERROR("Unable to create geometry buffers");
             return false;
         }
 
         if (!setupShadowBuffers())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to create shadow pass buffers");
-            #endif
+            LOG_ERROR("Unable to create shadow pass buffers");
             return false;
         }
 
         if (!setupScreenQuad())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to create screen quad");
-            #endif
+            LOG_ERROR("Unable to create screen quad");
             return false;
         }
 
         glEnable(GL_DEPTH_TEST);
         // TODO Multisample kills line & tool rendering for some reason
         //glEnable(GL_MULTISAMPLE);
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialisation Done.");
-        #endif
+        LOG_DEBUG("Initialisation Done.");
         return true;
     }
 
@@ -145,23 +132,17 @@ namespace Dream
 
         if (windowWidth == 0 || windowHeight == 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("It's a bit rude to use 0,0 viewport and divide by 0...");
-            #endif
+            LOG_DEBUG("It's a bit rude to use 0,0 viewport and divide by 0...");
             windowWidth = 1;
             windowHeight = 1;
         }
 
         glViewport(0, 0, windowWidth, windowHeight);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         freeGeometryBuffers();
         setupGeometryBuffers();
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
-        #endif
+        LOG_DEBUG("Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
     }
 
     void
@@ -184,15 +165,11 @@ namespace Dream
         if (!mEnabled)
         {
 
-            #ifdef DREAM_LOG
-            getLog()->critical("Component Disabled");
-            #endif
+            LOG_CRITICAL("Component Disabled");
             return;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug("\n\n==> Running Geometry Render Pass\n");
-        #endif
+        LOG_DEBUG("\n\n==> Running Geometry Render Pass\n");
         // Setup
         glViewport(0, 0, mWindowComponent->getWidth(), mWindowComponent->getHeight());
         glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
@@ -228,9 +205,7 @@ namespace Dream
         if (mGeometryPassFB != 0)
         {
             glDeleteFramebuffers(1, &mGeometryPassFB);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         glActiveTexture(GL_TEXTURE0);
@@ -261,45 +236,35 @@ namespace Dream
         if (mGeometryPassPositionBuffer != 0)
         {
             glDeleteTextures(1, &mGeometryPassPositionBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         // - normal color buffer
         if (mGeometryPassNormalBuffer != 0)
         {
             glDeleteTextures(1, &mGeometryPassNormalBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         // - color + specular color buffer
         if (mGeometryPassAlbedoBuffer != 0)
         {
             glDeleteTextures(1, &mGeometryPassAlbedoBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         // Depth Buffer
         if (mGeometryPassDepthBuffer != 0)
         {
             glDeleteRenderbuffers(1,&mGeometryPassDepthBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
          // Ignore Buffer
         if (mGeometryPassIgnoreBuffer != 0)
         {
             glDeleteTextures(1,&mGeometryPassIgnoreBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
     }
 
@@ -312,33 +277,23 @@ namespace Dream
 
         if (width == 0 || height == 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("It's a bit rude to allocate empty buffers...");
-            #endif
+            LOG_DEBUG("It's a bit rude to allocate empty buffers...");
             width = 1;
             height = 1;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Setting up Geometry Buffers with dimensions {}x{}",width,height);
-        #endif
+        LOG_DEBUG("Setting up Geometry Buffers with dimensions {}x{}",width,height);
 
         glGenFramebuffers(1,&mGeometryPassFB);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         if (mGeometryPassFB == 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Unable to create Geometry Framebuffer");
-            #endif
+            LOG_ERROR("Unable to create Geometry Framebuffer");
             return false;
         }
         glBindFramebuffer(GL_FRAMEBUFFER, mGeometryPassFB);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // 0 - position buffer
         glGenTextures(1, &mGeometryPassPositionBuffer);
@@ -347,9 +302,7 @@ namespace Dream
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGeometryPassPositionBuffer, 0);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // 1 - normal buffer
         glGenTextures(1, &mGeometryPassNormalBuffer);
@@ -358,9 +311,7 @@ namespace Dream
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mGeometryPassNormalBuffer, 0);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // 2 - Albedo+specular buffer
         glGenTextures(1, &mGeometryPassAlbedoBuffer);
@@ -369,9 +320,7 @@ namespace Dream
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, mGeometryPassAlbedoBuffer, 0);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // 4 - Ignore Lighting Buffer
         glGenTextures(1, &mGeometryPassIgnoreBuffer);
@@ -380,9 +329,7 @@ namespace Dream
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, mGeometryPassIgnoreBuffer, 0);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
         unsigned int attachments[4] = {
@@ -392,37 +339,27 @@ namespace Dream
             GL_COLOR_ATTACHMENT3
         };
         glDrawBuffers(4, attachments);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // then also add render buffer object as depth buffer and check for completeness.
         glGenRenderbuffers(1, &mGeometryPassDepthBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, mGeometryPassDepthBuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mGeometryPassDepthBuffer);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         // finally check if framebuffer is complete
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Deferred Rendering Framebuffer not complete!");
-            #endif
+            LOG_ERROR("Deferred Rendering Framebuffer not complete!");
             return false;
         }
-        #ifdef DREAM_LOG
         else
         {
-            getLog()->debug("Deferred Rending Buffer is complete!");
+            LOG_DEBUG("Deferred Rending Buffer is complete!");
         }
-        #endif
         mWindowComponent->bindDefaultFrameBuffer();
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         return true;
     }
 
@@ -460,22 +397,18 @@ namespace Dream
     {
         if (!mEnabled)
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Component Disabled");
-            #endif
+            LOG_CRITICAL("Component Disabled");
             return;
         }
         mLightingPassShader = sr->getLightingPassShader();
 
 
-        #ifdef DREAM_LOG
-        getLog()->debug
+        LOG_DEBUG
         (
            "\n\n"
            "==> Running Lighting Render Pass"
            "\n"
         );
-        #endif
 
         glViewport(0, 0, mWindowComponent->getWidth(), mWindowComponent->getHeight());
         mWindowComponent->bindDefaultFrameBuffer();
@@ -485,9 +418,7 @@ namespace Dream
 
         if (mLightingPassShader == nullptr)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Lighting Shader is nullptr");
-            #endif
+            LOG_ERROR("Lighting Shader is nullptr");
             return;
         }
 
@@ -554,41 +485,29 @@ namespace Dream
     GraphicsComponent::setupShadowBuffers
     ()
     {
-       #ifdef DREAM_LOG
-       getLog()->info("Setting up ShadowPass FrameBuffer");
-       #endif
+       LOG_INFO("Setting up ShadowPass FrameBuffer");
        glGenFramebuffers(1,&mShadowPassFB);
-       #ifdef DREAM_LOG
-       checkGLError();
-       #endif
+       GLCheckError();
 
        if (mShadowPassFB == 0)
        {
-          #ifdef DREAM_LOG
-          getLog()->error("Unable to create shadow pass FB");
-          #endif
+          LOG_ERROR("Unable to create shadow pass FB");
           return false;
        }
 
        glGenTextures(1, &mShadowPassDepthBuffer);
-       #ifdef DREAM_LOG
-       checkGLError();
-       #endif
+       GLCheckError();
 
        if (mShadowPassDepthBuffer == 0)
        {
 
-           #ifdef DREAM_LOG
-           getLog()->error("Unable to create shadow pass depth buffer");
-           #endif
+           LOG_ERROR("Unable to create shadow pass depth buffer");
            return false;
        }
 
        glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
 
-       #ifdef DREAM_LOG
-       checkGLError();
-       #endif
+       GLCheckError();
        glTexImage2D
        (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
             SHADOW_SIZE, SHADOW_SIZE, 0,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr);
@@ -599,20 +518,14 @@ namespace Dream
        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-       #ifdef DREAM_LOG
-       checkGLError();
-       #endif
+       GLCheckError();
 
        glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowPassDepthBuffer, 0);
        glDrawBuffer(GL_NONE);
        glReadBuffer(GL_NONE);
        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-       #ifdef DREAM_LOG
-       checkGLError();
-       #endif
+       GLCheckError();
 
        return true;
     }
@@ -623,9 +536,7 @@ namespace Dream
     {
         if (!mEnabled)
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Component Disabled");
-            #endif
+            LOG_CRITICAL("Component Disabled");
             return;
         }
 
@@ -633,21 +544,17 @@ namespace Dream
 
         if (mShadowLight == nullptr || mShadowPassShader == nullptr)
         {
-            #ifdef DREAM_LOG
-            getLog()->error
+            LOG_ERROR
             (
                 "Cannot render shadow pass Light: {}, Shader: {]",
                 mShadowLight != nullptr,
                 mShadowPassShader != nullptr
             );
-            #endif
             return;
         }
 
 
-        #ifdef DREAM_LOG
-        getLog()->debug("\n\n==> Running Shadow Render Pass\n");
-        #endif
+        LOG_DEBUG("\n\n==> Running Shadow Render Pass\n");
 
         glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
         glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
@@ -690,17 +597,13 @@ namespace Dream
         if (mShadowPassFB != 0)
         {
             glDeleteFramebuffers(1, &mShadowPassFB);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
 
         if (mShadowPassDepthBuffer != 0)
         {
             glDeleteTextures(1, &mShadowPassDepthBuffer);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
         }
     }
 
@@ -708,7 +611,7 @@ namespace Dream
 
     void
     GraphicsComponent::addToLightQueue
-    (ActorRuntime* runt)
+    (EntityRuntime* runt)
     {
         auto light = runt->getLightRuntime();
         if (light->getType() == LightType::LT_DIRECTIONAL)

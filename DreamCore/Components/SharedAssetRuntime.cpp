@@ -1,9 +1,10 @@
 #include "SharedAssetRuntime.h"
 
 #include "AssetDefinition.h"
-#include "../Project/Project.h"
-#include "../Project/ProjectRuntime.h"
-#include "../Project/ProjectDirectory.h"
+#include "Common/Logger.h"
+#include "Project/Project.h"
+#include "Project/ProjectRuntime.h"
+#include "Project/ProjectDirectory.h"
 
 namespace Dream
 {
@@ -12,9 +13,6 @@ namespace Dream
         : AssetRuntime(def),
           mProjectRuntime(runtime)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("SharedAssetRuntime");
-        #endif
     }
 
     SharedAssetRuntime::~SharedAssetRuntime()

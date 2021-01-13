@@ -12,6 +12,8 @@
 
 #include "AnimationDefinition.h"
 #include "AnimationKeyframe.h"
+#include "Common/Constants.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
@@ -28,9 +30,7 @@ namespace Dream
     AnimationDefinition::~AnimationDefinition
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     vector<AnimationKeyframe>

@@ -21,8 +21,8 @@
 #include <glm/glm.hpp>
 #include <btBulletDynamicsCommon.h>
 
-#include "../DiscreteAssetRuntime.h"
-#include "../Transform.h"
+#include "Components/DiscreteAssetRuntime.h"
+#include "Components/Transform.h"
 #include "PhysicsTasks.h"
 
 using namespace std;
@@ -36,7 +36,7 @@ namespace Dream
     class PhysicsComponent;
     class ModelCache;
     class ModelRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
 
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
@@ -56,7 +56,7 @@ namespace Dream
     public:
         PhysicsObjectRuntime(
             PhysicsObjectDefinition*, PhysicsComponent*,
-            ModelCache*, ActorRuntime*
+            ModelCache*, EntityRuntime*
         );
         ~PhysicsObjectRuntime() override;
         bool useDefinition() override;

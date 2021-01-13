@@ -16,23 +16,22 @@
 
 #pragma once
 
-#include "../../../Common/GLHeader.h"
+#include "ModelBone.h"
+#include "ModelTasks.h"
+
+#include "Common/GLHeader.h"
+#include "Components/Graphics/Material/MaterialRuntime.h"
+#include "Components/Graphics/Shader/ShaderRuntime.h"
+#include "Components/Graphics/Light/LightRuntime.h"
+#include "Components/Graphics/Texture/TextureRuntime.h"
+#include "Components/Graphics/Vertex.h"
+#include "Scene/Entity/BoundingBox.h"
 
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
-
-#include "../Material/MaterialRuntime.h"
-#include "../Shader/ShaderRuntime.h"
-#include "../Vertex.h"
-#include "../Texture/TextureRuntime.h"
-#include "../../../Common/DreamObject.h"
-#include "../Light/LightRuntime.h"
-#include "ModelBone.h"
-#include "../../../Scene/Actor/BoundingBox.h"
-#include "ModelTasks.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -44,10 +43,10 @@ namespace Dream
     class MaterialRuntime;
     class TextureRuntime;
     class ShaderRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
     class Camera;
 
-    class ModelMesh : public DreamObject
+    class ModelMesh
     {
     public:
         static long DrawCalls;
@@ -73,11 +72,9 @@ namespace Dream
         ~ModelMesh();
 
         void init();
-        #ifdef DREAM_LOG
         void logRuntimes();
-        #endif
-        void addRuntime(ActorRuntime* runt);
-        void removeRuntime(ActorRuntime* runt);
+        void addRuntime(EntityRuntime* runt);
+        void removeRuntime(EntityRuntime* runt);
 
         MaterialRuntime* getMaterial();
 
@@ -111,8 +108,8 @@ namespace Dream
         GLuint mIBO;
         vector<Vertex> mVertices;
         vector<GLuint> mIndices;
-        vector<ActorRuntime*> mRuntimes;
-        vector<ActorRuntime*> mRuntimesInFrustum;
+        vector<EntityRuntime*> mRuntimes;
+        vector<EntityRuntime*> mRuntimesInFrustum;
         size_t mVerticesCount;
         size_t mIndicesCount;
         BoundingBox mBoundingBox;

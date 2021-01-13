@@ -1,23 +1,14 @@
 #include "LightViewer.h"
-#include "../../DTState.h"
+#include "DTContext.h"
 
-#include "../../../DreamCore/Common/Constants.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
     LightViewer::LightViewer
-    (DTState* p)
+    (DTContext* p)
         : GLWidget(p,false)
     {
-#ifdef DREAM_LOG
-        setLogClassName("LightViewer");
-#endif
         for (auto index : LightModelIndices)
         {
             mVertexBuffer.push_back(LightModelVertices.at(index));
@@ -32,9 +23,7 @@ namespace DreamTool
 
     void LightViewer::draw()
     {
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
         vector<AssetRuntime*> lightRuntimes;
         if (mState->project)
         {
@@ -55,135 +44,84 @@ namespace DreamTool
             }
         }
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         if (!mVertexBuffer.empty())
         {
-#ifndef __APPLE__
-            glEnable(GL_LINE_SMOOTH);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            glLineWidth(3.0f);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-#endif
-
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
             //glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-            //checkGLError();
+            //GLCheckError();
 
             // Set the projection matrix
             //GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
             if (mProjectionUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for projection");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for projection");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
             // Set the view matrix
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
             if (mViewUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for view");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for view");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
 
             for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getActorRuntime()->getTransform().getMatrix();
+                mModelMatrix = light->getEntityRuntime()->getTransform().getMatrix();
                 Vector3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)
                 {
-                    #ifdef DREAM_LOG
-                    log->error("Unable to find Uniform Location for model");
-                    #endif
+                    LOG_ERROR("Unable to find Uniform Location for model");
                     break;
                 }
                 else
                 {
                     glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-                    #ifdef DREAM_LOG
-                    checkGLError();
-                    #endif
+                    GLCheckError();
                 }
 
                 if (mLightColorUniform == -1)
                 {
-                    #ifdef DREAM_LOG
-                   log->error("Unable to find uniform location for lightColor");
-                    #endif
+                   LOG_ERROR("Unable to find uniform location for lightColor");
                    break;
                 }
                 else
                 {
                     glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec.toGLM()));
-                    #ifdef DREAM_LOG
-                    checkGLError();
-                    #endif
+                    GLCheckError();
                 }
                 // Draw
                 glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
             }
-
-            // Revert State
-            #ifndef __APPLE__
-            glDisable(GL_LINE_SMOOTH);
-            glLineWidth(1.0f);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            #endif
         }
     }
 
@@ -193,37 +131,26 @@ namespace DreamTool
        // Vertex Array
        glBindVertexArray(mVao);
        ShaderRuntime::CurrentVAO = mVao;
-      #ifdef DREAM_LOG
-       checkGLError();
-        #endif
+       GLCheckError();
 
        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
        ShaderRuntime::CurrentVBO = mVbo;
-        #ifdef DREAM_LOG
-       checkGLError();
-        #endif
+       GLCheckError();
 
        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        #ifdef DREAM_LOG
-       checkGLError();
-        #endif
+       GLCheckError();
 
        glBindVertexArray(0);
 
         mLightColorUniform = glGetUniformLocation(mShaderProgram, "lightColor");
-       #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
     }
 
     void
     LightViewer::setShader
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->error("Compiling LightViewer Shaders");
-        #endif
+        LOG_TRACE("Compiling LightViewer Shaders");
         mVertexShaderSource =
             "#version 330 core\n"
             "\n"

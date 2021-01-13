@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "../Common/Definition.h"
+#include "Common/Definition.h"
 #include "Transform.h"
 
 using std::vector;

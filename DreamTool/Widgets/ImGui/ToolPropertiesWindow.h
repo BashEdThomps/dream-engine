@@ -8,7 +8,7 @@ namespace DreamTool
     class ToolPropertiesWindow : public ImGuiWidget
     {
     public:
-        ToolPropertiesWindow(DTState* p);
+        ToolPropertiesWindow(DTContext* p);
         ~ToolPropertiesWindow() override;
         void draw() override;
     };

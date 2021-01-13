@@ -14,8 +14,11 @@
 
 #include "Transform.h"
 
+#include "Common/Math.h"
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+
 #include <iostream>
-#include "../Common/Math.h"
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,45 +34,33 @@ namespace Dream
 
     Transform::Transform
     ()
-        : LockableObject("Transform"),
+        : LockableObject(),
           mMatrix(1.0f)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     Transform::Transform
     (const Transform& other)
-        :LockableObject ("Transform")
+        :LockableObject ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing Copy");
-        #endif
+        LOG_TRACE("Constructing Copy");
         mMatrix = other.mMatrix;
     }
 
     Transform::Transform
     (const mat4& mtx)
-        : LockableObject("Transform")
+        : LockableObject()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing from matrix");
-        #endif
+        LOG_TRACE("Constructing from matrix");
         setMatrix(mtx);
     }
 
     Transform::Transform
     (const json& jsonTransform)
-        : LockableObject("Transform")
+        : LockableObject()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Constructing from json");
-        #endif
+        LOG_TRACE("Constructing from json");
         fromJson(jsonTransform);
     }
 

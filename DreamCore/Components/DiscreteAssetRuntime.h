@@ -18,10 +18,10 @@
 
 namespace Dream
 {
-    class ActorRuntime;
+    class EntityRuntime;
 
     /**
-     * @brief A DiscreteAssetRuntime is unique to a single ActorRuntime
+     * @brief A DiscreteAssetRuntime is unique to a single EntityRuntime
      */
     class DiscreteAssetRuntime : public AssetRuntime
     {
@@ -30,14 +30,14 @@ namespace Dream
          * @param def Definition from which to create Runtime.
          * @param runtime Owner of this AssetRuntime.
          */
-        DiscreteAssetRuntime(AssetDefinition* def, ActorRuntime* runtime);
+        DiscreteAssetRuntime(AssetDefinition* def, EntityRuntime* runtime);
         ~DiscreteAssetRuntime() override;
 
-        ActorRuntime* getActorRuntime();
+        EntityRuntime* getEntityRuntime();
         string getAssetFilePath(string fmt = "") override;
         string getAssetDirectoryPath() override;
 
     protected:
-        ActorRuntime* mActorRuntime;
+        EntityRuntime* mEntityRuntime;
     };
 }

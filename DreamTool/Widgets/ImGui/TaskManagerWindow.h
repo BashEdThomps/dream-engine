@@ -9,7 +9,7 @@ namespace DreamTool
     class TaskManagerWindow : public ImGuiWidget
     {
     public:
-        TaskManagerWindow(DTState* proj);
+        TaskManagerWindow(DTContext* proj);
         ~TaskManagerWindow() override;
         void draw() override;
     };

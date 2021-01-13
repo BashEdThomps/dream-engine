@@ -16,23 +16,20 @@
 
 #pragma once
 
-#include "../../../Common/GLHeader.h"
+#include "ShaderUniform.h"
+#include "ShaderTasks.h"
 
-#include <vector>
-#include <map>
-#include <memory>
+#include "Common/GLHeader.h"
+#include "Components/SharedAssetRuntime.h"
+#include "Components/Graphics/Light/LightRuntime.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
 #include <glm/matrix.hpp>
-
-#include "ShaderUniform.h"
-
-#include "../../SharedAssetRuntime.h"
-#include "../Light/LightRuntime.h"
-#include "../../../Common/DreamObject.h"
-#include "ShaderTasks.h"
+#include <vector>
+#include <map>
+#include <memory>
 
 using std::vector;
 using std::map;
@@ -126,7 +123,7 @@ namespace Dream
 
         void bindMaterial(MaterialRuntime* material);
         void bindLightQueue(const vector<LightRuntime*>& lightQueue);
-        void bindRuntimes(const vector<ActorRuntime*>& runtimes);
+        void bindRuntimes(const vector<EntityRuntime*>& runtimes);
 
         void addMaterial(MaterialRuntime* material);
 

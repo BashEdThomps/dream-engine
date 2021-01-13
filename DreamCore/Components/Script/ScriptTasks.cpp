@@ -1,8 +1,11 @@
 ﻿#include "ScriptTasks.h"
+
 #include "ScriptRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Project/ProjectRuntime.h"
+
+#include "Common/Logger.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -10,18 +13,13 @@ namespace Dream
     ()
         : Task()
      {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptConstructionTask");
-        #endif
      }
 
     void
     ScriptConstructionTask::execute
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
 
         if(mScript->createScript())
         {
@@ -41,24 +39,19 @@ namespace Dream
     }
 
      ScriptOnInitTask::ScriptOnInitTask
-     (ActorRuntime* rt)
+     (EntityRuntime* rt)
          : Task(),
-           mActor(rt)
+           mEntity(rt)
      {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptExecuteOnInitTask");
-        #endif
      }
 
     void
     ScriptOnInitTask::execute
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing for SO {} script {} on thread {}",mActor->getName(), mScript->getNameAndUuidString(), mThreadId);
-        #endif
+        LOG_CRITICAL("Executing for SO {} script {} on thread {}",mEntity->getName(), mScript->getNameAndUuidString(), mThreadId);
 
-        if(mScript->executeOnInit(mActor))
+        if(mScript->executeOnInit(mEntity))
         {
             setState(TaskState::COMPLETED);
         }
@@ -79,24 +72,19 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnUpdateTask::ScriptOnUpdateTask
-    (ActorRuntime* rt)
+    (EntityRuntime* rt)
         : Task(),
-          mActor(rt)
+          mEntity(rt)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptExecuteOnUpdateTask");
-        #endif
     }
 
     void
     ScriptOnUpdateTask::execute
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
 
-        if(mScript->executeOnUpdate(mActor))
+        if(mScript->executeOnUpdate(mEntity))
         {
             setState(TaskState::COMPLETED);
         }
@@ -117,24 +105,19 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnEventTask::ScriptOnEventTask
-    (ActorRuntime* rt)
+    (EntityRuntime* rt)
         : Task(),
-          mActor(rt)
+          mEntity(rt)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptOnEventTask");
-        #endif
     }
 
     void
     ScriptOnEventTask::execute
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
 
-        if(mScript->executeOnEvent(mActor))
+        if(mScript->executeOnEvent(mEntity))
         {
             setState(TaskState::COMPLETED);
         }
@@ -155,31 +138,26 @@ namespace Dream
 //==================================================================================================
 
     ScriptOnDestroyTask::ScriptOnDestroyTask
-    (uint32_t destroyed, ActorRuntime* parent)
+    (uint32_t destroyed, EntityRuntime* parent)
         : DestructionTask(),
           mDestroyedObject(destroyed),
-          mParentActor(parent)
+          mParentEntity(parent)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptOnDestroyTask");
-        #endif
     }
 
     void
     ScriptOnDestroyTask::execute
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical(
+        LOG_CRITICAL(
             "Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
             mScript->getNameAndUuidString(),mDestroyedObject,
-            mParentActor->getNameAndUuidString(), mThreadId
+            mParentEntity->getNameAndUuidString(), mThreadId
         );
-        #endif
 
         if (mScript != nullptr)
         {
-            if(mScript->executeOnDestroy(mDestroyedObject, mParentActor))
+            if(mScript->executeOnDestroy(mDestroyedObject, mParentEntity))
             {
                 setState(TaskState::COMPLETED);
             }

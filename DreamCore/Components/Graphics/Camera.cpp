@@ -15,18 +15,20 @@
 
 #include "Camera.h"
 
-#include "../Window/WindowComponent.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+#include "Components/Window/WindowComponent.h"
+#include "Project/ProjectRuntime.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+
 #include <glm/common.hpp>
 
 namespace Dream
 {
     Camera::Camera
     (SceneRuntime* parent)
-        : DreamObject("Camera"),
-          mTranslation(0.0f),
+        : mTranslation(0.0f),
           mFront(0.0f, 0.0f, -1.0f),
           mUp(0.0f),
           mRight(0.0),
@@ -36,7 +38,7 @@ namespace Dream
           mMovementSpeed(Constants::CAMERA_SPEED),
           mProjectionMatrix(mat4(1.0f)),
           mFrustum(Frustum(this)),
-          mFocusedActor(nullptr),
+          mFocusedEntity(nullptr),
           mFocusTranslation(0.0f),
           mMinimumDraw(1.0f),
           mMaximumDraw(3000.0f),
@@ -48,10 +50,7 @@ namespace Dream
     Camera::~Camera
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Destroying Object");
-        #endif
+        LOG_DEBUG("Destroying Object");
     }
 
     float Camera::getYaw() const
@@ -79,11 +78,11 @@ namespace Dream
     ()
     const
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
             return lookAt(
                 mFocusTranslation.toGLM(),
-                vec3(mFocusedActor->getTransform().getMatrix()[3]),
+                vec3(mFocusedEntity->getTransform().getMatrix()[3]),
                 mUp.toGLM()
             );
         }
@@ -134,7 +133,7 @@ namespace Dream
     Camera::flyForward
     (float scalar)
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
            mTranslation.setZ(mTranslation.z() - (mMovementSpeed*scalar));
            if (mTranslation.z() < 0.0f)
@@ -154,7 +153,7 @@ namespace Dream
     Camera::flyBackward
     (float scalar)
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
            mTranslation.setZ(mTranslation.z() + (mMovementSpeed*scalar));
         }
@@ -170,7 +169,7 @@ namespace Dream
     Camera::flyLeft
     (float scalar)
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
             mYaw -= mMovementSpeed*scalar;
         }
@@ -186,7 +185,7 @@ namespace Dream
     Camera::flyRight
     (float scalar)
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
             mYaw += mMovementSpeed*scalar;
         }
@@ -224,12 +223,12 @@ namespace Dream
     Camera::updateCameraVectors
     ()
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
             Vector3 tx(
-                mFocusedActor->getTransform().getMatrix()[3][0],
-                mFocusedActor->getTransform().getMatrix()[3][1],
-                mFocusedActor->getTransform().getMatrix()[3][2]
+                mFocusedEntity->getTransform().getMatrix()[3][0],
+                mFocusedEntity->getTransform().getMatrix()[3][1],
+                mFocusedEntity->getTransform().getMatrix()[3][2]
             );
             setFocusTranslationFromTarget(tx);
             mFront = Vector3::normalize(tx);
@@ -309,9 +308,9 @@ namespace Dream
     ()
     const
     {
-        if (mFocusedActor)
+        if (mFocusedEntity)
         {
-            vec3 objTx = mFocusedActor->getTransform().getMatrix()[3];
+            vec3 objTx = mFocusedEntity->getTransform().getMatrix()[3];
             float x = mFocusTranslation.x() - objTx.x;
             float z = mFocusTranslation.z() - objTx.z;
             return atan2(x,z);
@@ -321,7 +320,7 @@ namespace Dream
 
     bool
     Camera::containedInFrustum
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     const
     {
         return mFrustum.testIntersection(
@@ -341,7 +340,7 @@ namespace Dream
 
     bool
     Camera::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, ActorRuntime* sor, const Vector3& tx)
+    (Frustum::Plane plane, EntityRuntime* sor, const Vector3& tx)
     const
     {
         auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
@@ -350,7 +349,7 @@ namespace Dream
 
     bool
     Camera::containedInFrustumAfterTransform
-    (ActorRuntime* sor, const mat4& tx)
+    (EntityRuntime* sor, const mat4& tx)
     const
     {
         return mFrustum.testIntersection(
@@ -362,7 +361,7 @@ namespace Dream
 
     bool
     Camera::visibleInFrustum
-    (ActorRuntime* sor)
+    (EntityRuntime* sor)
     const
     {
         return mFrustum.testIntersection(
@@ -405,16 +404,16 @@ namespace Dream
 
     void
     Camera::setFocusedSceneObejct
-    (ActorRuntime* rt)
+    (EntityRuntime* rt)
     {
-        mFocusedActor = rt;
+        mFocusedEntity = rt;
     }
 
-    ActorRuntime*
-    Camera::getFocusedActor
+    EntityRuntime*
+    Camera::getFocusedEntity
     () const
     {
-        return mFocusedActor;
+        return mFocusedEntity;
     }
 
     float

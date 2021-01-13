@@ -13,11 +13,15 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "AssetDefinition.h"
+
+#include "Common/Constants.h"
+#include "Common/Logger.h"
+#include "Project/ProjectDefinition.h"
+
 #include <string>
 #include  <sstream>
-#include "AssetDefinition.h"
 #include <regex>
-#include "../Project/ProjectDefinition.h"
 
 namespace Dream
 {
@@ -26,19 +30,13 @@ namespace Dream
         : Definition(jsonDef),
           mProjectDefinition(parent)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AssetDefinition");
-        getLog()->trace("Constructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE("Constructing {}", getNameAndUuidString());
     }
 
     AssetDefinition::~AssetDefinition
     ()
     {
-
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE("Destructing {}", getNameAndUuidString());
     }
 
     AssetType

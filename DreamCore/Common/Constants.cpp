@@ -11,68 +11,11 @@
  */
 
 #include "Constants.h"
-#include "GLHeader.h"
 
 using namespace std;
 
 namespace Dream
 {
-
-    /**
-* @brief Used to check for OpenGL Runtime Errors. This will display the
-* file and line from which the error was detected. This function should
-* not be called directly. Instead use the macro GLCheckError.
-*
-* @return True if an error was detected.
-*/
-
-#ifdef DREAM_LOG
-    bool
-    Constants::checkGLError_
-    (const string& file, int line)
-    {
-        GLenum errorCode = 0;
-        bool wasError = false;
-        do
-        {
-            errorCode = glGetError();
-            if (errorCode!=0)
-            {
-                logger->error("OpenGL Error Check {}:{} ", file, line);
-                switch (errorCode)
-                {
-                    case GL_NO_ERROR:
-                        logger->error("\tGL_NO_ERROR");
-                        break;
-                    case GL_INVALID_ENUM:
-                        logger->error("\tGL_INVALID_ENUM" );
-                        break;
-                    case GL_INVALID_VALUE:
-                        logger->error("\tGL_INVALID_VALUE");
-                        break;
-                    case GL_INVALID_OPERATION:
-                        logger->error("\tGL_INVALID_OPERATION");
-                        break;
-#ifndef WIN32
-                    case GL_INVALID_FRAMEBUFFER_OPERATION:
-                        logger->error("\tGL_INVALID_FRAMEBUFFER_OPERATION");
-                        break;
-#endif
-                    case GL_OUT_OF_MEMORY:
-                        logger->error("\tGL_OUT_OF_MEMORY");
-                        break;
-                }
-                //logger->error("\tName: {}" , glewGetErrorString(errorCode) );
-                logger->error("\tCode: {}" , errorCode );
-                wasError = true;
-            }
-        }
-        while(errorCode != 0);
-        return wasError;
-    }
-#endif
-
-
     // Misc =====================================================================
     const string Constants::DIR_PATH_SEP = "/";
     const string Constants::DIR_PATH_SEP_WINDOWS = "\\";
@@ -173,7 +116,7 @@ namespace Dream
 
     // Scene ====================================================================
     const string Constants::SCENE_NOTES = "notes";
-    const string Constants::SCENE_ROOT_ACTOR = "root";
+    const string Constants::SCENE_ROOT_ENTITY = "root";
     const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
     const string Constants::SCENE_CAMERA_MOVEMENT_SPEED = "cameraMovementSpeed";
     const string Constants::SCENE_CAMERA_TRANSFORM = "cameraTransform";
@@ -194,19 +137,19 @@ namespace Dream
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
 
-    // Actor ==============================================================
-    const string Constants::ACTOR = "actor";
-    const string Constants::ACTOR_ROOT_NAME = "Root Actor";
-    const string Constants::ACTOR_DEFAULT_NAME = "New Actor";
-    const string Constants::ACTOR_CHILDREN = "children";
-    const string Constants::ACTOR_HAS_CAMERA_FOCUS = "camera_focus";
-    const string Constants::ACTOR_ASSET_INSTANCES = "assetInstances";
-    const string Constants::ACTOR_ALWAYS_DRAW = "always_draw";
-    const string Constants::ACTOR_TEMPLATE = "template";
-    const string Constants::ACTOR_HIDDEN = "hidden";
-    const string Constants::ACTOR_DEFERRED = "deferred";
-    const string Constants::ACTOR_DIE_AFTER = "die_after";
-    const string Constants::ACTOR_PLAYER_OBJECT = "player_object";
+    // Entity ==============================================================
+    const string Constants::ENTITY = "actor";
+    const string Constants::ENTITY_ROOT_NAME = "Root Entity";
+    const string Constants::ENTITY_DEFAULT_NAME = "New Entity";
+    const string Constants::ENTITY_CHILDREN = "children";
+    const string Constants::ENTITY_HAS_CAMERA_FOCUS = "camera_focus";
+    const string Constants::ENTITY_ASSET_INSTANCES = "assetInstances";
+    const string Constants::ENTITY_ALWAYS_DRAW = "always_draw";
+    const string Constants::ENTITY_TEMPLATE = "template";
+    const string Constants::ENTITY_HIDDEN = "hidden";
+    const string Constants::ENTITY_DEFERRED = "deferred";
+    const string Constants::ENTITY_DIE_AFTER = "die_after";
+    const string Constants::ENTITY_PLAYER_OBJECT = "player_object";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
@@ -268,8 +211,8 @@ namespace Dream
     const string Constants::ASSET_ATTR_CCD_SPR = "ccd_spr";
     const string Constants::ASSET_ATTR_RESTITUTION = "restitution";
     const string Constants::ASSET_ATTR_FRICTION = "friction";
-    const string Constants::ASSET_ATTR_ANGULAR_FACTOR = "angular_factor";
-    const string Constants::ASSET_ATTR_LINEAR_FACTOR = "linear_factor";
+    const string Constants::ASSET_ATTR_ANGULAR_FENTITY = "angular_factor";
+    const string Constants::ASSET_ATTR_LINEAR_FENTITY = "linear_factor";
     const string Constants::ASSET_ATTR_ANGULAR_VELOCITY = "angular_velocity";
     const string Constants::ASSET_ATTR_LINEAR_VELOCITY = "linear_velocity";
 
@@ -964,10 +907,6 @@ namespace Dream
 
         return "";
     }
-
-    #ifdef DREAM_LOG
-    shared_ptr<spdlog::logger> Constants::logger = spdlog::stdout_logger_mt("Constants");
-    #endif
 
     vector<string> Constants::DREAM_PATH_SPLINE_TYPES
     {

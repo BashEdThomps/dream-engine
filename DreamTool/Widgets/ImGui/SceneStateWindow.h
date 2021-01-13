@@ -8,7 +8,7 @@ namespace DreamTool
         : public ImGuiWidget
     {
     public:
-        SceneStateWindow(DTState*);
+        SceneStateWindow(DTContext*);
         ~SceneStateWindow() override;
 
         void draw() override;

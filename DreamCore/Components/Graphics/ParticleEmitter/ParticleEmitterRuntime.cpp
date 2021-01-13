@@ -12,27 +12,24 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #include "ParticleEmitterRuntime.h"
+
 #include "ParticleEmitterDefinition.h"
-#include "../../../Scene/Actor/ActorRuntime.h"
-#include "../../../Scene/SceneRuntime.h"
-#include "../../../Project/ProjectRuntime.h"
-#include "../../Time.h"
+#include "Common/Logger.h"
+#include "Components/Time.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Scene/SceneRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
     ParticleEmitterRuntime::ParticleEmitterRuntime
     (
         ParticleEmitterDefinition* definition,
-        ActorRuntime* transform
+        EntityRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ParticleEmitterRuntime");
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     void
@@ -40,7 +37,7 @@ namespace Dream
     ()
     {
         // Update Velocity
-        auto time = mActorRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
+        auto time = mEntityRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
         for (Particle p : mParticles)
         {
             p.mVelocity.x += time->perSecond(p.mVelocity.x);
@@ -55,9 +52,7 @@ namespace Dream
     ParticleEmitterRuntime::~ParticleEmitterRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying");
-        #endif
+        LOG_TRACE("Destroying");
     }
 
     bool

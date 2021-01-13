@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "../AudioRuntime.h"
+#include "Components/Audio/AudioRuntime.h"
 
 namespace Dream
 {

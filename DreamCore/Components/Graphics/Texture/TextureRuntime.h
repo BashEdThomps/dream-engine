@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include "../../../Common/GLHeader.h"
+#include "Common/GLHeader.h"
 
 #include <iostream>
 #include <memory>
-#include "../../SharedAssetRuntime.h"
-#include "../GraphicsComponentTask.h"
+#include "Components/SharedAssetRuntime.h"
+#include "Components/Graphics/GraphicsComponentTask.h"
 #include "TextureTasks.h"
 
 using std::vector;
@@ -26,7 +26,7 @@ using std::string;
 namespace Dream
 {
     class TextureDefinition;
-    class ActorRuntime;
+    class EntityRuntime;
     class TextureDestructionTask;
     class TextureConstructionTask;
 

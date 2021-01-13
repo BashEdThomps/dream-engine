@@ -13,23 +13,25 @@
 
 #include "ProjectDefinition.h"
 #include "Project.h"
-#include "../Scene/SceneDefinition.h"
-#include "../Components/AssetDefinition.h"
-#include "../Components/Audio/AudioDefinition.h"
-#include "../Components/Animation/AnimationDefinition.h"
-#include "../Components/Scroller/ScrollerDefinition.h"
-#include "../Components/Path/PathDefinition.h"
-#include "../Components/Graphics/Font/FontDefinition.h"
-#include "../Components/Graphics/Light/LightDefinition.h"
-#include "../Components/Graphics/Material/MaterialDefinition.h"
-#include "../Components/Graphics/Model/ModelDefinition.h"
-#include "../Components/Graphics/Shader/ShaderDefinition.h"
-#include "../Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-#include "../Components/Graphics/Texture/TextureDefinition.h"
-#include "../Components/Physics/PhysicsObjectDefinition.h"
-#include "../Components/Script/ScriptDefinition.h"
-#include "../Components/ObjectEmitter/ObjectEmitterDefinition.h"
-#include "../Common/Uuid.h"
+#include "Scene/SceneDefinition.h"
+#include "Components/AssetDefinition.h"
+#include "Components/Audio/AudioDefinition.h"
+#include "Components/Animation/AnimationDefinition.h"
+#include "Components/Scroller/ScrollerDefinition.h"
+#include "Components/Path/PathDefinition.h"
+#include "Components/Graphics/Font/FontDefinition.h"
+#include "Components/Graphics/Light/LightDefinition.h"
+#include "Components/Graphics/Material/MaterialDefinition.h"
+#include "Components/Graphics/Model/ModelDefinition.h"
+#include "Components/Graphics/Shader/ShaderDefinition.h"
+#include "Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
+#include "Components/Graphics/Texture/TextureDefinition.h"
+#include "Components/Physics/PhysicsObjectDefinition.h"
+#include "Components/Script/ScriptDefinition.h"
+#include "Components/ObjectEmitter/ObjectEmitterDefinition.h"
+#include "Common/Uuid.h"
+#include "Common/Logger.h"
+#include "Common/Constants.h"
 
 namespace Dream
 {
@@ -38,21 +40,14 @@ namespace Dream
         : Definition(data)
 
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ProjectDefinition");
-        auto log = getLog();
-        log->trace("Constructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE("Constructing {}", getNameAndUuidString());
     }
 
 
     ProjectDefinition::~ProjectDefinition
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing {}", getNameAndUuidString());
-        #endif
+        LOG_TRACE("Destructing {}", getNameAndUuidString());
         deleteSceneDefinitions();
         deleteAssetDefinitions();
     }
@@ -141,10 +136,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading AssetDefinitions from JSON");
-        #endif
+        LOG_DEBUG("Loading AssetDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -157,10 +149,7 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Loading ScenesDefinitions from JSON");
-        #endif
+        LOG_DEBUG("Loading ScenesDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -206,10 +195,7 @@ namespace Dream
             case OBJECT_EMITTER:
                 return new ObjectEmitterDefinition(this,assetDefinitionJs);
             case NONE:
-                #ifdef DREAM_LOG
-                auto log = getLog();
-                log->error("Unable to create Asset Definition. Unknown Type");
-                #endif
+                LOG_ERROR("Unable to create Asset Definition. Unknown Type");
                 break;
         }
         return nullptr;
@@ -237,27 +223,22 @@ namespace Dream
     ProjectDefinition::removeAssetDefinition
     (AssetDefinition* assetDefinition)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug(
+        LOG_DEBUG(
                     "Removing AssetDefinition {} from {}",
                     assetDefinition->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
-        #endif
         auto iter = begin(mAssetDefinitions);
         auto endPos = end(mAssetDefinitions);
         while (iter != endPos)
         {
             if ((*iter) == assetDefinition)
             {
-                #ifdef DREAM_LOG
-                log->debug(
+                LOG_DEBUG(
                             "Found AssetDefinition to {} remove from {}",
                             assetDefinition->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
-                #endif
                 mAssetDefinitions.erase(iter);
                 return;
             }
@@ -313,7 +294,7 @@ namespace Dream
     (const json &scene)
     {
         auto so = new SceneDefinition(this, scene);
-        so->loadRootActorDefinition();
+        so->loadRootEntityDefinition();
         mSceneDefinitions.push_back(so);
     }
 
@@ -368,14 +349,11 @@ namespace Dream
     ProjectDefinition::removeSceneDefinition
     (SceneDefinition* sceneDef)
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug(
+        LOG_DEBUG(
                     "Removing SceneDefinition {} from {}",
                     sceneDef->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
-        #endif
 
         auto iter = begin(mSceneDefinitions);
         auto endPos = end(mSceneDefinitions);
@@ -383,13 +361,11 @@ namespace Dream
         {
             if ((*iter) == sceneDef)
             {
-                #ifdef DREAM_LOG
-                log->debug(
+                LOG_DEBUG(
                             "Found scene to {} remove from {}",
                             sceneDef->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
-                #endif
                 delete (*iter);
                 mSceneDefinitions.erase(iter);
                 return;
@@ -437,7 +413,7 @@ namespace Dream
         Transform camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
         auto sd = new SceneDefinition(this, scene);
-        sd->createNewRootActorDefinition();
+        sd->createNewRootEntityDefinition();
         mSceneDefinitions.push_back(sd);
         return sd;
     }
@@ -449,10 +425,7 @@ namespace Dream
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Creating new AssetDefinition with default Format {}", defaultFormat);
-        #endif
+        LOG_DEBUG("Creating new AssetDefinition with default Format {}", defaultFormat);
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
         assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
@@ -468,10 +441,7 @@ namespace Dream
     ()
     {
         uint32_t startupScene = getStartupSceneUuid();
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Finding startup scene {}", startupScene);
-        #endif
+        LOG_DEBUG("Finding startup scene {}", startupScene);
         return getSceneDefinitionByUuid(startupScene);
     }
 

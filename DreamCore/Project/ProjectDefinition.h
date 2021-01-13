@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../Common/Definition.h"
+#include "Common/Definition.h"
 
 using std::string;
 using std::vector;

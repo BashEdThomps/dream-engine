@@ -19,16 +19,9 @@
 #include <vector>
 #include <memory>
 
-#ifdef __APPLE__
-    #include <OpenAL/al.h>
-    #include <OpenAL/alc.h>
-#else
-    #include <al.h>
-    #include <alc.h>
-#endif
-
+#include "Common/ALHeader.h"
 #include "AudioStatus.h"
-#include "../Component.h"
+#include "Components/Component.h"
 #include <glm/vec3.hpp>
 
 using glm::vec3;

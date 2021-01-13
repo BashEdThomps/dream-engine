@@ -15,13 +15,15 @@
 
 #include "InputComponent.h"
 #include "InputTasks.h"
-#include "../Time.h"
-#include "../Transform.h"
-#include "../Script/ScriptRuntime.h"
-#include "../Graphics/Camera.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Project/ProjectRuntime.h"
+
+#include "Common/Logger.h"
+#include "Components/Time.h"
+#include "Components/Transform.h"
+#include "Components/Script/ScriptRuntime.h"
+#include "Components/Graphics/Camera.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 using std::make_shared;
 
@@ -37,11 +39,7 @@ namespace Dream
           mExecuteScriptTask(this),
           mJoystickCount(0)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("InputComponent");
-        auto log = getLog();
-        log->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
         //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
         mJoystickNavigation = make_shared<JoystickFaceForwardNavigation>(&mJoystickState,&mJoystickMapping);
     }
@@ -49,20 +47,14 @@ namespace Dream
     InputComponent::~InputComponent
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     bool
     InputComponent::init
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Initialising...");
-        #endif
+        LOG_DEBUG("Initialising...");
         return true;
     }
 

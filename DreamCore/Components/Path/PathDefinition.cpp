@@ -11,15 +11,14 @@
  */
 #include "PathDefinition.h"
 
+#include "Common/Constants.h"
+
 namespace Dream
 {
     PathDefinition::PathDefinition
     (ProjectDefinition* pd, const json& js)
         : AssetDefinition(pd,js)
     {
-#ifdef DREAM_LOG
-       setLogClassName("PathDefinition");
-#endif
     }
 
     PathDefinition::~PathDefinition

@@ -3,10 +3,8 @@
 
 namespace Dream
 {
-    Frustum::Frustum
-    (Camera* cam)
-        : DreamObject("Frustum"),
-          mCamera(cam)
+    Frustum::Frustum(Camera* cam)
+        : mCamera(cam)
     {
 
     }

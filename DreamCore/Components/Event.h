@@ -12,16 +12,18 @@
 
 #pragma once
 
-#include <string>
 
-#include "../Common/DreamObject.h"
-#include "../Common/Math.h"
+#include "Common/Math.h"
+
+#include <string>
 #include <map>
+
+using std::string;
 using std::map;
 
 namespace Dream
 {
-    class Event : public DreamObject
+    class Event
     {
     private:
         map<string,string> mAttributes;

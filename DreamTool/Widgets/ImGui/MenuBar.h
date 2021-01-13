@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "../../Model/ModelDefinitionBatchImporter.h"
+#include "Model/ModelDefinitionBatchImporter.h"
 
 namespace Dream
 {
@@ -22,7 +22,7 @@ namespace DreamTool
     class MenuBar : public ImGuiWidget
     {
     public:
-        MenuBar(DTState*);
+        MenuBar(DTContext*);
         ~MenuBar() override;
         void draw() override;
 

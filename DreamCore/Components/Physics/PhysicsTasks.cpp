@@ -1,4 +1,7 @@
 #include "PhysicsTasks.h"
+
+#include "Common/Logger.h"
+
 #include "PhysicsObjectRuntime.h"
 #include "PhysicsComponent.h"
 #include "PhysicsDebugDrawer.h"
@@ -11,10 +14,6 @@ namespace Dream
               mComponent(cp),
               mRuntime(rt)
         {
-
-            #ifdef DREAM_LOG
-            setLogClassName("PhysicsAddObjectTask");
-            #endif
         }
 
 
@@ -22,10 +21,8 @@ namespace Dream
         PhysicsAddObjectTask::execute
         ()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            getLog()->trace("Adding Actor to physics world");
-            #endif
+            LOG_CRITICAL("Executing on thread {}",mThreadId);
+            LOG_TRACE("Adding Entity to physics world");
 
             if(mComponent->tryLock())
             {
@@ -45,18 +42,13 @@ namespace Dream
         (PhysicsComponent* cp)
             : Task(), mComponent(cp)
         {
-            #ifdef DREAM_LOG
-            setLogClassName("PhysicsComponentUpdateTask");
-            #endif
         }
 
         void
         PhysicsUpdateWorldTask::execute
         ()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
+            LOG_CRITICAL("Executing on thread {}",mThreadId);
             if(mComponent->tryLock())
             {
                 mComponent->stepSimulation();
@@ -74,18 +66,13 @@ namespace Dream
         (PhysicsComponent* cp)
             : GraphicsComponentTask(), mComponent(cp)
         {
-            #ifdef DREAM_LOG
-            setLogClassName("PhysicsDrawDebugTask");
-            #endif
         }
 
         void
         PhysicsDrawDebugTask::execute
         ()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
+            LOG_CRITICAL("Executing on thread {}",mThreadId);
             if(mComponent->tryLock())
             {
                 mComponent->getDebugDrawer()->drawAll();

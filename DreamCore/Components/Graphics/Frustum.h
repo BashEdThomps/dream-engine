@@ -1,16 +1,16 @@
 #pragma once
 
-#include <glm/matrix.hpp>
-#include "../../Common/DreamObject.h"
-#include "../../Common/Math.h"
-#include "../../Scene/Actor/BoundingBox.h"
+#include "Common/Math.h"
+#include "Scene/Entity/BoundingBox.h"
 
-using namespace glm;
+#include <glm/matrix.hpp>
+
+using glm::mat4;
 
 namespace Dream
 {
     class Camera;
-    class Frustum : public DreamObject
+    class Frustum
     {
     public:
         enum Plane

@@ -11,11 +11,14 @@
  */
 
 #include "PathViewer.h"
-#include "../../../DreamCore/Components/Path/PathDefinition.h"
-#include "../../../DreamCore/Components/Path/PathRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
+
+#include <DreamCore.h>
+
 
 using Dream::Constants;
+using Dream::PathDefinition;
+using Dream::PathRuntime;
+using Dream::ShaderRuntime;
 using glm::quat;
 using glm::mat4;
 using glm::vec3;
@@ -23,7 +26,7 @@ using glm::vec3;
 namespace DreamTool
 {
     PathViewer::PathViewer
-    (DTState* state, bool visible)
+    (DTContext* state, bool visible)
         : GLWidget(state, visible),
           mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
           mPathRuntime(nullptr),
@@ -35,18 +38,13 @@ namespace DreamTool
           mSelectedCp(0),
           mUStep(0.05)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("PathViewer");
-        getLog()->trace("Constructing Object");
-        #endif
+        LOG_TRACE("Constructing Object");
     }
 
     PathViewer::~PathViewer
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Destructing Object");
-        #endif
+        LOG_DEBUG("Destructing Object");
         clearRuntime();
 
     }
@@ -55,9 +53,7 @@ namespace DreamTool
     PathViewer::init
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising");
-        #endif
+        LOG_DEBUG("Initialising");
         GLWidget::init();
     }
 
@@ -154,9 +150,7 @@ namespace DreamTool
     {
         if (mPathDefinition == nullptr)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("No object selected");
-            #endif
+            LOG_DEBUG("No object selected");
             return;
         }
         else
@@ -190,25 +184,17 @@ namespace DreamTool
     PathViewer::updateVertexBuffer
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Updating Vertex Buffer") ;
-        #endif
+        LOG_DEBUG("Updating Vertex Buffer") ;
 
         // Vertex Array
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         glBindVertexArray(0);
     }
 
@@ -258,14 +244,10 @@ namespace DreamTool
         vec3 pos = cp.position.toGLM();
         int index = cp.index;
 
-        #ifdef DREAM_LOG
-        getLog()->trace("Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
-        #endif
+        LOG_TRACE("Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
 
         vec3 colour = (mSelectedCp ==  index ? mSelectedColour : mUnselectedColour);
-        #ifdef DREAM_LOG
-        getLog()->trace("Selected? {}",mSelectedCp == index);
-        #endif
+        LOG_TRACE("Selected? {}",mSelectedCp == index);
 
         // Top Quad
 

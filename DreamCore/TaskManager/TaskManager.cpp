@@ -17,6 +17,7 @@
 #include "Task.h"
 #include "TaskManager.h"
 #include "TaskThread.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
@@ -26,40 +27,31 @@ namespace Dream
     }
 
     TaskManager::TaskManager()
-        : DreamObject("TaskManager"),
-          mNextThread(0)
+        : mNextThread(0)
         {
             startAllThreads();
         }
 
         TaskManager::~TaskManager()
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Destroying Object");
-            #endif
+            LOG_DEBUG("Destroying Object");
             joinAllThreads();
         }
 
         void TaskManager::startAllThreads()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Starting all worker threads...");
-            #endif
+            LOG_CRITICAL("Starting all worker threads...");
 
             for (int i=0; i <  static_cast<int>(thread::hardware_concurrency()); i++)
             {
-                #ifdef DREAM_LOG
-                getLog()->critical("Spawning thread {}",i);
-                #endif
+                LOG_CRITICAL("Spawning thread {}",i);
                 mThreadVector.push_back(new TaskThread(i));
             }
         }
 
         void TaskManager::joinAllThreads()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Joining all threads...");
-            #endif
+            LOG_CRITICAL("Joining all threads...");
             for (TaskThread* t : mThreadVector)
             {
                 t->setRunning(false);
@@ -80,9 +72,7 @@ namespace Dream
                 mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->critical("{} pushed to worker {}",t->getClassName(),mNextThread);
-                    #endif
+                    LOG_CRITICAL("Task: pushed task to worker {}",mNextThread);
                     break;
                 }
                 std::this_thread::yield();
@@ -97,9 +87,7 @@ namespace Dream
                 mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->critical("{} pushed to worker {}",dt->getClassName(),mNextThread);
-                    #endif
+                    LOG_CRITICAL("Task: pushed to worker {}",mNextThread);
                     break;
                 }
                 std::this_thread::yield();
@@ -109,9 +97,7 @@ namespace Dream
 
         void TaskManager::clearFences()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Clearing all fences");
-            #endif
+            LOG_CRITICAL("Clearing all fences");
             for (TaskThread* t : mThreadVector)
             {
                t->clearFence();
@@ -120,9 +106,7 @@ namespace Dream
 
         void TaskManager::waitForFence()
         {
-           #ifdef DREAM_LOG
-           getLog()->critical("... Waiting for fence ...");
-           #endif
+           LOG_CRITICAL("... Waiting for fence ...");
            int trys = 0;
            while (true)
            {
@@ -130,24 +114,18 @@ namespace Dream
                for (TaskThread* t : mThreadVector)
                {
                    trys++;
-                   #ifdef DREAM_LOG
-                   getLog()->trace("Trying for {} time",trys);
-                   #endif
+                   LOG_TRACE("Trying for {} time",trys);
 
                    result = result && t->getFence();
                    if (!result)
                    {
-                       #ifdef DREAM_LOG
-                       getLog()->trace("Thread {} is still working",t->getThreadId());
-                       #endif
+                       LOG_TRACE("Thread {} is still working",t->getThreadId());
                        break;
                    }
                }
                if (result)
                {
-                   #ifdef DREAM_LOG
-                   getLog()->critical("All Fences hit");
-                   #endif
+                   LOG_CRITICAL("All Fences hit");
                    break;
                }
                std::this_thread::yield();

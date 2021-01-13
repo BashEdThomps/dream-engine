@@ -11,6 +11,8 @@
  */
 #include "WindowComponent.h"
 
+#include "Common/Constants.h"
+
 namespace Dream
 {
 

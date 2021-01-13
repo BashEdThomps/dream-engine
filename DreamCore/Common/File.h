@@ -21,14 +21,12 @@
 #include <string>
 #include <vector>
 
-#include "../Common/DreamObject.h"
-
 using std::string;
 using std::vector;
 
 namespace Dream
 {
-    class File : public DreamObject
+    class File
     {
     private:
         string mPath;

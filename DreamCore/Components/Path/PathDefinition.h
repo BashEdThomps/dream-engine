@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "../AssetDefinition.h"
-#include "tinyspline/tinysplinecpp.h"
+#include "Components/AssetDefinition.h"
+#include <tinysplinecpp.h>
 
 namespace Dream
 {

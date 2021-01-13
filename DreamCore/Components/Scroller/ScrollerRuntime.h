@@ -18,7 +18,7 @@
 #include <deque>
 
 #include "ScrollerDefinition.h"
-#include "../DiscreteAssetRuntime.h"
+#include "Components/DiscreteAssetRuntime.h"
 #include "ScrollerTasks.h"
 
 namespace Dream
@@ -36,7 +36,7 @@ namespace Dream
         };
 
     public:
-        ScrollerRuntime(ScrollerDefinition*,ActorRuntime*);
+        ScrollerRuntime(ScrollerDefinition*,EntityRuntime*);
         ~ScrollerRuntime() override;
         bool useDefinition() override;
         void update();
@@ -45,17 +45,17 @@ namespace Dream
         ScrollerUpdateTask* getUpdateTask();
 
     protected:
-        ActorRuntime* createChlidRuntime(const ScrollerItem& item);
+        EntityRuntime* createChlidRuntime(const ScrollerItem& item);
         bool removeChlidRuntime(const ScrollerItem& item);
-        void addAssets(ActorRuntime* runt);
-        Range checkRange(ActorRuntime* runt) const;
+        void addAssets(EntityRuntime* runt);
+        Range checkRange(EntityRuntime* runt) const;
 
         Vector3 mVelocity;
         Vector3 mRangeBegin;
         Vector3 mRangeEnd;
-        vector<ActorRuntime*> mPreRange;
-        vector<ActorRuntime*> mInRange;
-        vector<ActorRuntime*> mPostRange;
+        vector<EntityRuntime*> mPreRange;
+        vector<EntityRuntime*> mInRange;
+        vector<EntityRuntime*> mPostRange;
         map<uint32_t,uint32_t> mAssetsMap;
         ScrollerUpdateTask mUpdateTask;
     };

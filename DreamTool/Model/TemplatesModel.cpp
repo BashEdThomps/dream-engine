@@ -1,14 +1,15 @@
 #include "TemplatesModel.h"
+
 #include <sstream>
-#include "../../DreamCore/Common/File.h"
-#include "../../DreamCore/Common/Directory.h"
+
+using std::stringstream;
+using Dream::File;
+using Dream::Constants;
 
 namespace DreamTool
 {
-    TemplatesModel::TemplatesModel
-    ()
-        :DreamObject ("TemplatesDirectoryModel"),
-          mBaseDir("./templates")
+    TemplatesModel::TemplatesModel()
+        :mBaseDir("./templates")
     {
 
     }
@@ -31,18 +32,13 @@ namespace DreamTool
     TemplatesModel::getTemplate
     (AssetType t, string templateName, string format)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         stringstream ss;
         ss << getTemplatesDirectory(t)
            << Constants::DIR_PATH_SEP
            << templateName
            << Constants::DIR_PATH_SEP
            << format;
-#ifdef DREAM_LOG
-        log->error("Loading template from {}" , ss.str());
-#endif
+        LOG_ERROR("Loading template from {}" , ss.str());
         File templateFile(ss.str());
         return templateFile.readString();
     }

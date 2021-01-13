@@ -15,21 +15,21 @@
 
 #pragma once
 
-#include "../Common/DreamObject.h"
-#include "../Common/ArgumentParser.h"
-#include "../Common/File.h"
+#include "Common/ArgumentParser.h"
+#include "Common/Constants.h"
+#include "Common/File.h"
 
 namespace Dream
 {
     class Project;
     class AssetDefinition;
 
-    class ProjectDirectory : public DreamObject
+    class ProjectDirectory
     {
     public:
         ProjectDirectory();
         ProjectDirectory(Project* project);
-        ~ProjectDirectory() override;
+        ~ProjectDirectory();
 
         bool baseDirectoryExists() const;
         bool createBaseDirectory() const;

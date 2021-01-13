@@ -16,24 +16,23 @@
 #include "DiscreteAssetRuntime.h"
 
 #include "AssetDefinition.h"
-#include "../TaskManager/Task.h"
-#include "../Scene/Actor/ActorRuntime.h"
-#include "../Scene/SceneRuntime.h"
-#include "../Project/Project.h"
-#include "../Project/ProjectRuntime.h"
-#include "../Project/ProjectDirectory.h"
+
+#include "Common/Logger.h"
+#include "Project/Project.h"
+#include "Project/ProjectRuntime.h"
+#include "Project/ProjectDirectory.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Scene/SceneRuntime.h"
+#include "TaskManager/Task.h"
 
 namespace Dream
 {
 
     DiscreteAssetRuntime::DiscreteAssetRuntime
-    (AssetDefinition* def, ActorRuntime* runtime)
+    (AssetDefinition* def, EntityRuntime* runtime)
         : AssetRuntime (def),
-          mActorRuntime(runtime)
+          mEntityRuntime(runtime)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("DiscreteAssetRuntime");
-        #endif
     }
 
     DiscreteAssetRuntime::~DiscreteAssetRuntime()
@@ -44,7 +43,7 @@ namespace Dream
     DiscreteAssetRuntime::getAssetFilePath
     (string fmt)
     {
-        auto pDir = mActorRuntime
+        auto pDir = mEntityRuntime
                 ->getSceneRuntime()
                 ->getProjectRuntime()
                 ->getProject()
@@ -56,7 +55,7 @@ namespace Dream
     DiscreteAssetRuntime::getAssetDirectoryPath
     ()
     {
-        auto pDir = mActorRuntime
+        auto pDir = mEntityRuntime
                 ->getSceneRuntime()
                 ->getProjectRuntime()
                 ->getProject()
@@ -64,10 +63,10 @@ namespace Dream
         return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
     }
 
-    ActorRuntime*
-    DiscreteAssetRuntime::getActorRuntime
+    EntityRuntime*
+    DiscreteAssetRuntime::getEntityRuntime
     ()
     {
-        return mActorRuntime;
+        return mEntityRuntime;
     }
 }

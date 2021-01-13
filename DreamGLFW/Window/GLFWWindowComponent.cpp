@@ -11,11 +11,9 @@
  */
 
 
-#include "../../DreamCore/Common/GLHeader.h"
 #include "GLFWWindowComponent.h"
-#include "../../DreamCore/Scene/SceneRuntime.h"
 
-using namespace Dream;
+using Dream::WindowComponent;
 
 namespace DreamGLFW
 {
@@ -68,19 +66,14 @@ namespace DreamGLFW
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("GLFWWindowComponent");
-        getLog()->info("Constructing" );
-        #endif
+        LOG_INFO("Constructing" );
         mName = "Dream";
     }
 
     GLFWWindowComponent::~GLFWWindowComponent
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->info("Destructing" );
-        #endif
+        LOG_INFO("Destructing" );
         glfwTerminate();
         mWindow = nullptr;
     }
@@ -114,25 +107,19 @@ namespace DreamGLFW
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
-#ifdef DREAM_LOG
-        checkGLError();
-#endif
+        GLCheckError();
     }
 
     bool
     GLFWWindowComponent::initGLFW
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising GLFW");
-        #endif
+        LOG_DEBUG("Initialising GLFW");
         glfwSetErrorCallback(GLFWErrorCallback);
         /* Initialize the library */
         if (!glfwInit())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("FAILED @ Initialising GLFW");
-            #endif
+            LOG_ERROR("FAILED @ Initialising GLFW");
             return false;
         }
 
@@ -151,9 +138,7 @@ namespace DreamGLFW
 
         if (mWindow == nullptr)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("FAILED @ Make Window");
-            #endif
+            LOG_ERROR("FAILED @ Make Window");
             glfwTerminate();
             return false;
         }
@@ -169,9 +154,7 @@ namespace DreamGLFW
         glfwSwapInterval(1);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        #ifdef DREAM_LOG
-        getLog()->debug("Queried Framebuffer size as {}x{}",mWidth,mHeight);
-        #endif
+        LOG_DEBUG("Queried Framebuffer size as {}x{}",mWidth,mHeight);
         return true;
     }
 
@@ -179,25 +162,21 @@ namespace DreamGLFW
     GLFWWindowComponent::initGL
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising GLFW::OpenGL");
-        #endif
+        LOG_DEBUG("Initialising GLFW::OpenGL");
 
         if(!gladLoadGL())
 		{
-			getLog()->error("Window: Error initialising GLAD!\n");
+			LOG_ERROR("Window: Error initialising GLAD!\n");
 			return false;
 		}
 
-        #ifdef DREAM_LOG
-        checkGLError();
+        GLCheckError();
 
-        getLog()->debug(
+        LOG_DEBUG(
             "OpenGL Version {}, Shader Version {}",
             glGetString(GL_VERSION),
             glGetString(GL_SHADING_LANGUAGE_VERSION)
         );
-        #endif
         return true;
     }
 
@@ -214,9 +193,7 @@ namespace DreamGLFW
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
-            #ifdef DREAM_LOG
-            getLog()->error("Window should close");
-            #endif
+            LOG_ERROR("Window should close");
         }
 
         if (WindowSizeChanged)
@@ -231,9 +208,7 @@ namespace DreamGLFW
     ()
     {
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        #ifdef DREAM_LOG
-        getLog()->error("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
-        #endif
+        LOG_ERROR("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         mSizeHasChanged = true;
     }
 

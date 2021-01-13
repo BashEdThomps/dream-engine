@@ -24,10 +24,15 @@
 
 // Maintain include order for GL
 #include <GLFW/glfw3.h>
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_glfw.h"
-#include "ImGui/imgui_impl_opengl3.h"
-#include "../../DreamCore/Components/Window/WindowComponent.h"
+#include <imgui.h>
+#ifdef IMGUI_HAS_DOCK
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#else
+	#include <imgui_impl_glfw.h>
+	#include <imgui_impl_opengl3.h>
+#endif
+#include <DreamCore.h>
 
 using namespace std;
 using namespace Dream;

@@ -12,24 +12,16 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifdef __APPLE__
-    #include <OpenAL/al.h>
-    #include <OpenAL/alc.h>
-#else
-    #include <al.h>
-    #include <alc.h>
-#endif
-
-#include <iostream>
-
 #include "AudioComponent.h"
+
+#include "Common/Logger.h"
 #include "Wav/WavAudioRuntime.h"
 #include "Ogg/OggAudioRuntime.h"
-
 #include "AudioDefinition.h"
-#include "../Time.h"
-#include "../../Scene/Actor/ActorRuntime.h"
+#include "Components/Time.h"
+#include "Scene/Entity/EntityRuntime.h"
+
+#include <iostream>
 
 namespace Dream
 {
@@ -39,18 +31,13 @@ namespace Dream
           mDevice(nullptr),
           mContext(nullptr)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AudioComponent");
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     AudioComponent::~AudioComponent
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
 
         alcMakeContextCurrent(nullptr);
 
@@ -71,9 +58,7 @@ namespace Dream
     AudioComponent::init
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising...");
-        #endif
+        LOG_DEBUG("Initialising...");
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);

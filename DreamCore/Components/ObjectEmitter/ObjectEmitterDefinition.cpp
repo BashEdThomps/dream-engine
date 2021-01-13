@@ -10,6 +10,7 @@
  * this file belongs to.
  */
 #include "ObjectEmitterDefinition.h"
+#include "Common/Constants.h"
 
 namespace Dream
 {
@@ -44,7 +45,7 @@ namespace Dream
     }
 
     uint32_t
-    ObjectEmitterDefinition::getActorUuid
+    ObjectEmitterDefinition::getEntityUuid
     ()
     {
         if(!mJson[Constants::OBJECT_EMITTER_UUID].is_number())
@@ -55,7 +56,7 @@ namespace Dream
     }
 
     void
-    ObjectEmitterDefinition::setActorUuid
+    ObjectEmitterDefinition::setEntityUuid
     (uint32_t uuid)
     {
         mJson[Constants::OBJECT_EMITTER_UUID] = uuid;

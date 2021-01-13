@@ -10,9 +10,8 @@
 namespace DreamTool
 {
     DTWidget::DTWidget
-    (DTState* state, bool visible)
-    : DreamObject("DTWidget"),
-      mState(state),
+    (DTContext* state, bool visible)
+    : mState(state),
       mVisible(visible)
     {}
 

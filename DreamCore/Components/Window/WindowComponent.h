@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../Component.h"
+#include "Components/Component.h"
 
 #include <string>
 

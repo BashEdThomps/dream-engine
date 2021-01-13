@@ -18,23 +18,21 @@
 
 #include "AudioDefinition.h"
 
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+
 namespace Dream
 {
     AudioDefinition::AudioDefinition
     (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AudioDefinition");
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     AudioDefinition::~AudioDefinition()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     bool

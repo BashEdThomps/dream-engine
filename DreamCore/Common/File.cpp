@@ -17,6 +17,9 @@
 
 #include "File.h"
 
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+
 #include <fstream>
 #include <sstream>
 #include <cstdio>
@@ -28,17 +31,14 @@ namespace Dream
 {
     File::File
     (string path)
-        : DreamObject ("FileReader")
+        : mPath(path)
     {
-        mPath = path;
     }
 
     File::~File
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug( "FileReader: Destroying reader for {}" , mPath );
-        #endif
+        LOG_DEBUG( "FileReader: Destroying reader for {}" , mPath );
     }
 
     string File::getDirectory() const
@@ -127,15 +127,11 @@ namespace Dream
     File::deleteFile
     () const
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Deleting file {}",mPath);
-        #endif
+        LOG_DEBUG("Deleting file {}",mPath);
         if(remove(mPath.c_str()) != 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Error deleting file {}",mPath );
+            LOG_ERROR("Error deleting file {}",mPath );
             perror("File check error");
-            #endif
             return false;
         }
         return true;
@@ -152,9 +148,7 @@ namespace Dream
             fclose(file);
             return true;
         }
-        #ifdef DREAM_LOG
         perror("File check error");
-        #endif
         return false;
     }
 
@@ -165,9 +159,7 @@ namespace Dream
 
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
-        #ifdef DREAM_LOG
-        getLog()->trace("Got file name with extension {}",fileName);
-        #endif
+        LOG_TRACE("Got file name with extension {}",fileName);
         return fileName;
     }
 
@@ -176,9 +168,7 @@ namespace Dream
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         auto nameOnly = name.substr(0,extStart);
-        #ifdef DREAM_LOG
-        getLog()->trace("Got file name without extension {}",nameOnly);
-        #endif
+        LOG_TRACE("Got file name without extension {}",nameOnly);
         return nameOnly;
     }
 
@@ -191,9 +181,7 @@ namespace Dream
         if (extStart != string::npos)
         {
             auto ext = name.substr(extStart+1);
-            #ifdef DREAM_LOG
-            getLog()->trace("Got file extension {}",ext);
-            #endif
+            LOG_TRACE("Got file extension {}",ext);
             return ext;
         }
         return "";

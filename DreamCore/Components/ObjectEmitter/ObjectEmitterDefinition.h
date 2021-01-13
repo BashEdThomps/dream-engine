@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../AssetDefinition.h"
-#include "../../Common/Math.h"
+#include "Components/AssetDefinition.h"
+#include "Common/Math.h"
 
 namespace Dream
 {
@@ -26,8 +26,8 @@ namespace Dream
         int getObjectCount();
         void setObjectCount(int count);
 
-        uint32_t getActorUuid();
-        void setActorUuid(uint32_t);
+        uint32_t getEntityUuid();
+        void setEntityUuid(uint32_t);
 
         int getEmitInterval();
         void setEmitInterval(int);

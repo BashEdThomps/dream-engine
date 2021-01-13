@@ -1,20 +1,17 @@
 #pragma once
 
-#include "DreamObject.h"
 #include <mutex>
 
 using std::mutex;
 
 namespace Dream
 {
-    class LockableObject : public DreamObject
+    class LockableObject
     {
     private:
         mutex mMutex;
     public:
-        inline void
-        lock
-        ()
+        inline void lock()
         {
             mMutex.lock();
         }
@@ -24,14 +21,12 @@ namespace Dream
             return mMutex.try_lock();
         }
 
-        inline void
-        unlock
-        ()
+        inline void unlock()
         {
             mMutex.unlock();
         }
 
-        inline LockableObject(string name) : DreamObject(name) {}
+        inline LockableObject() {}
         virtual inline ~LockableObject() {}
     };
 }

@@ -1,21 +1,15 @@
 #include "RenderingDebugWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelMesh.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 using namespace Dream;
 
 namespace DreamTool
 {
     RenderingDebugWindow::RenderingDebugWindow
-    (DTState* state)
+    (DTContext* state)
         :ImGuiWidget(state,false)
     {
-#ifdef DREAM_LOG
-        setLogClassName("RenderingDebugWindow");
-#endif
     }
 
     RenderingDebugWindow::~RenderingDebugWindow (){}

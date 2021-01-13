@@ -17,23 +17,25 @@
 #include <algorithm>
 
 #include "PathRuntime.h"
+#include "Common/Logger.h"
 
-#include "glm/glm.hpp"
-#include "glm/matrix.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "PathTasks.h"
-#include "../Transform.h"
-#include "../Time.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Project/ProjectRuntime.h"
-#include "tinyspline/tinyspline.h"
+#include "Components/Transform.h"
+#include "Components/Time.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+#include <tinyspline.h>
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Dream
 {
 
     PathRuntime::PathRuntime
-    (PathDefinition* definition, ActorRuntime* runtime)
+    (PathDefinition* definition, EntityRuntime* runtime)
         : DiscreteAssetRuntime(definition,runtime),
           mWrapPath(false),
           mCurrentIndex(0),
@@ -43,18 +45,13 @@ namespace Dream
           mDistanceToTravel(0.0f),
           mUpdateTask(this)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("PathRuntime");
-        getLog()->trace("Constructing Object");
-        #endif
+        LOG_TRACE("Constructing Object");
     }
 
     PathRuntime::~PathRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying Object");
-        #endif
+        LOG_TRACE("Destroying Object");
     }
 
     void
@@ -62,7 +59,7 @@ namespace Dream
     ()
     {
         auto transform = stepPath();
-        mActorRuntime->getTransform().setMatrix(transform);
+        mEntityRuntime->getTransform().setMatrix(transform);
     }
 
     bool
@@ -70,14 +67,12 @@ namespace Dream
     ()
     {
         auto animDef = static_cast<PathDefinition*>(mDefinition);
-        #ifdef DREAM_LOG
-        getLog()->debug(
+        LOG_DEBUG(
             "Loading {} spline with {} control points for {} ",
             animDef->getSplineType(),
             animDef->getControlPoints().size(),
             getNameAndUuidString()
         );
-        #endif
 
         mWrapPath = animDef->getWrap();
         mVelocity = animDef->getVelocity();
@@ -86,9 +81,7 @@ namespace Dream
 
         if (nControlPoints < 2)
         {
-            #ifdef DREAM_LOG
-            getLog()->warn("Skipping curve, not enough control points");
-            #endif
+            LOG_WARN("Skipping curve, not enough control points");
             mLoaded = true;
             return true;
         }
@@ -99,12 +92,10 @@ namespace Dream
         {
             generate();
         }
-        #ifdef DREAM_LOG
         else
         {
-            getLog()->error("Not enough control points to generate spline");
+            LOG_ERROR("Not enough control points to generate spline");
         }
-        #endif
         mLoaded = true;
         return mLoaded;
     }
@@ -169,10 +160,8 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
-                #ifdef DREAM_LOG
-                getLog()->trace("Generating with u={}",u);
-                getLog()->trace("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
-                #endif
+                LOG_TRACE("Generating with u={}",u);
+                LOG_TRACE("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
                 {
@@ -213,9 +202,7 @@ namespace Dream
         ts_bspline_free(&spline);
         ts_bspline_free(&derivative);
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Finished Loading spline for {}",getNameAndUuidString());
-        #endif
+        LOG_DEBUG("Finished Loading spline for {}",getNameAndUuidString());
     }
 
     vector<pair<vec3,vec3> >
@@ -272,7 +259,7 @@ namespace Dream
             float distanceToNext = 0.0f;
             if (mCurrentIndex != mSplinePoints.size()-1)
             {
-                mDistanceToTravel += mActorRuntime
+                mDistanceToTravel += mEntityRuntime
                     ->getSceneRuntime()
                     ->getProjectRuntime()
                     ->getTime()
@@ -280,9 +267,7 @@ namespace Dream
 
                 vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
                 distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
-                #ifdef DREAM_LOG
-                getLog()->trace("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
-                #endif
+                LOG_TRACE("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
             }
             else
             {
@@ -321,14 +306,12 @@ namespace Dream
         mat  = glm::translate(mat,thisPoint);
         auto rot = mat4_cast(thisOrient);
         mCurrentTransform = mat*rot;
-        #ifdef DREAM_LOG
         vec3 ang = eulerAngles(thisOrient);
-        getLog()->trace("Got spline point {}/{} T({},{},{}) R({},{},{})",
+        LOG_TRACE("Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),
             thisPoint.x, thisPoint.y, thisPoint.z,
             ang.x, ang.y, ang.z
         );
-        #endif
     }
 
     vector<vec3>

@@ -16,11 +16,12 @@
 
 #include "ScriptCache.h"
 
-#include "../../Common/File.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../TaskManager/TaskManager.h"
 #include "ScriptDefinition.h"
 #include "ScriptRuntime.h"
+#include "Common/Logger.h"
+#include "Common/File.h"
+#include "TaskManager/TaskManager.h"
+#include "Project/ProjectRuntime.h"
 
 namespace Dream
 {
@@ -28,20 +29,13 @@ namespace Dream
     (ProjectRuntime* runtime)
         : Cache (runtime)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ScriptCache");
-        auto log = getLog();
-        log->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     ScriptCache::~ScriptCache
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     SharedAssetRuntime*

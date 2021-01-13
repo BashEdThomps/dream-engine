@@ -16,19 +16,19 @@
 
 #pragma once
 
+#include "Components/Graphics/Shader/ShaderRuntime.h"
+
 #include <iostream>
 #include <sstream>
 #include <vector>
-
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
-
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btIDebugDraw.h>
 
-#include "../Graphics/Shader/ShaderRuntime.h"
-
-using namespace std;
+using std::vector;
+using std::string;
+using glm::vec3;
 
 namespace Dream
 {
@@ -37,11 +37,11 @@ namespace Dream
 
     struct PhysicsDebugVertex
     {
-        glm::vec3 Position;
-        glm::vec3 Color;
+        vec3 Position;
+        vec3 Color;
     };
 
-    class PhysicsDebugDrawer : public btIDebugDraw, DreamObject
+    class PhysicsDebugDrawer : public btIDebugDraw
     {
         Camera* mCamera;
         GLuint mShaderProgram;

@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../../../Common/DreamObject.h"
-
 namespace Dream
 {
-    class ModelAnimation : public DreamObject
+    class ModelAnimation
     {
     public:
         ModelAnimation();
-        ~ModelAnimation() override;
+        ~ModelAnimation();
     };
 }

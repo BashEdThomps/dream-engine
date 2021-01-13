@@ -22,30 +22,28 @@
     #define _USE_MATH_DEFINES // for C++
 #endif
 
+#include "Scene/Entity/BoundingBox.h"
+#include "Common/Math.h"
+#include "Components/Transform.h"
+#include "Frustum.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <vector>
 #include <numeric>
 #include <cmath>
 
-#include <glm/gtc/matrix_transform.hpp>
-#include "../../Scene/Actor/BoundingBox.h"
-#include "../../Common/DreamObject.h"
-#include "../../Common/Math.h"
-#include "../Transform.h"
-#include "Frustum.h"
-
-using namespace glm;
+using glm::mat4;
 
 namespace Dream
 {
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
 
     /**
      * @brief Implements a Camera in 3D Space.
      */
     class Camera
-        : public DreamObject
     {
     private:
         // Camera Attributes
@@ -62,7 +60,7 @@ namespace Dream
         mat4 mProjectionMatrix;
         Frustum mFrustum;
         // Focus on SO
-        ActorRuntime* mFocusedActor;
+        EntityRuntime* mFocusedEntity;
         Vector3  mFocusTranslation;
         float mMinimumDraw;
         float mMaximumDraw;
@@ -102,19 +100,19 @@ namespace Dream
         float getPitch() const;
         void setPitch(float pitch);
 
-        bool containedInFrustum(ActorRuntime*) const;
+        bool containedInFrustum(EntityRuntime*) const;
         bool containedInFrustum(const BoundingBox&) const;
-        bool containedInFrustumAfterTransform(ActorRuntime*,const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, ActorRuntime*sor, const Vector3& tx) const;
+        bool containedInFrustumAfterTransform(EntityRuntime*,const mat4& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, EntityRuntime*sor, const Vector3& tx) const;
 
-        bool visibleInFrustum(ActorRuntime*)const;
+        bool visibleInFrustum(EntityRuntime*)const;
         bool visibleInFrustum(const BoundingBox&) const;
 
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
 
-        void setFocusedSceneObejct(ActorRuntime*);
-        ActorRuntime* getFocusedActor() const;
+        void setFocusedSceneObejct(EntityRuntime*);
+        EntityRuntime* getFocusedEntity() const;
 
         float getFocusPitch() const;
         void setFocusPitch(float focusPitch);

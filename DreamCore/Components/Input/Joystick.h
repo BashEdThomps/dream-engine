@@ -2,12 +2,12 @@
 #include <string>
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
-#include "../Time.h"
-#include "../Transform.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../Graphics/Camera.h"
+#include "Components/Time.h"
+#include "Components/Transform.h"
+#include "Project/ProjectRuntime.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Components/Graphics/Camera.h"
 
 using glm::mat4;
 using glm::quat;

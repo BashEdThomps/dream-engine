@@ -1,21 +1,19 @@
 #include "ScrollerTasks.h"
+
 #include "ScrollerRuntime.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
         ScrollerUpdateTask::ScrollerUpdateTask(ScrollerRuntime* rt)
-            : Task(), mScrollerRuntime(rt)
+            : Task(),
+              mScrollerRuntime(rt)
         {
-            #ifdef DREAM_LOG
-            setLogClassName("ScrollerUpdateTask");
-            #endif
         }
 
         void ScrollerUpdateTask::execute()
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on thread {}",mThreadId);
-            #endif
+            LOG_CRITICAL("Executing on thread {}",mThreadId);
             if(mScrollerRuntime->tryLock())
             {
                 mScrollerRuntime->update();

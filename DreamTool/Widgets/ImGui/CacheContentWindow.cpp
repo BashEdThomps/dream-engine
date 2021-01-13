@@ -1,22 +1,12 @@
 #include "CacheContentWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Components/Audio/AudioCache.h"
-#include "../../../DreamCore/Components/Graphics/Material/MaterialCache.h"
-#include "../../../DreamCore/Components/Graphics/Model/ModelCache.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
-#include "../../../DreamCore/Components/Graphics/Texture/TextureCache.h"
-#include "../../../DreamCore/Components/Script/ScriptCache.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
     CacheContentWindow::CacheContentWindow
-    (DTState* proj) : ImGuiWidget(proj,false)
+    (DTContext* proj) : ImGuiWidget(proj,false)
     {
-#ifdef DREAM_LOG
-        setLogClassName("CacheContentWindow");
-#endif
     }
 
     CacheContentWindow::~CacheContentWindow

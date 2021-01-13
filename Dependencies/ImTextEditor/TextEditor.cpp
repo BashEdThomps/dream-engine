@@ -7,7 +7,7 @@
 #include "TextEditor.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../ImGui/imgui.h" // for imGui::GetCurrentWindow()
+#include <imgui.h> // for imGui::GetCurrentWindow()
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML
@@ -818,7 +818,7 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
     ImGui::PopAllowKeyboardFocus();
     ImGui::EndChild();
     ImGui::PopStyleVar();
-    ImGui::PopStyleColor();
+    //ImGui::PopStyleColor();
 
     mWithinRender = false;
 }

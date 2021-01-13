@@ -15,10 +15,10 @@
 
 #include "OggAudioRuntime.h"
 
+#include <Common/Logger.h>
+#include "Components/Audio/AudioDefinition.h"
+#include "Scene/Entity/EntityRuntime.h"
 #include <vorbis/vorbisfile.h>
-
-#include "../AudioDefinition.h"
-#include "../../../Scene/Actor/ActorRuntime.h"
 
 #define AUDIO_BUFFER_SIZE 1024
 
@@ -28,9 +28,6 @@ namespace Dream
     (AudioDefinition* def, ProjectRuntime* project)
         : AudioRuntime(def,project)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("OggAudioRuntime");
-        #endif
     }
 
     bool
@@ -38,9 +35,7 @@ namespace Dream
     ()
     {
         auto absPath = getAssetFilePath();
-        #ifdef DREAM_LOG
-        getLog()->debug("Loading Runtime: {}", absPath);
-        #endif
+        LOG_DEBUG("Loading Runtime: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -52,9 +47,7 @@ namespace Dream
         FILE *file = fopen(absPath.c_str(), "rb");
         if (file == nullptr)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Cannot open {} for reading", absPath);
-            #endif
+            LOG_ERROR("Cannot open {} for reading", absPath);
             return false;
         }
 
@@ -62,9 +55,7 @@ namespace Dream
         OggVorbis_File oggFile;
         if (ov_open(file, &oggFile, nullptr, 0) != 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Error opening {} for decoding");
-            #endif
+            LOG_ERROR("Error opening {} for decoding");
             return false;
         }
 
@@ -98,9 +89,7 @@ namespace Dream
             if (bytes < 0)
             {
                 ov_clear(&oggFile);
-                #ifdef DREAM_LOG
-                getLog()->error("Error decoding {}", absPath);
-                #endif
+                LOG_ERROR("Error decoding {}", absPath);
                 return false;
             }
             // Append to end of buffer

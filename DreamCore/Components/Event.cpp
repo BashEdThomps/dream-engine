@@ -12,26 +12,22 @@
 
 #include "Event.h"
 
-#include "../Scene/Actor/ActorRuntime.h"
+#include "Common/Logger.h"
+#include "Scene/Entity/EntityRuntime.h"
 
 namespace Dream
 {
     Event::Event
     (const map<string,string>& attributes)
-        : DreamObject("Event"),
-          mAttributes(attributes),
+        : mAttributes(attributes),
           mProcessed(false)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Creating");
-        #endif
+        LOG_TRACE("Creating");
     }
 
     Event::~Event()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying");
-        #endif
+        LOG_TRACE("Destroying");
     }
 
     void

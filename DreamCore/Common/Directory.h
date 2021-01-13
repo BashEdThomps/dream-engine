@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../Common/DreamObject.h"
 #include "File.h"
 
 namespace Dream
 {
 
-    class Directory : public DreamObject
+    class Directory
     {
     public:
         Directory(string dir);

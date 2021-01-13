@@ -15,13 +15,13 @@
 
 #pragma once
 
-#include "../Common/LockableObject.h"
+#include "Common/LockableObject.h"
 
 namespace Dream
 {
     class Time;
     class SceneRuntime;
-    class ActorRuntime;
+    class EntityRuntime;
     class ProjectRuntime;
 
     class Component : public LockableObject

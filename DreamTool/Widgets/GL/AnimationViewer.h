@@ -13,18 +13,21 @@
 
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
-#include "../../../DreamCore/Components/Animation/AnimationDefinition.h"
+
+namespace Dream
+{
+	class AnimationDefinition;
+}
 
 using glm::vec3;
-using Dream::AnimationDefinition;
 
 namespace DreamTool
 {
-    class DTState;
+    class DTContext;
     class AnimationViewer : public GLWidget
     {
     public:
-        AnimationViewer(DTState* state, bool visible = false);
+        AnimationViewer(DTContext* state, bool visible = false);
         ~AnimationViewer() override;
 
         void setAnimationDefinition(AnimationDefinition* object);

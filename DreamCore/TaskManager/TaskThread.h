@@ -6,7 +6,6 @@
 #include <atomic>
 #include <memory>
 
-#include "../Common/DreamObject.h"
 #include "Task.h"
 
 using std::thread;
@@ -17,7 +16,7 @@ using std::shared_ptr;
 
 namespace Dream
 {
-    class TaskThread : public DreamObject
+    class TaskThread
     {
     protected:
         thread mThread;

@@ -1,5 +1,9 @@
 #include "AudioCache.h"
 
+
+#include "Common/Constants.h"
+#include "Common/Logger.h"
+
 #include "AudioDefinition.h"
 #include "Wav/WavAudioRuntime.h"
 #include "Ogg/OggAudioRuntime.h"
@@ -11,9 +15,6 @@ namespace Dream
     (ProjectRuntime* parent)
         : Cache(parent)
     {
-#ifdef DREAM_LOG
-       setLogClassName("AudioCache");
-#endif
     }
 
     AudioCache::~AudioCache
@@ -37,9 +38,6 @@ namespace Dream
     AudioCache::loadRuntime
     (AssetDefinition* def)
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto aDef = static_cast<AudioDefinition*>(def);
         SharedAssetRuntime* asset = nullptr;
 
@@ -51,12 +49,10 @@ namespace Dream
         {
             asset = new OggAudioRuntime(aDef,mProjectRuntime);
         }
-#ifdef DREAM_LOG
         else
         {
-            log->error("Error, unrecognised audio format {}", def->getFormat());
+            LOG_ERROR("Error, unrecognised audio format {}", def->getFormat());
         }
-#endif
 
         if (asset)
         {

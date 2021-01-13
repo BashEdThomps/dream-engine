@@ -17,7 +17,7 @@
 #pragma once
 
 #include <chrono>
-#include "../Common/LockableObject.h"
+#include "Common/LockableObject.h"
 
 using std::chrono::time_point;
 using std::chrono::steady_clock;
@@ -81,12 +81,10 @@ namespace Dream
          */
         void updateFrameTime();
 
-        #ifdef DREAM_LOG
         /**
          * @brief Print Debug information about the Time object's state.
          */
         void show();
-        #endif
 
         /**
          * @return Get the time at the point of function call. Different from

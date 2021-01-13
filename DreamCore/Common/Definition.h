@@ -12,12 +12,15 @@
 
 #pragma once
 
-#include <sstream>
 #include "LockableObject.h"
-#include "json/json.hpp"
-#include "../Components/Transform.h"
+
+#include "Constants.h"
+#include "Components/Transform.h"
 #include "Math.h"
 #include "Uuid.h"
+
+#include <sstream>
+#include <json.hpp>
 
 using nlohmann::json;
 using std::stringstream;
@@ -42,7 +45,7 @@ namespace Dream
          * @param data Set the internal mJson variable to this data.
          */
         inline Definition
-        (const json& data) : LockableObject("Definition"), mJson(data)
+        (const json& data) : LockableObject(), mJson(data)
         {
             if (mJson[Constants::UUID].is_string())
             {

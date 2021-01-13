@@ -11,17 +11,14 @@
  */
 
 
-#include "../DreamCore/Common/GLHeader.h"
+#include <DreamCore.h>
 #include "DTWindowComponent.h"
-#include "../Widgets/ImGui/ImGuiWidget.h"
-#include "../Widgets/GL/GLWidget.h"
-#include "ImGui/imgui_internal.h"
-#include "ImGuizmo/ImGuizmo.h"
-#include "../../DreamCore/Scene/SceneRuntime.h"
+#include "Widgets/ImGui/ImGuiWidget.h"
+#include "Widgets/GL/GLWidget.h"
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 using namespace Dream;
-
-
 static bool WindowSizeChanged = false;
 
 namespace DreamTool
@@ -46,19 +43,14 @@ namespace DreamTool
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("DTWindowComponent");
-        getLog()->info("Constructing" );
-        #endif
+        LOG_INFO("Constructing" );
         mName = "Dream";
     }
 
     DTWindowComponent::~DTWindowComponent
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->info("Destructing" );
-        #endif
+        LOG_INFO("Destructing" );
         cleanUpImGui();
         if (mWindow)
         {
@@ -76,6 +68,7 @@ namespace DreamTool
     DTWindowComponent::init
     ()
     {
+        LOG_TRACE("{}", __FUNCTION__ );
         if (!initGLFW())
         {
             return false;
@@ -99,26 +92,20 @@ namespace DreamTool
     ()
     {
         glBindFramebuffer(GL_FRAMEBUFFER,0);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
     }
 
     bool
     DTWindowComponent::initGLFW
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising GLFW");
-        #endif
+        LOG_DEBUG("Initialising GLFW");
         glfwSetErrorCallback(GLFWErrorCallback);
 
         /* Initialize the library */
         if (!glfwInit())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("FAILED @ Initialising GLFW");
-            #endif
+            LOG_ERROR("FAILED @ Initialising GLFW");
             return false;
         }
 
@@ -129,8 +116,8 @@ namespace DreamTool
         #endif
         #ifdef __APPLE__
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
         #endif
@@ -146,9 +133,7 @@ namespace DreamTool
         if (mWindow == nullptr)
         {
 
-            #ifdef DREAM_LOG
-            getLog()->error("FAILED @ Make Window");
-            #endif
+            LOG_ERROR("FAILED @ Make Window");
             glfwTerminate();
             return false;
         }
@@ -161,9 +146,7 @@ namespace DreamTool
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Queried Framebuffer size as {}x{}",mWidth,mHeight);
-        #endif
+        LOG_DEBUG("Queried Framebuffer size as {}x{}",mWidth,mHeight);
         return true;
     }
 
@@ -172,27 +155,12 @@ namespace DreamTool
     ()
     {
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising ImGui");
-        #endif
-        /*
-        const char* glsl_version = "#version 330";
-        // Setup Dear ImGui binding
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-        ImGui_ImplOpenGL3_Init(glsl_version);
-        setTheme();
-        setFont();
-        return true;
-        */
+#ifdef IMGUI_HAS_DOCK
         const char* glsl_version = "#version 330 core";
 		// Setup Dear ImGui binding
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
+		auto ctx = ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Dockable Windows
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -208,36 +176,47 @@ namespace DreamTool
 	   }
 
 		ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+		GLCheckError();
 		ImGui_ImplOpenGL3_Init(glsl_version);
-		checkGLError();
+		GLCheckError();
 		setTheme();
 		setFont();
 		return true;
+#else
+        LOG_DEBUG("Initialising ImGui");
+        const char* glsl_version = "#version 330 core";
+        // Setup Dear ImGui binding
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+        setTheme();
+        setFont();
+        return true;
+#endif
     }
 
     bool
     DTWindowComponent::initGL
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->debug("Initialising GLFW::OpenGL");
-        #endif
+        LOG_DEBUG("Initialising GLFW::OpenGL");
 
         if(!gladLoadGL())
 		{
-			getLog()->error("Window: Error initialising GLAD!\n");
+			LOG_ERROR("Window: Error initialising GLAD!\n");
 			return false;
 		}
+		//glViewport(0,0,mWidth,mHeight);
+        GLCheckError();
 
-        #ifdef DREAM_LOG
-        checkGLError();
-
-        getLog()->debug(
+        LOG_DEBUG(
             "OpenGL Version {}, Shader Version {}",
             glGetString(GL_VERSION),
             glGetString(GL_SHADING_LANGUAGE_VERSION)
         );
-        #endif
         return true;
     }
 
@@ -254,9 +233,7 @@ namespace DreamTool
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
-            #ifdef DREAM_LOG
-            getLog()->error("Window should close");
-            #endif
+            LOG_ERROR("Window should close");
         }
 
         if (WindowSizeChanged)
@@ -269,9 +246,7 @@ namespace DreamTool
     void DTWindowComponent::getCurrentDimensions()
     {
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        #ifdef DREAM_LOG
-        getLog()->error("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
-        #endif
+        LOG_ERROR("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         mSizeHasChanged = true;
     }
 
@@ -296,11 +271,12 @@ namespace DreamTool
         }
     }
 
-    /* New, with Viewports */
+
     void
 	DTWindowComponent::drawImGui
 	()
 	{
+#ifdef IMGUI_HAS_DOCK
 		//debug("Window: {}",__FUNCTION__);
 		ImGuiIO& io = ImGui::GetIO();
 		// Start the Dear ImGui frame
@@ -386,15 +362,8 @@ namespace DreamTool
 			 ImGui::RenderPlatformWindowsDefault();
 			 glfwMakeContextCurrent(backup_current_context);
 		 }
-		checkGLError();
-	}
-    /*
-     * OLD - No Viewports
-
-    void
-    DTWindowComponent::drawImGui
-    ()
-    {
+		GLCheckError();
+#else
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -414,8 +383,8 @@ namespace DreamTool
         glfwMakeContextCurrent(mWindow);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwMakeContextCurrent(mWindow);
+#endif
     }
-    */
 
     void
     DTWindowComponent::cleanUpImGui
@@ -468,17 +437,12 @@ namespace DreamTool
 
         if (itr == end)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Adding Widget {}", widget->getClassName());
-            #endif
+            LOG_DEBUG("Adding Widget");
             mImGuiWidgets.push_back(widget);
         }
         else
         {
-
-            #ifdef DREAM_LOG
-            getLog()->error("Widget {} is all ready registered",widget->getClassName());
-            #endif
+            LOG_ERROR("Widget is all ready registered");
         }
     }
 
@@ -490,16 +454,12 @@ namespace DreamTool
         auto itr = find(mImGuiWidgets.begin(), end, widget);
         if (itr != end)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Removig Runtime of {} from widgets", widget->getClassName());
-            #endif
+            LOG_DEBUG("Removig Runtime of widget from widgets");
             mImGuiWidgets.erase(itr);
         }
         else
         {
-            #ifdef DREAM_LOG
-            getLog()->error("This instane of {} was not in the widgets list",widget->getClassName());
-            #endif
+            LOG_ERROR("This instane of widget was not in the widgets list");
         }
     }
 
@@ -512,16 +472,12 @@ namespace DreamTool
 
         if (itr == end)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Adding Widget {}", widget->getClassName());
-            #endif
+            LOG_DEBUG("Adding Widget");
             mGLWidgets.push_back(widget);
         }
         else
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Widget {} is all ready registered",widget->getClassName());
-            #endif
+            LOG_ERROR("Widget is all ready registered");
         }
     }
 
@@ -533,16 +489,12 @@ namespace DreamTool
         auto itr = find(mGLWidgets.begin(), end, widget);
         if (itr != end)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Removig Runtime of {} from widgets", widget->getClassName());
-            #endif
+            LOG_DEBUG("Removig Runtime of from widgets");
             mGLWidgets.erase(itr);
         }
         else
         {
-            #ifdef DREAM_LOG
-            getLog()->error("This instane of {} was not in the widgets list",widget->getClassName());
-            #endif
+            LOG_ERROR("This instane of {} was not in the widgets list");
         }
     }
 

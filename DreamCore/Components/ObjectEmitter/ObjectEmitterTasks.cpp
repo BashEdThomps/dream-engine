@@ -1,4 +1,5 @@
 #include "ObjectEmitterTasks.h"
+
 #include "ObjectEmitterRuntime.h"
 
 namespace Dream
@@ -8,9 +9,6 @@ namespace Dream
         : Task(),
           mRuntime(rt)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ObjectEmitterUpdateTask");
-        #endif
     }
 
     void

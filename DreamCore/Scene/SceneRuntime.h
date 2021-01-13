@@ -17,9 +17,9 @@
 
 #include "SceneState.h"
 
-#include "../Common/Runtime.h"
-#include "../Components/Transform.h"
-#include "../Components/Graphics/Camera.h"
+#include "Common/Runtime.h"
+#include "Components/Transform.h"
+#include "Components/Graphics/Camera.h"
 
 using std::string;
 using std::vector;
@@ -28,11 +28,11 @@ using std::shared_ptr;
 namespace Dream
 {
     class ProjectRuntime;
-    class Actor;
+    class Entity;
     class SceneDefinition;
     class AssetRuntime;
     class AssetDefinition;
-    class ActorRuntime;
+    class EntityRuntime;
     class ShaderRuntime;
     class ScriptRuntime;
 
@@ -41,8 +41,8 @@ namespace Dream
         SceneState mState;
         Vector3 mClearColour;
         ProjectRuntime* mProjectRuntime;
-        vector<ActorRuntime*> mActorRuntimeCleanUpQueue;
-        ActorRuntime* mRootActorRuntime;
+        vector<EntityRuntime*> mEntityRuntimeCleanUpQueue;
+        EntityRuntime* mRootEntityRuntime;
         ShaderRuntime* mLightingPassShader;
         ShaderRuntime* mShadowPassShader;
         ScriptRuntime* mInputScript;
@@ -52,16 +52,16 @@ namespace Dream
         float mMinDrawDistance;
         float mMaxDrawDistance;
         float mMeshCullDistance;
-        ActorRuntime* mPlayerObject;
+        EntityRuntime* mPlayerObject;
 
     protected:
         void updateLifetime();
-        vector<ActorRuntime*> getActorRuntimeCleanUpQueue() const;
-        void addActorRuntimeToCleanUpQueue(ActorRuntime*);
-        void clearActorRuntimeCleanUpQueue();
-        void processActorRuntimeCleanUpQueue();
+        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
+        void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
+        void clearEntityRuntimeCleanUpQueue();
+        void processEntityRuntimeCleanUpQueue();
         void createAllAssetRuntimes();
-        void setDeleteFlagOnAllActorRuntimes();
+        void setDeleteFlagOnAllEntityRuntimes();
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
@@ -94,15 +94,15 @@ namespace Dream
 
         void createSceneTasks();
 
-        bool hasRootActorRuntime() const;
-        void setRootActorRuntime(ActorRuntime* sceneObject);
-        ActorRuntime* getRootActorRuntime() const;
+        bool hasRootEntityRuntime() const;
+        void setRootEntityRuntime(EntityRuntime* sceneObject);
+        EntityRuntime* getRootEntityRuntime() const;
 
-        ActorRuntime* getActorRuntimeByName(const string& name) const;
-        ActorRuntime* getActorRuntimeByUuid(uint32_t uuid) const;
+        EntityRuntime* getEntityRuntimeByName(const string& name) const;
+        EntityRuntime* getEntityRuntimeByUuid(uint32_t uuid) const;
 
-        int countActorRuntimes() const;
-        int countChildrenOfActorRuntime(ActorRuntime*) const;
+        int countEntityRuntimes() const;
+        int countChildrenOfEntityRuntime(EntityRuntime*) const;
 
         void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
@@ -118,7 +118,7 @@ namespace Dream
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
-        vector<ActorRuntime*> getActorsWithRuntimeOf(AssetDefinition* def) const;
+        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
 
         /**
          * @return Gets the ScriptRuntime that handles Input
@@ -126,10 +126,10 @@ namespace Dream
         ScriptRuntime* getInputScript() const;
 
         /**
-         * @return Gets the nearest Actor to the Camera's position excluding
-         * the Actor the Camera is focused on.
+         * @return Gets the nearest Entity to the Camera's position excluding
+         * the Entity the Camera is focused on.
          */
-        ActorRuntime* getNearestToCamera() const;
+        EntityRuntime* getNearestToCamera() const;
 
         unsigned long getSceneCurrentTime() const;
         void setSceneCurrentTime(unsigned long sceneCurrentTime);
@@ -137,7 +137,7 @@ namespace Dream
         unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
-        void setPlayerObject(ActorRuntime* po);
-        ActorRuntime* getPlayerObject() const;
+        void setPlayerObject(EntityRuntime* po);
+        EntityRuntime* getPlayerObject() const;
     };
 }

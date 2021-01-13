@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../../Common/GLHeader.h"
+#include "Common/GLHeader.h"
 
 // Defer GL Operations using Task objects
-#include "../GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTask.h"
 
 namespace Dream
 {

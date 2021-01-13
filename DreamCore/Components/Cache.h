@@ -1,10 +1,13 @@
 #pragma once
 
-#include "../Common/LockableObject.h"
+#include "Common/LockableObject.h"
+
+#include <string>
 #include <vector>
 #include <memory>
 
 using std::vector;
+using std::string;
 
 namespace Dream
 {
@@ -15,7 +18,7 @@ namespace Dream
     /**
      * @brief Cache is an abstract class that is used to define a common
      * interface for a instanciating and storing SharedAssetRuntime objects.
-     * SharedAssetRuntime objects are used by more than one ActorRuntime
+     * SharedAssetRuntime objects are used by more than one EntityRuntime
      * or other AssetRuntime objects. These AssetRuntime objects are cached to
      * reduce the SceneRuntime memory footprint.
      */

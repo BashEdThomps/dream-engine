@@ -1,20 +1,14 @@
 #include "SelectionHighlighter.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Common/Constants.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
 
     SelectionHighlighter::SelectionHighlighter
-    (DTState* project)
+    (DTContext* project)
         :GLWidget (project,false),
-          mSelectedActorRuntime(nullptr),
+          mSelectedEntityRuntime(nullptr),
           mSelectionColour(vec3(0.0,1.0f,0.40f)),
           mOffset(0.25f),
           mXColour(vec3(1.0f, 0.0f, 0.0f)),
@@ -22,28 +16,20 @@ namespace DreamTool
           mZColour(vec3(0.0f, 0.0f, 1.0f)),
           mOutlineOnly(true)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("SelectionHighlighterWidget");
-        getLog()->trace("Constructing");
-        #endif
     }
 
     SelectionHighlighter::~SelectionHighlighter
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
     }
 
     void
-    SelectionHighlighter::setSelectedActor
-    (ActorRuntime* selected)
+    SelectionHighlighter::setSelectedEntity
+    (EntityRuntime* selected)
     {
-        mSelectedActorRuntime = selected;
-        #ifdef DREAM_LOG
-        getLog()->error("SelectedActor changed to {}",mSelectedActorRuntime->getNameAndUuidString());
-        #endif
+        mSelectedEntityRuntime = selected;
+        LOG_ERROR("SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
         updateGeometry();
     }
 
@@ -56,20 +42,15 @@ namespace DreamTool
     SelectionHighlighter::updateGeometry
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->error("Updating");
-        #endif
-        if (mSelectedActorRuntime == nullptr)
+        LOG_ERROR("Updating");
+        if (mSelectedEntityRuntime == nullptr)
         {
             return;
         }
 
-        BoundingBox bounds = mSelectedActorRuntime->getBoundingBox();
-        #ifdef DREAM_LOG
-        log->error("Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
-        log->error("Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
-        #endif
+        BoundingBox bounds = mSelectedEntityRuntime->getBoundingBox();
+        LOG_ERROR("Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
+        LOG_ERROR("Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
 
         mVertexBuffer.clear();
         // Top Quad
@@ -206,30 +187,21 @@ namespace DreamTool
          // Buffer Data
         glBindVertexArray(mVao);
         ShaderRuntime::CurrentVAO = mVao;
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
 
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         ShaderRuntime::CurrentVBO = mVbo;
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        #ifdef DREAM_LOG
-        checkGLError();
-        #endif
+        GLCheckError();
         glBindVertexArray(0);
     }
 
     void SelectionHighlighter::draw()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        checkGLError();
-        #endif
+        GLCheckError();
 
-        if (!mSelectedActorRuntime)
+        if (!mSelectedEntityRuntime)
         {
             return;
         }
@@ -254,105 +226,63 @@ namespace DreamTool
 
         if (!mVertexBuffer.empty())
         {
-            #ifndef __APPLE__
-            glEnable(GL_LINE_SMOOTH);
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            glLineWidth(3.0f);
-
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-            #endif
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
             // Enable shader program
             glUseProgram(mShaderProgram);
             ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
 
             // Vertex Array
             glBindVertexArray(mVao);
             ShaderRuntime::CurrentVAO = mVao;
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
 
             glBindBuffer(GL_ARRAY_BUFFER, mVbo);
             ShaderRuntime::CurrentVBO = mVbo;
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
             if (mProjectionUniform == -1)
             {
-                #ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for projection");
-                #endif
+                LOG_ERROR("Unable to find Uniform Location for projection");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-                #ifdef DREAM_LOG
-                checkGLError();
-                #endif
+                GLCheckError();
             }
 
             // Set the view matrix
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
+            GLCheckError();
             if (mViewUniform == -1)
             {
-                #ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for view");
-                #endif
+                LOG_ERROR("Unable to find Uniform Location for view");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
-            mModelMatrix = mSelectedActorRuntime->getTransform().getMatrix();
+            mModelMatrix = mSelectedEntityRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {
-#ifdef DREAM_LOG
-                log->error("Unable to find Uniform Location for model");
-#endif
+                LOG_ERROR("Unable to find Uniform Location for model");
                 return;
             }
             else
             {
                 glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
-#ifdef DREAM_LOG
-                checkGLError();
-#endif
+                GLCheckError();
             }
 
             // Draw
             glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-#ifdef DREAM_LOG
-            checkGLError();
-#endif
+            GLCheckError();
 
-            // Revert State
-#ifndef __APPLE__
-            glDisable(GL_LINE_SMOOTH);
-            glLineWidth(1.0f);
-
-            #ifdef DREAM_LOG
-            checkGLError();
-            #endif
-#endif
             glDisable(GL_BLEND);
         }
     }
@@ -409,6 +339,6 @@ namespace DreamTool
     SelectionHighlighter::clearSelection
     ()
     {
-       mSelectedActorRuntime =  nullptr;
+       mSelectedEntityRuntime =  nullptr;
     }
 }

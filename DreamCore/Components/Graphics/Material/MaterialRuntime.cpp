@@ -12,14 +12,14 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #include "MaterialRuntime.h"
-#include "../Shader/ShaderRuntime.h"
-#include "../Texture/TextureRuntime.h"
-#include "../Model/ModelMesh.h"
+
 #include "MaterialDefinition.h"
-#include "../Camera.h"
+#include "Common/Logger.h"
+#include "Components/Graphics/Shader/ShaderRuntime.h"
+#include "Components/Graphics/Texture/TextureRuntime.h"
+#include "Components/Graphics/Model/ModelMesh.h"
+#include "Components/Graphics/Camera.h"
 
 namespace Dream
 {
@@ -39,19 +39,12 @@ namespace Dream
 
           mShader(nullptr)
     {
-#ifdef DREAM_LOG
-        setLogClassName("MaterialRuntime");
-        auto log = getLog();
-        log->trace("Constructing");
-#endif
+        LOG_TRACE("Constructing");
     }
 
     MaterialRuntime::~MaterialRuntime()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace("Destructing");
-#endif
+        LOG_TRACE("Destructing");
     }
 
     void
@@ -82,7 +75,6 @@ namespace Dream
         return getName() == other.getName();
     }
 
-#ifdef DREAM_LOG
     void
     MaterialRuntime::debug
     ()
@@ -93,8 +85,7 @@ namespace Dream
         norm = (mNormalTexture   == nullptr ? 0 : mNormalTexture->getGLID());
         disp = (mDisplacementTexture == nullptr ? 0 : mDisplacementTexture->getGLID());
 
-        auto log = getLog();
-        log->trace(
+        LOG_TRACE(
             "Maerial Parameters\n"
             "Name....................{}\n"
             "Opacity.................{}\n"
@@ -144,15 +135,13 @@ namespace Dream
     MaterialRuntime::logMeshes
     ()
     {
-        auto log = getLog();
-        log->debug("\tMeshes for material {} : {}",getName(),mUsedBy.size());
+        LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
         for (auto mesh : mUsedBy)
         {
-            log->debug("\t\t{}", mesh->getName());
+            LOG_DEBUG("\t\t{}", mesh->getName());
             mesh->logRuntimes();
         }
     }
-#endif
 
     void
     MaterialRuntime::drawGeometryPass

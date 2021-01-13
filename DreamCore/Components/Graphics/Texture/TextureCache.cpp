@@ -1,12 +1,14 @@
 #include "TextureCache.h"
+
 #include "TextureDefinition.h"
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
-#include "../GraphicsComponent.h"
-#include "../../SharedAssetRuntime.h"
-#include "../../../Common/File.h"
-#include "../../../Project/ProjectRuntime.h"
-#include "soil/SOIL.h"
+#include "Common/File.h"
+#include "Components/Graphics/GraphicsComponent.h"
+#include "Components/SharedAssetRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+#include <SOIL.h>
 
 namespace Dream
 {
@@ -14,9 +16,6 @@ namespace Dream
     (ProjectRuntime* runtime)
         : Cache(runtime)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("TextureCache");
-        #endif
     }
 
     TextureCache::~TextureCache()
@@ -29,9 +28,7 @@ namespace Dream
     {
         if (!def)
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Cannot load texture, TextureDefinition is null");
-            #endif
+            LOG_ERROR("Cannot load texture, TextureDefinition is null");
             return nullptr;
         }
         auto textureDef = static_cast<TextureDefinition*>(def);
@@ -40,15 +37,11 @@ namespace Dream
         File txFile(filename);
         if (!txFile.exists())
         {
-            #ifdef DREAM_LOG
-            getLog()->error("Texture file does not exist: {}",filename);
-            #endif
+            LOG_ERROR("Texture file does not exist: {}",filename);
             return nullptr;
         }
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Loading texture: {}",filename);
-        #endif
+        LOG_DEBUG("Loading texture: {}",filename);
 
         int width = 0;
         int height = 0;
@@ -56,10 +49,8 @@ namespace Dream
 
         unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
 
-        #ifdef DREAM_LOG
-        getLog()->debug("Didn't find cached texture matching {}",filename);
-        getLog()->debug("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
-        #endif
+        LOG_DEBUG("Didn't find cached texture matching {}",filename);
+        LOG_DEBUG("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
 
         auto texture = new TextureRuntime(textureDef,mProjectRuntime);
         texture->setPath(filename);

@@ -15,21 +15,23 @@
 
 
 #include "ObjectEmitterRuntime.h"
+
 #include "ObjectEmitterDefinition.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Project/ProjectRuntime.h"
-#include "../Physics/PhysicsObjectRuntime.h"
-#include "../Time.h"
+#include "Common/Logger.h"
+#include "Components/Physics/PhysicsObjectRuntime.h"
+#include "Components/Time.h"
+#include "Project/ProjectRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Scene/SceneRuntime.h"
 
 namespace Dream
 {
     ObjectEmitterRuntime::ObjectEmitterRuntime
     (
         ObjectEmitterDefinition* definition,
-        ActorRuntime* transform
+        EntityRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform),
-        mActorUuid(0),
+        mEntityUuid(0),
         mEmitInterval(0),
         mObjectVelocity(0.0f),
         mStartRadius(0.0f),
@@ -42,18 +44,13 @@ namespace Dream
         mState(Emit),
         mUpdateTask(this)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("ObjectEmitterRuntime");
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     ObjectEmitterRuntime::~ObjectEmitterRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying");
-        #endif
+        LOG_TRACE("Destroying");
     }
 
     bool
@@ -61,7 +58,7 @@ namespace Dream
     ()
     {
         auto def = static_cast<ObjectEmitterDefinition*>(mDefinition);
-        mActorUuid = def->getActorUuid();
+        mEntityUuid = def->getEntityUuid();
         mLoops = def->getLoops();
         mEmitInterval = def->getEmitInterval();
         mObjectCount = def->getObjectCount();
@@ -84,22 +81,18 @@ namespace Dream
     bool
     ObjectEmitterRuntime::update()
     {
-       if (mActorRuntime->tryLock())
+       if (mEntityRuntime->tryLock())
        {
-           auto time = mActorRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
+           auto time = mEntityRuntime->getSceneRuntime()->getProjectRuntime()->getTime();
            long frameDelta = time->getFrameTimeDelta();
 
            switch (mState)
            {
                case Emit:
-                   #ifdef DREAM_LOG
-                   getLog()->debug("Emit");
-                   #endif
+                   LOG_DEBUG("Emit");
                    emitObjects();
                    mEmitIntervalTime = mEmitInterval;
-                   #ifdef DREAM_LOG
-                   getLog()->debug("EmitInterval");
-                   #endif
+                   LOG_DEBUG("EmitInterval");
                    mState = EmitInterval;
                    break;
                case EmitInterval:
@@ -113,9 +106,7 @@ namespace Dream
                        }
                        else
                        {
-                          #ifdef DREAM_LOG
-                          getLog()->debug("Done");
-                          #endif
+                          LOG_DEBUG("Done");
                           mState = Done;
                        }
                    }
@@ -123,7 +114,7 @@ namespace Dream
                case Done:
                    break;
            }
-           mActorRuntime->unlock();
+           mEntityRuntime->unlock();
            return true;
        }
        return false;
@@ -133,11 +124,9 @@ namespace Dream
     ObjectEmitterRuntime::emitObjects
     ()
     {
-        if (mActorUuid != 0)
+        if (mEntityUuid != 0)
         {
-            #ifdef DREAM_LOG
-            getLog()->debug("Emitting Objects");
-            #endif
+            LOG_DEBUG("Emitting Objects");
             double deltaTheta = (mEndTheta-mStartTheta)/mObjectCount;
             float theta = mStartTheta;
 
@@ -146,8 +135,8 @@ namespace Dream
                 float x = cos(theta);
                 float y = sin(theta);
 
-                ActorRuntime* newObj = mActorRuntime->addChildFromTemplateUuid(mActorUuid);
-                Vector3 startTx = mActorRuntime->getTransform().getTranslation();
+                EntityRuntime* newObj = mEntityRuntime->addChildFromTemplateUuid(mEntityUuid);
+                Vector3 startTx = mEntityRuntime->getTransform().getTranslation();
                 if (newObj->hasPhysicsObjectRuntime())
                 {
                     PhysicsObjectRuntime* po = newObj->getPhysicsObjectRuntime();

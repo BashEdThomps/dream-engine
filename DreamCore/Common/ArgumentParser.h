@@ -17,13 +17,11 @@
 
 #include <iostream>
 
-#include "../Common/DreamObject.h"
-
-using namespace std;
+using std::string;
 
 namespace Dream
 {
-    class ArgumentParser : DreamObject
+    class ArgumentParser
     {
 
     private:

@@ -17,47 +17,43 @@
 
 #include "Project.h"
 
-#include <algorithm>
-#include <thread>
-
 #include "ProjectRuntime.h"
 #include "ProjectDefinition.h"
 
-#include "../Components/AssetDefinition.h"
-#include "../Components/Time.h"
-#include "../Components/Transform.h"
-#include "../Components/AssetRuntime.h"
-#include "../Components/Window/WindowComponent.h"
+#include "Common/Logger.h"
+#include "Common/ArgumentParser.h"
+#include "Common/File.h"
+#include "Common/Uuid.h"
+#include "Common/Directory.h"
 
-#include "../Scene/SceneRuntime.h"
-#include "../Scene/SceneDefinition.h"
+#include "Components/AssetDefinition.h"
+#include "Components/Time.h"
+#include "Components/Transform.h"
+#include "Components/AssetRuntime.h"
+#include "Components/Window/WindowComponent.h"
 
-#include "../Common/ArgumentParser.h"
-#include "../Common/File.h"
-#include "../Common/Uuid.h"
-#include "../Common/Directory.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/SceneDefinition.h"
+
+#include <algorithm>
+#include <thread>
 
 namespace Dream
 {
     Project::Project
     (ProjectDirectory* dir)
-        : DreamObject("Project"),
-          mDirectory(dir),
+        : mDirectory(dir),
           mDefinition(nullptr),
           mRuntime(nullptr),
           mWindowComponent(nullptr)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Constructing");
-        #endif
+        LOG_TRACE("Constructing");
     }
 
     Project::~Project
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-        #endif
+        LOG_TRACE("Destructing");
 
         if (mRuntime != nullptr)
         {
@@ -76,17 +72,12 @@ namespace Dream
     Project::createProjectRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Creating project runtime for {}", mDefinition->getNameAndUuidString());
-        #endif
+        LOG_DEBUG("Creating project runtime for {}", mDefinition->getNameAndUuidString());
         mRuntime = new ProjectRuntime(this, mWindowComponent);
         mRuntime->lock();
         if (!mRuntime->useDefinition())
         {
-            #ifdef DREAM_LOG
-            log->critical("Failed to create project runtime");
-            #endif
+            LOG_CRITICAL("Failed to create project runtime");
             delete mRuntime;
             mRuntime = nullptr;
         }
@@ -109,10 +100,7 @@ namespace Dream
 
     void Project::resetProjectRuntime()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->debug("Resetting project runtime");
-        #endif
+        LOG_DEBUG("Resetting project runtime");
         delete mRuntime;
         mRuntime = nullptr;
     }

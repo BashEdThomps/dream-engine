@@ -25,7 +25,7 @@ namespace DreamTool
         bool mStepMajor;
         mat4 mOrientation;
     public:
-        Cursor(DTState* st);
+        Cursor(DTContext* st);
         ~Cursor() override;
         void draw() override;
         void init();

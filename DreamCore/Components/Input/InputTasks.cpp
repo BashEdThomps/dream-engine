@@ -1,6 +1,8 @@
 #include "InputTasks.h"
+
 #include "InputComponent.h"
-#include "../../Scene/SceneRuntime.h"
+#include "Common/Logger.h"
+#include "Scene/SceneRuntime.h"
 
 namespace Dream
 {
@@ -8,9 +10,6 @@ namespace Dream
     (InputComponent* cp)
         : Task(), mComponent(cp)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("InputPollDataTask");
-        #endif
     }
 
     void
@@ -19,9 +18,7 @@ namespace Dream
     {
         if (mComponent->tryLock())
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing on worker {}",mThreadId);
-            #endif
+            LOG_CRITICAL("Executing on worker {}",mThreadId);
             mComponent->pollData();
             mComponent->unlock();
             setState(TaskState::COMPLETED);
@@ -37,22 +34,15 @@ namespace Dream
     (InputComponent* cp)
         : Task(), mComponent(cp)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("InputExecuteScriptTask");
-        #endif
     }
 
     void InputExecuteScriptTask::execute()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
 
         if (mComponent->tryLock())
         {
-            #ifdef DREAM_LOG
-            getLog()->critical("Executing...");
-            #endif
+            LOG_CRITICAL("Executing...");
 
             if (mComponent->executeInputScript())
             {

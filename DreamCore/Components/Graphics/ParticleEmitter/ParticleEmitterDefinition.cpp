@@ -11,6 +11,8 @@
  */
 #include "ParticleEmitterDefinition.h"
 
+#include "Common/Constants.h"
+
 namespace Dream
 {
     ParticleEmitterDefinition::ParticleEmitterDefinition

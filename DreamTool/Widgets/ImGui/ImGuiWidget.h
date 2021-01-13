@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "../DTWidget.h"
-#include "ImGui/imgui.h"
+#include "Widgets/DTWidget.h"
+#include <imgui.h>
 
 namespace DreamTool
 {
     class ImGuiWidget : public DTWidget
     {
     public:
-        ImGuiWidget(DTState* project,bool visible = true);
+        ImGuiWidget(DTContext* project,bool visible = true);
         ~ImGuiWidget() override;
         bool StringCombo(const char* label,
                          int* current_item,

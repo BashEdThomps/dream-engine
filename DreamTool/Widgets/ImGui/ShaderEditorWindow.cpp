@@ -1,24 +1,15 @@
 #include "ShaderEditorWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectDefinition.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Project/ProjectDirectory.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderDefinition.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderRuntime.h"
-#include "../../../DreamCore/Components/Graphics/Shader/ShaderCache.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 namespace DreamTool
 {
 
     ShaderEditorWindow::ShaderEditorWindow
-    (DTState* state)
+    (DTContext* state)
         : ImGuiWidget (state),
           mShaderDefinition(nullptr)
     {
-#ifdef DREAM_LOG
-        setLogClassName("ShaderEditorWidget");
-#endif
         mVertexEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
         mFragmentEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     }
@@ -37,9 +28,6 @@ namespace DreamTool
         {
 
             ImGui::Begin("Shader Editor",&mVisible);
-#ifdef DREAM_LOG
-            auto log = getLog();
-#endif
             auto projRunt = mState->project->getRuntime();
             ShaderRuntime* shaderInst = nullptr;
             {
@@ -134,9 +122,7 @@ namespace DreamTool
                 {
                     if (currentTemplateIndex < 0)
                     {
-#ifdef DREAM_LOG
-                        log->error("Cannot load template {}",currentTemplateIndex);
-#endif
+                        LOG_ERROR("Cannot load template {}",currentTemplateIndex);
                     }
                     else
                     {
@@ -150,9 +136,7 @@ namespace DreamTool
                         }
                         else
                         {
-#ifdef DREAM_LOG
-                            log->error("Cannot set template, shader is null");
-#endif
+                            LOG_ERROR("Cannot set template, shader is null");
                         }
                         currentTemplateIndex = -1;
                     }

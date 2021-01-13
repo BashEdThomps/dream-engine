@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../Common/GLHeader.h"
-#include "../GraphicsComponentTask.h"
+#include "Common/GLHeader.h"
+#include "Components/Graphics/GraphicsComponentTask.h"
 
 namespace Dream
 {

@@ -1,22 +1,20 @@
 #include "PreferencesModel.h"
-#include "../../DreamCore/Common/File.h"
+
+using Dream::File;
+using Dream::Constants;
 
 namespace DreamTool
 {
     PreferencesModel::PreferencesModel
-    () : DreamObject("PreferencesModel")
+    ()
     {
-#ifdef DREAM_LOG
-        getLog()->trace("Constructing");
-#endif
+        LOG_TRACE("Constructing");
     }
 
     PreferencesModel::~PreferencesModel
     ()
     {
-#ifdef DREAM_LOG
-        getLog()->trace("Destructing");
-#endif
+        LOG_TRACE("Destructing");
     }
 
     bool

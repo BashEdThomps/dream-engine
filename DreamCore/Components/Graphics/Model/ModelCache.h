@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "../../Cache.h"
+#include "Components/Cache.h"
 
 namespace Dream
 {

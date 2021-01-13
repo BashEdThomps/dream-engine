@@ -16,21 +16,25 @@
 #include <algorithm>
 
 #include "AnimationRuntime.h"
-#include "../Time.h"
-#include "../../Scene/Actor/ActorRuntime.h"
-#include "../../Scene/SceneRuntime.h"
-#include "../../Project/ProjectRuntime.h"
+#include "AnimationEasing.h"
+
+#include "Common/Constants.h"
+#include "Common/Logger.h"
+#include "Components/Time.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Scene/SceneRuntime.h"
+#include "Project/ProjectRuntime.h"
+
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "AnimationEasing.h"
 
 namespace Dream
 {
     AnimationRuntime::AnimationRuntime
     (
         AnimationDefinition* definition,
-        ActorRuntime* runtime
+        EntityRuntime* runtime
     ) : DiscreteAssetRuntime(definition,runtime),
         mRunning(false),
         mCurrentTime(0),
@@ -39,18 +43,13 @@ namespace Dream
         mOriginalTransform(runtime->getTransform().getMatrix()),
         mUpdateTask(this)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("AnimationRuntime");
-        getLog()->trace("Constructing Object");
-        #endif
+        LOG_TRACE("Constructing Object");
     }
 
     AnimationRuntime::~AnimationRuntime
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Destroying Object");
-        #endif
+        LOG_TRACE("Destroying Object");
     }
 
     bool
@@ -71,9 +70,7 @@ namespace Dream
     {
         if (mRunning)
         {
-            #ifdef DREAM_LOG
-            getLog()->trace("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
-            #endif
+            LOG_TRACE("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
             mCurrentTime += deltaTime;
             if (mCurrentTime > mDuration)
             {
@@ -204,9 +201,7 @@ namespace Dream
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
-        #ifdef DREAM_LOG
-        getLog()->trace("Seeing to {}",pos);
-        #endif
+        LOG_TRACE("Seeing to {}",pos);
         vec3 newTx, newRx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
         newTx.y = mTweenTranslationY.seek(pos);
@@ -231,7 +226,7 @@ namespace Dream
         }
         matrix = matrix*mat4_cast(quat(newRx));
         matrix = glm::scale(matrix,newSx);
-        mActorRuntime->getTransform().setMatrix(matrix);
+        mEntityRuntime->getTransform().setMatrix(matrix);
     }
 
     long
@@ -251,7 +246,7 @@ namespace Dream
     void AnimationRuntime::update()
     {
        auto timeDelta =
-            mActorRuntime
+            mEntityRuntime
                ->getSceneRuntime()
                ->getProjectRuntime()
                ->getTime()

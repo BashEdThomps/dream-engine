@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../../TaskManager/Task.h"
-#include "../Graphics/GraphicsComponentTask.h"
+#include "TaskManager/Task.h"
+#include "Components/Graphics/GraphicsComponentTask.h"
 
 namespace Dream
 {
-    class ActorRuntime;
+    class EntityRuntime;
     class ScriptRuntime;
 
     class ScriptConstructionTask : public Task
@@ -19,44 +19,44 @@ namespace Dream
 
     class ScriptOnInitTask : public Task
     {
-        ActorRuntime* mActor;
+        EntityRuntime* mEntity;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnInitTask(ActorRuntime* rt);
+        ScriptOnInitTask(EntityRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnUpdateTask : public Task
     {
-        ActorRuntime* mActor;
+        EntityRuntime* mEntity;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnUpdateTask(ActorRuntime* rt);
+        ScriptOnUpdateTask(EntityRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnEventTask : public Task
     {
-        ActorRuntime* mActor;
+        EntityRuntime* mEntity;
         ScriptRuntime* mScript = nullptr;
 
     public:
-        ScriptOnEventTask(ActorRuntime* rt);
+        ScriptOnEventTask(EntityRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };
 
     class ScriptOnDestroyTask : public DestructionTask
     {
-        ActorRuntime* mParentActor;
+        EntityRuntime* mParentEntity;
         ScriptRuntime* mScript = nullptr;
         uint32_t mDestroyedObject;
     public:
-        ScriptOnDestroyTask(uint32_t destroyed, ActorRuntime* rt);
+        ScriptOnDestroyTask(uint32_t destroyed, EntityRuntime* rt);
         void execute() override;
         void setScript(ScriptRuntime* rt);
     };

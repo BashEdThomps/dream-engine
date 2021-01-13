@@ -1,21 +1,18 @@
 #include "PathTasks.h"
-#include "../Path/PathRuntime.h"
+
+#include "PathRuntime.h"
+#include "Common/Logger.h"
 
 namespace Dream
 {
     PathUpdateTask::PathUpdateTask(PathRuntime* rt)
     : Task(), mPathRuntime(rt)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("PathUpdateTask");
-        #endif
     }
 
     void PathUpdateTask::execute()
     {
-        #ifdef DREAM_LOG
-        getLog()->critical("Executing on thread {}",mThreadId);
-        #endif
+        LOG_CRITICAL("Executing on thread {}",mThreadId);
         if( mPathRuntime->tryLock())
         {
             mPathRuntime->update();

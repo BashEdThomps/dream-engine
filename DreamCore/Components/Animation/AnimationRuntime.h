@@ -17,15 +17,17 @@
 
 #include "AnimationDefinition.h"
 #include "AnimationKeyframe.h"
-#include "../DiscreteAssetRuntime.h"
 #include "AnimationTasks.h"
+#include "Components/DiscreteAssetRuntime.h"
+
+#include <tweeny.h>
+
 #ifdef max
 #undef max
 #endif
 #ifdef min
 #undef min
 #endif
-#include "tweeny/tweeny.h"
 
 using namespace tweeny;
 
@@ -34,7 +36,7 @@ namespace Dream
     class AnimationRuntime : public DiscreteAssetRuntime
     {
     public:
-        AnimationRuntime(AnimationDefinition*, ActorRuntime*);
+        AnimationRuntime(AnimationDefinition*, EntityRuntime*);
         ~AnimationRuntime() override;
         bool useDefinition() override;
 

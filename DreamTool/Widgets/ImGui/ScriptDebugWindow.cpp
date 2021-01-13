@@ -1,16 +1,13 @@
 #include "ScriptDebugWindow.h"
-#include "../../DTState.h"
+#include "DTContext.h"
 
 namespace DreamTool
 {
     ScriptDebugWindow::ScriptDebugWindow
-    (DTState* proj)
+    (DTContext* proj)
         : ImGuiWidget(proj,false),
         ScriptPrintListener()
     {
-#ifdef DREAM_LOG
-        setLogClassName("ScriptDebugWindow");
-#endif
     }
 
     ScriptDebugWindow::~ScriptDebugWindow

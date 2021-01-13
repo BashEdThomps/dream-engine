@@ -8,8 +8,8 @@
 #pragma once
 
 
-#include "../DreamCore/Common/GLHeader.h"
-#include "../DTWidget.h"
+#include <DreamCore.h>
+#include "Widgets/DTWidget.h"
 #include "glm/glm.hpp"
 
 using namespace Dream;
@@ -26,7 +26,7 @@ namespace DreamTool
     class GLWidget : public DTWidget
     {
     public:
-        GLWidget(DTState* project, bool visible = true);
+        GLWidget(DTContext* project, bool visible = true);
         virtual ~GLWidget() override;
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);

@@ -1,40 +1,27 @@
+#include "ProjectBrowser.h"
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
-#include "ProjectBrowser.h"
 #include "PropertiesWindow.h"
-#include "ImFileSystem/imguifilesystem.h"
-#include <sstream>
-#include "../../DTState.h"
+#include "DTContext.h"
 
-#include "../../../DreamCore/Components/AssetDefinition.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectDefinition.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/Scene/SceneDefinition.h"
-#include "../../../DreamCore/Scene/SceneRuntime.h"
-#include "../../../DreamCore/Scene/Actor/ActorDefinition.h"
-#include "../../../DreamCore/Scene/Actor/ActorRuntime.h"
+#include <DreamCore.h>
+#include <ImFileSystem.h>
+#include <sstream>
 
 using std::stringstream;
 
 namespace DreamTool
 {
-    ProjectBrowser::ProjectBrowser
-    (
-        DTState* project
-    )
+    ProjectBrowser::ProjectBrowser(DTContext* project)
         : ImGuiWidget(project)
     {}
 
     ProjectBrowser::~ProjectBrowser
     ()
     {
-#ifdef DREAM_LOG
-        setLogClassName("ProjectBrowser");
-#endif
     }
 
     void
@@ -56,9 +43,6 @@ namespace DreamTool
     ()
     {
 
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         // Project Tree
         auto projDef = mState->project->getDefinition();
         ImGui::Text("Scenegraph");
@@ -77,9 +61,7 @@ namespace DreamTool
         if (ImGui::IsItemClicked())
         {
 
-#ifdef DREAM_LOG
-            log->trace("Project clicked {}", projDef->getName());
-#endif
+            LOG_TRACE("Project clicked {}", projDef->getName());
             mState->propertiesWindow.pushPropertyTarget
             (
                 Project,
@@ -98,9 +80,7 @@ namespace DreamTool
 
                 if (ImGui::IsItemClicked())
                 {
-#ifdef DREAM_LOG
-                    log->trace("Scene Clicked {}", sDef->getName());
-#endif
+                    LOG_TRACE("Scene Clicked {}", sDef->getName());
                     auto pRunt = mState->project->getRuntime();
                     SceneRuntime* sRunt = nullptr;
 
@@ -113,9 +93,7 @@ namespace DreamTool
                     {
                         if (sRunt->getUuid() != sDef->getUuid())
                         {
-#ifdef DREAM_LOG
-                            log->trace("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
-#endif
+                            LOG_TRACE("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
                             sRunt = nullptr;
                         }
                     }
@@ -124,8 +102,8 @@ namespace DreamTool
 
                 if (sceneNodeOpen)
                 {
-                    ActorDefinition* rootSo = sDef->getRootActorDefinition();
-                    addActor(rootSo);
+                    EntityDefinition* rootSo = sDef->getRootEntityDefinition();
+                    addEntity(rootSo);
                     ImGui::TreePop();
                 }
             }
@@ -136,23 +114,20 @@ namespace DreamTool
     }
 
     void
-    ProjectBrowser::addActor
-    (ActorDefinition* def)
+    ProjectBrowser::addEntity
+    (EntityDefinition* def)
     {
         int treeId = 0;
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
 
         if (def != nullptr)
         {
             auto projRunt = mState->project->getRuntime();
             SceneRuntime* sRunt = projRunt->getActiveSceneRuntime();
-            ActorRuntime* soRunt = nullptr;
+            EntityRuntime* soRunt = nullptr;
 
             if (sRunt)
             {
-                soRunt = sRunt->getActorRuntimeByUuid(def->getUuid());
+                soRunt = sRunt->getEntityRuntimeByUuid(def->getUuid());
             }
 
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
@@ -188,7 +163,7 @@ namespace DreamTool
                flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
                nameStr.str().c_str(), 0);
 
-            // Actor Context Menu
+            // Entity Context Menu
             bool deleteClicked = false;
             bool copyToClicked = false;
 
@@ -205,7 +180,7 @@ namespace DreamTool
                 }
 
                 // No Root Deletion
-                if (def->getParentActor())
+                if (def->getParentEntity())
                 {
                     // Deletion
                     ImGui::Separator();
@@ -227,7 +202,7 @@ namespace DreamTool
             // Context Menu Items
             if (deleteClicked)
             {
-                auto parent = def->getParentActor();
+                auto parent = def->getParentEntity();
                 if (parent)
                 {
                     parent->removeChildDefinition(def);
@@ -246,9 +221,9 @@ namespace DreamTool
             {
                 for (auto node : mSelectedNodes)
                 {
-                    auto defToCreate = dynamic_cast<ActorDefinition*>(node);
-                    ActorDefinition* newDef = new ActorDefinition(def,def->getSceneDefinition(),defToCreate->getJson(),true);
-                    newDef->loadChildActorDefinitions(true);
+                    auto defToCreate = dynamic_cast<EntityDefinition*>(node);
+                    EntityDefinition* newDef = new EntityDefinition(def,def->getSceneDefinition(),defToCreate->getJson(),true);
+                    newDef->loadChildEntityDefinitions(true);
                     def->addChildDefinition(newDef);
                     if (soRunt)
                     {
@@ -275,22 +250,20 @@ namespace DreamTool
 
                 if (soRunt)
                 {
-                    mState->selectionHighlighter.setSelectedActor(soRunt);
+                    mState->selectionHighlighter.setSelectedEntity(soRunt);
                 }
-#ifdef DREAM_LOG
-                log->trace("Actor Clicked {}",def->getName());
-#endif
-                mState->propertiesWindow.pushPropertyTarget(Actor, def, soRunt);
+                LOG_TRACE("Entity Clicked {}",def->getName());
+                mState->propertiesWindow.pushPropertyTarget(Entity, def, soRunt);
             }
 
             // Drag Source
-            if (def->getParentActor() && ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+            if (def->getParentEntity() && ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
             {
                 mDragDropSource.objectDef = def;
-                mDragDropSource.parentDef = def->getParentActor();
+                mDragDropSource.parentDef = def->getParentEntity();
 
-                ImGui::SetDragDropPayload( Constants::ACTOR.c_str(),
-                    &mDragDropSource, sizeof(ActorDragSource*));
+                ImGui::SetDragDropPayload( Constants::ENTITY.c_str(),
+                    &mDragDropSource, sizeof(EntityDragSource*));
                 ImGui::Text("Reparent %s",def->getName().c_str());
                 ImGui::EndDragDropSource();
             }
@@ -298,17 +271,15 @@ namespace DreamTool
             // Drop Target
             if (ImGui::BeginDragDropTarget())
             {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::ACTOR.c_str()))
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::ENTITY.c_str()))
                 {
-                    IM_ASSERT(payload->DataSize == sizeof(ActorDragSource*));
-#ifdef DREAM_LOG
-                    log->trace
+                    IM_ASSERT(payload->DataSize == sizeof(EntityDragSource*));
+                    LOG_TRACE
                     (
                         "Definition {} was dropped onto {}",
                         mDragDropSource.objectDef->getNameAndUuidString(),
                         def->getNameAndUuidString()
                     );
-#endif
 
                     mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef,false);
                     def->adoptChildDefinition(mDragDropSource.objectDef);
@@ -318,7 +289,7 @@ namespace DreamTool
                         soRunt->createAndAddChildRuntime(mDragDropSource.objectDef);
 
                         // get old parent runtime and remove children that were reparented
-                        auto oldParent = sRunt->getActorRuntimeByUuid(mDragDropSource.parentDef->getUuid());
+                        auto oldParent = sRunt->getEntityRuntimeByUuid(mDragDropSource.parentDef->getUuid());
                         if (oldParent)
                         {
                             auto oldRuntime = oldParent->getChildRuntimeByUuid(mDragDropSource.objectDef->getUuid());
@@ -341,9 +312,9 @@ namespace DreamTool
             // Show Node Contents
             if(nodeOpen)
             {
-                for (ActorDefinition* child : def->getChildDefinitionsList())
+                for (EntityDefinition* child : def->getChildDefinitionsList())
                 {
-                    addActor(child);
+                    addEntity(child);
                 }
                 ImGui::TreePop();
             }
@@ -355,9 +326,6 @@ namespace DreamTool
     ProjectBrowser::drawAssetTree
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto projDef = mState->project->getDefinition();
         ImGui::Text("Assets");
         ImGui::Separator();
@@ -428,9 +396,7 @@ namespace DreamTool
                                 {
                                     if (ImGui::IsItemClicked())
                                     {
-#ifdef DREAM_LOG
-                                        log->error("Asset Definition Clicked {}", asset->getName());
-#endif
+                                        LOG_ERROR("Asset Definition Clicked {}", asset->getName());
                                         mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
                                     }
                                     ImGui::TreePop();

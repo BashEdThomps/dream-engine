@@ -15,17 +15,14 @@
 
 #include "ArgumentParser.h"
 #include "Environment.h"
+#include "Logger.h"
 
 namespace Dream
 {
     ArgumentParser::ArgumentParser
     (int argc, const char** argv)
-        : DreamObject ("ArgumentParser")
     {
-
-        #ifdef DREAM_LOG
-        getLog()->trace( "Constructing" );
-        #endif
+        LOG_TRACE( "Constructing" );
         mArgc = argc;
         mArgv = argv;
         mUsingHttp = false;
@@ -35,9 +32,7 @@ namespace Dream
     ArgumentParser::~ArgumentParser
     ()
     {
-        #ifdef DREAM_LOG
-        getLog()->trace( "Destructing" );
-        #endif
+        LOG_TRACE( "Destructing" );
     }
 
     void
@@ -53,9 +48,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mDreamPath = string(mArgv[i+1]);
-                    #ifdef DREAM_LOG
-                    getLog()->debug( "Got Dream Path {}" , mDreamPath );
-                    #endif
+                    LOG_DEBUG( "Got Dream Path {}" , mDreamPath );
                 }
                 else
                 {
@@ -67,9 +60,7 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mProjectUUID = string(mArgv[i+1]);
-                    #ifdef DREAM_LOG
-                    getLog()->debug( "Got Project UUID {}" , mProjectUUID );
-                    #endif
+                    LOG_DEBUG( "Got Project UUID {}" , mProjectUUID );
                 }
                 else
                 {
@@ -82,29 +73,20 @@ namespace Dream
                 if (mArgc > i)
                 {
                     mHttpUrl = string(mArgv[i+1]);
-                    #ifdef DREAM_LOG
-                    getLog()->debug( "Loading project over HTTP from {}" , mHttpUrl );
-                    #endif
+                    LOG_DEBUG( "Loading project over HTTP from {}" , mHttpUrl );
                 }
                 else
                 {
-                    #ifdef DREAM_LOG
-                    getLog()->error( "--http passed without URL argument." );
-                    #endif
+                    LOG_ERROR( "--http passed without URL argument." );
                 }
             }
         }
 
         mProjectPath = mDreamPath + Constants::PROJECT_PATH_SEP + mProjectUUID;
 
-        #ifdef DREAM_LOG
-        getLog()->debug( "Got Project Path {}" , mProjectPath );
-        #endif
+        LOG_DEBUG( "Got Project Path {}" , mProjectPath );
         mProjectFilePath = mProjectPath + Constants::PROJECT_PATH_SEP + mProjectUUID + Constants::PROJECT_EXTENSION;
-
-        #ifdef DREAM_LOG
-        getLog()->debug( "Got Project File Path {} " , mProjectFilePath );
-        #endif
+        LOG_DEBUG( "Got Project File Path {} " , mProjectFilePath );
     }
 
     string

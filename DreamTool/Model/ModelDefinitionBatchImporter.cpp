@@ -1,12 +1,7 @@
 #include "ModelDefinitionBatchImporter.h"
 #include <sstream>
-#include "../DTState.h"
-#include "../../DreamCore/Project/Project.h"
-#include "../../DreamCore/Project/ProjectDefinition.h"
-#include "../../DreamCore/Project/ProjectDirectory.h"
-#include "../../DreamCore/Components/Graphics/Model/ModelDefinition.h"
-#include "../../DreamCore/Common/File.h"
-#include "../../DreamCore/Common/Directory.h"
+#include "DTContext.h"
+#include <DreamCore.h>
 
 using namespace std;
 using namespace Dream;
@@ -14,9 +9,8 @@ using namespace Dream;
 namespace DreamTool
 {
     ModelDefinitionBatchImporter::ModelDefinitionBatchImporter
-    (DTState* state)
-        : DreamObject("BatchModelDefinitionImporter"),
-          mState(state),
+    (DTContext* state)
+        : mState(state),
           mDirectory(Directory(".")),
           mModelsToImport(nullptr),
           mReplaceExisting(false),
@@ -116,9 +110,6 @@ namespace DreamTool
     ModelDefinitionBatchImporter::findModels
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         mModelsFound.clear();
         if(mDirectory.exists())
         {
@@ -129,9 +120,7 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
-#ifdef DREAM_LOG
-                   log->error("Found Valid Model {}", justName);
-#endif
+                   LOG_ERROR("Found Valid Model {}", justName);
                    mModelsFound.push_back(justName);
                 }
             }
@@ -160,27 +149,18 @@ namespace DreamTool
     ModelDefinitionBatchImporter::import
     ()
     {
-#ifdef DREAM_LOG
-        auto log = getLog();
-#endif
         auto projDef = mState->project->getDefinition();
         if (!projDef)
         {
-#ifdef DREAM_LOG
-            log->error("Import failed. No Project Definition");
-#endif
+            LOG_ERROR("Import failed. No Project Definition");
             return;
         }
-#ifdef DREAM_LOG
-        log->error("Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
-#endif
+        LOG_ERROR("Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
         clearImportResults();
 
         if (!mModelsToImport)
         {
-#ifdef DREAM_LOG
-            log->error("Model Parameters are not set");
-#endif
+            LOG_ERROR("Model Parameters are not set");
             return;
         }
 
@@ -203,9 +183,7 @@ namespace DreamTool
                    modelDef = existing;
                    if (!mReplaceExisting)
                    {
-#ifdef DREAM_LOG
-                       log->error("Not set to replace models");
-#endif
+                       LOG_ERROR("Not set to replace models");
                        mImportResults.push_back(ModelDefinitionBatchImportResult{modelDef,ModelImportResult::SKIPPED});
                        continue;
                    }
@@ -223,9 +201,7 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
-#ifdef DREAM_LOG
-                    log->error("Copying asset data for {}", modelDef->getNameAndUuidString());
-#endif
+                    LOG_ERROR("Copying asset data for {}", modelDef->getNameAndUuidString());
                     mState->projectDirectory.writeAssetData(modelDef,objFile.readBinary());
                     mState->projectDirectory.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
                 }

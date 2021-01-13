@@ -1,20 +1,14 @@
 #include "TaskManagerWindow.h"
-#include "../../DTState.h"
-#include "../../../DreamCore/Project/Project.h"
-#include "../../../DreamCore/Project/ProjectRuntime.h"
-#include "../../../DreamCore/TaskManager/Task.h"
-#include "../../../DreamCore/TaskManager/TaskThread.h"
-#include "../../../DreamCore/TaskManager/TaskManager.h"
-#include "../../../DreamCore/Components/Graphics/GraphicsComponent.h"
+#include "DTContext.h"
+#include <DreamCore.h>
+
+using Dream::TaskThread;
 
 namespace DreamTool
 {
     TaskManagerWindow::TaskManagerWindow
-    (DTState* proj) : ImGuiWidget(proj,false)
+    (DTContext* proj) : ImGuiWidget(proj,false)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("TaskManagerWindow");
-        #endif
     }
 
     TaskManagerWindow::~TaskManagerWindow
@@ -44,11 +38,7 @@ namespace DreamTool
                     ImGui::Text("Worker Thread %d (%3lu Tasks)", t->getThreadId(),debugQueue.size());
                     for (Task* task : debugQueue)
                     {
-                        #ifdef DREAM_LOG
-                        ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
-                        #else
                         ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
-                        #endif
                     }
                     ImGui::NextColumn();
                 }
@@ -59,11 +49,7 @@ namespace DreamTool
                 auto gfxTaskQueue = gfxComponent->getDebugTaskQueue();
                 for (GraphicsComponentTask* task : gfxTaskQueue)
                 {
-                    #ifdef DREAM_LOG
-                    ImGui::Text("[%.3d/%.3d] %s",task->getTaskId(), task->getDeferralCount(), task->getClassName().c_str());
-                    #else
                     ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
-                    #endif
                 }
             }
             else

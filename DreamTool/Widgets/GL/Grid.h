@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #pragma once
+
 #include "GLWidget.h"
 
 using namespace glm;
@@ -34,7 +35,7 @@ namespace DreamTool
         };
 
         Grid(
-            DTState* p,
+            DTContext* p,
             AxisPair xp = AxisPair::XZ,
             glm::vec3 position = vec3(0.0f),
             float majorSpacing = 10.0f,

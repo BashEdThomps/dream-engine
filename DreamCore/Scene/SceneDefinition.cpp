@@ -12,61 +12,53 @@
 
 #include "SceneDefinition.h"
 #include "SceneDefinition.h"
-#include "Actor/ActorDefinition.h"
-#include "../Components/Transform.h"
-#include "../Project/ProjectDefinition.h"
-#include "../Common/Uuid.h"
+#include "Entity/EntityDefinition.h"
+#include "Common/Logger.h"
+#include "Common/Constants.h"
+#include "Common/Uuid.h"
+#include "Components/Transform.h"
+#include "Project/ProjectDefinition.h"
 
 namespace Dream
 {
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinition, const json& data)
         : Definition(data),
-          mRootActorDefinition(nullptr),
+          mRootEntityDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
-        #ifdef DREAM_LOG
-        setLogClassName("SceneDefinition");
-        auto log = getLog();
-        log->trace( "Constructing {}", getNameAndUuidString() );
-        #endif
+        LOG_TRACE( "Constructing {}", getNameAndUuidString() );
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
-        #ifdef DREAM_LOG
-        auto log = getLog();
-        log->trace( "Destructing {}", getNameAndUuidString() );
-        #endif
-        if (mRootActorDefinition != nullptr)
+        LOG_TRACE( "Destructing {}", getNameAndUuidString() );
+        if (mRootEntityDefinition != nullptr)
         {
-            delete mRootActorDefinition;
-            mRootActorDefinition = nullptr;
+            delete mRootEntityDefinition;
+            mRootEntityDefinition = nullptr;
         }
     }
 
     void
-    SceneDefinition::loadRootActorDefinition
+    SceneDefinition::loadRootEntityDefinition
     ()
     {
-        json rsoJson = mJson[Constants::SCENE_ROOT_ACTOR];
+        json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
         if (rsoJson.is_null())
         {
-            #ifdef DREAM_LOG
-            auto log = getLog();
-            log->error( "No root Actor found!!" );
-            #endif
+            LOG_ERROR( "No root Entity found!!" );
             return;
         }
 
-        mRootActorDefinition = new ActorDefinition
+        mRootEntityDefinition = new EntityDefinition
         (
             nullptr,
             this,
             rsoJson
         );
-        mRootActorDefinition->loadChildActorDefinitions();
+        mRootEntityDefinition->loadChildEntityDefinitions();
     }
 
     void
@@ -121,17 +113,17 @@ namespace Dream
 
     void
     SceneDefinition::addTemplate
-    (ActorDefinition* _template)
+    (EntityDefinition* _template)
     {
         mTemplates.push_back(_template);
     }
 
 
-    ActorDefinition*
+    EntityDefinition*
     SceneDefinition::getTemplateByUuid
     (uint32_t uuid)
     {
-        for (ActorDefinition* next : mTemplates)
+        for (EntityDefinition* next : mTemplates)
         {
             if (next->getUuid() == uuid)
             {
@@ -277,11 +269,11 @@ namespace Dream
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
     }
 
-    ActorDefinition*
-    SceneDefinition::getRootActorDefinition
+    EntityDefinition*
+    SceneDefinition::getRootEntityDefinition
     ()
     {
-        return mRootActorDefinition;
+        return mRootEntityDefinition;
     }
 
     ProjectDefinition*
@@ -291,29 +283,29 @@ namespace Dream
         return mProjectDefinition;
     }
 
-    ActorDefinition*
-    SceneDefinition::createNewRootActorDefinition
+    EntityDefinition*
+    SceneDefinition::createNewRootEntityDefinition
     ()
     {
         json rootDefJson;
-        rootDefJson[Constants::NAME] = Constants::ACTOR_ROOT_NAME;
+        rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        mRootActorDefinition = new ActorDefinition
+        mRootEntityDefinition = new EntityDefinition
         (
             nullptr,
             this,
             rootDefJson
         );
-        return mRootActorDefinition;
+        return mRootEntityDefinition;
     }
 
     json
     SceneDefinition::getJson
     ()
     {
-        mJson[Constants::SCENE_ROOT_ACTOR] = mRootActorDefinition->getJson();
+        mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
         return mJson;
     }
 
@@ -507,15 +499,15 @@ namespace Dream
     SceneDefinition::setPlayerObject
     (uint32_t po)
     {
-        mJson[Constants::ACTOR_PLAYER_OBJECT] = po;
+        mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
     }
 
     uint32_t SceneDefinition::getPlayerObject()
     {
-        if (!mJson[Constants::ACTOR_PLAYER_OBJECT].is_number())
+        if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
         {
-            mJson[Constants::ACTOR_PLAYER_OBJECT] = 0;
+            mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
         }
-        return mJson[Constants::ACTOR_PLAYER_OBJECT];
+        return mJson[Constants::ENTITY_PLAYER_OBJECT];
     }
 }
