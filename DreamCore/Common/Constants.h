@@ -74,14 +74,12 @@ namespace Dream
         const static string PROJECT_WINDOW_HEIGHT;
         const static int    PROJECT_DEFAULT_WINDOW_WIDTH;
         const static int    PROJECT_DEFAULT_WINDOW_HEIGHT;
-
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
         const static string ASSET_ATTR_GROUP;
         const static string ASSET_ATTR_GROUP_DEFAULT;
         //const static string ASSET_DIR;
-
         // Types
         const static string ASSET_TYPE;
         const static string ASSET_TYPE_ANIMATION;
@@ -98,7 +96,6 @@ namespace Dream
         const static string ASSET_TYPE_TEXTURE;
         const static string ASSET_TYPE_MATERIAL;
         const static string ASSET_TYPE_PARTICLE_EMITTER;
-
         // Formats
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_DREAM;
@@ -113,7 +110,6 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
-
         // Readable Names
         const static string ASSET_TYPE_ANIMATION_READABLE;
         const static string ASSET_TYPE_PATH_READABLE;
@@ -129,8 +125,6 @@ namespace Dream
         const static string ASSET_TYPE_TEXTURE_READABLE;
         const static string ASSET_TYPE_MATERIAL_READABLE;
         const static string ASSET_TYPE_PARTICLE_EMITTER_READABLE;
-
-
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
@@ -143,7 +137,6 @@ namespace Dream
         const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
-
         // Scene ================================================================
         const static string SCENE_NOTES;
         const static string SCENE_ROOT_ENTITY;
@@ -167,8 +160,6 @@ namespace Dream
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
         const static string SCENE_INPUT_SCRIPT;
-
-
         // Entity ==========================================================
         const static string ENTITY;
         const static string ENTITY_ROOT_NAME;
@@ -182,11 +173,9 @@ namespace Dream
         const static string ENTITY_DEFERRED;
         const static string ENTITY_DIE_AFTER;
         const static string ENTITY_PLAYER_OBJECT;
-
         // Transform ============================================================
         const static string TRANSFORM;
         const static string TRANSFORM_MATRIX;
-
         // Generic ==============================================================
         const static string X;
         const static string Y;
@@ -207,7 +196,6 @@ namespace Dream
         const static unsigned int XYZ_VECTOR_SIZE;
         const static unsigned int RGB_VECTOR_SIZE;
         const static unsigned int RGBA_VECTOR_SIZE;
-
         // Path =============================================================
         const static string ASSET_ATTR_ID;
         const static string ASSET_ATTR_VELOCITY;
@@ -228,7 +216,6 @@ namespace Dream
         const static string DREAM_PATH_TYPE_CLAMPED;
         const static string DREAM_PATH_TYPE_BEZIER;
         const static string ASSET_ATTR_STEP_SCALAR;
-
         // Particle Emitter ========================================================
         const static string PARTICLE_EMITTER_TEXTURE;
         const static string PARTICLE_EMITTER_AREA;
@@ -237,7 +224,6 @@ namespace Dream
         const static string PARTICLE_EMITTER_GRAVITY;
         const static string PARTICLE_EMITTER_PER_SECOND;
         const static string PARTICLE_EMITTER_LIFETIME;
-
         // Object Emitter ======================================================
         const static string OBJECT_EMITTER_UUID;
         const static string OBJECT_EMITTER_OBJECT_COUNT;
@@ -248,7 +234,6 @@ namespace Dream
         const static string OBJECT_EMITTER_START_THETA;
         const static string OBJECT_EMITTER_END_THETA;
         const static string OBJECT_EMITTER_START_RADIUS;
-
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
         const static string ASSET_ATTR_MARGIN;
@@ -268,8 +253,7 @@ namespace Dream
         const static string ASSET_ATTR_LINEAR_FENTITY;
         const static string ASSET_ATTR_ANGULAR_VELOCITY;
         const static string ASSET_ATTR_LINEAR_VELOCITY;
-
-
+        // Shapes
         const static string COLLISION_SHAPE_SPHERE;
         const static string COLLISION_SHAPE_BOX;
         const static string COLLISION_SHAPE_CYLINDER;
@@ -282,7 +266,6 @@ namespace Dream
         const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN;
         const static string COLLISION_SHAPE_STATIC_PLANE;
         const static string COLLISION_SHAPE_COMPOUND;
-
         const static string COLLISION_SHAPE_SPHERE_READABLE;
         const static string COLLISION_SHAPE_BOX_READABLE;
         const static string COLLISION_SHAPE_CYLINDER_READABLE;
@@ -295,12 +278,10 @@ namespace Dream
         const static string COLLISION_SHAPE_HEIGHTFIELD_TERRAIN_READABLE;
         const static string COLLISION_SHAPE_STATIC_PLANE_READABLE;
         const static string COLLISION_SHAPE_COMPOUND_READABLE;
-
         // Event ================================================================
         const static string EVENT_SENDER;
         const static string EVENT_TYPE;
         const static string EVENT_TYPE_COLLISION;
-
         // Light ================================================================
         const static string ASSET_ATTR_LIGHT_COLOR;
         const static string ASSET_ATTR_LIGHT_AMBIENT;
@@ -312,7 +293,6 @@ namespace Dream
         const static string ASSET_ATTR_LIGHT_QUADRATIC;
         const static string ASSET_ATTR_LIGHT_CUTOFF;
         const static string ASSET_ATTR_LIGHT_OUTER_CUTOFF;
-
         // Material =============================================================
         const static string ASSET_ATTR_MATERIAL_SHADER;
         const static string ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE;
@@ -324,7 +304,6 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_AMBIENT_COLOUR;
         const static string ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR;
         const static string ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR;
-
         const static string ASSET_ATTR_MATERIAL_OPACITY;
         const static string ASSET_ATTR_MATERIAL_BUMP_SCALING;
         const static string ASSET_ATTR_MATERIAL_HARDNESS;
@@ -332,25 +311,21 @@ namespace Dream
         const static string ASSET_ATTR_MATERIAL_SHININESS_STRENGTH;
         const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
         const static string ASSET_ATTR_MATERIAL_IGNORE;
-
         // Model ===============================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_LIST;
         const static string ASSET_ATTR_MODEL_MODEL_MATERIAL;
         const static string ASSET_ATTR_MODEL_DREAM_MATERIAL;
-
         // Shader ==============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;
         const static string SHADER_FRAGMENT_FILE_NAME;
         const static string SHADER_VERTEX_FILE_NAME;
-
         // Script ==============================================================
         const static string SCRIPT_INIT_FUNCTION;
         const static string SCRIPT_UPDATE_FUNCTION;
         const static string SCRIPT_INPUT_FUNCTION;
         const static string SCRIPT_EVENT_FUNCTION;
         const static string SCRIPT_DESTROY_FUNCTION;
-
         // Scroller ============================================================
         const static string SCROLLER_VELOCITY;
         const static string SCROLLER_LOOP;
@@ -359,7 +334,6 @@ namespace Dream
         const static string SCROLLER_ITEMS_ARRAY;
         const static string SCROLLER_ITEM_INDEX;
         const static string SCROLLER_ITEM_ORIGIN;
-
         // Audio ================================================================
         const static string ASSET_ATTR_SPECTRUM_ANALYSER;
         const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
@@ -368,7 +342,6 @@ namespace Dream
         const static string ASSET_ATTR_AUDIO_EM_NAME;
         const static string ASSET_ATTR_AUDIO_EM_REPEAT;
         const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
-
         // Animation/Keyframe ==================================================
         const static string KEYFRAME_ID;
         const static string KEYFRAME_TIME;
@@ -379,11 +352,9 @@ namespace Dream
         const static string KEYFRAME_LOOPING;
         const static string KEYFRAME_EASING_TYPE;
         const static string ANIMATION_RELATIVE;
-
         // Window ==============================================================
         const static int DEFAULT_SCREEN_WIDTH;
         const static int DEFAULT_SCREEN_HEIGHT;
-
         // Camera ==============================================================
         const static unsigned int CAMERA_MOVEMENT_FORWARD;
         const static unsigned int CAMERA_MOVEMENT_BACKWARD;
@@ -400,7 +371,12 @@ namespace Dream
         const static float CAMERA_SPEED;
         const static float CAMERA_SENSITIVTY;
         const static float CAMERA_ZOOM;
-
+        // Font ================================================================
+        const static string FONTS;
+        const static string FONT_NAME;
+        const static string FONT_SHADER_ID;
+        const static string FONT_PATH;
+        const static string FONT_SIZE;
         // Data Maps ===========================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;

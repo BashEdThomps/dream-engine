@@ -47,11 +47,11 @@ namespace Dream
     ()
     const
     {
-        LOG_DEBUG("Creating project directory {}",mPath);
+        LOG_DEBUG("ProjectDirectory: Creating project directory {}",mPath);
         Directory d(mPath);
         if(!d.create())
         {
-            LOG_ERROR("Unable to create project directory {}",mPath);
+            LOG_ERROR("ProjectDirectory: Unable to create project directory {}",mPath);
             return false;
         }
         return true;
@@ -68,7 +68,7 @@ namespace Dream
             auto type = typePair.first;
             if (!createAssetTypeDirectory(type))
             {
-                LOG_ERROR("Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
+                LOG_ERROR("ProjectDirectory: Unable to create asset directory {}",Constants::getAssetTypeStringFromTypeEnum(type));
                 return false;
             }
         }
@@ -91,30 +91,30 @@ namespace Dream
     const
     {
         auto dataPath = getAssetDirectoryPath(assetDef);
-        LOG_DEBUG("Writing asset data to {}",dataPath);
+        LOG_DEBUG("ProjectDirectory: Writing asset data to {}",dataPath);
 
         //Check target directory exists
         Directory dir(dataPath);
         if (!dir.exists())
         {
-            LOG_DEBUG("Asset path does not exist {}",dataPath);
+            LOG_DEBUG("ProjectDirectory: Asset path does not exist {}",dataPath);
             auto assetTypeEnum = Constants::getAssetTypeEnumFromString(assetDef->getType());
             if (!assetTypeDirectoryExists(assetTypeEnum))
             {
                 if(!createAssetTypeDirectory(assetTypeEnum))
                 {
-                    LOG_ERROR("Unable to create asset type directory");
+                    LOG_ERROR("ProjectDirectory: Unable to create asset type directory");
                     return false;
                 }
             }
             if(!dir.create())
             {
-                LOG_ERROR("Unable to create asset path {}",dataPath);
+                LOG_ERROR("ProjectDirectory: Unable to create asset path {}",dataPath);
                 return false;
             }
         }
         auto path = getAssetAbsolutePath(assetDef,format);
-        LOG_DEBUG("Copying asset to {}",path);
+        LOG_DEBUG("ProjectDirectory: Copying asset to {}",path);
         auto file = File(path);
         return file.writeBinary(data);
     }
@@ -188,7 +188,7 @@ namespace Dream
     const
     {
         auto path = getAssetDirectoryPath(ad);
-        LOG_DEBUG("Removing asset directory {}",path);
+        LOG_DEBUG("ProjectDirectory: Removing asset directory {}",path);
         Directory d(path);
         return d.deleteDirectory();
     }
@@ -252,7 +252,7 @@ namespace Dream
     {
         string assetTypeDirPath = getAssetTypeDirectory(type);
         Directory dir(assetTypeDirPath);
-        LOG_DEBUG("Creating asset dir {}", assetTypeDirPath);
+        LOG_DEBUG("ProjectDirectory: Creating asset dir {}", assetTypeDirPath);
         return dir.create();
     }
 
@@ -265,7 +265,7 @@ namespace Dream
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
-            LOG_ERROR("Cannot cleanup, no project definition");
+            LOG_ERROR("ProjectDirectory: Cannot cleanup, no project definition");
             return retval;
         }
 
@@ -278,7 +278,7 @@ namespace Dream
             if (assetDir.exists())
             {
                 auto subdirs = assetDir.listSubdirectories();
-                LOG_ERROR("Cleaning up {} containing {} definitions", path, subdirs.size());
+                LOG_ERROR("ProjectDirectory: Cleaning up {} containing {} definitions", path, subdirs.size());
                 int deletedCount=0;
                 for (const auto& subdirPath : subdirs)
                 {
@@ -286,21 +286,21 @@ namespace Dream
                     if (subdir.exists())
                     {
                         uint32_t name = static_cast<uint32_t>(std::stoi(subdir.getName()));
-                        LOG_ERROR("Checking subdir {} has definition",name);
+                        LOG_ERROR("ProjectDirectory: Checking subdir {} has definition",name);
                         auto def = pDef->getAssetDefinitionByUuid(name);
                         if (!def)
                         {
-                            LOG_ERROR("Definition {} does not exist, removing...",name);
+                            LOG_ERROR("ProjectDirectory: Definition {} does not exist, removing...",name);
                             subdir.deleteDirectory();
                             retval.push_back(name);
                         }
                     }
                 }
-                LOG_ERROR("Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+                LOG_ERROR("ProjectDirectory: Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
             }
             else
             {
-                LOG_ERROR("No Directory {}",path);
+                LOG_ERROR("ProjectDirectory: No Directory {}",path);
             }
         }
         return retval;
@@ -339,13 +339,13 @@ namespace Dream
     ProjectDirectory::openFromFileReader
     (const string &projectPath, const File &reader)
     {
-        LOG_DEBUG("Loading project from FileReader", reader.getPath());
+        LOG_DEBUG("ProjectDirectory: Loading project from FileReader", reader.getPath());
 
         string projectJsonStr = reader.readString();
 
         if (projectJsonStr.empty())
         {
-            LOG_ERROR("Loading Failed. Project Content is Empty");
+            LOG_ERROR("ProjectDirectory: Loading Failed. Project Content is Empty");
             return nullptr;
         }
 
@@ -356,12 +356,12 @@ namespace Dream
         }
         catch (const json::parse_error& ex)
         {
-            LOG_ERROR("Exception while parsing project file: {}",ex.what());
+            LOG_ERROR("ProjectDirectory: Exception while parsing project file: {}",ex.what());
             return nullptr;
         }
 
         mPath = projectPath;
-        LOG_DEBUG("Project path is: {}", mPath);
+        LOG_DEBUG("ProjectDirectory: Project path is: {}", mPath);
         mProject = new Project(this);
         auto pDef = new ProjectDefinition(projectJson);
         mProject->setDefinition(pDef);
@@ -377,11 +377,11 @@ namespace Dream
 
         if (projectFileName.empty())
         {
-            LOG_ERROR( "Project: Error {} is not a valid project directory!", directory  );
+            LOG_ERROR( "ProjectDirectory: Project: Error {} is not a valid project directory!", directory  );
             return nullptr;
         }
 
-        LOG_DEBUG( "Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
+        LOG_DEBUG( "ProjectDirectory: Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory );
 
         string projectFilePath = directory + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
 
@@ -419,7 +419,7 @@ namespace Dream
             if (dotJsonIndex != string::npos)
             {
                 projectFileName = filename.substr(0,dotJsonIndex);
-                LOG_DEBUG( "Found project file ",projectFileName );
+                LOG_DEBUG( "ProjectDirectory: Found project file ",projectFileName );
                 return projectFileName;
             }
         }
@@ -446,7 +446,7 @@ namespace Dream
         {
             auto type = typePair.first;
             string assetDir = getAssetTypeDirectory(type,dir);
-            LOG_ERROR("Checking for {}",assetDir);
+            LOG_ERROR("ProjectDirectory: Checking for {}",assetDir);
             if (!Directory(assetDir).exists())
             {
                 return false;
@@ -459,7 +459,7 @@ namespace Dream
     ProjectDirectory::openFromArgumentParser
     (const ArgumentParser &parser)
     {
-        LOG_DEBUG( "Project: Loading from ArgumentParser" );
+        LOG_DEBUG( "ProjectDirectory: Project: Loading from ArgumentParser" );
         File projectFileReader(parser.getProjectFilePath());
         return openFromFileReader(parser.getProjectPath(), projectFileReader);
     }

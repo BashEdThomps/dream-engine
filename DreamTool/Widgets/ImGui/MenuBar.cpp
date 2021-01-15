@@ -7,7 +7,7 @@
 
 #include <DreamCore.h>
 #include <imgui_internal.h>
-#include <ImFileSystem.h>
+#include <nfd.h>
 #include <sstream>
 
 
@@ -290,13 +290,13 @@ namespace DreamTool
                     bool showCacheContents = mState->cacheContentWindow.getVisible();
                     if (ImGui::Checkbox("Cache Contents",&showCacheContents))
                     {
-                       mState->cacheContentWindow.setVisible(showCacheContents);
+                        mState->cacheContentWindow.setVisible(showCacheContents);
                     }
 
                     bool showTaskManager = mState->taskManagerWindow.getVisible();
                     if (ImGui::Checkbox("Task Manager",&showTaskManager))
                     {
-                       mState->taskManagerWindow.setVisible(showTaskManager);
+                        mState->taskManagerWindow.setVisible(showTaskManager);
                     }
 
 
@@ -310,10 +310,10 @@ namespace DreamTool
                             if (active)
                             {
                                 active->setPhysicsDebug(physicsDebug);
-                            dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
+                                dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
+                            }
                         }
                     }
-                }
                 }
 
                 if(ImGui::BeginMenu("Engine Logging"))
@@ -355,8 +355,8 @@ namespace DreamTool
 
             static char msgBuf[128] = {0};
             snprintf(msgBuf,128,"%s | Input to %s",
-                mMessageString.c_str(),
-                (mState->inputTarget==DTContext::InputTarget::EDITOR?"Editor":"Scene"));
+                     mMessageString.c_str(),
+                     (mState->inputTarget==DTContext::InputTarget::EDITOR?"Editor":"Scene"));
 
             auto maxX = ImGui::GetWindowContentRegionMax().x;
             ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);
@@ -366,27 +366,60 @@ namespace DreamTool
             ImGui::EndMainMenuBar();
         }
 
-        // New Project
-        static ImGuiFs::Dialog newDlg;
-        const char* newProjectPath = newDlg.chooseFolderDialog(newButtonClicked,mState->lastDirectory.c_str());
         bool newProjectFailed = false;
-        if (strlen(newProjectPath)>0)
+        // New Project
+        if (newButtonClicked)
         {
-           if (!mState->newProject(newProjectPath))
-           {
-               newProjectFailed = true;
-           }
+            nfdchar_t *selected_file_path = NULL;
+            nfdresult_t result = NFD_PickFolder(&selected_file_path, mState->lastDirectory.c_str());
+
+            if ( result == NFD_OKAY )
+            {
+                LOG_INFO("MenuBar: Success! {}",selected_file_path);
+                if (!mState->newProject(selected_file_path))
+                {
+                    LOG_INFO("MenuBar: Success! {}",selected_file_path);
+                }
+                NFD_FreePath(selected_file_path);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("MenuBar: User pressed cancel.");
+                newProjectFailed = true;
+            }
+            else
+            {
+                LOG_ERROR("MenuBar: Error: %s\n", NFD_GetError() );
+                newProjectFailed = true;
+            }
         }
 
         // Open Project
         bool openProjectFailed = false;
-        static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFolderDialog(openButtonClicked,mState->lastDirectory.c_str());
-        if (strlen(chosenPath) > 0)
+
+        if (openButtonClicked)
         {
-            auto projectDir = openDlg.getChosenPath();
-            openProjectFailed = !mState->openProject(projectDir);
+            nfdchar_t *selected_file_path = NULL;
+            nfdresult_t result = NFD_PickFolder(&selected_file_path, mState->lastDirectory.c_str());
+
+            if ( result == NFD_OKAY )
+            {
+                LOG_INFO("MenuBar: Success! {}",selected_file_path);
+                openProjectFailed = !mState->openProject(selected_file_path);
+                NFD_FreePath(selected_file_path);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("MenuBar: User pressed cancel.");
+                openProjectFailed = true;
+            }
+            else
+            {
+                LOG_ERROR("MenuBar: Error: %s\n", NFD_GetError() );
+                openProjectFailed = true;
+            }
         }
+
 
         if (openProjectFailed)
         {
@@ -414,17 +447,32 @@ namespace DreamTool
 
         if (assetCleanupClicked)
         {
-           ImGui::OpenPopup("Asset Cleanup");
+            ImGui::OpenPopup("Asset Cleanup");
         }
 
-        static ImGuiFs::Dialog modelBatchImportDlg;
-        const char* modelBatchPath = modelBatchImportDlg.chooseFolderDialog(modelBatchImportClicked,mState->lastDirectory.c_str());
-        if (strlen(modelBatchPath) >0 )
+        if (modelBatchImportClicked)
         {
-            string dir = modelBatchImportDlg.getChosenPath();
-            mState->lastDirectory = dir;
-            mState->modelDefinitionBatchImporter.setDirectory(dir);
-            mState->modelDefinitionBatchImporter.findModels();
+            nfdchar_t *selected_file_path = NULL;
+            nfdresult_t result = NFD_OpenDialog(&selected_file_path, nullptr, 0, mState->lastDirectory.c_str());
+
+            if ( result == NFD_OKAY )
+            {
+                LOG_INFO("MenuBar: Success! {}",selected_file_path);
+                mState->lastDirectory = selected_file_path;
+                mState->modelDefinitionBatchImporter.setDirectory(selected_file_path);
+                mState->modelDefinitionBatchImporter.findModels();
+                NFD_FreePath(selected_file_path);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("MenuBar: User pressed cancel.");
+                newProjectFailed = true;
+            }
+            else
+            {
+                LOG_ERROR("MenuBar: Error: %s\n", NFD_GetError() );
+                newProjectFailed = true;
+            }
         }
 
         if (mState->modelDefinitionBatchImporter.hasModels())

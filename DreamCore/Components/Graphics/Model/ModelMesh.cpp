@@ -46,14 +46,14 @@ namespace Dream
           mInitMeshTask(this),
           mFreeMeshTask(nullptr)
     {
-        LOG_TRACE("Constructing Mesh for {}", parent->getName());
+        LOG_TRACE("ModelMesh: Constructing Mesh for {}", parent->getName());
         init();
     }
 
     ModelMesh::~ModelMesh
     ()
     {
-        LOG_TRACE("Destroying Mesh for {}",mParent->getNameAndUuidString());
+        LOG_TRACE("ModelMesh: Destroying Mesh for {}",mParent->getNameAndUuidString());
         mFreeMeshTask = make_shared<ModelFreeMeshTask>();
         mFreeMeshTask->clearState();
         mFreeMeshTask->setState(TaskState::QUEUED);
@@ -112,7 +112,7 @@ namespace Dream
     ModelMesh::addRuntime
     (EntityRuntime* runt)
     {
-        LOG_DEBUG("Adding Runtime of mesh for {}", runt->getNameAndUuidString());
+        LOG_DEBUG("ModelMesh: Adding Runtime of mesh for {}", runt->getNameAndUuidString());
         mRuntimes.push_back(runt);
     }
 
@@ -120,7 +120,7 @@ namespace Dream
     ModelMesh::removeRuntime
     (EntityRuntime* runt)
     {
-        LOG_DEBUG("Removing Runtime of mesh for {}", runt->getNameAndUuidString());
+        LOG_DEBUG("ModelMesh: Removing Runtime of mesh for {}", runt->getNameAndUuidString());
         auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
         if (itr != mRuntimes.end())
         {
@@ -158,16 +158,16 @@ namespace Dream
         }
         if (mRuntimesInFrustum.empty())
         {
-            LOG_DEBUG("(Geometry) No Runtimes of {} in Frustum", getName());
+            LOG_DEBUG("ModelMesh: (Geometry) No Runtimes of {} in Frustum", getName());
             return;
         }
-        LOG_TRACE("(Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
+        LOG_TRACE("ModelMesh: (Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
         size_t size = mRuntimesInFrustum.size();
         if (size > ShaderRuntime::MAX_RUNTIMES)
         {
-            LOG_TRACE("(Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+            LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
             size = ShaderRuntime::MAX_RUNTIMES;
         }
         size_t indices = mIndicesCount;
@@ -184,17 +184,17 @@ namespace Dream
     {
         if (mRuntimes.empty())
         {
-            LOG_DEBUG("(Shadow) No Runtimes of {} in Frustum", getName());
+            LOG_DEBUG("ModelMesh: (Shadow) No Runtimes of {} in Frustum", getName());
             return;
         }
-        LOG_TRACE("(Shadow) Drawing {} Runtimes of mesh {}", mRuntimes.size(), getName());
+        LOG_TRACE("ModelMesh: (Shadow) Drawing {} Runtimes of mesh {}", mRuntimes.size(), getName());
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : mRuntimes);
         size_t size = (inFrustumOnly ? mRuntimesInFrustum.size() : mRuntimes.size());
         if (size > ShaderRuntime::MAX_RUNTIMES)
         {
             size = ShaderRuntime::MAX_RUNTIMES;
-            LOG_TRACE("(Shadow) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+            LOG_TRACE("ModelMesh: (Shadow) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
         }
 
         size_t indices = mIndicesCount;

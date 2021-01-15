@@ -9,7 +9,7 @@ namespace DreamTool
           mStepMajor(false),
           mOrientation(mat4(1.0f))
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("Cursor: Constructing");
         for (auto index : ModelIndices)
         {
             mVertexBuffer.push_back(ModelVertices.at(index));
@@ -18,7 +18,7 @@ namespace DreamTool
 
     Cursor::~Cursor()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("Cursor: Destructing");
     }
 
     void
@@ -67,7 +67,7 @@ namespace DreamTool
             GLCheckError();
             if (mProjectionUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for projection");
+                LOG_ERROR("Cursor: Unable to find Uniform Location for projection");
                 return;
             }
             else
@@ -80,7 +80,7 @@ namespace DreamTool
             GLCheckError();
             if (mViewUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for view");
+                LOG_ERROR("Cursor: Unable to find Uniform Location for view");
                 return;
             }
             else
@@ -92,7 +92,7 @@ namespace DreamTool
             // Set the projection matrix
             if (mModelUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for model");
+                LOG_ERROR("Cursor: Unable to find Uniform Location for model");
                 return;
             }
             else

@@ -19,7 +19,7 @@ namespace Dream
     ScriptConstructionTask::execute
     ()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ScriptConstructionTask: Executing on thread {}",mThreadId);
 
         if(mScript->createScript())
         {
@@ -49,7 +49,7 @@ namespace Dream
     ScriptOnInitTask::execute
     ()
     {
-        LOG_CRITICAL("Executing for SO {} script {} on thread {}",mEntity->getName(), mScript->getNameAndUuidString(), mThreadId);
+        LOG_CRITICAL("ScriptOnInitTask: Executing for SO {} script {} on thread {}",mEntity->getName(), mScript->getNameAndUuidString(), mThreadId);
 
         if(mScript->executeOnInit(mEntity))
         {
@@ -82,7 +82,7 @@ namespace Dream
     ScriptOnUpdateTask::execute
     ()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ScriptOnUpdateTask: Executing on thread {}",mThreadId);
 
         if(mScript->executeOnUpdate(mEntity))
         {
@@ -115,7 +115,7 @@ namespace Dream
     ScriptOnEventTask::execute
     ()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ScriptOnEventTask: Executing on thread {}",mThreadId);
 
         if(mScript->executeOnEvent(mEntity))
         {
@@ -150,7 +150,7 @@ namespace Dream
     ()
     {
         LOG_CRITICAL(
-            "Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
+            "ScriptOnDestroyTask: Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
             mScript->getNameAndUuidString(),mDestroyedObject,
             mParentEntity->getNameAndUuidString(), mThreadId
         );

@@ -38,13 +38,13 @@ namespace Dream
           mShaderCache(shaderCache),
           mTextureCache(textureCache)
     {
-        LOG_TRACE( "Constructing" );
+        LOG_TRACE( "MaterialCache: Constructing" );
     }
 
     MaterialCache::~MaterialCache
     ()
     {
-        LOG_TRACE( "Destructing" );
+        LOG_TRACE( "MaterialCache: Destructing" );
     }
 
     SharedAssetRuntime*
@@ -53,7 +53,7 @@ namespace Dream
     {
         if (!def)
         {
-            LOG_ERROR("Material Definition is null");
+            LOG_ERROR("MaterialCache: Material Definition is null");
             return nullptr;
         }
         auto matDef = static_cast<MaterialDefinition*>(def);
@@ -61,7 +61,7 @@ namespace Dream
 
         if (shader == nullptr)
         {
-            LOG_ERROR("Cannot create material {} with null shader", matDef->getNameAndUuidString());
+            LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
             return nullptr;
         }
 

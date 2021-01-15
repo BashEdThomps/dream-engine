@@ -120,7 +120,7 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
-                   LOG_ERROR("Found Valid Model {}", justName);
+                   LOG_ERROR("ModelDefinitionBatchImporter: Found Valid Model {}", justName);
                    mModelsFound.push_back(justName);
                 }
             }
@@ -152,15 +152,15 @@ namespace DreamTool
         auto projDef = mState->project->getDefinition();
         if (!projDef)
         {
-            LOG_ERROR("Import failed. No Project Definition");
+            LOG_ERROR("ModelDefinitionBatchImporter: Import failed. No Project Definition");
             return;
         }
-        LOG_ERROR("Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
+        LOG_ERROR("ModelDefinitionBatchImporter: Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
         clearImportResults();
 
         if (!mModelsToImport)
         {
-            LOG_ERROR("Model Parameters are not set");
+            LOG_ERROR("ModelDefinitionBatchImporter: Model Parameters are not set");
             return;
         }
 
@@ -183,7 +183,7 @@ namespace DreamTool
                    modelDef = existing;
                    if (!mReplaceExisting)
                    {
-                       LOG_ERROR("Not set to replace models");
+                       LOG_ERROR("ModelDefinitionBatchImporter: Not set to replace models");
                        mImportResults.push_back(ModelDefinitionBatchImportResult{modelDef,ModelImportResult::SKIPPED});
                        continue;
                    }
@@ -201,7 +201,7 @@ namespace DreamTool
                 File mtlFile = mDirectory.file(justName+".mtl");
                 if (objFile.exists() && mtlFile.exists())
                 {
-                    LOG_ERROR("Copying asset data for {}", modelDef->getNameAndUuidString());
+                    LOG_ERROR("ModelDefinitionBatchImporter: Copying asset data for {}", modelDef->getNameAndUuidString());
                     mState->projectDirectory.writeAssetData(modelDef,objFile.readBinary());
                     mState->projectDirectory.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
                 }

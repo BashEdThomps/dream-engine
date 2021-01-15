@@ -43,14 +43,14 @@ namespace DreamTool
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
-        LOG_INFO("Constructing" );
-        mName = "Dream";
+        LOG_INFO("DTWindowComponent: Constructing" );
+        mName = "DreamTool";
     }
 
     DTWindowComponent::~DTWindowComponent
     ()
     {
-        LOG_INFO("Destructing" );
+        LOG_INFO("DTWindowComponent: Destructing" );
         cleanUpImGui();
         if (mWindow)
         {
@@ -68,7 +68,7 @@ namespace DreamTool
     DTWindowComponent::init
     ()
     {
-        LOG_TRACE("{}", __FUNCTION__ );
+        LOG_TRACE("DTWindowComponent: {}", __FUNCTION__ );
         if (!initGLFW())
         {
             return false;
@@ -99,13 +99,13 @@ namespace DreamTool
     DTWindowComponent::initGLFW
     ()
     {
-        LOG_DEBUG("Initialising GLFW");
+        LOG_DEBUG("DTWindowComponent: Initialising GLFW");
         glfwSetErrorCallback(GLFWErrorCallback);
 
         /* Initialize the library */
         if (!glfwInit())
         {
-            LOG_ERROR("FAILED @ Initialising GLFW");
+            LOG_ERROR("DTWindowComponent: FAILED @ Initialising GLFW");
             return false;
         }
 
@@ -133,7 +133,7 @@ namespace DreamTool
         if (mWindow == nullptr)
         {
 
-            LOG_ERROR("FAILED @ Make Window");
+            LOG_ERROR("DTWindowComponent: FAILED @ Make Window");
             glfwTerminate();
             return false;
         }
@@ -146,7 +146,7 @@ namespace DreamTool
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
 
-        LOG_DEBUG("Queried Framebuffer size as {}x{}",mWidth,mHeight);
+        LOG_DEBUG("DTWindowComponent: Queried Framebuffer size as {}x{}",mWidth,mHeight);
         return true;
     }
 
@@ -183,7 +183,7 @@ namespace DreamTool
 		setFont();
 		return true;
 #else
-        LOG_DEBUG("Initialising ImGui");
+        LOG_DEBUG("DTWindowComponent: Initialising ImGui");
         const char* glsl_version = "#version 330 core";
         // Setup Dear ImGui binding
         IMGUI_CHECKVERSION();
@@ -202,18 +202,18 @@ namespace DreamTool
     DTWindowComponent::initGL
     ()
     {
-        LOG_DEBUG("Initialising GLFW::OpenGL");
+        LOG_DEBUG("DTWindowComponent: Initialising GLFW::OpenGL");
 
         if(!gladLoadGL())
 		{
-			LOG_ERROR("Window: Error initialising GLAD!\n");
+			LOG_ERROR("DTWindowComponent: Window: Error initialising GLAD!\n");
 			return false;
 		}
 		//glViewport(0,0,mWidth,mHeight);
         GLCheckError();
 
         LOG_DEBUG(
-            "OpenGL Version {}, Shader Version {}",
+            "DTWindowComponent: OpenGL Version {}, Shader Version {}",
             glGetString(GL_VERSION),
             glGetString(GL_SHADING_LANGUAGE_VERSION)
         );
@@ -233,7 +233,7 @@ namespace DreamTool
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
-            LOG_ERROR("Window should close");
+            LOG_ERROR("DTWindowComponent: Window should close");
         }
 
         if (WindowSizeChanged)
@@ -246,7 +246,7 @@ namespace DreamTool
     void DTWindowComponent::getCurrentDimensions()
     {
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        LOG_ERROR("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
+        LOG_ERROR("DTWindowComponent: Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         mSizeHasChanged = true;
     }
 
@@ -437,12 +437,12 @@ namespace DreamTool
 
         if (itr == end)
         {
-            LOG_DEBUG("Adding Widget");
+            LOG_DEBUG("DTWindowComponent: Adding Widget");
             mImGuiWidgets.push_back(widget);
         }
         else
         {
-            LOG_ERROR("Widget is all ready registered");
+            LOG_ERROR("DTWindowComponent: Widget is all ready registered");
         }
     }
 
@@ -454,12 +454,12 @@ namespace DreamTool
         auto itr = find(mImGuiWidgets.begin(), end, widget);
         if (itr != end)
         {
-            LOG_DEBUG("Removig Runtime of widget from widgets");
+            LOG_DEBUG("DTWindowComponent: Removig Runtime of widget from widgets");
             mImGuiWidgets.erase(itr);
         }
         else
         {
-            LOG_ERROR("This instane of widget was not in the widgets list");
+            LOG_ERROR("DTWindowComponent: This instane of widget was not in the widgets list");
         }
     }
 
@@ -472,12 +472,12 @@ namespace DreamTool
 
         if (itr == end)
         {
-            LOG_DEBUG("Adding Widget");
+            LOG_DEBUG("DTWindowComponent: Adding Widget");
             mGLWidgets.push_back(widget);
         }
         else
         {
-            LOG_ERROR("Widget is all ready registered");
+            LOG_ERROR("DTWindowComponent: Widget is all ready registered");
         }
     }
 
@@ -489,12 +489,12 @@ namespace DreamTool
         auto itr = find(mGLWidgets.begin(), end, widget);
         if (itr != end)
         {
-            LOG_DEBUG("Removig Runtime of from widgets");
+            LOG_DEBUG("DTWindowComponent: Removig Runtime of from widgets");
             mGLWidgets.erase(itr);
         }
         else
         {
-            LOG_ERROR("This instane of {} was not in the widgets list");
+            LOG_ERROR("DTWindowComponent: This instane of {} was not in the widgets list");
         }
     }
 

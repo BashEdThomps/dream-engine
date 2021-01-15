@@ -32,7 +32,7 @@ namespace Dream
         mVAO(0),mVBO(0)
 
     {
-        LOG_DEBUG( "Constructing Object" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Constructing Object" );
 
         mDebugMode = DBG_DrawAabb;
         mShaderProgram = 0;
@@ -41,7 +41,7 @@ namespace Dream
     PhysicsDebugDrawer::~PhysicsDebugDrawer
     ()
     {
-        LOG_DEBUG( "Destroying Object" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Destroying Object" );
     }
 
     void
@@ -130,7 +130,7 @@ namespace Dream
         {
             glGetShaderInfoLog(mVertexShader, 512, nullptr, infoLog);
 
-            LOG_ERROR("SHADER:VERTEX:COMPILATION_FAILED\n{}" , infoLog );
+            LOG_ERROR("PhysicaDebugDrawer: SHADER:VERTEX:COMPILATION_FAILED\n{}" , infoLog );
         }
 
         // Fragment Shader
@@ -144,7 +144,7 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mFragmentShader, 512, nullptr, infoLog);
-            LOG_ERROR( "SHADER:FRAGMENT:COMPILATION_FAILED\n {}" , infoLog );
+            LOG_ERROR( "PhysicaDebugDrawer: SHADER:FRAGMENT:COMPILATION_FAILED\n {}" , infoLog );
         }
 
         // Shader Program
@@ -158,7 +158,7 @@ namespace Dream
         if (!success)
         {
             glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-            LOG_ERROR ("SHADER:PROGRAM:LINKING_FAILED\n {}" , infoLog );
+            LOG_ERROR ("PhysicaDebugDrawer: SHADER:PROGRAM:LINKING_FAILED\n {}" , infoLog );
         }
 
         // Delete the shaders as they're linked into our program now and no longer necessery
@@ -205,7 +205,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Skipping debug point");
+            LOG_ERROR("PhysicaDebugDrawer: Skipping debug point");
         }
         */
     }
@@ -215,7 +215,7 @@ namespace Dream
     (const btVector3& from,const btVector3& to,const btVector3& color)
     {
         LOG_TRACE(
-            "Queuing line from {} to {} with colour {}" ,
+            "PhysicaDebugDrawer: Queuing line from {} to {} with colour {}" ,
             btVecToString(from),
             btVecToString(to),
             btVecToString(color)
@@ -236,14 +236,14 @@ namespace Dream
     PhysicsDebugDrawer::drawSphere
     (const btVector3& p, btScalar radius, const btVector3& color)
     {
-        LOG_DEBUG( "Draw Sphere is not implemented" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Draw Sphere is not implemented" );
     }
 
     void
     PhysicsDebugDrawer::drawTriangle
     (const btVector3& a,const btVector3& b,const btVector3& c,const btVector3& color,btScalar alpha)
     {
-        LOG_DEBUG( "Draw Triangle is not implemented" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Draw Triangle is not implemented" );
     }
 
     void
@@ -257,7 +257,7 @@ namespace Dream
     PhysicsDebugDrawer::draw3dText
     (const btVector3& location,const char* textString)
     {
-        LOG_DEBUG( "Draw 3DText is not implemented" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Draw 3DText is not implemented" );
     }
 
     void
@@ -271,14 +271,14 @@ namespace Dream
     PhysicsDebugDrawer::drawContactPoint
     (const btVector3& pointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
     {
-        LOG_DEBUG( "Draw Contact Point is not implemented" );
+        LOG_DEBUG( "PhysicaDebugDrawer: Draw Contact Point is not implemented" );
     }
 
     void
     PhysicsDebugDrawer::drawAll
     ()
     {
-        LOG_DEBUG( "Drawing {} lines" , mVertexBuffer.size()/2 );
+        LOG_DEBUG( "PhysicaDebugDrawer: Drawing {} lines" , mVertexBuffer.size()/2 );
         preRender();
 
         // Enable shader program
@@ -291,7 +291,7 @@ namespace Dream
         GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
         if (projUniform == -1)
         {
-            LOG_ERROR( "Unable to find Uniform Location for projection" );
+            LOG_ERROR( "PhysicaDebugDrawer: Unable to find Uniform Location for projection" );
             return;
         }
         else
@@ -304,7 +304,7 @@ namespace Dream
         GLint viewUniform = glGetUniformLocation(mShaderProgram, "view");
         if (viewUniform == -1)
         {
-            LOG_ERROR( "Unable to find Uniform Location for view" );
+            LOG_ERROR( "PhysicaDebugDrawer: Unable to find Uniform Location for view" );
             return;
         }
         else

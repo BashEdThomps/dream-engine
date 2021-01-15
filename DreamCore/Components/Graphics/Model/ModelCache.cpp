@@ -29,20 +29,20 @@ namespace Dream
           mShaderCache(shaderCache),
           mMaterialCache(matCache)
     {
-        LOG_DEBUG("Contructing" );
+        LOG_DEBUG("ModelCache: Contructing" );
     }
 
     ModelCache::~ModelCache
     ()
     {
-        LOG_DEBUG("Destructing" );
+        LOG_DEBUG("ModelCache: Destructing" );
     }
 
     SharedAssetRuntime*
     ModelCache::loadRuntime
     (AssetDefinition* def)
     {
-        LOG_DEBUG("Loading {} from disk",  def->getUuid());
+        LOG_DEBUG("ModelCache: Loading {} from disk",  def->getUuid());
         auto model = new ModelRuntime(mShaderCache, mMaterialCache,def,mProjectRuntime);
         if (model->useDefinition())
         {
@@ -50,7 +50,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Unable to create runtime for model {}", def->getNameAndUuidString());
+            LOG_ERROR("ModelCache: Unable to create runtime for model {}", def->getNameAndUuidString());
             delete model;
             model = nullptr;
         }

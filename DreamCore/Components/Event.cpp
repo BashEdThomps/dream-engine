@@ -22,12 +22,12 @@ namespace Dream
         : mAttributes(attributes),
           mProcessed(false)
     {
-        LOG_TRACE("Creating");
+        LOG_TRACE("Event: Creating");
     }
 
     Event::~Event()
     {
-        LOG_TRACE("Destroying");
+        LOG_TRACE("Event: Destroying");
     }
 
     void

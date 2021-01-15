@@ -27,13 +27,13 @@ namespace Dream
           mRootEntityDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
-        LOG_TRACE( "Constructing {}", getNameAndUuidString() );
+        LOG_TRACE( "SceneDefinition: Constructing {}", getNameAndUuidString() );
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
-        LOG_TRACE( "Destructing {}", getNameAndUuidString() );
+        LOG_TRACE( "SceneDefinition: Destructing {}", getNameAndUuidString() );
         if (mRootEntityDefinition != nullptr)
         {
             delete mRootEntityDefinition;
@@ -48,7 +48,7 @@ namespace Dream
         json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
         if (rsoJson.is_null())
         {
-            LOG_ERROR( "No root Entity found!!" );
+            LOG_ERROR( "SceneDefinition: No root Entity found!!" );
             return;
         }
 
@@ -289,7 +289,7 @@ namespace Dream
     {
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
-        rootDefJson[Constants::UUID] = Uuid::generateUuid();
+        rootDefJson[Constants::UUID] = UuidTools::generateUuid();
         Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
         mRootEntityDefinition = new EntityDefinition

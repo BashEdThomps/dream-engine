@@ -45,13 +45,13 @@ namespace Dream
           mDistanceToTravel(0.0f),
           mUpdateTask(this)
     {
-        LOG_TRACE("Constructing Object");
+        LOG_TRACE("PathRuntime: Constructing Object");
     }
 
     PathRuntime::~PathRuntime
     ()
     {
-        LOG_TRACE("Destroying Object");
+        LOG_TRACE("PathRuntime: Destroying Object");
     }
 
     void
@@ -68,7 +68,7 @@ namespace Dream
     {
         auto animDef = static_cast<PathDefinition*>(mDefinition);
         LOG_DEBUG(
-            "Loading {} spline with {} control points for {} ",
+            "PathRuntime: Loading {} spline with {} control points for {} ",
             animDef->getSplineType(),
             animDef->getControlPoints().size(),
             getNameAndUuidString()
@@ -81,7 +81,7 @@ namespace Dream
 
         if (nControlPoints < 2)
         {
-            LOG_WARN("Skipping curve, not enough control points");
+            LOG_WARN("PathRuntime: Skipping curve, not enough control points");
             mLoaded = true;
             return true;
         }
@@ -94,7 +94,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Not enough control points to generate spline");
+            LOG_ERROR("PathRuntime: Not enough control points to generate spline");
         }
         mLoaded = true;
         return mLoaded;
@@ -160,8 +160,8 @@ namespace Dream
                 ts_bspline_eval(&derivative, u, &net3);
                 ts_deboornet_result(&net3, &result3);
 
-                LOG_TRACE("Generating with u={}",u);
-                LOG_TRACE("Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
+                LOG_TRACE("PathRuntime: Generating with u={}",u);
+                LOG_TRACE("PathRuntime: Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
 
                 for (i = 0; i < ts_deboornet_dimension(&net2); i++)
                 {
@@ -202,7 +202,7 @@ namespace Dream
         ts_bspline_free(&spline);
         ts_bspline_free(&derivative);
 
-        LOG_DEBUG("Finished Loading spline for {}",getNameAndUuidString());
+        LOG_DEBUG("PathRuntime: Finished Loading spline for {}",getNameAndUuidString());
     }
 
     vector<pair<vec3,vec3> >
@@ -267,7 +267,7 @@ namespace Dream
 
                 vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
                 distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
-                LOG_TRACE("To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
+                LOG_TRACE("PathRuntime: To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
             }
             else
             {
@@ -307,7 +307,7 @@ namespace Dream
         auto rot = mat4_cast(thisOrient);
         mCurrentTransform = mat*rot;
         vec3 ang = eulerAngles(thisOrient);
-        LOG_TRACE("Got spline point {}/{} T({},{},{}) R({},{},{})",
+        LOG_TRACE("PathRuntime: Got spline point {}/{} T({},{},{}) R({},{},{})",
             mCurrentIndex,mSplinePoints.size(),
             thisPoint.x, thisPoint.y, thisPoint.z,
             ang.x, ang.y, ang.z

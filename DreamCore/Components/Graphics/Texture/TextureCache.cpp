@@ -28,7 +28,7 @@ namespace Dream
     {
         if (!def)
         {
-            LOG_ERROR("Cannot load texture, TextureDefinition is null");
+            LOG_ERROR("TextureCache: Cannot load texture, TextureDefinition is null");
             return nullptr;
         }
         auto textureDef = static_cast<TextureDefinition*>(def);
@@ -37,11 +37,11 @@ namespace Dream
         File txFile(filename);
         if (!txFile.exists())
         {
-            LOG_ERROR("Texture file does not exist: {}",filename);
+            LOG_ERROR("TextureCache: Texture file does not exist: {}",filename);
             return nullptr;
         }
 
-        LOG_DEBUG("Loading texture: {}",filename);
+        LOG_DEBUG("TextureCache: Loading texture: {}",filename);
 
         int width = 0;
         int height = 0;
@@ -49,8 +49,8 @@ namespace Dream
 
         unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
 
-        LOG_DEBUG("Didn't find cached texture matching {}",filename);
-        LOG_DEBUG("Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
+        LOG_DEBUG("TextureCache: Didn't find cached texture matching {}",filename);
+        LOG_DEBUG("TextureCache: Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
 
         auto texture = new TextureRuntime(textureDef,mProjectRuntime);
         texture->setPath(filename);

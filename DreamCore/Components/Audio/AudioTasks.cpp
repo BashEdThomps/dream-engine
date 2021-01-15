@@ -15,7 +15,7 @@ namespace Dream
     AudioMarkersUpdateTask::execute
     ()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("AudioMarkersUpdateTask: Executing on thread {}",mThreadId);
         if(mAudioRuntime->tryLock())
         {
             mAudioRuntime->updateMarkers();

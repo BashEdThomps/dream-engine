@@ -27,7 +27,7 @@ namespace DreamTool
     GLWidget::~GLWidget()
     {
 
-        LOG_DEBUG("Destroying");
+        LOG_DEBUG("GLWidget: Destroying");
         if (mVao > 0)
         {
             glDeleteVertexArrays(1,&mVao);
@@ -168,7 +168,7 @@ namespace DreamTool
             // Set the projection matrix
             if (mModelUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for model");
+                LOG_ERROR("GLWidget: Unable to find Uniform Location for model");
                 return;
             }
             else
@@ -180,7 +180,7 @@ namespace DreamTool
             // Set the projection matrix
             if (mProjectionUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for projection");
+                LOG_ERROR("GLWidget: Unable to find Uniform Location for projection");
                 return;
             }
             else
@@ -192,7 +192,7 @@ namespace DreamTool
             // Set the view matrix
             if (mViewUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for view");
+                LOG_ERROR("GLWidget: Unable to find Uniform Location for view");
                 return;
             }
             else
@@ -247,7 +247,7 @@ namespace DreamTool
     void
     GLWidget::initShader()
     {
-        LOG_DEBUG("Initialising Shader");
+        LOG_DEBUG("GLWidget: Initialising Shader");
 
         GLuint vertexShader = 0;
         GLuint fragmentShader = 0;
@@ -267,7 +267,7 @@ namespace DreamTool
         if (!success)
         {
             glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-            LOG_ERROR("SHADER::VERTEX: COMPILATION_FAILED {}", infoLog);
+            LOG_ERROR("GLWidget: SHADER::VERTEX: COMPILATION_FAILED {}", infoLog);
         }
 
         // Fragment Shader
@@ -281,7 +281,7 @@ namespace DreamTool
         if (!success)
         {
             glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-            LOG_ERROR("SHADER::FRAGMENT: COMPILATION_FAILED {}", infoLog);
+            LOG_ERROR("GLWidget: SHADER::FRAGMENT: COMPILATION_FAILED {}", infoLog);
         }
 
         // Shader Program
@@ -295,7 +295,7 @@ namespace DreamTool
         if (!success)
         {
             glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);
-            LOG_ERROR(" SHADER::PROGRAM: LINKING_FAILED {}", infoLog);
+            LOG_ERROR("GLWidget:  SHADER::PROGRAM: LINKING_FAILED {}", infoLog);
         }
 
         // Delete the shaders as they're linked into our program now and no longer necessery

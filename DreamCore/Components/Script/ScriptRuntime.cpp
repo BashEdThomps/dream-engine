@@ -71,14 +71,14 @@ namespace Dream
           mDestroyFunction(nullptr),
           mInputFunction(nullptr)
     {
-        LOG_TRACE( "Constructing {}", getNameAndUuidString());
+        LOG_TRACE( "ScriptRuntime: Constructing {}", getNameAndUuidString());
         return;
     }
 
     ScriptRuntime::~ScriptRuntime
     ()
     {
-        LOG_TRACE("Destructing {}", mDefinition->getNameAndUuidString());
+        LOG_TRACE("ScriptRuntime: Destructing {}", mDefinition->getNameAndUuidString());
         if (mScriptModule)
         {
             mScriptModule->Discard();
@@ -123,19 +123,19 @@ namespace Dream
     bool ScriptRuntime::createScript()
     {
         auto path = getAssetFilePath();
-        LOG_DEBUG( "Creating Script at {}" , path);
+        LOG_DEBUG( "ScriptRuntime: Creating Script at {}" , path);
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            LOG_DEBUG("createState called for {}", getNameAndUuidString() );
+            LOG_DEBUG("ScriptRuntime: createState called for {}", getNameAndUuidString() );
             mScriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_CREATE_IF_NOT_EXISTS);
             mScriptModule->AddScriptSection(mUuidString.c_str(),mSource.c_str());
-            LOG_TRACE("Loaded Script Source\n{}\n",getSource());
+            LOG_TRACE("ScriptRuntime: Loaded Script Source\n{}\n",getSource());
             int r = mScriptModule->Build();
             if(r < 0)
             {
                 whyYouFail(r,__LINE__);
-                LOG_ERROR("Create script error");
+                LOG_ERROR("ScriptRuntime: Create script error");
                 mError = true;
             }
             mLoaded = true;
@@ -202,19 +202,19 @@ namespace Dream
     {
         if (mError)
         {
-            LOG_ERROR("Cannot run destroy, script for {} in error state.",destroyedSo);
+            LOG_ERROR("ScriptRuntime: Cannot run destroy, script for {} in error state.",destroyedSo);
             return true;
         }
 
         if (mInitialised.count(destroyedSo) == 0)
         {
-            LOG_ERROR("Scrip {} probably removed before descruction could be called.",destroyedSo);
+            LOG_ERROR("ScriptRuntime: Scrip {} probably removed before descruction could be called.",destroyedSo);
             return true;
         }
 
         if (!mInitialised[destroyedSo])
         {
-            LOG_TRACE("Attempted to destroy uninitialised object {}",destroyedSo);
+            LOG_TRACE("ScriptRuntime: Attempted to destroy uninitialised object {}",destroyedSo);
             return true;
         }
 
@@ -258,13 +258,13 @@ namespace Dream
     {
         if (mError)
         {
-            LOG_ERROR("Cannot init, script for {} in error state.",sor->getNameAndUuidString());
+            LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.",sor->getNameAndUuidString());
             return true;
         }
 
         if (mInitialised[sor->getUuid()])
         {
-            LOG_TRACE("Script has all ready been initialised for {}",sor->getNameAndUuidString());
+            LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}",sor->getNameAndUuidString());
             return true;
         }
 
@@ -308,14 +308,14 @@ namespace Dream
     {
         if (mError)
         {
-            LOG_ERROR( "Cannot execute {} in error state ",  getNameAndUuidString());
+            LOG_ERROR( "ScriptRuntime: Cannot execute {} in error state ",  getNameAndUuidString());
             sor->clearEventQueue();
             return true;
         }
 
         if (!mInitialised[sor->getUuid()])
         {
-            LOG_ERROR("Script has not been initialised");
+            LOG_ERROR("ScriptRuntime: Script has not been initialised");
             return true;
         }
 
@@ -324,7 +324,7 @@ namespace Dream
             return true;
         }
 
-        LOG_DEBUG( "Calling onEvent for {}", sor->getNameAndUuidString());
+        LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", sor->getNameAndUuidString());
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
@@ -369,7 +369,7 @@ namespace Dream
     ScriptRuntime::executeOnInput
     (InputComponent* inputComp, SceneRuntime* sr)
     {
-        LOG_CRITICAL("Executing onInput function with {}",getUuid());
+        LOG_CRITICAL("ScriptRuntime: Executing onInput function with {}",getUuid());
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {

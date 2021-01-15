@@ -21,8 +21,8 @@ namespace Dream
         PhysicsAddObjectTask::execute
         ()
         {
-            LOG_CRITICAL("Executing on thread {}",mThreadId);
-            LOG_TRACE("Adding Entity to physics world");
+            LOG_CRITICAL("PhysicsAddObjectTask: Executing on thread {}",mThreadId);
+            LOG_TRACE("PhysicsAddObjectTask: Adding Entity to physics world");
 
             if(mComponent->tryLock())
             {
@@ -48,7 +48,7 @@ namespace Dream
         PhysicsUpdateWorldTask::execute
         ()
         {
-            LOG_CRITICAL("Executing on thread {}",mThreadId);
+            LOG_CRITICAL("PhysicsUpdateWorldTask: Executing on thread {}",mThreadId);
             if(mComponent->tryLock())
             {
                 mComponent->stepSimulation();
@@ -72,7 +72,7 @@ namespace Dream
         PhysicsDrawDebugTask::execute
         ()
         {
-            LOG_CRITICAL("Executing on thread {}",mThreadId);
+            LOG_CRITICAL("PhysicsDrawDebugTask: Executing on thread {}",mThreadId);
             if(mComponent->tryLock())
             {
                 mComponent->getDebugDrawer()->drawAll();

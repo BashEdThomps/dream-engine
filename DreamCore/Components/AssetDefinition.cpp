@@ -30,13 +30,13 @@ namespace Dream
         : Definition(jsonDef),
           mProjectDefinition(parent)
     {
-        LOG_TRACE("Constructing {}", getNameAndUuidString());
+        LOG_TRACE("AssetDefinition: Constructing {}", getNameAndUuidString());
     }
 
     AssetDefinition::~AssetDefinition
     ()
     {
-        LOG_TRACE("Destructing {}", getNameAndUuidString());
+        LOG_TRACE("AssetDefinition: Destructing {}", getNameAndUuidString());
     }
 
     AssetType
@@ -197,7 +197,7 @@ namespace Dream
     {
         auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
         newAD->mJson = mJson;
-        newAD->setUuid(Uuid::generateUuid());
+        newAD->setUuid(UuidTools::generateUuid());
         string name = newAD->getName();
         regex numRegex("(\\d+)$");
         cmatch match;

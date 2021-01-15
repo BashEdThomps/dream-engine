@@ -35,7 +35,7 @@ namespace Dream
     ()
     {
         auto absPath = getAssetFilePath();
-        LOG_DEBUG("Loading Runtime: {}", absPath);
+        LOG_DEBUG("OggAudioRuntime: Loading Runtime: {}", absPath);
 
         // 0 for Little-Endian, 1 for Big-Endian
         int endian = 0;
@@ -47,7 +47,7 @@ namespace Dream
         FILE *file = fopen(absPath.c_str(), "rb");
         if (file == nullptr)
         {
-            LOG_ERROR("Cannot open {} for reading", absPath);
+            LOG_ERROR("OggAudioRuntime: Cannot open {} for reading", absPath);
             return false;
         }
 
@@ -55,7 +55,7 @@ namespace Dream
         OggVorbis_File oggFile;
         if (ov_open(file, &oggFile, nullptr, 0) != 0)
         {
-            LOG_ERROR("Error opening {} for decoding");
+            LOG_ERROR("OggAudioRuntime: Error opening {} for decoding");
             return false;
         }
 
@@ -89,7 +89,7 @@ namespace Dream
             if (bytes < 0)
             {
                 ov_clear(&oggFile);
-                LOG_ERROR("Error decoding {}", absPath);
+                LOG_ERROR("OggAudioRuntime: Error decoding {}", absPath);
                 return false;
             }
             // Append to end of buffer

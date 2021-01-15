@@ -71,13 +71,13 @@ namespace Dream
         mMeshCullDistance(1000.0f),
         mPlayerObject(nullptr)
     {
-        LOG_TRACE( "Constructing " );
+        LOG_TRACE( "SceneRuntime: Constructing " );
     }
 
     SceneRuntime::~SceneRuntime
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("SceneRuntime: Destructing");
         if (mState != SCENE_STATE_DESTROYED)
         {
             destroyRuntime();
@@ -88,7 +88,7 @@ namespace Dream
     SceneRuntime::destroyRuntime
     ()
     {
-        LOG_DEBUG("Destroying runtime {}",getNameAndUuidString());
+        LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
 
         if (mRootEntityRuntime != nullptr)
         {
@@ -119,7 +119,7 @@ namespace Dream
         }
         else
         {
-            LOG_WARN("Cannot switch scene state from {} to {}",mState,state);
+            LOG_WARN("SceneRuntime: Cannot switch scene state from {} to {}",mState,state);
         }
     }
 
@@ -251,7 +251,7 @@ namespace Dream
     {
         if (!mRootEntityRuntime)
         {
-            LOG_DEBUG( "Scenegraph is empty (no root EntityRuntime)" );
+            LOG_DEBUG( "SceneRuntime: Scenegraph is empty (no root EntityRuntime)" );
             return;
         }
 
@@ -261,7 +261,7 @@ namespace Dream
             (
                 [&](EntityRuntime*)
                 {
-                    LOG_DEBUG("showScenegraph not implemented");
+                    LOG_DEBUG("SceneRuntime: showScenegraph not implemented");
                     //obj->showStatus();
                     return nullptr;
                 }
@@ -288,7 +288,7 @@ namespace Dream
     SceneRuntime::collectGarbage
     ()
     {
-        LOG_DEBUG( "Collecting Garbage {}" , getNameAndUuidString() );
+        LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
         mRootEntityRuntime->applyToAll
         (
             function<EntityRuntime*(EntityRuntime*)>
@@ -326,11 +326,11 @@ namespace Dream
 
         if (sceneDefinition == nullptr)
         {
-            LOG_ERROR("SceneDefinition is null");
+            LOG_ERROR("SceneRuntime: SceneDefinition is null");
             return false;
         }
 
-        LOG_DEBUG( "Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
+        LOG_DEBUG( "SceneRuntime: Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
 
         // Assign Runtime attributes from Definition
         setName(sceneDefinition->getName());
@@ -356,12 +356,12 @@ namespace Dream
 
         if (mLightingPassShader == nullptr)
         {
-            LOG_ERROR("Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
 
         if (mShadowPassShader == nullptr)
         {
-            LOG_ERROR("Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
         }
 
         // Scripts
@@ -370,7 +370,7 @@ namespace Dream
         mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
         if (!mInputScript)
         {
-            LOG_ERROR("Unable to load Input r Script {}",inputScriptUuid);
+            LOG_ERROR("SceneRuntime: Unable to load Input r Script {}",inputScriptUuid);
         }
 
          // Physics
@@ -381,7 +381,7 @@ namespace Dream
         auto sor = new EntityRuntime(sod,this);
         if (!sor->useDefinition())
         {
-            LOG_ERROR("Error using scene object runtime definition");
+            LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
             delete sor;
             sor = nullptr;
             return false;
@@ -635,8 +635,7 @@ namespace Dream
     SceneRuntime::createSceneTasks
     ()
     {
-
-        LOG_DEBUG("Building SceneRuntime Task Queue...");
+        LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
 
         updateLifetime();
 

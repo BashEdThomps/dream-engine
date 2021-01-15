@@ -28,13 +28,13 @@ namespace Dream
         : btMotionState(),
           mDreamTransform(dreamTransform)
     {
-        LOG_TRACE( "Constructor called" );
+        LOG_TRACE( "PhysicsMotionState: Constructor called" );
     }
 
     PhysicsMotionState::~PhysicsMotionState
     ()
     {
-        LOG_TRACE( "Destroying Object" );
+        LOG_TRACE( "PhysicsMotionState: Destroying Object" );
     }
 
     void
@@ -50,7 +50,7 @@ namespace Dream
     (const btTransform &worldTrans)
     {
 
-        LOG_DEBUG( "setWorldTransform called" );
+        LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
         mDreamTransform->setMatrix(glm::make_mat4(mtx));
@@ -60,7 +60,7 @@ namespace Dream
     PhysicsMotionState::setKinematicPos
     (btTransform &trans)
     {
-        LOG_DEBUG( "setKinematicPos called" );
+        LOG_DEBUG( "PhysicsMotionState: setKinematicPos called" );
         setWorldTransform(trans);
     }
 }

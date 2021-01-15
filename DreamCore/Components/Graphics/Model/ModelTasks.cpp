@@ -13,7 +13,7 @@ namespace Dream
 
     void ModelInitMeshTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ModelTasks: Executing on thread {}",mThreadId);
         GLuint vao, vbo, ibo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -66,7 +66,7 @@ namespace Dream
 
     void ModelFreeMeshTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ModelTasks: Executing on thread {}",mThreadId);
 
         if (mVAO > 0)
         {

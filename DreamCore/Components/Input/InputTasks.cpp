@@ -18,7 +18,7 @@ namespace Dream
     {
         if (mComponent->tryLock())
         {
-            LOG_CRITICAL("Executing on worker {}",mThreadId);
+            LOG_CRITICAL("InputPollDataTask: Executing on worker {}",mThreadId);
             mComponent->pollData();
             mComponent->unlock();
             setState(TaskState::COMPLETED);
@@ -38,11 +38,11 @@ namespace Dream
 
     void InputExecuteScriptTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("InputExecuteScriptTask: Executing on thread {}",mThreadId);
 
         if (mComponent->tryLock())
         {
-            LOG_CRITICAL("Executing...");
+            LOG_CRITICAL("InputExecuteScriptTask: Executing...");
 
             if (mComponent->executeInputScript())
             {

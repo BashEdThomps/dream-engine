@@ -38,7 +38,7 @@ namespace DreamTool
            << templateName
            << Constants::DIR_PATH_SEP
            << format;
-        LOG_ERROR("Loading template from {}" , ss.str());
+        LOG_ERROR("TemplatesModel: Loading template from {}" , ss.str());
         File templateFile(ss.str());
         return templateFile.readString();
     }

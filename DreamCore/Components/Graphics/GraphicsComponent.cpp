@@ -73,14 +73,14 @@ namespace Dream
           mScreenQuadVAO(0),
           mScreenQuadVBO(0)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("GraphicsComponent: Constructing");
         GLCheckError();
     }
 
     GraphicsComponent::~GraphicsComponent
     (void)
     {
-        LOG_TRACE("Destroying Object");
+        LOG_TRACE("GraphicsComponent: Destroying Object");
         clearLightQueue();
         freeGeometryBuffers();
         freeShadowBuffers();
@@ -92,33 +92,33 @@ namespace Dream
     GraphicsComponent::init
     ()
     {
-        LOG_DEBUG("Initialising");
+        LOG_DEBUG("GraphicsComponent: Initialising");
 
         onWindowDimensionsChanged();
         GLCheckError();
 
         if (!setupGeometryBuffers())
         {
-            LOG_ERROR("Unable to create geometry buffers");
+            LOG_ERROR("GraphicsComponent: Unable to create geometry buffers");
             return false;
         }
 
         if (!setupShadowBuffers())
         {
-            LOG_ERROR("Unable to create shadow pass buffers");
+            LOG_ERROR("GraphicsComponent: Unable to create shadow pass buffers");
             return false;
         }
 
         if (!setupScreenQuad())
         {
-            LOG_ERROR("Unable to create screen quad");
+            LOG_ERROR("GraphicsComponent: Unable to create screen quad");
             return false;
         }
 
         glEnable(GL_DEPTH_TEST);
         // TODO Multisample kills line & tool rendering for some reason
         //glEnable(GL_MULTISAMPLE);
-        LOG_DEBUG("Initialisation Done.");
+        LOG_DEBUG("GraphicsComponent: Initialisation Done.");
         return true;
     }
 
@@ -132,7 +132,7 @@ namespace Dream
 
         if (windowWidth == 0 || windowHeight == 0)
         {
-            LOG_DEBUG("It's a bit rude to use 0,0 viewport and divide by 0...");
+            LOG_DEBUG("GraphicsComponent: It's a bit rude to use 0,0 viewport and divide by 0...");
             windowWidth = 1;
             windowHeight = 1;
         }
@@ -142,7 +142,7 @@ namespace Dream
         freeGeometryBuffers();
         setupGeometryBuffers();
 
-        LOG_DEBUG("Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
+        LOG_DEBUG("GraphicsComponent: Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
     }
 
     void
@@ -165,7 +165,7 @@ namespace Dream
         if (!mEnabled)
         {
 
-            LOG_CRITICAL("Component Disabled");
+            LOG_CRITICAL("GraphicsComponent: Component Disabled");
             return;
         }
 
@@ -277,19 +277,19 @@ namespace Dream
 
         if (width == 0 || height == 0)
         {
-            LOG_DEBUG("It's a bit rude to allocate empty buffers...");
+            LOG_DEBUG("GraphicsComponent: It's a bit rude to allocate empty buffers...");
             width = 1;
             height = 1;
         }
 
-        LOG_DEBUG("Setting up Geometry Buffers with dimensions {}x{}",width,height);
+        LOG_DEBUG("GraphicsComponent: Setting up Geometry Buffers with dimensions {}x{}",width,height);
 
         glGenFramebuffers(1,&mGeometryPassFB);
         GLCheckError();
 
         if (mGeometryPassFB == 0)
         {
-            LOG_ERROR("Unable to create Geometry Framebuffer");
+            LOG_ERROR("GraphicsComponent: Unable to create Geometry Framebuffer");
             return false;
         }
         glBindFramebuffer(GL_FRAMEBUFFER, mGeometryPassFB);
@@ -351,12 +351,12 @@ namespace Dream
         // finally check if framebuffer is complete
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            LOG_ERROR("Deferred Rendering Framebuffer not complete!");
+            LOG_ERROR("GraphicsComponent: Deferred Rendering Framebuffer not complete!");
             return false;
         }
         else
         {
-            LOG_DEBUG("Deferred Rending Buffer is complete!");
+            LOG_DEBUG("GraphicsComponent: Deferred Rending Buffer is complete!");
         }
         mWindowComponent->bindDefaultFrameBuffer();
         GLCheckError();
@@ -397,7 +397,7 @@ namespace Dream
     {
         if (!mEnabled)
         {
-            LOG_CRITICAL("Component Disabled");
+            LOG_CRITICAL("GraphicsComponent: Component Disabled");
             return;
         }
         mLightingPassShader = sr->getLightingPassShader();
@@ -418,7 +418,7 @@ namespace Dream
 
         if (mLightingPassShader == nullptr)
         {
-            LOG_ERROR("Lighting Shader is nullptr");
+            LOG_ERROR("GraphicsComponent: Lighting Shader is nullptr");
             return;
         }
 
@@ -485,13 +485,13 @@ namespace Dream
     GraphicsComponent::setupShadowBuffers
     ()
     {
-       LOG_INFO("Setting up ShadowPass FrameBuffer");
+       LOG_INFO("GraphicsComponent: Setting up ShadowPass FrameBuffer");
        glGenFramebuffers(1,&mShadowPassFB);
        GLCheckError();
 
        if (mShadowPassFB == 0)
        {
-          LOG_ERROR("Unable to create shadow pass FB");
+          LOG_ERROR("GraphicsComponent: Unable to create shadow pass FB");
           return false;
        }
 
@@ -501,7 +501,7 @@ namespace Dream
        if (mShadowPassDepthBuffer == 0)
        {
 
-           LOG_ERROR("Unable to create shadow pass depth buffer");
+           LOG_ERROR("GraphicsComponent: Unable to create shadow pass depth buffer");
            return false;
        }
 
@@ -536,7 +536,7 @@ namespace Dream
     {
         if (!mEnabled)
         {
-            LOG_CRITICAL("Component Disabled");
+            LOG_CRITICAL("GraphicsComponent: Component Disabled");
             return;
         }
 
@@ -546,7 +546,7 @@ namespace Dream
         {
             LOG_ERROR
             (
-                "Cannot render shadow pass Light: {}, Shader: {]",
+                "GraphicsComponent: Cannot render shadow pass Light: {}, Shader: {]",
                 mShadowLight != nullptr,
                 mShadowPassShader != nullptr
             );

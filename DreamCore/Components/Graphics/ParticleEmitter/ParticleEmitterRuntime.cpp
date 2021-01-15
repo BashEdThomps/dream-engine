@@ -29,7 +29,7 @@ namespace Dream
         EntityRuntime* transform
     ) : DiscreteAssetRuntime(definition,transform)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("ParticleEmitterRuntime: Constructing");
     }
 
     void
@@ -52,7 +52,7 @@ namespace Dream
     ParticleEmitterRuntime::~ParticleEmitterRuntime
     ()
     {
-        LOG_TRACE("Destroying");
+        LOG_TRACE("ParticleEmitterRuntime: Destroying");
     }
 
     bool

@@ -8,13 +8,13 @@ namespace DreamTool
     PreferencesModel::PreferencesModel
     ()
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("PreferencesModel: Constructing");
     }
 
     PreferencesModel::~PreferencesModel
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("PreferencesModel: Destructing");
     }
 
     bool

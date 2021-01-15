@@ -29,20 +29,20 @@ namespace DreamTool
           mSelectedKeyFrame(-1),
           mNodeSize(0.25f)
     {
-        LOG_TRACE("Constructing Object");
+        LOG_TRACE("AnimationViewer: Constructing Object");
     }
 
     AnimationViewer::~AnimationViewer
     ()
     {
-        LOG_DEBUG("Destructing Object");
+        LOG_DEBUG("AnimationViewer: Destructing Object");
     }
 
     void
     AnimationViewer::init
     ()
     {
-        LOG_DEBUG("Initialising");
+        LOG_DEBUG("AnimationViewer: Initialising");
         GLWidget::init();
     }
 
@@ -61,7 +61,7 @@ namespace DreamTool
     {
         if (mAnimationDefinition == nullptr)
         {
-            LOG_DEBUG("No object selected");
+            LOG_DEBUG("AnimationViewer: No object selected");
             return;
         }
 
@@ -83,7 +83,7 @@ namespace DreamTool
     AnimationViewer::updateVertexBuffer
     ()
     {
-        LOG_DEBUG("Updating Vertex Buffer") ;
+        LOG_DEBUG("AnimationViewer: Updating Vertex Buffer") ;
 
         // Vertex Array
         glBindVertexArray(mVao);
@@ -125,10 +125,10 @@ namespace DreamTool
         vec3 pos = kf.getTranslation();
         int index = kf.getID();
 
-        LOG_TRACE("Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
+        LOG_TRACE("AnimationViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
 
         vec3 colour = (mSelectedKeyFrame == index ? mSelectedColour : mUnselectedColour);
-        LOG_TRACE("Selected? {}",mSelectedKeyFrame == index);
+        LOG_TRACE("AnimationViewer: Selected? {}",mSelectedKeyFrame == index);
 
         // Top Quad
 

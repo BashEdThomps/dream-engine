@@ -43,13 +43,13 @@ namespace Dream
         mOriginalTransform(runtime->getTransform().getMatrix()),
         mUpdateTask(this)
     {
-        LOG_TRACE("Constructing Object");
+        LOG_TRACE("AnimationRuntime: Constructing Object");
     }
 
     AnimationRuntime::~AnimationRuntime
     ()
     {
-        LOG_TRACE("Destroying Object");
+        LOG_TRACE("AnimationRuntime: Destroying Object");
     }
 
     bool
@@ -70,7 +70,7 @@ namespace Dream
     {
         if (mRunning)
         {
-            LOG_TRACE("Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
+            LOG_TRACE("AnimationRuntime: Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
             mCurrentTime += deltaTime;
             if (mCurrentTime > mDuration)
             {
@@ -201,7 +201,7 @@ namespace Dream
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
-        LOG_TRACE("Seeing to {}",pos);
+        LOG_TRACE("AnimationRuntime: Seeing to {}",pos);
         vec3 newTx, newRx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
         newTx.y = mTweenTranslationY.seek(pos);

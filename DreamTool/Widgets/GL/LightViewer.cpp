@@ -68,7 +68,7 @@ namespace DreamTool
             GLCheckError();
             if (mProjectionUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for projection");
+                LOG_ERROR("LightViewer: Unable to find Uniform Location for projection");
                 return;
             }
             else
@@ -81,7 +81,7 @@ namespace DreamTool
             GLCheckError();
             if (mViewUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for view");
+                LOG_ERROR("LightViewer: Unable to find Uniform Location for view");
                 return;
             }
             else
@@ -99,7 +99,7 @@ namespace DreamTool
                 // Set the projection matrix
                 if (mModelUniform == -1)
                 {
-                    LOG_ERROR("Unable to find Uniform Location for model");
+                    LOG_ERROR("LightViewer: Unable to find Uniform Location for model");
                     break;
                 }
                 else
@@ -110,7 +110,7 @@ namespace DreamTool
 
                 if (mLightColorUniform == -1)
                 {
-                   LOG_ERROR("Unable to find uniform location for lightColor");
+                   LOG_ERROR("LightViewer: Unable to find uniform location for lightColor");
                    break;
                 }
                 else
@@ -150,7 +150,7 @@ namespace DreamTool
     LightViewer::setShader
     ()
     {
-        LOG_TRACE("Compiling LightViewer Shaders");
+        LOG_TRACE("LightViewer: Compiling LightViewer Shaders");
         mVertexShaderSource =
             "#version 330 core\n"
             "\n"

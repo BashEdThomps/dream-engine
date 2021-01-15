@@ -13,7 +13,7 @@ namespace Dream
 
         void ScrollerUpdateTask::execute()
         {
-            LOG_CRITICAL("Executing on thread {}",mThreadId);
+            LOG_CRITICAL("ScrollerUpdateTask: Executing on thread {}",mThreadId);
             if(mScrollerRuntime->tryLock())
             {
                 mScrollerRuntime->update();

@@ -89,7 +89,7 @@ namespace Dream
         mScriptOnEventTask(this),
         mScriptOnDestroyTask(nullptr)
     {
-        LOG_TRACE( "Constructing Object" );
+        LOG_TRACE( "EntityRuntime: Constructing Object" );
 
         mEventQueueMutex.lock();
         mEventQueue.reserve(10);
@@ -97,7 +97,7 @@ namespace Dream
 
         if (mRandomUuid)
         {
-            mUuid = Uuid::generateUuid();
+            mUuid = UuidTools::generateUuid();
         }
 
         if (static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->getPlayerObject() == mUuid)
@@ -111,7 +111,7 @@ namespace Dream
     EntityRuntime::~EntityRuntime
     ()
     {
-        LOG_TRACE( "Destroying Object" );
+        LOG_TRACE( "EntityRuntime: Destroying Object" );
 
         for (auto child : mChildRuntimes)
         {
@@ -452,7 +452,7 @@ namespace Dream
     {
         if (!mDeleted)
         {
-            LOG_TRACE("Event posted from {} to {}",
+            LOG_TRACE("EntityRuntime: Event posted from {} to {}",
                 event.getAttribute("uuid"), getNameAndUuidString());
             mEventQueueMutex.lock();
             mEventQueue.push_back(std::move(event));
@@ -481,7 +481,7 @@ namespace Dream
     EntityRuntime::clearEventQueue
     ()
     {
-        LOG_TRACE("Clearing event queue");
+        LOG_TRACE("EntityRuntime: Clearing event queue");
 
         if(tryLockEventQueue())
         {
@@ -504,7 +504,7 @@ namespace Dream
     EntityRuntime::collectGarbage
     ()
     {
-        LOG_TRACE("Collecting Garbage {}" ,getNameAndUuidString());
+        LOG_TRACE("EntityRuntime: Collecting Garbage {}" ,getNameAndUuidString());
 
         vector<EntityRuntime*> toDelete;
 
@@ -518,7 +518,7 @@ namespace Dream
 
         for (auto child : toDelete)
         {
-            LOG_TRACE("Deleting child {}",child->getNameAndUuidString());
+            LOG_TRACE("EntityRuntime: Deleting child {}",child->getNameAndUuidString());
             mChildRuntimes.erase
             (
                 find
@@ -565,10 +565,10 @@ namespace Dream
             bool result = false;
             if (def == nullptr)
             {
-                LOG_ERROR("Could not find asset definition {}", assetPair.second);
+                LOG_ERROR("EntityRuntime: Could not find asset definition {}", assetPair.second);
                 continue;
             }
-            LOG_TRACE("Creating {}",def->getNameAndUuidString());
+            LOG_TRACE("EntityRuntime: Creating {}",def->getNameAndUuidString());
             switch (assetPair.first)
             {
                 case AssetType::ANIMATION:
@@ -619,13 +619,13 @@ namespace Dream
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
-            LOG_ERROR("Project is not found");
+            LOG_ERROR("EntityRuntime: Project is not found");
             return nullptr;
         }
         auto assetDefinition = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (assetDefinition == nullptr)
         {
-            LOG_ERROR("AssetDefinition not found");
+            LOG_ERROR("EntityRuntime: AssetDefinition not found");
         }
         return assetDefinition;
     }
@@ -634,17 +634,17 @@ namespace Dream
     EntityRuntime::replaceAssetUuid
     (AssetType type, uint32_t uuid)
     {
-        LOG_INFO("REPLACING asset Runtime from uuid {}", uuid);
+        LOG_INFO("EntityRuntime: REPLACING asset Runtime from uuid {}", uuid);
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
-            LOG_ERROR("Project is not found");
+            LOG_ERROR("EntityRuntime: Project is not found");
             return false;
         }
         auto def = project->getDefinition()->getAssetDefinitionByUuid(uuid);
         if (def == nullptr)
         {
-            LOG_ERROR("AssetDefinition not found");
+            LOG_ERROR("EntityRuntime: AssetDefinition not found");
         }
         switch (type)
         {
@@ -678,7 +678,7 @@ namespace Dream
     (PhysicsObjectDefinition* definition)
     {
         removePhysicsObjectRuntime();
-        LOG_TRACE( "Creating Physics Object Asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
         mPhysicsObjectRuntime = new PhysicsObjectRuntime(
             definition,
             mSceneRuntime->getProjectRuntime()->getPhysicsComponent(),
@@ -692,7 +692,7 @@ namespace Dream
     EntityRuntime::createParticleEmitterRuntime
     (ParticleEmitterDefinition* definition)
     {
-        LOG_TRACE( "Creating ParticleEmitter asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating ParticleEmitter asset Runtime." );
         removeParticleEmitterRuntime();
         mParticleEmitterRuntime = new ParticleEmitterRuntime(definition,this);
         return mParticleEmitterRuntime->useDefinition();
@@ -702,7 +702,7 @@ namespace Dream
     EntityRuntime::createScrollerRuntime
     (ScrollerDefinition* def)
     {
-        LOG_DEBUG("Creating Scroller asset Runtime.");
+        LOG_DEBUG("EntityRuntime: Creating Scroller asset Runtime.");
         removeScrollerRuntime();
         mScrollerRuntime = new ScrollerRuntime(def,this);
         return mScrollerRuntime->useDefinition();
@@ -712,7 +712,7 @@ namespace Dream
     EntityRuntime::createAnimationRuntime
     (AnimationDefinition* definition)
     {
-        LOG_TRACE( "Creating Animation asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
         removeAnimationRuntime();
         mAnimationRuntime = new AnimationRuntime(definition,this);
         return mAnimationRuntime->useDefinition();
@@ -722,7 +722,7 @@ namespace Dream
     EntityRuntime::createPathRuntime
     (PathDefinition* definition)
     {
-        LOG_TRACE( "Creating Path asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
         removePathRuntime();
         mPathRuntime = new PathRuntime(definition,this);
         return mPathRuntime->useDefinition();
@@ -740,7 +740,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Cannot create AudioRuntime. AudioComponent is nullptr");
+            LOG_ERROR("EntityRuntime: Cannot create AudioRuntime. AudioComponent is nullptr");
         }
         return false;
     }
@@ -750,7 +750,7 @@ namespace Dream
     (ModelDefinition* definition)
     {
         removeModelRuntime();
-        LOG_INFO("Creating Model asset Runtime.");
+        LOG_INFO("EntityRuntime: Creating Model asset Runtime.");
         auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
@@ -761,7 +761,7 @@ namespace Dream
             }
             else
             {
-                LOG_ERROR("Error getting model Runtime, cache returned nullptr");
+                LOG_ERROR("EntityRuntime: Error getting model Runtime, cache returned nullptr");
                 return false;
             }
         }
@@ -773,7 +773,7 @@ namespace Dream
     (ScriptDefinition* definition)
     {
         removeScriptRuntime();
-        LOG_TRACE("Creating Script asset Runtime.");
+        LOG_TRACE("EntityRuntime: Creating Script asset Runtime.");
         auto scriptCache = mSceneRuntime->getProjectRuntime()->getScriptCache();
         if (scriptCache)
         {
@@ -789,11 +789,11 @@ namespace Dream
             }
             else
             {
-                LOG_ERROR("Error getting script Runtime, cache returned nullptr");
+                LOG_ERROR("EntityRuntime: Error getting script Runtime, cache returned nullptr");
                 return false;
             }
         }
-        LOG_ERROR("Script cache is null");
+        LOG_ERROR("EntityRuntime: Script cache is null");
         return false;
     }
 
@@ -802,7 +802,7 @@ namespace Dream
     (LightDefinition* definition)
     {
         removeLightRuntime();
-        LOG_TRACE( "Creating Light Asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating Light Asset Runtime." );
         mLightRuntime = new LightRuntime(definition,this);
         return mLightRuntime->useDefinition();
     }
@@ -812,7 +812,7 @@ namespace Dream
     (ObjectEmitterDefinition* definition)
     {
         removeObjectEmitterRuntime();
-        LOG_TRACE( "Creating ObjectEmitter Asset Runtime." );
+        LOG_TRACE( "EntityRuntime: Creating ObjectEmitter Asset Runtime." );
         mObjectEmitterRuntime = new ObjectEmitterRuntime(definition,this);
         return mObjectEmitterRuntime->useDefinition();
     }
@@ -1025,7 +1025,7 @@ namespace Dream
         child->setParentRuntime(this);
         if (!child->useDefinition())
         {
-            LOG_ERROR("Error creating child runtime");
+            LOG_ERROR("EntityRuntime: Error creating child runtime");
             delete child;
             return nullptr;
         }
@@ -1043,22 +1043,22 @@ namespace Dream
         {
             if (!def->getIsTemplate())
             {
-                LOG_ERROR("This SO is not a Template, too dangerous");
+                LOG_ERROR("EntityRuntime: This SO is not a Template, too dangerous");
                 return nullptr;
             }
             auto* child = new EntityRuntime(def, mSceneRuntime, true);
             child->setParentRuntime(this);
             if (!child->useDefinition())
             {
-                LOG_ERROR("Error creating child runtime");
+                LOG_ERROR("EntityRuntime: Error creating child runtime");
                 delete child;
                 return nullptr;
             }
             addChildRuntime(child);
-            LOG_ERROR("Successfully added child from template {}",def->getNameAndUuidString());
+            LOG_ERROR("EntityRuntime: Successfully added child from template {}",def->getNameAndUuidString());
             return child;
         }
-        LOG_ERROR("Cannt create child, definition not found");
+        LOG_ERROR("EntityRuntime: Cannt create child, definition not found");
         return nullptr;
     }
 
@@ -1069,9 +1069,9 @@ namespace Dream
         if (mDefinition)
         {
             auto def = static_cast<EntityDefinition*>(mDefinition);
-            LOG_TRACE( "Using Definition {}", def->getNameAndUuidString());
+            LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
             setName(def->getName());
-            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
+            setUuid(mRandomUuid ? UuidTools::generateUuid() : def->getUuid());
             setHasCameraFocus(def->getHasCameraFocus());
             setHidden(def->getHidden());
             initTransform();
@@ -1323,11 +1323,11 @@ namespace Dream
         if (mDeferredFor > 0)
         {
             long deferral = mDeferredFor-timeDelta;
-            LOG_CRITICAL("Reducing defferal by {} to {} for {}", timeDelta, deferral, getNameAndUuidString());
+            LOG_CRITICAL("EntityRuntime: Reducing defferal by {} to {} for {}", timeDelta, deferral, getNameAndUuidString());
             setDeferredFor(deferral);
             if (deferral < 0)
             {
-                LOG_CRITICAL("Loading Deferred Runtime {}", getNameAndUuidString());
+                LOG_CRITICAL("EntityRuntime: Loading Deferred Runtime {}", getNameAndUuidString());
                 loadDeferred();
             }
         }

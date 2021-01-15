@@ -14,7 +14,7 @@ namespace Dream
 
     void AnimationUpdateTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("AnimationUpdateTask: Executing on thread {}",mThreadId);
 
         if(mAnimationRuntime->tryLock())
         {

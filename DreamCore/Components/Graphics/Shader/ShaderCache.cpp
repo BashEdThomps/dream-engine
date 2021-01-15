@@ -28,13 +28,13 @@ namespace Dream
     (ProjectRuntime* rt)
         : Cache(rt)
     {
-        LOG_TRACE( "Constructing" );
+        LOG_TRACE( "ShaderCache: Constructing" );
     }
 
     ShaderCache::~ShaderCache
     ()
     {
-        LOG_TRACE( "Destructing" );
+        LOG_TRACE( "ShaderCache: Destructing" );
     }
 
     SharedAssetRuntime*
@@ -45,7 +45,7 @@ namespace Dream
 
         if (!shaderRuntime->useDefinition())
         {
-            LOG_ERROR("Error while loading shader {}", def->getUuid());
+            LOG_ERROR("ShaderCache: Error while loading shader {}", def->getUuid());
         }
         mRuntimes.push_back(shaderRuntime);
         return shaderRuntime;
@@ -55,11 +55,11 @@ namespace Dream
     ShaderCache::logShaders
     ()
     {
-        LOG_DEBUG("Contents of shader cache");
+        LOG_DEBUG("ShaderCache: Contents of shader cache");
         for (auto runtime : mRuntimes)
         {
             auto shader = static_cast<ShaderRuntime*>(runtime);
-            LOG_DEBUG("{}",shader->getNameAndUuidString());
+            LOG_DEBUG("ShaderCache: {}",shader->getNameAndUuidString());
             shader->logMaterials();
         }
     }

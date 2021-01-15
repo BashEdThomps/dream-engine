@@ -27,12 +27,12 @@ namespace Dream
     (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("AudioDefinition: Constructing");
     }
 
     AudioDefinition::~AudioDefinition()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("AudioDefinition: Destructing");
     }
 
     bool

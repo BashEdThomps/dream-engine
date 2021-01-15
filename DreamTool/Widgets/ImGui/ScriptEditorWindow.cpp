@@ -91,9 +91,7 @@ namespace DreamTool
                 {
                     if (currentTemplateIndex < 0)
                     {
-                        #ifdef DREAM_LOG
-                        LOG_ERROR("Cannot load Script template at index {}",currentTemplateIndex);
-                        #endif
+                        LOG_ERROR("ScriptEditorWindow: Cannot load Script template at index {}",currentTemplateIndex);
                     }
                     else
                     {
@@ -106,9 +104,7 @@ namespace DreamTool
                         }
                         else
                         {
-                            #ifdef DREAM_LOG
-                            LOG_ERROR("Cannot set from template, script Runtime is null");
-                            #endif
+                            LOG_ERROR("ScriptEditorWindow: Cannot set from template, script Runtime is null");
                         }
                     }
                     ImGui::CloseCurrentPopup();

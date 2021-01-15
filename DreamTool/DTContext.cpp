@@ -1,4 +1,5 @@
 #include "DTContext.h"
+#include <nfd.h>
 
 using namespace Dream;
 
@@ -31,12 +32,14 @@ namespace DreamTool
           argc(_argc),
           argv(_argv)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("DTContext: Constructing");
+        NFD_Init();
     }
 
     DTContext::~DTContext()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("DTContext: Destructing");
+        NFD_Quit();
     }
 
     bool DTContext::init()
@@ -323,7 +326,7 @@ namespace DreamTool
     {
         closeProject();
 
-        LOG_DEBUG("Opening project {}",dir);
+        LOG_DEBUG("DTContext: Opening project {}",dir);
         lastDirectory = dir;
         project = projectDirectory.openFromDirectory(dir);
         if(project)
@@ -343,7 +346,7 @@ namespace DreamTool
     DTContext::newProject
     (const string& dir)
     {
-        LOG_DEBUG("Creating Project {}",dir);
+        LOG_DEBUG("DTContext: Creating Project {}",dir);
         lastDirectory = dir;
         closeProject();
         project = projectDirectory.newProject(dir);

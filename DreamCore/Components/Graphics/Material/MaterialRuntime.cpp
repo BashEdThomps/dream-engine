@@ -39,12 +39,12 @@ namespace Dream
 
           mShader(nullptr)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("MaterialRuntime: Constructing");
     }
 
     MaterialRuntime::~MaterialRuntime()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("MaterialRuntime: Destructing");
     }
 
     void

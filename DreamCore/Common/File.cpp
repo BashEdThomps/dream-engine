@@ -38,7 +38,7 @@ namespace Dream
     File::~File
     ()
     {
-        LOG_DEBUG( "FileReader: Destroying reader for {}" , mPath );
+        LOG_DEBUG( "File: Destroying reader for {}" , mPath );
     }
 
     string File::getDirectory() const
@@ -127,10 +127,10 @@ namespace Dream
     File::deleteFile
     () const
     {
-        LOG_DEBUG("Deleting file {}",mPath);
+        LOG_DEBUG("File: Deleting file {}",mPath);
         if(remove(mPath.c_str()) != 0)
         {
-            LOG_ERROR("Error deleting file {}",mPath );
+            LOG_ERROR("File: Error deleting file {}",mPath );
             perror("File check error");
             return false;
         }
@@ -159,7 +159,7 @@ namespace Dream
 
         auto endOfPath = mPath.find_last_of(Constants::DIR_PATH_SEP);
         auto fileName = mPath.substr(endOfPath+1);
-        LOG_TRACE("Got file name with extension {}",fileName);
+        LOG_TRACE("File: Got file name with extension {}",fileName);
         return fileName;
     }
 
@@ -168,7 +168,7 @@ namespace Dream
         auto name = nameWithExtension();
         auto extStart = name.find_last_of(".");
         auto nameOnly = name.substr(0,extStart);
-        LOG_TRACE("Got file name without extension {}",nameOnly);
+        LOG_TRACE("File: Got file name without extension {}",nameOnly);
         return nameOnly;
     }
 
@@ -181,7 +181,7 @@ namespace Dream
         if (extStart != string::npos)
         {
             auto ext = name.substr(extStart+1);
-            LOG_TRACE("Got file extension {}",ext);
+            LOG_TRACE("File: Got file extension {}",ext);
             return ext;
         }
         return "";

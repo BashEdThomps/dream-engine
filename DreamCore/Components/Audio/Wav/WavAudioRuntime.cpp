@@ -24,7 +24,7 @@ namespace Dream
     (AudioDefinition* definition, ProjectRuntime* project)
         : AudioRuntime(definition, project)
     {
-        LOG_ERROR("Constructing");
+        LOG_ERROR("WavAudioRuntime: Constructing");
     }
 
     bool
@@ -33,20 +33,20 @@ namespace Dream
     {
         string absPath = getAssetFilePath();
 
-        LOG_DEBUG("Loading wav file from {}", absPath);
+        LOG_DEBUG("WavAudioRuntime: Loading wav file from {}", absPath);
 
         int headerSize = sizeof(mWavHeader), filelength = 0;
         FILE* wavFile = fopen(absPath.c_str(), "r");
 
         if (wavFile == nullptr)
         {
-            LOG_ERROR("Unable to open wave file: {}", absPath);
+            LOG_ERROR("WavAudioRuntime: Unable to open wave file: {}", absPath);
             return false;
         }
 
         //Read the header
         size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
-        LOG_DEBUG("Header Read {} bytes" ,bytesRead);
+        LOG_DEBUG("WavAudioRuntime: Header Read {} bytes" ,bytesRead);
         mAudioDataBuffer.reserve(mWavHeader.Subchunk2Size);
         //Read the data
         auto* buffer = new int8_t[mWavHeader.Subchunk2Size];
@@ -67,7 +67,7 @@ namespace Dream
 
         setLooping(static_cast<AudioDefinition*>(mDefinition)->getLoop());
 
-        LOG_DEBUG("Read {} bytes", mAudioDataBuffer.size());
+        LOG_DEBUG("WavAudioRuntime: Read {} bytes", mAudioDataBuffer.size());
         delete [] buffer;
         buffer = nullptr;
         filelength = getFileSize(wavFile);

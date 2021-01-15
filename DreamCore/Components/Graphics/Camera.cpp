@@ -50,7 +50,7 @@ namespace Dream
     Camera::~Camera
     ()
     {
-        LOG_DEBUG("Destroying Object");
+        LOG_DEBUG("Camera: Destroying Object");
     }
 
     float Camera::getYaw() const

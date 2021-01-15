@@ -22,7 +22,7 @@ using namespace std::chrono;
 
 namespace Dream
 {
-    uint32_t Uuid::generateUuid()
+    UuidType UuidTools::generateUuid()
     {
         srand(static_cast<unsigned int>(high_resolution_clock::now().time_since_epoch().count()));
         uint32_t retval = 0;

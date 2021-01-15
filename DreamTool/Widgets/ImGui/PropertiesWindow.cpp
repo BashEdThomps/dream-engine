@@ -6,7 +6,7 @@
 
 #include "PropertiesWindow.h"
 #include "glm/gtc/type_ptr.hpp"
-#include <ImFileSystem.h>
+#include <nfd.h>
 #include <ImGuizmo.h>
 #include "DTContext.h"
 #include <DreamCore.h>
@@ -156,9 +156,7 @@ namespace DreamTool
         }
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
-        #ifdef DREAM_LOG
-        LOG_ERROR("Pushed target {}",mHistory.size());
-        #endif
+        LOG_ERROR("PropertiesWindow: Pushed target {}",mHistory.size());
         setPropertyType(type);
         setDefinition(def);
         setRuntime(runt);
@@ -192,9 +190,7 @@ namespace DreamTool
         setPropertyType(last.type);
         setDefinition(last.definition);
         setRuntime(last.runtime);
-        #ifdef DREAM_LOG
-        LOG_ERROR("Popped target {}",mHistory.size());
-        #endif
+        LOG_ERROR("PropertiesWindow: Popped target {}",mHistory.size());
         mHistory.pop_back();
     }
 
@@ -595,9 +591,7 @@ namespace DreamTool
                 auto name = selectedShader->getName();
                 sceneDef->setLightingPassShader(uuid);
 
-                #ifdef DREAM_LOG
-                LOG_ERROR("Switched lighting pass shader to {} {}", name, uuid);
-                #endif
+                LOG_ERROR("PropertiesWindow: Switched lighting pass shader to {} {}", name, uuid);
             }
 
 
@@ -607,9 +601,7 @@ namespace DreamTool
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
-                #ifdef DREAM_LOG
-                LOG_ERROR("Switched shadow pass shader to {} {}", name, uuid);
-                #endif
+                LOG_ERROR("PropertiesWindow: Switched shadow pass shader to {} {}", name, uuid);
             }
         }
 
@@ -1790,25 +1782,34 @@ namespace DreamTool
     {
         bool selectAudioFile = ImGui::Button("Audio File...");
         auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
-
-        static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectAudioFile,mState->lastDirectory.c_str(),".ogg;.wav","Select Audio File");
-        if (strlen(chosenPath) > 0)
+        if (selectAudioFile)
         {
-            auto audioFilePath = openDlg.getChosenPath();
+            nfdchar_t *audioFilePath = NULL;
+            nfdfilteritem_t filter[2] = {{"Ogg Files", "ogg"}, {"WAVE Files", "wav"}};
+			nfdresult_t result = NFD_OpenDialog(&audioFilePath, filter, 2, mState->lastDirectory.c_str() );
 
-#ifdef DREAM_LOG
-            LOG_ERROR("Opening Audio File {}",audioFilePath);
-#endif
-            File audioFile(audioFilePath);
-            mState->lastDirectory = audioFile.getDirectory();
+			if ( result == NFD_OKAY )
+			{
+				LOG_INFO("PropertiesWindow: Success! {}",audioFilePath);
 
-#ifdef DREAM_LOG
-            LOG_ERROR("Setting last directory {}",mState->lastDirectory);
-#endif
-            auto audioData = audioFile.readBinary();
-            mState->projectDirectory.writeAssetData(audioDef,audioData);
-            audioDef->setName(audioFile.nameWithoutExtension());
+				LOG_DEBUG("PropertiesWindow: Opening Audio File {}",audioFilePath);
+				File audioFile(audioFilePath);
+				mState->lastDirectory = audioFile.getDirectory();
+
+				LOG_DEBUG("PropertiesWindow: Setting last directory {}",mState->lastDirectory);
+				auto audioData = audioFile.readBinary();
+				mState->projectDirectory.writeAssetData(audioDef,audioData);
+				audioDef->setName(audioFile.nameWithoutExtension());
+				NFD_FreePath(audioFilePath);
+			}
+			else if ( result == NFD_CANCEL )
+			{
+				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+			}
+			else
+			{
+				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+			}
         }
 
         auto projRunt = mState->project->getRuntime();
@@ -1871,20 +1872,31 @@ namespace DreamTool
         bool selectFile = ImGui::Button("Font File...");
         auto def = dynamic_cast<FontDefinition*>(mDefinition);
 
-        static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".ttf;.otf","Select Font File");
-        if (strlen(chosenPath) > 0)
+        if (selectFile)
         {
-            auto filePath = openDlg.getChosenPath();
+            nfdchar_t *filePath = NULL;
+            nfdfilteritem_t filters[2] = {{"TrueType", "ttf"}, {"OpenType", "otf"}};
+			nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, mState->lastDirectory.c_str());
 
-#ifdef DREAM_LOG
-            LOG_ERROR("Opening Font File {}",filePath);
-#endif
-            File file(filePath);
-            mState->lastDirectory = file.getDirectory();
-            auto data = file.readBinary();
-            mState->projectDirectory.writeAssetData(def,data);
-            def->setName(file.nameWithoutExtension());
+			if ( result == NFD_OKAY )
+			{
+				LOG_INFO("PropertiesWindow: Success! {}",filePath);
+				LOG_DEBUG("PropertiesWindow: Opening Font File {}",filePath);
+				File file(filePath);
+				mState->lastDirectory = file.getDirectory();
+				auto data = file.readBinary();
+				mState->projectDirectory.writeAssetData(def,data);
+				def->setName(file.nameWithoutExtension());
+				NFD_FreePath(filePath);
+			}
+			else if ( result == NFD_CANCEL )
+			{
+				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+			}
+			else
+			{
+				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+			}
         }
 
         ImGui::SameLine();
@@ -2315,39 +2327,60 @@ namespace DreamTool
         auto def = dynamic_cast<ModelDefinition*>(mDefinition);
 
         bool selectFile = ImGui::Button("Model File...");
-        static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),nullptr,"Select Model File");
-        if (strlen(chosenPath) > 0)
+
+        if (selectFile)
         {
-            auto filePath = openDlg.getChosenPath();
-#ifdef DREAM_LOG
-            LOG_ERROR("Opening Model File {}",filePath);
-#endif
-            File file(filePath);
-            mState->lastDirectory = file.getDirectory();
-            auto data = file.readBinary();
-            def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file.extension());
-            def->setName(file.nameWithoutExtension());
-            mState->projectDirectory.writeAssetData(def,data);
+            nfdchar_t *filePath = NULL;
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0, mState->lastDirectory.c_str());
+
+			if ( result == NFD_OKAY )
+			{
+				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
+				File file(filePath);
+				mState->lastDirectory = file.getDirectory();
+				auto data = file.readBinary();
+				def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file.extension());
+				def->setName(file.nameWithoutExtension());
+				mState->projectDirectory.writeAssetData(def,data);
+				NFD_FreePath(filePath);
+			}
+			else if ( result == NFD_CANCEL )
+			{
+				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+			}
+			else
+			{
+				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+			}
         }
 
         ImGui::SameLine();
 
         bool selectAdditionalFile = ImGui::Button("Additional File...");
-        static ImGuiFs::Dialog openAdditionalFileDlg;
-        const char* chosenAdditionalFilePath =
-                openAdditionalFileDlg.chooseFileDialog(selectAdditionalFile,mState->lastDirectory.c_str(),nullptr,"Select Additional File");
-        if (strlen(chosenAdditionalFilePath) > 0)
-        {
-            auto filePath = openAdditionalFileDlg.getChosenPath();
 
-#ifdef DREAM_LOG
-            LOG_ERROR("Opening Additional Model File {}",filePath);
-#endif
-            File file(filePath);
-            mState->lastDirectory = file.getDirectory();
-            auto data = file.readBinary();
-            mState->projectDirectory.writeAssetData(def,data,file.nameWithExtension());
+        if (selectAdditionalFile)
+        {
+            nfdchar_t *filePath = NULL;
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mState->lastDirectory.c_str());
+
+			if ( result == NFD_OKAY )
+			{
+				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
+				LOG_ERROR("PropertiesWindow: Opening Additional Model File {}",filePath);
+				File file(filePath);
+				mState->lastDirectory = file.getDirectory();
+				auto data = file.readBinary();
+				mState->projectDirectory.writeAssetData(def,data,file.nameWithExtension());
+				NFD_FreePath(filePath);
+			}
+			else if ( result == NFD_CANCEL )
+			{
+				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+			}
+			else
+			{
+				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+			}
         }
 
         ImGui::SameLine();
@@ -2417,9 +2450,7 @@ namespace DreamTool
                 auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
 
-#ifdef DREAM_LOG
-                LOG_ERROR("Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
-#endif
+                LOG_ERROR("PropertiesWindow: Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
             }
             ImGui::PopItemWidth();
             ImGui::NextColumn();
@@ -3003,19 +3034,29 @@ namespace DreamTool
         }
 
         bool selectFile = ImGui::Button("Texture File...");
-        static ImGuiFs::Dialog openDlg;
-        const char* chosenPath = openDlg.chooseFileDialog(selectFile,mState->lastDirectory.c_str(),".png","Select Texture File");
-        if (strlen(chosenPath) > 0)
+        if (selectFile)
         {
-            auto filePath = openDlg.getChosenPath();
-            #ifdef DREAM_LOG
-            LOG_ERROR("Opening Texture File {}",filePath);
-            #endif
-            File file(filePath);
-            mState->lastDirectory = file.getDirectory();
-            auto data = file.readBinary();
-            mState->projectDirectory.writeAssetData(textureDef,data);
-            textureDef->setName(file.nameWithoutExtension());
+            nfdchar_t *filePath = NULL;
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mState->lastDirectory.c_str());
+
+			if ( result == NFD_OKAY )
+			{
+				LOG_ERROR("PropertiesWindow: Opening Texture File {}",filePath);
+				File file(filePath);
+				mState->lastDirectory = file.getDirectory();
+				auto data = file.readBinary();
+				mState->projectDirectory.writeAssetData(textureDef,data);
+				textureDef->setName(file.nameWithoutExtension());
+				NFD_FreePath(filePath);
+			}
+			else if ( result == NFD_CANCEL )
+			{
+				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+			}
+			else
+			{
+				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+			}
         }
 
         ImGui::SameLine();

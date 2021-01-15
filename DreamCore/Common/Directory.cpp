@@ -69,7 +69,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR( "Unable to open directory {}", mPath );
+            LOG_ERROR( "Directory:Unable to open directory {}", mPath );
             return directoryContents;
         }
         return directoryContents;
@@ -118,7 +118,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR( "Unable to open directory {}", mPath );
+            LOG_ERROR( "Directory:Unable to open directory {}", mPath );
             return directoryContents;
         }
         return directoryContents;
@@ -175,7 +175,7 @@ namespace Dream
 
     bool Directory::deleteDirectory()
     {
-        LOG_DEBUG("Deleting directory {}",mPath);
+        LOG_DEBUG("Directory:Deleting directory {}",mPath);
         auto files = list();
         for (auto file : files)
         {
@@ -199,7 +199,7 @@ namespace Dream
         }
         if (rmdir(mPath.c_str()) != 0)
         {
-            LOG_ERROR("Unable to delete directory {}",mPath);
+            LOG_ERROR("Directory:Unable to delete directory {}",mPath);
             return false;
         }
         return true;
@@ -222,7 +222,7 @@ namespace Dream
         {
             result = true;
         }
-        LOG_ERROR("{} Directory {}",result? "Is a" : "Not a", mPath );
+        LOG_ERROR("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
         return result;
     }
 }

@@ -26,7 +26,7 @@ namespace Dream
           mLocation(0),
           mNeedsUpdate(true)
     {
-        LOG_DEBUG("Constructing uniform {}, count {}",mName,count);
+        LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,count);
         switch (type)
         {
             case Dream::INT1:
@@ -84,7 +84,7 @@ namespace Dream
 
     ShaderUniform::~ShaderUniform()
     {
-        LOG_TRACE("Destructing {} {}", mName, mCount);
+        LOG_TRACE("ShaderUniform: Destructing {} {}", mName, mCount);
         switch (mType)
         {
             case Dream::INT1:

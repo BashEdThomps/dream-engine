@@ -44,7 +44,7 @@ namespace Dream
     LightRuntime::~LightRuntime
     ()
     {
-        LOG_DEBUG("Destroying Object" );
+        LOG_DEBUG("LightRuntime: Destroying Object" );
     }
 
     Vector3

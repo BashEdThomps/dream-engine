@@ -122,7 +122,7 @@ namespace DreamTool
                 {
                     if (currentTemplateIndex < 0)
                     {
-                        LOG_ERROR("Cannot load template {}",currentTemplateIndex);
+                        LOG_ERROR("ShaderEditorWindow: Cannot load template {}",currentTemplateIndex);
                     }
                     else
                     {
@@ -136,7 +136,7 @@ namespace DreamTool
                         }
                         else
                         {
-                            LOG_ERROR("Cannot set template, shader is null");
+                            LOG_ERROR("ShaderEditorWindow: Cannot set template, shader is null");
                         }
                         currentTemplateIndex = -1;
                     }

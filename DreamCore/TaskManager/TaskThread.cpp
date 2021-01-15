@@ -25,7 +25,7 @@ namespace Dream
 
         void TaskThread::join()
         {
-            LOG_CRITICAL("Joining Thread {}",mThreadId);
+            LOG_TRACE("TaskThread: Joining Thread {}",mThreadId);
             mThread.join();
         }
 
@@ -46,7 +46,7 @@ namespace Dream
                 {
                     while (!mTaskQueue.empty())
                     {
-                        LOG_CRITICAL("Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
+                        LOG_TRACE("TaskThread: Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
                         for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
                         {
                             if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),(*itr)) == mDebugTaskQueue.end())
@@ -124,17 +124,17 @@ namespace Dream
                     mDestructionTaskQueueMutex.unlock();
                 }
 
-                LOG_CRITICAL("Worker {} has finished running it's task queue, Setting Fence",getThreadId());
+                LOG_TRACE("TaskThread: Worker {} has finished running it's task queue, Setting Fence",getThreadId());
                 mFence = true;
                 std::this_thread::yield();
             }
-            LOG_CRITICAL("---------- Worker {} is ending it's task queue",getThreadId());
+            LOG_TRACE("TaskThread: ---------- Worker {} is ending it's task queue",getThreadId());
         }
 
         void TaskThread::clearFence()
         {
             assert(mFence);
-            LOG_CRITICAL("Clearing fence for thread {}",getThreadId());
+            LOG_TRACE("TaskThread: Clearing fence for thread {}",getThreadId());
             mFence = false;
         }
 

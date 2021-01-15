@@ -50,7 +50,7 @@ else()
 		ImGui
 		ImGuizmo
 		ImTextEditor
-		ImFileSystem
+		nfd
         -lpthread
         -ldl
     )

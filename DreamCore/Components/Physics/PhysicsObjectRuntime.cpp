@@ -49,13 +49,13 @@ namespace Dream
          mModelCache(modelCache),
          mAddObjectTask(mPhysicsComponent,this)
     {
-        LOG_TRACE( "Constructing" );
+        LOG_TRACE( "PhysicsObjectRuntime: Constructing" );
     }
 
     PhysicsObjectRuntime::~PhysicsObjectRuntime
     ()
     {
-        LOG_TRACE( "Destroying" );
+        LOG_TRACE( "PhysicsObjectRuntime: Destroying" );
 
         /***** Deletes are handled by PhysicsComponent! *****/
 
@@ -100,7 +100,7 @@ namespace Dream
         mCollisionShape = createCollisionShape(pod);
         if (!mCollisionShape)
         {
-            LOG_ERROR( "Unable to create collision shape" );
+            LOG_ERROR( "PhysicsObjectRuntime: Unable to create collision shape" );
             return false;
         }
         float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];

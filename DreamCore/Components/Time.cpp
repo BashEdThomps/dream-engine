@@ -39,7 +39,7 @@ namespace Dream
     Time::updateFrameTime
     ()
     {
-        LOG_DEBUG( "Update Called" );
+        LOG_DEBUG( "Time: Update Called" );
         mLastFrameTime = mCurrentFrameTime;
         mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
         (steady_clock::now().time_since_epoch()).count();
@@ -58,7 +58,7 @@ namespace Dream
     {
         LOG_TRACE
         (
-           "CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
+           "Time: CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
            getCurrentFrameTime(),
            getLastFrameTime(),
            getFrameTimeDelta()
@@ -92,7 +92,7 @@ namespace Dream
     {
         double scalar = getFrameTimeDelta()/1000.0;
         double ret = value*scalar;
-        LOG_TRACE("Scaled by time {} to {} with {}",value,ret,scalar);
+        LOG_TRACE("Time: Scaled by time {} to {} with {}",value,ret,scalar);
         return ret;
     }
 

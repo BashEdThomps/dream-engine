@@ -30,7 +30,7 @@ namespace Dream
     AnimationDefinition::~AnimationDefinition
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("AnimationDefinition: Destructing");
     }
 
     vector<AnimationKeyframe>

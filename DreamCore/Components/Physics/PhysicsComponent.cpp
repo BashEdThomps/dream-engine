@@ -50,7 +50,7 @@ namespace Dream
     PhysicsComponent::~PhysicsComponent
     ()
     {
-        LOG_DEBUG( "Destroying Object" );
+        LOG_DEBUG( "PhysicsComponent: Destroying Object" );
 
         int i = 0;
 
@@ -75,18 +75,18 @@ namespace Dream
             }
             if (body && body->getMotionState())
             {
-                LOG_DEBUG( "Deleting a motion state" );
+                LOG_DEBUG( "PhysicsComponent: Deleting a motion state" );
                 delete body->getMotionState();
             }
 
-            LOG_DEBUG( "Deleting a collision object" );
+            LOG_DEBUG( "PhysicsComponent: Deleting a collision object" );
             mDynamicsWorld->removeCollisionObject(obj);
             delete obj;
         }
 
         for (btCollisionShape* shape : shapes)
         {
-            LOG_DEBUG( "Deleting Shape" );
+            LOG_DEBUG( "PhysicsComponent: Deleting Shape" );
             delete shape;
         }
 
@@ -140,7 +140,7 @@ namespace Dream
     PhysicsComponent::setGravity
     (const Vector3& gravity)
     {
-        LOG_DEBUG("Setting Gravity {},{},{}" , gravity.x(), gravity.y(), gravity.z());
+        LOG_DEBUG("PhysicsComponent: Setting Gravity {},{},{}" , gravity.x(), gravity.y(), gravity.z());
         if (mDynamicsWorld != nullptr)
         {
             mDynamicsWorld->setGravity(btVector3(gravity.x(), gravity.y(), gravity.z()));
@@ -163,7 +163,7 @@ namespace Dream
     PhysicsComponent::init
     ()
     {
-        LOG_DEBUG( "Initialising Component");
+        LOG_DEBUG( "PhysicsComponent: Initialising Component");
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -177,7 +177,7 @@ namespace Dream
         mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
         mDynamicsWorld->setDebugDrawer(mDebugDrawer);
 
-        LOG_DEBUG("Finished initialising PhysicsComponent");
+        LOG_DEBUG("PhysicsComponent: Finished initialising PhysicsComponent");
         return true;
     }
 
@@ -185,16 +185,16 @@ namespace Dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
-        LOG_DEBUG( "Adding Rigid Body to Dynamics World" );
+        LOG_DEBUG( "PhysicsComponent: Adding Rigid Body to Dynamics World" );
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->addRigidBody(rigidBody);
         }
         else
         {
-            LOG_ERROR("Unable to add rigid body to dynamics world, nullptr");
+            LOG_ERROR("PhysicsComponent: Unable to add rigid body to dynamics world, nullptr");
         }
-        LOG_DEBUG( "World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
+        LOG_DEBUG( "PhysicsComponent: World has {} rigid bodies" , mDynamicsWorld->getNumCollisionObjects());
     }
 
     void
@@ -208,14 +208,14 @@ namespace Dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
-        LOG_DEBUG( "Removing Rigid Body from Dynamics World" );
+        LOG_DEBUG( "PhysicsComponent: Removing Rigid Body from Dynamics World" );
         if (rigidBody != nullptr)
         {
             mDynamicsWorld->removeRigidBody(rigidBody);
         }
         else
         {
-            LOG_ERROR("Unable to remove rigidBody, nullptr");
+            LOG_ERROR("PhysicsComponent: Unable to remove rigidBody, nullptr");
         }
     }
 
@@ -253,12 +253,12 @@ namespace Dream
     PhysicsComponent::checkContactManifolds
     ()
     {
-        LOG_TRACE("Checking contact manifolds");
+        LOG_TRACE("PhysicsComponent: Checking contact manifolds");
         auto scene = mProjectRuntime->getActiveSceneRuntime();
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
         for (int i=0;i<numManifolds;i++)
         {
-            LOG_TRACE("Checking manifold {}",i);
+            LOG_TRACE("PhysicsComponent: Checking manifold {}",i);
             btPersistentManifold* contactManifold;
             contactManifold = mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
 
@@ -272,7 +272,7 @@ namespace Dream
 
                 if (sObjA != nullptr && sObjB != nullptr)
                 {
-                    LOG_DEBUG("Contact Manifold Found. Sending Event");
+                    LOG_DEBUG("PhysicsComponent: Contact Manifold Found. Sending Event");
 
                     Event aHitsB(sObjA->getAttributesMap());
                     Event bHitsA(sObjB->getAttributesMap());
@@ -317,12 +317,12 @@ namespace Dream
                 }
                 else
                 {
-                    LOG_ERROR("Contact Manifold Found but Entitys are nullptr");
+                    LOG_ERROR("PhysicsComponent: Contact Manifold Found but Entitys are nullptr");
                 }
             }
             else
             {
-                LOG_ERROR("Contact Manifold Found but Collision Objects are nullptr");
+                LOG_ERROR("PhysicsComponent: Contact Manifold Found but Collision Objects are nullptr");
             }
         }
     }

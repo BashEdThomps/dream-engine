@@ -8,7 +8,7 @@
 #include "DTContext.h"
 
 #include <DreamCore.h>
-#include <ImFileSystem.h>
+#include <nfd.h>
 #include <sstream>
 
 using std::stringstream;
@@ -61,7 +61,7 @@ namespace DreamTool
         if (ImGui::IsItemClicked())
         {
 
-            LOG_TRACE("Project clicked {}", projDef->getName());
+            LOG_TRACE("ProjectBrowser: Project clicked {}", projDef->getName());
             mState->propertiesWindow.pushPropertyTarget
             (
                 Project,
@@ -80,7 +80,7 @@ namespace DreamTool
 
                 if (ImGui::IsItemClicked())
                 {
-                    LOG_TRACE("Scene Clicked {}", sDef->getName());
+                    LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
                     auto pRunt = mState->project->getRuntime();
                     SceneRuntime* sRunt = nullptr;
 
@@ -93,7 +93,7 @@ namespace DreamTool
                     {
                         if (sRunt->getUuid() != sDef->getUuid())
                         {
-                            LOG_TRACE("Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
+                            LOG_TRACE("ProjectBrowser: Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
                             sRunt = nullptr;
                         }
                     }
@@ -252,7 +252,7 @@ namespace DreamTool
                 {
                     mState->selectionHighlighter.setSelectedEntity(soRunt);
                 }
-                LOG_TRACE("Entity Clicked {}",def->getName());
+                LOG_TRACE("ProjectBrowser: Entity Clicked {}",def->getName());
                 mState->propertiesWindow.pushPropertyTarget(Entity, def, soRunt);
             }
 
@@ -276,7 +276,7 @@ namespace DreamTool
                     IM_ASSERT(payload->DataSize == sizeof(EntityDragSource*));
                     LOG_TRACE
                     (
-                        "Definition {} was dropped onto {}",
+                        "ProjectBrowser: Definition {} was dropped onto {}",
                         mDragDropSource.objectDef->getNameAndUuidString(),
                         def->getNameAndUuidString()
                     );
@@ -396,7 +396,7 @@ namespace DreamTool
                                 {
                                     if (ImGui::IsItemClicked())
                                     {
-                                        LOG_ERROR("Asset Definition Clicked {}", asset->getName());
+                                        LOG_ERROR("ProjectBrowser: Asset Definition Clicked {}", asset->getName());
                                         mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
                                     }
                                     ImGui::TreePop();

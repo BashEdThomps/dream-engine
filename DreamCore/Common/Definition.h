@@ -49,7 +49,7 @@ namespace Dream
         {
             if (mJson[Constants::UUID].is_string())
             {
-               mJson[Constants::UUID] = Uuid::generateUuid();
+               mJson[Constants::UUID] = UuidTools::generateUuid();
             }
         }
 
@@ -123,7 +123,7 @@ namespace Dream
         {
             if (mJson[Constants::UUID].is_null())
             {
-                mJson[Constants::UUID] = Uuid::generateUuid();
+                mJson[Constants::UUID] = UuidTools::generateUuid();
             }
             return mJson[Constants::UUID];
         }

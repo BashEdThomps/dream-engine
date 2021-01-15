@@ -44,13 +44,13 @@ namespace DreamTool
           mMinorColour(minorColour)
 
     {
-        LOG_DEBUG("Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
+        LOG_DEBUG("Grid: Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
     }
 
     Grid::~Grid
     ()
     {
-        LOG_DEBUG("Destructing");
+        LOG_DEBUG("Grid: Destructing");
     }
 
     void
@@ -65,7 +65,7 @@ namespace DreamTool
     Grid::initMajorGridData
     ()
     {
-        LOG_DEBUG("Init Major Data");
+        LOG_DEBUG("Grid: Init Major Data");
         float halfSize = mSize/2.0f;
 
         // Major Grid
@@ -147,7 +147,7 @@ namespace DreamTool
     Grid::initMinorGridData
     ()
     {
-        LOG_DEBUG("Init Minor Data");
+        LOG_DEBUG("Grid: Init Minor Data");
         float halfSize = (mSize/2.0f);
 
         // Major Grid

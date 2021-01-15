@@ -21,12 +21,12 @@ namespace Dream
     (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("LightDefinition: Constructing");
     }
 
     LightDefinition::~LightDefinition()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("LightDefinition: Destructing");
     }
 
     void

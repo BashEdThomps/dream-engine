@@ -54,7 +54,7 @@
 	#endif
 		  if (errorCode!=0)
 		  {
-			  LOG_ERROR("OpenGL Error Check {}:{} ", file, line);
+			  LOG_ERROR("GLHeader: OpenGL Error Check {}:{} ", file, line);
 			  switch (errorCode)
 			  {
 				  case GL_NO_ERROR:
@@ -84,9 +84,7 @@
 		while(errorCode != 0);
 		return wasError;
 	}
-#endif
-
-#ifndef ENABLE_LOGGING
+#else
 	#define GLCheckError()
 #endif
 

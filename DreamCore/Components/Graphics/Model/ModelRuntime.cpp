@@ -48,13 +48,13 @@ namespace Dream
           mModelMatrix(mat4(1.0f)),
           mGlobalInverseTransform(mat4(1.0f))
     {
-        LOG_TRACE( "Constructing {}", definition->getNameAndUuidString() );
+        LOG_TRACE( "ModelRuntime: Constructing {}", definition->getNameAndUuidString() );
     }
 
     ModelRuntime::~ModelRuntime
     ()
     {
-        LOG_TRACE( "Destroying Object");
+        LOG_TRACE( "ModelRuntime: Destroying Object");
         for (auto mesh : mMeshes)
         {
             delete mesh;
@@ -67,7 +67,7 @@ namespace Dream
     ()
     {
         string path = getAssetFilePath();
-        LOG_INFO( "Loading Model - {}" , path);
+        LOG_INFO( "ModelRuntime: Loading Model - {}" , path);
 
         mMaterialNames.clear();
 
@@ -75,7 +75,7 @@ namespace Dream
 
         if (model == nullptr)
         {
-            LOG_ERROR("Could not get model importer, load failed");
+            LOG_ERROR("ModelRuntime: Could not get model importer, load failed");
             return false;
         }
 
@@ -83,7 +83,7 @@ namespace Dream
 
         if(scene == nullptr)
         {
-            LOG_ERROR("Could not get assimp scene from model. Loading failed");
+            LOG_ERROR("ModelRuntime: Could not get assimp scene from model. Loading failed");
             return false;
         }
 
@@ -250,13 +250,13 @@ namespace Dream
             if (material == nullptr)
             {
                 LOG_ERROR(
-                    "No material for mesh {} in model {}."
+                    "ModelRuntime: No material for mesh {} in model {}."
                     " Cannot create mesh with null material.",
                     mesh->mName.C_Str(), getNameAndUuidString()
                 );
                 return nullptr;
             }
-            LOG_DEBUG( "Using Material {}" , material->getName());
+            LOG_DEBUG( "ModelRuntime: Using Material {}" , material->getName());
             BoundingBox bb = updateBoundingBox(mesh);
             mBoundingBox.integrate(bb);
 
@@ -269,7 +269,7 @@ namespace Dream
         }
         else
         {
-            LOG_CRITICAL("Material Cache is nullptr");
+            LOG_CRITICAL("ModelRuntime: Material Cache is nullptr");
         }
 
         return nullptr;
@@ -321,7 +321,7 @@ namespace Dream
     ModelRuntime::loadImporter
     (string path)
     {
-        LOG_DEBUG("Loading {} from disk",  path);
+        LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
 
         auto importer = make_shared<Importer>();
         importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -329,7 +329,7 @@ namespace Dream
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LOG_ERROR( "Error {}" ,importer->GetErrorString() );
+            LOG_ERROR( "ModelRuntime: Error {}" ,importer->GetErrorString() );
             return nullptr;
         }
 
@@ -340,7 +340,7 @@ namespace Dream
     ModelRuntime::updateBoundingBox
     (aiMesh* mesh)
     {
-        LOG_DEBUG( "Updating bounding box");
+        LOG_DEBUG( "ModelRuntime: Updating bounding box");
 
         BoundingBox bb;
 

@@ -11,7 +11,7 @@ namespace Dream
 
     void TextureConstructionTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("TextureConstructionTask: Executing on thread {}",mThreadId);
         // Assign texture to ID
         GLuint textureID;
 
@@ -22,7 +22,7 @@ namespace Dream
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         GLCheckError();
-        LOG_DEBUG("Bound to texture id {}",textureID);
+        LOG_DEBUG("TextureConstructionTask: Bound to texture id {}",textureID);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mTextureRuntime->getWidth(),
             mTextureRuntime->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -61,7 +61,7 @@ namespace Dream
 
     void TextureDestructionTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("TextureDestructionTask: Executing on thread {}",mThreadId);
         glDeleteTextures(1,&mTextureId);
         setState(TaskState::COMPLETED);
     }

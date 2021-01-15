@@ -37,14 +37,14 @@ namespace Dream
         : LockableObject(),
           mMatrix(1.0f)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("Transform: Constructing");
     }
 
     Transform::Transform
     (const Transform& other)
         :LockableObject ()
     {
-        LOG_TRACE("Constructing Copy");
+        LOG_TRACE("Transform: Constructing Copy");
         mMatrix = other.mMatrix;
     }
 
@@ -52,7 +52,7 @@ namespace Dream
     (const mat4& mtx)
         : LockableObject()
     {
-        LOG_TRACE("Constructing from matrix");
+        LOG_TRACE("Transform: Constructing from matrix");
         setMatrix(mtx);
     }
 
@@ -60,7 +60,7 @@ namespace Dream
     (const json& jsonTransform)
         : LockableObject()
     {
-        LOG_TRACE("Constructing from json");
+        LOG_TRACE("Transform: Constructing from json");
         fromJson(jsonTransform);
     }
 

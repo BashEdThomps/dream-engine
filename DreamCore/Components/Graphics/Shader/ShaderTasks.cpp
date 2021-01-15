@@ -12,7 +12,7 @@ namespace Dream
     void ShaderCompileFragmentTask::execute()
     {
         mShaderRuntime->lock();
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ShaderCompileFragmentTask: Executing on thread {}",mThreadId);
         GLint success;
         GLchar infoLog[512];
         // Fragment Shader
@@ -26,7 +26,7 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mShaderRuntime->getFragmentShader(), 512, nullptr, infoLog);
-            LOG_ERROR( "FRAGMENT SHADER COMPILATION FAILED\n {}" , infoLog );
+            LOG_ERROR( "ShaderCompileFragmentTask: FRAGMENT SHADER COMPILATION FAILED\n {}" , infoLog );
             glDeleteShader(mShaderRuntime->getFragmentShader());
             mShaderRuntime->setFragmentShader(0);
             mShaderRuntime->unlock();
@@ -44,7 +44,7 @@ namespace Dream
     void ShaderCompileVertexTask::execute()
     {
         mShaderRuntime->lock();
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ShaderCompileVertexTask: Executing on thread {}",mThreadId);
         GLint success;
         GLchar infoLog[512];
         // Vertex Shader
@@ -58,7 +58,7 @@ namespace Dream
         if (!success)
         {
             glGetShaderInfoLog(mShaderRuntime->getVertexShader(), 512, nullptr, infoLog);
-            LOG_ERROR( "VERTEX SHADER COMPILATION FAILED\n {}" ,infoLog );
+            LOG_ERROR( "ShaderCompileVertexTask: VERTEX SHADER COMPILATION FAILED\n {}" ,infoLog );
             glDeleteShader(mShaderRuntime->getVertexShader());
             mShaderRuntime->setVertexShader(0);
             mShaderRuntime->unlock();
@@ -75,7 +75,7 @@ namespace Dream
 
     void ShaderLinkTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ShaderLinkTask: Executing on thread {}",mThreadId);
         mShaderRuntime->lock();
         if (mShaderRuntime->getVertexShader() != 0 && mShaderRuntime->getFragmentShader() != 0)
         {
@@ -85,7 +85,7 @@ namespace Dream
             mShaderRuntime->setShaderProgram(glCreateProgram());
             if (mShaderRuntime->getShaderProgram() == 0)
             {
-                LOG_ERROR("Unable to create shader program");
+                LOG_ERROR("ShaderLinkTask: Unable to create shader program");
                 mShaderRuntime->unlock();
                 return;
             }
@@ -100,7 +100,7 @@ namespace Dream
             if (!success)
             {
                 glGetProgramInfoLog(mShaderRuntime->getShaderProgram(), 512, nullptr, infoLog);
-                LOG_ERROR( "SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                LOG_ERROR( "ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
                 glDeleteProgram(mShaderRuntime->getShaderProgram());
                 mShaderRuntime->setShaderProgram(0);
                 mShaderRuntime->unlock();
@@ -144,7 +144,7 @@ namespace Dream
 
     void ShaderFreeTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("ShaderFreeTask: Executing on thread {}",mThreadId);
         glDeleteProgram(mShaderProgram);
         setState(COMPLETED);
     }

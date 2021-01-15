@@ -44,13 +44,13 @@ namespace Dream
         mState(Emit),
         mUpdateTask(this)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("ObjectEmitterRuntime: Constructing");
     }
 
     ObjectEmitterRuntime::~ObjectEmitterRuntime
     ()
     {
-        LOG_TRACE("Destroying");
+        LOG_TRACE("ObjectEmitterRuntime: Destroying");
     }
 
     bool
@@ -89,10 +89,10 @@ namespace Dream
            switch (mState)
            {
                case Emit:
-                   LOG_DEBUG("Emit");
+                   LOG_DEBUG("ObjectEmitterRuntime: Emit");
                    emitObjects();
                    mEmitIntervalTime = mEmitInterval;
-                   LOG_DEBUG("EmitInterval");
+                   LOG_DEBUG("ObjectEmitterRuntime: EmitInterval");
                    mState = EmitInterval;
                    break;
                case EmitInterval:
@@ -106,7 +106,7 @@ namespace Dream
                        }
                        else
                        {
-                          LOG_DEBUG("Done");
+                          LOG_DEBUG("ObjectEmitterRuntime: Done");
                           mState = Done;
                        }
                    }
@@ -126,7 +126,7 @@ namespace Dream
     {
         if (mEntityUuid != 0)
         {
-            LOG_DEBUG("Emitting Objects");
+            LOG_DEBUG("ObjectEmitterRuntime: Emitting Objects");
             double deltaTheta = (mEndTheta-mStartTheta)/mObjectCount;
             float theta = mStartTheta;
 

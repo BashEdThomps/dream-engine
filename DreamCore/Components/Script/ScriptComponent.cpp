@@ -120,13 +120,13 @@ namespace Dream
         : Component(runtime),
           mScriptCache(cache)
     {
-        LOG_TRACE( "Constructing Object" );
+        LOG_TRACE( "ScriptComponent: Constructing Object" );
     }
 
     ScriptComponent::~ScriptComponent
     ()
     {
-        LOG_TRACE("Destroying Object");
+        LOG_TRACE("ScriptComponent: Destroying Object");
         lock();
         if (Engine != nullptr)
         {
@@ -142,7 +142,7 @@ namespace Dream
     ScriptComponent::init
     ()
     {
-        LOG_DEBUG( "Initialising ScriptComponent" );
+        LOG_DEBUG( "ScriptComponent: Initialising ScriptComponent" );
         int r = asPrepareMultithread(); assert( r >= 0 );
         Engine = asCreateScriptEngine();
         r = Engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
@@ -151,7 +151,7 @@ namespace Dream
         RegisterScriptArray(Engine,true);
         RegisterScriptDictionary(Engine);
         Engine->SetContextCallbacks(RequestContextCallback,ReturnContextToPool);
-        LOG_DEBUG( "Got an AngelScript Engine");
+        LOG_DEBUG( "ScriptComponent: Got an AngelScript Engine");
         exposeAPI();
         return true;
     }
@@ -640,7 +640,7 @@ namespace Dream
     ScriptComponent::debugRegisteringClass
     (const string& className)
     {
-        LOG_DEBUG( "Registering Class {}",  className );
+        LOG_DEBUG( "ScriptComponent: Registering Class {}",  className );
     }
 
     void

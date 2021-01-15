@@ -38,13 +38,13 @@ namespace DreamTool
           mSelectedCp(0),
           mUStep(0.05)
     {
-        LOG_TRACE("Constructing Object");
+        LOG_TRACE("PathViewer: Constructing Object");
     }
 
     PathViewer::~PathViewer
     ()
     {
-        LOG_DEBUG("Destructing Object");
+        LOG_DEBUG("PathViewer: Destructing Object");
         clearRuntime();
 
     }
@@ -53,7 +53,7 @@ namespace DreamTool
     PathViewer::init
     ()
     {
-        LOG_DEBUG("Initialising");
+        LOG_DEBUG("PathViewer: Initialising");
         GLWidget::init();
     }
 
@@ -150,7 +150,7 @@ namespace DreamTool
     {
         if (mPathDefinition == nullptr)
         {
-            LOG_DEBUG("No object selected");
+            LOG_DEBUG("PathViewer: No object selected");
             return;
         }
         else
@@ -184,7 +184,7 @@ namespace DreamTool
     PathViewer::updateVertexBuffer
     ()
     {
-        LOG_DEBUG("Updating Vertex Buffer") ;
+        LOG_DEBUG("PathViewer: Updating Vertex Buffer") ;
 
         // Vertex Array
         glBindVertexArray(mVao);
@@ -244,10 +244,10 @@ namespace DreamTool
         vec3 pos = cp.position.toGLM();
         int index = cp.index;
 
-        LOG_TRACE("Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
+        LOG_TRACE("PathViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
 
         vec3 colour = (mSelectedCp ==  index ? mSelectedColour : mUnselectedColour);
-        LOG_TRACE("Selected? {}",mSelectedCp == index);
+        LOG_TRACE("PathViewer: Selected? {}",mSelectedCp == index);
 
         // Top Quad
 

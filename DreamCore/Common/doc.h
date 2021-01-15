@@ -34,7 +34,7 @@
  * \subsection Project
  * Project objects are the highest level of object in Dream. A Project consists
  * primarily of a ProjectDefinition and ProjectRuntime. A ProjectDefinition
- * defines a Project, it's Scenes, Entitys and Assets. On disk a Project is
+ * defines a Project, it's Scenes, Entities and Assets. On disk a Project is
  * saved as a json file and an accompanying set of assets directories. These
  * directories store any data (Texture/Font/3D/Audio/etc.) required to run the
  * Project
@@ -44,16 +44,16 @@
  *
  * \subsection Scenes
  * A Project contains one or more Scenes that are to be displayed. A Scene is composed of one
- * or more Entitys. A Scene may for example represent a level, environment or stage within
+ * or more Entities. A Scene may for example represent a level, environment or stage within
  * your application.
  * * \link Dream::SceneDefinition \endlink
  * * \link Dream::SceneRuntime \endlink
  *
- * \subsection Entitys
- * Scene Objects are used to construct a 'Scenegraph' that describes the relationship of objects
- * within the Scene. A Scene has a single 'Root' object with n-children. Scene Objects are
+ * \subsection Entities
+ * Entities are used to construct a 'Scenegraph' that describes the relationship of objects
+ * within the Scene. A Scene has a single 'Root' Entity with n-children. Entities are
  * arranged within a parent-child relationship tree, through which they can inherit their transformation.
- * Each Scene Object is assigned zero or more 'Assets Definitions' to instanciate at runtime.
+ * Each Entity is assigned zero or more 'Assets Definitions' to instanciate at runtime.
  * * \link Dream::EntityDefinition \endlink
  * * \link Dream::EntityRuntime \endlink
  *
@@ -68,8 +68,8 @@
  * AssetDefinition objects are used to define an Asset's initial properties.
  * They are defined once at the Project level and can be reused multiple times
  * within a Screen to create AssetRuntime objects. These AssetRuntimes are
- * then assigned to Entitys within a Scene. AssetDefinition objects are
- * defined at the Project level so that they can be shared by Entitys.
+ * then assigned to Entities within a Scene. AssetDefinition objects are
+ * defined at the Project level so that they can be shared by Entities.
  *
  * These are the types of Asset available in Dream.
  * * Animation
@@ -117,7 +117,6 @@
  *
  * \section Build Dependencies
  * Dream uses the following libraries.
- * * ALUT
  * * Assimp
  * * Bullet
  * * GLM

@@ -12,7 +12,7 @@ namespace Dream
 
     void PathUpdateTask::execute()
     {
-        LOG_CRITICAL("Executing on thread {}",mThreadId);
+        LOG_CRITICAL("PathUpdateTask: Executing on thread {}",mThreadId);
         if( mPathRuntime->tryLock())
         {
             mPathRuntime->update();

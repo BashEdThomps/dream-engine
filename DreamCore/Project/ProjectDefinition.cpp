@@ -40,14 +40,14 @@ namespace Dream
         : Definition(data)
 
     {
-        LOG_TRACE("Constructing {}", getNameAndUuidString());
+        LOG_TRACE("ProjectDefinition: Constructing {}", getNameAndUuidString());
     }
 
 
     ProjectDefinition::~ProjectDefinition
     ()
     {
-        LOG_TRACE("Destructing {}", getNameAndUuidString());
+        LOG_TRACE("ProjectDefinition: Destructing {}", getNameAndUuidString());
         deleteSceneDefinitions();
         deleteAssetDefinitions();
     }
@@ -136,7 +136,7 @@ namespace Dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
-        LOG_DEBUG("Loading AssetDefinitions from JSON");
+        LOG_DEBUG("ProjectDefinition: Loading AssetDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_ASSET_ARRAY])
         {
@@ -149,7 +149,7 @@ namespace Dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
-        LOG_DEBUG("Loading ScenesDefinitions from JSON");
+        LOG_DEBUG("ProjectDefinition: Loading ScenesDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_SCENE_ARRAY])
         {
@@ -195,7 +195,7 @@ namespace Dream
             case OBJECT_EMITTER:
                 return new ObjectEmitterDefinition(this,assetDefinitionJs);
             case NONE:
-                LOG_ERROR("Unable to create Asset Definition. Unknown Type");
+                LOG_ERROR("ProjectDefinition: Unable to create Asset Definition. Unknown Type");
                 break;
         }
         return nullptr;
@@ -224,7 +224,7 @@ namespace Dream
     (AssetDefinition* assetDefinition)
     {
         LOG_DEBUG(
-                    "Removing AssetDefinition {} from {}",
+                    "ProjectDefinition: Removing AssetDefinition {} from {}",
                     assetDefinition->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
@@ -235,7 +235,7 @@ namespace Dream
             if ((*iter) == assetDefinition)
             {
                 LOG_DEBUG(
-                            "Found AssetDefinition to {} remove from {}",
+                            "ProjectDefinition: Found AssetDefinition to {} remove from {}",
                             assetDefinition->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
@@ -350,7 +350,7 @@ namespace Dream
     (SceneDefinition* sceneDef)
     {
         LOG_DEBUG(
-                    "Removing SceneDefinition {} from {}",
+                    "ProjectDefinition: Removing SceneDefinition {} from {}",
                     sceneDef->getNameAndUuidString(),
                     getNameAndUuidString()
                     );
@@ -362,7 +362,7 @@ namespace Dream
             if ((*iter) == sceneDef)
             {
                 LOG_DEBUG(
-                            "Found scene to {} remove from {}",
+                            "ProjectDefinition: Found scene to {} remove from {}",
                             sceneDef->getNameAndUuidString(),
                             getNameAndUuidString()
                             );
@@ -408,7 +408,7 @@ namespace Dream
     ()
     {
         json scene;
-        scene[Constants::UUID] = Uuid::generateUuid();
+        scene[Constants::UUID] = UuidTools::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
         Transform camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
@@ -425,10 +425,10 @@ namespace Dream
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
-        LOG_DEBUG("Creating new AssetDefinition with default Format {}", defaultFormat);
+        LOG_DEBUG("ProjectDefinition: Creating new AssetDefinition with default Format {}", defaultFormat);
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
-        assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
+        assetDefinitionJson[Constants::UUID] = UuidTools::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
         AssetDefinition* ad = createAssetDefinition(assetDefinitionJson);
@@ -441,7 +441,7 @@ namespace Dream
     ()
     {
         uint32_t startupScene = getStartupSceneUuid();
-        LOG_DEBUG("Finding startup scene {}", startupScene);
+        LOG_DEBUG("ProjectDefinition: Finding startup scene {}", startupScene);
         return getSceneDefinitionByUuid(startupScene);
     }
 
@@ -621,7 +621,7 @@ namespace Dream
     {
         json j = json::object();
         j[Constants::NAME] = name;
-        j[Constants::UUID] = Uuid::generateUuid();
+        j[Constants::UUID] = UuidTools::generateUuid();
         j[Constants::PROJECT_AUTHOR] = "";
         j[Constants::PROJECT_DESCRIPTION] = "";
         j[Constants::PROJECT_STARTUP_SCENE] = "";

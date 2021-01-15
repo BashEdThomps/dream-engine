@@ -19,6 +19,7 @@ namespace Dream
     {
     public:
         FontDefinition(ProjectDefinition* pd, const json& js);
+        void SetShaderUUID();
     };
 
 }

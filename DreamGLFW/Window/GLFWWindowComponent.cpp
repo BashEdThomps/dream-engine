@@ -66,14 +66,14 @@ namespace DreamGLFW
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f)
     {
-        LOG_INFO("Constructing" );
+        LOG_INFO("GLFWWindowComponent: Constructing" );
         mName = "Dream";
     }
 
     GLFWWindowComponent::~GLFWWindowComponent
     ()
     {
-        LOG_INFO("Destructing" );
+        LOG_INFO("GLFWWindowComponent: Destructing" );
         glfwTerminate();
         mWindow = nullptr;
     }
@@ -114,12 +114,12 @@ namespace DreamGLFW
     GLFWWindowComponent::initGLFW
     ()
     {
-        LOG_DEBUG("Initialising GLFW");
+        LOG_DEBUG("GLFWWindowComponent: Initialising GLFW");
         glfwSetErrorCallback(GLFWErrorCallback);
         /* Initialize the library */
         if (!glfwInit())
         {
-            LOG_ERROR("FAILED @ Initialising GLFW");
+            LOG_ERROR("GLFWWindowComponent: FAILED @ Initialising GLFW");
             return false;
         }
 
@@ -138,7 +138,7 @@ namespace DreamGLFW
 
         if (mWindow == nullptr)
         {
-            LOG_ERROR("FAILED @ Make Window");
+            LOG_ERROR("GLFWWindowComponent: FAILED @ Make Window");
             glfwTerminate();
             return false;
         }
@@ -154,7 +154,7 @@ namespace DreamGLFW
         glfwSwapInterval(1);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        LOG_DEBUG("Queried Framebuffer size as {}x{}",mWidth,mHeight);
+        LOG_DEBUG("GLFWWindowComponent: Queried Framebuffer size as {}x{}",mWidth,mHeight);
         return true;
     }
 
@@ -162,18 +162,18 @@ namespace DreamGLFW
     GLFWWindowComponent::initGL
     ()
     {
-        LOG_DEBUG("Initialising GLFW::OpenGL");
+        LOG_DEBUG("GLFWWindowComponent: Initialising GLFW::OpenGL");
 
         if(!gladLoadGL())
 		{
-			LOG_ERROR("Window: Error initialising GLAD!\n");
+			LOG_ERROR("GLFWWindowComponent: Window: Error initialising GLAD!\n");
 			return false;
 		}
 
         GLCheckError();
 
         LOG_DEBUG(
-            "OpenGL Version {}, Shader Version {}",
+            "GLFWWindowComponent: OpenGL Version {}, Shader Version {}",
             glGetString(GL_VERSION),
             glGetString(GL_SHADING_LANGUAGE_VERSION)
         );
@@ -193,7 +193,7 @@ namespace DreamGLFW
                 sr->setState(Dream::SCENE_STATE_TO_DESTROY);
             }
             setShouldClose(true);
-            LOG_ERROR("Window should close");
+            LOG_ERROR("GLFWWindowComponent: Window should close");
         }
 
         if (WindowSizeChanged)
@@ -208,7 +208,7 @@ namespace DreamGLFW
     ()
     {
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        LOG_ERROR("Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
+        LOG_ERROR("GLFWWindowComponent: Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         mSizeHasChanged = true;
     }
 

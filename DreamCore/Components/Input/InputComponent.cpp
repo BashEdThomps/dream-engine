@@ -39,7 +39,7 @@ namespace Dream
           mExecuteScriptTask(this),
           mJoystickCount(0)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("InputComponent: Constructing");
         //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
         mJoystickNavigation = make_shared<JoystickFaceForwardNavigation>(&mJoystickState,&mJoystickMapping);
     }
@@ -47,14 +47,14 @@ namespace Dream
     InputComponent::~InputComponent
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("InputComponent: Destructing");
     }
 
     bool
     InputComponent::init
     ()
     {
-        LOG_DEBUG("Initialising...");
+        LOG_DEBUG("InputComponent: Initialising...");
         return true;
     }
 

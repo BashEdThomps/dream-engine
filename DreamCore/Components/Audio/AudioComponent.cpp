@@ -31,13 +31,13 @@ namespace Dream
           mDevice(nullptr),
           mContext(nullptr)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("AudioComponent: Constructing");
     }
 
     AudioComponent::~AudioComponent
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("AudioComponent: Destructing");
 
         alcMakeContextCurrent(nullptr);
 
@@ -58,7 +58,7 @@ namespace Dream
     AudioComponent::init
     ()
     {
-        LOG_DEBUG("Initialising...");
+        LOG_DEBUG("AudioComponent: Initialising...");
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);

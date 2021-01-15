@@ -121,7 +121,7 @@ namespace Dream
     AudioRuntime::play
     ()
     {
-        LOG_DEBUG(  "Playing source {}" , mSource);
+        LOG_DEBUG(  "AudioRuntime: Playing source {}" , mSource);
         alSourcePlay(mSource);
     }
 
@@ -129,7 +129,7 @@ namespace Dream
     AudioRuntime::stop
     ()
     {
-        LOG_DEBUG(  "Stopping source {}" , mSource);
+        LOG_DEBUG(  "AudioRuntime: Stopping source {}" , mSource);
         alSourceStop(mSource);
     }
 
@@ -137,7 +137,7 @@ namespace Dream
     AudioRuntime::pause
     ()
     {
-        LOG_DEBUG(  "Pausing source {}" , mSource);
+        LOG_DEBUG(  "AudioRuntime: Pausing source {}" , mSource);
         alSourcePause(mSource);
     }
 
@@ -176,14 +176,14 @@ namespace Dream
         for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
         {
             auto log = getLog();
-            LOG_trace("Generating events for marker {}", markerIndex);
+            LOG_trace("AudioRuntime: Generating events for marker {}", markerIndex);
             auto markerStart = ad->getMarkerSampleIndex(markerIndex);
             auto count = ad->getMarkerRepeat(markerIndex);
             auto step = ad->getMarkerRepeatPeriod(markerIndex);
             auto markerName = ad->getMarkerName(markerIndex);
 
             auto next = markerStart;
-            LOG_trace("Marker {}'s is : ", markerIndex, next);
+            LOG_trace("AudioRuntime: Marker {}'s is : ", markerIndex, next);
             Event e(mEntityRuntime,"audio");
             e.setString("name",markerName);
             e.setNumber("time",markerStart);
@@ -193,7 +193,7 @@ namespace Dream
             {
                 auto repeatIndex = i+1;
                 auto next = markerStart + (repeatIndex*step);
-                LOG_trace("Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
+                LOG_trace("AudioRuntime: Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
                 Event e(mEntityRuntime,"audio");
                 e.setString("name",markerName);
                 e.setNumber("time",next);
@@ -224,12 +224,11 @@ namespace Dream
     ()
     {
         /*
-        auto log = getLog();
         auto currentSample = mAudioComponent->getSampleOffset(mSource);
         // has just looped, restore cached events
         if (mLooping && mLastSampleOffset > currentSample)
         {
-            LOG_debug("Just Looped");
+            LOG_DEBUG("AudioRuntime: Just Looped");
            mMarkerEvents = mMarkerEventsCache;
         }
 
@@ -289,7 +288,7 @@ namespace Dream
             case AL_PAUSED:
                 return PAUSED;
             default:
-                LOG_ERROR("Unknown Audio State for {} " , getNameAndUuidString());
+                LOG_ERROR("AudioRuntime: Unknown Audio State for {} " , getNameAndUuidString());
                 return UNKNOWN;
         }
     }
@@ -379,7 +378,7 @@ namespace Dream
     AudioRuntime::loadIntoAL
     ()
     {
-        LOG_ERROR("Loading Into AL {}",getNameAndUuidString());
+        LOG_ERROR("AudioRuntime: Loading Into AL {}",getNameAndUuidString());
 
         if (mSource == 0 && mBuffer == 0)
         {
@@ -388,7 +387,7 @@ namespace Dream
 
             if (mAudioDataBuffer.empty())
             {
-                LOG_ERROR("Unable to load audio data: Empty Buffer");
+                LOG_ERROR("AudioRuntime: Unable to load audio data: Empty Buffer");
                 return false;
             }
 
@@ -400,11 +399,11 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Unable to load audio, source or buffer is empty");
+            LOG_ERROR("AudioRuntime: Unable to load audio, source or buffer is empty");
             return false;
         }
 
-        LOG_DEBUG("Pushed audio asset to play queue");
+        LOG_DEBUG("AudioRuntime: Pushed audio asset to play queue");
         return true;
     }
 }

@@ -19,12 +19,14 @@
 
 using namespace std;
 
+typedef uint32_t UuidType;
+
 namespace Dream
 {
-    class Uuid
+    class UuidTools
     {
     public:
-        static uint32_t generateUuid();
+        static UuidType generateUuid();
     };
 }
 

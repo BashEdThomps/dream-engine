@@ -36,11 +36,11 @@ namespace Dream
           mParentEntity(parent),
           mSceneDefinition(sceneDefinition)
     {
-        LOG_TRACE( "Constructing {}",getNameAndUuidString());
+        LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         if (randomUuid)
         {
-            mJson[Constants::UUID] = Uuid::generateUuid();
-            LOG_TRACE( "With new UUID",getNameAndUuidString());
+            mJson[Constants::UUID] = UuidTools::generateUuid();
+            LOG_TRACE( "EntityDefinition: With new UUID",getNameAndUuidString());
         }
         mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
     }
@@ -48,7 +48,7 @@ namespace Dream
     EntityDefinition::~EntityDefinition
     ()
     {
-        LOG_TRACE( "Destructing {}", getNameAndUuidString() );
+        LOG_TRACE( "EntityDefinition: Destructing {}", getNameAndUuidString() );
         deleteChildEntityDefinitions();
     }
 
@@ -160,7 +160,7 @@ namespace Dream
             {
                 LOG_DEBUG
                 (
-                    "Found child to {} remove from {}",
+                    "EntityDefinition: Found child to {} remove from {}",
                     child->getNameAndUuidString(),
                     getNameAndUuidString()
                 );
@@ -183,13 +183,13 @@ namespace Dream
     EntityDefinition::createNewChildDefinition
     (json* fromJson)
     {
-        LOG_DEBUG("Creating new child scene object");
+        LOG_DEBUG("EntityDefinition: Creating new child scene object");
 
         json defJson;
 
         if (fromJson == nullptr)
         {
-            LOG_DEBUG("from scratch");
+            LOG_DEBUG("EntityDefinition: from scratch");
             defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
 
             Transform transform;
@@ -197,7 +197,7 @@ namespace Dream
         }
         else
         {
-            LOG_DEBUG("from template copy");
+            LOG_DEBUG("EntityDefinition: from template copy");
             defJson = json::parse(fromJson->dump());
         }
 
@@ -327,13 +327,13 @@ namespace Dream
         // Nothing to assign duplicate to
         if (mParentEntity == nullptr)
         {
-            LOG_ERROR("Cannot Duplicate. No parent to assign duplicate to");
+            LOG_ERROR("EntityDefinition: Cannot Duplicate. No parent to assign duplicate to");
             return nullptr;
         }
 
         auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,getJson(),true);
         newSOD->loadChildEntityDefinitions(true);
-        newSOD->setUuid(Uuid::generateUuid());
+        newSOD->setUuid(UuidTools::generateUuid());
         string name = newSOD->getName();
         regex numRegex("(\\d+)$");
         cmatch match;
@@ -429,7 +429,7 @@ namespace Dream
             return 0;
         }
 
-        LOG_TRACE("Found {} Runtime",typeStr);
+        LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
         return mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr];
     }
 

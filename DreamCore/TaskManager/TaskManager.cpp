@@ -34,24 +34,24 @@ namespace Dream
 
         TaskManager::~TaskManager()
         {
-            LOG_DEBUG("Destroying Object");
+            LOG_TRACE("TaskManager: Destroying Object");
             joinAllThreads();
         }
 
         void TaskManager::startAllThreads()
         {
-            LOG_CRITICAL("Starting all worker threads...");
+            LOG_DEBUG("TaskManager: Starting all worker threads...");
 
             for (int i=0; i <  static_cast<int>(thread::hardware_concurrency()); i++)
             {
-                LOG_CRITICAL("Spawning thread {}",i);
+                LOG_DEBUG("TaskManager: Spawning thread {}",i);
                 mThreadVector.push_back(new TaskThread(i));
             }
         }
 
         void TaskManager::joinAllThreads()
         {
-            LOG_CRITICAL("Joining all threads...");
+            LOG_DEBUG("TaskManager: Joining all threads...");
             for (TaskThread* t : mThreadVector)
             {
                 t->setRunning(false);
@@ -72,7 +72,7 @@ namespace Dream
                 mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    LOG_CRITICAL("Task: pushed task to worker {}",mNextThread);
+                    LOG_DEBUG("TaskManager: pushed task to worker {}",mNextThread);
                     break;
                 }
                 std::this_thread::yield();
@@ -87,7 +87,7 @@ namespace Dream
                 mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    LOG_CRITICAL("Task: pushed to worker {}",mNextThread);
+                    LOG_DEBUG("TaskManager: pushed to worker {}",mNextThread);
                     break;
                 }
                 std::this_thread::yield();
@@ -97,7 +97,7 @@ namespace Dream
 
         void TaskManager::clearFences()
         {
-            LOG_CRITICAL("Clearing all fences");
+            LOG_TRACE("TaskManager: Clearing all fences");
             for (TaskThread* t : mThreadVector)
             {
                t->clearFence();
@@ -106,7 +106,7 @@ namespace Dream
 
         void TaskManager::waitForFence()
         {
-           LOG_CRITICAL("... Waiting for fence ...");
+           LOG_TRACE("TaskManager: ... Waiting for fence ...");
            int trys = 0;
            while (true)
            {
@@ -114,18 +114,18 @@ namespace Dream
                for (TaskThread* t : mThreadVector)
                {
                    trys++;
-                   LOG_TRACE("Trying for {} time",trys);
+                   LOG_TRACE("TaskManager: Trying for {} time",trys);
 
                    result = result && t->getFence();
                    if (!result)
                    {
-                       LOG_TRACE("Thread {} is still working",t->getThreadId());
+                       LOG_TRACE("TaskManager: Thread {} is still working",t->getThreadId());
                        break;
                    }
                }
                if (result)
                {
-                   LOG_CRITICAL("All Fences hit");
+                   LOG_TRACE("TaskManager: All Fences hit");
                    break;
                }
                std::this_thread::yield();

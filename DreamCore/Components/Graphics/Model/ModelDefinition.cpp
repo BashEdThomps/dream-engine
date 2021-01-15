@@ -28,7 +28,7 @@ namespace Dream
     (ProjectDefinition* pd, const json &js)
         : AssetDefinition(pd,js)
     {
-        LOG_TRACE("Constructing {}", getNameAndUuidString());
+        LOG_TRACE("ModelDefinition: Constructing {}", getNameAndUuidString());
     }
 
     ModelDefinition::~ModelDefinition()
@@ -92,12 +92,12 @@ namespace Dream
                 string materialNameStr = materialName;
                 if (material == materialNameStr)
                 {
-                    LOG_DEBUG("Removing material form {} shader map {}",getName(),material);
+                    LOG_DEBUG("ModelDefinition: Removing material form {} shader map {}",getName(),material);
                     shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }
         }
-        LOG_ERROR("Could not remove {} from {} shader map, object not found",getName(), material);
+        LOG_ERROR("ModelDefinition: Could not remove {} from {} shader map, object not found",getName(), material);
     }
 
     void

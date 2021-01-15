@@ -7,12 +7,12 @@ namespace Dream
     ModelAnimation::ModelAnimation
     ()
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("ModelAnimation: Constructing");
     }
 
     ModelAnimation::~ModelAnimation
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("ModelAnimation: Destructing");
     }
 }

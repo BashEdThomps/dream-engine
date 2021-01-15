@@ -21,7 +21,7 @@ namespace DreamTool
     SelectionHighlighter::~SelectionHighlighter
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("SelectionHighlighter: Destructing");
     }
 
     void
@@ -29,7 +29,7 @@ namespace DreamTool
     (EntityRuntime* selected)
     {
         mSelectedEntityRuntime = selected;
-        LOG_ERROR("SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
+        LOG_ERROR("SelectionHighlighter: SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
         updateGeometry();
     }
 
@@ -42,15 +42,15 @@ namespace DreamTool
     SelectionHighlighter::updateGeometry
     ()
     {
-        LOG_ERROR("Updating");
+        LOG_ERROR("SelectionHighlighter: Updating");
         if (mSelectedEntityRuntime == nullptr)
         {
             return;
         }
 
         BoundingBox bounds = mSelectedEntityRuntime->getBoundingBox();
-        LOG_ERROR("Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
-        LOG_ERROR("Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
+        LOG_ERROR("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
+        LOG_ERROR("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
 
         mVertexBuffer.clear();
         // Top Quad
@@ -244,7 +244,7 @@ namespace DreamTool
             GLCheckError();
             if (mProjectionUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for projection");
+                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for projection");
                 return;
             }
             else
@@ -257,7 +257,7 @@ namespace DreamTool
             GLCheckError();
             if (mViewUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for view");
+                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for view");
                 return;
             }
             else
@@ -270,7 +270,7 @@ namespace DreamTool
             // Set the projection matrix
             if (mModelUniform == -1)
             {
-                LOG_ERROR("Unable to find Uniform Location for model");
+                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for model");
                 return;
             }
             else

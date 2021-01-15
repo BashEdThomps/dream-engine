@@ -81,14 +81,14 @@ namespace Dream
           mShaderCache(nullptr),
           mScriptCache(nullptr)
     {
-        LOG_DEBUG( "Constructing" );
+        LOG_DEBUG( "ProjectRuntime: Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
     }
 
     ProjectRuntime::~ProjectRuntime
     ()
     {
-        LOG_DEBUG( "Destructing" );
+        LOG_DEBUG( "ProjectRuntime: Destructing" );
         deleteCaches();
         deleteComponents();
 
@@ -127,7 +127,7 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
-        LOG_DEBUG( "Initialising Components..." );
+        LOG_DEBUG( "ProjectRuntime: Initialising Components..." );
 
         mTime = new Time();
 
@@ -166,7 +166,7 @@ namespace Dream
             return false;
         }
 
-        LOG_DEBUG( "Successfuly created Components." );
+        LOG_DEBUG( "ProjectRuntime: Successfuly created Components." );
 
         return true;
     }
@@ -177,7 +177,7 @@ namespace Dream
     {
         if (!mWindowComponent)
         {
-            LOG_CRITICAL("Window component is null");
+            LOG_CRITICAL("ProjectRuntime: Window component is null");
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
@@ -195,7 +195,7 @@ namespace Dream
         mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
-            LOG_ERROR( "Unable to initialise AudioComponent." );
+            LOG_ERROR( "ProjectRuntime: Unable to initialise AudioComponent." );
             mAudioComponent->unlock();
             return false;
         }
@@ -213,7 +213,7 @@ namespace Dream
 
         if (!mInputComponent->init())
         {
-            LOG_ERROR( "Unable to initialise InputComponent." );
+            LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
             mInputComponent->unlock();
             return false;
         }
@@ -230,7 +230,7 @@ namespace Dream
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
-            LOG_ERROR( "Unable to initialise PhysicsComponent." );
+            LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
             mPhysicsComponent->unlock();
             return false;
         }
@@ -248,7 +248,7 @@ namespace Dream
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
         {
-            LOG_ERROR( "Unable to initialise Graphics Component." );
+            LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
             mGraphicsComponent->unlock();
             return false;
         }
@@ -264,7 +264,7 @@ namespace Dream
         mScriptComponent->lock();
         if(!mScriptComponent->init())
         {
-            LOG_ERROR( "Unable to initialise Script Engine." );
+            LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
             mScriptComponent->unlock();
             return false;
         }
@@ -284,7 +284,7 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        LOG_TRACE("initialising caches");
+        LOG_TRACE("ProjectRuntime: initialising caches");
         mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
         mShaderCache  = new ShaderCache(this);
@@ -667,7 +667,7 @@ namespace Dream
     ProjectRuntime::constructSceneRuntime
     (SceneRuntime* rt)
     {
-        LOG_DEBUG("Constructing Scene Runtime");
+        LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
         return rt->useDefinition();
     }
 

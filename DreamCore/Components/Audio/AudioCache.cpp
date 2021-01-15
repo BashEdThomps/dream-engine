@@ -51,7 +51,7 @@ namespace Dream
         }
         else
         {
-            LOG_ERROR("Error, unrecognised audio format {}", def->getFormat());
+            LOG_ERROR("AudioCache: Error, unrecognised audio format {}", def->getFormat());
         }
 
         if (asset)

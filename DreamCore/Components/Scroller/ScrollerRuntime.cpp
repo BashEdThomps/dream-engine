@@ -37,20 +37,20 @@ namespace Dream
         mRangeEnd(0.0f),
         mUpdateTask(this)
     {
-        LOG_TRACE("Constructing Object");
+        LOG_TRACE("ScrollerRuntime: Constructing Object");
     }
 
     ScrollerRuntime::~ScrollerRuntime
     ()
     {
-        LOG_TRACE("Destroying Object");
+        LOG_TRACE("ScrollerRuntime: Destroying Object");
     }
 
     bool
     ScrollerRuntime::useDefinition
     ()
     {
-        LOG_DEBUG("Creating ScrollerRuntime Children for {}", mEntityRuntime->getNameAndUuidString());
+        LOG_DEBUG("ScrollerRuntime: Creating ScrollerRuntime Children for {}", mEntityRuntime->getNameAndUuidString());
         auto scrollerDef = static_cast<ScrollerDefinition*>(mDefinition);
         auto items = scrollerDef->getItemsArray();
         mVelocity = scrollerDef->getVelocity();
@@ -145,7 +145,7 @@ namespace Dream
     ScrollerRuntime::update
     ()
     {
-        LOG_TRACE("Updating Runtime");
+        LOG_TRACE("ScrollerRuntime: Updating Runtime");
         auto time =
             mEntityRuntime
                 ->getSceneRuntime()
@@ -165,11 +165,11 @@ namespace Dream
 
         mEntityRuntime->lock();
         auto children = mEntityRuntime->getChildRuntimes();
-        LOG_TRACE("Child has {} children", children.size());
+        LOG_TRACE("ScrollerRuntime: Child has {} children", children.size());
         for (auto* child : children)
         {
             child->lock();
-            LOG_TRACE("Translating Child with delta vel {},{},{}", delta.x(), delta.y(), delta.z());
+            LOG_TRACE("ScrollerRuntime: Translating Child with delta vel {},{},{}", delta.x(), delta.y(), delta.z());
             child->getTransform().translate(delta);
             child->unlock();
         }
@@ -179,7 +179,7 @@ namespace Dream
         {
            if (checkRange(*iter) == Range::InRange)
            {
-              LOG_ERROR("New Child in range {}",(*iter)->getNameAndUuidString());
+              LOG_ERROR("ScrollerRuntime: New Child in range {}",(*iter)->getNameAndUuidString());
               addAssets(*iter);
               mInRange.push_back(*iter);
               mPreRange.erase(iter);
@@ -194,7 +194,7 @@ namespace Dream
         {
            if (checkRange(*iter) == Range::PostRange)
            {
-               LOG_ERROR("Child has gone out of range {}",(*iter)->getNameAndUuidString());
+               LOG_ERROR("ScrollerRuntime: Child has gone out of range {}",(*iter)->getNameAndUuidString());
                mPostRange.push_back(*iter);
                mInRange.erase(iter);
            }
@@ -214,7 +214,7 @@ namespace Dream
         for (EntityRuntime* runt : mPostRange)
         {
             runt->lock();
-            LOG_ERROR("Garbage! {}",runt->getNameAndUuidString());
+            LOG_ERROR("ScrollerRuntime: Garbage! {}",runt->getNameAndUuidString());
             mEntityRuntime->removeChildRuntime(runt);
             runt->unlock();
         }

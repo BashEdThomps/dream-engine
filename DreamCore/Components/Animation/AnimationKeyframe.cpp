@@ -20,7 +20,7 @@ namespace Dream
     AnimationKeyframe::~AnimationKeyframe
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("AnimationKeyFrame: Destructing");
     }
 
     long

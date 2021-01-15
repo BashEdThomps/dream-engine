@@ -111,7 +111,7 @@ namespace Dream
             }
             else
             {
-                LOG_CRITICAL("Tash: *** WHAT THE F JEFF!!! *** Task was not waiting for target");
+                LOG_CRITICAL("Task: *** WHAT THE F JEFF!!! *** Task was not waiting for target");
             }
             WaitingForMutex.unlock();
         }
@@ -121,7 +121,7 @@ namespace Dream
             WaitingForMeMutex.lock();
            for (Task* t : WaitingForMe[mTaskId])
            {
-               LOG_CRITICAL("Task: is notifying dependant task of completion");
+               LOG_TRACE("Task: is notifying dependant task of completion");
                t->clearDependency(this);
            }
            WaitingForMe[mTaskId].clear();
@@ -137,7 +137,7 @@ namespace Dream
                 TaskStatesMutex.lock();
                 TaskStates[mTaskId] = TaskState::WAITING;
                 TaskStatesMutex.unlock();
-                LOG_CRITICAL("is waiting for {} dependencies to finish",WaitingFor[mTaskId].size());
+                LOG_TRACE("Task: is waiting for {} dependencies to finish",WaitingFor[mTaskId].size());
             }
             WaitingForMutex.unlock();
             return retval;

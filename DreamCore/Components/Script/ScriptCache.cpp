@@ -29,13 +29,13 @@ namespace Dream
     (ProjectRuntime* runtime)
         : Cache (runtime)
     {
-        LOG_TRACE("Constructing");
+        LOG_TRACE("ScriptCache: Constructing");
     }
 
     ScriptCache::~ScriptCache
     ()
     {
-        LOG_TRACE("Destructing");
+        LOG_TRACE("ScriptCache: Destructing");
     }
 
     SharedAssetRuntime*

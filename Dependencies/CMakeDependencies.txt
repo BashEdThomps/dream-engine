@@ -75,13 +75,6 @@ file(MAKE_DIRECTORY ${imtexteditor_output_dir})
 add_subdirectory(${imtexteditor_src_dir} ${imtexteditor_output_dir} EXCLUDE_FROM_ALL)
 include_directories(${imtexteditor_src_dir})
 
-# ImFileSystem
-set(imfilesystem_src_dir Dependencies/ImFileSystem/)
-set(imfilesystem_output_dir ${CMAKE_BINARY_DIR}/build_imfilesystem)
-file(MAKE_DIRECTORY ${imfilesystem_output_dir})
-add_subdirectory(${imfilesystem_src_dir} ${imfilesystem_output_dir} EXCLUDE_FROM_ALL)
-include_directories(${imfilesystem_src_dir})
-
 # JSON
 set(json_src_dir Dependencies/json/)
 include_directories(${json_src_dir})
@@ -94,7 +87,7 @@ add_subdirectory(${lua_src_dir} ${lua_output_dir} EXCLUDE_FROM_ALL)
 include_directories(${lua_src_dir}/src)
 
 # NativeFileDialog
-set (nfd_src_dir Dependencies/nativefiledialog/)
+set (nfd_src_dir Dependencies/nativefiledialog-extended/)
 set (nfd_output_dir ${CMAKE_BINARY_DIR}/build_nfd)
 file(MAKE_DIRECTORY ${nfd_output_dir})
 add_subdirectory(${nfd_src_dir} ${nfd_output_dir} EXCLUDE_FROM_ALL)
