@@ -15,7 +15,7 @@
 #include "Common/Constants.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AnimationDefinition::AnimationDefinition
     (ProjectDefinition* pd, const json& js)

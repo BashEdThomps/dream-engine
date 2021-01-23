@@ -19,7 +19,7 @@
 #include "Components/Transform.h"
 #include "Project/ProjectDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinition, const json& data)

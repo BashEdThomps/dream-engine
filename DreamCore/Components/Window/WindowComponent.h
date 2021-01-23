@@ -19,12 +19,13 @@
 #pragma once
 
 #include "Components/Component.h"
+#include "Common/GLHeader.h"
 
 #include <string>
 
 using std::string;
 
-namespace Dream
+namespace octronic::dream
 {
 
     class WindowComponent : public Component
@@ -37,6 +38,9 @@ namespace Dream
       virtual void getCurrentDimensions() = 0;
       virtual void swapBuffers() = 0;
       virtual void updateWindow(SceneRuntime* sr) = 0;
+      virtual void bindFrameBuffer() = 0;
+      virtual GLuint getFrameBuffer() const = 0;
+      virtual GLuint getDepthBuffer() const = 0;
 
       void setWidth(int);
       void setHeight(int);
@@ -49,18 +53,19 @@ namespace Dream
       void close();
       bool shouldClose() const;
       void setShouldClose(bool);
-      bool sizeHasChanged();
       double getMouseX() const;
       double getMouseY() const;
-      virtual void bindDefaultFrameBuffer() = 0;
+
+      void setWindowSizeChangedFlag(bool f);
+      bool getWindowSizeChangedFlag() const;
 
     protected:
       int mWidth;
       int mHeight;
       string mName;
       bool mShouldClose;
-      bool mSizeHasChanged;
       double mMouseX;
       double mMouseY;
+      bool mWindowSizeChangedFlag;
     };
 }

@@ -16,7 +16,7 @@
 
 class btTransform;
 
-namespace Dream
+namespace octronic::dream
 {
     class PhysicsMotionState : public btMotionState
     {

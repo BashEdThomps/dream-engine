@@ -20,12 +20,12 @@
 #include "Common/Logger.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 #include "Scene/Entity/EntityRuntime.h"
 #include "Scene/SceneRuntime.h"
-#include "TaskManager/Task.h"
+#include "Components/Task/Task.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
     DiscreteAssetRuntime::DiscreteAssetRuntime

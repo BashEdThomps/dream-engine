@@ -27,7 +27,7 @@ using namespace std;
 using namespace nlohmann;
 using namespace glm;
 
-namespace Dream
+namespace octronic::dream
 {
     /**
      * @brief The result of decomposing a glm::mat4 into it's constituent parts.
@@ -132,6 +132,9 @@ namespace Dream
          */
         void preTranslate(const Vector3& translation);
 
+        /**
+		* @brief get the translation vector described by the underlying matrix
+		*/
         Vector3& getTranslation();
 
         /**
@@ -140,6 +143,11 @@ namespace Dream
          */
         json getJson() const;
 
+        /**
+         * @brief Populate the underlying matrix values from those given in the
+         * JSON object.
+         * @param js - json objct with matrix data
+         */
         void fromJson(const json& js);
 
         /**

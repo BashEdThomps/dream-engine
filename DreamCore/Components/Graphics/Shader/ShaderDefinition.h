@@ -20,7 +20,7 @@
 
 #include "Components/AssetDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class ShaderDefinition : public AssetDefinition
     {

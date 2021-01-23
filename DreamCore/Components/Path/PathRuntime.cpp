@@ -31,7 +31,7 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
 
     PathRuntime::PathRuntime

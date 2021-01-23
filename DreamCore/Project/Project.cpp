@@ -21,10 +21,8 @@
 #include "ProjectDefinition.h"
 
 #include "Common/Logger.h"
-#include "Common/ArgumentParser.h"
-#include "Common/File.h"
 #include "Common/Uuid.h"
-#include "Common/Directory.h"
+#include "Components/Storage/Directory.h"
 
 #include "Components/AssetDefinition.h"
 #include "Components/Time.h"
@@ -38,14 +36,15 @@
 #include <algorithm>
 #include <thread>
 
-namespace Dream
+namespace octronic::dream
 {
     Project::Project
-    (ProjectDirectory* dir)
+    (ProjectDirectory* dir, StorageManager* fm)
         : mDirectory(dir),
           mDefinition(nullptr),
           mRuntime(nullptr),
-          mWindowComponent(nullptr)
+          mWindowComponent(nullptr),
+          mStorageManager(fm)
     {
         LOG_TRACE("Project: Constructing");
     }
@@ -73,7 +72,7 @@ namespace Dream
     ()
     {
         LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
-        mRuntime = new ProjectRuntime(this, mWindowComponent);
+        mRuntime = new ProjectRuntime(this, mWindowComponent,mStorageManager);
         mRuntime->lock();
         if (!mRuntime->useDefinition())
         {

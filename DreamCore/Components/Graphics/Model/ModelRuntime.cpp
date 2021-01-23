@@ -24,16 +24,18 @@
 #include "Components/Graphics/Shader/ShaderCache.h"
 #include "Components/Graphics/Shader/ShaderDefinition.h"
 #include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/File.h"
 
 #include <limits>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
-#include <SOIL.h>
 
 using ::Assimp::Importer;
 
-namespace Dream
+namespace octronic::dream
 {
     ModelRuntime::ModelRuntime
     (
@@ -323,8 +325,25 @@ namespace Dream
     {
         LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
 
+        StorageManager* fm = mProjectRuntime->getStorageManager();
+        File* modelFile = fm->openFile(path);
+
+        if (!modelFile->readBinary())
+        {
+            LOG_ERROR("ModelRuntime: Error reading model file");
+            fm->closeFile(modelFile);
+            modelFile = nullptr;
+        }
+
         auto importer = make_shared<Importer>();
-        importer->ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        importer->ReadFileFromMemory(
+        	modelFile->getBinaryData(),
+        	modelFile->getBinaryDataSize(),
+        	aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace
+    	);
+
+        fm->closeFile(modelFile);
+        modelFile = nullptr;
 
         const aiScene* scene = importer->GetScene();
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

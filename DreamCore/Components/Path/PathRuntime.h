@@ -25,7 +25,7 @@
 using namespace tinyspline;
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     class PathRuntime : public DiscreteAssetRuntime
     {

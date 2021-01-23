@@ -16,13 +16,13 @@
 
 #pragma once
 
-namespace Dream
+namespace octronic::dream
 {
   enum AudioStatus
   {
-    PLAYING,
-    PAUSED,
-    STOPPED,
-    UNKNOWN
+    AUDIO_STATUS_PLAYING,
+    AUDIO_STATUS_PAUSED,
+    AUDIO_STATUS_STOPPED,
+    AUDIO_STATUS_UNKNOWN
   };
 }

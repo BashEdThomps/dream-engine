@@ -1,10 +1,10 @@
 #include "Cursor.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    Cursor::Cursor(DTContext* state)
+    Cursor::Cursor(DreamToolContext* state)
         : GLWidget(state,false),
           mStepMajor(false),
           mOrientation(mat4(1.0f))
@@ -26,15 +26,16 @@ namespace DreamTool
     ()
     {
 
-        if (mState->project)
+        Project* proj = mContext->getProject();
+        if (proj)
         {
-            auto pRuntime = mState->project->getRuntime();
+            ProjectRuntime* pRuntime = proj->getRuntime();
             if (pRuntime)
             {
-                auto sRunt = pRuntime->getActiveSceneRuntime();
+                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    auto cam = sRunt->getCamera();
+                    Camera* cam = sRunt->getCamera();
                     if (cam)
                     {
                         mProjectionMatrix = cam->getProjectionMatrix();
@@ -129,48 +130,47 @@ namespace DreamTool
     Cursor::onAction
     (CursorAction a)
     {
+        Grid* grid = mContext->getGrid();
         vec3 txDelta(0.0f);
-        float step = mStepMajor ?
-                     mState->grid.getMajorSpacing() :
-                     mState->grid.getMinorSpacing();
+        float step = mStepMajor ? grid->getMajorSpacing() : grid->getMinorSpacing();
 
         // Make a move
         switch(a)
         {
-            case DreamTool::Cursor::XPlus:
+            case Cursor::XPlus:
                 txDelta.x = step;
                 break;
-            case DreamTool::Cursor::XMinus:
+            case Cursor::XMinus:
                 txDelta.x = -step;
                 break;
-            case DreamTool::Cursor::YPlus:
+            case Cursor::YPlus:
                 txDelta.y = step;
                 break;
-            case DreamTool::Cursor::YMinus:
+            case Cursor::YMinus:
                 txDelta.y = -step;
                 break;
-            case DreamTool::Cursor::ZPlus:
+            case Cursor::ZPlus:
                 txDelta.z = step;
                 break;
-            case DreamTool::Cursor::ZMinus:
+            case Cursor::ZMinus:
                 txDelta.z = -step;
                 break;
-            case DreamTool::Cursor::StepMajor:
+            case Cursor::StepMajor:
                 break;
-            case DreamTool::Cursor::StepMinor:
+            case Cursor::StepMinor:
                 break;
         }
 
         // Cancel unused axis
-        switch (mState->grid.getAxisPair())
+        switch (grid->getAxisPair())
         {
-            case DreamTool::Grid::XY:
+            case Grid::XY:
                 txDelta.z = 0.0f;
                 break;
-            case DreamTool::Grid::XZ:
+            case Grid::XZ:
                 txDelta.y = 0.0f;
                 break;
-            case DreamTool::Grid::YZ:
+            case Grid::YZ:
                 txDelta.x = 0.0f;
                 break;
         }
@@ -183,23 +183,24 @@ namespace DreamTool
     Cursor::setPosition
     (vec3 pos, bool snap)
     {
+        Grid* grid = mContext->getGrid();
         if (snap)
         {
-            float minor = mState->grid.getMinorSpacing();
+            float minor = grid->getMinorSpacing();
             pos.x = pos.x-fmod(pos.x,minor);
             pos.y = pos.y-fmod(pos.y,minor);
             pos.z = pos.z-fmod(pos.z,minor);
         }
 
-        switch (mState->grid.getAxisPair())
+        switch (grid->getAxisPair())
         {
-            case DreamTool::Grid::XY:
+            case Grid::XY:
                 pos.z = 0.0f;
                 break;
-            case DreamTool::Grid::XZ:
+            case Grid::XZ:
                 pos.y = 0.0f;
                 break;
-            case DreamTool::Grid::YZ:
+            case Grid::YZ:
                 pos.x = 0.0f;
                 break;
         }
@@ -213,15 +214,15 @@ namespace DreamTool
         vec3 current = getPosition();
         switch (ap)
         {
-            case DreamTool::Grid::XY:
+            case Grid::XY:
                 current.z = 0.0f;
                 mOrientation = mat4_cast(quat(vec3(radians(90.0f),0.0f,0.0f)));
                 break;
-            case DreamTool::Grid::XZ:
+            case Grid::XZ:
                 current.y = 0.0f;
                 mOrientation = mat4_cast(quat(vec3(0.0f,0.0f,0.0f)));
                 break;
-            case DreamTool::Grid::YZ:
+            case Grid::YZ:
                 current.x = 0.0f;
                 mOrientation = mat4_cast(quat(vec3(0.0f,0.0f,radians(-90.0f))));
                 break;
@@ -241,8 +242,9 @@ namespace DreamTool
     Cursor::mouseToWorldSpace
     (float x, float y)
     {
-        auto w =  mState->windowComponent.getWidth();
-        auto h = mState->windowComponent.getHeight();
+        auto windowComp = mContext->getGlPreviewWindowComponent();
+        auto w = windowComp->getWidth();
+        auto h = windowComp->getHeight();
         float depth = 0.5;
         /*if (mState->project->getRuntime())
         {

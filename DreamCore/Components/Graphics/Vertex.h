@@ -20,7 +20,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
   struct Vertex
   {

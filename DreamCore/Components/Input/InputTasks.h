@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TaskManager/Task.h"
+#include "Components/Task/Task.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class InputComponent;
     class SceneRuntime;

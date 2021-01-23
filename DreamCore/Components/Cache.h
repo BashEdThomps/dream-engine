@@ -9,7 +9,7 @@
 using std::vector;
 using std::string;
 
-namespace Dream
+namespace octronic::dream
 {
     class ProjectRuntime;
     class SharedAssetRuntime;

@@ -15,7 +15,7 @@
 #include "Common/Logger.h"
 #include "Scene/Entity/EntityRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     Event::Event
     (const map<string,string>& attributes)

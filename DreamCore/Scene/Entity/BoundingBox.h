@@ -18,7 +18,7 @@
 #define GLM_FORCE_RADIANS
 #include "Common/Math.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class BoundingBox
     {

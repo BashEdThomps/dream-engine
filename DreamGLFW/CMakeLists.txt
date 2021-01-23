@@ -1,17 +1,15 @@
 cmake_minimum_required (VERSION 3.0)
 project(DreamGLFW)
 
+include_directories(${DreamCore_SOURCE_DIR}/include)
 
 # Targets #####################################################################
 
 add_executable (
     ${PROJECT_NAME}
-	Window/GLFWWindowComponent.cpp
+	GLFWWindowComponent.cpp
 	Main.cpp
 )
-
-include_directories(${DreamCore_SOURCE_DIR}/include)
-
 
 if (WIN32)
     target_link_libraries(

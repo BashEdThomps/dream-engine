@@ -2,20 +2,17 @@
 
 #include "GLWidget.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class EntityRuntime;
 }
 
-using namespace Dream;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class SelectionHighlighter
-            : public GLWidget
+    class SelectionHighlighter : public GLWidget
     {
     public:
-        SelectionHighlighter(DTContext* project);
+        SelectionHighlighter(DreamToolContext* project);
         ~SelectionHighlighter() override;
         void setSelectedEntity(EntityRuntime* selected);
         void draw() override;

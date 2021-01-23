@@ -2,18 +2,27 @@
 
 #include "Logger.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
     #define GL_SILENCE_DEPRECATION
     #include "glad/glad.h"
     #include <OpenGL/gl.h>
-#endif
-
-#ifdef __linux__
+#elif defined(__ANDROID__)
+	#if __ANDROID_API__ >= 24
+		#include <GLES3/gl32.h>
+	#elif __ANDROID_API__ >= 21
+		#include <GLES3/gl31.h>
+	#elif __ANDROID_API >= 18
+		#include <GLES3/gl3.h>
+	#else
+		#define GL_GLEXT_PROTOTYPES
+		#include <GLES2/gl2.h>
+		#include <GLES2/gl2ext.h>
+		#include <EGL/egl.h>
+	#endif
+#elif defined(__linux__)
     #include "glad/glad.h"
     #include <GL/gl.h>
-#endif
-
-#ifdef _WIN32
+#elif defined(_WIN32)
     #ifndef NOMINMAX
         #define NOMINMAX // prevent windows redefining min/max
     #endif
@@ -29,11 +38,10 @@
 #endif
 
 
-#ifdef ENABLE_LOGGING
+#if defined(ENABLE_LOGGING)
 	#include <string>
 	using std::string;
 
-	#define GLCheckError() _GLCheckError_(__FILE__, __LINE__)
 	/**
 	* @brief Used to check for OpenGL Runtime Errors. This will display the
 	* file and line from which the error was detected. This function should
@@ -41,13 +49,14 @@
 	*
 	* @return True if an error was detected.
 	*/
+	#define GLCheckError() _GLCheckError_(__FILE__, __LINE__)
 	static bool _GLCheckError_(const string& file, int line)
 	{
 		GLenum errorCode = 0;
 		bool wasError = false;
 		do
 		{
-	#ifdef __ANDROID__
+	#if defined(__ANDROID__)
 			errorCode = glGetError();
 	#else
 		  errorCode = glad_glGetError();
@@ -84,8 +93,39 @@
 		while(errorCode != 0);
 		return wasError;
 	}
+
+    /**
+      @brief Get Framebuffer Error string from the given enum
+     * Using:
+     *     https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml
+     */
+	#define GLGetFrameBufferError(x) _GLGetFrameBufferError_(x)
+    static string _GLGetFrameBufferError_(GLuint error)
+    {
+        switch (error)
+        {
+            case GL_FRAMEBUFFER_UNDEFINED:
+                return "GL_FRAMEBUFFER_UNDEFINED";
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
+                return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                return "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                return "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
+			case GL_FRAMEBUFFER_UNSUPPORTED:
+                return "GL_FRAMEBUFFER_UNSUPPORTED";
+			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                return "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
+			case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                return "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+            default:
+                return "Unknown Error";
+        }
+    }
+
 #else
 	#define GLCheckError()
+	#define GLGetFrameBufferError()
 #endif
-
-

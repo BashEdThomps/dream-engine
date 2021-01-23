@@ -1,17 +1,18 @@
 #include "ModelDefinitionBatchImporter.h"
+
+#include "DreamToolContext.h"
 #include <sstream>
-#include "DTContext.h"
-#include <DreamCore.h>
 
-using namespace std;
-using namespace Dream;
+using std::stringstream;
+using octronic::dream::Project;
+using octronic::dream::ProjectDefinition;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     ModelDefinitionBatchImporter::ModelDefinitionBatchImporter
-    (DTContext* state)
-        : mState(state),
-          mDirectory(Directory(".")),
+    (DreamToolContext* context)
+        : Model(context),
+          mDirectory(nullptr),
           mModelsToImport(nullptr),
           mReplaceExisting(false),
           mAppendDirectoryName(false)
@@ -82,7 +83,7 @@ namespace DreamTool
     ModelDefinitionBatchImporter::getDirectoryName
     ()
     {
-        return mDirectory.getName();
+        return mDirectory->getName();
     }
 
     bool
@@ -96,11 +97,11 @@ namespace DreamTool
     {
        switch(result)
        {
-           case DreamTool::CREATED:
+           case CREATED:
                return "Created";
-           case DreamTool::REPLACED:
+           case REPLACED:
                return "Replaced";
-           case DreamTool::SKIPPED:
+           case SKIPPED:
                return "Skipped";
        }
        return "";
@@ -110,19 +111,22 @@ namespace DreamTool
     ModelDefinitionBatchImporter::findModels
     ()
     {
+        StorageManager* fm = mContext->getStorageManager();
         mModelsFound.clear();
-        if(mDirectory.exists())
+        if(mDirectory->exists())
         {
-            for(string objFileName : mDirectory.list("\\.obj$"))
+            for(string objFileName : mDirectory->list("\\.obj$"))
             {
-                File objFile = mDirectory.file(objFileName);
-                string justName = objFile.nameWithoutExtension();
-                File mtlFile = mDirectory.file(justName+".mtl");
-                if (objFile.exists() && mtlFile.exists())
+                File* objFile = mDirectory->file(objFileName);
+                string justName = objFile->getNameWithoutExtension();
+                File* mtlFile = mDirectory->file(justName+".mtl");
+                if (objFile->exists() && mtlFile->exists())
                 {
                    LOG_ERROR("ModelDefinitionBatchImporter: Found Valid Model {}", justName);
                    mModelsFound.push_back(justName);
                 }
+                fm->closeFile(objFile);
+                fm->closeFile(mtlFile);
             }
         }
         std::sort(mModelsFound.begin(),mModelsFound.end());
@@ -149,13 +153,14 @@ namespace DreamTool
     ModelDefinitionBatchImporter::import
     ()
     {
-        auto projDef = mState->project->getDefinition();
+        auto projDef = mContext->getProject()->getDefinition();
         if (!projDef)
         {
             LOG_ERROR("ModelDefinitionBatchImporter: Import failed. No Project Definition");
             return;
         }
-        LOG_ERROR("ModelDefinitionBatchImporter: Importing Models from path : {} ({})",mDirectory.getPath(), mDirectory.getName());
+        LOG_ERROR("ModelDefinitionBatchImporter: Importing Models from path : {} ({})",
+                  mDirectory->getPath(), mDirectory->getName());
         clearImportResults();
 
         if (!mModelsToImport)
@@ -170,7 +175,7 @@ namespace DreamTool
             stringstream assetName;
             if (mAppendDirectoryName)
             {
-               assetName << mDirectory.getName();
+               assetName << mDirectory->getName();
                assetName << ".";
             }
             assetName << justName;
@@ -191,20 +196,35 @@ namespace DreamTool
                 }
                 else
                 {
-                    modelDef = dynamic_cast<ModelDefinition*>(projDef->createNewAssetDefinition(AssetType::MODEL));
+                    modelDef = dynamic_cast<ModelDefinition*>(projDef->createNewAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL));
                     mImportResults.push_back(ModelDefinitionBatchImportResult{modelDef,ModelImportResult::CREATED});
                 }
 
                 modelDef->setName(assetName.str());
 
-                File objFile = mDirectory.file(justName+".obj");
-                File mtlFile = mDirectory.file(justName+".mtl");
-                if (objFile.exists() && mtlFile.exists())
+                StorageManager* fm = mContext->getStorageManager();
+
+                File* objFile = mDirectory->file(justName+".obj");
+                File* mtlFile = mDirectory->file(justName+".mtl");
+
+                if (objFile->exists() && mtlFile->exists())
                 {
                     LOG_ERROR("ModelDefinitionBatchImporter: Copying asset data for {}", modelDef->getNameAndUuidString());
-                    mState->projectDirectory.writeAssetData(modelDef,objFile.readBinary());
-                    mState->projectDirectory.writeAssetData(modelDef,mtlFile.readBinary(),mtlFile.nameWithExtension());
+                    objFile->readBinary();
+                    mContext->getProjectDirectory()->writeAssetData(
+                    	modelDef,
+                    	objFile->getBinaryData(),
+                    	objFile->getBinaryDataSize());
+
+                    mtlFile->readBinary();
+                    mContext->getProjectDirectory()->writeAssetData(
+                    	modelDef,
+                    	mtlFile->getBinaryData(),
+                    	mtlFile->getBinaryDataSize(),
+                    	mtlFile->getNameWithExtension());
                 }
+                fm->closeFile(objFile);
+                fm->closeFile(mtlFile);
             }
         }
         clearImportParameters();
@@ -227,7 +247,8 @@ namespace DreamTool
     ModelDefinitionBatchImporter::setDirectory
     (string dir)
     {
-        mDirectory = Directory(dir);
+        StorageManager* fm = mContext->getStorageManager();
+        mDirectory = fm->openDirectory(dir);
     }
 
     void

@@ -2,14 +2,12 @@
 
 #include "ImGuiWidget.h"
 
-using namespace Dream;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class CacheContentWindow : public ImGuiWidget
     {
     public:
-        CacheContentWindow(DTContext* proj);
+        CacheContentWindow(DreamToolContext* proj);
         ~CacheContentWindow() override;
         void draw() override;
     };

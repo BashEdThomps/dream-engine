@@ -37,7 +37,7 @@ struct aiMesh;
 using namespace glm;
 using namespace Assimp;
 
-namespace Dream
+namespace octronic::dream
 {
     class Texture;
     class MaterialCache;

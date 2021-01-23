@@ -5,17 +5,17 @@
 #include "glm/vec3.hpp"
 #include <DreamCore.h>
 
-using Dream::Definition;
-using Dream::Runtime;
-using Dream::PathDefinition;
-using Dream::AnimationDefinition;
-using Dream::CompoundChildDefinition;
-using Dream::AssetDefinition;
-using Dream::AnimationKeyframe;
-using Dream::PathControlPoint;
+using octronic::dream::Definition;
+using octronic::dream::Runtime;
+using octronic::dream::PathDefinition;
+using octronic::dream::AnimationDefinition;
+using octronic::dream::CompoundChildDefinition;
+using octronic::dream::AssetDefinition;
+using octronic::dream::AnimationKeyframe;
+using octronic::dream::PathControlPoint;
 
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class SelectionHighlighter;
 
@@ -29,7 +29,7 @@ namespace DreamTool
     class PropertiesWindow : public ImGuiWidget
     {
     public:
-        PropertiesWindow(DTContext*);
+        PropertiesWindow(DreamToolContext*);
         ~PropertiesWindow() override;
 
         void draw() override;
@@ -60,10 +60,7 @@ namespace DreamTool
         void drawScriptProperties();
         void drawShaderAssetProperties();
         void drawPathAssetProperties();
-        void drawParticleEmitterAssetProperties();
         void drawTextureAssetProperties();
-        void drawScrollerAssetProperties();
-        void drawObjectEmitterProperties();
 
         void setRuntime(Runtime* runt);
         void setDefinition(Definition* def);

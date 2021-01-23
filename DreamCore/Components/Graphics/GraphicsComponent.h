@@ -27,10 +27,9 @@ using glm::mat4;
 using std::vector;
 using std::shared_ptr;
 
-typedef struct NVGcontext NVGcontext;
 typedef unsigned int GLuint;
 
-namespace Dream
+namespace octronic::dream
 {
     class ShaderCache;
     class WindowComponent;
@@ -46,7 +45,16 @@ namespace Dream
     class ShaderRuntime;
 
     /**
-     * @brief Responsible for managing Dream's graphics pipeline.
+     * @brief GraphicsComponent is responsible for managing Dream's graphics pipeline.
+     *
+     * Dream implements a multi-pass rendering pipline. Each pass renders to it's
+     * associated FrameBuffers.
+     *
+     * 1. Geometry Pass:
+     *
+     * 2. Shadow Pass:
+     *
+     * 3. Lighting Pass:
      */
     class GraphicsComponent : public Component
     {
@@ -54,10 +62,11 @@ namespace Dream
 
         vector<GraphicsComponentTask*> mTaskQueue;
         vector<GraphicsComponentTask*> mDebugTaskQueue;
-        vector< shared_ptr<GraphicsComponentDestructionTask> > mDestructionTaskQueue;
+        vector<shared_ptr<GraphicsComponentDestructionTask> > mDestructionTaskQueue;
         vector<LightRuntime*> mLightQueue;
         WindowComponent* mWindowComponent;
         ShaderCache* mShaderCache;
+
         // Geom
         GLuint mGeometryPassFB;
         GLuint mGeometryPassPositionBuffer;

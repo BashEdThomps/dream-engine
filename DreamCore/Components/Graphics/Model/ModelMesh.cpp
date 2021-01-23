@@ -27,7 +27,7 @@
 
 using std::make_shared;
 
-namespace Dream
+namespace octronic::dream
 {
     ModelMesh::ModelMesh
     (ModelRuntime* parent, const string& name, const vector<Vertex>& vertices,
@@ -56,7 +56,7 @@ namespace Dream
         LOG_TRACE("ModelMesh: Destroying Mesh for {}",mParent->getNameAndUuidString());
         mFreeMeshTask = make_shared<ModelFreeMeshTask>();
         mFreeMeshTask->clearState();
-        mFreeMeshTask->setState(TaskState::QUEUED);
+        mFreeMeshTask->setState(TaskState::TASK_STATE_QUEUED);
         mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
         mParent->getProjectRuntime()->getGraphicsComponent()->pushDestructionTask(mFreeMeshTask);
     }
@@ -94,7 +94,7 @@ namespace Dream
     ()
     {
         mInitMeshTask.clearState();
-        mInitMeshTask.setState(TaskState::QUEUED);
+        mInitMeshTask.setState(TaskState::TASK_STATE_QUEUED);
         mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mInitMeshTask);
     }
 

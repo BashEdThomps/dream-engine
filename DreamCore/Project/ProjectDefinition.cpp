@@ -17,23 +17,20 @@
 #include "Components/AssetDefinition.h"
 #include "Components/Audio/AudioDefinition.h"
 #include "Components/Animation/AnimationDefinition.h"
-#include "Components/Scroller/ScrollerDefinition.h"
 #include "Components/Path/PathDefinition.h"
 #include "Components/Graphics/Font/FontDefinition.h"
 #include "Components/Graphics/Light/LightDefinition.h"
 #include "Components/Graphics/Material/MaterialDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
 #include "Components/Graphics/Shader/ShaderDefinition.h"
-#include "Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "Components/Graphics/Texture/TextureDefinition.h"
 #include "Components/Physics/PhysicsObjectDefinition.h"
 #include "Components/Script/ScriptDefinition.h"
-#include "Components/ObjectEmitter/ObjectEmitterDefinition.h"
 #include "Common/Uuid.h"
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ProjectDefinition::ProjectDefinition
     (const json& data)
@@ -96,34 +93,6 @@ namespace Dream
         return mJson[Constants::PROJECT_AUTHOR];
     }
 
-    int
-    ProjectDefinition::getWindowWidth
-    ()
-    {
-        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH];
-    }
-
-    void
-    ProjectDefinition::setWindowWidth
-    (int width)
-    {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = width;
-    }
-
-    int
-    ProjectDefinition::getWindowHeight
-    ()
-    {
-        return mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT];
-    }
-
-    void
-    ProjectDefinition::setWindowHeight
-    (int height)
-    {
-        mJson[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = height;
-    }
-
     void
     ProjectDefinition::loadChildDefinitions
     ()
@@ -166,35 +135,29 @@ namespace Dream
 
         switch (type)
         {
-            case ANIMATION:
+            case ASSET_TYPE_ENUM_ANIMATION:
                 return new AnimationDefinition(this, assetDefinitionJs);
-            case AUDIO:
+            case ASSET_TYPE_ENUM_AUDIO:
                 return new AudioDefinition(this, assetDefinitionJs);
-            case FONT:
+            case ASSET_TYPE_ENUM_FONT:
                 return new FontDefinition(this, assetDefinitionJs);
-            case LIGHT:
+            case ASSET_TYPE_ENUM_LIGHT:
                 return new LightDefinition(this, assetDefinitionJs);
-            case MATERIAL:
+            case ASSET_TYPE_ENUM_MATERIAL:
                 return new MaterialDefinition(this, assetDefinitionJs);
-            case MODEL:
+            case ASSET_TYPE_ENUM_MODEL:
                 return new ModelDefinition(this, assetDefinitionJs);
-            case PATH:
+            case ASSET_TYPE_ENUM_PATH:
                 return new PathDefinition(this, assetDefinitionJs);
-            case PARTICLE_EMITTER:
-                return new ParticleEmitterDefinition(this, assetDefinitionJs);
-            case PHYSICS_OBJECT:
+            case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                 return new PhysicsObjectDefinition(this, assetDefinitionJs);
-            case SCRIPT:
+            case ASSET_TYPE_ENUM_SCRIPT:
                 return new ScriptDefinition(this, assetDefinitionJs);
-            case SCROLLER:
-                return new ScrollerDefinition(this,assetDefinitionJs);
-            case SHADER:
+            case ASSET_TYPE_ENUM_SHADER:
                 return new ShaderDefinition(this, assetDefinitionJs);
-            case TEXTURE:
+            case ASSET_TYPE_ENUM_TEXTURE:
                 return new TextureDefinition(this, assetDefinitionJs);
-            case OBJECT_EMITTER:
-                return new ObjectEmitterDefinition(this,assetDefinitionJs);
-            case NONE:
+            case ASSET_TYPE_ENUM_NONE:
                 LOG_ERROR("ProjectDefinition: Unable to create Asset Definition. Unknown Type");
                 break;
         }
@@ -625,9 +588,6 @@ namespace Dream
         j[Constants::PROJECT_AUTHOR] = "";
         j[Constants::PROJECT_DESCRIPTION] = "";
         j[Constants::PROJECT_STARTUP_SCENE] = "";
-        j[Constants::PROJECT_WINDOW_SIZE] = json::object();
-        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_WIDTH] = Constants::PROJECT_DEFAULT_WINDOW_WIDTH;
-        j[Constants::PROJECT_WINDOW_SIZE][Constants::PROJECT_WINDOW_HEIGHT] = Constants::PROJECT_DEFAULT_WINDOW_HEIGHT;
         j[Constants::PROJECT_ASSET_ARRAY] = json::array();
         j[Constants::PROJECT_SCENE_ARRAY] = json::array();
         return new ProjectDefinition(j);

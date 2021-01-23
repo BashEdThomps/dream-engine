@@ -21,7 +21,7 @@
 using std::string;
 using std::map;
 
-namespace Dream
+namespace octronic::dream
 {
     class Event
     {

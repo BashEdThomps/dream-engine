@@ -1,13 +1,13 @@
 #pragma once
 #include "GLWidget.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class LightViewer :
         public GLWidget
     {
     public:
-        LightViewer(DTContext* project);
+        LightViewer(DreamToolContext* project);
         ~LightViewer() override;
         void draw() override;
         void init();

@@ -22,7 +22,7 @@
 
 using nlohmann::json;
 
-namespace Dream
+namespace octronic::dream
 {
     ModelDefinition::ModelDefinition
     (ProjectDefinition* pd, const json &js)

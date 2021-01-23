@@ -24,7 +24,7 @@
 using std::vector;
 using glm::vec3;
 
-namespace Dream
+namespace octronic::dream
 {
     struct RGB;
     class ModelMesh;

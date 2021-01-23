@@ -35,7 +35,7 @@
 
 using glm::mat4;
 
-namespace Dream
+namespace octronic::dream
 {
     class SceneRuntime;
     class EntityRuntime;

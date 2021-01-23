@@ -29,7 +29,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <iostream>
 
-namespace Dream
+namespace octronic::dream
 {
     PhysicsComponent::PhysicsComponent
     (ProjectRuntime* pr)

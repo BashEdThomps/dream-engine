@@ -21,7 +21,7 @@
 
 using namespace glm;
 
-namespace Dream
+namespace octronic::dream
 {
     enum UniformType
     {

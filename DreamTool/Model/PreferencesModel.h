@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Model.h"
+
 #include <DreamCore.h>
 #include <json.hpp>
 #include <string>
@@ -7,13 +9,13 @@
 using nlohmann::json;
 using std::string;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class PreferencesModel
+    class PreferencesModel : public Model
     {
     public:
         const static string PREFS_FILE_NAME;
-        PreferencesModel();
+        PreferencesModel(DreamToolContext* context);
         ~PreferencesModel();
         bool load(string projectPath);
         bool save();

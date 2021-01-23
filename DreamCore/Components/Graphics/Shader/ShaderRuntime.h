@@ -37,7 +37,7 @@ using std::shared_ptr;
 using std::string;
 using glm::mat4;
 
-namespace Dream
+namespace octronic::dream
 {
     class ShaderCache;
     class ShaderDefinition;

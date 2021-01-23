@@ -2,14 +2,14 @@
 
 #include "ImGuiWidget.h"
 
-using namespace Dream;
+using namespace octronic::dream;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class TaskManagerWindow : public ImGuiWidget
     {
     public:
-        TaskManagerWindow(DTContext* proj);
+        TaskManagerWindow(DreamToolContext* proj);
         ~TaskManagerWindow() override;
         void draw() override;
     };

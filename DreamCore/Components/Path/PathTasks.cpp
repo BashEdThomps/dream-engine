@@ -3,7 +3,7 @@
 #include "PathRuntime.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     PathUpdateTask::PathUpdateTask(PathRuntime* rt)
     : Task(), mPathRuntime(rt)
@@ -17,11 +17,11 @@ namespace Dream
         {
             mPathRuntime->update();
             mPathRuntime->unlock();
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }

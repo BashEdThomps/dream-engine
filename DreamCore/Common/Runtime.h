@@ -21,7 +21,7 @@
 using std::string;
 using std::atomic;
 
-namespace Dream
+namespace octronic::dream
 {
     class Definition;
 

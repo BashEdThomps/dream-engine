@@ -17,7 +17,7 @@
 
 #include "Components/Audio/AudioRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class OggAudioRuntime : public AudioRuntime
     {

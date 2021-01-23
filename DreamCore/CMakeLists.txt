@@ -7,46 +7,57 @@ project(
     DESCRIPTION "DreamCore Library"
 )
 
+
 include(GNUInstallDirs)
-
-
 
 # Targets #####################################################################
 
 add_library(
     DreamCore
     SHARED
-	TaskManager/TaskManager.cpp
-	TaskManager/TaskThread.cpp
-	TaskManager/Task.cpp
-	Project/ProjectDirectory.cpp
+
 	Project/Project.cpp
 	Project/ProjectDefinition.cpp
 	Project/ProjectRuntime.cpp
+
 	Components/AssetRuntime.cpp
-	Components/DiscreteAssetRuntime.cpp
 	Components/AssetDefinition.cpp
+	Components/Cache.cpp
+	Components/Component.cpp
+	Components/DiscreteAssetRuntime.cpp
+	Components/Event.cpp
+	Components/SharedAssetRuntime.cpp
+	Components/Time.cpp
+	Components/Transform.cpp
+
+	Components/Storage/File.cpp
+	Components/Storage/StorageManager.cpp
+	Components/Storage/Directory.cpp
+	Components/Storage/ProjectDirectory.cpp
+
 	Components/Input/InputComponent.cpp
 	Components/Input/InputTasks.cpp
-	Components/ObjectEmitter/ObjectEmitterRuntime.cpp
-	Components/ObjectEmitter/ObjectEmitterDefinition.cpp
-	Components/ObjectEmitter/ObjectEmitterTasks.cpp
-	Components/Component.cpp
+
 	Components/Path/PathTasks.cpp
 	Components/Path/PathRuntime.cpp
 	Components/Path/PathDefinition.cpp
-	Components/SharedAssetRuntime.cpp
+
+	Components/Task/TaskManager.cpp
+	Components/Task/TaskThread.cpp
+	Components/Task/Task.cpp
+
 	Components/Animation/AnimationTasks.cpp
 	Components/Animation/AnimationKeyframe.cpp
 	Components/Animation/AnimationRuntime.cpp
 	Components/Animation/AnimationEasing.cpp
 	Components/Animation/AnimationDefinition.cpp
+
 	Components/Script/ScriptTasks.cpp
 	Components/Script/ScriptCache.cpp
 	Components/Script/ScriptRuntime.cpp
 	Components/Script/ScriptComponent.cpp
 	Components/Script/ScriptDefinition.cpp
-	Components/Cache.cpp
+
 	Components/Audio/AudioComponent.cpp
 	Components/Audio/Ogg/OggAudioRuntime.cpp
 	Components/Audio/Wav/WavAudioRuntime.cpp
@@ -54,18 +65,16 @@ add_library(
 	Components/Audio/AudioDefinition.cpp
 	Components/Audio/AudioCache.cpp
 	Components/Audio/AudioTasks.cpp
-	Components/Transform.cpp
+
 	Components/Window/WindowComponent.cpp
+
 	Components/Physics/PhysicsComponent.cpp
 	Components/Physics/PhysicsTasks.cpp
 	Components/Physics/PhysicsObjectDefinition.cpp
 	Components/Physics/PhysicsObjectRuntime.cpp
 	Components/Physics/PhysicsMotionState.cpp
 	Components/Physics/PhysicsDebugDrawer.cpp
-	Components/Event.cpp
-	Components/Scroller/ScrollerDefinition.cpp
-	Components/Scroller/ScrollerTasks.cpp
-	Components/Scroller/ScrollerRuntime.cpp
+
 	Components/Graphics/Camera.cpp
 	Components/Graphics/Frustum.cpp
 	Components/Graphics/GraphicsComponent.cpp
@@ -79,8 +88,6 @@ add_library(
 	Components/Graphics/Texture/TextureTasks.cpp
 	Components/Graphics/Texture/TextureCache.cpp
 	Components/Graphics/Texture/TextureDefinition.cpp
-	Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.cpp
-	Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.cpp
 	Components/Graphics/Shader/ShaderTasks.cpp
 	Components/Graphics/Shader/ShaderCache.cpp
 	Components/Graphics/Shader/ShaderDefinition.cpp
@@ -89,16 +96,14 @@ add_library(
 	Components/Graphics/Light/LightRuntime.cpp
 	Components/Graphics/Light/LightDefinition.cpp
 	Components/Graphics/Font/FontDefinition.cpp
+	Components/Graphics/Font/FontRuntime.cpp
 	Components/Graphics/Material/MaterialCache.cpp
 	Components/Graphics/Material/MaterialRuntime.cpp
 	Components/Graphics/Material/MaterialDefinition.cpp
-	Components/Time.cpp
-	Common/Environment.cpp
+
 	Common/Constants.cpp
-	Common/ArgumentParser.cpp
-	Common/Directory.cpp
 	Common/Uuid.cpp
-	Common/File.cpp
+
 	Scene/SceneRuntime.cpp
 	Scene/SceneDefinition.cpp
 	Scene/Entity/EntityRuntime.cpp
@@ -130,7 +135,6 @@ ELSEIF(APPLE)
 		glad
 		LinearMath
 		ogg
-		soil
 		spdlog
 		tinyspline
 		vorbis
@@ -141,18 +145,18 @@ ELSEIF(APPLE)
 ENDIF()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/DreamCore.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/DreamCore.h)
 
 target_include_directories(
 	${PROJECT_NAME}
 	PUBLIC
 	.
+	${glm_output_dir}
+	${bullet_src_dir}/src
 )
 
-target_link_directories(
-	${PROJECT_NAME}
-	PRIVATE
+link_directories(
 	${glad_output_dir}
 	${glm_output_dir}
 	${freetype_output_dir}

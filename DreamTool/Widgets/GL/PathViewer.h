@@ -14,7 +14,7 @@
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
 	class PathDefinition;
 	class PathRuntime;
@@ -22,13 +22,13 @@ namespace Dream
 
 using glm::vec3;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class DTContext;
+    class DreamToolContext;
     class PathViewer : public GLWidget
     {
     public:
-        PathViewer(DTContext* state, bool visible = false);
+        PathViewer(DreamToolContext* state, bool visible = false);
         ~PathViewer() override;
 
         void setPathDefinition(PathDefinition* object);

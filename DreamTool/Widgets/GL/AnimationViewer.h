@@ -14,20 +14,20 @@
 #include "GLWidget.h"
 #include <glm/vec3.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
 	class AnimationDefinition;
 }
 
 using glm::vec3;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class DTContext;
+    class DreamToolContext;
     class AnimationViewer : public GLWidget
     {
     public:
-        AnimationViewer(DTContext* state, bool visible = false);
+        AnimationViewer(DreamToolContext* state, bool visible = false);
         ~AnimationViewer() override;
 
         void setAnimationDefinition(AnimationDefinition* object);

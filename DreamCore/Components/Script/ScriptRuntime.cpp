@@ -25,7 +25,7 @@
 
 #include <angelscript.h>
 
-namespace Dream
+namespace octronic::dream
 {
     void ScriptRuntime::whyYouFail(int r, int line)
     {
@@ -91,7 +91,7 @@ namespace Dream
     ()
     {
         mConstructionTask.setScript(this);
-        mConstructionTask.setState(TaskState::NEW);
+        mConstructionTask.setState(TaskState::TASK_STATE_NEW);
         mLoaded = false;
         return true;
     }

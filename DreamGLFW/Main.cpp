@@ -16,32 +16,32 @@
 #include <sstream>
 
 #include <DreamCore.h>
-#include "Window/GLFWWindowComponent.h"
+#include "GLFWWindowComponent.h"
 
 #define MINIMUM_ARGUMENTS 3
 
 using std::shared_ptr;
-using Dream::Project;
-using Dream::WindowComponent;
-using Dream::ProjectDirectory;
-using Dream::ProjectDefinition;
-using Dream::ProjectRuntime;
-using Dream::SceneDefinition;
-using Dream::SceneRuntime;
-using Dream::MouseState;
-using Dream::KeyboardState;
-using Dream::JoystickState;
-using DreamGLFW::GLFWWindowComponent;
+using octronic::dream::Project;
+using octronic::dream::WindowComponent;
+using octronic::dream::ProjectDirectory;
+using octronic::dream::ProjectDefinition;
+using octronic::dream::ProjectRuntime;
+using octronic::dream::SceneDefinition;
+using octronic::dream::SceneRuntime;
+using octronic::dream::MouseState;
+using octronic::dream::KeyboardState;
+using octronic::dream::JoystickState;
+using octronic::dream::glfw::GLFWWindowComponent;
+using octronic::dream::StorageManager;
+using octronic::dream::Directory;
 
 void run(int,char**);
-Project* openProject(ProjectDirectory&, string, WindowComponent&);
 void handleSceneInput(Project*);
 
-int
-main
-(int argc,char** argv)
+int main(int argc,char** argv)
 {
     string logLevel = "trace";
+
     for (int i=0; i<argc; i++)
     {
         if (string(argv[i]) == "-l")
@@ -52,10 +52,11 @@ main
             }
         }
     }
+
     cout << "Using log level " << logLevel << endl;
     LOG_LEVEL(spdlog::level::from_str(logLevel));
     //spdlog::set_pattern("[source %s] [function %!] [line %#] %v");
-    spdlog::set_pattern("%H:%M:%S (%l) %n: %v");
+    spdlog::set_pattern("[%H:%M:%S]%l: %v");
 
     if(argc < 2)
     {
@@ -67,69 +68,61 @@ main
         return 1;
     }
 
-    run(argc,argv);
-
-    return 0;
-}
-
-Project* openProject(ProjectDirectory& projectDirectory, string dir, WindowComponent& windowComponent)
-{
-    LOG_DEBUG("DreamGLFW: Opening project {}",dir);
-    auto project = projectDirectory.openFromDirectory(dir);
-    if(project)
-    {
-        project->setWindowComponent(&windowComponent);
-        project->createProjectRuntime();
-        return project;
-    }
-    return nullptr;
-}
-
-void run(int argc, char** argv)
-{
     bool MainLoopDone = false;
-    ProjectDirectory projectDirectory;
-    GLFWWindowComponent windowComponent;
-    ProjectRuntime* projectRuntime = nullptr;
-    ProjectDefinition* projectDefinition = nullptr;
-    SceneDefinition* startupSceneDefinition = nullptr;
-    SceneRuntime* activeSceneRuntime = nullptr;
 
     LOG_INFO("DreamGLFW: Starting...");
 
+    GLFWWindowComponent windowComponent;
     if(!windowComponent.init())
     {
         LOG_ERROR("DreamGLFW: Could not initialise window component");
-        return;
+        exit(1);
     }
 
-    Project* project = openProject(projectDirectory, argv[1], windowComponent);
+    StorageManager fileManager;
+    string dir = argv[1];
+    Project* project = nullptr;
+    ProjectDirectory projectDirectory(&fileManager);
+    Directory* d = fileManager.openDirectory(dir);
 
-    if (project)
+    LOG_DEBUG("DreamGLFW: Opening project {}",dir);
+    project = projectDirectory.openFromDirectory(d);
+    if(!project)
     {
-        projectRuntime = project->getRuntime();
-        projectDefinition = project->getDefinition();
+        LOG_ERROR("DreamGLFW: ");
+   		exit(1);
+    }
 
-        if (projectDefinition)
-        {
-            startupSceneDefinition = projectDefinition->getStartupSceneDefinition();
-        }
+	project->setWindowComponent(&windowComponent);
+	project->createProjectRuntime();
 
-        if (startupSceneDefinition && projectRuntime)
-        {
-            activeSceneRuntime = new SceneRuntime(startupSceneDefinition,projectRuntime);
-            if(activeSceneRuntime->useDefinition())
-            {
-                projectRuntime->addSceneRuntime(activeSceneRuntime);
-                projectRuntime->setSceneRuntimeAsActive(activeSceneRuntime->getUuid());
-            }
-            else
-            {
-                LOG_ERROR("DreamGLFW: Unable to use startup scene runtime");
-                delete activeSceneRuntime;
-                activeSceneRuntime = nullptr;
-            }
-        }
+	ProjectRuntime* projectRuntime = project->getRuntime();
+    ProjectDefinition* projectDefinition = project->getDefinition();
+
+	if (!projectDefinition)
+    {
+        LOG_ERROR("DreamGLFW: ");
+        exit(1);
+    }
+
+    SceneDefinition* startupSceneDefinition = nullptr;
+    SceneRuntime* activeSceneRuntime = nullptr;
+	startupSceneDefinition = projectDefinition->getStartupSceneDefinition();
+
+	if (startupSceneDefinition && projectRuntime)
+	{
+		activeSceneRuntime = new SceneRuntime(startupSceneDefinition,projectRuntime);
+		if(activeSceneRuntime->useDefinition())
+		{
+			projectRuntime->addSceneRuntime(activeSceneRuntime);
+			projectRuntime->setSceneRuntimeAsActive(activeSceneRuntime->getUuid());
+		}
+		else
+		{
+			LOG_ERROR("DreamGLFW: Unable to use startup scene runtime");
+			delete activeSceneRuntime;
+			activeSceneRuntime = nullptr;
+		}
     }
 
     // Run the project
@@ -156,6 +149,7 @@ void run(int argc, char** argv)
         }
 
         //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
+        spdlog::default_logger()->flush();
     }
 
     LOG_INFO("DreamGLFW: Run is done. Cleaning up");
@@ -166,9 +160,7 @@ void run(int argc, char** argv)
     }
 }
 
-void
-handleSceneInput
-(Project* project)
+void handleSceneInput(Project* project)
 {
     auto pRunt = project->getRuntime();
     if (pRunt)
@@ -224,4 +216,3 @@ handleSceneInput
         }
     }
 }
-

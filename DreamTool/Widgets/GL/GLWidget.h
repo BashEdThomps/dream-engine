@@ -8,14 +8,15 @@
 #pragma once
 
 
+#include "Widgets/DreamToolWidget.h"
+
 #include <DreamCore.h>
-#include "Widgets/DTWidget.h"
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
-using namespace Dream;
-using namespace glm;
+using glm::vec3;
+using glm::mat4;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     struct GLWidgetVertex
     {
@@ -23,10 +24,10 @@ namespace DreamTool
         vec3 Color;
     };
 
-    class GLWidget : public DTWidget
+    class GLWidget : public DreamToolWidget
     {
     public:
-        GLWidget(DTContext* project, bool visible = true);
+        GLWidget(DreamToolContext* project, bool visible = true);
         virtual ~GLWidget() override;
         void setViewMatrix(mat4);
         void setProjectionMatrix(mat4);

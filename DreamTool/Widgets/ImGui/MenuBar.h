@@ -1,16 +1,13 @@
 #pragma once
 
 #include "ImGuiWidget.h"
-#include "Model/ModelDefinitionBatchImporter.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class Project;
 }
 
-using namespace Dream;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class LuaDebugWindow;
     class ProjectBrowser;
@@ -22,7 +19,7 @@ namespace DreamTool
     class MenuBar : public ImGuiWidget
     {
     public:
-        MenuBar(DTContext*);
+        MenuBar(DreamToolContext*);
         ~MenuBar() override;
         void draw() override;
 
@@ -31,6 +28,21 @@ namespace DreamTool
 
         string getMessageString() const;
         void setMessageString(const string& messageString);
+    private:
+        void drawFileMenu();
+        void onFileNewClicked();
+        void onFileOpenClicked();
+        void onFileQuitClicked();
+        void onFileSaveClicked();
+        void onFileCloseClicked();
+
+        void drawViewMenu();
+        void drawComponentsMenu();
+        void drawToolsMenu();
+        void drawSceneMenu();
+        void drawDebugMenu();
+
+        void drawStatusText();
 
     protected:
         string mMessageString;

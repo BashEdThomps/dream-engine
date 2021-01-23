@@ -16,14 +16,59 @@
 #include "OggAudioRuntime.h"
 
 #include <Common/Logger.h>
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/File.h"
+#include "Project/ProjectRuntime.h"
 #include "Components/Audio/AudioDefinition.h"
 #include "Scene/Entity/EntityRuntime.h"
+
 #include <vorbis/vorbisfile.h>
+
+#include <fstream>
 
 #define AUDIO_BUFFER_SIZE 1024
 
-namespace Dream
+namespace octronic::dream
 {
+    size_t
+    octronic_dream_ogg_read
+    (void* buffer, size_t elementSize, size_t elementCount, void* dataSource)
+    {
+        assert(elementSize == 1);
+
+        std::ifstream& stream = *static_cast<std::ifstream*>(dataSource);
+        stream.read(static_cast<char*>(buffer), elementCount);
+        const std::streamsize bytesRead = stream.gcount();
+        stream.clear(); // In case we read past EOF
+        return static_cast<size_t>(bytesRead);
+    }
+
+    int
+    octronic_dream_ogg_seek
+    (void* dataSource, ogg_int64_t offset, int origin)
+    {
+        static const std::vector<std::ios_base::seekdir> seekDirections
+        {
+            std::ios_base::beg, std::ios_base::cur, std::ios_base::end
+        };
+
+        std::ifstream& stream = *static_cast<std::ifstream*>(dataSource);
+        stream.seekg(offset, seekDirections.at(origin));
+        stream.clear(); // In case we seeked to EOF
+        return 0;
+    }
+
+    long
+    octronic_dream_ogg_tell
+    (void* dataSource)
+    {
+        std::ifstream& stream = *static_cast<std::ifstream*>(dataSource);
+        const auto position = stream.tellg();
+        assert(position >= 0);
+        return static_cast<long>(position);
+    }
+
+
     OggAudioRuntime::OggAudioRuntime
     (AudioDefinition* def, ProjectRuntime* project)
         : AudioRuntime(def,project)
@@ -44,16 +89,37 @@ namespace Dream
 
         // Local fixed size array
         char buffer[AUDIO_BUFFER_SIZE];
-        FILE *file = fopen(absPath.c_str(), "rb");
+        StorageManager* fm = mProjectRuntime->getStorageManager();
+        File *file = fm->openFile(absPath);
         if (file == nullptr)
         {
             LOG_ERROR("OggAudioRuntime: Cannot open {} for reading", absPath);
             return false;
         }
 
+        if (!file->readBinary())
+        {
+            LOG_ERROR("OggAudioRuntime: Error reading binary data");
+            fm->closeFile(file);
+            file = nullptr;
+            return false;
+        }
+
+        std::fstream sbuf;
+        sbuf.rdbuf()->pubsetbuf((char*)file->getBinaryData(), file->getBinaryDataSize());
+
+        ov_callbacks callbacks;
+        memset(&callbacks,0,sizeof(ov_callbacks));
+        callbacks.read_func  = octronic_dream_ogg_read;
+        callbacks.seek_func  = octronic_dream_ogg_seek;
+        callbacks.close_func = nullptr;
+        callbacks.tell_func  = octronic_dream_ogg_tell;
+
         // Try opening the given file
         OggVorbis_File oggFile;
-        if (ov_open(file, &oggFile, nullptr, 0) != 0)
+
+        //if (ov_open(file, &oggFile, nullptr, 0) != 0)
+        if (ov_open_callbacks(&sbuf, &oggFile, nullptr, 0, callbacks) != 0)
         {
             LOG_ERROR("OggAudioRuntime: Error opening {} for decoding");
             return false;

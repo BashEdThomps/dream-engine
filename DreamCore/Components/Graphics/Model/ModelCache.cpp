@@ -21,7 +21,7 @@
 #include "ModelDefinition.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ModelCache::ModelCache
     (ProjectRuntime* rt, ShaderCache* shaderCache, MaterialCache* matCache)
@@ -43,7 +43,7 @@ namespace Dream
     (AssetDefinition* def)
     {
         LOG_DEBUG("ModelCache: Loading {} from disk",  def->getUuid());
-        auto model = new ModelRuntime(mShaderCache, mMaterialCache,def,mProjectRuntime);
+        auto model = new ModelRuntime(mShaderCache, mMaterialCache, def, mProjectRuntime);
         if (model->useDefinition())
         {
             mRuntimes.push_back(model);

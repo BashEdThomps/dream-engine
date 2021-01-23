@@ -19,10 +19,7 @@
 
 #include "GLWidget.h"
 
-using namespace glm;
-using namespace std;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class Grid : public GLWidget
     {
@@ -35,9 +32,9 @@ namespace DreamTool
         };
 
         Grid(
-            DTContext* p,
+            DreamToolContext* p,
             AxisPair xp = AxisPair::XZ,
-            glm::vec3 position = vec3(0.0f),
+            vec3 position = vec3(0.0f),
             float majorSpacing = 10.0f,
             float minorSpacing = 1.0f,
             float size = 100.0f,
@@ -78,7 +75,7 @@ namespace DreamTool
 
     protected: // Variables
         AxisPair mAxisPair;
-        glm::vec3 mTranslation;
+        vec3 mTranslation;
         float mSize;
         float mMajorSpacing;
         float mMinorSpacing;

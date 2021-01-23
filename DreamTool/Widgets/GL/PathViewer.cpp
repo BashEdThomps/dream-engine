@@ -15,18 +15,18 @@
 #include <DreamCore.h>
 
 
-using Dream::Constants;
-using Dream::PathDefinition;
-using Dream::PathRuntime;
-using Dream::ShaderRuntime;
+using octronic::dream::Constants;
+using octronic::dream::PathDefinition;
+using octronic::dream::PathRuntime;
+using octronic::dream::ShaderRuntime;
 using glm::quat;
 using glm::mat4;
 using glm::vec3;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     PathViewer::PathViewer
-    (DTContext* state, bool visible)
+    (DreamToolContext* state, bool visible)
         : GLWidget(state, visible),
           mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
           mPathRuntime(nullptr),

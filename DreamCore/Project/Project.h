@@ -25,7 +25,7 @@ using std::shared_ptr;
 using std::vector;
 using nlohmann::json;
 
-namespace Dream
+namespace octronic::dream
 {
     class ArgumentParser;
     class File;
@@ -34,19 +34,15 @@ namespace Dream
     class AssetDefinition;
     class WindowComponent;
     class ProjectDirectory;
+    class StorageManager;
 
     class Project
     {
-        // Variables
-    private:
-        ProjectDirectory* mDirectory;
-        ProjectDefinition* mDefinition;
-        ProjectRuntime* mRuntime;
-        WindowComponent* mWindowComponent;
+
 
         // Public Methods
     public:
-        Project(ProjectDirectory* dir);
+        Project(ProjectDirectory* dir, StorageManager* fm);
         ~Project();
 
         ProjectRuntime* getRuntime() const;
@@ -60,7 +56,15 @@ namespace Dream
 
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
         void setWindowComponent(WindowComponent* windowComponent);
+        void setStorageManager(StorageManager* fm);
 
         ProjectDirectory* getDirectory() const;
+            // Variables
+    private:
+        ProjectDirectory* mDirectory;
+        ProjectDefinition* mDefinition;
+        ProjectRuntime* mRuntime;
+        WindowComponent* mWindowComponent;
+        StorageManager* mStorageManager;
     };
 }

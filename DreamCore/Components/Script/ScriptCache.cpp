@@ -19,11 +19,12 @@
 #include "ScriptDefinition.h"
 #include "ScriptRuntime.h"
 #include "Common/Logger.h"
-#include "Common/File.h"
-#include "TaskManager/TaskManager.h"
+#include "Components/Storage/File.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Task/TaskManager.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ScriptCache::ScriptCache
     (ProjectRuntime* runtime)
@@ -45,8 +46,11 @@ namespace Dream
         auto scriptDef = static_cast<ScriptDefinition*>(def);
         auto newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
         auto absPath = getAbsolutePath(scriptDef);
-        File scriptFile(absPath);
-        newScript->setSource(scriptFile.readString());
+        StorageManager* fm = mProjectRuntime->getStorageManager();
+        File* scriptFile = fm->openFile(absPath);
+        newScript->setSource(scriptFile->readString());
+        fm->closeFile(scriptFile);
+        scriptFile = nullptr;
         newScript->useDefinition();
         mRuntimes.push_back(newScript);
         return newScript;

@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-namespace Dream
+namespace octronic::dream
 {
 
     void PhysicsDebugDrawer::setCamera(Camera* camera)
@@ -328,10 +328,12 @@ namespace Dream
     ()
     {
         glEnable(GL_BLEND);
+        GLCheckError();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GLCheckError();
         glEnable(GL_LINE_SMOOTH);
+        GLCheckError();
         glEnable(GL_DEPTH_TEST);
-
         GLCheckError();
     }
 
@@ -340,7 +342,9 @@ namespace Dream
     ()
     {
         glDisable (GL_BLEND);
+        GLCheckError();
         glDisable(GL_LINE_SMOOTH);
+        GLCheckError();
         glDisable(GL_DEPTH_TEST);
         GLCheckError();
     }

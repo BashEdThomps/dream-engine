@@ -13,15 +13,15 @@
 #include "AnimationViewer.h"
 #include <DreamCore.h>
 
-using Dream::Constants;
+using octronic::dream::Constants;
 using glm::quat;
 using glm::mat4;
 using glm::vec3;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     AnimationViewer::AnimationViewer
-    (DTContext* state, bool visible)
+    (DreamToolContext* state, bool visible)
         : GLWidget(state, visible),
           mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
           mUnselectedColour(vec3(0.75f, 0.75f, 0.0f)),

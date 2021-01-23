@@ -2,7 +2,7 @@
 
 #include "Components/Cache.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class TextureRuntime;
     class TextureDefinition;

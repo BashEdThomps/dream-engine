@@ -6,7 +6,7 @@
 
 using std::make_shared;
 
-namespace Dream
+namespace octronic::dream
 {
     TextureRuntime::TextureRuntime
     (TextureDefinition* def, ProjectRuntime* rt)
@@ -26,7 +26,7 @@ namespace Dream
     {
         mTextureDestructionTask = make_shared<TextureDestructionTask>();
         mTextureDestructionTask->setGLID(mGLID);
-        mTextureDestructionTask->setState(TaskState::QUEUED);
+        mTextureDestructionTask->setState(TaskState::TASK_STATE_QUEUED);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
     }
 

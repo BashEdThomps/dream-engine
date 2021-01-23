@@ -1,12 +1,12 @@
 #include "LightViewer.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 
 #include <DreamCore.h>
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     LightViewer::LightViewer
-    (DTContext* p)
+    (DreamToolContext* p)
         : GLWidget(p,false)
     {
         for (auto index : LightModelIndices)
@@ -25,16 +25,17 @@ namespace DreamTool
     {
         GLCheckError();
         vector<AssetRuntime*> lightRuntimes;
-        if (mState->project)
+        Project* proj = mContext->getProject();
+        if (proj)
         {
-            auto pRuntime = mState->project->getRuntime();
+            ProjectRuntime* pRuntime = proj->getRuntime();
             if (pRuntime)
             {
-                auto sRunt = pRuntime->getActiveSceneRuntime();
+                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    lightRuntimes = sRunt->getAssetRuntimes(AssetType::LIGHT);
-                    auto cam = sRunt->getCamera();
+                    lightRuntimes = sRunt->getAssetRuntimes(AssetType::ASSET_TYPE_ENUM_LIGHT);
+                    Camera* cam = sRunt->getCamera();
                     if (cam)
                     {
                         mProjectionMatrix = cam->getProjectionMatrix();

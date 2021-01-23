@@ -4,14 +4,14 @@
 #include <TextEditor.h>
 #include <DreamCore.h>
 
-using Dream::ScriptDefinition;
+using octronic::dream::ScriptDefinition;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class ScriptEditorWindow : public ImGuiWidget
     {
     public:
-        ScriptEditorWindow(DTContext* state);
+        ScriptEditorWindow(DreamToolContext* state);
         ~ScriptEditorWindow() override;
 
         void draw() override;

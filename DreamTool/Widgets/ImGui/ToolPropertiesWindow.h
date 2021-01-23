@@ -2,13 +2,13 @@
 
 #include "ImGuiWidget.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class Grid;
     class ToolPropertiesWindow : public ImGuiWidget
     {
     public:
-        ToolPropertiesWindow(DTContext* p);
+        ToolPropertiesWindow(DreamToolContext* p);
         ~ToolPropertiesWindow() override;
         void draw() override;
     };

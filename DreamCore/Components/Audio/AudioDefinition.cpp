@@ -21,7 +21,7 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AudioDefinition::AudioDefinition
     (ProjectDefinition* pd, const json &js)

@@ -31,7 +31,7 @@
 
 using namespace tweeny;
 
-namespace Dream
+namespace octronic::dream
 {
     class AnimationRuntime : public DiscreteAssetRuntime
     {
@@ -61,7 +61,7 @@ namespace Dream
         AnimationUpdateTask* getUpdateTask();
 
     private:
-        void applyEasing(tweeny::tween<float>& twn, AnimationEasing::Type easing);
+        void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
         vector<AnimationKeyframe> mKeyframes;
         long mCurrentTime;
         long mDuration;

@@ -11,7 +11,7 @@
  */
 #include "FontDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     FontDefinition::FontDefinition
     (ProjectDefinition* pd, const json &js)

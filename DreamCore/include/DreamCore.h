@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Components/Storage/File.h"
+#include "Components/Storage/StorageManager.h"
+
+// Common
 #include "Common/Constants.h"
-#include "Common/Directory.h"
 #include "Common/Logger.h"
 #include "Common/GLHeader.h"
 
@@ -34,8 +37,6 @@
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Texture/TextureDefinition.h"
 #include "Components/Graphics/Texture/TextureCache.h"
-#include "Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
-#include "Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
 
 // Input
 #include "Components/Input/InputComponent.h"
@@ -48,16 +49,9 @@
 #include "Components/Path/PathDefinition.h"
 #include "Components/Path/PathRuntime.h"
 
-// Scroller
-#include "Components/Scroller/ScrollerDefinition.h"
-
 // Script
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Script/ScriptComponent.h"
-
-// Object Emitter
-#include "Components/ObjectEmitter/ObjectEmitterDefinition.h"
-#include "Components/ObjectEmitter/ObjectEmitterRuntime.h"
 
 // Window
 #include "Components/Window/WindowComponent.h"
@@ -69,12 +63,12 @@
 #include "Scene/Entity/EntityRuntime.h"
 
 // Project
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectDefinition.h"
 #include "Project/ProjectRuntime.h"
 #include "Project/Project.h"
 
 // Task Manager
-#include "TaskManager/Task.h"
-#include "TaskManager/TaskManager.h"
-#include "TaskManager/TaskThread.h"
+#include "Components/Task/Task.h"
+#include "Components/Task/TaskManager.h"
+#include "Components/Task/TaskThread.h"

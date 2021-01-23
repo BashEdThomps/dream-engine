@@ -31,7 +31,7 @@
 #include "Project/ProjectDefinition.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     PhysicsObjectRuntime::PhysicsObjectRuntime
     (

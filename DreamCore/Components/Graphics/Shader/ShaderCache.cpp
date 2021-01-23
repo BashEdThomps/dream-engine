@@ -22,7 +22,7 @@
 #include "Components/Graphics/Camera.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ShaderCache::ShaderCache
     (ProjectRuntime* rt)

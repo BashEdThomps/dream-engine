@@ -3,14 +3,16 @@
 #include "TextureDefinition.h"
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
-#include "Common/File.h"
+#include "Components/Storage/File.h"
+#include "Components/Storage/StorageManager.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Project/ProjectRuntime.h"
 
-#include <SOIL.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
-namespace Dream
+namespace octronic::dream
 {
     TextureCache::TextureCache
     (ProjectRuntime* runtime)
@@ -34,23 +36,46 @@ namespace Dream
         auto textureDef = static_cast<TextureDefinition*>(def);
         string filename = getAbsolutePath(def);
 
-        File txFile(filename);
-        if (!txFile.exists())
+        StorageManager* fm = mProjectRuntime->getStorageManager();
+        File* txFile = fm->openFile(filename);
+        if (!txFile->exists())
         {
             LOG_ERROR("TextureCache: Texture file does not exist: {}",filename);
+            fm->closeFile(txFile);
+            txFile = nullptr;
             return nullptr;
         }
 
         LOG_DEBUG("TextureCache: Loading texture: {}",filename);
 
+        if (!txFile->readBinary())
+        {
+            LOG_ERROR("TextureCache: Unable to read file data");
+            fm->closeFile(txFile);
+            txFile = nullptr;
+            return nullptr;
+        }
+        uint8_t* buffer = txFile->getBinaryData();
+        size_t buffer_sz = txFile->getBinaryDataSize();
+
         int width = 0;
         int height = 0;
         int channels = 0;
 
-        unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
+	    stbi_set_flip_vertically_on_load(true);
+		uint8_t* image = stbi_load_from_memory(
+			static_cast<const stbi_uc*>(buffer),
+			buffer_sz,
+			&width, &height,
+			&channels, 0
+		);
 
-        LOG_DEBUG("TextureCache: Didn't find cached texture matching {}",filename);
-        LOG_DEBUG("TextureCache: Loaded texture {} with width {}, height {}, channels {}",filename, width,height,channels);
+        fm->closeFile(txFile);
+        txFile = nullptr;
+
+        LOG_DEBUG(
+    		"TextureCache: Loaded texture {} with width {}, height {}, channels {}",
+            filename, width,height,channels);
 
         auto texture = new TextureRuntime(textureDef,mProjectRuntime);
         texture->setPath(filename);

@@ -24,7 +24,7 @@
 
 #include <glm/common.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
     Camera::Camera
     (SceneRuntime* parent)
@@ -102,6 +102,8 @@ namespace Dream
         auto wc = mSceneRuntime->getProjectRuntime()->getWindowComponent();
         int windowWidth  = wc->getWidth();
         int windowHeight = wc->getHeight();
+        assert(windowWidth != 0.f);
+        assert(windowHeight != 0.f);
         updateProjectionMatrix(static_cast<float>(windowWidth),static_cast<float>(windowHeight));
         updateCameraVectors();
     }

@@ -1,10 +1,14 @@
 #include "SceneStateWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+using octronic::dream::Project;
+using octronic::dream::ProjectDefinition;
+using octronic::dream::ProjectRuntime;
+
+namespace octronic::dream::tool
 {
-    SceneStateWindow::SceneStateWindow(DTContext* p)
+    SceneStateWindow::SceneStateWindow(DreamToolContext* p)
         : ImGuiWidget(p,false)
     {
     }
@@ -16,7 +20,8 @@ namespace DreamTool
 
     void SceneStateWindow::draw()
     {
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
             ImGui::Begin("Scene States",&mVisible);
             ImGui::Columns(3);
@@ -28,8 +33,9 @@ namespace DreamTool
             ImGui::NextColumn();
 
 
-            auto pDef = mState->project->getDefinition();
-            auto pRunt = mState->project->getRuntime();
+            Project* project = mContext->getProject();
+            ProjectDefinition* pDef = project->getDefinition();
+            ProjectRuntime* pRunt = project->getRuntime();
 
             if (pDef)
             {

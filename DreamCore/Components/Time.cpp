@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-namespace Dream
+namespace octronic::dream
 {
     Time::Time
     () : LockableObject()

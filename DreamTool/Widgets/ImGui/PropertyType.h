@@ -1,13 +1,13 @@
 #pragma once
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     enum PropertyType
     {
-        None,
-        Project,
-        Scene,
-        Entity,
-        Asset
+        PropertyType_None,
+        PropertyType_Project,
+        PropertyType_Scene,
+        PropertyType_Entity,
+        PropertyType_Asset
     };
 }

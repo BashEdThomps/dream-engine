@@ -19,7 +19,7 @@
 using namespace std;
 using namespace glm;
 
-namespace Dream
+namespace octronic::dream
 {
     class LightRuntime;
     class Camera;

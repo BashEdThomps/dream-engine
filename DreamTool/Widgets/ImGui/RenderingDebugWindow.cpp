@@ -1,13 +1,16 @@
 #include "RenderingDebugWindow.h"
-#include "DTContext.h"
+
+#include "DreamToolContext.h"
+
 #include <DreamCore.h>
 
-using namespace Dream;
+using octronic::dream::Project;
+using octronic::dream::ProjectRuntime;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     RenderingDebugWindow::RenderingDebugWindow
-    (DTContext* state)
+    (DreamToolContext* state)
         :ImGuiWidget(state,false)
     {
     }
@@ -19,10 +22,10 @@ namespace DreamTool
     RenderingDebugWindow::draw
     ()
     {
-        if (mState->project)
+        if (mContext->getProject())
         {
             ImGui::Begin("Render Pipeline",&mVisible);
-            auto pRuntime = mState->project->getRuntime();
+            auto pRuntime = mContext->getProject()->getRuntime();
             if (pRuntime)
             {
                 auto gfx = pRuntime->getGraphicsComponent();
@@ -30,7 +33,6 @@ namespace DreamTool
                 {
                     if (ImGui::CollapsingHeader("Statistics"))
                     {
-
                         ImGui::PushItemWidth(-1);
                         ImGui::PlotLines("FPS",&pRuntime->getFrameDurationHistory()[0],ProjectRuntime::MaxFrameCount, 0, "FPS", 0.f, 250.f, ImVec2(0,50));
                         ImGui::PopItemWidth();

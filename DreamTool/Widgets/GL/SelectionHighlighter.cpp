@@ -1,12 +1,16 @@
 #include "SelectionHighlighter.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+using octronic::dream::BoundingBox;
+using octronic::dream::Project;
+using octronic::dream::ProjectRuntime;
+
+namespace octronic::dream::tool
 {
 
     SelectionHighlighter::SelectionHighlighter
-    (DTContext* project)
+    (DreamToolContext* project)
         :GLWidget (project,false),
           mSelectedEntityRuntime(nullptr),
           mSelectionColour(vec3(0.0,1.0f,0.40f)),
@@ -206,15 +210,16 @@ namespace DreamTool
             return;
         }
 
-        if (mState->project)
+        Project* proj = mContext->getProject();
+        if (proj)
         {
-            auto pRuntime = mState->project->getRuntime();
+            ProjectRuntime* pRuntime = proj->getRuntime();
             if (pRuntime)
             {
-                auto sRunt = pRuntime->getActiveSceneRuntime();
+                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    auto cam = sRunt->getCamera();
+                    Camera* cam = sRunt->getCamera();
                     if (cam)
                     {
                         mProjectionMatrix = cam->getProjectionMatrix();

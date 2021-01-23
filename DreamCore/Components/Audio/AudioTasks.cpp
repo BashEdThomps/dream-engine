@@ -3,7 +3,7 @@
 
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AudioMarkersUpdateTask::AudioMarkersUpdateTask
     (AudioRuntime* rt)
@@ -20,11 +20,11 @@ namespace Dream
         {
             mAudioRuntime->updateMarkers();
             mAudioRuntime->unlock();
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }

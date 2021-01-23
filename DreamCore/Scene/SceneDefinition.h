@@ -18,7 +18,7 @@
 
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     class ProjectDefinition;
     class Entity;

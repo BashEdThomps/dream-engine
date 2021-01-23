@@ -6,7 +6,7 @@
 #include "PhysicsComponent.h"
 #include "PhysicsDebugDrawer.h"
 
-namespace Dream
+namespace octronic::dream
 {
          PhysicsAddObjectTask::PhysicsAddObjectTask
          (PhysicsComponent* cp, PhysicsObjectRuntime* rt)
@@ -29,11 +29,11 @@ namespace Dream
                     mComponent->addPhysicsObjectRuntime(mRuntime);
                     mComponent->unlock();
                     mRuntime->setInPhysicsWorld(true);
-                    setState(TaskState::COMPLETED);
+                    setState(TaskState::TASK_STATE_COMPLETED);
             }
             else
             {
-                setState(TaskState::WAITING);
+                setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
         }
@@ -53,11 +53,11 @@ namespace Dream
             {
                 mComponent->stepSimulation();
                 mComponent->unlock();
-                setState(TaskState::COMPLETED);
+                setState(TaskState::TASK_STATE_COMPLETED);
             }
             else
             {
-                setState(TaskState::WAITING);
+                setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
         }
@@ -77,11 +77,11 @@ namespace Dream
             {
                 mComponent->getDebugDrawer()->drawAll();
                 mComponent->unlock();
-                setState(TaskState::COMPLETED);
+                setState(TaskState::TASK_STATE_COMPLETED);
             }
             else
             {
-                setState(TaskState::WAITING);
+                setState(TaskState::TASK_STATE_WAITING);
             }
         }
 }

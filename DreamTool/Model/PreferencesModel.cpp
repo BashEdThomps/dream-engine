@@ -1,12 +1,17 @@
 #include "PreferencesModel.h"
 
-using Dream::File;
-using Dream::Constants;
+#include <DreamCore.h>
+#include "DreamToolContext.h"
 
-namespace DreamTool
+using octronic::dream::File;
+using octronic::dream::StorageManager;
+using octronic::dream::Constants;
+
+namespace octronic::dream::tool
 {
     PreferencesModel::PreferencesModel
-    ()
+    (DreamToolContext* context)
+        : Model(context)
     {
         LOG_TRACE("PreferencesModel: Constructing");
     }
@@ -22,12 +27,15 @@ namespace DreamTool
     (string projectPath)
     {
         mProjectPath = projectPath;
-        File f(getAbsolutePath());
-        if (f.exists())
+        StorageManager* fm = mContext->getStorageManager();
+        File* f = fm->openFile (getAbsolutePath());
+        if (f->exists())
         {
-            mJson = json::parse(f.readString());
+            mJson = json::parse(f->readString());
+            fm->closeFile(f);
             return true;
         }
+        fm->closeFile(f);
         return false;
     }
 
@@ -35,8 +43,11 @@ namespace DreamTool
     PreferencesModel::save
     ()
     {
-        File f(getAbsolutePath());
-        return f.writeString(mJson.dump(1));
+        StorageManager* fm = mContext->getStorageManager();
+        File* f = fm->openFile(getAbsolutePath());
+        bool retval = f->writeString(mJson.dump(1));
+        fm->closeFile(f);
+        return retval;
     }
 
     string

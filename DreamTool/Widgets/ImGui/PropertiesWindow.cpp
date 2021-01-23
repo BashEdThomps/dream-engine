@@ -8,15 +8,15 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <nfd.h>
 #include <ImGuizmo.h>
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     PropertiesWindow::PropertiesWindow
-    (DTContext* proj)
+    (DreamToolContext* proj)
         : ImGuiWidget (proj),
-          mType(None),
+          mType(PropertyType_None),
           mDefinition(nullptr),
           mRuntime(nullptr),
           mImageSize(256,256),
@@ -36,7 +36,8 @@ namespace DreamTool
     PropertiesWindow::draw
     ()
     {
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
             ImGui::Begin("Properties",&mVisible);
             if(ImGui::Button("<- Back"))
@@ -45,18 +46,18 @@ namespace DreamTool
             }
             switch (mType)
             {
-                case PropertyType::None:
+                case PropertyType_None:
                     break;
-                case PropertyType::Project:
+                case PropertyType_Project:
                     drawProjectProperties();
                     break;
-                case PropertyType::Scene:
+                case PropertyType_Scene:
                     drawSceneProperties();
                     break;
-                case PropertyType::Entity:
+                case PropertyType_Entity:
                     drawEntityProperties();
                     break;
-                case PropertyType::Asset:
+                case PropertyType_Asset:
                     drawAssetProperties();
                     break;
             }
@@ -85,7 +86,7 @@ namespace DreamTool
                 auto parent = soRuntime->getParentRuntime();
                 parent->removeChildRuntime(soRuntime);
             }
-            mState->selectionHighlighter.clearSelection();
+            mContext->getSelectionHighlighter()->clearSelection();
             removeFromHistory(mDefinition);
             mDefinition = nullptr;
             mRuntime = nullptr;
@@ -104,8 +105,9 @@ namespace DreamTool
             ImGui::OpenPopup("Confirm Delete Scene");
         }
 
-        auto sDef = dynamic_cast<SceneDefinition*>(mDefinition);
-        auto pDef = mState->project->getDefinition();
+        Project* project = mContext->getProject();
+        SceneDefinition* sDef = dynamic_cast<SceneDefinition*>(mDefinition);
+        ProjectDefinition* pDef = project->getDefinition();
 
         if(ImGui::BeginPopupModal("Confirm Delete Scene"))
         {
@@ -141,14 +143,7 @@ namespace DreamTool
     (PropertyType type, Definition* def, Runtime* runt)
     {
         // Remove old
-        auto itr = std::find_if(
-                    mHistory.begin(),
-                    mHistory.end(),
-                    [&](PropertiesTarget& tgt)
-        {
-                return tgt.definition == def;
-    }
-                );
+        auto itr = std::find_if(mHistory.begin(), mHistory.end(), [&](PropertiesTarget& tgt){return tgt.definition == def;});
 
         if (itr != mHistory.end())
         {
@@ -199,7 +194,7 @@ namespace DreamTool
     ()
     {
         mHistory.clear();
-        setPropertyType(PropertyType::None);
+        setPropertyType(PropertyType_None);
         setDefinition(nullptr);
         setRuntime(nullptr);
     }
@@ -243,7 +238,7 @@ namespace DreamTool
     PropertiesWindow::clear
     ()
     {
-        mType = None;
+        mType = PropertyType_None;
         mDefinition = nullptr;
         mRuntime = nullptr;
     }
@@ -259,7 +254,8 @@ namespace DreamTool
     PropertiesWindow::drawProjectProperties
     ()
     {
-        auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+        Project* project = mContext->getProject();
+        ProjectDefinition* projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
 
         if (projDef == nullptr)
         {
@@ -269,12 +265,7 @@ namespace DreamTool
         ImGui::SameLine();
         if(ImGui::Button("New Scene"))
         {
-            pushPropertyTarget
-                    (
-                        DreamTool::Scene,
-                        mState->project->getDefinition()->createNewSceneDefinition(),
-                        nullptr
-                        );
+            pushPropertyTarget(PropertyType_Scene, project->getDefinition()->createNewSceneDefinition(), nullptr);
             return;
         }
         drawNameAndIdProperties();
@@ -292,18 +283,6 @@ namespace DreamTool
         {
             startup = projDef->getSceneDefinitionAtIndex(startupScene);
             projDef->setStartupSceneUuid(startup->getUuid());
-        }
-        ImGui::Separator();
-
-        // Window Dimensions
-        int windowSize[2] = {
-            projDef->getWindowWidth(),
-            projDef->getWindowHeight()
-        };
-        if (ImGui::DragInt2("Window Size",windowSize))
-        {
-            projDef->setWindowWidth(windowSize[0]);
-            projDef->setWindowHeight(windowSize[1]);
         }
         ImGui::Separator();
 
@@ -329,8 +308,8 @@ namespace DreamTool
     PropertiesWindow::drawSceneProperties
     ()
     {
-        auto sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
-        auto sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
+        SceneDefinition* sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
+        SceneRuntime* sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
 
         if (sceneDef == nullptr)
         {
@@ -573,20 +552,20 @@ namespace DreamTool
                 }
             }
 
-            auto pDef = sceneDef->getProjectDefinition();
-            auto lpShaderUuid = sceneDef->getLightingPassShader();
-            auto lpShaderDef = pDef->getAssetDefinitionByUuid(lpShaderUuid);
-            int lightingShaderIndex = pDef->getAssetDefinitionIndex(AssetType::SHADER,lpShaderDef);
+            ProjectDefinition* pDef = sceneDef->getProjectDefinition();
+            UuidType lpShaderUuid = sceneDef->getLightingPassShader();
+            ShaderDefinition* lpShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(lpShaderUuid));
+            int lightingShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,lpShaderDef);
 
-            auto spShaderUuid = sceneDef->getShadowPassShader();
-            auto spShaderDef = pDef->getAssetDefinitionByUuid(spShaderUuid);
-            int shadowShaderIndex = pDef->getAssetDefinitionIndex(AssetType::SHADER,spShaderDef);
+            UuidType spShaderUuid = sceneDef->getShadowPassShader();
+            ShaderDefinition* spShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(spShaderUuid));
+            int shadowShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,spShaderDef);
 
-            auto shaderList = mState->project->getDefinition()->getAssetNamesVector(AssetType::SHADER);
+            auto shaderList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
 
             if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
             {
-                auto selectedShader = mState->project->getDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, lightingShaderIndex);
+                auto selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, lightingShaderIndex);
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setLightingPassShader(uuid);
@@ -597,7 +576,7 @@ namespace DreamTool
 
             if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
             {
-                auto selectedShader = mState->project->getDefinition()->getAssetDefinitionAtIndex(AssetType::SHADER, shadowShaderIndex);
+                auto selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shadowShaderIndex);
                 auto uuid = selectedShader->getUuid();
                 auto name = selectedShader->getName();
                 sceneDef->setShadowPassShader(uuid);
@@ -607,15 +586,15 @@ namespace DreamTool
 
         if (ImGui::CollapsingHeader("Scripting"))
         {
-            auto pDef=mState->project->getDefinition();
-            vector<string> scriptAssets = mState->project->getDefinition()->getAssetNamesVector(AssetType::SCRIPT);
+            auto pDef= mContext->getProject()->getDefinition();
+            vector<string> scriptAssets = mContext->getProject()->getDefinition()->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
 
             uint32_t inputScriptUuid = sceneDef->getInputScript();
             auto inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
-            int inputScriptIndex = pDef->getAssetDefinitionIndex(AssetType::SCRIPT,inputScriptDef);
+            int inputScriptIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,inputScriptDef);
             if (StringCombo("Input Script",&inputScriptIndex,scriptAssets,scriptAssets.size()))
             {
-                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,inputScriptIndex);
+                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,inputScriptIndex);
                 auto uuid = selected->getUuid();
                 sceneDef->setInputScript(uuid);
             }
@@ -659,7 +638,7 @@ namespace DreamTool
     PropertiesWindow::drawEntityProperties
     ()
     {
-        auto projDef = mState->project->getDefinition();
+        auto projDef = mContext->getProject()->getDefinition();
         auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
         auto soRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
 
@@ -681,7 +660,7 @@ namespace DreamTool
         if (ImGui::Button("Add Child"))
         {
             auto newChildDef = soDef->createNewChildDefinition();
-            mat4 cursorTx = glm::translate(mat4(1.0f),mState->cursor.getPosition());
+            mat4 cursorTx = glm::translate(mat4(1.0f),mContext->getCursor()->getPosition());
             newChildDef->getTransform().setMatrix(cursorTx);
             EntityRuntime* newRt = nullptr;
             if (soRuntime)
@@ -689,7 +668,7 @@ namespace DreamTool
                 newRt = soRuntime->createAndAddChildRuntime(newChildDef);
                 newRt->getTransform().setMatrix(cursorTx);
             }
-            pushPropertyTarget(PropertyType::Entity,newChildDef,newRt);
+            pushPropertyTarget(PropertyType_Entity,newChildDef,newRt);
         }
 
         if (soDef->getParentEntity() != nullptr)
@@ -703,7 +682,7 @@ namespace DreamTool
                 {
                     newRt = soRuntime->createAndAddChildRuntime(dup);
                 }
-                pushPropertyTarget(PropertyType::Entity,dup,newRt);
+                pushPropertyTarget(PropertyType_Entity,dup,newRt);
             }
         }
 
@@ -836,11 +815,11 @@ namespace DreamTool
         {
 
             // Audio
-            int selectedAnimationAsset = soDef->getSelectedAssetIndex(AssetType::ANIMATION);
-            vector<string> animationAssets = projDef->getAssetNamesVector(AssetType::ANIMATION);
+            int selectedAnimationAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION);
+            vector<string> animationAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_ANIMATION);
             if(ImGui::Button("-##Animation"))
             {
-                soDef->setAssetDefinition(AssetType::ANIMATION,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_ANIMATION,0);
                 if (soRuntime)
                 {
                     soRuntime->removeAnimationRuntime();
@@ -850,12 +829,8 @@ namespace DreamTool
             if(ImGui::Button(">##Animation"))
             {
                 if (selectedAnimationAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ANIMATION,selectedAnimationAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset);
+                pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
 
@@ -863,23 +838,23 @@ namespace DreamTool
 
             if(StringCombo("Animation",&selectedAnimationAsset,animationAssets,animationAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ANIMATION, selectedAnimationAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ANIMATION, selectedAnimationAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ANIMATION, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedDef->getUuid());
                     }
                 }
             }
 
             // Audio
-            int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::AUDIO);
-            vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::AUDIO);
+            int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO);
+            vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_AUDIO);
             if(ImGui::Button("-##Audio"))
             {
-                soDef->setAssetDefinition(AssetType::AUDIO,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_AUDIO,0);
                 if (soRuntime)
                 {
                     soRuntime->removeAudioRuntime();
@@ -889,12 +864,8 @@ namespace DreamTool
             if(ImGui::Button(">##Audio"))
             {
                 if (selectedAudioAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO,selectedAudioAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO,selectedAudioAsset);
+                pushPropertyTarget(PropertyType_Asset,asset, nullptr);
                 return;
             }
 
@@ -902,24 +873,24 @@ namespace DreamTool
 
             if(StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::AUDIO, selectedAudioAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::AUDIO, selectedAudioAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::AUDIO, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedDef->getUuid());
                     }
                 }
             }
 
             // Light
-            int selectedLightAsset = soDef->getSelectedAssetIndex(AssetType::LIGHT);
-            vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::LIGHT);
+            int selectedLightAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT);
+            vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_LIGHT);
 
             if(ImGui::Button("-##Light"))
             {
-                soDef->setAssetDefinition(AssetType::LIGHT,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_LIGHT,0);
                 if (soRuntime)
                 {
                     soRuntime->removeLightRuntime();
@@ -931,12 +902,8 @@ namespace DreamTool
             if(ImGui::Button(">##Light"))
             {
                 if (selectedLightAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT,selectedLightAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT,selectedLightAsset);
+                pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
 
@@ -944,24 +911,24 @@ namespace DreamTool
 
             if(StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::LIGHT, selectedLightAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::LIGHT, selectedLightAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::LIGHT, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedDef->getUuid());
                     }
                 }
             }
 
             // Model
-            int selectedModelAsset = soDef->getSelectedAssetIndex(AssetType::MODEL);
-            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
+            int selectedModelAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL);
+            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
             if(ImGui::Button("-##Model"))
             {
-                soDef->setAssetDefinition(AssetType::MODEL,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL,0);
                 if (soRuntime)
                 {
                     soRuntime->removeModelRuntime();
@@ -973,13 +940,8 @@ namespace DreamTool
             if(ImGui::Button(">##Model"))
             {
                 if (selectedModelAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::MODEL,selectedModelAsset);
-                pushPropertyTarget
-                        (
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL,selectedModelAsset);
+                pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
 
@@ -987,96 +949,23 @@ namespace DreamTool
 
             if(StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::MODEL, selectedModelAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::MODEL, selectedDef->getUuid());
-                    }
-                }
-            }
-
-            // Object Emitter
-            int selectedObjectEmitterAsset = soDef->getSelectedAssetIndex(AssetType::OBJECT_EMITTER);
-            vector<string> oeAssets = projDef->getAssetNamesVector(AssetType::OBJECT_EMITTER);
-            if(ImGui::Button("-##ObjectEmitter"))
-            {
-                soDef->setAssetDefinition(AssetType::OBJECT_EMITTER,0);
-                if (soRuntime)
-                {
-                    soRuntime->removeObjectEmitterRuntime();
-                }
-            }
-            ImGui::SameLine();
-
-            if(ImGui::Button(">##ObjectEmitter"))
-            {
-                if (selectedObjectEmitterAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::OBJECT_EMITTER,selectedObjectEmitterAsset);
-                pushPropertyTarget(PropertyType::Asset,asset,nullptr);
-                return;
-            }
-            ImGui::SameLine();
-            if(StringCombo("Object Emitter",&selectedObjectEmitterAsset,oeAssets,oeAssets.size()))
-            {
-                soDef->setSelectedAssetIndex(AssetType::OBJECT_EMITTER, selectedObjectEmitterAsset);
-                if (soRuntime)
-                {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::OBJECT_EMITTER, selectedObjectEmitterAsset);
-                    if (selectedDef)
-                    {
-                        soRuntime->replaceAssetUuid(AssetType::OBJECT_EMITTER, selectedDef->getUuid());
-                    }
-                }
-            }
-
-            // Particle Emitter
-            int selectedParticleEmitterAsset = soDef->getSelectedAssetIndex(AssetType::PARTICLE_EMITTER);
-            vector<string> peAssets = projDef->getAssetNamesVector(AssetType::PARTICLE_EMITTER);
-            if(ImGui::Button("-##ParticleEmitter"))
-            {
-                soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
-                if (soRuntime)
-                {
-                    soRuntime->removeParticleEmitterRuntime();
-                }
-            }
-            ImGui::SameLine();
-
-            if(ImGui::Button(">##ParticleEmitter"))
-            {
-                if (selectedParticleEmitterAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER,selectedParticleEmitterAsset);
-                pushPropertyTarget
-                        (
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
-                return;
-            }
-            ImGui::SameLine();
-            if(StringCombo("Particle Emitter",&selectedParticleEmitterAsset,peAssets,peAssets.size()))
-            {
-                soDef->setSelectedAssetIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
-                if (soRuntime)
-                {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::PARTICLE_EMITTER, selectedParticleEmitterAsset);
-                    if (selectedDef)
-                    {
-                        soRuntime->replaceAssetUuid(AssetType::PARTICLE_EMITTER, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_MODEL, selectedDef->getUuid());
                     }
                 }
             }
 
             // Path
-            int selectedPathAsset = soDef->getSelectedAssetIndex(AssetType::PATH);
-            vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::PATH);
+            int selectedPathAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH);
+            vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PATH);
             if(ImGui::Button("-##Path"))
             {
-                soDef->setAssetDefinition(AssetType::PATH,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PATH,0);
                 if (soRuntime)
                 {
                     soRuntime->removePathRuntime();
@@ -1088,12 +977,8 @@ namespace DreamTool
             if(ImGui::Button(">##Path"))
             {
                 if (selectedPathAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PATH,selectedPathAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PATH,selectedPathAsset);
+                pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
 
@@ -1101,20 +986,20 @@ namespace DreamTool
 
             if(StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::PATH, selectedPathAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH, selectedPathAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(PATH, selectedPathAsset);
-                    soRuntime->replaceAssetUuid(PATH, selectedDef->getUuid());
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(ASSET_TYPE_ENUM_PATH, selectedPathAsset);
+                    soRuntime->replaceAssetUuid(ASSET_TYPE_ENUM_PATH, selectedDef->getUuid());
                 }
             }
 
             //Physics Object
-            int selectedPhysicsObjectAsset = soDef->getSelectedAssetIndex(AssetType::PHYSICS_OBJECT);
-            vector<string> poAssets = projDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
+            int selectedPhysicsObjectAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
+            vector<string> poAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
             if(ImGui::Button("-##PhysicsObject"))
             {
-                soDef->setAssetDefinition(AssetType::PHYSICS_OBJECT,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,0);
                 if (soRuntime)
                 {
                     soRuntime->removePhysicsObjectRuntime();
@@ -1125,12 +1010,8 @@ namespace DreamTool
             if(ImGui::Button(">##PhysicsObject"))
             {
                 if (selectedPhysicsObjectAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+                pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
 
@@ -1138,23 +1019,23 @@ namespace DreamTool
 
             if(StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT, selectedPhysicsObjectAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedPhysicsObjectAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::PHYSICS_OBJECT, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedDef->getUuid());
                     }
                 }
             }
 
             // Script
-            int selectedScriptAsset = soDef->getSelectedAssetIndex(AssetType::SCRIPT);
-            vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::SCRIPT);
+            int selectedScriptAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT);
+            vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
             if(ImGui::Button("-##Script"))
             {
-                soDef->setAssetDefinition(AssetType::SCRIPT,0);
+                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_SCRIPT,0);
                 if (soRuntime)
                 {
                     soRuntime->removeScriptRuntime();
@@ -1165,12 +1046,8 @@ namespace DreamTool
             if(ImGui::Button(">##Script"))
             {
                 if (selectedScriptAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT,selectedScriptAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
+                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,selectedScriptAsset);
+                pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
 
@@ -1178,56 +1055,19 @@ namespace DreamTool
 
             if(StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::SCRIPT, selectedScriptAsset);
+                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
                 if (soRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::SCRIPT, selectedScriptAsset);
+                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::SCRIPT, selectedDef->getUuid());
+                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedDef->getUuid());
                     }
                 }
             }
 
-            // Scroller
-            int selectedScrollerAsset = soDef->getSelectedAssetIndex(AssetType::SCROLLER);
-            vector<string> scrollerAssets = projDef->getAssetNamesVector(AssetType::SCROLLER);
-            if(ImGui::Button("-##Scroller"))
-            {
-                soDef->setAssetDefinition(AssetType::SCROLLER,0);
-                if (soRuntime)
-                {
-                    soRuntime->removeScrollerRuntime();
-                }
-            }
             ImGui::SameLine();
 
-            if(ImGui::Button(">##Scroller"))
-            {
-                if (selectedScrollerAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::SCROLLER,selectedScrollerAsset);
-                pushPropertyTarget(
-                            PropertyType::Asset,
-                            asset,
-                            nullptr
-                            );
-                return;
-            }
-
-            ImGui::SameLine();
-
-            if(StringCombo("Scroller",&selectedScrollerAsset,scrollerAssets,scrollerAssets.size()))
-            {
-                soDef->setSelectedAssetIndex(AssetType::SCROLLER, selectedScrollerAsset);
-                if (soRuntime)
-                {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::SCROLLER, selectedScrollerAsset);
-                    if (selectedDef)
-                    {
-                        soRuntime->replaceAssetUuid(AssetType::SCROLLER, selectedDef->getUuid());
-                    }
-                }
-            }
         }
     }
 
@@ -1329,19 +1169,14 @@ namespace DreamTool
 
                     if (withChildren)
                     {
-                        soRunt->applyToAll
-                                (
-                                    function<EntityRuntime*(EntityRuntime*)>(
-                                        [&](EntityRuntime* rt)
-                        {
-                                        if (rt != soRunt)
-                                        {
-                                            auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-                                            d->setTransform(rt->getTransform());
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }
-                                    ));
+                        soRunt->applyToAll(
+                        	function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
+								if (rt != soRunt){
+									auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+									d->setTransform(rt->getTransform());
+								}
+								return static_cast<EntityRuntime*>(nullptr);
+							}));
                     }
                 }
             }
@@ -1378,7 +1213,7 @@ namespace DreamTool
             ImGui::Columns(1);
         }
 
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();
@@ -1453,7 +1288,7 @@ namespace DreamTool
 
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();
@@ -1487,8 +1322,8 @@ namespace DreamTool
     PropertiesWindow::drawAssetProperties
     ()
     {
-        mState->pathViewer.setVisible(false);
-        mState->animationViewer.setVisible(false);
+        mContext->getPathViewer()->setVisible(false);
+        mContext->getAnimationViewer()->setVisible(false);
         auto assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
         if (assetDef == nullptr)
         {
@@ -1498,8 +1333,8 @@ namespace DreamTool
         ImGui::SameLine();
         if(ImGui::Button("Delete Asset"))
         {
-            mState->projectDirectory.removeAssetDirectory(assetDef);
-            auto projDef = mState->project->getDefinition();
+            mContext->getProjectDirectory()->removeAssetDirectory(assetDef);
+            auto projDef = mContext->getProject()->getDefinition();
             projDef->removeAssetDefinition(assetDef);
             removeFromHistory(mDefinition);
             mDefinition = nullptr;
@@ -1511,8 +1346,8 @@ namespace DreamTool
         if (ImGui::Button("Duplicate"))
         {
             auto dup = assetDef->duplicate();
-            auto projDef = mState->project->getDefinition();
-            pushPropertyTarget(PropertyType::Entity,dup,nullptr);
+            auto projDef = mContext->getProject()->getDefinition();
+            pushPropertyTarget(PropertyType_Entity,dup,nullptr);
         }
 
 
@@ -1529,53 +1364,44 @@ namespace DreamTool
         auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
         switch (type)
         {
-            case AssetType::ANIMATION:
+            case AssetType::ASSET_TYPE_ENUM_ANIMATION:
                 drawAnimationAssetProperties();
                 break;
-            case AssetType::AUDIO:
+            case AssetType::ASSET_TYPE_ENUM_AUDIO:
                 drawAudioAssetProperties();
                 break;
-            case AssetType::FONT:
+            case AssetType::ASSET_TYPE_ENUM_FONT:
                 drawFontAssetProperties();
                 break;
-            case AssetType::LIGHT:
+            case AssetType::ASSET_TYPE_ENUM_LIGHT:
                 drawLightAssetProperties();
                 break;
-            case AssetType::MATERIAL:
+            case AssetType::ASSET_TYPE_ENUM_MATERIAL:
                 drawMaterialAssetProperties();
                 break;
-            case AssetType::MODEL:
+            case AssetType::ASSET_TYPE_ENUM_MODEL:
                 drawModelAssetProperties();
                 break;
-            case AssetType::OBJECT_EMITTER:
-                drawObjectEmitterProperties();
-                break;
-            case AssetType::PHYSICS_OBJECT:
+            case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                 drawPhysicsObjectAssetProperties();
                 break;
-            case AssetType::SCRIPT:
+            case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                 drawScriptProperties();
                 break;
-            case AssetType::SCROLLER:
-                drawScrollerAssetProperties();
-                break;
-            case AssetType::SHADER:
+            case AssetType::ASSET_TYPE_ENUM_SHADER:
                 drawShaderAssetProperties();
                 break;
-            case AssetType::PATH:
+            case AssetType::ASSET_TYPE_ENUM_PATH:
                 drawPathAssetProperties();
                 break;
-            case AssetType::PARTICLE_EMITTER:
-                drawParticleEmitterAssetProperties();
-                break;
-            case AssetType::TEXTURE:
+            case AssetType::ASSET_TYPE_ENUM_TEXTURE:
                 drawTextureAssetProperties();
                 break;
-            case AssetType::NONE:
+            case AssetType::ASSET_TYPE_ENUM_NONE:
                 break;
         }
 
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto activeScene = pRunt->getActiveSceneRuntime();
@@ -1600,8 +1426,8 @@ namespace DreamTool
     ()
     {
         auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
-        mState->animationViewer.setAnimationDefinition(animDef);
-        mState->animationViewer.setVisible(true);
+        mContext->getAnimationViewer()->setAnimationDefinition(animDef);
+        mContext->getAnimationViewer()->setVisible(true);
 
         ImGui::Columns(2);
 
@@ -1719,7 +1545,7 @@ namespace DreamTool
             int currentEasingType = kf.getEasingType();
             if (StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
             {
-                kf.setEasingType(static_cast<AnimationEasing::Type>(currentEasingType));
+                kf.setEasingType(static_cast<AnimationEasing::EasingType>(currentEasingType));
                 animDef->updateKeyframe(kf);
             }
 
@@ -1730,7 +1556,7 @@ namespace DreamTool
             {
                 drawAnimationKeyframeImGuizmo(animDef, kf);
             }
-            mState->animationViewer.regenerate();
+            mContext->getAnimationViewer()->regenerate();
         }
         ImGui::Columns(1);
     }
@@ -1746,7 +1572,7 @@ namespace DreamTool
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
 
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();
@@ -1786,21 +1612,25 @@ namespace DreamTool
         {
             nfdchar_t *audioFilePath = NULL;
             nfdfilteritem_t filter[2] = {{"Ogg Files", "ogg"}, {"WAVE Files", "wav"}};
-			nfdresult_t result = NFD_OpenDialog(&audioFilePath, filter, 2, mState->lastDirectory.c_str() );
+			nfdresult_t result = NFD_OpenDialog(&audioFilePath, filter, 2, mContext->getLastDirectory().c_str() );
 
 			if ( result == NFD_OKAY )
 			{
 				LOG_INFO("PropertiesWindow: Success! {}",audioFilePath);
 
 				LOG_DEBUG("PropertiesWindow: Opening Audio File {}",audioFilePath);
-				File audioFile(audioFilePath);
-				mState->lastDirectory = audioFile.getDirectory();
+                StorageManager* fm = mContext->getStorageManager();
+				File* audioFile = fm->openFile(audioFilePath);
+				mContext->setLastDirectory(audioFile->getDirectory());
 
-				LOG_DEBUG("PropertiesWindow: Setting last directory {}",mState->lastDirectory);
-				auto audioData = audioFile.readBinary();
-				mState->projectDirectory.writeAssetData(audioDef,audioData);
-				audioDef->setName(audioFile.nameWithoutExtension());
+				LOG_DEBUG("PropertiesWindow: Setting last directory {}",mContext->getLastDirectory());
+				audioFile->readBinary();
+				auto audioData = audioFile->getBinaryData();
+                auto audioDataSize = audioFile->getBinaryDataSize();
+				mContext->getProjectDirectory()->writeAssetData(audioDef,audioData, audioDataSize);
+				audioDef->setName(audioFile->getNameWithoutExtension());
 				NFD_FreePath(audioFilePath);
+                fm->closeFile(audioFile);
 			}
 			else if ( result == NFD_CANCEL )
 			{
@@ -1812,7 +1642,8 @@ namespace DreamTool
 			}
         }
 
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
+
         AudioRuntime* audioRunt = nullptr;
         if (projRunt)
         {
@@ -1826,7 +1657,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            mState->projectDirectory.removeAssetDirectory(audioDef);
+            mContext->getProjectDirectory()->removeAssetDirectory(audioDef);
         }
 
         ImGui::Separator();
@@ -1876,17 +1707,21 @@ namespace DreamTool
         {
             nfdchar_t *filePath = NULL;
             nfdfilteritem_t filters[2] = {{"TrueType", "ttf"}, {"OpenType", "otf"}};
-			nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, mState->lastDirectory.c_str());
+			nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, mContext->getLastDirectory().c_str());
 
 			if ( result == NFD_OKAY )
 			{
 				LOG_INFO("PropertiesWindow: Success! {}",filePath);
 				LOG_DEBUG("PropertiesWindow: Opening Font File {}",filePath);
-				File file(filePath);
-				mState->lastDirectory = file.getDirectory();
-				auto data = file.readBinary();
-				mState->projectDirectory.writeAssetData(def,data);
-				def->setName(file.nameWithoutExtension());
+                StorageManager* fm = mContext->getStorageManager();
+				File* file = fm->openFile(filePath);
+				mContext->setLastDirectory(file->getDirectory());
+				file->readBinary();
+				auto data = file->getBinaryData();
+				auto dataSize = file->getBinaryDataSize();
+				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
+				def->setName(file->getNameWithoutExtension());
+                fm->closeFile(file);
 				NFD_FreePath(filePath);
 			}
 			else if ( result == NFD_CANCEL )
@@ -1903,7 +1738,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            mState->projectDirectory.removeAssetDirectory(def);
+            mContext->getProjectDirectory()->removeAssetDirectory(def);
         }
     }
 
@@ -1912,7 +1747,7 @@ namespace DreamTool
     {
         auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
 
-        vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::LIGHT];
+        vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_LIGHT];
         int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
         if(StringCombo("Type",&selectedLightType,lightTypes,lightTypes.size()))
         {
@@ -2006,8 +1841,8 @@ namespace DreamTool
     PropertiesWindow::drawMaterialAssetProperties
     ()
     {
-        auto projDef = mState->project->getDefinition();
-        auto projRunt = mState->project->getRuntime();
+        auto projDef = mContext->getProject()->getDefinition();
+        auto projRunt = mContext->getProject()->getRuntime();
         auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
 
         int shaderIndex = 0;
@@ -2015,15 +1850,15 @@ namespace DreamTool
         if (projDef)
         {
             auto shaderAsset = projDef->getAssetDefinitionByUuid(materialDef->getShader());
-            shaderIndex = projDef->getAssetDefinitionIndex(AssetType::SHADER,shaderAsset);
-            shaderList = projDef->getAssetNamesVector(AssetType::SHADER);
+            shaderIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderAsset);
+            shaderList = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
         }
 
         if(StringCombo("Shader", &shaderIndex, shaderList, shaderList.size()))
         {
             if (projDef)
             {
-                auto newShader = projDef->getAssetDefinitionAtIndex(AssetType::SHADER,shaderIndex);
+                auto newShader = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderIndex);
                 if(newShader)
                 {
                     materialDef->setShader(newShader->getUuid());
@@ -2235,21 +2070,21 @@ namespace DreamTool
 
         if(projDef)
         {
-            textures = projDef->getAssetNamesVector(AssetType::TEXTURE);
+            textures = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
             diffuseIndex = projDef->getAssetDefinitionIndex(
-                        AssetType::TEXTURE,
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
                         projDef->getAssetDefinitionByUuid(diffuseUuid)
                         );
             specularIndex = projDef->getAssetDefinitionIndex(
-                        AssetType::TEXTURE,
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
                         projDef->getAssetDefinitionByUuid(specularUuid)
                         );
             normalIndex = projDef->getAssetDefinitionIndex(
-                        AssetType::TEXTURE,
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
                         projDef->getAssetDefinitionByUuid(normalUuid)
                         );
             displacementIndex = projDef->getAssetDefinitionIndex(
-                        AssetType::TEXTURE,
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
                         projDef->getAssetDefinitionByUuid(displacementUuid)
                         );
         }
@@ -2259,7 +2094,7 @@ namespace DreamTool
         {
             if (projDef)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, diffuseIndex);
+                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, diffuseIndex);
                 if (txDef)
                 {
                     auto uuid = txDef->getUuid();
@@ -2275,7 +2110,7 @@ namespace DreamTool
         {
             if (projDef)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, specularIndex);
+                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, specularIndex);
                 if (txDef)
                 {
                     auto uuid = txDef->getUuid();
@@ -2291,7 +2126,7 @@ namespace DreamTool
         {
             if (projDef)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, normalIndex);
+                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, normalIndex);
                 if (txDef)
                 {
                     auto uuid = txDef->getUuid();
@@ -2307,7 +2142,7 @@ namespace DreamTool
         {
             if (projDef)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, displacementIndex);
+                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, displacementIndex);
                 if (txDef)
                 {
                     auto uuid = txDef->getUuid();
@@ -2331,17 +2166,21 @@ namespace DreamTool
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0, mState->lastDirectory.c_str());
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0, mContext->getLastDirectory().c_str());
 
 			if ( result == NFD_OKAY )
 			{
 				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
-				File file(filePath);
-				mState->lastDirectory = file.getDirectory();
-				auto data = file.readBinary();
-				def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file.extension());
-				def->setName(file.nameWithoutExtension());
-				mState->projectDirectory.writeAssetData(def,data);
+                StorageManager* fm = mContext->getStorageManager();
+				File* file = fm->openFile(filePath);
+				mContext->setLastDirectory(file->getDirectory());
+				file->readBinary();
+				auto data = file->getBinaryData();
+				auto dataSize = file->getBinaryDataSize();
+				def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file->getExtension());
+				def->setName(file->getNameWithoutExtension());
+				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
+                fm->closeFile(file);
 				NFD_FreePath(filePath);
 			}
 			else if ( result == NFD_CANCEL )
@@ -2361,16 +2200,20 @@ namespace DreamTool
         if (selectAdditionalFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mState->lastDirectory.c_str());
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
 
 			if ( result == NFD_OKAY )
 			{
 				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
 				LOG_ERROR("PropertiesWindow: Opening Additional Model File {}",filePath);
-				File file(filePath);
-				mState->lastDirectory = file.getDirectory();
-				auto data = file.readBinary();
-				mState->projectDirectory.writeAssetData(def,data,file.nameWithExtension());
+                StorageManager* fm = mContext->getStorageManager();
+				File* file = fm->openFile(filePath);
+				mContext->setLastDirectory(file->getDirectory());
+				file->readBinary();
+				auto data = file->getBinaryData();
+				auto dataSize = file->getBinaryDataSize();
+				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize,file->getNameWithExtension());
+                fm->closeFile(file);
 				NFD_FreePath(filePath);
 			}
 			else if ( result == NFD_CANCEL )
@@ -2387,14 +2230,14 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File(s)"))
         {
-            mState->projectDirectory.removeAssetDirectory(def);
+            mContext->getProjectDirectory()->removeAssetDirectory(def);
         }
 
         ImGui::Text("Model Format: %s", def->getFormat().c_str());
 
         vector<string> modelMaterialNames;
         map<string,Bone> bones;
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
         if (projRunt)
         {
             auto modelCache = projRunt->getModelCache();
@@ -2430,10 +2273,10 @@ namespace DreamTool
         ImGui::NextColumn();
 
         vector<string> materialAssetNames;
-        auto projDef =  mState->project->getDefinition();
+        auto projDef =  mContext->getProject()->getDefinition();
         if (projDef)
         {
-            materialAssetNames = projDef->getAssetNamesVector(AssetType::MATERIAL);
+            materialAssetNames = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MATERIAL);
         }
 
         for (string modelMaterial : modelMaterialNames)
@@ -2443,11 +2286,11 @@ namespace DreamTool
             ImGui::PushItemWidth(-1);
             auto currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
             auto currentMaterialDef = projDef->getAssetDefinitionByUuid(currentMaterialUuid);
-            int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::MATERIAL,currentMaterialDef);
+            int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL,currentMaterialDef);
             string itemName = "##Material:" + modelMaterial;
             if(StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
             {
-                auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::MATERIAL, currentMaterialIndex);
+                auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL, currentMaterialIndex);
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
 
                 LOG_ERROR("PropertiesWindow: Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
@@ -2463,7 +2306,7 @@ namespace DreamTool
     {
         bool modified = false;
         auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
-        vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::PHYSICS_OBJECT];
+        vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT];
         string poFormatString = pod->getFormat();
         int poFormatIndex = getStringIndexInVector(poFormatString, poFormats);
         if(StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
@@ -2612,16 +2455,16 @@ namespace DreamTool
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
-            auto projDef = mState->project->getDefinition();
+            auto projDef = mContext->getProject()->getDefinition();
 
             uint32_t selectedModelAssetUuid = pod->getCollisionModel();
             AssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
-            int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedModelAssetDef);
-            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
+            int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetDef);
+            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
             if(StringCombo("Model",&selectedModelAssetIndex,modelAssets,modelAssets.size()))
             {
-                AssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, selectedModelAssetIndex);
+                AssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetIndex);
                 pod->setCollisionModel(newlySelected->getUuid());
                 modified = true;
             }
@@ -2645,10 +2488,10 @@ namespace DreamTool
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
         {
             ImGui::Columns(2);
-            auto pDef = mState->project->getDefinition();
+            auto pDef = mContext->getProject()->getDefinition();
             if (pDef)
             {
-                auto shapeNames = pDef->getAssetNamesVector(AssetType::PHYSICS_OBJECT);
+                auto shapeNames = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
                 static int shapeNameIndex = -1;
                 StringCombo("Shape",&shapeNameIndex,shapeNames,shapeNames.size());
 
@@ -2657,7 +2500,7 @@ namespace DreamTool
                 {
                     if (shapeNameIndex >= 0)
                     {
-                        auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::PHYSICS_OBJECT,shapeNameIndex);
+                        auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,shapeNameIndex);
                         pod->addCompoundChild(CompoundChildDefinition
                         {
                             pod,Transform(),childDef->getUuid()
@@ -2712,8 +2555,8 @@ namespace DreamTool
         ImGui::PushItemWidth(-1);
         if(ImGui::Button("Open Script Editor..."))
         {
-            mState->scriptEditorWindow.setScriptDefinition(scriptDef);
-            mState->scriptEditorWindow.setVisible(true);
+            mContext->getScriptEditorWindow()->setScriptDefinition(scriptDef);
+            mContext->getScriptEditorWindow()->setVisible(true);
         }
         ImGui::PopItemWidth();
     }
@@ -2723,7 +2566,7 @@ namespace DreamTool
     ()
     {
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
         ShaderRuntime* shaderInst = nullptr;
         if (projRunt)
         {
@@ -2736,8 +2579,8 @@ namespace DreamTool
         ImGui::PushItemWidth(-1);
         if(ImGui::Button("Open Shader Editor..."))
         {
-            mState->shaderEditorWindow.setShaderDefinition(shaderDef);
-            mState->shaderEditorWindow.setVisible(true);
+            mContext->getShaderEditorWindow()->setShaderDefinition(shaderDef);
+            mContext->getShaderEditorWindow()->setVisible(true);
         }
         ImGui::PopItemWidth();
     }
@@ -2748,8 +2591,8 @@ namespace DreamTool
     {
         bool needsRegen = false;
         auto* pathDef = static_cast<PathDefinition*>(mDefinition);
-        mState->pathViewer.setPathDefinition(pathDef);
-        mState->pathViewer.setVisible(true);
+        mContext->getPathViewer()->setPathDefinition(pathDef);
+        mContext->getPathViewer()->setVisible(true);
 
         float stepScalar = pathDef->getStepScalar();
         if (ImGui::DragFloat("Step Scalar",&stepScalar))
@@ -2847,7 +2690,7 @@ namespace DreamTool
             }
             if (selected == cp.id)
             {
-                mState->pathViewer.setSelectedControlPoint(cp.id);
+                mContext->getPathViewer()->setSelectedControlPoint(cp.id);
                 drawPathControlPointImGuizmo(pathDef,cp);
                 needsRegen = true;
             }
@@ -2855,7 +2698,7 @@ namespace DreamTool
         if (needsRegen)
         {
             replaceRuntimes(pathDef);
-            mState->pathViewer.regenerate();
+            mContext->getPathViewer()->regenerate();
         }
         ImGui::Columns(1);
         if (ImGui::Button("Deselect"))
@@ -2875,7 +2718,7 @@ namespace DreamTool
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
 
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();
@@ -2906,123 +2749,13 @@ namespace DreamTool
    }
 
     void
-    PropertiesWindow::drawParticleEmitterAssetProperties
-    ()
-    {
-        auto* peDef = static_cast<ParticleEmitterDefinition*>(mDefinition);
-        auto projDef = mState->project->getDefinition();
-        auto projRunt = mState->project->getRuntime();
-
-        vector<string> textureNamesList;
-
-        if(projDef)
-        {
-            textureNamesList = projDef->getAssetNamesVector(AssetType::TEXTURE);
-        }
-
-        uint32_t particleTextureId = peDef->getTexture();
-        auto textureDefinition = projDef->getAssetDefinitionByUuid(particleTextureId);
-        int particleTextureListIndex = projDef->getAssetDefinitionIndex(AssetType::TEXTURE,textureDefinition);
-
-        // Particle Texture
-        if(StringCombo("Texture",&particleTextureListIndex,textureNamesList,textureNamesList.size()))
-        {
-            if (projDef)
-            {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::TEXTURE, particleTextureListIndex);
-                if (txDef)
-                {
-                    auto uuid = txDef->getUuid();
-                    peDef->setTexture(uuid);
-                }
-            }
-        }
-
-        void* previewTexture = 0;
-
-        if (textureDefinition)
-        {
-            auto txDef = dynamic_cast<TextureDefinition*>(textureDefinition);
-            auto txCache = projRunt->getTextureCache();
-            auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
-            if (txRuntime)
-            {
-                previewTexture = (void*)(intptr_t)txRuntime->getGLID();
-            }
-        }
-
-        ImGui::Image(previewTexture, mImageSize);
-        ImGui::Separator();
-
-        // Area
-        float area[3] = {
-            peDef->getArea().x(),
-            peDef->getArea().y(),
-            peDef->getArea().z()
-        };
-        if (ImGui::DragFloat3("Spawn Area",&area[0]))
-        {
-            peDef->setArea(
-                Vector3(
-                    area[0],
-                    area[1],
-                    area[2]
-                )
-            );
-        }
-
-        // Particle Size
-        float size[3] = {
-                peDef->getParticleSize().x(),
-                peDef->getParticleSize().y()
-        };
-        if (ImGui::DragFloat2("Particle Size", &size[0]))
-        {
-            peDef->setParticleSize(
-                Vector2(
-                    size[0],
-                    size[1]
-                )
-            );
-        }
-
-        // Velocity
-        float velocity = peDef->getVelocity();
-        if (ImGui::DragFloat("Velocity",&velocity))
-        {
-            peDef->setVelocity(velocity);
-        }
-
-        // Gravity
-        float gravity = peDef->getGravity();
-        if (ImGui::DragFloat("Gravity",&gravity))
-        {
-            peDef->setGravity(gravity);
-        }
-
-        // Particles Per Second
-        float pps = peDef->getParticlesPerSecond();
-        if (ImGui::DragFloat("Particles Per Second",&pps))
-        {
-            peDef->setParticlesPerSecond(pps);
-        }
-
-        // LifeTime
-        float lifetime = peDef->getParticleLifetime();
-        if(ImGui::DragFloat("Particle Lifetime",&lifetime))
-        {
-            peDef->setParticleLifetime(lifetime);
-        }
-    }
-
-    void
     PropertiesWindow::drawTextureAssetProperties
     ()
     {
         void* textureId = nullptr;
 
         auto textureDef = dynamic_cast<TextureDefinition*>(mDefinition);
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
         if (projRunt)
         {
             auto txCache = projRunt->getTextureCache();
@@ -3037,16 +2770,20 @@ namespace DreamTool
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mState->lastDirectory.c_str());
+			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
 
 			if ( result == NFD_OKAY )
 			{
 				LOG_ERROR("PropertiesWindow: Opening Texture File {}",filePath);
-				File file(filePath);
-				mState->lastDirectory = file.getDirectory();
-				auto data = file.readBinary();
-				mState->projectDirectory.writeAssetData(textureDef,data);
-				textureDef->setName(file.nameWithoutExtension());
+                StorageManager* fm = mContext->getStorageManager();
+				File* file = fm->openFile(filePath);
+				mContext->setLastDirectory(file->getDirectory());
+				file->readBinary();
+				auto data = file->getBinaryData();
+				auto dataSize = file->getBinaryDataSize();
+				mContext->getProjectDirectory()->writeAssetData(textureDef,data,dataSize);
+				textureDef->setName(file->getNameWithoutExtension());
+                fm->closeFile(file);
 				NFD_FreePath(filePath);
 			}
 			else if ( result == NFD_CANCEL )
@@ -3063,7 +2800,7 @@ namespace DreamTool
 
         if(ImGui::Button("Remove File"))
         {
-            mState->projectDirectory.removeAssetDirectory(textureDef);
+            mContext->getProjectDirectory()->removeAssetDirectory(textureDef);
         }
 
         ImGui::Columns(1);
@@ -3071,228 +2808,6 @@ namespace DreamTool
         ImGui::Image(textureId, mImageSize);
     }
 
-    void
-    PropertiesWindow::drawScrollerAssetProperties
-    ()
-    {
-        ScrollerDefinition* scrDef = static_cast<ScrollerDefinition*>(mDefinition);
-        auto projDef = mState->project->getDefinition();
-
-        float velocity[3] = {
-            scrDef->getVelocity().x(),
-            scrDef->getVelocity().y(),
-            scrDef->getVelocity().z()
-        };
-        if (ImGui::DragFloat3("Velocity (units/s)",&velocity[0]))
-        {
-            scrDef->setVelocity(
-                Vector3(
-                    velocity[0],
-                    velocity[1],
-                    velocity[2]
-                )
-            );
-        }
-
-        ImGui::Separator();
-        ImGui::Text("Range");
-
-        float rangeBegin[3] = {
-            scrDef->getRangeBegin().x(),
-            scrDef->getRangeBegin().y(),
-            scrDef->getRangeBegin().z()
-        };
-        if (ImGui::DragFloat3("Begin",&rangeBegin[0]))
-        {
-            scrDef->setRangeBegin(
-                Vector3(
-                    rangeBegin[0],
-                    rangeBegin[1],
-                    rangeBegin[2]
-                )
-            );
-        }
-
-        float rangeEnd[3] = {
-            scrDef->getRangeEnd().x(),
-            scrDef->getRangeEnd().y(),
-            scrDef->getRangeEnd().z()
-        };
-        if (ImGui::DragFloat3("End",&rangeEnd[0]))
-        {
-            scrDef->setRangeEnd(
-                Vector3(
-                    rangeEnd[0],
-                    rangeEnd[1],
-                    rangeEnd[2]
-                )
-            );
-        }
-
-        ImGui::Separator();
-
-        ImGui::Text("Scroller Items");
-        if(ImGui::Button("Add Item"))
-        {
-            ScrollerItem item;
-            item.index = scrDef->getNextItemIndex();
-            scrDef->addItem(item);
-        }
-
-        ImGui::Columns(4);
-
-        ImGui::Text("ID");
-        ImGui::NextColumn();
-        ImGui::Text("Reorder");
-        ImGui::NextColumn();
-        ImGui::Text("Model");
-        ImGui::NextColumn();
-        ImGui::Text("Origin");
-        ImGui::NextColumn();
-
-        vector<ScrollerItem> items = scrDef->getItemsArray();
-        vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::MODEL);
-
-        int id = 0;
-        for (ScrollerItem item : items)
-        {
-            bool updated = false;
-            bool removed = false;
-            bool movedForward = false;
-            bool movedBack = false;
-            bool copied = false;
-
-            ImGui::PushID(id++);
-            ImGui::Separator();
-
-            ImGui::Text("%d",item.index);
-            ImGui::NextColumn();
-
-            if(ImGui::Button("Up"))
-            {
-                movedBack = true;
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Down"))
-            {
-                movedForward = true;
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Copy"))
-            {
-                copied = true;
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Remove"))
-            {
-                removed = true;
-            }
-
-            ImGui::NextColumn();
-
-            uint32_t modelUuid = item.uuid;
-            AssetDefinition* selectedDef = projDef->getAssetDefinitionByUuid(modelUuid);
-            int modelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::MODEL, selectedDef);
-
-            ImGui::PushItemWidth(-1);
-            if(StringCombo("##Model",&modelAssetIndex,modelAssets,modelAssets.size()))
-            {
-                item.uuid = projDef->getAssetDefinitionAtIndex(AssetType::MODEL, modelAssetIndex)->getUuid();
-                updated = true;
-            }
-            ImGui::PopItemWidth();
-
-            ImGui::NextColumn();
-
-            Vector3 origin = item.origin;
-            ImGui::PushItemWidth(-1);
-            float originF[3] = {origin.x(),origin.y(),origin.z()};
-            if (ImGui::DragFloat3("##Origin",&originF[0]))
-            {
-                item.origin = Vector3(&originF[0]);
-                updated = true;
-            }
-            ImGui::PopItemWidth();
-
-            ImGui::NextColumn();
-
-            ImGui::PopID();
-
-            if (updated)
-            {
-               scrDef->updateScrollerItem(item);
-            }
-            else if (removed)
-            {
-                scrDef->removeScrollerItem(item);
-            }
-            else if (movedForward)
-            {
-                scrDef->moveScrollerItem(item,true);
-            }
-            else if (movedBack)
-            {
-                scrDef->moveScrollerItem(item,false);
-            }
-            else if (copied)
-            {
-                scrDef->copyScrollerItem(item);
-            }
-        }
-
-        ImGui::Columns(1);
-    }
-
-    void
-    PropertiesWindow::drawObjectEmitterProperties
-    ()
-    {
-        auto projDef = mState->project->getDefinition();
-        auto oeDef = static_cast<ObjectEmitterDefinition*>(mDefinition);
-
-        int objectUuid = oeDef->getEntityUuid();
-        if (ImGui::InputInt("Scene Object",&objectUuid))
-        {
-            oeDef->setEntityUuid(objectUuid);
-        }
-
-        float thetas[2] = {glm::degrees(oeDef->getStartTheta()),glm::degrees(oeDef->getEndTheta())};
-        if (ImGui::DragFloat2("Start/End Theta",&thetas[0]))
-        {
-            oeDef->setStartTheta(glm::radians(thetas[0]));
-            oeDef->setEndTheta(glm::radians(thetas[1]));
-        }
-
-        float startRadius = oeDef->getStartRadius();
-        if (ImGui::DragFloat("Starting Radius",&startRadius))
-        {
-            oeDef->setStartRadius(startRadius);
-        }
-
-        int count = oeDef->getObjectCount();
-        if (ImGui::DragInt("Object Count",&count))
-        {
-            oeDef->setObjectCount(count);
-        }
-
-        int frequency = oeDef->getEmitInterval();
-        if (ImGui::DragInt("Emit Interval",&frequency))
-        {
-            oeDef->setEmitInterval(frequency);
-        }
-
-        int repeats = oeDef->getLoops();
-        if (ImGui::DragInt("Loops",&repeats))
-        {
-            oeDef->setLoops(repeats);
-        }
-
-        float velocity = oeDef->getObjectVelocity();
-        if (ImGui::DragFloat("Object Velocity",&velocity))
-        {
-            oeDef->setObjectVelocity(velocity);
-        }
-    }
 
     int
     PropertiesWindow::getStringIndexInVector
@@ -3313,7 +2828,7 @@ namespace DreamTool
     PropertiesWindow::replaceRuntimes
     (AssetDefinition* assetDef)
     {
-        auto pRunt = mState->project->getRuntime();
+        auto pRunt = mContext->getProject()->getRuntime();
         if (pRunt)
         {
             auto sRunt = pRunt->getActiveSceneRuntime();

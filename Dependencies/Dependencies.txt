@@ -1,0 +1,147 @@
+# Dependencies #################################################################
+
+# Angelscript
+set (angelscript_src_dir Dependencies/angelscript-2.35.0)
+set (angelscript_output_dir ${CMAKE_BINARY_DIR}/build_angelscript)
+file(MAKE_DIRECTORY ${angelscript_output_dir})
+add_subdirectory(${angelscript_src_dir}/angelscript/projects/cmake ${angelscript_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${angelscript_src_dir}/angelscript/include)
+include_directories(${angelscript_src_dir}/add_on)
+
+# Assimp
+set (assimp_src_dir Dependencies/assimp-5.0.1/)
+set (assimp_output_dir ${CMAKE_BINARY_DIR}/build_assimp)
+file(MAKE_DIRECTORY ${assimp_output_dir})
+add_subdirectory(${assimp_src_dir} ${assimp_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${assimp_src_dir}/include)
+
+# Bullet
+set (bullet_src_dir Dependencies/bullet3-3.08/)
+set (bullet_output_dir ${CMAKE_BINARY_DIR}/build_bullet)
+file(MAKE_DIRECTORY ${bullet_output_dir})
+add_subdirectory(${bullet_src_dir} ${bullet_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${bullet_src_dir}/src)
+
+# Freetype
+set (freetype_src_dir Dependencies/freetype2-VER-2-10-2/)
+set (freetype_output_dir ${CMAKE_BINARY_DIR}/build_freetype)
+file(MAKE_DIRECTORY ${freetype_output_dir})
+add_subdirectory(${freetype_src_dir} ${freetype_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${freetype_src_dir}/include)
+
+# GLAD
+if (NOT ANDROID)
+	set (glad_src_dir Dependencies/glad/)
+	set (glad_output_dir ${CMAKE_BINARY_DIR}/build_glad)
+	file(MAKE_DIRECTORY ${glad_output_dir})
+	add_subdirectory(${glad_src_dir} ${glad_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${glad_src_dir}/include)
+endif(NOT ANDROID)
+
+# GLFW
+if (NOT ANDROID)
+	set (glfw_src_dir Dependencies/glfw-3.3.2/)
+	set (glfw_output_dir ${CMAKE_BINARY_DIR}/build_glfw)
+	file(MAKE_DIRECTORY ${glfw_output_dir})
+	add_subdirectory(${glfw_src_dir} ${glfw_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${glfw_src_dir}/include)
+endif(NOT ANDROID)
+
+# GLM
+set (glm_src_dir Dependencies/glm-0.9.9.8/)
+set (glm_output_dir ${CMAKE_BINARY_DIR}/build_glm)
+file(MAKE_DIRECTORY ${glm_output_dir})
+add_subdirectory(${glm_src_dir} ${glm_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${glm_src_dir})
+
+# ImGui
+if (NOT ANDROID)
+	set (imgui_src_dir Dependencies/imgui-docking/)
+	#set (imgui_src_dir Dependencies/imgui-1.79/)
+	set (imgui_output_dir ${CMAKE_BINARY_DIR}/build_imgui)
+	file(MAKE_DIRECTORY ${imgui_output_dir})
+	add_subdirectory(${imgui_src_dir} ${imgui_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${imgui_src_dir})
+	include_directories(${imgui_src_dir}/examples)
+endif(NOT ANDROID)
+
+# ImGuizmo
+if (NOT ANDROID)
+	set (imguizmo_src_dir Dependencies/ImGuizmo/)
+	set (imguizmo_output_dir ${CMAKE_BINARY_DIR}/build_imguizmo)
+	file(MAKE_DIRECTORY ${imguizmo_output_dir})
+	add_subdirectory(${imguizmo_src_dir} ${imguizmo_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${imguizmo_src_dir})
+endif(NOT ANDROID)
+
+# ImTextEditor
+if (NOT ANDROID)
+	set (imtexteditor_src_dir Dependencies/ImTextEditor/)
+	set (imtexteditor_output_dir ${CMAKE_BINARY_DIR}/build_imtexteditor)
+	file(MAKE_DIRECTORY ${imtexteditor_output_dir})
+	add_subdirectory(${imtexteditor_src_dir} ${imtexteditor_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${imtexteditor_src_dir})
+endif(NOT ANDROID)
+
+# JSON
+set(json_src_dir Dependencies/json/)
+include_directories(${json_src_dir})
+
+# Lua
+set (lua_src_dir Dependencies/lua-5.3.6/)
+set (lua_output_dir ${CMAKE_BINARY_DIR}/build_lua)
+file(MAKE_DIRECTORY ${lua_output_dir})
+add_subdirectory(${lua_src_dir} ${lua_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${lua_src_dir}/src)
+
+# NativeFileDialog
+if (NOT ANDROID)
+	set (nfd_src_dir Dependencies/nativefiledialog-extended/)
+	set (nfd_output_dir ${CMAKE_BINARY_DIR}/build_nfd)
+	file(MAKE_DIRECTORY ${nfd_output_dir})
+	add_subdirectory(${nfd_src_dir} ${nfd_output_dir} EXCLUDE_FROM_ALL)
+	include_directories(${nfd_src_dir}/src/include)
+endif(NOT ANDROID)
+
+# ogg
+set (ogg_src_dir Dependencies/ogg-1.3.4/)
+set (ogg_output_dir ${CMAKE_BINARY_DIR}/build_ogg)
+file(MAKE_DIRECTORY ${ogg_output_dir})
+add_subdirectory(${ogg_src_dir} ${ogg_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${ogg_src_dir}/include)
+
+# STB
+set (stb_src_dir Dependencies/stb/)
+include_directories(${stb_src_dir})
+
+# sol
+set(sol_src_dir Dependencies/sol/)
+include_directories(${sol_src_dir})
+
+# Spdlog
+set (spdlog_src_dir Dependencies/spdlog-1.8.2/)
+set (spdlog_output_dir ${CMAKE_BINARY_DIR}/build_spdlog)
+file(MAKE_DIRECTORY ${spdlog_output_dir})
+add_subdirectory(${spdlog_src_dir} ${spdlog_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${spdlog_src_dir}/include)
+
+# Tweeny
+set (tweeny_src_dir Dependencies/tweeny-3.1.1/)
+set (tweeny_output_dir ${CMAKE_BINARY_DIR}/build_tweeny)
+file(MAKE_DIRECTORY ${tweeny_output_dir})
+add_subdirectory(${tweeny_src_dir} ${tweeny_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${tweeny_src_dir}/include)
+
+# TinySpline
+set (tinyspline_src_dir Dependencies/tinyspline/)
+set (tinyspline_output_dir ${CMAKE_BINARY_DIR}/build_tinyspline)
+file(MAKE_DIRECTORY ${tinyspline_output_dir})
+add_subdirectory(${tinyspline_src_dir} ${tinyspline_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${tinyspline_src_dir})
+
+# Vorbis
+set (vorbis_src_dir Dependencies/vorbis-1.3.7/)
+set (vorbis_output_dir ${CMAKE_BINARY_DIR}/build_vorbis)
+file(MAKE_DIRECTORY ${vorbis_output_dir})
+add_subdirectory(${vorbis_src_dir} ${vorbis_output_dir} EXCLUDE_FROM_ALL)
+include_directories(${vorbis_src_dir}/include)

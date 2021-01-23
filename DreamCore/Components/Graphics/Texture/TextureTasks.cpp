@@ -1,8 +1,7 @@
 #include "TextureRuntime.h"
 #include "TextureTasks.h"
-#include <SOIL.h>
 
-namespace Dream
+namespace octronic::dream
 {
     TextureConstructionTask::TextureConstructionTask(TextureRuntime* rt)
         : GraphicsComponentTask(), mTextureRuntime(rt)
@@ -48,9 +47,9 @@ namespace Dream
         glBindTexture(GL_TEXTURE_2D, 0);
 
         GLCheckError();
-        SOIL_free_image_data(mTextureRuntime->getImage());
+        delete mTextureRuntime->getImage();
         mTextureRuntime->setImage(nullptr);
-        setState(TaskState::COMPLETED);
+        setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     TextureDestructionTask::TextureDestructionTask
@@ -63,7 +62,7 @@ namespace Dream
     {
         LOG_CRITICAL("TextureDestructionTask: Executing on thread {}",mThreadId);
         glDeleteTextures(1,&mTextureId);
-        setState(TaskState::COMPLETED);
+        setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     void TextureDestructionTask::setGLID(GLuint id)

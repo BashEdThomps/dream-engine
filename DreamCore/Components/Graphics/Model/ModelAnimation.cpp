@@ -2,7 +2,7 @@
 
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ModelAnimation::ModelAnimation
     ()

@@ -8,7 +8,7 @@
 using nlohmann::json;
 using glm::vec3;
 
-namespace Dream
+namespace octronic::dream
 {
     class AnimationKeyframe
     {
@@ -40,8 +40,8 @@ namespace Dream
         bool operator>= (const AnimationKeyframe &other) const;
         bool operator== (const AnimationKeyframe &other) const;
 
-        AnimationEasing::Type getEasingType() const;
-        void setEasingType(AnimationEasing::Type type);
+        AnimationEasing::EasingType getEasingType() const;
+        void setEasingType(AnimationEasing::EasingType type);
 
     private:
         int mID;
@@ -49,6 +49,6 @@ namespace Dream
         vec3 mTranslation;
         vec3 mRotation;
         vec3 mScale;
-        AnimationEasing::Type mEasingType;
+        AnimationEasing::EasingType mEasingType;
     };
 }

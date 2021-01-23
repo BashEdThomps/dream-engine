@@ -1,13 +1,13 @@
 #include "GamepadStateWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
 
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     GamepadStateWindow::GamepadStateWindow
-    (DTContext* state, bool visible)
+    (DreamToolContext* state, bool visible)
         : ImGuiWidget (state,visible)
     {
     }
@@ -22,14 +22,15 @@ namespace DreamTool
     GamepadStateWindow::draw
     ()
     {
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
 
             ImGui::Begin("Gamepad State",&mVisible);
-            auto pRuntime = mState->project->getRuntime();
+            ProjectRuntime* pRuntime = project->getRuntime();
             if (pRuntime)
             {
-                auto inputComp = pRuntime->getInputComponent();
+                InputComponent* inputComp = pRuntime->getInputComponent();
                 if (inputComp)
                 {
                     JoystickState& js = inputComp->getJoystickState();

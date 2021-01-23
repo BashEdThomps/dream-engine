@@ -2,7 +2,7 @@
 
 #include "ImGuiWidget.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class EntityDefinition;
     class Definition;
@@ -10,9 +10,7 @@ namespace Dream
 
 #define buf_sz 128
 
-using namespace Dream;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
     struct EntityDragSource
     {
@@ -24,7 +22,7 @@ namespace DreamTool
     class ProjectBrowser : public ImGuiWidget
     {
     public:
-        ProjectBrowser(DTContext* proj);
+        ProjectBrowser(DreamToolContext* proj);
         ~ProjectBrowser() override;
         void draw() override;
 

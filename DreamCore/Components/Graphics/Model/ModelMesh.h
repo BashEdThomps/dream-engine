@@ -37,7 +37,7 @@ using std::vector;
 using std::shared_ptr;
 using std::string;
 
-namespace Dream
+namespace octronic::dream
 {
     class ModelRuntime;
     class MaterialRuntime;

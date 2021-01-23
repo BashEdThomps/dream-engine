@@ -24,7 +24,6 @@
 #include "Components/Animation/AnimationTasks.h"
 #include "Components/Audio/AudioTasks.h"
 #include "Components/Path/PathTasks.h"
-#include "Components/Scroller/ScrollerTasks.h"
 #include "Components/Physics/PhysicsTasks.h"
 #include "Components/Input/InputTasks.h"
 #include "Components/Time.h"
@@ -34,13 +33,10 @@
 #include "Components/Audio/AudioRuntime.h"
 #include "Components/Physics/PhysicsObjectRuntime.h"
 #include "Components/Path/PathRuntime.h"
-#include "Components/Scroller/ScrollerRuntime.h"
 #include "Components/Graphics/Shader/ShaderCache.h"
-#include "Components/ObjectEmitter/ObjectEmitterRuntime.h"
-#include "Components/ObjectEmitter/ObjectEmitterTasks.h"
 #include "Components/Script/ScriptRuntime.h"
 #include "Project/ProjectRuntime.h"
-#include "TaskManager/TaskManager.h"
+#include "Components/Task/TaskManager.h"
 #include <iostream>
 
 #ifdef max
@@ -51,7 +47,7 @@
 #undef min
 #endif
 
-namespace Dream
+namespace octronic::dream
 {
     SceneRuntime::SceneRuntime
     (SceneDefinition* sd, ProjectRuntime* project)
@@ -646,12 +642,12 @@ namespace Dream
         auto scriptComponent = mProjectRuntime->getScriptComponent();
 
         auto constructInput = mInputScript->getConstructionTask();
-        if (constructInput->getState() == TaskState::NEW)
+        if (constructInput->getState() == TaskState::TASK_STATE_NEW)
         {
-           constructInput->setState(TaskState::QUEUED);
+           constructInput->setState(TaskState::TASK_STATE_QUEUED);
            taskManager->pushTask(constructInput);
         }
-        else if (constructInput->getState() == TaskState::COMPLETED)
+        else if (constructInput->getState() == TaskState::TASK_STATE_COMPLETED)
         {
             // Poll Data
             inputComponent->setCurrentSceneRuntime(this);
@@ -718,36 +714,19 @@ namespace Dream
                     ut->clearState();
                     taskManager->pushTask(ut);
                 }
-                // Scroller
-                if (rt->hasScrollerRuntime())
-                {
-                    auto scr = rt->getScrollerRuntime();
-                    auto ut = scr->getUpdateTask();
-                    ut->clearState();
-                    taskManager->pushTask(ut);
-                }
-
-                // Object Emitter
-                if (rt->hasObjectEmitterRuntime())
-                {
-                    auto oe = rt->getObjectEmitterRuntime();
-                    auto ut = oe->getUpdateTask();
-                    ut->clearState();
-                    taskManager->pushTask(ut);
-                }
 
                 // Scripting
                 if (scriptComponent->getEnabled() && rt->hasScriptRuntime())
                 {
                     auto script = rt->getScriptRuntime();
                     auto load = script->getConstructionTask();
-                    if (load->getState() == TaskState::NEW)
+                    if (load->getState() == TaskState::TASK_STATE_NEW)
                     {
                         // Don't clear state of load
-                        load->setState(TaskState::QUEUED);
+                        load->setState(TaskState::TASK_STATE_QUEUED);
                         taskManager->pushTask(load);
                     }
-                    else if (load->getState() == TaskState::COMPLETED)
+                    else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
                     {
                         if (!script->getInitialised(rt))
                         {

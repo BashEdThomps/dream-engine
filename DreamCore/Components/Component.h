@@ -17,13 +17,20 @@
 
 #include "Common/LockableObject.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class Time;
     class SceneRuntime;
     class EntityRuntime;
     class ProjectRuntime;
 
+    /**
+     * @brief Component is the base class for Component classes.
+     * Providing access to octronic::dream::Time and octronic::dream::ProjectRuntime
+     * and Enabled status flag;
+     * Component publically inherits from octronic::dream::LockableObject, which
+     * provide the means to build thread safety into the Component.
+     */
     class Component : public LockableObject
     {
 

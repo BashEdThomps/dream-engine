@@ -19,7 +19,7 @@
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
     (AudioDefinition* def, ProjectRuntime* project)
@@ -282,14 +282,14 @@ namespace Dream
         switch (state)
         {
             case AL_STOPPED:
-                return STOPPED;
+                return AUDIO_STATUS_STOPPED;
             case AL_PLAYING:
-                return PLAYING;
+                return AUDIO_STATUS_PLAYING;
             case AL_PAUSED:
-                return PAUSED;
+                return AUDIO_STATUS_PAUSED;
             default:
                 LOG_ERROR("AudioRuntime: Unknown Audio State for {} " , getNameAndUuidString());
-                return UNKNOWN;
+                return AUDIO_STATUS_UNKNOWN;
         }
     }
 

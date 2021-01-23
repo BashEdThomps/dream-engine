@@ -21,7 +21,7 @@
 #include "Components/Graphics/Model/ModelMesh.h"
 #include "Components/Graphics/Camera.h"
 
-namespace Dream
+namespace octronic::dream
 {
     MaterialRuntime::MaterialRuntime(MaterialDefinition* def, ProjectRuntime* rt)
         : SharedAssetRuntime(def, rt),

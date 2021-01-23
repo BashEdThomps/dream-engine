@@ -29,7 +29,7 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
     AnimationRuntime::AnimationRuntime
     (
@@ -129,7 +129,7 @@ namespace Dream
             vec3 tx = mKeyframes.at(i).getTranslation();
             vec3 rx = mKeyframes.at(i).getRotation();
             vec3 sx = mKeyframes.at(i).getScale();
-            AnimationEasing::Type easing = mKeyframes.at(i).getEasingType();
+            AnimationEasing::EasingType easing = mKeyframes.at(i).getEasingType();
 
             if (i==0)
             {
@@ -256,111 +256,111 @@ namespace Dream
 
     void
     AnimationRuntime::applyEasing
-    (tweeny::tween<float>& twn, AnimationEasing::Type easing)
+    (tweeny::tween<float>& twn, AnimationEasing::EasingType easing)
     {
         switch(easing)
         {
-            case AnimationEasing::Type::EasingLinear:
+            case AnimationEasing::EasingType::EasingLinear:
                 twn.via(tweeny::easing::linear);
                 break;
 
-            case AnimationEasing::Type::EasingQuadraticIn:
+            case AnimationEasing::EasingType::EasingQuadraticIn:
                 twn.via(tweeny::easing::quadraticIn);
                 break;
-            case AnimationEasing::Type::EasingQuadraticOut:
+            case AnimationEasing::EasingType::EasingQuadraticOut:
                 twn.via(tweeny::easing::quadraticOut);
                 break;
-            case AnimationEasing::Type::EasingQuadraticInOut:
+            case AnimationEasing::EasingType::EasingQuadraticInOut:
                 twn.via(tweeny::easing::quadraticInOut);
                 break;
 
-            case AnimationEasing::Type::EasingCubicIn:
+            case AnimationEasing::EasingType::EasingCubicIn:
                 twn.via(tweeny::easing::cubicIn);
                 break;
-            case AnimationEasing::Type::EasingCubicOut:
+            case AnimationEasing::EasingType::EasingCubicOut:
                 twn.via(tweeny::easing::cubicOut);
                 break;
-            case AnimationEasing::Type::EasingCubicInOut:
+            case AnimationEasing::EasingType::EasingCubicInOut:
                 twn.via(tweeny::easing::cubicInOut);
                 break;
 
-            case AnimationEasing::Type::EasingQuarticIn:
+            case AnimationEasing::EasingType::EasingQuarticIn:
                 twn.via(tweeny::easing::quarticIn);
                 break;
-            case AnimationEasing::Type::EasingQuarticOut:
+            case AnimationEasing::EasingType::EasingQuarticOut:
                 twn.via(tweeny::easing::quarticOut);
                 break;
-            case AnimationEasing::Type::EasingQuarticInOut:
+            case AnimationEasing::EasingType::EasingQuarticInOut:
                 twn.via(tweeny::easing::quarticInOut);
                 break;
 
-            case AnimationEasing::Type::EasingQuinticIn:
+            case AnimationEasing::EasingType::EasingQuinticIn:
                 twn.via(tweeny::easing::quinticIn);
                 break;
-            case AnimationEasing::Type::EasingQuinticOut:
+            case AnimationEasing::EasingType::EasingQuinticOut:
                 twn.via(tweeny::easing::quinticOut);
                 break;
-            case AnimationEasing::Type::EasingQuinticInOut:
+            case AnimationEasing::EasingType::EasingQuinticInOut:
                 twn.via(tweeny::easing::quinticInOut);
                 break;
 
-            case AnimationEasing::Type::EasingSinusoidalIn:
+            case AnimationEasing::EasingType::EasingSinusoidalIn:
                 twn.via(tweeny::easing::sinusoidalIn);
                 break;
-            case AnimationEasing::Type::EasingSinusoidalOut:
+            case AnimationEasing::EasingType::EasingSinusoidalOut:
                 twn.via(tweeny::easing::sinusoidalOut);
                 break;
-            case AnimationEasing::Type::EasingSinusoidalInOut:
+            case AnimationEasing::EasingType::EasingSinusoidalInOut:
                 twn.via(tweeny::easing::sinusoidalInOut);
                 break;
 
-            case AnimationEasing::Type::EasingExponentialIn:
+            case AnimationEasing::EasingType::EasingExponentialIn:
                 twn.via(tweeny::easing::exponentialIn);
                 break;
-            case AnimationEasing::Type::EasingExponentialOut:
+            case AnimationEasing::EasingType::EasingExponentialOut:
                 twn.via(tweeny::easing::exponentialOut);
                 break;
-            case AnimationEasing::Type::EasingExponentialInOut:
+            case AnimationEasing::EasingType::EasingExponentialInOut:
                 twn.via(tweeny::easing::exponentialInOut);
                 break;
 
-            case AnimationEasing::Type::EasingCircularIn:
+            case AnimationEasing::EasingType::EasingCircularIn:
                 twn.via(tweeny::easing::circularIn);
                 break;
-            case AnimationEasing::Type::EasingCircularOut:
+            case AnimationEasing::EasingType::EasingCircularOut:
                 twn.via(tweeny::easing::circularOut);
                 break;
-            case AnimationEasing::Type::EasingCircularInOut:
+            case AnimationEasing::EasingType::EasingCircularInOut:
                 twn.via(tweeny::easing::circularInOut);
                 break;
 
-            case AnimationEasing::Type::EasingBounceIn:
+            case AnimationEasing::EasingType::EasingBounceIn:
                 twn.via(tweeny::easing::bounceIn);
                 break;
-            case AnimationEasing::Type::EasingBounceOut:
+            case AnimationEasing::EasingType::EasingBounceOut:
                 twn.via(tweeny::easing::bounceOut);
                 break;
-            case AnimationEasing::Type::EasingBounceInOut:
+            case AnimationEasing::EasingType::EasingBounceInOut:
                 twn.via(tweeny::easing::bounceInOut);
                 break;
 
-            case AnimationEasing::Type::EasingElasticIn:
+            case AnimationEasing::EasingType::EasingElasticIn:
                 twn.via(tweeny::easing::elasticIn);
                 break;
-            case AnimationEasing::Type::EasingElasticOut:
+            case AnimationEasing::EasingType::EasingElasticOut:
                 twn.via(tweeny::easing::elasticOut);
                 break;
-            case AnimationEasing::Type::EasingElasticInOut:
+            case AnimationEasing::EasingType::EasingElasticInOut:
                 twn.via(tweeny::easing::elasticInOut);
                 break;
 
-            case AnimationEasing::Type::EasingBackIn:
+            case AnimationEasing::EasingType::EasingBackIn:
                 twn.via(tweeny::easing::backIn);
                 break;
-            case AnimationEasing::Type::EasingBackOut:
+            case AnimationEasing::EasingType::EasingBackOut:
                 twn.via(tweeny::easing::backOut);
                 break;
-            case AnimationEasing::Type::EasingBackInOut:
+            case AnimationEasing::EasingType::EasingBackInOut:
                 twn.via(tweeny::easing::backInOut);
                 break;
         }

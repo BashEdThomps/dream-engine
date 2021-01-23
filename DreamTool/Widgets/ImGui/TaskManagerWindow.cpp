@@ -1,13 +1,13 @@
 #include "TaskManagerWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-using Dream::TaskThread;
+using octronic::dream::TaskThread;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     TaskManagerWindow::TaskManagerWindow
-    (DTContext* proj) : ImGuiWidget(proj,false)
+    (DreamToolContext* proj) : ImGuiWidget(proj,false)
     {
     }
 
@@ -23,9 +23,9 @@ namespace DreamTool
     {
         ImGui::Begin("Task Manager",&mVisible);
 
-        if (mState->project)
+        if (mContext->getProject())
         {
-            auto projRunt = mState->project->getRuntime();
+            auto projRunt = mContext->getProject()->getRuntime();
             if (projRunt)
             {
                 auto* taskManager = projRunt->getTaskManager();

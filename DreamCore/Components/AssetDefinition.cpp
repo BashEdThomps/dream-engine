@@ -23,7 +23,7 @@
 #include  <sstream>
 #include <regex>
 
-namespace Dream
+namespace octronic::dream
 {
     AssetDefinition::AssetDefinition
     (ProjectDefinition* parent, const json &jsonDef)
@@ -128,13 +128,6 @@ namespace Dream
     ()
     {
         return getType() == Constants::ASSET_TYPE_PATH;
-    }
-
-    bool
-    AssetDefinition::isTypeParticleEmitter
-    ()
-    {
-       return getType() == Constants::ASSET_TYPE_PARTICLE_EMITTER;
     }
 
     bool

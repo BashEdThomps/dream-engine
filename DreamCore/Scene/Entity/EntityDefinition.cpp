@@ -24,7 +24,7 @@
 
 #include <regex>
 
-namespace Dream
+namespace octronic::dream
 {
     EntityDefinition::EntityDefinition
     (EntityDefinition* parent,

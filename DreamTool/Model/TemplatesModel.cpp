@@ -1,15 +1,20 @@
 #include "TemplatesModel.h"
 
+#include "DreamToolContext.h"
+
 #include <sstream>
 
 using std::stringstream;
-using Dream::File;
-using Dream::Constants;
+using octronic::dream::File;
+using octronic::dream::StorageManager;
+using octronic::dream::Constants;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    TemplatesModel::TemplatesModel()
-        :mBaseDir("./templates")
+    TemplatesModel::TemplatesModel
+    (DreamToolContext* context)
+        :Model(context),
+          mBaseDir("./templates")
     {
 
     }
@@ -24,8 +29,11 @@ namespace DreamTool
     (AssetType t)
     {
        auto path = getTemplatesDirectory(t);
-       Directory dir(path);
-       return dir.list();
+       StorageManager* fm = mContext->getStorageManager();
+       Directory* dir = fm->openDirectory(path);
+       auto retval = dir->list();
+       fm->closeDirectory(dir);
+       return retval;
     }
 
     string
@@ -39,8 +47,11 @@ namespace DreamTool
            << Constants::DIR_PATH_SEP
            << format;
         LOG_ERROR("TemplatesModel: Loading template from {}" , ss.str());
-        File templateFile(ss.str());
-        return templateFile.readString();
+        StorageManager* fm = mContext->getStorageManager();
+        File* templateFile = fm->openFile(ss.str());
+        auto retval = templateFile->readString();
+        fm->closeFile(templateFile);
+        return retval;
     }
 
     string

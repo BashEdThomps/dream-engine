@@ -19,7 +19,8 @@
 #include "ShaderCache.h"
 #include "ShaderDefinition.h"
 #include "ShaderTasks.h"
-#include "Common/File.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/File.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
@@ -29,7 +30,7 @@
 
 using std::make_shared;
 
-namespace Dream
+namespace octronic::dream
 {
     ShaderRuntime::ShaderRuntime
     (ShaderDefinition* definition, ProjectRuntime* rt)
@@ -64,7 +65,7 @@ namespace Dream
         LOG_TRACE( "ShaderRuntime: Destroying Object" );
         mFreeTask = make_shared<ShaderFreeTask>();
         mFreeTask->clearState();
-        mFreeTask->setState(TaskState::QUEUED);
+        mFreeTask->setState(TaskState::TASK_STATE_QUEUED);
         mFreeTask->setShaderProgram(mShaderProgram);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mFreeTask);
     }
@@ -169,21 +170,26 @@ namespace Dream
     ()
     {
         // 1. Open Shader Files into Memory
+        StorageManager* fm = mProjectRuntime->getStorageManager();
         string absVertexPath = getAssetFilePath(Constants::SHADER_VERTEX_FILE_NAME);
-        File vertexReader(absVertexPath);
-        if (vertexReader.exists())
+        File* vertexReader = fm->openFile(absVertexPath);
+        if (vertexReader->exists())
         {
-			setVertexSource(vertexReader.readString());
+			setVertexSource(vertexReader->readString());
 			LOG_TRACE("ShaderRuntime: Loading Vertex Shader for {} from {}\n{}\n",
 				mDefinition->getNameAndUuidString(),absVertexPath, mVertexSource
 			);
 			// 2. Compile shaders
 			mCompileVertexTask.clearState();
-			mCompileVertexTask.setState(TaskState::QUEUED);
+			mCompileVertexTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileVertexTask);
+            fm->closeFile(vertexReader);
+            vertexReader = nullptr;
 			return true;
         }
         LOG_ERROR("ShaderRuntime: Vertex Shader file does not exist");
+        fm->closeFile(vertexReader);
+        vertexReader = nullptr;
         return false;
     }
 
@@ -192,21 +198,26 @@ namespace Dream
     ()
     {
         // 1. Open Shader Files into Memory
+        StorageManager* fm = mProjectRuntime->getStorageManager();
         string absFragmentPath = getAssetFilePath(Constants::SHADER_FRAGMENT_FILE_NAME);
-        File fragmentReader(absFragmentPath);
-        if (fragmentReader.exists())
+        File* fragmentReader = fm->openFile(absFragmentPath);
+        if (fragmentReader->exists())
         {
-			setFragmentSource(fragmentReader.readString());
+			setFragmentSource(fragmentReader->readString());
 			LOG_TRACE("ShaderRuntime: Loading Fragment Shader for {} from {}\n{}\n",
 				mDefinition->getNameAndUuidString(),absFragmentPath, mFragmentSource
 			);
 			// 2. Compile shaders
 			mCompileFragmentTask.clearState();
-			mCompileFragmentTask.setState(TaskState::QUEUED);
+			mCompileFragmentTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileFragmentTask);
+            fm->closeFile(fragmentReader);
+            fragmentReader = nullptr;
 			return true;
         }
         LOG_ERROR("ShaderRuntime: Fragment Shader file does not exist");
+        fm->closeFile(fragmentReader);
+        fragmentReader = nullptr;
         return false;
     }
 
@@ -217,7 +228,7 @@ namespace Dream
        mLinkTask.clearState();
        mLinkTask.dependsOn(&mCompileVertexTask);
        mLinkTask.dependsOn(&mCompileFragmentTask);
-       mLinkTask.setState(TaskState::QUEUED);
+       mLinkTask.setState(TaskState::TASK_STATE_QUEUED);
        mProjectRuntime->getGraphicsComponent()->pushTask(&mLinkTask);
        return true;
    }

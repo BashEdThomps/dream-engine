@@ -25,11 +25,11 @@
 using nlohmann::json;
 using std::stringstream;
 
-namespace Dream
+namespace octronic::dream
 {
     /**
-     * @brief Definition is an abstract class that provides naming, id-ing and
-     * json serialization functionality.
+     * @brief Definition is an abstract class that provides Name, ID and
+     * JSON serialization functions.
      */
     class Definition : public LockableObject
     {

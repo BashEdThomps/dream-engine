@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Dream
+namespace octronic::dream
 {
     class ModelAnimation
     {

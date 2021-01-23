@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Model.h"
+
 #include <DreamCore.h>
 
 #include <string>
@@ -7,15 +9,15 @@
 
 using std::vector;
 using std::string;
-using Dream::Directory;
-using Dream::AssetType;
+using octronic::dream::Directory;
+using octronic::dream::AssetType;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class TemplatesModel
+    class TemplatesModel : public Model
     {
     public:
-        TemplatesModel();
+        TemplatesModel(DreamToolContext* context);
         ~TemplatesModel();
 
         vector<string> getTemplateNames(AssetType t);

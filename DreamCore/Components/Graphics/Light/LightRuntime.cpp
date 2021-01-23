@@ -21,7 +21,7 @@
 #include "Common/Logger.h"
 #include "Scene/Entity/EntityRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     LightRuntime::LightRuntime
     (
@@ -243,21 +243,21 @@ namespace Dream
 
         switch(mType)
         {
-            case Dream::LT_NONE:
+            case LT_NONE:
                 break;
-            case Dream::LT_POINT:
+            case LT_POINT:
                 mConstant    = lightDef->getConstant();
                 mLinear      = lightDef->getLinear();
                 mQuadratic   = lightDef->getQuadratic();
                 break;
-            case Dream::LT_SPOTLIGHT:
+            case LT_SPOTLIGHT:
                 mCutOff      = lightDef->getCutOff();
                 mOuterCutOff = lightDef->getOuterCutOff();
                 mConstant    = lightDef->getConstant();
                 mLinear      = lightDef->getLinear();
                 mQuadratic   = lightDef->getQuadratic();
                 break;
-            case Dream::LT_DIRECTIONAL:
+            case LT_DIRECTIONAL:
                 break;
         }
 

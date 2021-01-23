@@ -13,14 +13,14 @@
 #pragma once
 #include <iostream>
 #include <math.h>
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <LinearMath/btVector3.h>
 
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     class Math
     {

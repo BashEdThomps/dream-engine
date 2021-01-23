@@ -24,7 +24,7 @@ using std::chrono::steady_clock;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-namespace Dream
+namespace octronic::dream
 {
     /**
      * @brief Manages timinng features for Dream. All times use

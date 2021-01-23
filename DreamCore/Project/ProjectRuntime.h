@@ -22,7 +22,7 @@ using std::string;
 using std::vector;
 using std::deque;
 
-namespace Dream
+namespace octronic::dream
 {
     // Forward Declarations
     class Project;
@@ -37,6 +37,7 @@ namespace Dream
     class PhysicsComponent;
     class ScriptComponent;
     class TaskManager;
+    class StorageManager;
 
     class SceneRuntime;
     class EntityRuntime;
@@ -53,38 +54,12 @@ namespace Dream
     // Class Declaration
     class ProjectRuntime : public Runtime
     {
-
-    private: // Member Variables
-        bool mDone;
-
-        Time* mTime;
-        Project* mProject;
-
-        // Components
-        AudioComponent* mAudioComponent;
-        InputComponent* mInputComponent;
-        GraphicsComponent* mGraphicsComponent;
-        PhysicsComponent* mPhysicsComponent;
-        ScriptComponent* mScriptComponent;
-        WindowComponent* mWindowComponent;
-        TaskManager* mTaskManager;
-
-        // Caches
-        AudioCache* mAudioCache;
-        TextureCache* mTextureCache;
-        MaterialCache* mMaterialCache;
-        ModelCache* mModelCache;
-        ShaderCache* mShaderCache;
-        ScriptCache* mScriptCache;
-
-        vector<SceneRuntime*> mSceneRuntimeVector;
-        vector<SceneRuntime*> mSceneRuntimesToRemove;
-        deque<float> mFrameDurationHistory;
-
-    public: // Public Functions
+    public: // Public Variables
         static int MaxFrameCount;
 
-        ProjectRuntime(Project* parentProject, WindowComponent* wc = nullptr);
+    public: // Public Functions
+
+        ProjectRuntime(Project* parentProject, WindowComponent* wc, StorageManager* fm);
         ~ProjectRuntime() override;
 
         void setDone(bool);
@@ -99,6 +74,7 @@ namespace Dream
         ScriptComponent* getScriptComponent() const;
         InputComponent* getInputComponent() const;
         TaskManager* getTaskManager() const;
+        StorageManager* getStorageManager() const;
 
         Project* getProject() const;
 
@@ -148,7 +124,7 @@ namespace Dream
         deque<float> getFrameDurationHistory() const;
         float getAverageFramerate();
 
-    private:
+    private: // Member Functions
         bool initAudioComponent();
         bool initInputComponent();
         bool initPhysicsComponent();
@@ -160,5 +136,33 @@ namespace Dream
 
         void deleteCaches();
         void deleteComponents();
+
+    private: // Member Variables
+        bool mDone;
+
+        Time* mTime;
+        Project* mProject;
+
+        // Components
+        AudioComponent* mAudioComponent;
+        InputComponent* mInputComponent;
+        GraphicsComponent* mGraphicsComponent;
+        PhysicsComponent* mPhysicsComponent;
+        ScriptComponent* mScriptComponent;
+        WindowComponent* mWindowComponent;
+        TaskManager* mTaskManager;
+        StorageManager* mStorageManager;
+
+        // Caches
+        AudioCache* mAudioCache;
+        TextureCache* mTextureCache;
+        MaterialCache* mMaterialCache;
+        ModelCache* mModelCache;
+        ShaderCache* mShaderCache;
+        ScriptCache* mScriptCache;
+
+        vector<SceneRuntime*> mSceneRuntimeVector;
+        vector<SceneRuntime*> mSceneRuntimesToRemove;
+        deque<float> mFrameDurationHistory;
     };
 }

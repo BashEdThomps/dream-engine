@@ -20,7 +20,7 @@
 #include "Components/Audio/AudioRuntime.h"
 #include "WavHeader.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class WavAudioRuntime : public AudioRuntime
     {

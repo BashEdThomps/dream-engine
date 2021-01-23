@@ -29,7 +29,7 @@ using namespace std;
 using namespace glm;
 using namespace nlohmann;
 
-namespace Dream
+namespace octronic::dream
 {
     class PhysicsMotionState;
     class PhysicsObjectDefinition;

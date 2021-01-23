@@ -17,7 +17,7 @@
 #include "ShaderUniform.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
   ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
         : mType(type),
@@ -29,53 +29,53 @@ namespace Dream
         LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,count);
         switch (type)
         {
-            case Dream::INT1:
+            case INT1:
                 mData = new GLint[count];
                 memcpy(mData,data,sizeof(GLint)*static_cast<unsigned long>(count));
                 break;
-            case Dream::INT2:
+            case INT2:
                 mData = new ivec2[count];
                 memcpy(mData,data,sizeof(ivec2)*static_cast<unsigned long>(count));
                 break;
-            case Dream::INT3:
+            case INT3:
                 mData = new ivec3[count];
                 memcpy(mData,data,sizeof(ivec3)*static_cast<unsigned long>(count));
                 break;
-            case Dream::INT4:
+            case INT4:
                 mData = new ivec4[count];
                 memcpy(mData,data,sizeof(ivec4)*static_cast<unsigned long>(count));
                 break;
 
-            case Dream::UINT1:
+            case UINT1:
                 mData = new GLint[count];
                 memcpy(mData,data,sizeof(GLuint)*static_cast<unsigned long>(count));
                 break;
-            case Dream::UINT2:
+            case UINT2:
                 mData = new uvec2[count];
                 memcpy(mData,data,sizeof(uvec2)*static_cast<unsigned long>(count));
                 break;
-            case Dream::UINT3:
+            case UINT3:
                 mData = new uvec3[count];
                 memcpy(mData,data,sizeof(uvec3)*static_cast<unsigned long>(count));
                 break;
-            case Dream::UINT4:
+            case UINT4:
                 mData = new uvec4[count];
                 memcpy(mData,data,sizeof(uvec4)*static_cast<unsigned long>(count));
                 break;
 
-            case Dream::FLOAT1:
+            case FLOAT1:
                 mData = new GLint[count];
                 memcpy(mData,data,sizeof(GLfloat)*static_cast<unsigned long>(count));
                 break;
-            case Dream::FLOAT2:
+            case FLOAT2:
                 mData = new vec2[count];
                 memcpy(mData,data,sizeof(vec2)*static_cast<unsigned long>(count));
                 break;
-            case Dream::FLOAT3:
+            case FLOAT3:
                 mData = new vec3[count];
                 memcpy(mData,data,sizeof(vec3)*static_cast<unsigned long>(count));
                 break;
-            case Dream::FLOAT4:
+            case FLOAT4:
                 mData = new vec4[count];
                 memcpy(mData,data,sizeof(vec4)*static_cast<unsigned long>(count));
                 break;
@@ -87,42 +87,42 @@ namespace Dream
         LOG_TRACE("ShaderUniform: Destructing {} {}", mName, mCount);
         switch (mType)
         {
-            case Dream::INT1:
+            case INT1:
                 delete[] static_cast<GLint*>(mData);
                 break;
-            case Dream::INT2:
+            case INT2:
                 delete[] static_cast<ivec2*>(mData);
                 break;
-            case Dream::INT3:
+            case INT3:
                 delete[] static_cast<ivec3*>(mData);
                 break;
-            case Dream::INT4:
+            case INT4:
                 delete[] static_cast<ivec4*>(mData);
                 break;
 
-            case Dream::UINT1:
+            case UINT1:
                 delete[] static_cast<GLuint*>(mData);
                 break;
-            case Dream::UINT2:
+            case UINT2:
                 delete[] static_cast<uvec2*>(mData);
                 break;
-            case Dream::UINT3:
+            case UINT3:
                 delete[] static_cast<uvec3*>(mData);
                 break;
-            case Dream::UINT4:
+            case UINT4:
                 delete[] static_cast<uvec4*>(mData);
                 break;
 
-            case Dream::FLOAT1:
+            case FLOAT1:
                 delete[] static_cast<GLfloat*>(mData);
                 break;
-            case Dream::FLOAT2:
+            case FLOAT2:
                 delete[] static_cast<vec2*>(mData);
                 break;
-            case Dream::FLOAT3:
+            case FLOAT3:
                 delete[] static_cast<vec3*>(mData);
                 break;
-            case Dream::FLOAT4:
+            case FLOAT4:
                 delete[] static_cast<vec4*>(mData);
                 break;
         }
@@ -177,42 +177,42 @@ namespace Dream
         size_t size = 0;
         switch (mType)
         {
-            case Dream::INT1:
+            case INT1:
                 size = sizeof(GLint)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::INT2:
+            case INT2:
                 size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::INT3:
+            case INT3:
                 size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::INT4:
+            case INT4:
                 size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
                 break;
 
-            case Dream::UINT1:
+            case UINT1:
                 size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::UINT2:
+            case UINT2:
                 size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::UINT3:
+            case UINT3:
                 size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::UINT4:
+            case UINT4:
                 size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
                 break;
 
-            case Dream::FLOAT1:
+            case FLOAT1:
                 size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::FLOAT2:
+            case FLOAT2:
                 size = sizeof(vec2)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::FLOAT3:
+            case FLOAT3:
                 size = sizeof(vec3)*static_cast<unsigned long>(mCount);
                 break;
-            case Dream::FLOAT4:
+            case FLOAT4:
                 size = sizeof(vec4)*static_cast<unsigned long>(mCount);
                 break;
         }

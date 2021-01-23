@@ -13,7 +13,7 @@
 
 #include "Common/Constants.h"
 
-namespace Dream
+namespace octronic::dream
 {
     PathDefinition::PathDefinition
     (ProjectDefinition* pd, const json& js)

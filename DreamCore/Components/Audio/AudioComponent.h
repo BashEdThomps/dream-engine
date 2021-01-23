@@ -26,7 +26,7 @@
 
 using glm::vec3;
 
-namespace Dream
+namespace octronic::dream
 {
     class AudioRuntime;
     class AudioDefinition;

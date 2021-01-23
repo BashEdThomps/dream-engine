@@ -2,7 +2,7 @@
 #include "GLWidget.h"
 #include "Grid.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class Cursor : public GLWidget
     {
@@ -25,7 +25,7 @@ namespace DreamTool
         bool mStepMajor;
         mat4 mOrientation;
     public:
-        Cursor(DTContext* st);
+        Cursor(DreamToolContext* st);
         ~Cursor() override;
         void draw() override;
         void init();

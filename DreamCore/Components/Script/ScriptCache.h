@@ -13,7 +13,7 @@
 
 #include "Components/Cache.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class ScriptCache : public Cache
     {

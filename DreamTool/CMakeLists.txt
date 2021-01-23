@@ -1,30 +1,22 @@
 cmake_minimum_required (VERSION 3.0)
 project(DreamTool)
 
+# Targets ######################################################################
+
 include_directories(${DreamCore_SOURCE_DIR}/include)
 
 add_executable (
     ${PROJECT_NAME}
-	Window/DTWindowComponent.cpp
+	Main.cpp
+	DreamToolContext.cpp
+	DreamToolWindow.cpp
+
+	Model/Model.cpp
 	Model/PreferencesModel.cpp
 	Model/TemplatesModel.cpp
 	Model/ModelDefinitionBatchImporter.cpp
-	DTContext.cpp
-	Main.cpp
-	Widgets/ImGui/SceneStateWindow.cpp
-	Widgets/ImGui/ProjectBrowser.cpp
-	Widgets/ImGui/ScriptDebugWindow.cpp
-	Widgets/ImGui/MenuBar.cpp
-	Widgets/ImGui/ImGuiWidget.cpp
-	Widgets/ImGui/GamepadStateWindow.cpp
-	Widgets/ImGui/PropertiesWindow.cpp
-	Widgets/ImGui/ScriptEditorWindow.cpp
-	Widgets/ImGui/ToolPropertiesWindow.cpp
-	Widgets/ImGui/ShaderEditorWindow.cpp
-	Widgets/ImGui/RenderingDebugWindow.cpp
-	Widgets/ImGui/CacheContentWindow.cpp
-	Widgets/ImGui/TaskManagerWindow.cpp
-	Widgets/DTWidget.cpp
+
+	Widgets/DreamToolWidget.cpp
 	Widgets/GL/GLWidget.cpp
 	Widgets/GL/LightViewer.cpp
 	Widgets/GL/SelectionHighlighter.cpp
@@ -32,6 +24,21 @@ add_executable (
 	Widgets/GL/AnimationViewer.cpp
 	Widgets/GL/PathViewer.cpp
 	Widgets/GL/Cursor.cpp
+
+	Widgets/ImGui/SceneStateWindow.cpp
+	Widgets/ImGui/ProjectBrowser.cpp
+	Widgets/ImGui/ScriptDebugWindow.cpp
+	Widgets/ImGui/MenuBar.cpp
+	Widgets/ImGui/ImGuiWidget.cpp
+	Widgets/ImGui/GamepadStateWindow.cpp
+	Widgets/ImGui/GLPreviewWindowComponent.cpp
+	Widgets/ImGui/PropertiesWindow.cpp
+	Widgets/ImGui/ScriptEditorWindow.cpp
+	Widgets/ImGui/ToolPropertiesWindow.cpp
+	Widgets/ImGui/ShaderEditorWindow.cpp
+	Widgets/ImGui/RenderingDebugWindow.cpp
+	Widgets/ImGui/CacheContentWindow.cpp
+	Widgets/ImGui/TaskManagerWindow.cpp
 )
 
 target_include_directories(

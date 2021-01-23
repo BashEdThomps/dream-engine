@@ -9,12 +9,12 @@ using std::string;
 using std::vector;
 using std::function;
 
-namespace Dream
+namespace octronic::dream
 {
     class AnimationEasing
     {
     public:
-        enum Type
+        enum EasingType
         {
             EasingLinear = 0,
 
@@ -61,7 +61,7 @@ namespace Dream
 
 
         static const vector<string> EasingNames;
-        static AnimationEasing::Type getEasingType(const string &);
-        static const string getEasingName(AnimationEasing::Type easing);
+        static AnimationEasing::EasingType getEasingType(const string &);
+        static const string getEasingName(AnimationEasing::EasingType easing);
     };
 }

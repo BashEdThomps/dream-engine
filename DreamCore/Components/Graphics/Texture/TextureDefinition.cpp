@@ -18,7 +18,7 @@
  */
 #include "TextureDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     TextureDefinition::TextureDefinition
     (ProjectDefinition* pd, const json& js)

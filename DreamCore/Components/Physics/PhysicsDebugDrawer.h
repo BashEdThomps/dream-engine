@@ -30,7 +30,7 @@ using std::vector;
 using std::string;
 using glm::vec3;
 
-namespace Dream
+namespace octronic::dream
 {
 
     class Camera;

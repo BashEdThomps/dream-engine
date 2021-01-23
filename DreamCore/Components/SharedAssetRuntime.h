@@ -3,7 +3,7 @@
 
 // TODO - Add Used-by vector for common user management?
 
-namespace Dream
+namespace octronic::dream
 {
     class ProjectRuntime;
     class SharedAssetRuntime : public AssetRuntime

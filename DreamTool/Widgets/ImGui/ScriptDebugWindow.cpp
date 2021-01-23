@@ -1,10 +1,10 @@
 #include "ScriptDebugWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     ScriptDebugWindow::ScriptDebugWindow
-    (DTContext* proj)
+    (DreamToolContext* proj)
         : ImGuiWidget(proj,false),
         ScriptPrintListener()
     {
@@ -20,7 +20,8 @@ namespace DreamTool
     ScriptDebugWindow::draw
     ()
     {
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
             ImGui::Begin("Script Debug Output",&mVisible);
 

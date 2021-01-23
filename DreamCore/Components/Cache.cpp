@@ -1,12 +1,12 @@
 #include "Cache.h"
 
 #include "Project/Project.h"
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectRuntime.h"
 #include "SharedAssetRuntime.h"
 #include "AssetDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     Cache::Cache
     (ProjectRuntime* parent)

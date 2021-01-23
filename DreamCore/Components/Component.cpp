@@ -16,7 +16,7 @@
 #include "Component.h"
 #include "Time.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
     Component::Component

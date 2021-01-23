@@ -27,7 +27,7 @@ using std::function;
 using std::shared_ptr;
 using nlohmann::json;
 
-namespace Dream
+namespace octronic::dream
 {
     class Entity;
     class Scene;
@@ -38,37 +38,28 @@ namespace Dream
     class ModelRuntime;
     class LightRuntime;
     class PhysicsObjectRuntime;
-    class ParticleEmitterRuntime;
     class SceneRuntime;
     class EntityDefinition;
     class AssetDefinition;
     class PathDefinition;
-    class ScrollerRuntime;
-    class ScrollerDefinition;
     class AnimationDefinition;
     class AudioDefinition;
     class LightDefinition;
     class ModelDefinition;
     class PhysicsObjectDefinition;
     class ScriptDefinition;
-    class ParticleEmitterDefinition;
     class ScriptRuntime;
     class AssetRuntime;
-    class ObjectEmitterDefinition;
-    class ObjectEmitterRuntime;
 
     class EntityRuntime : public Runtime
     {
         AnimationRuntime* mAnimationRuntime;
         AudioRuntime* mAudioRuntime;
         LightRuntime* mLightRuntime;
-        ParticleEmitterRuntime* mParticleEmitterRuntime;
         PathRuntime* mPathRuntime;
         PhysicsObjectRuntime* mPhysicsObjectRuntime;
         ScriptRuntime* mScriptRuntime;
         ModelRuntime* mModelRuntime;
-        ScrollerRuntime* mScrollerRuntime;
-        ObjectEmitterRuntime* mObjectEmitterRuntime;
 
         Transform mInitialTransform;
         Transform mTransform;
@@ -109,10 +100,7 @@ namespace Dream
         bool createModelRuntime(ModelDefinition*);
         bool createScriptRuntime(ScriptDefinition*);
         bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
-        bool createParticleEmitterRuntime(ParticleEmitterDefinition*);
         bool createLightRuntime(LightDefinition*);
-        bool createScrollerRuntime(ScrollerDefinition*);
-        bool createObjectEmitterRuntime(ObjectEmitterDefinition*);
 
         AnimationRuntime* getAnimationRuntime();
         PathRuntime*  getPathRuntime();
@@ -121,9 +109,6 @@ namespace Dream
         ScriptRuntime* getScriptRuntime();
         PhysicsObjectRuntime* getPhysicsObjectRuntime();
         LightRuntime* getLightRuntime();
-        ParticleEmitterRuntime* getParticleEmitterRuntime();
-        ScrollerRuntime* getScrollerRuntime();
-        ObjectEmitterRuntime* getObjectEmitterRuntime();
         AssetRuntime* getAssetRuntime(AssetType);
 
         bool hasAnimationRuntime();
@@ -133,8 +118,6 @@ namespace Dream
         bool hasScriptRuntime();
         bool hasPhysicsObjectRuntime();
         bool hasLightRuntime();
-        bool hasScrollerRuntime();
-        bool hasObjectEmitterRuntime();
 
         Transform& getTransform();
         Transform getInitialTransform();
@@ -185,9 +168,6 @@ namespace Dream
         void removeLightRuntime();
         void removeScriptRuntime();
         void removePhysicsObjectRuntime();
-        void removeParticleEmitterRuntime();
-        void removeScrollerRuntime();
-        void removeObjectEmitterRuntime();
 
         bool replaceAssetUuid(AssetType type, uint32_t uuid);
         AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);

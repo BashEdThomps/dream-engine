@@ -14,7 +14,7 @@
 
 #include "Project.h"
 #include "ProjectDefinition.h"
-#include "ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 
 #include "Common/Logger.h"
 
@@ -29,7 +29,7 @@
 #include "Components/Audio/AudioCache.h"
 #include "Components/Input/InputComponent.h"
 
-#include "TaskManager/TaskManager.h"
+#include "Components/Task/TaskManager.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Components/Graphics/Model/ModelMesh.h"
 #include "Components/Physics/PhysicsComponent.h"
@@ -44,25 +44,10 @@
 
 #include <thread>
 
-namespace Dream
+namespace octronic::dream
 {
-    deque<float> ProjectRuntime::getFrameDurationHistory() const
-    {
-        return mFrameDurationHistory;
-    }
-
-    float ProjectRuntime::getAverageFramerate()
-    {
-       float f = 0.0;
-       for (const auto& dur : mFrameDurationHistory)
-       {
-           f += dur;
-       }
-       return f/MaxFrameCount;
-    }
-
     ProjectRuntime::ProjectRuntime
-    (Project* project, WindowComponent* windowComponent)
+    (Project* project, WindowComponent* windowComponent, StorageManager* fm)
         : Runtime(project->getDefinition()),
           mDone(false),
           mTime(nullptr),
@@ -74,6 +59,7 @@ namespace Dream
           mScriptComponent(nullptr),
           mWindowComponent(windowComponent),
           mTaskManager(nullptr),
+          mStorageManager(fm),
           mAudioCache(nullptr),
           mTextureCache(nullptr),
           mMaterialCache(nullptr),
@@ -127,7 +113,7 @@ namespace Dream
     ProjectRuntime::initComponents
     ()
     {
-        LOG_DEBUG( "ProjectRuntime: Initialising Components..." );
+        LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
 
         mTime = new Time();
 
@@ -175,6 +161,7 @@ namespace Dream
     ProjectRuntime::initWindowComponent
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (!mWindowComponent)
         {
             LOG_CRITICAL("ProjectRuntime: Window component is null");
@@ -191,6 +178,7 @@ namespace Dream
     ProjectRuntime::initAudioComponent
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mAudioComponent = new AudioComponent(this);
         mAudioComponent->lock();
         if (!mAudioComponent->init())
@@ -205,6 +193,7 @@ namespace Dream
 
     bool ProjectRuntime::initInputComponent()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
         projectDef->lock();
         mInputComponent = new InputComponent(this);
@@ -225,6 +214,7 @@ namespace Dream
     ProjectRuntime::initPhysicsComponent
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mPhysicsComponent = new PhysicsComponent(this);
         mPhysicsComponent->lock();
         mPhysicsComponent->setTime(mTime);
@@ -242,6 +232,7 @@ namespace Dream
     ProjectRuntime::initGraphicsComponent
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mGraphicsComponent = new GraphicsComponent(this,mWindowComponent);
         mGraphicsComponent->lock();
         mGraphicsComponent->setTime(mTime);
@@ -260,6 +251,7 @@ namespace Dream
     ProjectRuntime::initScriptComponent
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mScriptComponent = new ScriptComponent(this,mScriptCache);
         mScriptComponent->lock();
         if(!mScriptComponent->init())
@@ -276,6 +268,7 @@ namespace Dream
     ProjectRuntime::initTaskManager
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mTaskManager = new TaskManager();
         return true;
     }
@@ -284,7 +277,7 @@ namespace Dream
     ProjectRuntime::initCaches
     ()
     {
-        LOG_TRACE("ProjectRuntime: initialising caches");
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
         mShaderCache  = new ShaderCache(this);
@@ -298,6 +291,7 @@ namespace Dream
     ProjectRuntime::deleteCaches
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (mAudioCache != nullptr)
         {
             delete mAudioCache;
@@ -339,6 +333,7 @@ namespace Dream
     ProjectRuntime::deleteComponents
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (mTaskManager != nullptr)
         {
             delete mTaskManager;
@@ -424,6 +419,14 @@ namespace Dream
         return mTaskManager;
     }
 
+    StorageManager*
+    ProjectRuntime::getStorageManager
+    ()
+    const
+    {
+        return mStorageManager;
+    }
+
     bool
     ProjectRuntime::updateLogic
     (SceneRuntime* sr)
@@ -433,9 +436,10 @@ namespace Dream
         "Update Logic called @ {}\n"
         "=======================================================================\n",
         mTime->getAbsoluteTime());
-
         mTime->updateFrameTime();
+
         mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
+
         if (mFrameDurationHistory.size() > MaxFrameCount)
         {
             mFrameDurationHistory.pop_front();
@@ -444,6 +448,7 @@ namespace Dream
         sr->createSceneTasks();
         mTaskManager->clearFences();
         mTaskManager->waitForFence();
+        mGraphicsComponent->handleResize();
         sr->getCamera()->update();
         return true;
     }
@@ -460,7 +465,6 @@ namespace Dream
         // Draw 3D/PhysicsDebug/2D
         ModelMesh::ClearCounters();
         mGraphicsComponent->executeTaskQueue();
-        mGraphicsComponent->handleResize();
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
@@ -530,6 +534,7 @@ namespace Dream
     ProjectRuntime::collectGarbage
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         for (auto rt : mSceneRuntimesToRemove)
         {
             auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
@@ -544,6 +549,7 @@ namespace Dream
     ProjectRuntime::updateAll
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (mSceneRuntimeVector.empty())
         {
             mTaskManager->clearFences();
@@ -585,6 +591,7 @@ namespace Dream
     ()
     const
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         int nRuntimes = mSceneRuntimeVector.size();
         for (int i=0;i<nRuntimes;i++)
         {
@@ -601,6 +608,7 @@ namespace Dream
     (uint32_t uuid)
     const
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         for (auto* sr : mSceneRuntimeVector)
         {
             if (sr->getUuid() == uuid)
@@ -615,6 +623,7 @@ namespace Dream
     ProjectRuntime::setSceneRuntimeAsActive
     (uint32_t uuid)
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         int nRuntimes = mSceneRuntimeVector.size();
         for (int i=0;i<nRuntimes;i++)
         {
@@ -691,6 +700,7 @@ namespace Dream
     ProjectRuntime::useDefinition
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (!initCaches())
         {
             return false;
@@ -756,6 +766,7 @@ namespace Dream
     ProjectRuntime::destructSceneRuntime
     (SceneRuntime* rt, bool clearCaches)
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         rt->destroyRuntime();
         if (clearCaches)
         {
@@ -767,6 +778,7 @@ namespace Dream
     ProjectRuntime::clearAllCaches
     ()
     {
+        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mTaskManager->clearFences();
         mTaskManager->waitForFence();
         if (mAudioCache != nullptr)
@@ -892,6 +904,21 @@ namespace Dream
             if (result) break;
         }
         return result;
+    }
+
+    deque<float> ProjectRuntime::getFrameDurationHistory() const
+    {
+        return mFrameDurationHistory;
+    }
+
+    float ProjectRuntime::getAverageFramerate()
+    {
+       float f = 0.0;
+       for (const auto& dur : mFrameDurationHistory)
+       {
+           f += dur;
+       }
+       return f/MaxFrameCount;
     }
 
     int ProjectRuntime::MaxFrameCount = 100;

@@ -7,11 +7,11 @@
 
 #include "ImGuiWidget.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     ImGuiWidget::ImGuiWidget
-    (DTContext* project, bool visible)
-        : DTWidget(project, visible)
+    (DreamToolContext* project, bool visible)
+        : DreamToolWidget(project, visible)
     {
     }
 

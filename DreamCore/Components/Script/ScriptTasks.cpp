@@ -7,7 +7,7 @@
 #include "Scene/Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ScriptConstructionTask::ScriptConstructionTask
     ()
@@ -23,12 +23,12 @@ namespace Dream
 
         if(mScript->createScript())
         {
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
             mScript->setLoaded(true);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }
@@ -53,11 +53,11 @@ namespace Dream
 
         if(mScript->executeOnInit(mEntity))
         {
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
 
@@ -86,11 +86,11 @@ namespace Dream
 
         if(mScript->executeOnUpdate(mEntity))
         {
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }
@@ -119,11 +119,11 @@ namespace Dream
 
         if(mScript->executeOnEvent(mEntity))
         {
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }
@@ -159,16 +159,16 @@ namespace Dream
         {
             if(mScript->executeOnDestroy(mDestroyedObject, mParentEntity))
             {
-                setState(TaskState::COMPLETED);
+                setState(TaskState::TASK_STATE_COMPLETED);
             }
             else
             {
-                setState(TaskState::WAITING);
+                setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
         }
         else {
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
     }
 

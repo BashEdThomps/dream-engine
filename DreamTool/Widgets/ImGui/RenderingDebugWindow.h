@@ -2,13 +2,13 @@
 
 #include "ImGuiWidget.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class RenderingDebugWindow
             : public ImGuiWidget
     {
     public:
-        RenderingDebugWindow(DTContext* state);
+        RenderingDebugWindow(DreamToolContext* state);
         ~RenderingDebugWindow() override;
 
         void draw() override;

@@ -18,7 +18,7 @@
 #include "AssetDefinition.h"
 #include "Common/Uuid.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AssetRuntime::AssetRuntime
     (AssetDefinition* definition)
@@ -47,10 +47,9 @@ namespace Dream
         mLoaded = loaded;
     }
 
-    void
-    AssetRuntime::collectGarbage
-    ()
-    {
-
-    }
+    void AssetRuntime::collectGarbage()
+	{
+	}
 }
+
+

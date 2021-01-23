@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TaskManager/Task.h"
+#include "Components/Task/Task.h"
 #include "Components/Graphics/GraphicsComponentTask.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class PhysicsObjectRuntime;
     class PhysicsComponent;

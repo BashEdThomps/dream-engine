@@ -3,19 +3,17 @@
 #include "ImGuiWidget.h"
 #include <TextEditor.h>
 
-namespace Dream
+namespace octronic::dream
 {
     class ShaderDefinition;
 }
 
-using namespace Dream;
-
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class ShaderEditorWindow : public ImGuiWidget
     {
     public:
-        ShaderEditorWindow(DTContext* state);
+        ShaderEditorWindow(DreamToolContext* state);
         ~ShaderEditorWindow() override;
 
         void draw() override;

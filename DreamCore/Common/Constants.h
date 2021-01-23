@@ -19,28 +19,25 @@
 
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     /**
      * @brief AssetType enum describing the types of Asset available in Dream.
      */
     enum AssetType
     {
-        ANIMATION,
-        AUDIO,
-        FONT,
-        LIGHT,
-        MATERIAL,
-        MODEL,
-        OBJECT_EMITTER,
-        PARTICLE_EMITTER,
-        PATH,
-        PHYSICS_OBJECT,
-        SCRIPT,
-        SCROLLER,
-        SHADER,
-        TEXTURE,
-        NONE
+        ASSET_TYPE_ENUM_ANIMATION,
+        ASSET_TYPE_ENUM_AUDIO,
+        ASSET_TYPE_ENUM_FONT,
+        ASSET_TYPE_ENUM_LIGHT,
+        ASSET_TYPE_ENUM_MATERIAL,
+        ASSET_TYPE_ENUM_MODEL,
+        ASSET_TYPE_ENUM_PATH,
+        ASSET_TYPE_ENUM_PHYSICS_OBJECT,
+        ASSET_TYPE_ENUM_SCRIPT,
+        ASSET_TYPE_ENUM_SHADER,
+        ASSET_TYPE_ENUM_TEXTURE,
+        ASSET_TYPE_ENUM_NONE
     };
 
     /**
@@ -69,11 +66,7 @@ namespace Dream
         const static string PROJECT_SCENE_ARRAY;
         const static string PROJECT_ASSET_ARRAY;
         const static string PROJECT_STARTUP_SCENE;
-        const static string PROJECT_WINDOW_SIZE;
-        const static string PROJECT_WINDOW_WIDTH;
-        const static string PROJECT_WINDOW_HEIGHT;
-        const static int    PROJECT_DEFAULT_WINDOW_WIDTH;
-        const static int    PROJECT_DEFAULT_WINDOW_HEIGHT;
+
         // Asset ================================================================
         const static string UUID;
         const static string NAME;
@@ -87,15 +80,12 @@ namespace Dream
         const static string ASSET_TYPE_LIGHT;
         const static string ASSET_TYPE_FONT;
         const static string ASSET_TYPE_MODEL;
-        const static string ASSET_TYPE_OBJECT_EMITTER;
         const static string ASSET_TYPE_PATH;
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
-        const static string ASSET_TYPE_SCROLLER;
         const static string ASSET_TYPE_SHADER;
         const static string ASSET_TYPE_TEXTURE;
         const static string ASSET_TYPE_MATERIAL;
-        const static string ASSET_TYPE_PARTICLE_EMITTER;
         // Formats
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_DREAM;
@@ -117,14 +107,11 @@ namespace Dream
         const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
         const static string ASSET_TYPE_MODEL_READABLE;
-        const static string ASSET_TYPE_OBJECT_EMITTER_READABLE;
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         const static string ASSET_TYPE_SCRIPT_READABLE;
-        const static string ASSET_TYPE_SCROLLER_READABLE;
         const static string ASSET_TYPE_SHADER_READABLE;
         const static string ASSET_TYPE_TEXTURE_READABLE;
         const static string ASSET_TYPE_MATERIAL_READABLE;
-        const static string ASSET_TYPE_PARTICLE_EMITTER_READABLE;
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
@@ -216,24 +203,6 @@ namespace Dream
         const static string DREAM_PATH_TYPE_CLAMPED;
         const static string DREAM_PATH_TYPE_BEZIER;
         const static string ASSET_ATTR_STEP_SCALAR;
-        // Particle Emitter ========================================================
-        const static string PARTICLE_EMITTER_TEXTURE;
-        const static string PARTICLE_EMITTER_AREA;
-        const static string PARTICLE_EMITTER_SIZE;
-        const static string PARTICLE_EMITTER_VELOCITY;
-        const static string PARTICLE_EMITTER_GRAVITY;
-        const static string PARTICLE_EMITTER_PER_SECOND;
-        const static string PARTICLE_EMITTER_LIFETIME;
-        // Object Emitter ======================================================
-        const static string OBJECT_EMITTER_UUID;
-        const static string OBJECT_EMITTER_OBJECT_COUNT;
-        const static string OBJECT_EMITTER_EMIT_INTERVAL;
-        const static string OBJECT_EMITTER_LOOP_INTERVAL;
-        const static string OBJECT_EMITTER_LOOPS;
-        const static string OBJECT_EMITTER_VELOCITY;
-        const static string OBJECT_EMITTER_START_THETA;
-        const static string OBJECT_EMITTER_END_THETA;
-        const static string OBJECT_EMITTER_START_RADIUS;
         // Physics ==============================================================
         const static string ASSET_ATTR_MASS;
         const static string ASSET_ATTR_MARGIN;
@@ -326,14 +295,6 @@ namespace Dream
         const static string SCRIPT_INPUT_FUNCTION;
         const static string SCRIPT_EVENT_FUNCTION;
         const static string SCRIPT_DESTROY_FUNCTION;
-        // Scroller ============================================================
-        const static string SCROLLER_VELOCITY;
-        const static string SCROLLER_LOOP;
-        const static string SCROLLER_RANGE_BEGIN;
-        const static string SCROLLER_RANGE_END;
-        const static string SCROLLER_ITEMS_ARRAY;
-        const static string SCROLLER_ITEM_INDEX;
-        const static string SCROLLER_ITEM_ORIGIN;
         // Audio ================================================================
         const static string ASSET_ATTR_SPECTRUM_ANALYSER;
         const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
@@ -352,9 +313,6 @@ namespace Dream
         const static string KEYFRAME_LOOPING;
         const static string KEYFRAME_EASING_TYPE;
         const static string ANIMATION_RELATIVE;
-        // Window ==============================================================
-        const static int DEFAULT_SCREEN_WIDTH;
-        const static int DEFAULT_SCREEN_HEIGHT;
         // Camera ==============================================================
         const static unsigned int CAMERA_MOVEMENT_FORWARD;
         const static unsigned int CAMERA_MOVEMENT_BACKWARD;

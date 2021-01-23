@@ -11,7 +11,7 @@
  */
 #include "ScriptDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ScriptDefinition::ScriptDefinition
     (ProjectDefinition* pd, const json &js)

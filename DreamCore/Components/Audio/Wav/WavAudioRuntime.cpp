@@ -17,8 +17,11 @@
 
 #include "Common/Logger.h"
 #include "Components/Audio/AudioDefinition.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/File.h"
+#include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     WavAudioRuntime::WavAudioRuntime
     (AudioDefinition* definition, ProjectRuntime* project)
@@ -36,7 +39,8 @@ namespace Dream
         LOG_DEBUG("WavAudioRuntime: Loading wav file from {}", absPath);
 
         int headerSize = sizeof(mWavHeader), filelength = 0;
-        FILE* wavFile = fopen(absPath.c_str(), "r");
+        StorageManager* fm = mProjectRuntime->getStorageManager();
+        File* wavFile = fm->openFile(absPath);
 
         if (wavFile == nullptr)
         {
@@ -45,15 +49,29 @@ namespace Dream
         }
 
         //Read the header
-        size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
+        if (!wavFile->readBinary())
+        {
+            fm->closeFile(wavFile);
+            wavFile = nullptr;
+            return false;
+        }
+
+        // Read in the headerr
+        //size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
+        memcpy(&mWavHeader, wavFile->getBinaryData(), headerSize);
+        size_t bytesRead = headerSize;
         LOG_DEBUG("WavAudioRuntime: Header Read {} bytes" ,bytesRead);
         mAudioDataBuffer.reserve(mWavHeader.Subchunk2Size);
+
         //Read the data
-        auto* buffer = new int8_t[mWavHeader.Subchunk2Size];
-        bytesRead = fread(buffer, sizeof buffer[0], mWavHeader.Subchunk2Size, wavFile);
-        assert(bytesRead == mWavHeader.Subchunk2Size);
+        int8_t* buffer = new int8_t[mWavHeader.Subchunk2Size];
+        // old - bytesRead = fread(buffer, sizeof buffer[0], mWavHeader.Subchunk2Size, wavFile);
+        // old - assert(bytesRead == mWavHeader.Subchunk2Size);
+        memcpy(buffer, &wavFile->getBinaryData()[bytesRead], sizeof(int8_t) * mWavHeader.Subchunk2Size);
+
         mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
         mFrequency = mWavHeader.SamplesPerSecond;
+
         if (mWavHeader.NumOfChannels == 1)
         {
             mChannels = 1;
@@ -70,7 +88,9 @@ namespace Dream
         LOG_DEBUG("WavAudioRuntime: Read {} bytes", mAudioDataBuffer.size());
         delete [] buffer;
         buffer = nullptr;
-        filelength = getFileSize(wavFile);
+
+        // old - filelength = getFileSize(wavFile);
+        filelength = wavFile->getBinaryDataSize();
 
         LOG_DEBUG(
             "Status...\n"
@@ -99,9 +119,16 @@ namespace Dream
               mWavHeader.Subchunk2Size,
               mWavHeader.AudioFormat,
               mWavHeader.BlockAlign,
-              mWavHeader.Subchunk2ID[0], mWavHeader.Subchunk2ID[1], mWavHeader.Subchunk2ID[2], mWavHeader.Subchunk2ID[3]
+              mWavHeader.Subchunk2ID[0],
+              mWavHeader.Subchunk2ID[1],
+              mWavHeader.Subchunk2ID[2],
+              mWavHeader.Subchunk2ID[3]
         );
-        fclose(wavFile);
+
+        // Close File
+        // old - fclose(wavFile);
+        fm->closeFile(wavFile);
+        wavFile = nullptr;
         return loadIntoAL();
     }
 

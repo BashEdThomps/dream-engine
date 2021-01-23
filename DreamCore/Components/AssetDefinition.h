@@ -20,7 +20,7 @@
 
 using std::vector;
 
-namespace Dream
+namespace octronic::dream
 {
     class ProjectDefinition;
 
@@ -77,7 +77,6 @@ namespace Dream
         bool isTypeScript();
         bool isTypeShader();
         bool isTypePath();
-        bool isTypeParticleEmitter();
         bool isTypePhysicsObject();
         bool isTypeTexture();
     protected:

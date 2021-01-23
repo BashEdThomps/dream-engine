@@ -8,7 +8,7 @@
 #include "Wav/WavAudioRuntime.h"
 #include "Ogg/OggAudioRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
     AudioCache::AudioCache

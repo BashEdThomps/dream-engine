@@ -2,13 +2,13 @@
 
 #include "ImGuiWidget.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     class SceneStateWindow
         : public ImGuiWidget
     {
     public:
-        SceneStateWindow(DTContext*);
+        SceneStateWindow(DreamToolContext*);
         ~SceneStateWindow() override;
 
         void draw() override;

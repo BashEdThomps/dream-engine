@@ -1,13 +1,18 @@
 #include "GLWidget.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace DreamTool
+using octronic::dream::Project;
+using octronic::dream::Camera;
+using octronic::dream::ProjectRuntime;
+using octronic::dream::SceneRuntime;
+
+namespace octronic::dream::tool
 {
     GLWidget::GLWidget
-    (DTContext* project, bool visible)
-        : DTWidget (project, visible),
+    (DreamToolContext* project, bool visible)
+        : DreamToolWidget (project, visible),
           mModelMatrix(mat4(1.0f)),
           mViewMatrix(mat4(1.0f)),
           mProjectionMatrix(mat4(1.0f)),
@@ -110,15 +115,16 @@ namespace DreamTool
     {
 
         GLCheckError();
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
-            auto pRuntime = mState->project->getRuntime();
+            ProjectRuntime* pRuntime = project->getRuntime();
             if (pRuntime)
             {
-                auto sRunt = pRuntime->getActiveSceneRuntime();
+                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    auto cam = sRunt->getCamera();
+                    Camera* cam = sRunt->getCamera();
                     if (cam)
                     {
                         mProjectionMatrix = cam->getProjectionMatrix();

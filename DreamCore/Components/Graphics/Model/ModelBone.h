@@ -6,7 +6,7 @@
 using std::vector;
 using glm::mat4;
 
-namespace Dream
+namespace octronic::dream
 {
     struct VertexWeight
     {

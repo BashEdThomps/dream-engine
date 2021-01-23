@@ -12,7 +12,7 @@
 
 #include "Components/AssetDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class ModelDefinition : public AssetDefinition
     {

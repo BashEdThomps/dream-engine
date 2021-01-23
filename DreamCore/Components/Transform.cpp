@@ -29,7 +29,7 @@ using namespace glm;
 using std::cout;
 using std::endl;
 
-namespace Dream
+namespace octronic::dream
 {
 
     Transform::Transform

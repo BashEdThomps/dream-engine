@@ -3,7 +3,7 @@
 #include "Common/GLHeader.h"
 #include "Components/Graphics/GraphicsComponentTask.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class ModelMesh;
 

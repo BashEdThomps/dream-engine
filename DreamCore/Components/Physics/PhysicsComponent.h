@@ -33,7 +33,7 @@ class btRigidBody;
 class btCollisionObject;
 class btPersistentManifold;
 
-namespace Dream
+namespace octronic::dream
 {
     class PhysicsObjectRuntime;
     class SceneRuntime;

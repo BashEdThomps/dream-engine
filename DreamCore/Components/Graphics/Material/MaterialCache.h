@@ -20,7 +20,7 @@
 
 #include "Components/Cache.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class ShaderCache;
     class TextureCache;

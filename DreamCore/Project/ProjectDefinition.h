@@ -17,7 +17,7 @@
 using std::string;
 using std::vector;
 
-namespace Dream
+namespace octronic::dream
 {
     class Project;
     class SceneDefinition;
@@ -44,12 +44,6 @@ namespace Dream
         uint32_t getStartupSceneUuid();
         void setStartupSceneUuid(uint32_t sceneUuid);
         SceneDefinition* getStartupSceneDefinition();
-
-        int getWindowWidth();
-        void setWindowWidth(int width);
-
-        int getWindowHeight();
-        void setWindowHeight(int height);
 
         void loadChildDefinitions();
 

@@ -21,7 +21,7 @@
 #include "Components/AssetDefinition.h"
 #include <tinysplinecpp.h>
 
-namespace Dream
+namespace octronic::dream
 {
 
     struct PathControlPoint

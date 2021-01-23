@@ -1,7 +1,7 @@
 #include "ShaderRuntime.h"
 #include "ShaderTasks.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
     ShaderCompileFragmentTask::ShaderCompileFragmentTask(ShaderRuntime* rt)
@@ -32,7 +32,7 @@ namespace Dream
             mShaderRuntime->unlock();
             return;
         }
-        setState(COMPLETED);
+        setState(TASK_STATE_COMPLETED);
         mShaderRuntime->unlock();
     }
 
@@ -64,7 +64,7 @@ namespace Dream
             mShaderRuntime->unlock();
             return;
         }
-        setState(COMPLETED);
+        setState(TASK_STATE_COMPLETED);
         mShaderRuntime->unlock();
     }
 
@@ -128,7 +128,7 @@ namespace Dream
                                                  ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT));
             }
         }
-        setState(COMPLETED);
+        setState(TASK_STATE_COMPLETED);
         mShaderRuntime->unlock();
     }
 
@@ -146,6 +146,6 @@ namespace Dream
     {
         LOG_CRITICAL("ShaderFreeTask: Executing on thread {}",mThreadId);
         glDeleteProgram(mShaderProgram);
-        setState(COMPLETED);
+        setState(TASK_STATE_COMPLETED);
     }
 }

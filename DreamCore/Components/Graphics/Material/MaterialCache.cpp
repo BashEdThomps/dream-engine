@@ -27,10 +27,10 @@
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Shader/ShaderCache.h"
 #include "Project/Project.h"
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     MaterialCache::MaterialCache
     (ProjectRuntime* parent, ShaderCache* shaderCache, TextureCache* textureCache)

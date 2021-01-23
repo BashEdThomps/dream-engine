@@ -3,16 +3,14 @@
 #include "ImGuiWidget.h"
 #include <DreamCore.h>
 
-using namespace Dream;
+using octronic::dream::ScriptPrintListener;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    class ScriptDebugWindow
-            : public ImGuiWidget,
-              public ScriptPrintListener
+    class ScriptDebugWindow : public ImGuiWidget, public ScriptPrintListener
     {
     public:
-        ScriptDebugWindow(DTContext* proj);
+        ScriptDebugWindow(DreamToolContext* proj);
         ~ScriptDebugWindow() override;
 
         void draw() override;

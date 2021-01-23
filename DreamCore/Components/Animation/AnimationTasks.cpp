@@ -1,9 +1,9 @@
 #include "AnimationRuntime.h"
 
-#include "TaskManager/Task.h"
+#include "Components/Task/Task.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AnimationUpdateTask::AnimationUpdateTask
     (AnimationRuntime* rt)
@@ -20,11 +20,11 @@ namespace Dream
         {
             mAnimationRuntime->update();
             mAnimationRuntime->unlock();
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }

@@ -18,8 +18,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 
-
-
 #include "Camera.h"
 #include "Common/GLHeader.h"
 #include "Common/Logger.h"
@@ -49,26 +47,26 @@
 
 using namespace glm;
 
-namespace Dream
+namespace octronic::dream
 {
     GraphicsComponent::GraphicsComponent
     (ProjectRuntime* pr, WindowComponent* windowComponent)
         : Component(pr),
           mWindowComponent(windowComponent),
           mShaderCache(nullptr),
-
+          // Geometry Pass Vars
           mGeometryPassFB(0),
           mGeometryPassPositionBuffer(0),
           mGeometryPassAlbedoBuffer(0),
           mGeometryPassNormalBuffer(0),
           mGeometryPassDepthBuffer(0),
           mGeometryPassIgnoreBuffer(0),
-
+          // Shadow Pass Vars
           mShadowPassShader(nullptr),
           mShadowPassFB(0),
           mShadowPassDepthBuffer(0),
           mShadowMatrix(mat4(1.0f)),
-
+          // Light Pass Vars
           mLightingPassShader(nullptr),
           mScreenQuadVAO(0),
           mScreenQuadVBO(0)
@@ -132,9 +130,8 @@ namespace Dream
 
         if (windowWidth == 0 || windowHeight == 0)
         {
-            LOG_DEBUG("GraphicsComponent: It's a bit rude to use 0,0 viewport and divide by 0...");
-            windowWidth = 1;
-            windowHeight = 1;
+            LOG_ERROR("GraphicsComponent: Cannot setup buffers with 0,0 viewport");
+        	assert (windowWidth != 0 && windowHeight != 0);
         }
 
         glViewport(0, 0, windowWidth, windowHeight);
@@ -143,13 +140,14 @@ namespace Dream
         setupGeometryBuffers();
 
         LOG_DEBUG("GraphicsComponent: Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
+        mWindowComponent->setWindowSizeChangedFlag(false);
     }
 
     void
     GraphicsComponent::handleResize
     ()
     {
-        if (mWindowComponent->sizeHasChanged())
+        if (mWindowComponent->getWindowSizeChangedFlag())
         {
             onWindowDimensionsChanged();
         }
@@ -164,7 +162,6 @@ namespace Dream
     {
         if (!mEnabled)
         {
-
             LOG_CRITICAL("GraphicsComponent: Component Disabled");
             return;
         }
@@ -172,23 +169,33 @@ namespace Dream
         LOG_DEBUG("\n\n==> Running Geometry Render Pass\n");
         // Setup
         glViewport(0, 0, mWindowComponent->getWidth(), mWindowComponent->getHeight());
+        GLCheckError();
         glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
+        GLCheckError();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GLCheckError();
         glDisable(GL_BLEND);
+        GLCheckError();
         glEnable(GL_DEPTH_TEST);
+        GLCheckError();
         glDepthFunc(GL_LESS);
+        GLCheckError();
         glEnable(GL_CULL_FACE);
+        GLCheckError();
         glCullFace(GL_BACK);
+        GLCheckError();
 
         // Clear the colorbuffer
         if (sr != nullptr)
         {
             auto clearColour = sr->getClearColour();
             glClearColor(clearColour.x(), clearColour.y(), clearColour.z(), 1.0f);
+            GLCheckError();
         }
         else
         {
             glClearColor(0.0f,0.0f,0.0f,0.0f);
+            GLCheckError();
             return;
         }
 
@@ -260,7 +267,7 @@ namespace Dream
             GLCheckError();
         }
 
-         // Ignore Buffer
+        // Ignore Buffer
         if (mGeometryPassIgnoreBuffer != 0)
         {
             glDeleteTextures(1,&mGeometryPassIgnoreBuffer);
@@ -275,12 +282,7 @@ namespace Dream
         auto width = mWindowComponent->getWidth();
         auto height = mWindowComponent->getHeight();
 
-        if (width == 0 || height == 0)
-        {
-            LOG_DEBUG("GraphicsComponent: It's a bit rude to allocate empty buffers...");
-            width = 1;
-            height = 1;
-        }
+        assert (width != 0 && height != 0);
 
         LOG_DEBUG("GraphicsComponent: Setting up Geometry Buffers with dimensions {}x{}",width,height);
 
@@ -358,8 +360,6 @@ namespace Dream
         {
             LOG_DEBUG("GraphicsComponent: Deferred Rending Buffer is complete!");
         }
-        mWindowComponent->bindDefaultFrameBuffer();
-        GLCheckError();
         return true;
     }
 
@@ -373,8 +373,8 @@ namespace Dream
             // positions        // texture Coords
             -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
         };
 
         // setup plane VAO
@@ -404,17 +404,19 @@ namespace Dream
 
 
         LOG_DEBUG
-        (
-           "\n\n"
+                (
+                    "\n\n"
            "==> Running Lighting Render Pass"
            "\n"
         );
 
         glViewport(0, 0, mWindowComponent->getWidth(), mWindowComponent->getHeight());
-        mWindowComponent->bindDefaultFrameBuffer();
+        mWindowComponent->bindFrameBuffer();
         // Clear Buffer
         glClearColor(0.0f,0.0f,0.0f,1.0f);
+        GLCheckError();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GLCheckError();
 
         if (mLightingPassShader == nullptr)
         {
@@ -427,31 +429,40 @@ namespace Dream
 
             // Setup source textures
             glActiveTexture(GL_TEXTURE0);
+            GLCheckError();
             glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
+            GLCheckError();
             ShaderRuntime::CurrentTexture0 = mGeometryPassPositionBuffer;
 
             glActiveTexture(GL_TEXTURE1);
+            GLCheckError();
             glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
+            GLCheckError();
             ShaderRuntime::CurrentTexture1 = mGeometryPassNormalBuffer;
 
             glActiveTexture(GL_TEXTURE2);
+            GLCheckError();
             glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
+            GLCheckError();
             ShaderRuntime::CurrentTexture2 = mGeometryPassAlbedoBuffer;
 
             glActiveTexture(GL_TEXTURE3);
+            GLCheckError();
             glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
+            GLCheckError();
             ShaderRuntime::CurrentTexture3 = mShadowPassDepthBuffer;
 
             glActiveTexture(GL_TEXTURE4);
+            GLCheckError();
             glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
+            GLCheckError();
             ShaderRuntime::CurrentTexture4 = mGeometryPassIgnoreBuffer;
 
-            GLuint pos, norm, alb, shadow, ignore, depth;
-            pos = 0;
-            norm = 1;
-            alb  = 2;
-            shadow = 3;
-            ignore = 4;
+            GLuint pos    = 0;
+            GLuint norm   = 1;
+            GLuint alb    = 2;
+            GLuint shadow = 3;
+            GLuint ignore = 4;
             mLightingPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
             mLightingPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
             mLightingPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
@@ -460,6 +471,7 @@ namespace Dream
 
             auto shadowMtx = mLightingPassShader->getUniformLocation("shadowSpaceMatrix");
             glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
+            GLCheckError();
 
             mLightingPassShader->setViewerPosition(sr->getCamera()->getTranslation());
             mLightingPassShader->bindLightQueue(mLightQueue);
@@ -467,14 +479,26 @@ namespace Dream
 
             mLightingPassShader->bindVertexArray(mScreenQuadVAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            GLCheckError();
 
-            // Copy content of geometry's depth buffer to default framebuffer's depth buffer
+            // Copy content of geometry's depth buffer to the target
+            // framebuffer's depth buffer
+
             auto width = mWindowComponent->getWidth();
             auto height = mWindowComponent->getHeight();
+
             glBindFramebuffer(GL_READ_FRAMEBUFFER, mGeometryPassDepthBuffer);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-            glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-            mWindowComponent->bindDefaultFrameBuffer();
+            GLCheckError();
+
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mWindowComponent->getDepthBuffer());
+            GLCheckError();
+
+            glBlitFramebuffer(
+				/* Source */ 0, 0, width, height,
+				/* Dest   */ 0, 0, width, height,
+				GL_DEPTH_BUFFER_BIT, GL_NEAREST
+            );
+            GLCheckError();
         }
         clearLightQueue();
     }
@@ -485,49 +509,46 @@ namespace Dream
     GraphicsComponent::setupShadowBuffers
     ()
     {
-       LOG_INFO("GraphicsComponent: Setting up ShadowPass FrameBuffer");
-       glGenFramebuffers(1,&mShadowPassFB);
-       GLCheckError();
+        LOG_INFO("GraphicsComponent: Setting up ShadowPass FrameBuffer");
+        glGenFramebuffers(1,&mShadowPassFB);
+        GLCheckError();
 
-       if (mShadowPassFB == 0)
-       {
-          LOG_ERROR("GraphicsComponent: Unable to create shadow pass FB");
-          return false;
-       }
+        if (mShadowPassFB == 0)
+        {
+            LOG_ERROR("GraphicsComponent: Unable to create shadow pass FB");
+            return false;
+        }
 
-       glGenTextures(1, &mShadowPassDepthBuffer);
-       GLCheckError();
+        glGenTextures(1, &mShadowPassDepthBuffer);
+        GLCheckError();
 
-       if (mShadowPassDepthBuffer == 0)
-       {
+        if (mShadowPassDepthBuffer == 0)
+        {
 
-           LOG_ERROR("GraphicsComponent: Unable to create shadow pass depth buffer");
-           return false;
-       }
+            LOG_ERROR("GraphicsComponent: Unable to create shadow pass depth buffer");
+            return false;
+        }
 
-       glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
+        glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
 
-       GLCheckError();
-       glTexImage2D
-       (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-            SHADOW_SIZE, SHADOW_SIZE, 0,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr);
+        GLCheckError();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_SIZE, SHADOW_SIZE, 0,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        GLCheckError();
 
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-       float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-       glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-       GLCheckError();
+        glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowPassDepthBuffer, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //GLCheckError();
 
-       glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
-       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowPassDepthBuffer, 0);
-       glDrawBuffer(GL_NONE);
-       glReadBuffer(GL_NONE);
-       glBindFramebuffer(GL_FRAMEBUFFER, 0);
-       GLCheckError();
-
-       return true;
+        return true;
     }
 
     void
@@ -544,11 +565,10 @@ namespace Dream
 
         if (mShadowLight == nullptr || mShadowPassShader == nullptr)
         {
-            LOG_ERROR
-            (
-                "GraphicsComponent: Cannot render shadow pass Light: {}, Shader: {]",
-                mShadowLight != nullptr,
-                mShadowPassShader != nullptr
+            LOG_ERROR(
+				"GraphicsComponent: Cannot render shadow pass Light: {}, Shader: {]",
+				mShadowLight != nullptr,
+				mShadowPassShader != nullptr
             );
             return;
         }
@@ -557,8 +577,11 @@ namespace Dream
         LOG_DEBUG("\n\n==> Running Shadow Render Pass\n");
 
         glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
+        GLCheckError();
         glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
+        GLCheckError();
         glClear(GL_DEPTH_BUFFER_BIT);
+        GLCheckError();
 
         // Setup Uniforms
         static float near_plane = 1.0f;
@@ -568,11 +591,10 @@ namespace Dream
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
 
         mat4 lightMat = mShadowLight->getTransform().getMatrix();
-        mat4 lightView = glm::lookAt
-        (
-            vec3(lightMat[3]), // Light Pos
-            vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
-            vec3(0.0f,1.0f,0.0f) // Up
+        mat4 lightView = glm::lookAt(
+			vec3(lightMat[3]), // Light Pos
+			vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
+			vec3(0.0f,1.0f,0.0f) // Up
         );
 
         //DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
@@ -581,19 +603,21 @@ namespace Dream
         mShadowMatrix = lightProjection*lightView;
         //glCullFace(GL_FRONT);
         glDisable(GL_CULL_FACE);
+        GLCheckError();
         if (mShaderCache != nullptr)
         {
             mShaderCache->drawShadowPass(mShadowMatrix, mShadowPassShader);
         }
         glEnable(GL_CULL_FACE);
+        GLCheckError();
         glCullFace(GL_BACK);
+        GLCheckError();
     }
 
     void
     GraphicsComponent::freeShadowBuffers
     ()
     {
-        //mWindowComponent->bindDefaultFrameBuffer();
         if (mShadowPassFB != 0)
         {
             glDeleteFramebuffers(1, &mShadowPassFB);
@@ -616,7 +640,7 @@ namespace Dream
         auto light = runt->getLightRuntime();
         if (light->getType() == LightType::LT_DIRECTIONAL)
         {
-           mShadowLight = runt;
+            mShadowLight = runt;
         }
         mLightQueue.push_back(light);
     }
@@ -713,7 +737,7 @@ namespace Dream
     GraphicsComponent::pushTask
     (GraphicsComponentTask* t)
     {
-       mTaskQueue.push_back(t);
+        mTaskQueue.push_back(t);
     }
     void
     GraphicsComponent::pushDestructionTask
@@ -739,19 +763,21 @@ namespace Dream
                 }
 
                 // Check if ready to execute
-                if (t->isWaitingForDependencies())
+                if (!t->isWaitingForDependencies())
+                {
+                    t->setState(TaskState::TASK_STATE_ACTIVE);
+                    t->execute();
+                }
+                // Still Waiting
+                else
                 {
                     t->incrementDeferralCount();
                 }
-                else
-                {
-                    t->setState(TaskState::ACTIVE);
-                    t->execute();
-                }
 
-                if (t->getState() == TaskState::COMPLETED)
+                // Task has completed
+                if (t->getState() == TaskState::TASK_STATE_COMPLETED)
                 {
-                   completed.push_back(t);
+                    completed.push_back(t);
                 }
             }
 
@@ -776,7 +802,7 @@ namespace Dream
         for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
         {
             const auto& t = (*itr);
-            t->setState(TaskState::ACTIVE);
+            t->setState(TaskState::TASK_STATE_ACTIVE);
             t->execute();
         }
         mDestructionTaskQueue.clear();

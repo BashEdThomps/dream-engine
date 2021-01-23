@@ -16,7 +16,7 @@
 #pragma once
 #include "AssetRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class EntityRuntime;
 

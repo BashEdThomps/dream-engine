@@ -4,7 +4,7 @@
 
 using std::mutex;
 
-namespace Dream
+namespace octronic::dream
 {
     class LockableObject
     {

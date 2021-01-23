@@ -19,13 +19,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <DreamCore.h>
 
-using namespace Dream;
-namespace DreamTool
+namespace octronic::dream::tool
 {
-
     Grid::Grid
     (
-            DTContext* p,
+            DreamToolContext* p,
             AxisPair xp,
             glm::vec3 position,
             float majorSpacing,

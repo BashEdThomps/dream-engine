@@ -19,7 +19,7 @@
 
 using std::numeric_limits;
 
-namespace Dream
+namespace octronic::dream
 {
     BoundingBox::BoundingBox(const Vector3& min, const Vector3& max)
         : maxDimension(max.x()*2),

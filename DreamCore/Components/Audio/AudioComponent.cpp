@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-namespace Dream
+namespace octronic::dream
 {
     AudioComponent::AudioComponent
     (ProjectRuntime* rt)

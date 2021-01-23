@@ -50,7 +50,7 @@ using std::string;
 
 static void PrintCallback(const string& in)
 {
-    for (auto* pl : Dream::ScriptComponent::PrintListeners)
+    for (auto* pl : octronic::dream::ScriptComponent::PrintListeners)
     {
         pl->onPrint(in);
     }
@@ -76,13 +76,13 @@ static void MessageCallback(const asSMessageInfo *msg, void *param)
   ss << "(" << msg->section << ") [" <<  msg->row << "," << msg->col << "] " << msg->message;
   cout << ss.str() << endl;
 
-  for (auto* pl : Dream::ScriptComponent::PrintListeners)
+  for (auto* pl : octronic::dream::ScriptComponent::PrintListeners)
     {
         pl->onPrint(ss.str());
     }
 }
 
-namespace Dream
+namespace octronic::dream
 {
     void ScriptComponent::whyYouFail(int r, int line)
     {

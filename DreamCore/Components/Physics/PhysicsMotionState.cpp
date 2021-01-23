@@ -21,7 +21,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Dream
+namespace octronic::dream
 {
     PhysicsMotionState::PhysicsMotionState
     (Transform* dreamTransform)

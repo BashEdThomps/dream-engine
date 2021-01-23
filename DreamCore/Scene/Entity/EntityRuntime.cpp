@@ -19,15 +19,12 @@
 #include "Components/Animation/AnimationDefinition.h"
 #include "Components/Animation/AnimationRuntime.h"
 #include "Components/Path/PathDefinition.h"
-#include "Components/Scroller/ScrollerDefinition.h"
-#include "Components/Scroller/ScrollerRuntime.h"
 #include "Components/Audio/AudioCache.h"
 #include "Components/Audio/AudioRuntime.h"
 #include "Components/Audio/AudioComponent.h"
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Graphics/Model/ModelCache.h"
 #include "Components/Graphics/Light/LightRuntime.h"
-#include "Components/Graphics/ParticleEmitter/ParticleEmitterRuntime.h"
 #include "Components/Physics/PhysicsObjectRuntime.h"
 #include "Components/Physics/PhysicsComponent.h"
 #include "Components/AssetDefinition.h"
@@ -35,18 +32,15 @@
 #include "Components/Graphics/Font/FontDefinition.h"
 #include "Components/Graphics/Light/LightDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
-#include "Components/Graphics/ParticleEmitter/ParticleEmitterDefinition.h"
 #include "Components/Physics/PhysicsObjectDefinition.h"
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Script/ScriptComponent.h"
 #include "Components/Script/ScriptRuntime.h"
-#include "Components/ObjectEmitter/ObjectEmitterDefinition.h"
-#include "Components/ObjectEmitter/ObjectEmitterRuntime.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 #include "Project/ProjectDefinition.h"
 #include "Common/Uuid.h"
-#include "TaskManager/TaskManager.h"
+#include "Components/Task/TaskManager.h"
 #include "Components/Script/ScriptTasks.h"
 #include "Components/Time.h"
 
@@ -56,7 +50,7 @@
 
 using std::vector;
 
-namespace Dream
+namespace octronic::dream
 {
     EntityRuntime::EntityRuntime(
         EntityDefinition* sd,
@@ -66,15 +60,12 @@ namespace Dream
         mAnimationRuntime(nullptr),
         mAudioRuntime(nullptr),
         mLightRuntime(nullptr),
-        mParticleEmitterRuntime(nullptr),
         mPathRuntime(nullptr),
         mPhysicsObjectRuntime(nullptr),
         mScriptRuntime(nullptr),
         mModelRuntime(nullptr),
-        mScrollerRuntime(nullptr),
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
-        mObjectEmitterRuntime(nullptr),
         mBoundingBox(),
         mHasCameraFocus(false),
         mDeleted(false),
@@ -119,16 +110,13 @@ namespace Dream
         }
         mChildRuntimes.clear();
 
-        removeScrollerRuntime();
         removeAnimationRuntime();
         removeAudioRuntime();
         removeLightRuntime();
         removeModelRuntime();
-        removeParticleEmitterRuntime();
         removePathRuntime();
         removePhysicsObjectRuntime();
         removeScriptRuntime();
-        removeObjectEmitterRuntime();
     }
 
     void
@@ -217,40 +205,6 @@ namespace Dream
         }
     }
 
-    void
-    EntityRuntime::removeParticleEmitterRuntime
-    ()
-    {
-        if (mParticleEmitterRuntime != nullptr)
-        {
-            delete mParticleEmitterRuntime;
-            mParticleEmitterRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeObjectEmitterRuntime
-    ()
-    {
-        if (mObjectEmitterRuntime != nullptr)
-        {
-            delete mObjectEmitterRuntime;
-            mObjectEmitterRuntime = nullptr;
-        }
-    }
-
-
-    void
-    EntityRuntime::removeScrollerRuntime
-    ()
-    {
-        if (mScrollerRuntime != nullptr)
-        {
-            delete mScrollerRuntime;
-            mScrollerRuntime = nullptr;
-        }
-    }
-
     AnimationRuntime*
     EntityRuntime::getAnimationRuntime
     ()
@@ -293,53 +247,26 @@ namespace Dream
         return mLightRuntime;
     }
 
-    ParticleEmitterRuntime*
-    EntityRuntime::getParticleEmitterRuntime
-    ()
-    {
-       return mParticleEmitterRuntime;
-    }
-
-    ObjectEmitterRuntime*
-    EntityRuntime::getObjectEmitterRuntime
-    ()
-    {
-        return mObjectEmitterRuntime;
-    }
-
-    ScrollerRuntime*
-    EntityRuntime::getScrollerRuntime
-    ()
-    {
-        return mScrollerRuntime;
-    }
-
     AssetRuntime*
     EntityRuntime::getAssetRuntime
     (AssetType type)
     {
        switch (type)
        {
-           case Dream::ANIMATION:
+           case ASSET_TYPE_ENUM_ANIMATION:
                return getAnimationRuntime();
-           case Dream::PATH:
+           case ASSET_TYPE_ENUM_PATH:
                return getPathRuntime();
-           case Dream::AUDIO:
+           case ASSET_TYPE_ENUM_AUDIO:
                return getAudioRuntime();
-           case Dream::LIGHT:
+           case ASSET_TYPE_ENUM_LIGHT:
                return getLightRuntime();
-           case Dream::MODEL:
+           case ASSET_TYPE_ENUM_MODEL:
                return getModelRuntime();
-           case Dream::PHYSICS_OBJECT:
+           case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                return getPhysicsObjectRuntime();
-           case Dream::SCRIPT:
+           case ASSET_TYPE_ENUM_SCRIPT:
                return getScriptRuntime();
-           case Dream::SCROLLER:
-               return getScrollerRuntime();
-           case Dream::PARTICLE_EMITTER:
-               return getParticleEmitterRuntime();
-           case Dream::OBJECT_EMITTER:
-               return getObjectEmitterRuntime();
            default:
                break;
        }
@@ -372,13 +299,6 @@ namespace Dream
     ()
     {
         return mScriptRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasObjectEmitterRuntime
-    ()
-    {
-        return mObjectEmitterRuntime != nullptr;
     }
 
     void
@@ -571,35 +491,26 @@ namespace Dream
             LOG_TRACE("EntityRuntime: Creating {}",def->getNameAndUuidString());
             switch (assetPair.first)
             {
-                case AssetType::ANIMATION:
+                case AssetType::ASSET_TYPE_ENUM_ANIMATION:
                     result = createAnimationRuntime(static_cast<AnimationDefinition*>(def));
                     break;
-                case AssetType::AUDIO:
+                case AssetType::ASSET_TYPE_ENUM_AUDIO:
                     result = createAudioRuntime(static_cast<AudioDefinition*>(def));
                     break;
-                case AssetType::LIGHT:
+                case AssetType::ASSET_TYPE_ENUM_LIGHT:
                     result = createLightRuntime(static_cast<LightDefinition*>(def));
                     break;
-                case AssetType::MODEL:
+                case AssetType::ASSET_TYPE_ENUM_MODEL:
                     result = createModelRuntime(static_cast<ModelDefinition*>(def));
                     break;
-                case AssetType::PARTICLE_EMITTER:
-                    result = createParticleEmitterRuntime(static_cast<ParticleEmitterDefinition*>(def));
-                    break;
-                case AssetType::PATH:
+                case AssetType::ASSET_TYPE_ENUM_PATH:
                     result = createPathRuntime(static_cast<PathDefinition*>(def));
                     break;
-                case AssetType::PHYSICS_OBJECT:
+                case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                     result = createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
                     break;
-                case AssetType::SCRIPT:
+                case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                     result = createScriptRuntime(static_cast<ScriptDefinition*>(def));
-                    break;
-                case AssetType::SCROLLER:
-                    result = createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
-                    break;
-                case AssetType::OBJECT_EMITTER:
-                    result = createObjectEmitterRuntime(static_cast<ObjectEmitterDefinition*>(def));
                     break;
                 default:
                     return false;
@@ -648,26 +559,20 @@ namespace Dream
         }
         switch (type)
         {
-            case AssetType::ANIMATION:
+            case AssetType::ASSET_TYPE_ENUM_ANIMATION:
                 return createAnimationRuntime(static_cast<AnimationDefinition*>(def));
-            case AssetType::AUDIO:
+            case AssetType::ASSET_TYPE_ENUM_AUDIO:
                 return createAudioRuntime(static_cast<AudioDefinition*>(def));
-            case AssetType::LIGHT:
+            case AssetType::ASSET_TYPE_ENUM_LIGHT:
                 return createLightRuntime(static_cast<LightDefinition*>(def));
-            case AssetType::MODEL:
+            case AssetType::ASSET_TYPE_ENUM_MODEL:
                 return createModelRuntime(static_cast<ModelDefinition*>(def));
-            case AssetType::PARTICLE_EMITTER:
-                return createParticleEmitterRuntime(static_cast<ParticleEmitterDefinition*>(def));
-            case AssetType::PATH:
+            case AssetType::ASSET_TYPE_ENUM_PATH:
                 return createPathRuntime(static_cast<PathDefinition*>(def));
-            case AssetType::PHYSICS_OBJECT:
+            case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                 return createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
-            case AssetType::SCRIPT:
+            case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                 return createScriptRuntime(static_cast<ScriptDefinition*>(def));
-            case AssetType::SCROLLER:
-                return createScrollerRuntime(static_cast<ScrollerDefinition*>(def));
-            case AssetType::OBJECT_EMITTER:
-                return createObjectEmitterRuntime(static_cast<ObjectEmitterDefinition*>(def));
             default:
                 return false;
         }
@@ -686,26 +591,6 @@ namespace Dream
             this
         );
         return mPhysicsObjectRuntime->useDefinition();
-    }
-
-    bool
-    EntityRuntime::createParticleEmitterRuntime
-    (ParticleEmitterDefinition* definition)
-    {
-        LOG_TRACE( "EntityRuntime: Creating ParticleEmitter asset Runtime." );
-        removeParticleEmitterRuntime();
-        mParticleEmitterRuntime = new ParticleEmitterRuntime(definition,this);
-        return mParticleEmitterRuntime->useDefinition();
-    }
-
-    bool
-    EntityRuntime::createScrollerRuntime
-    (ScrollerDefinition* def)
-    {
-        LOG_DEBUG("EntityRuntime: Creating Scroller asset Runtime.");
-        removeScrollerRuntime();
-        mScrollerRuntime = new ScrollerRuntime(def,this);
-        return mScrollerRuntime->useDefinition();
     }
 
     bool
@@ -805,16 +690,6 @@ namespace Dream
         LOG_TRACE( "EntityRuntime: Creating Light Asset Runtime." );
         mLightRuntime = new LightRuntime(definition,this);
         return mLightRuntime->useDefinition();
-    }
-
-    bool
-    EntityRuntime::createObjectEmitterRuntime
-    (ObjectEmitterDefinition* definition)
-    {
-        removeObjectEmitterRuntime();
-        LOG_TRACE( "EntityRuntime: Creating ObjectEmitter Asset Runtime." );
-        mObjectEmitterRuntime = new ObjectEmitterRuntime(definition,this);
-        return mObjectEmitterRuntime->useDefinition();
     }
 
     EntityRuntime*
@@ -1181,13 +1056,6 @@ namespace Dream
             return cam->exceedsFrustumPlaneAtTranslation(plane,this,tx);
         }
         return false;
-    }
-
-    bool
-    EntityRuntime::hasScrollerRuntime
-    ()
-    {
-        return mScrollerRuntime != nullptr;
     }
 
     bool

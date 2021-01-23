@@ -4,7 +4,7 @@
 #include "Common/Logger.h"
 #include "Scene/SceneRuntime.h"
 
-namespace Dream
+namespace octronic::dream
 {
     InputPollDataTask::InputPollDataTask
     (InputComponent* cp)
@@ -21,11 +21,11 @@ namespace Dream
             LOG_CRITICAL("InputPollDataTask: Executing on worker {}",mThreadId);
             mComponent->pollData();
             mComponent->unlock();
-            setState(TaskState::COMPLETED);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TaskState::WAITING);
+            setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
     }
@@ -46,11 +46,11 @@ namespace Dream
 
             if (mComponent->executeInputScript())
             {
-                setState(TaskState::COMPLETED);
+                setState(TaskState::TASK_STATE_COMPLETED);
             }
             else
             {
-                setState(TaskState::WAITING);
+                setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
             mComponent->unlock();

@@ -5,7 +5,7 @@
 // Defer GL Operations using Task objects
 #include "Components/Graphics/GraphicsComponentTask.h"
 
-namespace Dream
+namespace octronic::dream
 {
     class TextureRuntime;
     class TextureConstructionTask : public GraphicsComponentTask

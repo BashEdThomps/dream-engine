@@ -3,7 +3,7 @@
 #include "Common/Constants.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     AnimationKeyframe::AnimationKeyframe
     (int id)
@@ -12,7 +12,7 @@ namespace Dream
           mTranslation(vec3(0.0f)),
           mRotation(vec3(0.0f)),
           mScale(vec3(1.0f)),
-          mEasingType(AnimationEasing::Type::EasingBounceInOut)
+          mEasingType(AnimationEasing::EasingType::EasingBounceInOut)
     {
 
     }
@@ -54,7 +54,7 @@ namespace Dream
 
         if (!js[Constants::KEYFRAME_EASING_TYPE].is_null())
         {
-            mEasingType = static_cast<AnimationEasing::Type>(js[Constants::KEYFRAME_EASING_TYPE]);
+            mEasingType = static_cast<AnimationEasing::EasingType>(js[Constants::KEYFRAME_EASING_TYPE]);
         }
 
         if (!js[Constants::KEYFRAME_TRANSLATION].is_null())
@@ -207,7 +207,7 @@ namespace Dream
         mScale = scale;
     }
 
-    AnimationEasing::Type
+    AnimationEasing::EasingType
     AnimationKeyframe::getEasingType
     ()
     const
@@ -217,7 +217,7 @@ namespace Dream
 
     void
     AnimationKeyframe::setEasingType
-    (AnimationEasing::Type type)
+    (AnimationEasing::EasingType type)
     {
         mEasingType = type;
     }

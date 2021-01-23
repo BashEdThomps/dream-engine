@@ -20,7 +20,7 @@
 
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     class AssetDefinition;
 
@@ -48,6 +48,7 @@ namespace Dream
 
         bool getLoaded() const;
         void setLoaded(bool);
+
         void collectGarbage() override;
     };
 }

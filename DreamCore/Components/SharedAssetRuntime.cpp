@@ -4,9 +4,9 @@
 #include "Common/Logger.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 
-namespace Dream
+namespace octronic::dream
 {
     SharedAssetRuntime::SharedAssetRuntime
     (AssetDefinition* def, ProjectRuntime* runtime)

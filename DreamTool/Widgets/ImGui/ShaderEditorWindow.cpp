@@ -1,12 +1,12 @@
 #include "ShaderEditorWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
 
     ShaderEditorWindow::ShaderEditorWindow
-    (DTContext* state)
+    (DreamToolContext* state)
         : ImGuiWidget (state),
           mShaderDefinition(nullptr)
     {
@@ -24,11 +24,11 @@ namespace DreamTool
     ShaderEditorWindow::draw
     ()
     {
-        if (mState->project && mShaderDefinition)
+        if (mContext->getProject() && mShaderDefinition)
         {
 
             ImGui::Begin("Shader Editor",&mVisible);
-            auto projRunt = mState->project->getRuntime();
+            auto projRunt = mContext->getProject()->getRuntime();
             ShaderRuntime* shaderInst = nullptr;
             {
                 auto scriptCache = projRunt->getShaderCache();
@@ -47,21 +47,19 @@ namespace DreamTool
                     auto currentVertexText = mVertexEditor.GetText();
                     shaderInst->setVertexSource(currentVertexText);
                     string vSource = shaderInst->getVertexSource();
-                    vector<char> vData(vSource.begin(),vSource.end());
-                    vertSuccess = mState->projectDirectory.writeAssetData(mShaderDefinition,vData,Constants::SHADER_VERTEX_FILE_NAME);
+                    vertSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)vSource.c_str(), vSource.size(),Constants::SHADER_VERTEX_FILE_NAME);
 
                     auto currentFragmentText = mFragmentEditor.GetText();
                     shaderInst->setFragmentSource(currentFragmentText);
                     string fSource = shaderInst->getFragmentSource();
-                    vector<char> data(fSource.begin(),fSource.end());
-                    fragSuccess = mState->projectDirectory.writeAssetData(mShaderDefinition,data,Constants::SHADER_FRAGMENT_FILE_NAME);
+                    fragSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)fSource.c_str(),fSource.size(),Constants::SHADER_FRAGMENT_FILE_NAME);
                     if (vertSuccess && fragSuccess)
                     {
-                        mState->menuBar.setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
+                        mContext->getMenuBar()->setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
                     }
                     else
                     {
-                        mState->menuBar.setMessageString("Error saving Shader"+shaderInst->getNameAndUuidString());
+                        mContext->getMenuBar()->setMessageString("Error saving Shader"+shaderInst->getNameAndUuidString());
                     }
 
                 }
@@ -70,7 +68,7 @@ namespace DreamTool
 
             // Templates
 
-            vector<string> templates = mState->templatesModel.getTemplateNames(AssetType::SHADER);
+            vector<string> templates = mContext->getTemplatesModel()->getTemplateNames(AssetType::ASSET_TYPE_ENUM_SHADER);
             static int currentTemplateIndex = -1;
             if(StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
             {
@@ -79,7 +77,7 @@ namespace DreamTool
             // Editors
             ImGui::Columns(2);
 
-            ImGui::PushFont(DTWindowComponent::MonoFont);
+            ImGui::PushFont(DreamToolWindow::MonoFont);
 
             auto cposVert = mVertexEditor.GetCursorPosition();
             ImGui::Text(
@@ -127,8 +125,8 @@ namespace DreamTool
                     else
                     {
                         auto  templateName = templates.at(currentTemplateIndex);
-                        string vertTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
-                        string fragTemplate = mState->templatesModel.getTemplate(AssetType::SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
+                        string vertTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
+                        string fragTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
                         if (shaderInst)
                         {
                             mVertexEditor.SetText(vertTemplate);
@@ -154,7 +152,7 @@ namespace DreamTool
     (ShaderDefinition* scriptDefinition)
     {
         mShaderDefinition = scriptDefinition;
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
         ShaderRuntime* scriptInst = nullptr;
         if (projRunt)
         {

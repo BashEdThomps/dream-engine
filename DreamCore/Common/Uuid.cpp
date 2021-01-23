@@ -20,7 +20,7 @@
 
 using namespace std::chrono;
 
-namespace Dream
+namespace octronic::dream
 {
     UuidType UuidTools::generateUuid()
     {

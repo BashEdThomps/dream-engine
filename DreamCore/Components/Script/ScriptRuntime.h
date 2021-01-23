@@ -22,7 +22,7 @@
 class asIScriptModule;
 class asIScriptFunction;
 
-namespace Dream
+namespace octronic::dream
 {
     class ScriptDefinition;
     class InputComponent;

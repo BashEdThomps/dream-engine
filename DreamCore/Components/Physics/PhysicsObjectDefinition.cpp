@@ -11,7 +11,7 @@
  */
 #include "PhysicsObjectDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
     (ProjectDefinition* pd, const json &js)

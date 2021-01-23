@@ -7,7 +7,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-namespace Dream
+namespace octronic::dream
 {
     struct MouseState
     {

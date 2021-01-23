@@ -15,17 +15,20 @@
 
 #pragma once
 
-#include <vector>
-#include <deque>
 #include "AudioStatus.h"
 #include "AudioTasks.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
 #include "Common/ALHeader.h"
 
-using namespace std;
+#include <vector>
+#include <deque>
 
-namespace Dream
+using std::deque;
+using std::vector;
+
+
+namespace octronic::dream
 {
     class AudioDefinition;
     class AudioComponent;

@@ -3,7 +3,7 @@
 #include "ModelMesh.h"
 #include "Common/Logger.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ModelInitMeshTask::ModelInitMeshTask(ModelMesh* mesh)
         : GraphicsComponentTask(),
@@ -48,7 +48,7 @@ namespace Dream
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
                               static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
         glBindVertexArray(0);
-        setState(TaskState::COMPLETED);
+        setState(TaskState::TASK_STATE_COMPLETED);
         mMesh->clearVertices();
         mMesh->clearIndices();
     }
@@ -82,6 +82,6 @@ namespace Dream
         {
             glDeleteBuffers(1,&mIBO);
         }
-        setState(TaskState::COMPLETED);
+        setState(TaskState::TASK_STATE_COMPLETED);
     }
 }

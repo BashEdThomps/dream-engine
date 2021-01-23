@@ -13,15 +13,15 @@
 
 #include "Common/Constants.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
     WindowComponent::WindowComponent()
         : Component(nullptr),
-          mWidth(Constants::DEFAULT_SCREEN_WIDTH),
-          mHeight(Constants::DEFAULT_SCREEN_HEIGHT),
+          mWidth(0),
+          mHeight(0),
           mShouldClose(false),
-          mSizeHasChanged(true),
+          mWindowSizeChangedFlag(false),
           mMouseX(0),
           mMouseY(0)
     {
@@ -100,15 +100,6 @@ namespace Dream
         mShouldClose = close;
     }
 
-    bool
-    WindowComponent::sizeHasChanged
-    ()
-    {
-        bool temp = mSizeHasChanged;
-        mSizeHasChanged = false;
-        return temp;
-    }
-
     double WindowComponent::getMouseX()
     const
     {
@@ -121,4 +112,13 @@ namespace Dream
        return mMouseY;
     }
 
+    void WindowComponent::setWindowSizeChangedFlag(bool f)
+	{
+        mWindowSizeChangedFlag =  f;
+    }
+
+    bool WindowComponent::getWindowSizeChangedFlag() const
+    {
+        return mWindowSizeChangedFlag;
+    }
 }

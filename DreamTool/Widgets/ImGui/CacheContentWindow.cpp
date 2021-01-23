@@ -1,11 +1,11 @@
 #include "CacheContentWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 #include <DreamCore.h>
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
     CacheContentWindow::CacheContentWindow
-    (DTContext* proj) : ImGuiWidget(proj,false)
+    (DreamToolContext* proj) : ImGuiWidget(proj,false)
     {
     }
 
@@ -21,9 +21,9 @@ namespace DreamTool
     {
         ImGui::Begin("Cache Content");
 
-        if (mState->project)
+        if (mContext->getProject())
         {
-            auto projRunt = mState->project->getRuntime();
+            auto projRunt = mContext->getProject()->getRuntime();
             if (projRunt)
             {
                 if (ImGui::CollapsingHeader("Audio Cache"))

@@ -26,7 +26,7 @@
 
 using std::shared_ptr;
 
-namespace Dream
+namespace octronic::dream
 {
     class InputComponent : public Component
     {

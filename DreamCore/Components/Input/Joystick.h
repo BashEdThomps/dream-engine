@@ -17,7 +17,7 @@ using std::endl;
 using glm::mat4;
 using glm::vec3;
 
-namespace Dream
+namespace octronic::dream
 {
     class JoystickMapping
     {

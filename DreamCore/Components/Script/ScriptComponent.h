@@ -15,13 +15,13 @@
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "Components/Component.h"
-#include "Project/ProjectDirectory.h"
+#include "Components/Storage/ProjectDirectory.h"
 
 class asScriptModule;
 class asIScriptContext;
 class asIScriptEngine;
 
-namespace Dream
+namespace octronic::dream
 {
     class SceneRuntime;
     class EntityRuntime;

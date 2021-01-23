@@ -1,11 +1,11 @@
 #include "ScriptEditorWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
 
     ScriptEditorWindow::ScriptEditorWindow
-    (DTContext* state)
+    (DreamToolContext* state)
         : ImGuiWidget (state),
           mScriptDefinition(nullptr)
     {
@@ -23,12 +23,12 @@ namespace DreamTool
     ScriptEditorWindow::draw
     ()
     {
-        if (mState->project && mScriptDefinition)
+        if (mContext->getProject() && mScriptDefinition)
         {
 
             ImGui::Begin("Script Editor",&mVisible);
 
-            auto projRunt = mState->project->getRuntime();
+            auto projRunt = mContext->getProject()->getRuntime();
             ScriptRuntime* scriptInst = nullptr;
             {
                 auto scriptCache = projRunt->getScriptCache();
@@ -45,24 +45,24 @@ namespace DreamTool
                     auto currentText = mTextEditor.GetText();
                     scriptInst->setSource(currentText);
                     string source = scriptInst->getSource();
-                    vector<char> data(source.begin(),source.end());
-                    if (mState->projectDirectory.writeAssetData(mScriptDefinition,data,Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT))
+
+                    if (mContext->getProjectDirectory()->writeAssetData(mScriptDefinition,(uint8_t*)source.c_str(),source.size(),Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT))
                     {
 
-                        mState->menuBar.setMessageString("Saved Script "+scriptInst->getNameAndUuidString());
+                        mContext->getMenuBar()->setMessageString("Saved Script "+scriptInst->getNameAndUuidString());
                     }
                 }
             }
             ImGui::SameLine();
 
-            vector<string> templates = mState->templatesModel.getTemplateNames(AssetType::SCRIPT);
+            vector<string> templates = mContext->getTemplatesModel()->getTemplateNames(AssetType::ASSET_TYPE_ENUM_SCRIPT);
             static int currentTemplateIndex = -1;
             if (StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
             {
                 ImGui::OpenPopup("Load From Template?");
             }
 
-            ImGui::PushFont(DTWindowComponent::MonoFont);
+            ImGui::PushFont(DreamToolWindow::MonoFont);
 
             auto cpos = mTextEditor.GetCursorPosition();
             ImGui::Text(
@@ -96,7 +96,7 @@ namespace DreamTool
                     else
                     {
                         auto templateName = templates.at(currentTemplateIndex);
-                        auto templateStr = mState->templatesModel.getTemplate(AssetType::SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT);
+                        auto templateStr = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT);
                         if (scriptInst)
                         {
                             scriptInst->setSource(templateStr);
@@ -121,7 +121,7 @@ namespace DreamTool
     (ScriptDefinition* scriptDefinition)
     {
         mScriptDefinition = scriptDefinition;
-        auto projRunt = mState->project->getRuntime();
+        auto projRunt = mContext->getProject()->getRuntime();
         ScriptRuntime* scriptInst = nullptr;
         if (projRunt)
         {

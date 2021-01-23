@@ -27,7 +27,7 @@
 
 using std::make_shared;
 
-namespace Dream
+namespace octronic::dream
 {
     InputComponent::InputComponent
     (ProjectRuntime* rt)

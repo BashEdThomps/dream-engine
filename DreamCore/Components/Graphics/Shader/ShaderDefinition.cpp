@@ -17,7 +17,7 @@
  */
 #include "ShaderDefinition.h"
 
-namespace Dream
+namespace octronic::dream
 {
     ShaderDefinition::ShaderDefinition
     (ProjectDefinition* pd, const json &js)

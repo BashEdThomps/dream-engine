@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace Dream
+namespace octronic::dream
 {
     class AssetDefinition;
     class SceneDefinition;

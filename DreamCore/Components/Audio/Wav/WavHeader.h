@@ -18,7 +18,7 @@
 
 #include <cstdint>
 
-namespace Dream {
+namespace octronic::dream {
       typedef struct {
         // RIFF Chunk Descriptor
 

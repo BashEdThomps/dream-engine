@@ -21,7 +21,7 @@ using namespace std;
 
 typedef uint32_t UuidType;
 
-namespace Dream
+namespace octronic::dream
 {
     class UuidTools
     {

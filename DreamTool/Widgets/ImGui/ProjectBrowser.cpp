@@ -5,7 +5,7 @@
 #endif
 
 #include "PropertiesWindow.h"
-#include "DTContext.h"
+#include "DreamToolContext.h"
 
 #include <DreamCore.h>
 #include <nfd.h>
@@ -13,9 +13,9 @@
 
 using std::stringstream;
 
-namespace DreamTool
+namespace octronic::dream::tool
 {
-    ProjectBrowser::ProjectBrowser(DTContext* project)
+    ProjectBrowser::ProjectBrowser(DreamToolContext* project)
         : ImGuiWidget(project)
     {}
 
@@ -28,7 +28,8 @@ namespace DreamTool
     ProjectBrowser::draw
     ()
     {
-        if (mState->project)
+        Project* project = mContext->getProject();
+        if (project)
         {
             ImGui::Begin("Project Browser",&mVisible);
             drawProjectTree();
@@ -42,9 +43,9 @@ namespace DreamTool
     ProjectBrowser::drawProjectTree
     ()
     {
-
+        Project* project = mContext->getProject();
         // Project Tree
-        auto projDef = mState->project->getDefinition();
+        ProjectDefinition* projDef = project->getDefinition();
         ImGui::Text("Scenegraph");
         ImGui::Separator();
 
@@ -62,11 +63,11 @@ namespace DreamTool
         {
 
             LOG_TRACE("ProjectBrowser: Project clicked {}", projDef->getName());
-            mState->propertiesWindow.pushPropertyTarget
+            mContext->getPropertiesWindow()->pushPropertyTarget
             (
-                Project,
+                PropertyType_Project,
                 projDef,
-                mState->project->getRuntime()
+                project->getRuntime()
             );
         }
 
@@ -81,7 +82,7 @@ namespace DreamTool
                 if (ImGui::IsItemClicked())
                 {
                     LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
-                    auto pRunt = mState->project->getRuntime();
+                    ProjectRuntime* pRunt = project->getRuntime();
                     SceneRuntime* sRunt = nullptr;
 
                     if (pRunt)
@@ -97,7 +98,7 @@ namespace DreamTool
                             sRunt = nullptr;
                         }
                     }
-                    mState->propertiesWindow.pushPropertyTarget(Scene, sDef,sRunt);
+                    mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Scene, sDef,sRunt);
                 }
 
                 if (sceneNodeOpen)
@@ -117,11 +118,12 @@ namespace DreamTool
     ProjectBrowser::addEntity
     (EntityDefinition* def)
     {
+        Project* project = mContext->getProject();
         int treeId = 0;
 
         if (def != nullptr)
         {
-            auto projRunt = mState->project->getRuntime();
+            ProjectRuntime* projRunt = project->getRuntime();
             SceneRuntime* sRunt = projRunt->getActiveSceneRuntime();
             EntityRuntime* soRunt = nullptr;
 
@@ -169,14 +171,14 @@ namespace DreamTool
 
             if (ImGui::BeginPopupContextItem())
             {
-                const char* defName = def->getName().c_str();
+                string defName = def->getName();
                 if (mSelectedNodes.size() > 1)
                 {
                     ImGui::Text("%d objects selected",static_cast<int>(mSelectedNodes.size()));
                 }
                 else
                 {
-                    ImGui::Text("%s",defName);
+                    ImGui::Text("%s",defName.c_str());
                 }
 
                 // No Root Deletion
@@ -185,7 +187,7 @@ namespace DreamTool
                     // Deletion
                     ImGui::Separator();
                     char deleteBuffer[buf_sz];
-                    snprintf(deleteBuffer, buf_sz, "Delete %s",defName);
+                    snprintf(deleteBuffer, buf_sz, "Delete %s",defName.c_str());
                     deleteClicked = ImGui::MenuItem(deleteBuffer);
                 }
 
@@ -193,7 +195,7 @@ namespace DreamTool
                 ImGui::Separator();
 
                 char copySelectedBuffer[buf_sz];
-                snprintf(copySelectedBuffer,buf_sz,"Copy selected object(s) into %s",defName);
+                snprintf(copySelectedBuffer,buf_sz,"Copy selected object(s) into %s",defName.c_str());
                 copyToClicked = ImGui::MenuItem(copySelectedBuffer);
 
                 ImGui::EndPopup();
@@ -212,9 +214,9 @@ namespace DreamTool
                     auto parent = soRunt->getParentRuntime();
                     parent->removeChildRuntime(soRunt);
                 }
-                mState->selectionHighlighter.clearSelection();
-                mState->propertiesWindow.removeFromHistory(def);
-                mState->propertiesWindow.popPropertyTarget();
+                mContext->getSelectionHighlighter()->clearSelection();
+                mContext->getPropertiesWindow()->removeFromHistory(def);
+                mContext->getPropertiesWindow()->popPropertyTarget();
                 mSelectedNodes.clear();
             }
             else if (copyToClicked)
@@ -250,10 +252,10 @@ namespace DreamTool
 
                 if (soRunt)
                 {
-                    mState->selectionHighlighter.setSelectedEntity(soRunt);
+                    mContext->getSelectionHighlighter()->setSelectedEntity(soRunt);
                 }
                 LOG_TRACE("ProjectBrowser: Entity Clicked {}",def->getName());
-                mState->propertiesWindow.pushPropertyTarget(Entity, def, soRunt);
+                mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Entity, def, soRunt);
             }
 
             // Drag Source
@@ -299,8 +301,8 @@ namespace DreamTool
                             }
                         }
                         // Clear from properties
-                        mState->propertiesWindow.removeFromHistory(mDragDropSource.objectDef);
-                        mState->propertiesWindow.popPropertyTarget();
+                        mContext->getPropertiesWindow()->removeFromHistory(mDragDropSource.objectDef);
+                        mContext->getPropertiesWindow()->popPropertyTarget();
                     }
                     // Clear DragDrop pointers
                     mDragDropSource.objectDef = nullptr;
@@ -326,7 +328,7 @@ namespace DreamTool
     ProjectBrowser::drawAssetTree
     ()
     {
-        auto projDef = mState->project->getDefinition();
+        ProjectDefinition* projDef = mContext->getProject()->getDefinition();
         ImGui::Text("Assets");
         ImGui::Separator();
 
@@ -357,7 +359,7 @@ namespace DreamTool
                 if (newClicked)
                 {
                     auto newDef = projDef->createNewAssetDefinition(type);
-                    mState->propertiesWindow.pushPropertyTarget(Asset,newDef,nullptr);
+                    mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset,newDef,nullptr);
                     projDef->regroupAssetDefinitions();
                 }
                 ImGui::EndPopup();
@@ -397,11 +399,10 @@ namespace DreamTool
                                     if (ImGui::IsItemClicked())
                                     {
                                         LOG_ERROR("ProjectBrowser: Asset Definition Clicked {}", asset->getName());
-                                        mState->propertiesWindow.pushPropertyTarget(Asset, asset, nullptr);
+                                        mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                                     }
                                     ImGui::TreePop();
                                 }
-
                             }
                         }
                         ImGui::TreePop();

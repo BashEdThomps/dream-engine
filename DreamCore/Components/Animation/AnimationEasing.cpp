@@ -1,27 +1,27 @@
 #include "AnimationEasing.h"
 
-namespace Dream
+namespace octronic::dream
 {
 
 
 
     const string
     AnimationEasing::getEasingName
-    (AnimationEasing::Type easing)
+    (AnimationEasing::EasingType easing)
     {
         return EasingNames.at(easing);
     }
 
-    AnimationEasing::Type
+    AnimationEasing::EasingType
     AnimationEasing::getEasingType
     (const string& str)
     {
        auto namePos = std::find(EasingNames.begin(), EasingNames.end(),str);
        if (namePos != EasingNames.end())
        {
-          return static_cast<AnimationEasing::Type>(std::distance(EasingNames.begin(), namePos));
+          return static_cast<AnimationEasing::EasingType>(std::distance(EasingNames.begin(), namePos));
        }
-       return  Type::EasingLinear;
+       return  EasingType::EasingLinear;
     }
 
     const vector<string>
