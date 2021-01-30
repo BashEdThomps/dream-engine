@@ -35,6 +35,15 @@ namespace octronic::dream::tool
                     }
                 }
 
+                if (ImGui::CollapsingHeader("Font Cache"))
+                {
+                    auto cache = projRunt->getFontCache();
+                    for (auto instance : cache->getRuntimeVector())
+                    {
+                        ImGui::Text("%s",instance->getNameAndUuidString().c_str());
+                    }
+                }
+
                 if (ImGui::CollapsingHeader("Material Cache"))
                 {
                     auto cache = projRunt->getMaterialCache();

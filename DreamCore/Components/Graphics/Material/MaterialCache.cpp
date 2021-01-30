@@ -56,29 +56,21 @@ namespace octronic::dream
             LOG_ERROR("MaterialCache: Material Definition is null");
             return nullptr;
         }
-        auto matDef = static_cast<MaterialDefinition*>(def);
-        auto shader = static_cast<ShaderRuntime*>(mShaderCache->getRuntime(matDef->getShader()));
 
-        if (shader == nullptr)
+        MaterialDefinition* matDef = static_cast<MaterialDefinition*>(def);
+        MaterialRuntime* material = new MaterialRuntime(matDef,mProjectRuntime);
+
+        if(!material->useDefinition())
         {
-            LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
-            return nullptr;
+            LOG_ERROR("MaterialCache: Material useDefinition Failed");
+           	delete material;
+            material = nullptr;
+        }
+        else
+        {
+        	mRuntimes.push_back(material);
         }
 
-        auto material = new MaterialRuntime(matDef,mProjectRuntime);
-        auto diffuse = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getDiffuseTexture()));
-        auto specular = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getSpecularTexture()));
-        auto normal = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getNormalTexture()));
-        auto displacement = static_cast<TextureRuntime*>(mTextureCache->getRuntime(matDef->getDisplacementTexture()));
-        material->useDefinition();
-
-        material->setDiffuseTexture(diffuse);
-        material->setSpecularTexture(specular);
-        material->setNormalTexture(normal);
-        material->setDisplacementTexture(displacement);
-        material->setShader(shader);
-        shader->addMaterial(material);
-        mRuntimes.push_back(material);
         return material;
     }
 } // End of Dream

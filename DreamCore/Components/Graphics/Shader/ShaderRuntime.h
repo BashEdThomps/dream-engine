@@ -136,6 +136,11 @@ namespace octronic::dream
         void setFontPositionUniform(const vec2& pos);
         void setFontProjection(const mat4& proj);
 
+
+		bool performFragmentCompilation();
+		bool performVertexCompilation();
+		bool performLinking();
+
     protected:
         bool compileVertex();
         bool compileFragment();

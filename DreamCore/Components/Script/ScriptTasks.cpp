@@ -38,8 +38,6 @@ namespace octronic::dream
     }
 
 
-
-
     // =========================================================================
 
     EntityScriptOnInitTask::EntityScriptOnInitTask (EntityRuntime* rt)

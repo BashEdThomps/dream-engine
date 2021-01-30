@@ -25,9 +25,12 @@ namespace octronic::dream
 {
     /**
      * @brief The TaskManager class is responsible for scheduling and executing
-     * concurrent Tasks that are used to implement a Project's runtime logic
+     * concurrent Tasks that are used to implement a Scene's runtime logic.
      * Tasks should be atomic, and may be dependant on other Tasks. This system
      * allows Dream to utilise all of the processing cores available on the host.
+     *
+     * Graphics-related tasks are executed on the main thread by the
+     * GraphicsComponent.
      */
     class TaskManager
     {

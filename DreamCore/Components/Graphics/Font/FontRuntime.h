@@ -49,6 +49,12 @@ namespace octronic::dream
         void setAtlasHeight(unsigned int atlasHeight);
 
 
+        GLuint getAtlasTexture() const;
+        unsigned int getAtlasWidth() const;
+        unsigned int getAtlasHeight() const;
+
+        bool loadIntoGL();
+
     private:
         int mSize;
         FontCharacterInfo mCharacterInfo[CHAR_INFO_SZ];

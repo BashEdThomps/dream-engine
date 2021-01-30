@@ -1,12 +1,21 @@
 #include "FontRuntime.h"
 
-#include "Common/Logger.h"
 #include "FontDefinition.h"
+#include "FontCache.h"
+
+#include "Common/Logger.h"
+#include "Components/Graphics/GraphicsComponent.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/ProjectDirectory.h"
+#include "Components/Storage/File.h"
 #include "Scene/Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
-#include "Components/Graphics/GraphicsComponent.h"
+#include "Project/Project.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 using std::make_shared;
+using std::max;
 
 /**
  * https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02
@@ -53,6 +62,40 @@ namespace octronic::dream
         FontDefinition* fontDef = static_cast<FontDefinition*>(mDefinition);
 
         mSize = fontDef->getSize();
+
+        string filename = mProjectRuntime->getProject()->getDirectory()->getAssetAbsolutePath(fontDef);
+        // Open File
+        StorageManager* sm = mProjectRuntime->getStorageManager();
+        File* fontFile = sm->openFile(filename);
+        if (!fontFile->exists())
+        {
+            LOG_ERROR("FontCache: Font file {} does not exist", filename);
+            sm->closeFile(fontFile);
+            fontFile = nullptr;
+            return false;
+        }
+
+        // Read File
+ 		LOG_DEBUG("FontCache: Loading font: {}",filename);
+
+        if (!fontFile->readBinary())
+        {
+            LOG_ERROR("FontCache: Unable to read file data");
+            sm->closeFile(fontFile);
+            fontFile = nullptr;
+            return false;
+        }
+
+        uint8_t* buffer = fontFile->getBinaryData();
+        size_t buffer_sz = fontFile->getBinaryDataSize();
+
+        // Set Runtime Parameters
+        setFontFile(fontFile);
+        // Push back construction task
+        pushConstructionTask();
+
+        // Cache FontRuntime
+        fontFile = nullptr;
 
         return true;
 	}
@@ -226,5 +269,170 @@ namespace octronic::dream
 	void FontRuntime::setAtlasHeight(unsigned int atlasHeight)
     {
        mAtlasHeight = atlasHeight;
+    }
+
+
+    GLuint FontRuntime::getAtlasTexture() const
+    {
+        return mAtlasTexture;
+    }
+
+    unsigned int FontRuntime::getAtlasWidth() const
+    {
+        return mAtlasWidth;
+	}
+
+    unsigned int FontRuntime::getAtlasHeight() const
+    {
+        return mAtlasHeight;
+    }
+
+    bool FontRuntime::loadIntoGL()
+    {
+        // VAO
+        glGenVertexArrays(1,&mVao);
+        GLCheckError();
+        glBindVertexArray(mVao);
+        GLCheckError();
+
+        // VBO
+        glGenBuffers(1,&mVbo);
+        GLCheckError();
+        glBindBuffer(GL_ARRAY_BUFFER,mVbo);
+        GLCheckError();
+
+        // Vertex Position Attributes
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+        GLCheckError();
+        glEnableVertexAttribArray(0);
+        GLCheckError();
+
+        // Unbind for now
+        glBindVertexArray(0);
+        GLCheckError();
+
+        FT_Face face = NULL;
+
+        FontCache* fontCache = getProjectRuntime()->getFontCache();
+        FT_Library ft_lib = fontCache->getFreeTypeLibrary();
+
+        StorageManager* sm = getProjectRuntime()->getStorageManager();
+
+        // Already read the data in
+        void* font_data = mFontFile->getBinaryData();
+        size_t font_data_sz = mFontFile->getBinaryDataSize();
+
+        if (!font_data || font_data_sz == 0)
+        {
+            LOG_ERROR("FontConstructionTask: Font file was not read successfully");
+            sm->closeFile(mFontFile);
+            mFontFile = nullptr;
+            return false;
+        }
+
+        FT_Error ft_error = FT_New_Memory_Face(ft_lib,static_cast<FT_Byte*>(font_data),font_data_sz, 0, &face );
+
+        if(ft_error)
+        {
+            LOG_ERROR("FontManager: Unable to create font face: {}", FontCache::getFreetypeErrorMessage(ft_error));
+            return false;
+        }
+
+        assert(mSize > 0.f);
+
+        FT_Set_Pixel_Sizes(face, 0, mSize);
+
+        if(ft_error)
+        {
+            LOG_ERROR("FontManager: Unable to create font face: {}", FontCache::getFreetypeErrorMessage(ft_error));
+            return false;
+        }
+
+        FT_GlyphSlot g = face->glyph;
+        unsigned int w = 0;
+        unsigned int h = 0;
+
+        for(int i = 32; i < 128; i++)
+        {
+            if(FT_Load_Char(face, i, FT_LOAD_RENDER))
+            {
+                LOG_ERROR("Font: Loading character %c failed!\n", i);
+                continue;
+            }
+
+            w += g->bitmap.width;
+            h = max(h, g->bitmap.rows);
+        }
+
+        /* you might as well save this value as it is needed later on */
+        mAtlasWidth = w;
+        mAtlasHeight = h;
+
+        glGenTextures(1, &mAtlasTexture);
+        GLCheckError();
+
+        glActiveTexture(GL_TEXTURE0);
+        GLCheckError();
+
+        glBindTexture(GL_TEXTURE_2D, mAtlasTexture);
+        GLCheckError();
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        GLCheckError();
+
+#if defined (GL_ES_VERSION_3_0)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
+        GLCheckError();
+#else
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+        GLCheckError();
+#endif
+
+        /* Clamping to edges is important to prevent artifacts when scaling */
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GLCheckError();
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GLCheckError();
+
+		/* Linear filtering usually looks best for text */
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GLCheckError();
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GLCheckError();
+
+        // Begin loading glyphs
+
+        int x = 0;
+
+        for(int i = 32; i < 128; i++)
+        {
+            if(FT_Load_Char(face, i, FT_LOAD_RENDER))
+            {
+                continue;
+            }
+
+#if defined (GL_ES_VERSION_3_0)
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+#else
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+        	GLCheckError();
+#endif
+
+            mCharacterInfo[i].ax = g->advance.x >> 6;
+            mCharacterInfo[i].ay = g->advance.y >> 6;
+            mCharacterInfo[i].bw = g->bitmap.width;
+            mCharacterInfo[i].bh = g->bitmap.rows;
+            mCharacterInfo[i].bl = g->bitmap_left;
+            mCharacterInfo[i].bt = g->bitmap_top;
+            mCharacterInfo[i].tx = (float)x / w;
+
+            x += g->bitmap.width;
+        }
+
+        FT_Done_Face(face);
+        sm->closeFile(mFontFile);
+        return true;
     }
 }

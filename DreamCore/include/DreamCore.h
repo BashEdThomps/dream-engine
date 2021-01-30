@@ -22,22 +22,30 @@
 
 // Graphics
 #include "Components/Graphics/GraphicsComponent.h"
-#include "Components/Graphics/Font/FontDefinition.h"
+
 #include "Components/Graphics/Shader/ShaderDefinition.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Shader/ShaderCache.h"
+
 #include "Components/Graphics/Model/ModelDefinition.h"
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Graphics/Model/ModelCache.h"
 #include "Components/Graphics/Model/ModelMesh.h"
+
 #include "Components/Graphics/Light/LightDefinition.h"
 #include "Components/Graphics/Light/LightRuntime.h"
+
 #include "Components/Graphics/Material/MaterialCache.h"
 #include "Components/Graphics/Material/MaterialDefinition.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
+
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Texture/TextureDefinition.h"
 #include "Components/Graphics/Texture/TextureCache.h"
+
+#include "Components/Graphics/Font/FontDefinition.h"
+#include "Components/Graphics/Font/FontCache.h"
+#include "Components/Graphics/Font/FontRuntime.h"
 
 // Storage
 #include "Components/Storage/ProjectDirectory.h"

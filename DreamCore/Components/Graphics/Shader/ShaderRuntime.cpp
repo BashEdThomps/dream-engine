@@ -28,6 +28,8 @@
 #include "Scene/Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
+#define ERROR_BUF_SZ 4096
+
 using std::make_shared;
 using std::pair;
 using glm::value_ptr;
@@ -910,6 +912,124 @@ namespace octronic::dream
 
        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(proj));
 
+    }
+
+    bool ShaderRuntime::performFragmentCompilation()
+    {
+        GLint success;
+        GLchar infoLog[ERROR_BUF_SZ];
+        // Fragment Shader
+        setFragmentShader(glCreateShader(GL_FRAGMENT_SHADER));
+        string fs = getFragmentSource().c_str();
+
+        const char *fSource = fs.c_str();
+        glShaderSource(getFragmentShader(), 1, &fSource, nullptr);
+        glCompileShader(getFragmentShader());
+        // Print compile errors if any
+        glGetShaderiv(getFragmentShader(), GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(getFragmentShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderRuntime:\n"
+                       "\tFRAGMENT SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                       getNameAndUuidString(),
+                       infoLog );
+            glDeleteShader(getFragmentShader());
+            setFragmentShader(0);
+            return false;
+        }
+        return true;
+
+    }
+
+	bool ShaderRuntime::performVertexCompilation()
+    {
+        GLint success;
+        GLchar infoLog[ERROR_BUF_SZ];
+        // Vertex Shader
+        setVertexShader(glCreateShader(GL_VERTEX_SHADER));
+        string vs = getVertexSource().c_str();
+
+        const char *vSource = vs.c_str();
+        glShaderSource(getVertexShader(), 1, &vSource, nullptr);
+        glCompileShader(getVertexShader());
+        // Print compile errors if any
+        glGetShaderiv(getVertexShader(), GL_COMPILE_STATUS, &success);
+
+        if (!success)
+        {
+            glGetShaderInfoLog(getVertexShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderCompileVertexTask:\n"
+                       "\tVERTEX SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                       getNameAndUuidString(),
+                       infoLog );
+            glDeleteShader(getVertexShader());
+            setVertexShader(0);
+            return false;
+        }
+        return true;
+    }
+
+	bool ShaderRuntime::performLinking()
+    {
+        if (getVertexShader() != 0 && getFragmentShader() != 0)
+        {
+            GLint success;
+
+            // Create Shader Program
+            setShaderProgram(glCreateProgram());
+            if (getShaderProgram() == 0)
+            {
+                LOG_CRITICAL( "ShaderRuntime: Linking:\n"
+                           "\tSHADER LINKING FAILED\n"
+                           "\tShaderRuntime: {}\n",
+                           getNameAndUuidString());
+
+                return false;
+            }
+
+            glAttachShader(getShaderProgram(), getVertexShader());
+            glAttachShader(getShaderProgram(), getFragmentShader());
+            glLinkProgram(getShaderProgram());
+
+            // Print linking errors if any
+            glGetProgramiv(getShaderProgram(), GL_LINK_STATUS, &success);
+            GLchar infoLog[ERROR_BUF_SZ];
+            if (!success)
+            {
+                glGetProgramInfoLog(getShaderProgram(), ERROR_BUF_SZ, nullptr, infoLog);
+                LOG_CRITICAL("ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                glDeleteProgram(getShaderProgram());
+                setShaderProgram(0);
+                return false;
+            }
+
+            // Delete the shaders as they're linked into our program now and no longer necessery
+            glDeleteShader(getVertexShader());
+            glDeleteShader(getFragmentShader());
+
+            setLoaded(getShaderProgram() != 0);
+
+            if (getLoaded())
+            {
+                setPointLightCountLocation(
+                            glGetUniformLocation(getShaderProgram(),
+                                                 ShaderRuntime::UNIFORM_POINT_LIGHT_COUNT));
+
+                setSpotLightCountLocation(
+                            glGetUniformLocation(getShaderProgram(),
+                                                 ShaderRuntime::UNIFORM_SPOT_LIGHT_COUNT));
+
+                setDirectionalLightCountLocation(
+                            glGetUniformLocation(getShaderProgram(),
+                                                 ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT));
+            }
+        }
+        return true;
     }
 
     const GLint ShaderRuntime::UNIFORM_NOT_FOUND = -1;

@@ -59,6 +59,13 @@ namespace octronic::dream
                                       t->getTaskName(), t->getTaskId(), mThreadId);
                             t->setState(TaskState::TASK_STATE_COMPLETED);
                         }
+                        // Task failed
+                        else if (t->getState() == TaskState::TASK_STATE_FAILED)
+                        {
+                            LOG_TRACE("TaskThread: Task {}({}) FAILED on thread {}, welp",
+                                      t->getTaskName(), t->getTaskId(), mThreadId);
+                           assert(false);
+                        }
                         // Task is in good state, is it waiting for dependencies?
                         // if so, defer
                         else if (t->isWaitingForDependencies())

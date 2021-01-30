@@ -17,9 +17,12 @@
 #include "MaterialDefinition.h"
 #include "Common/Logger.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
+#include "Components/Graphics/Shader/ShaderCache.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
+#include "Components/Graphics/Texture/TextureCache.h"
 #include "Components/Graphics/Model/ModelMesh.h"
 #include "Components/Graphics/Camera.h"
+#include "Project/ProjectRuntime.h"
 
 namespace octronic::dream
 {
@@ -182,6 +185,30 @@ namespace octronic::dream
         mColorAmbient = rgbToVec3(matDef->getAmbientColour());
         mColorEmissive = rgbToVec3(matDef->getEmissiveColour());
         mColorReflective = rgbToVec3(matDef->getReflectiveColour());
+
+        // Shaders & Textures
+        ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
+        TextureCache* textureCache = mProjectRuntime->getTextureCache();
+        ShaderRuntime* shader = static_cast<ShaderRuntime*>(shaderCache->getRuntime(matDef->getShader()));
+
+        if (shader == nullptr)
+        {
+            LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
+            return false;
+        }
+
+        TextureRuntime* diffuse = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getDiffuseTexture()));
+        TextureRuntime* specular = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getSpecularTexture()));
+        TextureRuntime* normal = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getNormalTexture()));
+        TextureRuntime* displacement = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getDisplacementTexture()));
+
+        setDiffuseTexture(diffuse);
+        setSpecularTexture(specular);
+        setNormalTexture(normal);
+        setDisplacementTexture(displacement);
+        setShader(shader);
+        shader->addMaterial(this);
+
         return true;
     }
 

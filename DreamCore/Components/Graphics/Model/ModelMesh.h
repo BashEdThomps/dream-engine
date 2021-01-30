@@ -98,6 +98,7 @@ namespace octronic::dream
         void clearIndices();
         size_t getIndicesCount();
         size_t getVerticesCount();
+        bool loadIntoGL();
 
     private:
         ModelRuntime* mParent;

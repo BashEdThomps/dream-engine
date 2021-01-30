@@ -41,13 +41,18 @@ namespace octronic::dream
     ShaderCache::loadRuntime
     (AssetDefinition* def)
     {
-        auto shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
+        ShaderRuntime* shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
 
         if (!shaderRuntime->useDefinition())
         {
             LOG_ERROR("ShaderCache: Error while loading shader {}", def->getUuid());
+            delete shaderRuntime;
+            shaderRuntime = nullptr;
         }
-        mRuntimes.push_back(shaderRuntime);
+        else
+        {
+        	mRuntimes.push_back(shaderRuntime);
+        }
         return shaderRuntime;
     }
 

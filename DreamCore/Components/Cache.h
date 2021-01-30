@@ -19,6 +19,7 @@ namespace octronic::dream
     /**
      * @brief Cache is an abstract class that is used to define a common
      * interface for a instanciating and storing SharedAssetRuntime objects.
+     *
      * SharedAssetRuntime objects are used by more than one EntityRuntime
      * or other AssetRuntime objects. These AssetRuntime objects are cached to
      * reduce the SceneRuntime memory footprint.
@@ -88,6 +89,10 @@ namespace octronic::dream
          */
         virtual void clear();
 
+        /**
+         * @brief runtimeCount
+         * @return the number of Runtimes in this Cache
+         */
         size_t runtimeCount() const;
     protected:
 
@@ -96,6 +101,9 @@ namespace octronic::dream
          * SharedAssetRuntime that will be managed by this Cache.
          * @param definition AssetDefinition of Asset you wish to load
          * @return A SharedAssetRuntime or nullptr if unsuccesssful.
+         *
+         * LoadRuntime should not implement any logic, only call logic used
+         * to load an Asset's data into RAM.
          */
         virtual SharedAssetRuntime* loadRuntime(AssetDefinition* definition) = 0;
 

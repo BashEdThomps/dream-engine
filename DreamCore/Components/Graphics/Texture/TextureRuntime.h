@@ -33,16 +33,6 @@ namespace octronic::dream
 
     class TextureRuntime : public SharedAssetRuntime
     {
-    private:
-        GLuint mGLID;
-        string mPath;
-        int mWidth;
-        int mHeight;
-        int mChannels;
-        unsigned char* mImage;
-        TextureConstructionTask mTextureConstructionTask;
-        shared_ptr<TextureDestructionTask> mTextureDestructionTask;
-
     public:
         TextureRuntime(TextureDefinition* def, ProjectRuntime*);
         ~TextureRuntime() override;
@@ -70,6 +60,19 @@ namespace octronic::dream
         void setImage(unsigned char* image);
 
         void pushConstructionTask();
+
+        bool loadIntoGL();
+
+    private:
+        GLuint mGLID;
+        int mWidth;
+        int mHeight;
+        int mChannels;
+        unsigned char* mImage;
+        TextureConstructionTask mTextureConstructionTask;
+        shared_ptr<TextureDestructionTask> mTextureDestructionTask;
+
+
 
     };
 }

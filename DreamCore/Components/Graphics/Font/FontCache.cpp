@@ -33,7 +33,7 @@ namespace octronic::dream
           mFreeTypeLibrary(nullptr)
 
     {
-       initFreetypeLibrary();
+        initFreetypeLibrary();
     }
 
     FontCache::~FontCache()
@@ -45,16 +45,16 @@ namespace octronic::dream
     {
         LOG_TRACE("FontCache: {}",__FUNCTION__);
         FT_Error ft_error = FT_Init_FreeType(&mFreeTypeLibrary);
-		if( ft_error )
-		{
+        if( ft_error )
+        {
             LOG_ERROR("FontManager: Unable to initialise FreeType Library: {}",ft_error);
-			return false;
-		}
+            return false;
+        }
         return true;
     }
 
-	SharedAssetRuntime* FontCache::loadRuntime(AssetDefinition* definition)
-	{
+    SharedAssetRuntime* FontCache::loadRuntime(AssetDefinition* definition)
+    {
         // Check Definition
         if (definition == nullptr)
         {
@@ -62,46 +62,21 @@ namespace octronic::dream
             return nullptr;
         }
 
-        FontDefinition* fontDef = static_cast<FontDefinition*>(definition);
-        string filename = getAbsolutePath(definition);
-        // Open File
-        StorageManager* sm = mProjectRuntime->getStorageManager();
-        File* fontFile = sm->openFile(filename);
-        if (!fontFile->exists())
-        {
-            LOG_ERROR("FontCache: Font file {} does not exist", filename);
-            sm->closeFile(fontFile);
-            fontFile = nullptr;
-            return nullptr;
-        }
-        // Read File
-
- 		LOG_DEBUG("FontCache: Loading font: {}",filename);
-
-        if (!fontFile->readBinary())
-        {
-            LOG_ERROR("FontCache: Unable to read file data");
-            sm->closeFile(fontFile);
-            fontFile = nullptr;
-            return nullptr;
-        }
-
-        uint8_t* buffer = fontFile->getBinaryData();
-        size_t buffer_sz = fontFile->getBinaryDataSize();
-
         // Create Runtime
+        FontDefinition* fontDef = static_cast<FontDefinition*>(definition);
         FontRuntime* fontRuntime = new FontRuntime(fontDef, mProjectRuntime);
-        // Set Runtime Parameters
-        fontRuntime->useDefinition();
-        fontRuntime->setFontFile(fontFile);
-        // Push back construction task
-        fontRuntime->pushConstructionTask();
-
-        // Cache FontRuntime
-        mRuntimes.push_back(fontRuntime);
-        fontFile = nullptr;
+        if (!fontRuntime->useDefinition())
+        {
+            LOG_ERROR("FontCache: Error loading Font, useDefinition failed");
+            delete fontRuntime;
+            return nullptr;
+        }
+        else
+        {
+            mRuntimes.push_back(fontRuntime);
+        }
         return fontRuntime;
-	}
+    }
 
     FT_Library FontCache::getFreeTypeLibrary()
     {
@@ -109,13 +84,13 @@ namespace octronic::dream
     }
 
     const char* FontCache::getFreetypeErrorMessage(FT_Error err)
-	{
+    {
         LOG_TRACE("FontManager: {}",__FUNCTION__);
-		#undef FTERRORS_H_
-		#define FT_ERRORDEF( e, v, s )  case e: return s;
-		#define FT_ERROR_START_LIST     switch (err) {
-		#define FT_ERROR_END_LIST       }
-		#include FT_ERRORS_H
-		return "(Unknown error)";
-	}
+#undef FTERRORS_H_
+#define FT_ERRORDEF( e, v, s )  case e: return s;
+#define FT_ERROR_START_LIST     switch (err) {
+#define FT_ERROR_END_LIST       }
+#include FT_ERRORS_H
+        return "(Unknown error)";
+    }
 }

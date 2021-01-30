@@ -13,6 +13,9 @@
 
 using glm::degrees;
 using glm::radians;
+using octronic::dream::FontRuntime;
+using octronic::dream::FontCache;
+using octronic::dream::FontRuntime;
 
 namespace octronic::dream::tool
 {
@@ -1971,6 +1974,35 @@ namespace octronic::dream::tool
         {
             def->setSize(fontSize);
         }
+
+        // Display the FontAtlas Texture
+        Project* project = mContext->getProject();
+        if (project)
+        {
+            ProjectRuntime* projectRuntime = project->getRuntime();
+            if (projectRuntime)
+            {
+				FontCache* fontCache = projectRuntime->getFontCache();
+                if (fontCache)
+                {
+        			FontRuntime* fontRuntime = static_cast<FontRuntime*>(fontCache->getRuntime(def));
+                    if (fontRuntime)
+                    {
+                        GLuint atlasTexture = fontRuntime->getAtlasTexture();
+                        unsigned int atlasWidth = fontRuntime->getAtlasWidth();
+                        unsigned int atlasHeight = fontRuntime->getAtlasHeight();
+                        if (ImGui::BeginChild("Font Atlas Texture",
+                        	ImVec2(atlasWidth,atlasHeight),
+                        	false, ImGuiWindowFlags_HorizontalScrollbar))
+                        {
+                        	ImGui::Image((void*)(intptr_t)atlasTexture,ImVec2(atlasWidth,atlasHeight));
+                        	ImGui::EndChild();
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     void PropertiesWindow::drawLightAssetProperties
