@@ -26,6 +26,10 @@ namespace octronic::dream
 		friend class StorageManager;
 
     public:
+		File(string path);
+        ~File();
+        File(const File&) = delete;
+        File& operator=(const File&) = delete;
         string getDirectory() const;
         string getPath() const;
 
@@ -45,11 +49,7 @@ namespace octronic::dream
         string getNameWithoutExtension() const;
         string getExtension() const;
 
-    private:
-		File(string path);
-        ~File();
-        File(const File&) = delete;
-        File& operator=(const File&) = delete;
+
 
 	protected:
         string mPath;

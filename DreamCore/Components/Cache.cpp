@@ -19,7 +19,7 @@ namespace octronic::dream
     Cache::~Cache
     ()
     {
-       clear();
+        clear();
     }
 
     string
@@ -30,6 +30,40 @@ namespace octronic::dream
                 ->getProject()
                 ->getDirectory()
                 ->getAssetAbsolutePath(def);
+    }
+
+    void Cache::removeRuntimeByUuid(UuidType uuid)
+    {
+        AssetRuntime* target = nullptr;
+
+        for (auto* runtime : mRuntimes)
+        {
+            if (runtime->getUuid() == uuid)
+            {
+                target = runtime;
+            }
+        }
+
+        if (target)
+        {
+            auto target_itr = find(mRuntimes.begin(), mRuntimes.end(), target);
+            if (target_itr != mRuntimes.end())
+            {
+                mRuntimes.erase(target_itr);
+            }
+            delete target;
+            target = nullptr;
+        }
+    }
+
+    void Cache::removeRuntime(AssetDefinition *def)
+    {
+        if (def == nullptr)
+        {
+            return;
+        }
+
+        removeRuntimeByUuid(def->getUuid());
     }
 
     void
@@ -45,7 +79,7 @@ namespace octronic::dream
 
     AssetDefinition*
     Cache::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         return mProjectRuntime->getAssetDefinitionByUuid(uuid);
     }
@@ -58,38 +92,45 @@ namespace octronic::dream
         {
             return nullptr;
         }
-       for (auto* runtime : mRuntimes)
-       {
-           if (runtime->getUuid() == def->getUuid())
-           {
-               return runtime;
-           }
-       }
-       return loadRuntime(def);
+
+        for (auto* runtime : mRuntimes)
+        {
+            if (runtime->getUuid() == def->getUuid())
+            {
+                return runtime;
+            }
+        }
+        return loadRuntime(def);
     }
 
     SharedAssetRuntime*
     Cache::getRuntime
-    (uint32_t id)
+    (UuidType id)
     {
-       if (id == 0)
-       {
+        if (id == 0)
+        {
             return nullptr;
-       }
-       for (auto runtime : mRuntimes)
-       {
-           if (runtime->getUuid() == id)
-           {
-               return runtime;
-           }
-       }
-       return loadRuntime(getAssetDefinitionByUuid(id));
+        }
+
+        for (auto runtime : mRuntimes)
+        {
+            if (runtime->getUuid() == id)
+            {
+                return runtime;
+            }
+        }
+        return loadRuntime(getAssetDefinitionByUuid(id));
     }
 
     const vector<SharedAssetRuntime*>&
     Cache::getRuntimeVector
     ()
     {
-       return mRuntimes;
+        return mRuntimes;
+    }
+
+    size_t Cache::runtimeCount() const
+    {
+        return mRuntimes.size();
     }
 }

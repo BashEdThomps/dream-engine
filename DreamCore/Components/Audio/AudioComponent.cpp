@@ -15,21 +15,14 @@
 #include "AudioComponent.h"
 
 #include "Common/Logger.h"
-#include "Wav/WavAudioRuntime.h"
-#include "Ogg/OggAudioRuntime.h"
-#include "AudioDefinition.h"
-#include "Components/Time.h"
-#include "Scene/Entity/EntityRuntime.h"
 
 #include <iostream>
 
 namespace octronic::dream
 {
     AudioComponent::AudioComponent
-    (ProjectRuntime* rt)
-        : Component(rt),
-          mDevice(nullptr),
-          mContext(nullptr)
+    ()
+    : Component(nullptr)
     {
         LOG_TRACE("AudioComponent: Constructing");
     }
@@ -38,55 +31,6 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("AudioComponent: Destructing");
-
-        alcMakeContextCurrent(nullptr);
-
-        if (mContext != nullptr)
-        {
-            alcDestroyContext(mContext);
-            mContext = nullptr;
-        }
-
-        if (mDevice != nullptr)
-        {
-            alcCloseDevice(mDevice);
-            mDevice = nullptr;
-        }
     }
 
-    bool
-    AudioComponent::init
-    ()
-    {
-        LOG_DEBUG("AudioComponent: Initialising...");
-        mDevice = alcOpenDevice(nullptr);
-        mContext  = alcCreateContext(mDevice, nullptr);
-        alcMakeContextCurrent(mContext);
-        vec3 position(0.0f);
-        setListenerPosition(position);
-        return true;
-    }
-
-    void
-    AudioComponent::setListenerPosition
-    (const vec3& pos)
-    {
-        alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
-    }
-
-    void
-    AudioComponent::setVolume
-    (float volume)
-    {
-        alListenerf(AL_GAIN,volume);
-    }
-
-    float
-    AudioComponent::getVolume
-    ()
-    {
-        float vol;
-        alGetListenerf(AL_GAIN,&vol);
-        return vol;
-    }
 }

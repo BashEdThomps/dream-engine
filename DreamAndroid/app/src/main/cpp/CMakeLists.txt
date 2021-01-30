@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fno-rtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a")
 
 if (${ANDROID_PLATFORM_LEVEL} LESS 12)
   message(FATAL_ERROR "OpenGL 2 is not supported before API level 11 (currently using ${ANDROID_PLATFORM_LEVEL}).")
@@ -12,14 +12,6 @@ else ()
 endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 
 set(dependencies_dir /Users/Ashley/Desktop/dream/Dependencies)
-
-# Angelscript
-set (angelscript_src_dir ${dependencies_dir}/angelscript-2.35.0)
-set (angelscript_output_dir ${CMAKE_BINARY_DIR}/build_angelscript)
-file(MAKE_DIRECTORY ${angelscript_output_dir})
-add_subdirectory(${angelscript_src_dir}/angelscript/projects/cmake ${angelscript_output_dir} EXCLUDE_FROM_ALL)
-include_directories(${angelscript_src_dir}/angelscript/include)
-include_directories(${angelscript_src_dir}/add_on)
 
 # Assimp
 set (assimp_src_dir ${dependencies_dir}/assimp-5.0.1/)
@@ -108,12 +100,28 @@ set (DreamCore_src_dir /Users/Ashley/Desktop/dream/DreamCore)
 set (DreamCore_output_dir ${CMAKE_BINARY_DIR}/build_DreamCore)
 file(MAKE_DIRECTORY ${DreamCore_output_dir})
 add_subdirectory(${DreamCore_src_dir} ${DreamCore_output_dir})
+include_directories(${DreamCore_src_dir})
 include_directories(${DreamCore_src_dir}/include)
 
 add_library(
       dream_android
       SHARED
+      droid/AndroidAudioRuntime.cpp
+      droid/AndroidAudioComponent.cpp
+      droid/AndroidFile.cpp
+      droid/AndroidDirectory.cpp
+      droid/AndroidStorageManager.cpp
+      droid/AndroidWindowComponent.cpp
       DreamJNI.cpp
+)
+
+link_directories(
+        ${freetype_output_dir}
+        ${lua_output_dir}
+        ${spdlog_output_dir}
+        ${tweeny_output_dir}
+        ${ogg_output_dir}
+        ${vorbis_output_dir}
 )
 
 target_link_libraries(
@@ -123,4 +131,15 @@ target_link_libraries(
       EGL
       log
       m
+      DreamCore
+      assimp
+      BulletCollision
+      BulletDynamics
+      LinearMath
+        lua
+      ogg
+      spdlog
+      tinyspline
+      vorbis
+      vorbisfile
 )

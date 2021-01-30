@@ -45,7 +45,7 @@ namespace octronic::dream
 
     bool // Indicates whether a new insertion was made
     ModelDefinition::addModelMaterial
-    (const string &material, uint32_t shader)
+    (const string &material, UuidType shader)
     {
         if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
@@ -107,7 +107,7 @@ namespace octronic::dream
         mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
     }
 
-    uint32_t
+    UuidType
     ModelDefinition::getDreamMaterialForModelMaterial
     (const string &mat)
     {

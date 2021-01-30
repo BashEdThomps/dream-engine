@@ -1,7 +1,6 @@
 ﻿#include "ScriptTasks.h"
 
 #include "ScriptRuntime.h"
-
 #include "Common/Logger.h"
 #include "Scene/SceneRuntime.h"
 #include "Scene/Entity/EntityRuntime.h"
@@ -9,22 +8,22 @@
 
 namespace octronic::dream
 {
-    ScriptConstructionTask::ScriptConstructionTask
-    ()
-        : Task()
-     {
-     }
+    // =========================================================================
 
-    void
-    ScriptConstructionTask::execute
-    ()
+    EntityScriptConstructionTask::EntityScriptConstructionTask
+    (EntityRuntime* rt)
+        : Task("EntityScriptConstructionTask"),
+          mEntity(rt)
     {
-        LOG_CRITICAL("ScriptConstructionTask: Executing on thread {}",mThreadId);
+    }
 
-        if(mScript->createScript())
+    void EntityScriptConstructionTask::execute()
+    {
+        LOG_TRACE("EntityScriptConstructionTask: Executing on thread {}",mThreadId);
+
+        if(mScript->createEntityState(mEntity))
         {
             setState(TaskState::TASK_STATE_COMPLETED);
-            mScript->setLoaded(true);
         }
         else
         {
@@ -33,23 +32,25 @@ namespace octronic::dream
         }
     }
 
-    void ScriptConstructionTask::setScript(ScriptRuntime *rt)
+    void EntityScriptConstructionTask::setScript(ScriptRuntime *rt)
     {
         mScript = rt;
     }
 
-     ScriptOnInitTask::ScriptOnInitTask
-     (EntityRuntime* rt)
-         : Task(),
-           mEntity(rt)
-     {
-     }
 
-    void
-    ScriptOnInitTask::execute
-    ()
+
+
+    // =========================================================================
+
+    EntityScriptOnInitTask::EntityScriptOnInitTask (EntityRuntime* rt)
+        : Task("EntityScriptExecuteOnInitTask"),
+          mEntity(rt)
     {
-        LOG_CRITICAL("ScriptOnInitTask: Executing for SO {} script {} on thread {}",mEntity->getName(), mScript->getNameAndUuidString(), mThreadId);
+    }
+
+    void EntityScriptOnInitTask::execute()
+    {
+        LOG_TRACE("EntityScriptExecuteOnInitTask: Executing on thread {}",mThreadId);
 
         if(mScript->executeOnInit(mEntity))
         {
@@ -60,29 +61,24 @@ namespace octronic::dream
             setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }
-
     }
 
-    void
-    ScriptOnInitTask::setScript
-    (ScriptRuntime *rt)
+    void EntityScriptOnInitTask::setScript(ScriptRuntime *rt)
     {
         mScript = rt;
     }
-//==================================================================================================
 
-    ScriptOnUpdateTask::ScriptOnUpdateTask
-    (EntityRuntime* rt)
-        : Task(),
+    // =========================================================================
+
+    EntityScriptOnUpdateTask::EntityScriptOnUpdateTask(EntityRuntime* rt)
+        : Task("EntityScriptExecuteOnUpdateTask"),
           mEntity(rt)
     {
     }
 
-    void
-    ScriptOnUpdateTask::execute
-    ()
+    void EntityScriptOnUpdateTask::execute()
     {
-        LOG_CRITICAL("ScriptOnUpdateTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("EntityScriptOnUpdateTask: Executing on thread {}",mThreadId);
 
         if(mScript->executeOnUpdate(mEntity))
         {
@@ -95,27 +91,23 @@ namespace octronic::dream
         }
     }
 
-    void
-    ScriptOnUpdateTask::setScript
-    (ScriptRuntime *rt)
+    void EntityScriptOnUpdateTask::setScript(ScriptRuntime *rt)
     {
         mScript = rt;
     }
 
-//==================================================================================================
+    // =========================================================================
 
-    ScriptOnEventTask::ScriptOnEventTask
-    (EntityRuntime* rt)
-        : Task(),
+    EntityScriptOnEventTask::EntityScriptOnEventTask(EntityRuntime* rt)
+        : Task("EntityScriptOnEventTask"),
           mEntity(rt)
     {
+        LOG_TRACE("EntityScriptOnEventTask: {}", __FUNCTION__);
     }
 
-    void
-    ScriptOnEventTask::execute
-    ()
+    void EntityScriptOnEventTask::execute()
     {
-        LOG_CRITICAL("ScriptOnEventTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ScriptOnEventTask: Executing on thread {}",mThreadId);
 
         if(mScript->executeOnEvent(mEntity))
         {
@@ -128,54 +120,95 @@ namespace octronic::dream
         }
     }
 
-    void
-    ScriptOnEventTask::setScript
-    (ScriptRuntime *rt)
+    void EntityScriptOnEventTask::setScript(ScriptRuntime *rt)
     {
         mScript = rt;
     }
 
-//==================================================================================================
+    // =========================================================================
 
-    ScriptOnDestroyTask::ScriptOnDestroyTask
-    (uint32_t destroyed, EntityRuntime* parent)
-        : DestructionTask(),
-          mDestroyedObject(destroyed),
-          mParentEntity(parent)
+    EntityScriptDestructionTask::EntityScriptDestructionTask
+    (UuidType uuid)
+        : DestructionTask("EntityScriptDestructionTask"),
+          mUuid(uuid)
     {
+        LOG_DEBUG("EntityScriptDestructionTask: {}", __FUNCTION__);
     }
 
-    void
-    ScriptOnDestroyTask::execute
-    ()
+    void EntityScriptDestructionTask::execute()
     {
-        LOG_CRITICAL(
-            "ScriptOnDestroyTask: Executing onDestroy in script {} for SO {} (child of {}) on thread {}",
-            mScript->getNameAndUuidString(),mDestroyedObject,
-            mParentEntity->getNameAndUuidString(), mThreadId
-        );
+        LOG_TRACE("EntityScriptDestructionTask:Executing on thread {}",mThreadId);
 
-        if (mScript != nullptr)
+        if(mScript->removeEntityState(mUuid))
         {
-            if(mScript->executeOnDestroy(mDestroyedObject, mParentEntity))
-            {
-                setState(TaskState::TASK_STATE_COMPLETED);
-            }
-            else
-            {
-                setState(TaskState::TASK_STATE_WAITING);
-                mDeferralCount++;
-            }
-        }
-        else {
             setState(TaskState::TASK_STATE_COMPLETED);
         }
+        else
+        {
+            setState(TaskState::TASK_STATE_WAITING);
+            mDeferralCount++;
+        }
     }
 
-    void
-    ScriptOnDestroyTask::setScript
-    (ScriptRuntime *rt)
+    void EntityScriptDestructionTask::setScript(ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+
+    // =========================================================================
+
+    InputScriptConstructionTask::InputScriptConstructionTask
+    ()
+        : Task("InputScriptConstructionTask")
+    {
+    }
+
+    void InputScriptConstructionTask::execute()
+    {
+        LOG_TRACE("InputScriptConstructionTask: Executing on thread {}",mThreadId);
+
+        if(mScript->registerInputScript())
+        {
+            setState(TaskState::TASK_STATE_COMPLETED);
+        }
+        else
+        {
+            setState(TaskState::TASK_STATE_WAITING);
+            mDeferralCount++;
+        }
+    }
+
+    void InputScriptConstructionTask::setScript(ScriptRuntime *rt)
+    {
+        mScript = rt;
+    }
+
+    // =========================================================================
+
+    InputScriptDestructionTask::InputScriptDestructionTask()
+        : DestructionTask("InputScriptDestructionTask")
+    {
+        LOG_DEBUG("InputScriptDestructionTask: {}", __FUNCTION__);
+    }
+
+    void InputScriptDestructionTask::execute()
+    {
+        LOG_TRACE("InputScriptDestructionTask:Executing on thread {}",mThreadId);
+
+        if(mScript->removeInputScript())
+        {
+            setState(TaskState::TASK_STATE_COMPLETED);
+        }
+        else
+        {
+            setState(TaskState::TASK_STATE_WAITING);
+            mDeferralCount++;
+        }
+    }
+
+    void InputScriptDestructionTask::setScript(ScriptRuntime *rt)
     {
         mScript = rt;
     }
 }
+

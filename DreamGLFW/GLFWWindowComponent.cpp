@@ -28,7 +28,7 @@ namespace octronic::dream::glfw
     GLFWErrorCallback
     (int _errno, const char* errmsg)
     {
-        cout << "GLFW Error: Number " << _errno << "\nMessage: " << errmsg << endl;
+        LOG_ERROR("GLFW Error: Number {}\nMessage: {}" , _errno, errmsg);
     }
 
     void

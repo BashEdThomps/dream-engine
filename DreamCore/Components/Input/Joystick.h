@@ -1,19 +1,21 @@
 #pragma once
+
+#include "Common/Logger.h"
+#include "Components/Time.h"
+#include "Components/Transform.h"
+#include "Components/Graphics/Camera.h"
+#include "Scene/SceneRuntime.h"
+#include "Scene/Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+
 #include <string>
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
-#include "Components/Time.h"
-#include "Components/Transform.h"
-#include "Project/ProjectRuntime.h"
-#include "Scene/SceneRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
-#include "Components/Graphics/Camera.h"
 
 using glm::mat4;
 using glm::quat;
 using std::string;
-using std::cout;
-using std::endl;
 using glm::mat4;
 using glm::vec3;
 
@@ -226,6 +228,8 @@ namespace octronic::dream
 
         }
 
+        virtual ~JoystickNavigation() {}
+
         virtual void update(SceneRuntime* rt) = 0;
 
         void setHeading(const Vector2& h)
@@ -245,6 +249,8 @@ namespace octronic::dream
         JoystickFaceForwardNavigation(JoystickState* state, JoystickMapping* mapping)
             : JoystickNavigation(state,mapping) {}
 
+        ~JoystickFaceForwardNavigation() {}
+
         void update(SceneRuntime* rt) override
         {
             if (!rt) return;
@@ -254,7 +260,7 @@ namespace octronic::dream
             float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
             float rightY = mJoystickState->getAxisData(mJoystickMapping->AnalogRightYAxis);
 
-            auto playerObject = rt->getPlayerObject();
+            auto playerObject = rt->getPlayerEntity();
             if (playerObject)
             {
                 auto& playerTransform = playerObject->getTransform();
@@ -270,7 +276,7 @@ namespace octronic::dream
             }
             else
             {
-                cout << "No player object" << endl;
+                LOG_ERROR("Joystick: No player object");
             }
 
 
@@ -299,6 +305,8 @@ namespace octronic::dream
               mLeftTheta(0.0f),
               mRightTheta(0.0f)
         {}
+
+        ~Joystick2DPlaneNavigation() {}
 
         void update(SceneRuntime* rt) override
         {
@@ -341,7 +349,7 @@ namespace octronic::dream
                 mRightVelocity = 0.0f;
             }
 
-            auto playerObject = rt->getPlayerObject();
+            auto playerObject = rt->getPlayerEntity();
             if (playerObject)
             {
                 auto& playerTransform = playerObject->getTransform();
@@ -360,18 +368,18 @@ namespace octronic::dream
             }
             else
             {
-                cout << "No player object" << endl;
+                LOG_ERROR("Joystick: No player object");
             }
         }
 
         void show()
         {
-            cout << "JSNav3D ="
-                   " Lv: " << mLeftVelocity
-                << " Lt: " << mLeftTheta
-                << " Rv: " << mRightVelocity
-                << " Rt: " << mRightTheta
-                << endl;
+            LOG_ERROR(
+            	"JoystickSNav3D = Lv: {}  Lt: {} Rv: {} Rt: {}",
+				mLeftVelocity,
+				mLeftTheta,
+				mRightVelocity,
+				mRightTheta);
         }
 
         float getRightVelocity() const

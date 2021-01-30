@@ -15,6 +15,10 @@
 
 namespace octronic::dream
 {
+    class SharedAssetRuntime;
+    class AssetDefinition;
+    class ProjectRuntime;
+
     class ScriptCache : public Cache
     {
     public:

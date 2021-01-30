@@ -11,14 +11,18 @@
  */
 
 #pragma once
+
+#include "Common/Constants.h"
 #include <iostream>
 #include <math.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <LinearMath/btVector3.h>
+#include <json.hpp>
 
-using namespace std;
+using nlohmann::json;
+
 
 namespace octronic::dream
 {
@@ -45,6 +49,7 @@ namespace octronic::dream
         Vector2(float f = 0.0f) : _x(f), _y(f) {}
         Vector2(const float* fp) : _x(fp[0]), _y(fp[1]) {}
         Vector2(float x, float y) : _x(x), _y(y) {}
+        Vector2(const json& js) : _x(js[Constants::X]), _y(js[Constants::Y]) {}
 
         glm::vec2 toGLM() const
         {
@@ -101,6 +106,14 @@ namespace octronic::dream
             _y += other._y;
         }
 
+        json toJson() const
+        {
+            json js = json::object();
+            js[Constants::X] = _x;
+            js[Constants::Y] = _y;
+            return js;
+        }
+
     };
 
     class Vector3
@@ -115,6 +128,7 @@ namespace octronic::dream
         Vector3(const float* fp) : _x(fp[0]), _y(fp[1]), _z(fp[2]) {}
         Vector3(const glm::vec3& v) : _x(v.x), _y(v.y), _z(v.z) {}
         Vector3(const btVector3& v) : _x(v.x()), _y(v.y()), _z(v.z()) {}
+        Vector3(const json& js) : _x(js[Constants::X]), _y(js[Constants::Y]), _z(js[Constants::Z]) {}
 
         glm::vec3 toGLM() const
         {
@@ -128,12 +142,21 @@ namespace octronic::dream
 
         float x() const { return _x; }
         void setX(float x) { _x = x; }
+        float r() const { return _x; }
+        void setR(float r) { _x = r; }
+
 
         float y() const { return _y; }
         void setY(float y) { _y = y; }
+        float g() const { return _y; }
+        void setG(float g) { _y = g; }
+
 
         float z() const { return _z; }
         void setZ(float z) { _z = z; }
+        float b() const { return _z; }
+        void setB(float b) { _z = b; }
+
 
         bool operator==(const Vector3& other) const
         {
@@ -215,6 +238,15 @@ namespace octronic::dream
                     a.y()*b.y()+
                     a.z()*b.z();
         }
+
+        json toJson() const
+        {
+            json js = json::object();
+            js[Constants::X] = _x;
+            js[Constants::Y] = _y;
+            js[Constants::Z] = _z;
+            return js;
+        }
     };
 
     class Vector4
@@ -225,10 +257,19 @@ namespace octronic::dream
         float _w;
 
     public:
-        Vector4(float f = 0.0f) : _x(f), _y(f), _z(f), _w(f) {}
-        Vector4(const float* fp) : _x(fp[0]), _y(fp[1]), _z(fp[2]), _w(fp[3]) {}
+        Vector4(float f = 0.0f)
+            : _x(f), _y(f), _z(f), _w(f) {}
+        Vector4(const float* fp)
+
+            : _x(fp[0]), _y(fp[1]), _z(fp[2]), _w(fp[3]) {}
         Vector4(float x, float y, float z, float w)
+
             : _x(x), _y(y), _z(z), _w(w) {}
+        Vector4(const json& js)
+            : _w(js[Constants::W]),
+              _x(js[Constants::X]),
+              _y(js[Constants::Y]),
+              _z(js[Constants::Z]) {}
 
         glm::vec4 toGLM() const
         {
@@ -238,14 +279,30 @@ namespace octronic::dream
         float x() const { return _x; }
         void setX(float x) { _x = x; }
 
+        float r() const { return _x; }
+        void setR(float r) { _x = r; }
+
+
         float y() const { return _y; }
         void setY(float y) { _y = y; }
+
+        float g() const { return _y; }
+        void setG(float g) { _y = g; }
+
 
         float z() const { return _z; }
         void setZ(float z) { _z = z; }
 
+        float b() const { return _z; }
+        void setB(float b) { _z = b; }
+
+
         float w() const { return _w; }
         void setW(float w) { _w = w; }
+
+        float a() const { return _w; }
+        void setA(float a) { _w = a; }
+
 
         bool operator==(const Vector4 other) const
         {
@@ -301,6 +358,16 @@ namespace octronic::dream
             _y += other._y;
             _z += other._z;
             _w += other._z;
+        }
+
+        json toJson() const
+        {
+            json js = json::object();
+            js[Constants::W] = _w;
+            js[Constants::X] = _x;
+            js[Constants::Y] = _y;
+            js[Constants::Z] = _z;
+            return js;
         }
 
         static Vector4 normalize(const Vector4& p)

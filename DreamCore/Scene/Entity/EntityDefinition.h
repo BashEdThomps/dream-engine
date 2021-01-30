@@ -19,7 +19,6 @@
 #include "Common/Definition.h"
 #include "Components/Transform.h"
 
-using namespace std;
 
 namespace octronic::dream
 {
@@ -28,11 +27,6 @@ namespace octronic::dream
 
     class EntityDefinition : public Definition
     {
-    private:
-        EntityDefinition* mParentEntity;
-        SceneDefinition* mSceneDefinition;
-        vector<EntityDefinition*> mChildDefinitions;
-
     public:
         EntityDefinition(
             EntityDefinition* parent,
@@ -83,13 +77,28 @@ namespace octronic::dream
         int getSelectedAssetIndex(AssetType type);
         void setSelectedAssetIndex(AssetType type, int index);
 
-        uint32_t getAssetDefinition(AssetType type);
-        void setAssetDefinition(AssetType type, uint32_t uuid);
-        map<AssetType, uint32_t> getAssetDefinitionsMap();
+        UuidType getAssetDefinition(AssetType type);
+        void setAssetDefinition(AssetType type, UuidType uuid);
+        map<AssetType, UuidType> getAssetDefinitionsMap();
+
+        void setFontColor(const Vector3& color);
+        Vector3 getFontColor();
+
+        void setFontText(const string& text);
+        string getFontText();
+
+        void setFontScale(float s);
+        float getFontScale();
 
 
     private:
         void deleteChildEntityDefinitions();
         void setEmptyAssetsObject();
+    private:
+        EntityDefinition* mParentEntity;
+        SceneDefinition* mSceneDefinition;
+        vector<EntityDefinition*> mChildDefinitions;
+
+
     };
 }

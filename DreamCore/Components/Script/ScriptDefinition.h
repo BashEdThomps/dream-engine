@@ -21,7 +21,6 @@ namespace octronic::dream
     public:
         ScriptDefinition(ProjectDefinition* pd, const json& js);
         virtual ~ScriptDefinition();
-
-        bool isFormatAngelScript();
+        bool isFormatLua();
     };
 }

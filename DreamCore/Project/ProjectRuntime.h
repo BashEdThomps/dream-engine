@@ -50,6 +50,7 @@ namespace octronic::dream
     class ScriptCache;
     class ModelCache;
     class ShaderCache;
+    class FontCache;
 
     // Class Declaration
     class ProjectRuntime : public Runtime
@@ -59,7 +60,7 @@ namespace octronic::dream
 
     public: // Public Functions
 
-        ProjectRuntime(Project* parentProject, WindowComponent* wc, StorageManager* fm);
+        ProjectRuntime(Project* parentProject, WindowComponent* wc, AudioComponent* ac, StorageManager* fm);
         ~ProjectRuntime() override;
 
         void setDone(bool);
@@ -105,20 +106,21 @@ namespace octronic::dream
         ModelCache* getModelCache() const;
         TextureCache* getTextureCache() const;
         ScriptCache* getScriptCache() const;
+        FontCache* getFontCache() const;
 
         bool hasActiveScene() const;
 
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
+        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid) const;
 
-        EntityRuntime* getEntityRuntimeByUuid(SceneRuntime* rt, uint32_t uuid) const;
+        EntityRuntime* getEntityRuntimeByUuid(SceneRuntime* rt, UuidType uuid) const;
         SceneRuntime* getActiveSceneRuntime() const;
-        SceneRuntime* getSceneRuntimeByUuid(uint32_t uuid) const;
+        SceneRuntime* getSceneRuntimeByUuid(UuidType uuid) const;
 
         void addSceneRuntime(SceneRuntime*);
         void removeSceneRuntime(SceneRuntime*);
-        void setSceneRuntimeAsActive(uint32_t uuid);
+        void setSceneRuntimeAsActive(UuidType uuid);
         vector<SceneRuntime*> getSceneRuntimeVector() const;
-        bool hasSceneRuntime(uint32_t uuid) const;
+        bool hasSceneRuntime(UuidType uuid) const;
         bool hasLoadedScenes() const;
 
         deque<float> getFrameDurationHistory() const;
@@ -160,6 +162,7 @@ namespace octronic::dream
         ModelCache* mModelCache;
         ShaderCache* mShaderCache;
         ScriptCache* mScriptCache;
+        FontCache* mFontCache;
 
         vector<SceneRuntime*> mSceneRuntimeVector;
         vector<SceneRuntime*> mSceneRuntimesToRemove;

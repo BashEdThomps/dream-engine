@@ -41,19 +41,19 @@ namespace octronic::dream
         string getDescription();
         void setDescription(const string& description);
 
-        uint32_t getStartupSceneUuid();
-        void setStartupSceneUuid(uint32_t sceneUuid);
+        UuidType getStartupSceneUuid();
+        void setStartupSceneUuid(UuidType sceneUuid);
         SceneDefinition* getStartupSceneDefinition();
 
         void loadChildDefinitions();
 
         size_t countAssetDefinitions();
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
+        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
         AssetDefinition* getAssetDefinitionByName(const string& name);
         void addAssetDefinition(AssetDefinition* def);
 
         size_t countScenesDefinitions();
-        SceneDefinition* getSceneDefinitionByUuid(uint32_t uuid);
+        SceneDefinition* getSceneDefinitionByUuid(UuidType uuid);
         SceneDefinition* getSceneDefinitionByName(const string& name);
         vector<SceneDefinition*> getSceneDefinitionsVector();
         void removeSceneDefinition(SceneDefinition* sceneDef);
@@ -73,7 +73,7 @@ namespace octronic::dream
         long getSceneDefinitionIndex(SceneDefinition*);
         SceneDefinition* getSceneDefinitionAtIndex(int index);
         long getAssetDefinitionIndex(AssetType, AssetDefinition*);
-        long getAssetDefinitionIndex(AssetType, uint32_t);
+        long getAssetDefinitionIndex(AssetType, UuidType);
         AssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);

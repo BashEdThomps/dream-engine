@@ -22,37 +22,30 @@
 namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
-    (AudioDefinition* def, ProjectRuntime* project)
+    (AudioLoader* loader, AudioDefinition* def, ProjectRuntime* project)
         : SharedAssetRuntime(def,project),
+          mLoader(loader),
           mLooping(false),
-          mFormat(0),
-          mFrequency(0),
-          mSource(0),
-          mBuffer(0),
-          mStartTime(-1),
+          mStartTime(0),
           mLastSampleOffset(0),
-          mChannels(-1),
-          mDurationInSamples(-1),
           mMarkersUpdateTask(this)
     {
+        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         setLooping(false);
-        setBuffer(0);
-        setSource(0);
         generateEventList();
     }
 
     AudioRuntime::~AudioRuntime()
     {
-          alDeleteBuffers(1,&mBuffer);
-          alDeleteSources(1,&mSource);
+        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
     }
 
     void
     AudioRuntime::setLooping
     (bool looping)
     {
+        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         mLooping = looping;
-        alSourcei(mSource, AL_LOOPING, mLooping ? 1 : 0);
     }
 
     bool
@@ -61,98 +54,6 @@ namespace octronic::dream
     const
     {
         return mLooping;
-    }
-
-    std::vector<ALchar>
-    AudioRuntime::getAudioDataBuffer
-    ()
-    const
-    {
-        return mAudioDataBuffer;
-    }
-
-    ALsizei
-    AudioRuntime::getFrequency
-    ()
-    const
-    {
-        return mFrequency;
-    }
-
-    ALenum
-    AudioRuntime::getFormat
-    ()
-    const
-    {
-        return mFormat;
-    }
-
-    void
-    AudioRuntime::setBuffer
-    (ALuint buffer)
-    {
-        mBuffer = buffer;
-    }
-
-    ALuint
-    AudioRuntime::getBuffer
-    ()
-    const
-    {
-        return mBuffer;
-    }
-
-    void
-    AudioRuntime::setSource
-    (ALuint source)
-    {
-        mSource = source;
-    }
-
-    ALuint
-    AudioRuntime::getSource
-    ()
-    const
-    {
-        return mSource;
-    }
-
-    void
-    AudioRuntime::play
-    ()
-    {
-        LOG_DEBUG(  "AudioRuntime: Playing source {}" , mSource);
-        alSourcePlay(mSource);
-    }
-
-    void
-    AudioRuntime::stop
-    ()
-    {
-        LOG_DEBUG(  "AudioRuntime: Stopping source {}" , mSource);
-        alSourceStop(mSource);
-    }
-
-    void
-    AudioRuntime::pause
-    ()
-    {
-        LOG_DEBUG(  "AudioRuntime: Pausing source {}" , mSource);
-        alSourcePause(mSource);
-    }
-
-    void
-    AudioRuntime::setSourcePosision
-    (glm::vec3 pos)
-    {
-        alSource3f(mSource, AL_POSITION, pos.x, pos.y, pos.z);
-    }
-
-    void
-    AudioRuntime::setVolume
-    (float volume)
-    {
-        alSourcef(mSource, AL_GAIN,volume);
     }
 
     void
@@ -265,145 +166,14 @@ namespace octronic::dream
         mStartTime = startTime;
     }
 
-    int
-    AudioRuntime::getChannels
-    ()
-    const
+    AudioMarkersUpdateTask* AudioRuntime::getMarkersUpdateTask()
     {
-        return mChannels;
+        return &mMarkersUpdateTask;
     }
 
-    AudioStatus
-    AudioRuntime::getState
-    ()
-    {
-        int state;
-        alGetSourcei(mSource, AL_SOURCE_STATE, &state);
-        switch (state)
-        {
-            case AL_STOPPED:
-                return AUDIO_STATUS_STOPPED;
-            case AL_PLAYING:
-                return AUDIO_STATUS_PLAYING;
-            case AL_PAUSED:
-                return AUDIO_STATUS_PAUSED;
-            default:
-                LOG_ERROR("AudioRuntime: Unknown Audio State for {} " , getNameAndUuidString());
-                return AUDIO_STATUS_UNKNOWN;
-        }
-    }
 
-    vector<char>
-    AudioRuntime::getAudioBuffer
-    (size_t offset, size_t length)
-    const
-    {
-        vector<char> retval = vector<char>(length);
-        vector<char> audioData = getAudioDataBuffer();
-        char* dataBegin = &audioData[offset];
-        retval.insert(retval.begin(), dataBegin, dataBegin+length);
-        return retval;
-    }
-
-    int
-    AudioRuntime::getDurationInSamples
-    ()
-    {
-        if (mDurationInSamples < 0 && mBuffer != 0)
-        {
-            ALint sizeInBytes;
-            ALint channels;
-            ALint bits;
-
-            alGetBufferi(mBuffer, AL_SIZE, &sizeInBytes);
-            alGetBufferi(mBuffer, AL_CHANNELS, &channels);
-            alGetBufferi(mBuffer, AL_BITS, &bits);
-
-            mDurationInSamples = sizeInBytes * 8 / (channels * bits);
-        }
-        return mDurationInSamples;
-    }
-
-    AudioMarkersUpdateTask *AudioRuntime::getMarkersUpdateTask()
-    {
-       return &mMarkersUpdateTask;
-    }
-
-    ALint
-    AudioRuntime::getSampleOffset
-    ()
-    const
-    {
-        ALint sampleOffset;
-        alGetSourcei(mSource, AL_SAMPLE_OFFSET, &sampleOffset);
-        return sampleOffset;
-    }
-
-    void
-    AudioRuntime::setSampleOffset
-    (ALint offset)
-    {
-        alSourcei(mSource,AL_SAMPLE_OFFSET, offset);
-    }
-
-    ALuint
-    AudioRuntime::generateSource
-    ()
-    {
-        alGetError();
-        alGenSources(1, &mSource);
-        ALenum error = alGetError();
-        if ( error != AL_NO_ERROR )
-        {
-            mSource = static_cast<ALuint>(-1);
-        }
-        return mSource;
-    }
-
-    ALuint
-    AudioRuntime::generateBuffer
-    ()
-    {
-        alGetError();
-        alGenBuffers(1, &mBuffer);
-        ALenum error = alGetError();
-        if ( error != AL_NO_ERROR )
-        {
-            mBuffer = static_cast<ALuint>(-1);
-        }
-        return mBuffer;
-    }
-
-    bool
-    AudioRuntime::loadIntoAL
-    ()
-    {
-        LOG_ERROR("AudioRuntime: Loading Into AL {}",getNameAndUuidString());
-
-        if (mSource == 0 && mBuffer == 0)
-        {
-            generateBuffer();
-            generateSource();
-
-            if (mAudioDataBuffer.empty())
-            {
-                LOG_ERROR("AudioRuntime: Unable to load audio data: Empty Buffer");
-                return false;
-            }
-
-            alBufferData(mBuffer, mFormat, &mAudioDataBuffer[0], static_cast<ALsizei>(mAudioDataBuffer.size()), mFrequency);
-            alSourcei(mSource, AL_BUFFER, static_cast<ALint>(mBuffer));
-
-            alSourcei(mSource, AL_LOOPING, mLooping ? 1 : 0 );
-            mAudioDataBuffer.clear();
-        }
-        else
-        {
-            LOG_ERROR("AudioRuntime: Unable to load audio, source or buffer is empty");
-            return false;
-        }
-
-        LOG_DEBUG("AudioRuntime: Pushed audio asset to play queue");
-        return true;
-    }
+    AudioLoader* AudioRuntime::getAudioLoader() const
+	{
+		return mLoader;
+	}
 }

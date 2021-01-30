@@ -15,13 +15,9 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <memory>
-
-#include "Common/ALHeader.h"
 #include "AudioStatus.h"
 #include "Components/Component.h"
+
 #include <glm/vec3.hpp>
 
 using glm::vec3;
@@ -32,15 +28,12 @@ namespace octronic::dream
     class AudioDefinition;
     class AudioComponent : public Component
     {
-    private:
-        ALCdevice*  mDevice;
-        ALCcontext* mContext;
     public:
-        AudioComponent(ProjectRuntime* rt);
-        ~AudioComponent() override;
-        bool init() override;
-        void setListenerPosition(const vec3&);
-        void setVolume(float);
-        float getVolume();
+        AudioComponent();
+        virtual ~AudioComponent();
+        virtual void setListenerPosition(const vec3&) = 0;
+        virtual void setVolume(float) = 0;
+        virtual float getVolume() = 0;
+    	virtual AudioRuntime* newAudioRuntime(AudioDefinition* def) = 0;
     };
 }

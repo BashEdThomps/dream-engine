@@ -10,7 +10,7 @@ namespace octronic::dream
 {
          PhysicsAddObjectTask::PhysicsAddObjectTask
          (PhysicsComponent* cp, PhysicsObjectRuntime* rt)
-            : Task(),
+            : Task("PhysicsAddObjectTask"),
               mComponent(cp),
               mRuntime(rt)
         {
@@ -21,7 +21,7 @@ namespace octronic::dream
         PhysicsAddObjectTask::execute
         ()
         {
-            LOG_CRITICAL("PhysicsAddObjectTask: Executing on thread {}",mThreadId);
+            LOG_TRACE("PhysicsAddObjectTask: Executing on thread {}",mThreadId);
             LOG_TRACE("PhysicsAddObjectTask: Adding Entity to physics world");
 
             if(mComponent->tryLock())
@@ -33,6 +33,7 @@ namespace octronic::dream
             }
             else
             {
+            	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
                 setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
@@ -40,7 +41,7 @@ namespace octronic::dream
 
         PhysicsUpdateWorldTask::PhysicsUpdateWorldTask
         (PhysicsComponent* cp)
-            : Task(), mComponent(cp)
+            : Task("PhysicsUpdateWorldTask"), mComponent(cp)
         {
         }
 
@@ -48,7 +49,7 @@ namespace octronic::dream
         PhysicsUpdateWorldTask::execute
         ()
         {
-            LOG_CRITICAL("PhysicsUpdateWorldTask: Executing on thread {}",mThreadId);
+            LOG_TRACE("PhysicsUpdateWorldTask: Executing on thread {}",mThreadId);
             if(mComponent->tryLock())
             {
                 mComponent->stepSimulation();
@@ -57,6 +58,7 @@ namespace octronic::dream
             }
             else
             {
+            	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
                 setState(TaskState::TASK_STATE_WAITING);
                 mDeferralCount++;
             }
@@ -64,7 +66,7 @@ namespace octronic::dream
 
         PhysicsDrawDebugTask::PhysicsDrawDebugTask
         (PhysicsComponent* cp)
-            : GraphicsComponentTask(), mComponent(cp)
+            : GraphicsComponentTask("PhysicsDrawDebugTask"), mComponent(cp)
         {
         }
 
@@ -72,7 +74,7 @@ namespace octronic::dream
         PhysicsDrawDebugTask::execute
         ()
         {
-            LOG_CRITICAL("PhysicsDrawDebugTask: Executing on thread {}",mThreadId);
+            LOG_TRACE("PhysicsDrawDebugTask: Executing on Graphics thread");
             if(mComponent->tryLock())
             {
                 mComponent->getDebugDrawer()->drawAll();
@@ -81,6 +83,7 @@ namespace octronic::dream
             }
             else
             {
+            	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
                 setState(TaskState::TASK_STATE_WAITING);
             }
         }

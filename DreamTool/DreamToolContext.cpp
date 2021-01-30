@@ -1,6 +1,7 @@
 #include "DreamToolContext.h"
 #include <nfd.h>
 
+using octronic::dream::GraphicsComponent;
 using octronic::dream::Project;
 
 namespace octronic::dream::tool
@@ -84,6 +85,7 @@ namespace octronic::dream::tool
 
         // GL Widgets
         mGlPreviewWindowComponent.init();
+        mAudioComponent.init();
         mGrid.init();
         mLightViewer.init();
         mSelectionHighlighter.init();
@@ -348,6 +350,7 @@ namespace octronic::dream::tool
         mProject = mProjectDirectory.openFromDirectory(mProjectBaseDirectory);
         if(mProject)
         {
+            mProject->setAudioComponent(&mAudioComponent);
             mProject->setWindowComponent(&mGlPreviewWindowComponent);
             mProject->createProjectRuntime();
             stringstream ss;

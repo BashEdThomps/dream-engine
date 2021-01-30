@@ -36,6 +36,7 @@ using std::map;
 using std::shared_ptr;
 using std::string;
 using glm::mat4;
+using glm::vec2;
 
 namespace octronic::dream
 {
@@ -47,32 +48,7 @@ namespace octronic::dream
 
     class ShaderRuntime : public SharedAssetRuntime
     {
-    private:
-        unsigned int mPointLightCount;
-        GLint mPointLightCountLocation;
-
-        unsigned int mSpotLightCount;
-        GLint mSpotLightCountLocation;
-
-        unsigned int mDirectionalLightCount;
-        GLint mDirectionalLightCountLocation;
-
-        GLuint mShaderProgram;
-
-        bool mNeedsRebind;
-        GLint mMaterialLocation;
-
-        vector<ShaderUniform*> mUniformVector;
-        vector<MaterialRuntime*> mMaterials;
-        vector<mat4> mRuntimeMatricies;
-        map<string,GLint> mUinformCache;
-        GLuint mVertexShader;
-        GLuint mFragmentShader;
-        bool mRecompile;
-        string mVertexSource;
-        string mFragmentSource;
-
-    public:
+        public:
         const static unsigned int MAX_LIGHTS;
         const static GLint UNIFORM_NOT_FOUND;
         const static char* UNIFORM_POINT_LIGHT_COUNT;
@@ -156,6 +132,10 @@ namespace octronic::dream
         GLint getDirectionalLightCountLocation() const;
         void setDirectionalLightCountLocation(const GLint& directionalLightCountLocation);
 
+        void setFontColorUniform(const Vector3& color);
+        void setFontPositionUniform(const vec2& pos);
+        void setFontProjection(const mat4& proj);
+
     protected:
         bool compileVertex();
         bool compileFragment();
@@ -165,5 +145,31 @@ namespace octronic::dream
         ShaderCompileVertexTask mCompileVertexTask;
         ShaderLinkTask mLinkTask;
         shared_ptr<ShaderFreeTask> mFreeTask;
+    private:
+        unsigned int mPointLightCount;
+        GLint mPointLightCountLocation;
+
+        unsigned int mSpotLightCount;
+        GLint mSpotLightCountLocation;
+
+        unsigned int mDirectionalLightCount;
+        GLint mDirectionalLightCountLocation;
+
+        GLuint mShaderProgram;
+
+        bool mNeedsRebind;
+        GLint mMaterialLocation;
+
+        vector<ShaderUniform*> mUniformVector;
+        vector<MaterialRuntime*> mMaterials;
+        vector<mat4> mRuntimeMatricies;
+        map<string,GLint> mUinformCache;
+        GLuint mVertexShader;
+        GLuint mFragmentShader;
+        bool mRecompile;
+        string mVertexSource;
+        string mFragmentSource;
+
+
     };
 }

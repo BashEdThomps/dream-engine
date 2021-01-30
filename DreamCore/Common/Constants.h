@@ -13,11 +13,13 @@
 
 #pragma once
 
-#include <iostream>
+#include <string>
 #include <map>
 #include <vector>
 
-using namespace std;
+using std::map;
+using std::string;
+using std::vector;
 
 namespace octronic::dream
 {
@@ -89,13 +91,14 @@ namespace octronic::dream
         // Formats
         const static string ASSET_FORMAT;
         const static string ASSET_FORMAT_DREAM;
-        const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
+        const static string ASSET_FORMAT_SCRIPT_LUA;
         const static string ASSET_FORMAT_MODEL_ASSIMP;
         const static string ASSET_FORMAT_MODEL_OBJ;
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
         const static string ASSET_FORMAT_FONT_TTF;
         const static string ASSET_FORMAT_SHADER_GLSL;
+        const static string ASSET_FORMAT_SHADER_GLES;
         const static string ASSET_FORMAT_LIGHT_POINT;
         const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
         const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
@@ -113,7 +116,7 @@ namespace octronic::dream
         const static string ASSET_TYPE_TEXTURE_READABLE;
         const static string ASSET_TYPE_MATERIAL_READABLE;
         const static string ASSET_FORMAT_READABLE;
-        const static string ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
+        const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         const static string ASSET_FORMAT_MODEL_OBJ_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
@@ -146,6 +149,7 @@ namespace octronic::dream
         const static string SCENE_CAMERA_FOCUSED_ON;
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
+        const static string SCENE_FONT_SHADER;
         const static string SCENE_INPUT_SCRIPT;
         // Entity ==========================================================
         const static string ENTITY;
@@ -160,6 +164,10 @@ namespace octronic::dream
         const static string ENTITY_DEFERRED;
         const static string ENTITY_DIE_AFTER;
         const static string ENTITY_PLAYER_OBJECT;
+        const static string ENTITY_FONT_COLOR;
+        const static string ENTITY_FONT_TEXT;
+        const static string ENTITY_FONT_SCALE;
+
         // Transform ============================================================
         const static string TRANSFORM;
         const static string TRANSFORM_MATRIX;
@@ -183,6 +191,11 @@ namespace octronic::dream
         const static unsigned int XYZ_VECTOR_SIZE;
         const static unsigned int RGB_VECTOR_SIZE;
         const static unsigned int RGBA_VECTOR_SIZE;
+
+        // Font ================================================================
+        const static string ASSET_ATTR_FONT_SHADER_ID;
+        const static string ASSET_ATTR_FONT_SIZE;
+
         // Path =============================================================
         const static string ASSET_ATTR_ID;
         const static string ASSET_ATTR_VELOCITY;
@@ -287,8 +300,10 @@ namespace octronic::dream
         // Shader ==============================================================
         const static string SHADER_FRAGMENT;
         const static string SHADER_VERTEX;
-        const static string SHADER_FRAGMENT_FILE_NAME;
-        const static string SHADER_VERTEX_FILE_NAME;
+        const static string SHADER_GLSL_FRAGMENT_FILE_NAME;
+        const static string SHADER_GLES_FRAGMENT_FILE_NAME;
+        const static string SHADER_GLSL_VERTEX_FILE_NAME;
+        const static string SHADER_GLES_VERTEX_FILE_NAME;
         // Script ==============================================================
         const static string SCRIPT_INIT_FUNCTION;
         const static string SCRIPT_UPDATE_FUNCTION;
@@ -329,12 +344,9 @@ namespace octronic::dream
         const static float CAMERA_SPEED;
         const static float CAMERA_SENSITIVTY;
         const static float CAMERA_ZOOM;
-        // Font ================================================================
-        const static string FONTS;
-        const static string FONT_NAME;
-        const static string FONT_SHADER_ID;
-        const static string FONT_PATH;
-        const static string FONT_SIZE;
+
+
+
         // Data Maps ===========================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;
         static vector<string> DREAM_ASSET_TYPES_READABLE_VECTOR;

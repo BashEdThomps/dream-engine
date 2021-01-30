@@ -16,8 +16,6 @@
 #include "Components/Cache.h"
 #include "Components/Graphics/Light/LightRuntime.h"
 
-using namespace std;
-using namespace glm;
 
 namespace octronic::dream
 {

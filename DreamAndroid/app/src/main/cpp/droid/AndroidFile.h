@@ -6,20 +6,20 @@
 
 #include <DreamCore.h>
 
-using octonic::dream::File;
+using octronic::dream::File;
 
 namespace octronic::dream::android
 {
-    class AndroidFileManager;
+    class AndroidStorageManager;
+
     class AndroidFile : public File
     {
     public:
-        AndroidFile(AndroidFileManager* fm, string path);
-
+        AndroidFile(AndroidStorageManager* fm, const string& path);
         bool readBinary() override;
         bool exists() const override;
 
     protected:
-        AndroidFileManager* mFileManager;
+        AndroidStorageManager* mStorageManager;
     };
 }

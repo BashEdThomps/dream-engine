@@ -29,21 +29,21 @@ namespace octronic::dream
         ~MaterialDefinition() override;
 
         // Shader
-        uint32_t getShader();
-        void setShader(uint32_t);
+        UuidType getShader();
+        void setShader(UuidType);
 
         // Textures
-        uint32_t getDiffuseTexture();
-        void setDiffuseTexture(uint32_t);
+        UuidType getDiffuseTexture();
+        void setDiffuseTexture(UuidType);
 
-        uint32_t getSpecularTexture();
-        void setSpecularTexture(uint32_t);
+        UuidType getSpecularTexture();
+        void setSpecularTexture(UuidType);
 
-        uint32_t getNormalTexture();
-        void setNormalTexture(uint32_t);
+        UuidType getNormalTexture();
+        void setNormalTexture(UuidType);
 
-        uint32_t getDisplacementTexture();
-        void setDisplacementTexture(uint32_t);
+        UuidType getDisplacementTexture();
+        void setDisplacementTexture(UuidType);
 
         // Colour
         RGB getDiffuseColour();

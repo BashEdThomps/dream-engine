@@ -4,6 +4,7 @@ project(DreamTool)
 # Targets ######################################################################
 
 include_directories(${DreamCore_SOURCE_DIR}/include)
+include_directories(${DreamOpenAL_SOURCE_DIR})
 
 add_executable (
     ${PROJECT_NAME}
@@ -49,11 +50,13 @@ if (WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
         DreamCore
+		DreamOpenAL
     )
 else()
     target_link_libraries(
         ${PROJECT_NAME}
         DreamCore
+		DreamOpenAL
 		ImGui
 		ImGuizmo
 		ImTextEditor

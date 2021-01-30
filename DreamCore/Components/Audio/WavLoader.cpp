@@ -13,45 +13,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "WavAudioRuntime.h"
+#include "WavLoader.h"
 
 #include "Common/Logger.h"
 #include "Components/Audio/AudioDefinition.h"
 #include "Components/Storage/StorageManager.h"
+#include "Components/Storage/ProjectDirectory.h"
 #include "Components/Storage/File.h"
+#include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 
 namespace octronic::dream
 {
-    WavAudioRuntime::WavAudioRuntime
-    (AudioDefinition* definition, ProjectRuntime* project)
-        : AudioRuntime(definition, project)
+    WavLoader::WavLoader
+    ()
+        : AudioLoader()
     {
-        LOG_ERROR("WavAudioRuntime: Constructing");
+        LOG_TRACE("WavLoader: {}",__FUNCTION__);
+    }
+
+    WavLoader::~WavLoader()
+    {
+        LOG_TRACE("WavLoader: {}",__FUNCTION__);
     }
 
     bool
-    WavAudioRuntime::useDefinition
-    ()
+    WavLoader::loadIntoBuffer
+    (AudioDefinition* audioDefinition, ProjectRuntime* projectRuntime)
     {
-        string absPath = getAssetFilePath();
+        LOG_TRACE("WavLoader: {}",__FUNCTION__);
+        Project* project = projectRuntime->getProject();
+        ProjectDirectory* pDir = project->getDirectory();
+        string absPath = pDir->getAssetAbsolutePath(audioDefinition);
 
-        LOG_DEBUG("WavAudioRuntime: Loading wav file from {}", absPath);
+        LOG_DEBUG("WavLoader: Loading wav file from {}", absPath);
 
         int headerSize = sizeof(mWavHeader), filelength = 0;
-        StorageManager* fm = mProjectRuntime->getStorageManager();
-        File* wavFile = fm->openFile(absPath);
+        StorageManager* sm = projectRuntime->getStorageManager();
+        File* wavFile = sm->openFile(absPath);
 
         if (wavFile == nullptr)
         {
-            LOG_ERROR("WavAudioRuntime: Unable to open wave file: {}", absPath);
+            LOG_ERROR("WavLoader: Unable to open wave file: {}", absPath);
+            sm->closeFile(wavFile);
+            return false;
+        }
+
+        if (!wavFile->exists())
+        {
+
+            LOG_ERROR("WavLoader: Wav file does not exist: {}", absPath);
+            sm->closeFile(wavFile);
             return false;
         }
 
         //Read the header
         if (!wavFile->readBinary())
         {
-            fm->closeFile(wavFile);
+            sm->closeFile(wavFile);
             wavFile = nullptr;
             return false;
         }
@@ -60,36 +79,41 @@ namespace octronic::dream
         //size_t bytesRead = fread(&mWavHeader, 1, headerSize, wavFile);
         memcpy(&mWavHeader, wavFile->getBinaryData(), headerSize);
         size_t bytesRead = headerSize;
-        LOG_DEBUG("WavAudioRuntime: Header Read {} bytes" ,bytesRead);
-        mAudioDataBuffer.reserve(mWavHeader.Subchunk2Size);
+        LOG_DEBUG("WavLoader: Header Read {} bytes" ,bytesRead);
+        mAudioBuffer = new uint8_t[mWavHeader.Subchunk2Size];
+        mAudioBufferSize = mWavHeader.Subchunk2Size;
 
-        //Read the data
-        int8_t* buffer = new int8_t[mWavHeader.Subchunk2Size];
-        // old - bytesRead = fread(buffer, sizeof buffer[0], mWavHeader.Subchunk2Size, wavFile);
-        // old - assert(bytesRead == mWavHeader.Subchunk2Size);
-        memcpy(buffer, &wavFile->getBinaryData()[bytesRead], sizeof(int8_t) * mWavHeader.Subchunk2Size);
+        LOG_DEBUG("WavLoader: Reserved Subchunk2Size {} bytes" ,mWavHeader.Subchunk2Size);
 
-        mAudioDataBuffer.insert(mAudioDataBuffer.end(), buffer, buffer + bytesRead);
-        mFrequency = mWavHeader.SamplesPerSecond;
+        // Read the data
+
+        // OOB check
+        assert(bytesRead + mWavHeader.Subchunk2Size <= wavFile->getBinaryDataSize());
+
+        memcpy(mAudioBuffer, &wavFile->getBinaryData()[bytesRead], mWavHeader.Subchunk2Size);
+        LOG_DEBUG("WavLoader: Read subchunk2 from index [{}], size {} bytes", bytesRead, mWavHeader.Subchunk2Size);
+        bytesRead = mWavHeader.Subchunk2Size;
+
+        mSampleRate = mWavHeader.SamplesPerSecond;
 
         if (mWavHeader.NumOfChannels == 1)
         {
+            LOG_DEBUG("WavLoader: 1 Channel");
             mChannels = 1;
-            mFormat = AL_FORMAT_MONO16;
+        }
+        else if (mWavHeader.NumOfChannels == 2)
+        {
+            LOG_DEBUG("WavLoader: 2 Channels");
+            mChannels = 2;
         }
         else
         {
-            mChannels = 2;
-            mFormat = AL_FORMAT_STEREO16;
+            LOG_DEBUG("WavLoader: Error in number of channels");
+            assert(false);
         }
 
-        setLooping(static_cast<AudioDefinition*>(mDefinition)->getLoop());
+        LOG_DEBUG("WavLoader: Read {} bytes", mAudioBufferSize);
 
-        LOG_DEBUG("WavAudioRuntime: Read {} bytes", mAudioDataBuffer.size());
-        delete [] buffer;
-        buffer = nullptr;
-
-        // old - filelength = getFileSize(wavFile);
         filelength = wavFile->getBinaryDataSize();
 
         LOG_DEBUG(
@@ -126,21 +150,8 @@ namespace octronic::dream
         );
 
         // Close File
-        // old - fclose(wavFile);
-        fm->closeFile(wavFile);
+        sm->closeFile(wavFile);
         wavFile = nullptr;
-        return loadIntoAL();
-    }
-
-    // find the file size
-    long
-    WavAudioRuntime::getFileSize
-    (FILE* inFile)
-    {
-        size_t fileSize = 0;
-        fseek(inFile, 0, SEEK_END);
-        fileSize = ftell(inFile);
-        fseek(inFile, 0, SEEK_SET);
-        return fileSize;
+        return checkLoaded();
     }
 }

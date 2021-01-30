@@ -9,10 +9,10 @@ int main(int argc,char** argv)
     DreamToolContext state(argc,argv);
     if(!state.init())
     {
-        return 1;
+        exit(1);
     }
     state.run();
 
     LOG_INFO("Main: Run is done. Performing stack-based clean up");
-    return 0;
+    exit(0);
 }

@@ -25,6 +25,7 @@
 #include "Components/AssetDefinition.h"
 #include "Components/Time.h"
 #include "Components/Transform.h"
+
 #include "Components/Audio/AudioComponent.h"
 #include "Components/Audio/AudioCache.h"
 #include "Components/Input/InputComponent.h"
@@ -36,6 +37,7 @@
 #include "Components/Window/WindowComponent.h"
 #include "Components/Script/ScriptComponent.h"
 
+#include "Components/Graphics/Font/FontCache.h"
 #include "Components/Graphics/Model/ModelCache.h"
 #include "Components/Graphics/Material/MaterialCache.h"
 #include "Components/Graphics/Shader/ShaderCache.h"
@@ -47,12 +49,12 @@
 namespace octronic::dream
 {
     ProjectRuntime::ProjectRuntime
-    (Project* project, WindowComponent* windowComponent, StorageManager* fm)
+    (Project* project, WindowComponent* windowComponent, AudioComponent* ac, StorageManager* fm)
         : Runtime(project->getDefinition()),
           mDone(false),
           mTime(nullptr),
           mProject(project),
-          mAudioComponent(nullptr),
+          mAudioComponent(ac),
           mInputComponent(nullptr),
           mGraphicsComponent(nullptr),
           mPhysicsComponent(nullptr),
@@ -65,7 +67,8 @@ namespace octronic::dream
           mMaterialCache(nullptr),
           mModelCache(nullptr),
           mShaderCache(nullptr),
-          mScriptCache(nullptr)
+          mScriptCache(nullptr),
+          mFontCache(nullptr)
     {
         LOG_DEBUG( "ProjectRuntime: Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
@@ -119,40 +122,47 @@ namespace octronic::dream
 
         if (!initWindowComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init WindowComponent");
             return false;
         }
 
         if(!initGraphicsComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
             return false;
         }
 
         if (!initInputComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init InputComponent");
             return false;
         }
 
         if(!initPhysicsComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init PhysicsComponent");
             return false;
         }
 
         if(!initAudioComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init AudioComponent");
             return false;
         }
 
         if (!initScriptComponent())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init ScriptComponent");
             return false;
         }
 
         if (!initTaskManager())
         {
+            LOG_ERROR("ProjectRuntime: Failed to init TaskManager");
             return false;
         }
 
-        LOG_DEBUG( "ProjectRuntime: Successfuly created Components." );
+        LOG_DEBUG( "ProjectRuntime: Successfully created Components." );
 
         return true;
     }
@@ -179,7 +189,16 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mAudioComponent = new AudioComponent(this);
+        if(mAudioComponent == nullptr)
+        {
+            LOG_ERROR("ProjectRuntime: AudioComponent is null");
+            return false;
+        }
+        mAudioComponent->setProjectRuntime(this);
+
+        // Audio component must be initialised outside of dream
+
+        /*
         mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
@@ -188,6 +207,7 @@ namespace octronic::dream
             return false;
         }
         mAudioComponent->unlock();
+        */
         return true;
     }
 
@@ -284,6 +304,7 @@ namespace octronic::dream
         mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
         mModelCache   = new ModelCache(this,mShaderCache, mMaterialCache);
         mScriptCache  = new ScriptCache(this);
+        mFontCache = new FontCache(this);
         return true;
     }
 
@@ -327,6 +348,12 @@ namespace octronic::dream
             delete mScriptCache;
             mScriptCache = nullptr;
         }
+
+        if (mFontCache != nullptr)
+        {
+            delete mFontCache;
+            mFontCache = nullptr;
+        }
     }
 
     void
@@ -342,7 +369,7 @@ namespace octronic::dream
 
         if (mAudioComponent != nullptr)
         {
-            delete mAudioComponent;
+            //delete mAudioComponent;
             mAudioComponent = nullptr;
         }
 
@@ -468,6 +495,7 @@ namespace octronic::dream
         mGraphicsComponent->renderGeometryPass(sr);
         mGraphicsComponent->renderShadowPass(sr);
         mGraphicsComponent->renderLightingPass(sr);
+        mGraphicsComponent->renderFonts(sr);
         mGraphicsComponent->executeDestructionTaskQueue();
         ShaderRuntime::InvalidateState();
         mPhysicsComponent->setCamera(sr->getCamera());
@@ -527,6 +555,7 @@ namespace octronic::dream
         "CollectGarbage Called @ {}\n"
         "=======================================================================",
         mTime->getAbsoluteTime());
+
         rt->collectGarbage();
     }
 
@@ -549,7 +578,8 @@ namespace octronic::dream
     ProjectRuntime::updateAll
     ()
     {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+        LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
+
         if (mSceneRuntimeVector.empty())
         {
             mTaskManager->clearFences();
@@ -584,6 +614,7 @@ namespace octronic::dream
             }
         }
         collectGarbage();
+        LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
     }
 
     SceneRuntime*
@@ -605,7 +636,7 @@ namespace octronic::dream
 
     SceneRuntime*
     ProjectRuntime::getSceneRuntimeByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
@@ -621,7 +652,7 @@ namespace octronic::dream
 
     void
     ProjectRuntime::setSceneRuntimeAsActive
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         int nRuntimes = mSceneRuntimeVector.size();
@@ -762,6 +793,12 @@ namespace octronic::dream
         return mScriptCache;
     }
 
+    FontCache*
+    ProjectRuntime::getFontCache() const
+    {
+        return mFontCache;
+    }
+
     void
     ProjectRuntime::destructSceneRuntime
     (SceneRuntime* rt, bool clearCaches)
@@ -822,11 +859,18 @@ namespace octronic::dream
             mScriptCache->clear();
             mScriptCache->unlock();
         }
+
+        if (mFontCache != nullptr)
+        {
+            mFontCache->lock();
+            mFontCache->clear();
+            mFontCache->unlock();
+        }
     }
 
     AssetDefinition*
     ProjectRuntime::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         if (mProject != nullptr)
@@ -838,7 +882,7 @@ namespace octronic::dream
 
     EntityRuntime*
     ProjectRuntime::getEntityRuntimeByUuid
-    (SceneRuntime* rt, uint32_t uuid)
+    (SceneRuntime* rt, UuidType uuid)
     const
     {
         if (rt == nullptr)
@@ -888,7 +932,7 @@ namespace octronic::dream
 
     bool
     ProjectRuntime::hasSceneRuntime
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         bool result = false;

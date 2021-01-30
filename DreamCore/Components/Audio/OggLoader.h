@@ -15,15 +15,20 @@
 
 #pragma once
 
-#include "Components/Audio/AudioRuntime.h"
+#include "AudioLoader.h"
+#include <string>
+
+using std::string;
 
 namespace octronic::dream
 {
-    class OggAudioRuntime : public AudioRuntime
+    class OggLoader : public AudioLoader
     {
     public:
-        OggAudioRuntime(AudioDefinition* def, ProjectRuntime* project);
-
-        bool useDefinition() override;
-    };
+		static const uint16_t OGG_LOAD_BUFFER_SIZE;
+        OggLoader();
+	    ~OggLoader();
+		string getOggErrorString(int error);
+		bool loadIntoBuffer(AudioDefinition* def, ProjectRuntime* project) override;
+	};
 }

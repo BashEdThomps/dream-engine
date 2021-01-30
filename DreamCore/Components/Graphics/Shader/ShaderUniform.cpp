@@ -12,10 +12,18 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #include "ShaderUniform.h"
 #include "Common/Logger.h"
+
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
+using glm::ivec2;
+using glm::ivec3;
+using glm::ivec4;
+using glm::uvec2;
+using glm::uvec3;
+using glm::uvec4;
 
 namespace octronic::dream
 {

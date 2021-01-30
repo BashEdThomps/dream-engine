@@ -15,52 +15,42 @@
 
 #pragma once
 
-#include "ScriptTasks.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
-
-class asIScriptModule;
-class asIScriptFunction;
 
 namespace octronic::dream
 {
     class ScriptDefinition;
     class InputComponent;
+    class EntityRuntime;
     class SceneRuntime;
 
     class ScriptRuntime : public SharedAssetRuntime
     {
-        static void whyYouFail(int,int);
-        bool mError;
-        string mSource;
-        string mUuidString;
-        ScriptConstructionTask mConstructionTask;
-        map<uint32_t, bool> mInitialised;
-        asIScriptModule* mScriptModule;
-
-        asIScriptFunction *mInitFunction;
-        asIScriptFunction *mEventFunction;
-        asIScriptFunction *mUpdateFunction;
-        asIScriptFunction *mDestroyFunction;
-        asIScriptFunction *mInputFunction;
     public:
-
         ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
         ~ScriptRuntime() override;
         bool useDefinition() override;
+
+        bool createEntityState(EntityRuntime* rt);
+        bool removeEntityState(UuidType uuid);
+
         string getSource() const;
         void setSource(const string& source);
-        bool createScript();
 
-        bool executeOnInit(EntityRuntime*);
-        bool executeOnUpdate(EntityRuntime*);
-        bool executeOnEvent(EntityRuntime*);
-        bool executeOnDestroy(uint32_t destroyedSo, EntityRuntime* parent);
+        bool executeOnInit(EntityRuntime* state);
+        bool executeOnUpdate(EntityRuntime* state);
+        bool executeOnEvent(EntityRuntime* state);
 
         bool executeOnInput(InputComponent*, SceneRuntime*);
 
-        bool getInitialised(EntityRuntime* sor);
-        ScriptConstructionTask* getConstructionTask();
-        void removeInitialisedFlag(uint32_t);
+        bool registerInputScript();
+        bool removeInputScript();
+    private:
+        string mSource;
+        const static string LUA_ON_INIT_FUNCTION;
+        const static string LUA_ON_UPDATE_FUNCTION;
+        const static string LUA_ON_INPUT_FUNCTION;
+        const static string LUA_ON_EVENT_FUNCTION;
     };
 }

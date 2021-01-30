@@ -17,21 +17,18 @@
 
 #include <fstream>
 
-#include "Components/Audio/AudioRuntime.h"
+#include "Components/Audio/AudioLoader.h"
 #include "WavHeader.h"
 
 namespace octronic::dream
 {
-    class WavAudioRuntime : public AudioRuntime
+    class WavLoader : public AudioLoader
     {
-
+    public:
+        WavLoader();
+		~WavLoader();
+		bool loadIntoBuffer(AudioDefinition* definition, ProjectRuntime* project) override;
     private:
         WavHeader mWavHeader;
-
-    public:
-        WavAudioRuntime(AudioDefinition*, ProjectRuntime*);
-
-        long getFileSize(FILE* inFile);
-        bool useDefinition() override;
     };
 }

@@ -416,7 +416,7 @@ namespace octronic::dream::tool
             }
             else
             {
-                for (uint32_t sdir : subdirsRemoved)
+                for (UuidType sdir : subdirsRemoved)
                 {
                     ImGui::Text("%d",sdir);
                 }

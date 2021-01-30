@@ -42,6 +42,7 @@ namespace octronic::dream
     class EntityDefinition;
     class AssetDefinition;
     class PathDefinition;
+    class FontRuntime;
     class AnimationDefinition;
     class AudioDefinition;
     class LightDefinition;
@@ -50,40 +51,10 @@ namespace octronic::dream
     class ScriptDefinition;
     class ScriptRuntime;
     class AssetRuntime;
+    class FontDefinition;
 
     class EntityRuntime : public Runtime
     {
-        AnimationRuntime* mAnimationRuntime;
-        AudioRuntime* mAudioRuntime;
-        LightRuntime* mLightRuntime;
-        PathRuntime* mPathRuntime;
-        PhysicsObjectRuntime* mPhysicsObjectRuntime;
-        ScriptRuntime* mScriptRuntime;
-        ModelRuntime* mModelRuntime;
-
-        Transform mInitialTransform;
-        Transform mTransform;
-        mutex mEventQueueMutex;
-        vector<Event> mEventQueue;
-        map<AssetType,uint32_t> mAssetDefinitions;
-        vector<EntityRuntime*> mChildRuntimes;
-        SceneRuntime* mSceneRuntime;
-        EntityRuntime* mParentRuntime;
-        BoundingBox mBoundingBox;
-        bool mHasCameraFocus;
-        bool mDeleted;
-        bool mHidden;
-        bool mAlwaysDraw;
-        bool mRandomUuid;
-        long mDeferredFor;
-        long mObjectLifetime;
-        long mDieAfter;
-        ScriptOnInitTask mScriptOnInitTask;
-        ScriptOnUpdateTask mScriptOnUpdateTask;
-        ScriptOnEventTask mScriptOnEventTask;
-        shared_ptr<ScriptOnDestroyTask> mScriptOnDestroyTask;
-        map<string,string> mAttributes;
-
     public:
         EntityRuntime(EntityDefinition* sd, SceneRuntime* sceneRuntime = nullptr, bool randomUuid = false);
         ~EntityRuntime() override;
@@ -101,7 +72,9 @@ namespace octronic::dream
         bool createScriptRuntime(ScriptDefinition*);
         bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
         bool createLightRuntime(LightDefinition*);
+        bool createFontRuntime(FontDefinition*);
 
+        FontRuntime* getFontRuntime();
         AnimationRuntime* getAnimationRuntime();
         PathRuntime*  getPathRuntime();
         AudioRuntime* getAudioRuntime();
@@ -118,6 +91,7 @@ namespace octronic::dream
         bool hasScriptRuntime();
         bool hasPhysicsObjectRuntime();
         bool hasLightRuntime();
+        bool hasFontRuntime();
 
         Transform& getTransform();
         Transform getInitialTransform();
@@ -138,8 +112,8 @@ namespace octronic::dream
         void unlockEventQueue();
         void clearEventQueue();
 
-        EntityRuntime* getChildRuntimeByUuid(uint32_t uuid);
-        EntityRuntime* addChildFromTemplateUuid(uint32_t uuid);
+        EntityRuntime* getChildRuntimeByUuid(UuidType uuid);
+        EntityRuntime* addChildFromTemplateUuid(UuidType uuid);
         int countAllChildren();
         size_t countChildren();
         void addChildRuntime(EntityRuntime*);
@@ -147,6 +121,13 @@ namespace octronic::dream
         EntityRuntime* createAndAddChildRuntime(EntityDefinition*);
         vector<EntityRuntime*> getChildRuntimes();
         bool isChildOf(EntityRuntime*);
+
+        void setScriptInitialised(bool i);
+        bool getScriptInitialised() const;
+
+        void setScriptError(bool i);
+        bool getScriptError() const;
+
 
         bool isParentOf(EntityRuntime* child);
         void setParentRuntime(EntityRuntime* parent);
@@ -168,11 +149,12 @@ namespace octronic::dream
         void removeLightRuntime();
         void removeScriptRuntime();
         void removePhysicsObjectRuntime();
+        void removeFontRuntime();
 
-        bool replaceAssetUuid(AssetType type, uint32_t uuid);
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
-        void setAssetDefinitionsMap(const map<AssetType, uint32_t> &loadQueue);
-        map<AssetType, uint32_t> getAssetDefinitionsMap();
+        bool replaceAssetUuid(AssetType type, UuidType uuid);
+        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
+        void setAssetDefinitionsMap(const map<AssetType, UuidType> &loadQueue);
+        map<AssetType, UuidType> getAssetDefinitionsMap();
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
@@ -203,12 +185,63 @@ namespace octronic::dream
 
         bool loadChildrenFromDefinition(EntityDefinition* definition);
 
-        ScriptOnInitTask* getScriptOnInitTask();
-        ScriptOnEventTask* getScriptOnEventTask();
-        ScriptOnUpdateTask* getScriptOnUpdateTask();
+        EntityScriptConstructionTask* getScriptConstructionTask();
+        EntityScriptOnInitTask* getScriptOnInitTask();
+        EntityScriptOnEventTask* getScriptOnEventTask();
+        EntityScriptOnUpdateTask* getScriptOnUpdateTask();
 
         string getAttribute(const string& key) const;
         void setAttribute(const string& key, const string& value);
         const map<string,string>& getAttributesMap() const;
+
+        string getFontText() const;
+        void setFontText(const string& fontText);
+
+        Vector3 getFontColor() const;
+        void setFontColor(const Vector3& fontColor);
+
+        float getFontScale() const;
+        void setFontScale(float fontScale);
+
+    protected:
+        AnimationRuntime* mAnimationRuntime;
+        AudioRuntime* mAudioRuntime;
+        LightRuntime* mLightRuntime;
+        PathRuntime* mPathRuntime;
+        PhysicsObjectRuntime* mPhysicsObjectRuntime;
+        ScriptRuntime* mScriptRuntime;
+        bool mScriptInitialised;
+        bool mScriptError;
+        ModelRuntime* mModelRuntime;
+        FontRuntime* mFontRuntime;
+
+        Transform mInitialTransform;
+        Transform mTransform;
+        mutex mEventQueueMutex;
+        vector<Event> mEventQueue;
+        map<AssetType,UuidType> mAssetDefinitions;
+        vector<EntityRuntime*> mChildRuntimes;
+        SceneRuntime* mSceneRuntime;
+        EntityRuntime* mParentRuntime;
+        BoundingBox mBoundingBox;
+        bool mHasCameraFocus;
+        bool mDeleted;
+        bool mHidden;
+        bool mAlwaysDraw;
+        bool mRandomUuid;
+        long mDeferredFor;
+        long mObjectLifetime;
+        long mDieAfter;
+        EntityScriptConstructionTask mScriptConstructionTask;
+        EntityScriptOnInitTask mScriptOnInitTask;
+        EntityScriptOnUpdateTask mScriptOnUpdateTask;
+        EntityScriptOnEventTask mScriptOnEventTask;
+        shared_ptr<EntityScriptDestructionTask> mScriptDestructionTask;
+        map<string,string> mAttributes;
+        string mFontText;
+        Vector3 mFontColor;
+		float mFontScale;
+
+
     };
 }

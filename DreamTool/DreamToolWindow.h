@@ -34,8 +34,6 @@
 #endif
 #include <DreamCore.h>
 
-using namespace std;
-using namespace octronic::dream;
 
 namespace octronic::dream::tool
 {

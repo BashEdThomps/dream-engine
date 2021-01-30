@@ -377,7 +377,7 @@ namespace octronic::dream
             iter++
        )
        {
-            uint32_t jsUuid = (*iter)[Constants::UUID];
+            UuidType jsUuid = (*iter)[Constants::UUID];
             if (def.uuid == jsUuid)
             {
                (*iter)[Constants::TRANSFORM] = def.transform.getJson();
@@ -417,7 +417,7 @@ namespace octronic::dream
         }
     }
 
-    uint32_t
+    UuidType
     PhysicsObjectDefinition::getCollisionModel
     ()
     {
@@ -431,7 +431,7 @@ namespace octronic::dream
 
     void
     PhysicsObjectDefinition::setCollisionModel
-    (uint32_t modelUuid)
+    (UuidType modelUuid)
     {
         mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }

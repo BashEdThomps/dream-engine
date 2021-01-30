@@ -11,6 +11,8 @@
  */
 #include "ScriptDefinition.h"
 
+#include "Common/Constants.h"
+
 namespace octronic::dream
 {
     ScriptDefinition::ScriptDefinition
@@ -26,9 +28,9 @@ namespace octronic::dream
     }
 
     bool
-    ScriptDefinition::isFormatAngelScript
+    ScriptDefinition::isFormatLua
     ()
     {
-        return getFormat() == Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
+        return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
     }
 }

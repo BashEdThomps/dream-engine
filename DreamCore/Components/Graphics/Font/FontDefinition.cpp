@@ -18,5 +18,21 @@ namespace octronic::dream
         :AssetDefinition(pd,js)
     {
     }
+
+	void FontDefinition::setSize(unsigned int size)
+    {
+        mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+    }
+
+	unsigned int FontDefinition::getSize()
+    {
+        unsigned int size = 1;
+        if (mJson[Constants::ASSET_ATTR_FONT_SIZE].is_null())
+        {
+            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+        }
+        size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
+        return size;
+    }
 }
 

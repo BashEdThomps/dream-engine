@@ -3,10 +3,11 @@
 
 #include "Common/Constants.h"
 #include "Common/Logger.h"
+#include "Project/ProjectRuntime.h"
 
 #include "AudioDefinition.h"
-#include "Wav/WavAudioRuntime.h"
-#include "Ogg/OggAudioRuntime.h"
+#include "AudioComponent.h"
+#include "AudioRuntime.h"
 
 namespace octronic::dream
 {
@@ -39,25 +40,20 @@ namespace octronic::dream
     (AssetDefinition* def)
     {
         auto aDef = static_cast<AudioDefinition*>(def);
-        SharedAssetRuntime* asset = nullptr;
-
-        if (def->getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV)
-        {
-            asset = new WavAudioRuntime(aDef,mProjectRuntime);
-        }
-        else if (def->getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG)
-        {
-            asset = new OggAudioRuntime(aDef,mProjectRuntime);
-        }
-        else
-        {
-            LOG_ERROR("AudioCache: Error, unrecognised audio format {}", def->getFormat());
-        }
+        AudioComponent* ac = mProjectRuntime->getAudioComponent();
+        AudioRuntime* asset = ac->newAudioRuntime(aDef);
 
         if (asset)
         {
-            asset->useDefinition();
-            mRuntimes.push_back(asset);
+            if (!asset->useDefinition())
+            {
+               delete asset;
+               asset = nullptr;
+            }
+            else
+            {
+            	mRuntimes.push_back(asset);
+            }
         }
 
         return asset;

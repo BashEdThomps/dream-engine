@@ -10,7 +10,7 @@ namespace octronic::dream::tool
           mScriptDefinition(nullptr)
     {
 
-        mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::AngelScript());
+        mTextEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
     }
 
     ScriptEditorWindow::~ScriptEditorWindow
@@ -30,13 +30,12 @@ namespace octronic::dream::tool
 
             auto projRunt = mContext->getProject()->getRuntime();
             ScriptRuntime* scriptInst = nullptr;
-            {
-                auto scriptCache = projRunt->getScriptCache();
-                if (scriptCache)
-                {
-                    scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
-                }
-            }
+
+			auto scriptCache = projRunt->getScriptCache();
+			if (scriptCache)
+			{
+				scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
+			}
 
             if(ImGui::Button("Save"))
             {
@@ -46,7 +45,7 @@ namespace octronic::dream::tool
                     scriptInst->setSource(currentText);
                     string source = scriptInst->getSource();
 
-                    if (mContext->getProjectDirectory()->writeAssetData(mScriptDefinition,(uint8_t*)source.c_str(),source.size(),Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT))
+                    if (mContext->getProjectDirectory()->writeAssetData(mScriptDefinition,(uint8_t*)source.c_str(),source.size(),Constants::ASSET_FORMAT_SCRIPT_LUA))
                     {
 
                         mContext->getMenuBar()->setMessageString("Saved Script "+scriptInst->getNameAndUuidString());
@@ -64,12 +63,12 @@ namespace octronic::dream::tool
 
             ImGui::PushFont(DreamToolWindow::MonoFont);
 
-            auto cpos = mTextEditor.GetCursorPosition();
+            TextEditor::Coordinates cpos = mTextEditor.GetCursorPosition();
             ImGui::Text(
-                        "%6d/%-6d %6d lines  | %s | %s | %s | %s",
+                        "Row:%6d/%6d | Col:%-6d  | %s | %s | %s | %s",
                         cpos.mLine + 1,
-                        cpos.mColumn + 1,
                         mTextEditor.GetTotalLines(),
+                        cpos.mColumn + 1,
                         mTextEditor.IsOverwrite() ? "Ovr" : "Ins",
                         mTextEditor.CanUndo() ? "*" : " ",
                         mTextEditor.GetLanguageDefinition().mName.c_str(),
@@ -96,7 +95,7 @@ namespace octronic::dream::tool
                     else
                     {
                         auto templateName = templates.at(currentTemplateIndex);
-                        auto templateStr = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT);
+                        auto templateStr = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_LUA);
                         if (scriptInst)
                         {
                             scriptInst->setSource(templateStr);
@@ -128,12 +127,20 @@ namespace octronic::dream::tool
             auto scriptCache = projRunt->getScriptCache();
             if (scriptCache)
             {
-                scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
+                scriptInst = static_cast<ScriptRuntime*>(scriptCache->getRuntime(mScriptDefinition));
                 if (scriptInst)
                 {
                     mTextEditor.SetReadOnly(false);
                     mTextEditor.SetText(scriptInst->getSource());
                 }
+                else
+                {
+                    mTextEditor.SetText("");
+                }
+            }
+            else
+            {
+                mTextEditor.SetText("");
             }
         }
     }

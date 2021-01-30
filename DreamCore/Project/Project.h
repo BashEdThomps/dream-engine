@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "Common/Uuid.h"
 
 #include <string>
 #include <vector>
@@ -35,6 +36,7 @@ namespace octronic::dream
     class WindowComponent;
     class ProjectDirectory;
     class StorageManager;
+    class AudioComponent;
 
     class Project
     {
@@ -54,9 +56,10 @@ namespace octronic::dream
         void setDefinition(ProjectDefinition* definition);
         bool hasProjectDefinition() const;
 
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid) const;
+        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid) const;
         void setWindowComponent(WindowComponent* windowComponent);
-        void setStorageManager(StorageManager* fm);
+        void setStorageManager(StorageManager* storageManager);
+        void setAudioComponent(AudioComponent* audioComponent);
 
         ProjectDirectory* getDirectory() const;
             // Variables
@@ -65,6 +68,7 @@ namespace octronic::dream
         ProjectDefinition* mDefinition;
         ProjectRuntime* mRuntime;
         WindowComponent* mWindowComponent;
+        AudioComponent* mAudioComponent;
         StorageManager* mStorageManager;
     };
 }

@@ -27,8 +27,11 @@ namespace octronic::dream
     }
 
     TaskManager::TaskManager()
-        : mNextThread(0)
+        : mNextThread(0),
+          mHardwareThreadCount(thread::hardware_concurrency())
         {
+            LOG_CRITICAL("TaskManager: Constructing with {} hardware threads available",
+                         mHardwareThreadCount);
             startAllThreads();
         }
 
@@ -40,9 +43,9 @@ namespace octronic::dream
 
         void TaskManager::startAllThreads()
         {
-            LOG_DEBUG("TaskManager: Starting all worker threads...");
+            LOG_DEBUG("TaskManager: Starting all threads...");
 
-            for (int i=0; i <  static_cast<int>(thread::hardware_concurrency()); i++)
+            for (int i=0; i <  mHardwareThreadCount; i++)
             {
                 LOG_DEBUG("TaskManager: Spawning thread {}",i);
                 mThreadVector.push_back(new TaskThread(i));
@@ -66,15 +69,30 @@ namespace octronic::dream
 
         void TaskManager::pushTask(Task* t)
         {
+            for (TaskThread* thread : mThreadVector)
+            {
+                if (thread->hasTask(t))
+                {
+                    LOG_ERROR("TaskManager: Thread {} already has task {}({})",
+                              thread->getThreadId(), t->getTaskName(), t->getTaskId());
+                    return;
+                }
+            }
             while (true)
             {
                 bool result = mThreadVector.at(mNextThread)->pushTask(t);
-                mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    LOG_DEBUG("TaskManager: pushed task to worker {}",mNextThread);
-                    break;
+                    LOG_DEBUG("TaskManager: {}({}) pushed task to thread {}",t->getTaskName(),t->getTaskId(), mNextThread);
                 }
+                else
+                {
+                    LOG_ERROR("TaskManager: Failed to push task {}({}) to thread {}",t->getTaskName(), t->getTaskId(), mNextThread);
+                }
+                mNextThread++;
+                mNextThread = mNextThread % mThreadVector.size();
+                assert(mNextThread >= 0 && mNextThread <= mThreadVector.size());
+                if (result) break;
                 std::this_thread::yield();
             }
         }
@@ -84,12 +102,17 @@ namespace octronic::dream
             while (true)
             {
                 bool result = mThreadVector.at(mNextThread)->pushDestructionTask(dt);
-                mNextThread = (mNextThread +1) % mThreadVector.size();
                 if (result)
                 {
-                    LOG_DEBUG("TaskManager: pushed to worker {}",mNextThread);
-                    break;
+                    LOG_DEBUG("TaskManager: {} pushed destruction task to thread {}",dt->getTaskName(), mNextThread);
                 }
+                else
+                {
+                   LOG_ERROR("TaskManager: Failed to push task {} to thread {}",dt->getTaskName(), mNextThread);
+                }
+                mNextThread++;
+                mNextThread = mNextThread % mThreadVector.size();
+                if (result) break;
                 std::this_thread::yield();
             }
         }
@@ -114,12 +137,12 @@ namespace octronic::dream
                for (TaskThread* t : mThreadVector)
                {
                    trys++;
-                   LOG_TRACE("TaskManager: Trying for {} time",trys);
+                   LOG_TRACE("TaskManager: Waiting for fence for {} time",trys);
 
-                   result = result && t->getFence();
+                   result = (result && t->getFence());
                    if (!result)
                    {
-                       LOG_TRACE("TaskManager: Thread {} is still working",t->getThreadId());
+                       LOG_TRACE("TaskManager: Thread {} is still working", t->getThreadId());
                        break;
                    }
                }

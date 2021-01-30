@@ -36,7 +36,7 @@ namespace octronic::dream
     }
 
     // Shader
-    uint32_t
+    UuidType
     MaterialDefinition::getShader
     ()
     {
@@ -49,13 +49,13 @@ namespace octronic::dream
 
     void
     MaterialDefinition::setShader
-    (uint32_t val)
+    (UuidType val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
     }
 
     // Textures
-    uint32_t
+    UuidType
     MaterialDefinition::getDiffuseTexture
     ()
     {
@@ -68,12 +68,12 @@ namespace octronic::dream
 
     void
     MaterialDefinition::setDiffuseTexture
-    (uint32_t val)
+    (UuidType val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
     }
 
-    uint32_t
+    UuidType
     MaterialDefinition::getSpecularTexture
     ()
     {
@@ -86,12 +86,12 @@ namespace octronic::dream
 
     void
     MaterialDefinition::setSpecularTexture
-    (uint32_t val)
+    (UuidType val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
     }
 
-    uint32_t
+    UuidType
     MaterialDefinition::getNormalTexture
     ()
     {
@@ -104,12 +104,12 @@ namespace octronic::dream
 
     void
     MaterialDefinition::setNormalTexture
-    (uint32_t val)
+    (UuidType val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
     }
 
-    uint32_t
+    UuidType
     MaterialDefinition::getDisplacementTexture
     ()
     {
@@ -123,7 +123,7 @@ namespace octronic::dream
 
     void
     MaterialDefinition::setDisplacementTexture
-    (uint32_t val)
+    (UuidType val)
     {
         mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
     }

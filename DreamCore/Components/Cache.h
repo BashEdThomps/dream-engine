@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/LockableObject.h"
+#include "Common/Uuid.h"
 
 #include <string>
 #include <vector>
@@ -54,7 +55,7 @@ namespace octronic::dream
          * @param uuid definition The AssetDefinition for the AssetRuntime you wish
          * to instanciate.
          */
-        SharedAssetRuntime* getRuntime(uint32_t uuid);
+        SharedAssetRuntime* getRuntime(UuidType uuid);
 
         /**
          * @return Reference to the vector of SharedAssetRuntimes managed by
@@ -71,9 +72,23 @@ namespace octronic::dream
         string getAbsolutePath(AssetDefinition* definition);
 
         /**
+         * @brief removeRuntime remove a runtime from the cache based on definition
+         * @param definition
+         */
+        void removeRuntime(AssetDefinition* definition);
+
+        /**
+         * @brief removeRuntime remove a runtime from the cache based on uuid
+         * @param definition
+         */
+        void removeRuntimeByUuid(UuidType uuid);
+
+        /**
          * @brief Delete all AssetRuntimes managed by this Cache.
          */
         virtual void clear();
+
+        size_t runtimeCount() const;
     protected:
 
         /**
@@ -89,7 +104,7 @@ namespace octronic::dream
          * @return AssetDefinition specified by uuid, or nullptr if none is
          * found.
          */
-        AssetDefinition* getAssetDefinitionByUuid(uint32_t uuid);
+        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
 
         /**
          * @brief Vector of SharedAssetRuntimes managed by this Cache.

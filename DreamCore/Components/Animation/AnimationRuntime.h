@@ -29,7 +29,7 @@
 #undef min
 #endif
 
-using namespace tweeny;
+using tweeny::tween;
 
 namespace octronic::dream
 {

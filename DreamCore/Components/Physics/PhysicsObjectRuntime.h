@@ -25,9 +25,6 @@
 #include "Components/Transform.h"
 #include "PhysicsTasks.h"
 
-using namespace std;
-using namespace glm;
-using namespace nlohmann;
 
 namespace octronic::dream
 {
@@ -50,7 +47,7 @@ namespace octronic::dream
         ModelCache* mModelCache;
         PhysicsAddObjectTask mAddObjectTask;
 
-        PhysicsObjectDefinition* getAssetDefinitionByUuid(uint32_t);
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);
         btCollisionShape* createTriangleMeshShape(ModelRuntime*);
 
     public:
@@ -73,9 +70,11 @@ namespace octronic::dream
         void applyTorque(const Vector3&);
         void clearForces();
 
-        void setCenterOfMassTransform(const Transform& tx);
-        void setCenterOfMassTransform(const Vector3& tx);
-        void setCenterOfMassTransform(float x, float y, float z);
+        void setCenterOfMassTransformTx(const Transform& tx);
+        void setCenterOfMassTransform3fv(const Vector3& tx);
+        void setCenterOfMassTransform3f(float x, float y, float z);
+        void setCenterOfMassTransformMat4(mat4 tx);
+
         void setWorldTransform(const Transform& tx);
 
         Vector3 getLinearVelocity();
@@ -100,7 +99,6 @@ namespace octronic::dream
 
         void  setCcdSweptSphereRadius(float);
         float getCcdSweptSphereRadius();
-        void setCenterOfMassTransform(mat4 tx);
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
 

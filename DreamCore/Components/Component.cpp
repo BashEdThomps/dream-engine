@@ -50,4 +50,9 @@ namespace octronic::dream
     {
         mEnabled = enabled;
     }
+
+    void Component::setProjectRuntime(ProjectRuntime *pr)
+    {
+        mProjectRuntime = pr;
+    }
 }

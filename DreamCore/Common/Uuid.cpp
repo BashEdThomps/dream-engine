@@ -18,17 +18,20 @@
 #include <cstdlib>
 #include <chrono>
 
-using namespace std::chrono;
+using std::srand;
+using std::chrono::high_resolution_clock;
 
 namespace octronic::dream
 {
-    UuidType UuidTools::generateUuid()
+    const UuidType Uuid::INVALID = 0;
+
+    UuidType Uuid::generateUuid()
     {
         srand(static_cast<unsigned int>(high_resolution_clock::now().time_since_epoch().count()));
-        uint32_t retval = 0;
-        while (retval == 0)
+        UuidType retval = INVALID;
+        while (retval == INVALID)
         {
-           retval = static_cast<uint32_t>(rand());
+           retval = static_cast<UuidType>(rand());
         }
         return retval;
     }

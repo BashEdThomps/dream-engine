@@ -19,7 +19,6 @@
 #include "Common/GLHeader.h"
 #include <glm/glm.hpp>
 
-using namespace glm;
 
 namespace octronic::dream
 {

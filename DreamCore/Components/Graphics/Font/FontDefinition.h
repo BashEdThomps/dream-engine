@@ -19,7 +19,9 @@ namespace octronic::dream
     {
     public:
         FontDefinition(ProjectDefinition* pd, const json& js);
-        void SetShaderUUID();
+
+        void setSize(unsigned int size);
+        unsigned int getSize();
     };
 
 }

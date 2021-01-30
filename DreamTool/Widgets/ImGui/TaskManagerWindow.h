@@ -2,7 +2,6 @@
 
 #include "ImGuiWidget.h"
 
-using namespace octronic::dream;
 
 namespace octronic::dream::tool
 {

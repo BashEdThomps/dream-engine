@@ -17,129 +17,95 @@
 #include "ScriptDefinition.h"
 #include "ScriptComponent.h"
 
-#include "Common/Logger.h"
 #include "Components/Input/InputComponent.h"
 #include "Scene/SceneRuntime.h"
 #include "Scene/Entity/EntityRuntime.h"
+#include <sol.h>
 #include "Project/ProjectRuntime.h"
-
-#include <angelscript.h>
 
 namespace octronic::dream
 {
-    void ScriptRuntime::whyYouFail(int r, int line)
-    {
-        if (r<0)
-        {
-            string errStr;
-            switch (r)
-            {
-                case asINVALID_DECLARATION:
-                    errStr = "Invalid Declaration";
-                    break;
-                case asINVALID_NAME:
-                    errStr = "Invalid Name";
-                    break;
-                case asNAME_TAKEN:
-                    errStr = "Name Taken";
-                    break;
-                case asERROR:
-                    errStr = "Error: not a proper id";
-                    break;
-                case asALREADY_REGISTERED:
-                    errStr = "Already Registered";
-                break;
-                default:
-                    errStr = "Other, Go Check";
-                    break;
-            }
-            cout << "On line: " << line << " errNo: " << r << " Reason: " << errStr << endl;
-            assert(false);
-        }
-    }
+    const string ScriptRuntime::LUA_ON_INIT_FUNCTION = "onInit";
+    const string ScriptRuntime::LUA_ON_UPDATE_FUNCTION = "onUpdate";
+    const string ScriptRuntime::LUA_ON_INPUT_FUNCTION = "onInput";
+    const string ScriptRuntime::LUA_ON_EVENT_FUNCTION = "onEvent";
 
     ScriptRuntime::ScriptRuntime
     (ScriptDefinition* definition, ProjectRuntime* rt)
         : SharedAssetRuntime(definition,rt),
-          mError(false),
-          mSource(""),
-          mUuidString(std::to_string(mUuid)),
-          mScriptModule(nullptr),
-          mInitFunction(nullptr),
-          mEventFunction(nullptr),
-          mUpdateFunction(nullptr),
-          mDestroyFunction(nullptr),
-          mInputFunction(nullptr)
+          mSource("")
     {
-        LOG_TRACE( "ScriptRuntime: Constructing {}", getNameAndUuidString());
+        LOG_TRACE( "ScriptRuntime: {} {}",__FUNCTION__, getNameAndUuidString());
         return;
     }
 
     ScriptRuntime::~ScriptRuntime
     ()
     {
-        LOG_TRACE("ScriptRuntime: Destructing {}", mDefinition->getNameAndUuidString());
-        if (mScriptModule)
-        {
-            mScriptModule->Discard();
-            mScriptModule = nullptr;
-        }
+        LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, mDefinition->getNameAndUuidString());
     }
 
     bool
     ScriptRuntime::useDefinition
     ()
     {
-        mConstructionTask.setScript(this);
-        mConstructionTask.setState(TaskState::TASK_STATE_NEW);
-        mLoaded = false;
+        auto path = getAssetFilePath();
+        LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
         return true;
     }
 
     bool
-    ScriptRuntime::getInitialised
-    (EntityRuntime* sor)
+    ScriptRuntime::createEntityState
+    (EntityRuntime* entity)
     {
-       return mInitialised[sor->getUuid()];
-    }
-
-    ScriptConstructionTask*
-    ScriptRuntime::getConstructionTask
-    ()
-    {
-        return &mConstructionTask;
-    }
-
-    void
-    ScriptRuntime::removeInitialisedFlag(uint32_t id)
-    {
-        auto itr = mInitialised.find(id);
-        if (itr != mInitialised.end())
-        {
-            mInitialised.erase(itr);
-        }
-    }
-
-    bool ScriptRuntime::createScript()
-    {
-        auto path = getAssetFilePath();
-        LOG_DEBUG( "ScriptRuntime: Creating Script at {}" , path);
-
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            LOG_DEBUG("ScriptRuntime: createState called for {}", getNameAndUuidString() );
-            mScriptModule = ScriptComponent::Engine->GetModule(mUuidString.c_str(),asGM_CREATE_IF_NOT_EXISTS);
-            mScriptModule->AddScriptSection(mUuidString.c_str(),mSource.c_str());
-            LOG_TRACE("ScriptRuntime: Loaded Script Source\n{}\n",getSource());
-            int r = mScriptModule->Build();
-            if(r < 0)
+            if (entity)
+                LOG_DEBUG("ScriptRuntime: loadScript called for {}", entity->getNameAndUuidString() );
+            LOG_DEBUG("ScriptRuntime: calling scriptLoadFromString in lua for {}" , entity->getNameAndUuidString() );
             {
-                whyYouFail(r,__LINE__);
-                LOG_ERROR("ScriptRuntime: Create script error");
-                mError = true;
+                sol::state_view solStateView(ScriptComponent::State);
+
+                // Create an environment for this entity runtime
+                sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+                solStateView[entity->getUuid()] = environment;
+
+                auto exec_result = solStateView.safe_script(mSource, environment,
+                                                            [](lua_State*, sol::protected_function_result pfr) {
+                        return pfr;
+            });
+
+                // it did not work
+                if(!exec_result.valid())
+                {
+                    // An error has occured
+                    sol::error err = exec_result;
+                    std::string what = err.what();
+                    LOG_ERROR("ScriptRuntime: {} Could not execute lua script:\n{}",
+                                 entity->getUuid(),what);
+                    entity->setScriptError(true);
+                    mProjectRuntime->getScriptComponent()->unlock();
+                    assert(false);
+                    return false;
+                }
             }
-            mLoaded = true;
+
             mProjectRuntime->getScriptComponent()->unlock();
+            return true;
+        }
+        return false;
+    }
+
+    bool
+    ScriptRuntime::removeEntityState
+    (UuidType uuid)
+    {
+        if(mProjectRuntime->getScriptComponent()->tryLock())
+        {
+            sol::state_view stateView(ScriptComponent::State);
+            stateView[uuid] = sol::lua_nil;
+            mProjectRuntime->getScriptComponent()->unlock();
+            LOG_DEBUG( "ScriptRuntime: Removed script lua table for {}" , uuid);
             return true;
         }
         return false;
@@ -164,137 +130,75 @@ namespace octronic::dream
 
     bool
     ScriptRuntime::executeOnUpdate
-    (EntityRuntime* sor)
+    (EntityRuntime* entity)
     {
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            if (mScriptModule)
+            sol::state_view solStateView(ScriptComponent::State);
+
+            LOG_DEBUG("ScriptRuntime: Calling onUpdate for {}",entity->getNameAndUuidString());
+
+            sol::protected_function onUpdateFunction = solStateView[entity->getUuid()][LUA_ON_UPDATE_FUNCTION];
+            auto result = onUpdateFunction(entity);
+            if (!result.valid())
             {
-                if (!mUpdateFunction)
-                {
-                    mUpdateFunction = mScriptModule->GetFunctionByName
-                        (Constants::SCRIPT_UPDATE_FUNCTION.c_str());
-                }
-                if (mUpdateFunction)
-                {
-                    auto ctx = ScriptComponent::Engine->RequestContext();
-                    int r;
-                    r = ctx->Prepare(mUpdateFunction); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
-                    r = ctx->Execute(); whyYouFail(r,__LINE__);
-                    if (r < 0)
-                    {
-                        whyYouFail(r,__LINE__);
-                        mError = true;
-                    }
-                    ScriptComponent::Engine->ReturnContext(ctx);
-                }
+                // An error has occured
+                sol::error err = result;
+                string what = err.what();
+                LOG_ERROR("ScriptRuntime: {} Could not execute onUpdate in lua script:\n{}",
+                             entity->getNameAndUuidString(),
+                             what);
+                entity->setScriptError(true);
+                mProjectRuntime->getScriptComponent()->unlock();
+                assert(false);
+                return false;
             }
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }
         return false;
     }
-
-    bool
-    ScriptRuntime::executeOnDestroy
-    (uint32_t destroyedSo, EntityRuntime* parent)
-    {
-        if (mError)
-        {
-            LOG_ERROR("ScriptRuntime: Cannot run destroy, script for {} in error state.",destroyedSo);
-            return true;
-        }
-
-        if (mInitialised.count(destroyedSo) == 0)
-        {
-            LOG_ERROR("ScriptRuntime: Scrip {} probably removed before descruction could be called.",destroyedSo);
-            return true;
-        }
-
-        if (!mInitialised[destroyedSo])
-        {
-            LOG_TRACE("ScriptRuntime: Attempted to destroy uninitialised object {}",destroyedSo);
-            return true;
-        }
-
-        if(mProjectRuntime->getScriptComponent()->tryLock())
-        {
-            if (mScriptModule)
-            {
-                if (!mDestroyFunction)
-                {
-                    mDestroyFunction = mScriptModule->GetFunctionByName
-                        (Constants::SCRIPT_DESTROY_FUNCTION.c_str());
-                }
-
-                if (mDestroyFunction)
-                {
-                    auto ctx = ScriptComponent::Engine->RequestContext();
-                    int r;
-                    r = ctx->Prepare(mDestroyFunction); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgDWord(0,destroyedSo); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgObject(1,parent); whyYouFail(r,__LINE__);
-                    r = ctx->Execute(); whyYouFail(r,__LINE__);
-                    if (r < 0)
-                    {
-                        whyYouFail(r,__LINE__);
-                        mError = true;
-                    }
-                    removeInitialisedFlag(destroyedSo);
-                    ScriptComponent::Engine->ReturnContext(ctx);
-                }
-            }
-            mProjectRuntime->getScriptComponent()->unlock();
-            return true;
-        }
-        return false;
-    }
-
 
     bool
     ScriptRuntime::executeOnInit
-    (EntityRuntime* sor)
+    (EntityRuntime* entity)
     {
-        if (mError)
+        if (entity->getScriptError())
         {
-            LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.",sor->getNameAndUuidString());
+            LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.", entity->getNameAndUuidString());
             return true;
         }
 
-        if (mInitialised[sor->getUuid()])
+        if (entity->getScriptInitialised())
         {
-            LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}",sor->getNameAndUuidString());
+            LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}", entity->getNameAndUuidString());
             return true;
         }
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
-            if (mScriptModule)
+            sol::state_view solStateView(ScriptComponent::State);
+            LOG_DEBUG("ScriptRuntime: Calling onInit in {} for {}",  getName(), entity->getName());
+            sol::protected_function onInitFunction = solStateView[entity->getUuid()][LUA_ON_INIT_FUNCTION];
+            auto initResult = onInitFunction(entity);
+            if (!initResult.valid())
             {
-                if (!mInitFunction)
-                {
-                    mInitFunction =  mScriptModule->GetFunctionByName
-                        (Constants::SCRIPT_INIT_FUNCTION.c_str());
-                }
-                if (mInitFunction)
-                {
-                    auto ctx = ScriptComponent::Engine->RequestContext();
-                    int r;
-                    r = ctx->Prepare(mInitFunction); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
-                    r = ctx->Execute(); whyYouFail(r,__LINE__);
-                    if (r < 0)
-                    {
-                        whyYouFail(r,__LINE__);
-                        mError = true;
-                    }
-                    else
-                    {
-                        mInitialised[sor->getUuid()] = true;
-                    }
-                    ScriptComponent::Engine->ReturnContext(ctx);
-                }
+                // An error has occured
+                sol::error err = initResult;
+                string what = err.what();
+                LOG_ERROR(
+                            "ScriptRuntime: {}\nCould not execute onInit in lua script:\n{}",
+                            entity->getNameAndUuidString(),
+                            what
+                            );
+                entity->setScriptError(true);
+                mProjectRuntime->getScriptComponent()->unlock();
+                assert(false);
+                return false;
+            }
+            else
+            {
+                entity->setScriptInitialised(true);
             }
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
@@ -304,61 +208,45 @@ namespace octronic::dream
 
     bool
     ScriptRuntime::executeOnEvent
-    (EntityRuntime* sor)
+    (EntityRuntime* entity)
     {
-        if (mError)
+        if (entity->getScriptError())
         {
             LOG_ERROR( "ScriptRuntime: Cannot execute {} in error state ",  getNameAndUuidString());
-            sor->clearEventQueue();
+            entity->clearEventQueue();
             return true;
         }
 
-        if (!mInitialised[sor->getUuid()])
-        {
-            LOG_ERROR("ScriptRuntime: Script has not been initialised");
-            return true;
-        }
-
-        if (!sor->hasEvents())
+        if (!entity->hasEvents())
         {
             return true;
         }
 
-        LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", sor->getNameAndUuidString());
+        LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", entity->getNameAndUuidString());
 
         if(mProjectRuntime->getScriptComponent()->tryLock())
         {
-            if (mScriptModule)
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onEventFunction =
+                    solStateView[entity->getUuid()][LUA_ON_EVENT_FUNCTION];
+
+            for (const Event& e : *entity->getEventQueue())
             {
-                if (!mEventFunction)
+                auto result = onEventFunction(entity,e);
+                if (!result.valid())
                 {
-                    mEventFunction = mScriptModule->GetFunctionByName
-                        (Constants::SCRIPT_EVENT_FUNCTION.c_str());
-                }
-                if (mEventFunction)
-                {
-                    if (sor->tryLockEventQueue())
-                    {
-                        for (Event& e : *sor->getEventQueue())
-                        {
-                            auto ctx = ScriptComponent::Engine->RequestContext();
-                            int r;
-                            r = ctx->Prepare(mEventFunction); whyYouFail(r,__LINE__);
-                            r = ctx->SetArgObject(0,sor); whyYouFail(r,__LINE__);
-                            r = ctx->SetArgObject(1,&e); whyYouFail(r,__LINE__);
-                            ctx->Execute(); whyYouFail(r,__LINE__);
-                            if (r < 0)
-                            {
-                                whyYouFail(r,__LINE__);
-                                mError = true;
-                                break;
-                            }
-                            ScriptComponent::Engine->ReturnContext(ctx);
-                        }
-                        sor->unlockEventQueue();
-                    }
+                    // An error has occured
+                    sol::error err = result;
+                    string what = err.what();
+                    LOG_ERROR("ScriptRuntime: {}:\nCould not execute onEvent in lua script:\n{}",
+                              entity->getNameAndUuidString(), what);
+                    entity->setScriptError(true);
+                    mProjectRuntime->getScriptComponent()->unlock();
+                    assert(false);
+                    return false;
                 }
             }
+            entity->clearEventQueue();
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }
@@ -369,36 +257,66 @@ namespace octronic::dream
     ScriptRuntime::executeOnInput
     (InputComponent* inputComp, SceneRuntime* sr)
     {
-        LOG_CRITICAL("ScriptRuntime: Executing onInput function with {}",getUuid());
+        LOG_TRACE("ScriptRuntime: Executing onInput function with {}",getUuid());
 
         if (mProjectRuntime->getScriptComponent()->tryLock())
         {
-            if (mScriptModule)
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onInputFunction = solStateView[getUuid()][LUA_ON_INPUT_FUNCTION];
+            auto result = onInputFunction(inputComp, sr);
+            if (!result.valid())
             {
-                if (!mInputFunction)
-                {
-                    mInputFunction = mScriptModule->GetFunctionByName
-                        (Constants::SCRIPT_INPUT_FUNCTION.c_str());
-                }
-                if (mInputFunction)
-                {
-                    auto ctx = ScriptComponent::Engine->RequestContext();
-                    int r;
-                    r = ctx->Prepare(mInputFunction); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgObject(0,inputComp); whyYouFail(r,__LINE__);
-                    r = ctx->SetArgObject(1,sr); whyYouFail(r,__LINE__);
-                    r = ctx->Execute(); whyYouFail(r,__LINE__);
-                    if (r < 0)
-                    {
-                        whyYouFail(r,__LINE__);
-                        mError = true;
-                    }
-                    ScriptComponent::Engine->ReturnContext(ctx);
-                }
+                // An error has occured
+                sol::error err = result;
+                string what = err.what();
+                LOG_ERROR("ScriptRuntime: Could not execute onInput in lua script:\n{}",what);
+               	assert(false);
+            	mProjectRuntime->getScriptComponent()->unlock();
+                return false;
             }
             mProjectRuntime->getScriptComponent()->unlock();
             return true;
         }
         return false;
+    }
+
+
+    bool ScriptRuntime::registerInputScript()
+    {
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
+        sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+        solStateView[getUuid()] = environment;
+        auto exec_result = solStateView.safe_script
+                (   mSource, environment,
+                    [](lua_State*, sol::protected_function_result pfr)
+        {
+                return pfr;
+    }
+                );
+        // it did not work
+        if(!exec_result.valid())
+        {
+            // An error has occured
+            sol::error err = exec_result;
+            string what = err.what();
+            LOG_ERROR("ScriptRuntime: Could not execute lua script:\n{}",what);
+            mProjectRuntime->getScriptComponent()->unlock();
+            assert(false);
+            return false;
+        }
+        LOG_DEBUG("ScriptRuntime: Loaded Input Script Successfully");
+        mProjectRuntime->getScriptComponent()->unlock();
+        return true;
+    }
+
+    bool ScriptRuntime::removeInputScript()
+    {
+        mProjectRuntime->getScriptComponent()->lock();
+        sol::state_view solStateView(ScriptComponent::State);
+        solStateView[getUuid()] = nullptr;
+        LOG_DEBUG("ScriptRuntime: Removed input script Successfully");
+        mProjectRuntime->getScriptComponent()->unlock();
+        return true;
     }
 }

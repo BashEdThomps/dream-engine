@@ -29,6 +29,17 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
+using std::pair;
+using glm::value_ptr;
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
+using glm::ivec2;
+using glm::ivec3;
+using glm::ivec4;
+using glm::uvec2;
+using glm::uvec3;
+using glm::uvec4;
 
 namespace octronic::dream
 {
@@ -171,7 +182,11 @@ namespace octronic::dream
     {
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntime->getStorageManager();
-        string absVertexPath = getAssetFilePath(Constants::SHADER_VERTEX_FILE_NAME);
+#if defined (GL_ES_VERSION_3_0)
+        string absVertexPath = getAssetFilePath(Constants::SHADER_GLES_VERTEX_FILE_NAME);
+#else
+        string absVertexPath = getAssetFilePath(Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+#endif
         File* vertexReader = fm->openFile(absVertexPath);
         if (vertexReader->exists())
         {
@@ -179,7 +194,7 @@ namespace octronic::dream
 			LOG_TRACE("ShaderRuntime: Loading Vertex Shader for {} from {}\n{}\n",
 				mDefinition->getNameAndUuidString(),absVertexPath, mVertexSource
 			);
-			// 2. Compile shaders
+			// 2. Push a Vertex Compile Task
 			mCompileVertexTask.clearState();
 			mCompileVertexTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileVertexTask);
@@ -199,7 +214,11 @@ namespace octronic::dream
     {
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntime->getStorageManager();
-        string absFragmentPath = getAssetFilePath(Constants::SHADER_FRAGMENT_FILE_NAME);
+#if defined (GL_ES_VERSION_3_0)
+        string absFragmentPath = getAssetFilePath(Constants::SHADER_GLES_FRAGMENT_FILE_NAME);
+#else
+        string absFragmentPath = getAssetFilePath(Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+#endif
         File* fragmentReader = fm->openFile(absFragmentPath);
         if (fragmentReader->exists())
         {
@@ -207,7 +226,8 @@ namespace octronic::dream
 			LOG_TRACE("ShaderRuntime: Loading Fragment Shader for {} from {}\n{}\n",
 				mDefinition->getNameAndUuidString(),absFragmentPath, mFragmentSource
 			);
-			// 2. Compile shaders
+
+			// 2. Push a Fragment Compile Task
 			mCompileFragmentTask.clearState();
 			mCompileFragmentTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileFragmentTask);
@@ -225,6 +245,7 @@ namespace octronic::dream
    ShaderRuntime::linkProgram
    ()
    {
+       // Push a shader Link Task
        mLinkTask.clearState();
        mLinkTask.dependsOn(&mCompileVertexTask);
        mLinkTask.dependsOn(&mCompileFragmentTask);
@@ -842,6 +863,53 @@ namespace octronic::dream
     (const GLint& directionalLightCountLocation)
     {
         mDirectionalLightCountLocation = directionalLightCountLocation;
+    }
+
+    void
+    ShaderRuntime::setFontPositionUniform(const vec2& pos)
+    {
+       GLuint location = getUniformLocation("uModel");
+       mat4 model(1.f);
+       model = glm::translate(model,vec3(pos.x,pos.y,0.f));
+
+       if (location == UNIFORM_NOT_FOUND)
+       {
+            LOG_ERROR( "ShaderRuntime: Unable to find Font model matrix uinform \"uModel\" in shader {}" ,getNameAndUuidString()  );
+            assert(false);
+            return;
+       }
+
+       glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(model));
+    }
+
+    void
+    ShaderRuntime::setFontColorUniform(const Vector3& color)
+    {
+       GLuint location = getUniformLocation("uColor");
+       vec3 glm_val = color.toGLM();
+       if (location == UNIFORM_NOT_FOUND)
+       {
+            LOG_ERROR( "ShaderRuntime: Unable to find Font model matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
+            assert(false);
+            return;
+       }
+       glUniform3fv(location,1,value_ptr(glm_val));
+    }
+
+
+    void ShaderRuntime::setFontProjection(const mat4& proj)
+    {
+        GLuint location = getUniformLocation("uProjection");
+
+       if (location == UNIFORM_NOT_FOUND)
+       {
+            LOG_ERROR( "ShaderRuntime: Unable to find Font projection matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
+            assert(false);
+            return;
+       }
+
+       glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(proj));
+
     }
 
     const GLint ShaderRuntime::UNIFORM_NOT_FOUND = -1;

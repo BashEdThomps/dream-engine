@@ -34,8 +34,8 @@ struct aiScene;
 struct aiMaterial;
 struct aiNode;
 struct aiMesh;
-using namespace glm;
-using namespace Assimp;
+using Assimp::Importer;
+using std::shared_ptr;
 
 namespace octronic::dream
 {
@@ -95,6 +95,6 @@ namespace octronic::dream
         void processBoneData(aiMesh* mesh);
         void processAnimationData(aiNode* mesh);
 
-        glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
+        mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
     };
 }

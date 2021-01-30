@@ -11,6 +11,9 @@
 #include "DreamToolContext.h"
 #include <DreamCore.h>
 
+using glm::degrees;
+using glm::radians;
+
 namespace octronic::dream::tool
 {
     PropertiesWindow::PropertiesWindow
@@ -69,22 +72,23 @@ namespace octronic::dream::tool
     PropertiesWindow::drawDeleteEntityButton
     ()
     {
-        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntimeime = dynamic_cast<EntityRuntime*>(mRuntime);
+
         if (ImGui::Button("Delete"))
         {
-            if (soDef)
+            if (entityDefinition)
             {
-                auto parent = soDef->getParentEntity();
+                EntityDefinition* parent = entityDefinition->getParentEntity();
                 if (parent)
                 {
-                    parent->removeChildDefinition(soDef);
+                    parent->removeChildDefinition(entityDefinition);
                 }
             }
-            if (soRuntime)
+            if (entityRuntimeime)
             {
-                auto parent = soRuntime->getParentRuntime();
-                parent->removeChildRuntime(soRuntime);
+                EntityRuntime* parent = entityRuntimeime->getParentRuntime();
+                parent->removeChildRuntime(entityRuntimeime);
             }
             mContext->getSelectionHighlighter()->clearSelection();
             removeFromHistory(mDefinition);
@@ -255,9 +259,9 @@ namespace octronic::dream::tool
     ()
     {
         Project* project = mContext->getProject();
-        ProjectDefinition* projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+        ProjectDefinition* projectDefinition = dynamic_cast<ProjectDefinition*>(mDefinition);
 
-        if (projDef == nullptr)
+        if (projectDefinition == nullptr)
         {
             return;
         }
@@ -272,34 +276,34 @@ namespace octronic::dream::tool
 
         ImGui::Separator();
         // Startup Scene
-        auto startup = projDef->getStartupSceneDefinition();
-        int startupScene = projDef->getSceneDefinitionIndex(startup);
+        SceneDefinition* startup = projectDefinition->getStartupSceneDefinition();
+        int startupScene = projectDefinition->getSceneDefinitionIndex(startup);
         vector<string> scenes;
-        for(SceneDefinition* scene : projDef->getSceneDefinitionsVector())
+        for(SceneDefinition* scene : projectDefinition->getSceneDefinitionsVector())
         {
             scenes.push_back(scene->getName());
         }
         if(StringCombo("Startup Scene",&startupScene,scenes,scenes.size()))
         {
-            startup = projDef->getSceneDefinitionAtIndex(startupScene);
-            projDef->setStartupSceneUuid(startup->getUuid());
+            startup = projectDefinition->getSceneDefinitionAtIndex(startupScene);
+            projectDefinition->setStartupSceneUuid(startup->getUuid());
         }
         ImGui::Separator();
 
         // Author
         char authorBuffer[512] = {0};
-        strncpy(authorBuffer, projDef->getAuthor().c_str(), projDef->getAuthor().length());
+        strncpy(authorBuffer, projectDefinition->getAuthor().c_str(), projectDefinition->getAuthor().length());
         if(ImGui::InputText("Author",authorBuffer,512))
         {
-            projDef->setAuthor(authorBuffer);
+            projectDefinition->setAuthor(authorBuffer);
         }
 
         // Description
         char descriptionBuffer[512] = {0};
-        strncpy(descriptionBuffer,projDef->getDescription().c_str(),projDef->getDescription().length());
+        strncpy(descriptionBuffer,projectDefinition->getDescription().c_str(),projectDefinition->getDescription().length());
         if(ImGui::InputTextMultiline("Description",descriptionBuffer,512))
         {
-            projDef->setDescription(descriptionBuffer);
+            projectDefinition->setDescription(descriptionBuffer);
         }
 
     }
@@ -322,6 +326,7 @@ namespace octronic::dream::tool
         {
             return;
         }
+
         drawNameAndIdProperties();
 
         ImGui::Separator();
@@ -331,8 +336,8 @@ namespace octronic::dream::tool
 
         if (sceneRuntime)
         {
-            auto cam = sceneRuntime->getCamera();
-            auto tx = cam->getTranslation();
+            Camera* cam = sceneRuntime->getCamera();
+            Vector3 tx = cam->getTranslation();
             cameraTranslation[0] = tx.x();
             cameraTranslation[1] = tx.y();
             cameraTranslation[2] = tx.z();
@@ -357,12 +362,8 @@ namespace octronic::dream::tool
 
                 if (sceneRuntime != nullptr)
                 {
-                    auto cam = sceneRuntime->getCamera();
-                    cam->setTranslation(Vector3(
-                         cameraTranslation[0],
-                         cameraTranslation[1],
-                         cameraTranslation[2]
-                     ));
+                    Camera* cam = sceneRuntime->getCamera();
+                    cam->setTranslation(Vector3(cameraTranslation[0],cameraTranslation[1],cameraTranslation[2]));
                 }
             }
 
@@ -370,7 +371,7 @@ namespace octronic::dream::tool
 
             if (sceneRuntime)
             {
-                auto cam = sceneRuntime->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 cameraRotation[0] = degrees(cam->getPitch());
                 cameraRotation[1] = degrees(cam->getYaw());
             }
@@ -390,7 +391,7 @@ namespace octronic::dream::tool
 
                 if (sceneRuntime != nullptr)
                 {
-                    auto cam = sceneRuntime->getCamera();
+                    Camera* cam = sceneRuntime->getCamera();
                     cam->setPitch(radians(cameraRotation[0]));
                     cam->setYaw(radians(cameraRotation[1]));
                 }
@@ -405,7 +406,7 @@ namespace octronic::dream::tool
                 }
                 if (sceneRuntime)
                 {
-                    auto cam = sceneRuntime->getCamera();
+                    Camera* cam = sceneRuntime->getCamera();
                     cam->setMovementSpeed(camSpeed);
                 }
             }
@@ -429,7 +430,7 @@ namespace octronic::dream::tool
             {
                 if (sceneRuntime)
                 {
-                    auto cam = sceneRuntime->getCamera();
+                    Camera* cam = sceneRuntime->getCamera();
                     cam->setTranslation(sceneDef->getCameraTranslation());
                     cam->setPitch(sceneDef->getCameraPitch());
                     cam->setYaw(sceneDef->getCameraYaw());
@@ -438,11 +439,11 @@ namespace octronic::dream::tool
             }
 
 
-            auto focused = sceneDef->getCameraFocusedOn();
+            UuidType focused = sceneDef->getCameraFocusedOn();
             string focusedStr = "None";
             if (sceneRuntime)
             {
-                auto focusedObj = sceneRuntime->getEntityRuntimeByUuid(focused);
+                EntityRuntime* focusedObj = sceneRuntime->getEntityRuntimeByUuid(focused);
                 if (focusedObj)
                 {
                     focusedStr = focusedObj->getNameAndUuidString();
@@ -453,10 +454,10 @@ namespace octronic::dream::tool
                 sceneDef->setCameraFocusedOn(0);
                 if (sceneRuntime)
                 {
-                    auto cam = sceneRuntime->getCamera();
+                    Camera* cam = sceneRuntime->getCamera();
                     if(cam)
                     {
-                        cam->setFocusedSceneObejct(nullptr);
+                        cam->setFocusedEntity(nullptr);
                     }
                 }
             }
@@ -465,10 +466,10 @@ namespace octronic::dream::tool
 
             if (sceneRuntime)
             {
-                auto* po = sceneRuntime->getEntityRuntimeByUuid(sceneDef->getPlayerObject());
-                if (po)
+                EntityRuntime* playerObject = sceneRuntime->getEntityRuntimeByUuid(sceneDef->getPlayerObject());
+                if (playerObject)
                 {
-                    ImGui::Text("PlayerObject: %s",po->getNameAndUuidString().c_str());
+                    ImGui::Text("PlayerObject: %s",playerObject->getNameAndUuidString().c_str());
                 }
             }
             else
@@ -491,7 +492,7 @@ namespace octronic::dream::tool
             float theta = 0.0f;
             if (sceneRuntime)
             {
-                auto cam = sceneRuntime->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 theta = glm::degrees(cam->getFocusedObjectTheta());
             }
 
@@ -535,7 +536,7 @@ namespace octronic::dream::tool
                 }
             }
 
-            auto clearVec = sceneDef->getClearColour();
+            Vector3 clearVec = sceneDef->getClearColour();
             float clear[3] = {clearVec.x(), clearVec.y(), clearVec.z()};
             if(ImGui::ColorEdit3("Clear Color",&clear[0]))
             {
@@ -548,54 +549,75 @@ namespace octronic::dream::tool
                 if (sceneRuntime)
                 {
                     sceneRuntime->setClearColour(
-                        Vector3(clear[0],clear[1],clear[2]));
+                                Vector3(clear[0],clear[1],clear[2]));
                 }
             }
 
             ProjectDefinition* pDef = sceneDef->getProjectDefinition();
-            UuidType lpShaderUuid = sceneDef->getLightingPassShader();
-            ShaderDefinition* lpShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(lpShaderUuid));
-            int lightingShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,lpShaderDef);
+            vector<string> shaderList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
 
-            UuidType spShaderUuid = sceneDef->getShadowPassShader();
-            ShaderDefinition* spShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(spShaderUuid));
-            int shadowShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,spShaderDef);
-
-            auto shaderList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
-
-            if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
+            // Setup LightPass Shader
             {
-                auto selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, lightingShaderIndex);
-                auto uuid = selectedShader->getUuid();
-                auto name = selectedShader->getName();
-                sceneDef->setLightingPassShader(uuid);
+                UuidType lpShaderUuid = sceneDef->getLightingPassShader();
+                ShaderDefinition* lpShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(lpShaderUuid));
+                int lightingShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,lpShaderDef);
 
-                LOG_ERROR("PropertiesWindow: Switched lighting pass shader to {} {}", name, uuid);
+                if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, lightingShaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    sceneDef->setLightingPassShader(uuid);
+
+                    LOG_DEBUG("PropertiesWindow: Switched lighting pass shader to {} {}", name, uuid);
+                }
             }
 
-
-            if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
+            // Setup ShadowPassShader
             {
-                auto selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shadowShaderIndex);
-                auto uuid = selectedShader->getUuid();
-                auto name = selectedShader->getName();
-                sceneDef->setShadowPassShader(uuid);
-                LOG_ERROR("PropertiesWindow: Switched shadow pass shader to {} {}", name, uuid);
+                UuidType spShaderUuid = sceneDef->getShadowPassShader();
+                ShaderDefinition* spShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(spShaderUuid));
+                int shadowShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,spShaderDef);
+
+                if (StringCombo("Shadow Pass Shader", &shadowShaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shadowShaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    sceneDef->setShadowPassShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched shadow pass shader to {} {}", name, uuid);
+                }
+            }
+
+            // Setup FontShader
+            {
+                UuidType fontShaderUuid = sceneDef->getFontShader();
+                ShaderDefinition* fontShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(fontShaderUuid));
+                int fontShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,fontShaderDef);
+
+                if (StringCombo("Font Shader", &fontShaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, fontShaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    sceneDef->setFontShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched Font shader to {} {}", name, uuid);
+                }
             }
         }
 
         if (ImGui::CollapsingHeader("Scripting"))
         {
-            auto pDef= mContext->getProject()->getDefinition();
+            ProjectDefinition* pDef= mContext->getProject()->getDefinition();
             vector<string> scriptAssets = mContext->getProject()->getDefinition()->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
 
-            uint32_t inputScriptUuid = sceneDef->getInputScript();
-            auto inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
+            UuidType inputScriptUuid = sceneDef->getInputScript();
+            AssetDefinition* inputScriptDef = pDef->getAssetDefinitionByUuid(inputScriptUuid);
             int inputScriptIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,inputScriptDef);
             if (StringCombo("Input Script",&inputScriptIndex,scriptAssets,scriptAssets.size()))
             {
-                auto selected = pDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,inputScriptIndex);
-                auto uuid = selected->getUuid();
+                AssetDefinition* selected = pDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,inputScriptIndex);
+                UuidType uuid = selected->getUuid();
                 sceneDef->setInputScript(uuid);
             }
         }
@@ -638,16 +660,18 @@ namespace octronic::dream::tool
     PropertiesWindow::drawEntityProperties
     ()
     {
-        auto projDef = mContext->getProject()->getDefinition();
-        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
-        auto soRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+        ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
+        EntityDefinition* entityDef = dynamic_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
 
-        if (soDef == nullptr)
+        // Valid Definition
+        if (entityDef == nullptr)
         {
             return;
         }
 
-        if (soDef->getParentEntity() != nullptr)
+        // Not the root
+        if (entityDef->getParentEntity() != nullptr)
         {
 
             ImGui::SameLine();
@@ -656,129 +680,165 @@ namespace octronic::dream::tool
                 return;
             }
         }
+
         ImGui::SameLine();
+
         if (ImGui::Button("Add Child"))
         {
-            auto newChildDef = soDef->createNewChildDefinition();
+            EntityDefinition* newChildDef = entityDef->createNewChildDefinition();
             mat4 cursorTx = glm::translate(mat4(1.0f),mContext->getCursor()->getPosition());
             newChildDef->getTransform().setMatrix(cursorTx);
             EntityRuntime* newRt = nullptr;
-            if (soRuntime)
+            if (entityRuntime)
             {
-                newRt = soRuntime->createAndAddChildRuntime(newChildDef);
+                newRt = entityRuntime->createAndAddChildRuntime(newChildDef);
                 newRt->getTransform().setMatrix(cursorTx);
             }
             pushPropertyTarget(PropertyType_Entity,newChildDef,newRt);
         }
 
-        if (soDef->getParentEntity() != nullptr)
+        // Not root
+        if (entityDef->getParentEntity() != nullptr)
         {
             ImGui::SameLine();
             if (ImGui::Button("Duplicate"))
             {
-                auto dup = soDef->duplicate();
+                EntityDefinition* dup = entityDef->duplicate();
                 EntityRuntime* newRt = nullptr;
-                if (soRuntime)
+                if (entityRuntime)
                 {
-                    newRt = soRuntime->createAndAddChildRuntime(dup);
+                    newRt = entityRuntime->createAndAddChildRuntime(dup);
                 }
                 pushPropertyTarget(PropertyType_Entity,dup,newRt);
             }
         }
 
         drawNameAndIdProperties();
+
         ImGui::Separator();
 
         ImGui::Columns(2);
 
         if (ImGui::Button("Set Camera Focus"))
         {
-            if(soDef)
+            if(entityDef)
             {
-                auto sDef = soDef->getSceneDefinition();
+                SceneDefinition* sDef = entityDef->getSceneDefinition();
                 if (sDef)
                 {
-                    sDef->setCameraFocusedOn(soDef->getUuid());
+                    sDef->setCameraFocusedOn(entityDef->getUuid());
                 }
             }
-            if (soRuntime)
+            if (entityRuntime)
             {
-                auto sRunt = soRuntime->getSceneRuntime();
-                if (sRunt)
+                SceneRuntime* sceneRuntime = entityRuntime->getSceneRuntime();
+                if (sceneRuntime)
                 {
-                    auto cam = sRunt->getCamera();
-                    cam->setFocusedSceneObejct(soRuntime);
+                    Camera* cam = sceneRuntime->getCamera();
+                    cam->setFocusedEntity(entityRuntime);
                 }
             }
         }
+
         ImGui::NextColumn();
 
         if (ImGui::Button("Set as Player Object"))
         {
-            if(soDef)
+            if(entityDef)
             {
-                auto sDef = soDef->getSceneDefinition();
+                SceneDefinition* sDef = entityDef->getSceneDefinition();
                 if (sDef)
                 {
-                    sDef->setPlayerObject(soDef->getUuid());
+                    sDef->setPlayerObject(entityDef->getUuid());
                 }
             }
-            if (soRuntime)
+            if (entityRuntime)
             {
-                auto sRunt = soRuntime->getSceneRuntime();
-                if (sRunt)
+                SceneRuntime* sceneRuntime = entityRuntime->getSceneRuntime();
+                if (sceneRuntime)
                 {
-                    sRunt->setPlayerObject(soRuntime);
+                    sceneRuntime->setPlayerEntity(entityRuntime);
                 }
             }
         }
+
         ImGui::NextColumn();
 
-        bool alwaysDraw = soDef->getAlwaysDraw();
+        bool alwaysDraw = entityDef->getAlwaysDraw();
         if (ImGui::Checkbox("Always Draw", &alwaysDraw))
         {
-            if(soDef) soDef->setAlwaysDraw(alwaysDraw);
-            if (soRuntime) soRuntime->setAlwaysDraw(alwaysDraw);
+            if(entityDef) entityDef->setAlwaysDraw(alwaysDraw);
+            if (entityRuntime) entityRuntime->setAlwaysDraw(alwaysDraw);
         }
+
         ImGui::NextColumn();
 
-        bool hidden = soDef->getHidden();
+        bool hidden = entityDef->getHidden();
         if(ImGui::Checkbox("Hidden", &hidden))
         {
-            if(soDef) soDef->setHidden(hidden);
-            if(soRuntime) soRuntime->setHidden(hidden);
+            if(entityDef) entityDef->setHidden(hidden);
+            if(entityRuntime) entityRuntime->setHidden(hidden);
         }
+
         ImGui::NextColumn();
 
-        bool isTemplate = soDef->getIsTemplate();
+        bool isTemplate = entityDef->getIsTemplate();
         if(ImGui::Checkbox("Template", &isTemplate))
         {
-            if(soDef) soDef->setIsTemplate(isTemplate);
+            if(entityDef) entityDef->setIsTemplate(isTemplate);
         }
 
-
         ImGui::Columns(1);
+
         ImGui::Separator();
 
         ImGui::Text("Lifetime");
 
-        int deferred = soDef->getDeferred();
+        int deferred = entityDef->getDeferred();
         if(ImGui::InputInt("Deferred For (seconds)",&deferred))
         {
-            soDef->setDeferred(deferred);
+            entityDef->setDeferred(deferred);
         }
 
-        int dieAfter = soDef->getDieAfter();
+        int dieAfter = entityDef->getDieAfter();
         if(ImGui::InputInt("Die After (seconds)",&dieAfter))
         {
-            soDef->setDieAfter(dieAfter);
+            entityDef->setDieAfter(dieAfter);
+        }
+
+        if (entityDef->getAssetDefinition(AssetType::ASSET_TYPE_ENUM_FONT) != Uuid::INVALID)
+        {
+            if (ImGui::CollapsingHeader("Text Properties"))
+            {
+                char fontTextBuffer[128] = {0};
+                string fontText = entityDef->getFontText();
+                strncpy(fontTextBuffer, fontText.c_str(), fontText.size());
+                if (ImGui::InputText("Text", fontTextBuffer,128))
+                {
+                    entityDef->setFontText(string(fontTextBuffer));
+                }
+
+                Vector3 fontColorV = entityDef->getFontColor();
+                float fontColor[3] = {fontColorV.r(), fontColorV.g(), fontColorV.b()};
+
+                if (ImGui::ColorPicker3("Color", &fontColor[0]))
+                {
+                    entityDef->setFontColor(Vector3(fontColor[0],fontColor[1],fontColor[2]));
+                }
+
+                float fontScale = entityDef->getFontScale();
+                if (ImGui::InputFloat("Font Scale",&fontScale))
+                {
+                    entityDef->setFontScale(fontScale);
+                }
+            }
         }
 
         ImGui::Separator();
 
-        if (soRuntime && soRuntime->hasAnimationRuntime())
+        if (entityRuntime && entityRuntime->hasAnimationRuntime())
         {
-            auto animation = soRuntime->getAnimationRuntime();
+            AnimationRuntime* animation = entityRuntime->getAnimationRuntime();
             if (ImGui::CollapsingHeader("Animation"))
             {
                 if (ImGui::Button("Run"))
@@ -809,27 +869,28 @@ namespace octronic::dream::tool
             }
         }
 
-        drawImGizmo();
+        drawNonImGizmo();
 
         if(ImGui::CollapsingHeader("Assets"))
         {
 
-            // Audio
-            int selectedAnimationAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION);
-            vector<string> animationAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_ANIMATION);
+            // Animation =======================================================
+
+            int selectedAnimationAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION);
+            vector<string> animationAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_ANIMATION);
             if(ImGui::Button("-##Animation"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_ANIMATION,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_ANIMATION,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removeAnimationRuntime();
+                    entityRuntime->removeAnimationRuntime();
                 }
             }
             ImGui::SameLine();
             if(ImGui::Button(">##Animation"))
             {
                 if (selectedAnimationAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset);
                 pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
@@ -838,33 +899,34 @@ namespace octronic::dream::tool
 
             if(StringCombo("Animation",&selectedAnimationAsset,animationAssets,animationAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedDef->getUuid());
                     }
                 }
             }
 
-            // Audio
-            int selectedAudioAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO);
-            vector<string> audioAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_AUDIO);
+            // Audio ===========================================================
+
+            int selectedAudioAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO);
+            vector<string> audioAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_AUDIO);
             if(ImGui::Button("-##Audio"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_AUDIO,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_AUDIO,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removeAudioRuntime();
+                    entityRuntime->removeAudioRuntime();
                 }
             }
             ImGui::SameLine();
             if(ImGui::Button(">##Audio"))
             {
                 if (selectedAudioAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO,selectedAudioAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO,selectedAudioAsset);
                 pushPropertyTarget(PropertyType_Asset,asset, nullptr);
                 return;
             }
@@ -873,27 +935,64 @@ namespace octronic::dream::tool
 
             if(StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedDef->getUuid());
                     }
                 }
             }
 
-            // Light
-            int selectedLightAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT);
-            vector<string> lightAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_LIGHT);
+            // Font ============================================================
+
+            int selectedFontAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_FONT);
+            vector<string> fontAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_FONT);
+            if(ImGui::Button("-##Font"))
+            {
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_FONT,0);
+                if (entityRuntime)
+                {
+                    entityRuntime->removeFontRuntime();
+                }
+            }
+            ImGui::SameLine();
+            if(ImGui::Button(">##Font"))
+            {
+                if (selectedFontAsset < 0) return;
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_FONT,selectedFontAsset);
+                pushPropertyTarget(PropertyType_Asset,asset, nullptr);
+                return;
+            }
+
+            ImGui::SameLine();
+
+            if(StringCombo("Font",&selectedFontAsset,fontAssets,fontAssets.size()))
+            {
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_FONT, selectedFontAsset);
+                if (entityRuntime)
+                {
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_FONT, selectedFontAsset);
+                    if (selectedDef)
+                    {
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_FONT, selectedDef->getUuid());
+                    }
+                }
+            }
+
+            // Light ===========================================================
+
+            int selectedLightAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT);
+            vector<string> lightAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_LIGHT);
 
             if(ImGui::Button("-##Light"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_LIGHT,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_LIGHT,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removeLightRuntime();
+                    entityRuntime->removeLightRuntime();
                 }
 
             }
@@ -902,7 +1001,7 @@ namespace octronic::dream::tool
             if(ImGui::Button(">##Light"))
             {
                 if (selectedLightAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT,selectedLightAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT,selectedLightAsset);
                 pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
@@ -911,27 +1010,27 @@ namespace octronic::dream::tool
 
             if(StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedDef->getUuid());
                     }
                 }
             }
 
             // Model
-            int selectedModelAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL);
-            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
+            int selectedModelAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL);
+            vector<string> modelAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
             if(ImGui::Button("-##Model"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removeModelRuntime();
+                    entityRuntime->removeModelRuntime();
                 }
 
             }
@@ -940,7 +1039,7 @@ namespace octronic::dream::tool
             if(ImGui::Button(">##Model"))
             {
                 if (selectedModelAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL,selectedModelAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL,selectedModelAsset);
                 pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
@@ -949,26 +1048,26 @@ namespace octronic::dream::tool
 
             if(StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_MODEL, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_MODEL, selectedDef->getUuid());
                     }
                 }
             }
 
             // Path
-            int selectedPathAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH);
-            vector<string> pathAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PATH);
+            int selectedPathAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH);
+            vector<string> pathAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PATH);
             if(ImGui::Button("-##Path"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PATH,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PATH,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removePathRuntime();
+                    entityRuntime->removePathRuntime();
                 }
 
             }
@@ -977,7 +1076,7 @@ namespace octronic::dream::tool
             if(ImGui::Button(">##Path"))
             {
                 if (selectedPathAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PATH,selectedPathAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PATH,selectedPathAsset);
                 pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
@@ -986,23 +1085,23 @@ namespace octronic::dream::tool
 
             if(StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH, selectedPathAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH, selectedPathAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(ASSET_TYPE_ENUM_PATH, selectedPathAsset);
-                    soRuntime->replaceAssetUuid(ASSET_TYPE_ENUM_PATH, selectedDef->getUuid());
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(ASSET_TYPE_ENUM_PATH, selectedPathAsset);
+                    entityRuntime->replaceAssetUuid(ASSET_TYPE_ENUM_PATH, selectedDef->getUuid());
                 }
             }
 
             //Physics Object
-            int selectedPhysicsObjectAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
-            vector<string> poAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
+            int selectedPhysicsObjectAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
+            vector<string> poAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
             if(ImGui::Button("-##PhysicsObject"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removePhysicsObjectRuntime();
+                    entityRuntime->removePhysicsObjectRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1010,7 +1109,7 @@ namespace octronic::dream::tool
             if(ImGui::Button(">##PhysicsObject"))
             {
                 if (selectedPhysicsObjectAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
                 pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                 return;
             }
@@ -1019,26 +1118,26 @@ namespace octronic::dream::tool
 
             if(StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,selectedPhysicsObjectAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedPhysicsObjectAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedPhysicsObjectAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT, selectedDef->getUuid());
                     }
                 }
             }
 
             // Script
-            int selectedScriptAsset = soDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT);
-            vector<string> scriptAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
+            int selectedScriptAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT);
+            vector<string> scriptAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
             if(ImGui::Button("-##Script"))
             {
-                soDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_SCRIPT,0);
-                if (soRuntime)
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_SCRIPT,0);
+                if (entityRuntime)
                 {
-                    soRuntime->removeScriptRuntime();
+                    entityRuntime->removeScriptRuntime();
                 }
             }
             ImGui::SameLine();
@@ -1046,7 +1145,7 @@ namespace octronic::dream::tool
             if(ImGui::Button(">##Script"))
             {
                 if (selectedScriptAsset < 0) return;
-                auto asset = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,selectedScriptAsset);
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,selectedScriptAsset);
                 pushPropertyTarget(PropertyType_Asset,asset,nullptr);
                 return;
             }
@@ -1055,13 +1154,13 @@ namespace octronic::dream::tool
 
             if(StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size()))
             {
-                soDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
-                if (soRuntime)
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
+                if (entityRuntime)
                 {
-                    auto selectedDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
                     if (selectedDef)
                     {
-                        soRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedDef->getUuid());
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedDef->getUuid());
                     }
                 }
             }
@@ -1072,16 +1171,130 @@ namespace octronic::dream::tool
     }
 
     void
+    PropertiesWindow::drawNonImGizmo
+    ()
+    {
+        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+
+        static bool withChildren = false;
+
+        if(ImGui::CollapsingHeader("Transform"))
+        {
+            Transform tx;
+
+            if (entityRuntime)
+            {
+				tx.setMatrix(entityRuntime->getTransform().getMatrix());
+            }
+            else
+            {
+                tx.setMatrix(entityDefinition->getTransform().getMatrix());
+            }
+
+            MatrixDecomposition dx = tx.decomposeMatrix();
+			vec3 eulerRotation = eulerAngles(dx.rotation);
+
+            ImGui::Columns(1);
+
+            float float_translation[3] = {dx.translation.x, dx.translation.y, dx.translation.z};
+            float float_rotation[3] = {degrees(eulerRotation.x), degrees(eulerRotation.y), degrees(eulerRotation.z)};
+            float float_scale[3] = {dx.scale.x, dx.scale.y, dx.scale.z};
+
+            bool tx_changed = false;
+            tx_changed |= ImGui::InputFloat3("Translation", float_translation);
+            tx_changed |= ImGui::InputFloat3("Rotation", float_rotation);
+            tx_changed |= ImGui::InputFloat3("Scale", float_scale);
+
+
+            if (tx_changed)
+            {
+				dx.translation = vec3(float_translation[0],float_translation[1],float_translation[2]);
+                dx.rotation = quat(vec3(float_rotation[0],float_rotation[1],float_rotation[2]));
+				dx.scale = vec3(float_scale[0],float_scale[1],float_scale[2]);
+				if (entityRuntime)
+				{
+					entityRuntime->getTransform().recomposeMatrix(dx);
+				}
+				else
+				{
+					entityDefinition->getTransform().recomposeMatrix(dx);
+				}
+            }
+
+            ImGui::Separator();
+            ImGui::Checkbox("With Children",&withChildren);
+            ImGui::Separator();
+
+            ImGui::Separator();
+
+            ImGui::Columns(2);
+
+            if(ImGui::Button("Capture as Initial"))
+            {
+                if (entityDefinition && entityRuntime)
+                {
+                    entityDefinition->setTransform(entityRuntime->getTransform());
+
+                    if (withChildren)
+                    {
+                        entityRuntime->applyToAll(
+                        	function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
+                        	{
+								if (rt != entityRuntime)
+								{
+									EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+									d->setTransform(rt->getTransform());
+								}
+								return static_cast<EntityRuntime*>(nullptr);
+                            }
+                        ));
+                    }
+                }
+            }
+
+            ImGui::NextColumn();
+            if(ImGui::Button("Restore to Initial"))
+            {
+                if (entityDefinition && entityRuntime)
+                {
+                    Transform tmp = entityDefinition->getTransform();
+                    entityRuntime->setTransform(&tmp);
+                    if (withChildren)
+                    {
+                        entityRuntime->applyToAll(
+                                    function<EntityRuntime*(EntityRuntime*)>(
+                                        [&](EntityRuntime* rt){
+                                        if (rt != entityRuntime)
+                                        {
+                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+                                            Transform tmp = d->getTransform();
+                                            rt->setTransform(&tmp);
+                                        }
+                                        return static_cast<EntityRuntime*>(nullptr);
+                                    }
+                                    ));
+                    }
+
+                }
+
+            }
+
+            ImGui::Columns(1);
+        }
+    }
+
+    void
     PropertiesWindow::drawImGizmo
     ()
     {
         float *matrix = nullptr;
-        auto soRunt = dynamic_cast<EntityRuntime*>(mRuntime);
-        auto soDef = dynamic_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
 
-        if (soRunt)
+        if (entityRuntime)
         {
-            matrix = soRunt->getTransform().getMatrixFloatPointer();
+            matrix = entityRuntime->getTransform().getMatrixFloatPointer();
         }
         else
         {
@@ -1163,20 +1376,20 @@ namespace octronic::dream::tool
 
             if(ImGui::Button("Capture Initial"))
             {
-                if (soDef && soRunt)
+                if (entityDefinition && entityRuntime)
                 {
-                    soDef->setTransform(soRunt->getTransform());
+                    entityDefinition->setTransform(entityRuntime->getTransform());
 
                     if (withChildren)
                     {
-                        soRunt->applyToAll(
-                        	function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
-								if (rt != soRunt){
-									auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-									d->setTransform(rt->getTransform());
-								}
-								return static_cast<EntityRuntime*>(nullptr);
-							}));
+                        entityRuntime->applyToAll(
+                                    function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
+                                        if (rt != entityRuntime){
+                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+                                            d->setTransform(rt->getTransform());
+                                        }
+                                        return static_cast<EntityRuntime*>(nullptr);
+                                    }));
                     }
                 }
             }
@@ -1184,21 +1397,21 @@ namespace octronic::dream::tool
             ImGui::NextColumn();
             if(ImGui::Button("Restore Initial"))
             {
-                if (soDef && soRunt)
+                if (entityDefinition && entityRuntime)
                 {
-                    auto tmp = soDef->getTransform();
-                    soRunt->setTransform(&tmp);
+                    Transform tmp = entityDefinition->getTransform();
+                    entityRuntime->setTransform(&tmp);
                     if (withChildren)
                     {
-                        soRunt->applyToAll
+                        entityRuntime->applyToAll
                                 (
                                     function<EntityRuntime*(EntityRuntime*)>(
                                         [&](EntityRuntime* rt)
-                        {
-                                        if (rt != soRunt)
+                                    {
+                                        if (rt != entityRuntime)
                                         {
-                                            auto d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-                                            auto tmp = d->getTransform();
+                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+                                            Transform tmp = d->getTransform();
                                             rt->setTransform(&tmp);
                                         }
                                         return static_cast<EntityRuntime*>(nullptr);
@@ -1213,17 +1426,17 @@ namespace octronic::dream::tool
             ImGui::Columns(1);
         }
 
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto sRunt = pRunt->getActiveSceneRuntime();
-            if (sRunt)
+            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            if (sceneRuntime)
             {
-                auto cam = sRunt->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 if (cam)
                 {
-                    auto view = cam->getViewMatrix();
-                    auto proj = cam->getProjectionMatrix();
+                    mat4 view = cam->getViewMatrix();
+                    mat4 proj = cam->getProjectionMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     //ImGuizmo::DrawCube(glm::value_ptr(view),glm::value_ptr(proj),matrix);
@@ -1240,15 +1453,15 @@ namespace octronic::dream::tool
                                 mGizmoUseSnap ? &mGizmoSnap.x : nullptr
                                                 );
 
-                    if (soRunt && withChildren)
+                    if (entityRuntime && withChildren)
                     {
                         Vector3 tx(delta[3][0],delta[3][1],delta[3][2]);
-                        soRunt->applyToAll
+                        entityRuntime->applyToAll
                                 (
                                     function<EntityRuntime*(EntityRuntime*)>(
                                         [&](EntityRuntime* rt)
-                        {
-                                        if (rt != soRunt)
+                                    {
+                                        if (rt != entityRuntime)
                                         {
                                             rt->getTransform().preTranslate(tx);
                                         }
@@ -1288,17 +1501,17 @@ namespace octronic::dream::tool
 
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto sRunt = pRunt->getActiveSceneRuntime();
-            if (sRunt)
+        	SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            if (sceneRuntime)
             {
-                auto cam = sRunt->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 if (cam)
                 {
-                    auto proj = cam->getProjectionMatrix();
-                    auto view = cam->getViewMatrix();
+                    mat4 proj = cam->getProjectionMatrix();
+                    mat4 view = cam->getViewMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     ImGuizmo::Manipulate
@@ -1324,7 +1537,7 @@ namespace octronic::dream::tool
     {
         mContext->getPathViewer()->setVisible(false);
         mContext->getAnimationViewer()->setVisible(false);
-        auto assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
+        AssetDefinition* assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
         if (assetDef == nullptr)
         {
             return;
@@ -1334,19 +1547,19 @@ namespace octronic::dream::tool
         if(ImGui::Button("Delete Asset"))
         {
             mContext->getProjectDirectory()->removeAssetDirectory(assetDef);
-            auto projDef = mContext->getProject()->getDefinition();
-            projDef->removeAssetDefinition(assetDef);
+            ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
+            projectDefinition->removeAssetDefinition(assetDef);
             removeFromHistory(mDefinition);
             mDefinition = nullptr;
             mRuntime = nullptr;
-            projDef->regroupAssetDefinitions();
+            projectDefinition->regroupAssetDefinitions();
             return;
         }
         ImGui::SameLine();
         if (ImGui::Button("Duplicate"))
         {
-            auto dup = assetDef->duplicate();
-            auto projDef = mContext->getProject()->getDefinition();
+            AssetDefinition* dup = assetDef->duplicate();
+            ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
             pushPropertyTarget(PropertyType_Entity,dup,nullptr);
         }
 
@@ -1361,7 +1574,7 @@ namespace octronic::dream::tool
             assetDef->getProject()->regroupAssetDefinitions();
         }
         ImGui::Separator();
-        auto type = Constants::getAssetTypeEnumFromString(assetDef->getType());
+        AssetType type = Constants::getAssetTypeEnumFromString(assetDef->getType());
         switch (type)
         {
             case AssetType::ASSET_TYPE_ENUM_ANIMATION:
@@ -1401,18 +1614,18 @@ namespace octronic::dream::tool
                 break;
         }
 
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto activeScene = pRunt->getActiveSceneRuntime();
+            SceneRuntime* activeScene = projectRuntime->getActiveSceneRuntime();
             if (activeScene)
             {
                 ImGui::Separator();
                 ImGui::Columns(1);
                 if(ImGui::CollapsingHeader("Active Runtimes"))
                 {
-                    auto runtimes = activeScene->getEntitysWithRuntimeOf(assetDef);
-                    for (auto runtime : runtimes)
+                    vector<EntityRuntime*> runtimes = activeScene->getEntitysWithRuntimeOf(assetDef);
+                    for (EntityRuntime* runtime : runtimes)
                     {
                         ImGui::Text("%s",runtime->getNameAndUuidString().c_str());
                     }
@@ -1425,7 +1638,7 @@ namespace octronic::dream::tool
     PropertiesWindow::drawAnimationAssetProperties
     ()
     {
-        auto animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
+        AnimationDefinition* animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
         mContext->getAnimationViewer()->setAnimationDefinition(animDef);
         mContext->getAnimationViewer()->setVisible(true);
 
@@ -1467,7 +1680,7 @@ namespace octronic::dream::tool
 
         static int selected = -1;
 
-        for (auto& kf : animDef->getKeyframes())
+        for (AnimationKeyframe& kf : animDef->getKeyframes())
         {
             ImGui::PushID(kf.getID());
 
@@ -1536,12 +1749,12 @@ namespace octronic::dream::tool
 
             if(ImGui::Button("Edit"))
             {
-               selected = kf.getID();
+                selected = kf.getID();
             }
             ImGui::NextColumn();
 
             // Easing
-            auto easingTypes = AnimationEasing::EasingNames;
+            vector<string> easingTypes = AnimationEasing::EasingNames;
             int currentEasingType = kf.getEasingType();
             if (StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
             {
@@ -1572,29 +1785,29 @@ namespace octronic::dream::tool
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
 
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto sRunt = pRunt->getActiveSceneRuntime();
-            if (sRunt)
+            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            if (sceneRuntime)
             {
-                auto cam = sRunt->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 if (cam)
                 {
-                    auto proj = cam->getProjectionMatrix();
-                    auto view = cam->getViewMatrix();
+                    mat4 proj = cam->getProjectionMatrix();
+                    mat4 view = cam->getViewMatrix();
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     ImGuizmo::Manipulate
-                    (
-                        glm::value_ptr(view),
-                        glm::value_ptr(proj),
-                        currentGizmoOperation,
-                        currentGizmoMode,
-                        matrix,
-                        nullptr,
-                        nullptr
-                    );
+                            (
+                                glm::value_ptr(view),
+                                glm::value_ptr(proj),
+                                currentGizmoOperation,
+                                currentGizmoMode,
+                                matrix,
+                                nullptr,
+                                nullptr
+                                );
                     kf.setTranslation(vec3(mtx[3]));
                     def->updateKeyframe(kf);
                 }
@@ -1606,57 +1819,63 @@ namespace octronic::dream::tool
     PropertiesWindow::drawAudioAssetProperties
     ()
     {
-        bool selectAudioFile = ImGui::Button("Audio File...");
-        auto audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
-        if (selectAudioFile)
+        AudioDefinition* audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
+
+        if (ImGui::Button("Audio File..."))
         {
             nfdchar_t *audioFilePath = NULL;
             nfdfilteritem_t filter[2] = {{"Ogg Files", "ogg"}, {"WAVE Files", "wav"}};
-			nfdresult_t result = NFD_OpenDialog(&audioFilePath, filter, 2, mContext->getLastDirectory().c_str() );
+            nfdresult_t result = NFD_OpenDialog(&audioFilePath, filter, 2, mContext->getLastDirectory().c_str() );
 
-			if ( result == NFD_OKAY )
-			{
-				LOG_INFO("PropertiesWindow: Success! {}",audioFilePath);
+            if ( result == NFD_OKAY )
+            {
+                LOG_INFO("PropertiesWindow: Success! {}",audioFilePath);
 
-				LOG_DEBUG("PropertiesWindow: Opening Audio File {}",audioFilePath);
+                LOG_DEBUG("PropertiesWindow: Opening Audio File {}",audioFilePath);
                 StorageManager* fm = mContext->getStorageManager();
-				File* audioFile = fm->openFile(audioFilePath);
-				mContext->setLastDirectory(audioFile->getDirectory());
+                File* audioFile = fm->openFile(audioFilePath);
+                mContext->setLastDirectory(audioFile->getDirectory());
 
-				LOG_DEBUG("PropertiesWindow: Setting last directory {}",mContext->getLastDirectory());
-				audioFile->readBinary();
-				auto audioData = audioFile->getBinaryData();
-                auto audioDataSize = audioFile->getBinaryDataSize();
-				mContext->getProjectDirectory()->writeAssetData(audioDef,audioData, audioDataSize);
-				audioDef->setName(audioFile->getNameWithoutExtension());
-				NFD_FreePath(audioFilePath);
+                LOG_DEBUG("PropertiesWindow: Setting last directory {}",mContext->getLastDirectory());
+                audioFile->readBinary();
+                uint8_t* audioData = audioFile->getBinaryData();
+                size_t audioDataSize = audioFile->getBinaryDataSize();
+                mContext->getProjectDirectory()->writeAssetData(audioDef,audioData, audioDataSize, audioFile->getExtension());
+                audioDef->setFormat(audioFile->getExtension());
+                audioDef->setName(audioFile->getNameWithoutExtension());
+                NFD_FreePath(audioFilePath);
                 fm->closeFile(audioFile);
-			}
-			else if ( result == NFD_CANCEL )
-			{
-				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
-			}
-			else
-			{
-				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
-			}
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+            }
+            else
+            {
+                LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+            }
         }
 
-        auto projRunt = mContext->getProject()->getRuntime();
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
 
         AudioRuntime* audioRunt = nullptr;
-        if (projRunt)
+        if (projectRuntime)
         {
-            auto audioCache = projRunt->getAudioCache();
+            AudioCache* audioCache = projectRuntime->getAudioCache();
             audioRunt = dynamic_cast<AudioRuntime*>(audioCache->getRuntime(audioDef));
         }
 
-
-        ImGui::SameLine();
-
+        ImGui::Text("Format: %s", audioDef->getFormat().c_str());
 
         if(ImGui::Button("Remove File"))
         {
+            audioDef->setFormat("");
+            if (audioRunt)
+            {
+                AudioCache* audioCache = projectRuntime->getAudioCache();
+                audioCache->removeRuntime(audioDef);
+                audioRunt = nullptr;
+            }
             mContext->getProjectDirectory()->removeAssetDirectory(audioDef);
         }
 
@@ -1687,11 +1906,17 @@ namespace octronic::dream::tool
         }
 
         ImGui::PushItemWidth(-1);
-        int audioProg = audioRunt->getSampleOffset();
-        int duration = audioRunt->getDurationInSamples();
-        if(ImGui::SliderInt("#AudioProgress", &audioProg,0,duration,"%d"))
+        if (audioRunt)
         {
-            audioRunt->setSampleOffset(audioProg);
+            int duration = audioRunt->getDurationInSamples();
+            if (duration > 0)
+            {
+                int audioProg = audioRunt->getSampleOffset();
+                if(ImGui::SliderInt("#AudioProgress", &audioProg,0,duration,"%d"))
+                {
+                    audioRunt->setSampleOffset(audioProg);
+                }
+            }
         }
         ImGui::PopItemWidth();
     }
@@ -1701,37 +1926,37 @@ namespace octronic::dream::tool
     ()
     {
         bool selectFile = ImGui::Button("Font File...");
-        auto def = dynamic_cast<FontDefinition*>(mDefinition);
+        FontDefinition* def = dynamic_cast<FontDefinition*>(mDefinition);
 
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
             nfdfilteritem_t filters[2] = {{"TrueType", "ttf"}, {"OpenType", "otf"}};
-			nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, mContext->getLastDirectory().c_str());
+            nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, mContext->getLastDirectory().c_str());
 
-			if ( result == NFD_OKAY )
-			{
-				LOG_INFO("PropertiesWindow: Success! {}",filePath);
-				LOG_DEBUG("PropertiesWindow: Opening Font File {}",filePath);
+            if ( result == NFD_OKAY )
+            {
+                LOG_INFO("PropertiesWindow: Success! {}",filePath);
+                LOG_DEBUG("PropertiesWindow: Opening Font File {}",filePath);
                 StorageManager* fm = mContext->getStorageManager();
-				File* file = fm->openFile(filePath);
-				mContext->setLastDirectory(file->getDirectory());
-				file->readBinary();
-				auto data = file->getBinaryData();
-				auto dataSize = file->getBinaryDataSize();
-				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
-				def->setName(file->getNameWithoutExtension());
+                File* file = fm->openFile(filePath);
+                mContext->setLastDirectory(file->getDirectory());
+                file->readBinary();
+                uint8_t* data = file->getBinaryData();
+                size_t dataSize = file->getBinaryDataSize();
+                mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
+                def->setName(file->getNameWithoutExtension());
                 fm->closeFile(file);
-				NFD_FreePath(filePath);
-			}
-			else if ( result == NFD_CANCEL )
-			{
-				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
-			}
-			else
-			{
-				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
-			}
+                NFD_FreePath(filePath);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+            }
+            else
+            {
+                LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+            }
         }
 
         ImGui::SameLine();
@@ -1740,12 +1965,18 @@ namespace octronic::dream::tool
         {
             mContext->getProjectDirectory()->removeAssetDirectory(def);
         }
+
+        float fontSize = def->getSize();
+        if (ImGui::SliderFloat("Size",&fontSize,1.f,100.f))
+        {
+            def->setSize(fontSize);
+        }
     }
 
     void PropertiesWindow::drawLightAssetProperties
     ()
     {
-        auto lightDef = dynamic_cast<LightDefinition*>(mDefinition);
+        LightDefinition* lightDef = dynamic_cast<LightDefinition*>(mDefinition);
 
         vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_LIGHT];
         int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
@@ -1841,24 +2072,24 @@ namespace octronic::dream::tool
     PropertiesWindow::drawMaterialAssetProperties
     ()
     {
-        auto projDef = mContext->getProject()->getDefinition();
-        auto projRunt = mContext->getProject()->getRuntime();
-        auto materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+        ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        MaterialDefinition* materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
 
         int shaderIndex = 0;
         vector<string> shaderList;
-        if (projDef)
+        if (projectDefinition)
         {
-            auto shaderAsset = projDef->getAssetDefinitionByUuid(materialDef->getShader());
-            shaderIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderAsset);
-            shaderList = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
+            AssetDefinition* shaderAsset = projectDefinition->getAssetDefinitionByUuid(materialDef->getShader());
+            shaderIndex = projectDefinition->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderAsset);
+            shaderList = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
         }
 
         if(StringCombo("Shader", &shaderIndex, shaderList, shaderList.size()))
         {
-            if (projDef)
+            if (projectDefinition)
             {
-                auto newShader = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderIndex);
+                AssetDefinition* newShader = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderIndex);
                 if(newShader)
                 {
                     materialDef->setShader(newShader->getUuid());
@@ -1892,7 +2123,7 @@ namespace octronic::dream::tool
         {
             materialDef->setSpecularColour(
                         RGB
-            {
+                        {
                             specularColor[0],
                             specularColor[1],
                             specularColor[2]
@@ -1925,7 +2156,7 @@ namespace octronic::dream::tool
         {
             materialDef->setReflectiveColour(
                         RGB
-            {
+                        {
                             reflectiveColor[0],
                             reflectiveColor[1],
                             reflectiveColor[2]
@@ -1942,7 +2173,7 @@ namespace octronic::dream::tool
         {
             materialDef->setEmissiveColour(
                         RGB
-            {
+                        {
                             emissiveColor[0],
                             emissiveColor[1],
                             emissiveColor[2]
@@ -1998,24 +2229,24 @@ namespace octronic::dream::tool
 
         ImGui::Separator();
 
-        uint32_t diffuseUuid = materialDef->getDiffuseTexture();
-        uint32_t specularUuid = materialDef->getSpecularTexture();
-        uint32_t normalUuid = materialDef->getNormalTexture();
-        uint32_t displacementUuid = materialDef->getDisplacementTexture();
+        UuidType diffuseUuid = materialDef->getDiffuseTexture();
+        UuidType specularUuid = materialDef->getSpecularTexture();
+        UuidType normalUuid = materialDef->getNormalTexture();
+        UuidType displacementUuid = materialDef->getDisplacementTexture();
         void* diffuseTxId = nullptr;
         void* normalTxId = nullptr;
         void* specularTxId = nullptr;
         void* displacementTxId = nullptr;
 
-        if (projDef && projRunt)
+        if (projectDefinition && projectRuntime)
         {
             // Diffuse
-            auto diffuseDef = projDef->getAssetDefinitionByUuid(diffuseUuid);
+            AssetDefinition* diffuseDef = projectDefinition->getAssetDefinitionByUuid(diffuseUuid);
             if (diffuseDef)
             {
-                auto txDef = dynamic_cast<TextureDefinition*>(diffuseDef);
-                auto txCache = projRunt->getTextureCache();
-                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(diffuseDef);
+                TextureCache* txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     diffuseTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2023,12 +2254,12 @@ namespace octronic::dream::tool
             }
 
             // Specular
-            auto specularDef = projDef->getAssetDefinitionByUuid(specularUuid);
+            AssetDefinition* specularDef = projectDefinition->getAssetDefinitionByUuid(specularUuid);
             if (specularDef)
             {
-                auto txDef = dynamic_cast<TextureDefinition*>(specularDef);
-                auto txCache = projRunt->getTextureCache();
-                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(specularDef);
+                TextureCache* txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     specularTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2036,12 +2267,12 @@ namespace octronic::dream::tool
             }
 
             // Normal
-            auto normalDef = projDef->getAssetDefinitionByUuid(normalUuid);
+            AssetDefinition* normalDef = projectDefinition->getAssetDefinitionByUuid(normalUuid);
             if (normalDef)
             {
-                auto txDef = dynamic_cast<TextureDefinition*>(normalDef);
-                auto txCache = projRunt->getTextureCache();
-                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(normalDef);
+                TextureCache* txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     normalTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2049,12 +2280,12 @@ namespace octronic::dream::tool
             }
 
             // Displacement
-            auto displacementDef = projDef->getAssetDefinitionByUuid(displacementUuid);
+            auto displacementDef = projectDefinition->getAssetDefinitionByUuid(displacementUuid);
             if (displacementDef)
             {
-                auto txDef = dynamic_cast<TextureDefinition*>(displacementDef);
-                auto txCache = projRunt->getTextureCache();
-                auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(displacementDef);
+                TextureCache* txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     displacementTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2068,36 +2299,36 @@ namespace octronic::dream::tool
         int normalIndex;
         int displacementIndex;
 
-        if(projDef)
+        if(projectDefinition)
         {
-            textures = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
-            diffuseIndex = projDef->getAssetDefinitionIndex(
+            textures = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
+            diffuseIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projDef->getAssetDefinitionByUuid(diffuseUuid)
+                        projectDefinition->getAssetDefinitionByUuid(diffuseUuid)
                         );
-            specularIndex = projDef->getAssetDefinitionIndex(
+            specularIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projDef->getAssetDefinitionByUuid(specularUuid)
+                        projectDefinition->getAssetDefinitionByUuid(specularUuid)
                         );
-            normalIndex = projDef->getAssetDefinitionIndex(
+            normalIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projDef->getAssetDefinitionByUuid(normalUuid)
+                        projectDefinition->getAssetDefinitionByUuid(normalUuid)
                         );
-            displacementIndex = projDef->getAssetDefinitionIndex(
+            displacementIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projDef->getAssetDefinitionByUuid(displacementUuid)
+                        projectDefinition->getAssetDefinitionByUuid(displacementUuid)
                         );
         }
 
         // Diffuse
         if(StringCombo("Diffuse",&diffuseIndex,textures,textures.size()))
         {
-            if (projDef)
+            if (projectDefinition)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, diffuseIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, diffuseIndex);
                 if (txDef)
                 {
-                    auto uuid = txDef->getUuid();
+                    UuidType uuid = txDef->getUuid();
                     materialDef->setDiffuseTexture(uuid);
                 }
             }
@@ -2108,12 +2339,12 @@ namespace octronic::dream::tool
         // Specular
         if(StringCombo("Specular",&specularIndex,textures,textures.size()))
         {
-            if (projDef)
+            if (projectDefinition)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, specularIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, specularIndex);
                 if (txDef)
                 {
-                    auto uuid = txDef->getUuid();
+                    UuidType uuid = txDef->getUuid();
                     materialDef->setSpecularTexture(uuid);
                 }
             }
@@ -2124,12 +2355,12 @@ namespace octronic::dream::tool
         // Normal
         if(StringCombo("Normal",&normalIndex,textures,textures.size()))
         {
-            if (projDef)
+            if (projectDefinition)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, normalIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, normalIndex);
                 if (txDef)
                 {
-                    auto uuid = txDef->getUuid();
+                    UuidType uuid = txDef->getUuid();
                     materialDef->setNormalTexture(uuid);
                 }
             }
@@ -2140,12 +2371,12 @@ namespace octronic::dream::tool
         // Displacement
         if(StringCombo("Displacement",&displacementIndex,textures,textures.size()))
         {
-            if (projDef)
+            if (projectDefinition)
             {
-                auto txDef = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, displacementIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, displacementIndex);
                 if (txDef)
                 {
-                    auto uuid = txDef->getUuid();
+                    UuidType uuid = txDef->getUuid();
                     materialDef->setDisplacementTexture(uuid);
                 }
             }
@@ -2159,38 +2390,38 @@ namespace octronic::dream::tool
     PropertiesWindow::drawModelAssetProperties
     ()
     {
-        auto def = dynamic_cast<ModelDefinition*>(mDefinition);
+        ModelDefinition* def = dynamic_cast<ModelDefinition*>(mDefinition);
 
         bool selectFile = ImGui::Button("Model File...");
 
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0, mContext->getLastDirectory().c_str());
+            nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0, mContext->getLastDirectory().c_str());
 
-			if ( result == NFD_OKAY )
-			{
-				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
+            if ( result == NFD_OKAY )
+            {
+                LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
                 StorageManager* fm = mContext->getStorageManager();
-				File* file = fm->openFile(filePath);
-				mContext->setLastDirectory(file->getDirectory());
-				file->readBinary();
-				auto data = file->getBinaryData();
-				auto dataSize = file->getBinaryDataSize();
-				def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file->getExtension());
-				def->setName(file->getNameWithoutExtension());
-				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
+                File* file = fm->openFile(filePath);
+                mContext->setLastDirectory(file->getDirectory());
+                file->readBinary();
+                uint8_t* data = file->getBinaryData();
+                size_t dataSize = file->getBinaryDataSize();
+                def->setFormat(Constants::ASSET_TYPE_MODEL+"."+file->getExtension());
+                def->setName(file->getNameWithoutExtension());
+                mContext->getProjectDirectory()->writeAssetData(def,data,dataSize);
                 fm->closeFile(file);
-				NFD_FreePath(filePath);
-			}
-			else if ( result == NFD_CANCEL )
-			{
-				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
-			}
-			else
-			{
-				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
-			}
+                NFD_FreePath(filePath);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+            }
+            else
+            {
+                LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+            }
         }
 
         ImGui::SameLine();
@@ -2200,30 +2431,30 @@ namespace octronic::dream::tool
         if (selectAdditionalFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
+            nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
 
-			if ( result == NFD_OKAY )
-			{
-				LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
-				LOG_ERROR("PropertiesWindow: Opening Additional Model File {}",filePath);
+            if ( result == NFD_OKAY )
+            {
+                LOG_ERROR("PropertiesWindow: Opening Model File {}",filePath);
+                LOG_ERROR("PropertiesWindow: Opening Additional Model File {}",filePath);
                 StorageManager* fm = mContext->getStorageManager();
-				File* file = fm->openFile(filePath);
-				mContext->setLastDirectory(file->getDirectory());
-				file->readBinary();
-				auto data = file->getBinaryData();
-				auto dataSize = file->getBinaryDataSize();
-				mContext->getProjectDirectory()->writeAssetData(def,data,dataSize,file->getNameWithExtension());
+                File* file = fm->openFile(filePath);
+                mContext->setLastDirectory(file->getDirectory());
+                file->readBinary();
+                uint8_t* data = file->getBinaryData();
+                size_t dataSize = file->getBinaryDataSize();
+                mContext->getProjectDirectory()->writeAssetData(def,data,dataSize,file->getNameWithExtension());
                 fm->closeFile(file);
-				NFD_FreePath(filePath);
-			}
-			else if ( result == NFD_CANCEL )
-			{
-				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
-			}
-			else
-			{
-				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
-			}
+                NFD_FreePath(filePath);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+            }
+            else
+            {
+                LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+            }
         }
 
         ImGui::SameLine();
@@ -2237,13 +2468,14 @@ namespace octronic::dream::tool
 
         vector<string> modelMaterialNames;
         map<string,Bone> bones;
-        auto projRunt = mContext->getProject()->getRuntime();
-        if (projRunt)
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+
+        if (projectRuntime)
         {
-            auto modelCache = projRunt->getModelCache();
+            ModelCache* modelCache = projectRuntime->getModelCache();
             if (modelCache)
             {
-                auto modelRuntime = dynamic_cast<ModelRuntime*>(modelCache->getRuntime(def));
+                ModelRuntime* modelRuntime = dynamic_cast<ModelRuntime*>(modelCache->getRuntime(def));
                 if (modelRuntime)
                 {
                     modelMaterialNames = modelRuntime->getMaterialNames();
@@ -2273,10 +2505,10 @@ namespace octronic::dream::tool
         ImGui::NextColumn();
 
         vector<string> materialAssetNames;
-        auto projDef =  mContext->getProject()->getDefinition();
-        if (projDef)
+        ProjectDefinition* projectDefinition =  mContext->getProject()->getDefinition();
+        if (projectDefinition)
         {
-            materialAssetNames = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MATERIAL);
+            materialAssetNames = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MATERIAL);
         }
 
         for (string modelMaterial : modelMaterialNames)
@@ -2284,13 +2516,14 @@ namespace octronic::dream::tool
             ImGui::Text("%s",modelMaterial.c_str());
             ImGui::NextColumn();
             ImGui::PushItemWidth(-1);
-            auto currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
-            auto currentMaterialDef = projDef->getAssetDefinitionByUuid(currentMaterialUuid);
-            int currentMaterialIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL,currentMaterialDef);
+            UuidType currentMaterialUuid = def->getDreamMaterialForModelMaterial(modelMaterial);
+            AssetDefinition* currentMaterialDef = projectDefinition->getAssetDefinitionByUuid(currentMaterialUuid);
+            int currentMaterialIndex = projectDefinition->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL,currentMaterialDef);
             string itemName = "##Material:" + modelMaterial;
+
             if(StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
             {
-                auto changedMaterial = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL, currentMaterialIndex);
+                AssetDefinition* changedMaterial = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MATERIAL, currentMaterialIndex);
                 def->addModelMaterial(modelMaterial,changedMaterial->getUuid());
 
                 LOG_ERROR("PropertiesWindow: Changed {} material {} to map to {}",def->getName(), modelMaterial, changedMaterial->getNameAndUuidString() );
@@ -2305,7 +2538,7 @@ namespace octronic::dream::tool
     ()
     {
         bool modified = false;
-        auto pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
+        PhysicsObjectDefinition* pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
         vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT];
         string poFormatString = pod->getFormat();
         int poFormatIndex = getStringIndexInVector(poFormatString, poFormats);
@@ -2455,16 +2688,16 @@ namespace octronic::dream::tool
         }
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH) == 0)
         {
-            auto projDef = mContext->getProject()->getDefinition();
+            auto projectDefinition = mContext->getProject()->getDefinition();
 
-            uint32_t selectedModelAssetUuid = pod->getCollisionModel();
-            AssetDefinition* selectedModelAssetDef = projDef->getAssetDefinitionByUuid(selectedModelAssetUuid);
-            int selectedModelAssetIndex = projDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetDef);
-            vector<string> modelAssets = projDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
+            UuidType selectedModelAssetUuid = pod->getCollisionModel();
+            AssetDefinition* selectedModelAssetDef = projectDefinition->getAssetDefinitionByUuid(selectedModelAssetUuid);
+            int selectedModelAssetIndex = projectDefinition->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetDef);
+            vector<string> modelAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
             if(StringCombo("Model",&selectedModelAssetIndex,modelAssets,modelAssets.size()))
             {
-                AssetDefinition* newlySelected = projDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetIndex);
+                AssetDefinition* newlySelected = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetIndex);
                 pod->setCollisionModel(newlySelected->getUuid());
                 modified = true;
             }
@@ -2502,9 +2735,9 @@ namespace octronic::dream::tool
                     {
                         auto childDef = pDef->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,shapeNameIndex);
                         pod->addCompoundChild(CompoundChildDefinition
-                        {
-                            pod,Transform(),childDef->getUuid()
-                        });
+                                              {
+                                                  pod,Transform(),childDef->getUuid()
+                                              });
                     }
                     modified = true;
                 }
@@ -2514,7 +2747,7 @@ namespace octronic::dream::tool
                 ImGui::Separator();
 
                 auto shapes = pod->getCompoundChildren();
-                static uint32_t selectedToTransform = 0;
+                static UuidType selectedToTransform = 0;
                 for (auto shape : shapes)
                 {
                     auto shapeDef = pDef->getAssetDefinitionByUuid(shape.uuid);
@@ -2566,11 +2799,11 @@ namespace octronic::dream::tool
     ()
     {
         auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
-        auto projRunt = mContext->getProject()->getRuntime();
+        auto projectRuntime = mContext->getProject()->getRuntime();
         ShaderRuntime* shaderInst = nullptr;
-        if (projRunt)
+        if (projectRuntime)
         {
-            auto shaderCache = projRunt->getShaderCache();
+            auto shaderCache = projectRuntime->getShaderCache();
             if (shaderCache)
             {
                 shaderInst = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderDef));
@@ -2611,14 +2844,14 @@ namespace octronic::dream::tool
         bool wrap = pathDef->getWrap();
         if (ImGui::Checkbox("Wrap",&wrap))
         {
-           pathDef->setWrap(wrap);
+            pathDef->setWrap(wrap);
             needsRegen = true;
         }
 
         float velocity = pathDef->getVelocity();
         if (ImGui::DragFloat("Velocity",&velocity))
         {
-           pathDef->setVelocity(velocity);
+            pathDef->setVelocity(velocity);
             needsRegen = true;
         }
 
@@ -2707,10 +2940,10 @@ namespace octronic::dream::tool
         }
     }
 
-   void
-   PropertiesWindow::drawPathControlPointImGuizmo
-   (PathDefinition* pDef, PathControlPoint cp)
-   {
+    void
+    PropertiesWindow::drawPathControlPointImGuizmo
+    (PathDefinition* pDef, PathControlPoint cp)
+    {
         mat4 mtx(1.0f);
         mtx = glm::translate(mtx, cp.position.toGLM());
         float* matrix = glm::value_ptr(mtx);
@@ -2718,13 +2951,13 @@ namespace octronic::dream::tool
         static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
 
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        auto projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto sRunt = pRunt->getActiveSceneRuntime();
-            if (sRunt)
+            auto sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            if (sceneRuntime)
             {
-                auto cam = sRunt->getCamera();
+                Camera* cam = sceneRuntime->getCamera();
                 if (cam)
                 {
                     auto proj = cam->getProjectionMatrix();
@@ -2732,21 +2965,21 @@ namespace octronic::dream::tool
                     ImGuiIO& io = ImGui::GetIO();
                     ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
                     ImGuizmo::Manipulate
-                    (
-                        glm::value_ptr(view),
-                        glm::value_ptr(proj),
-                        currentGizmoOperation,
-                        currentGizmoMode,
-                        matrix,
-                        nullptr,
-                        nullptr
-                    );
+                            (
+                                glm::value_ptr(view),
+                                glm::value_ptr(proj),
+                                currentGizmoOperation,
+                                currentGizmoMode,
+                                matrix,
+                                nullptr,
+                                nullptr
+                                );
                     cp.position = Vector3(mtx[3][0],mtx[3][1],mtx[3][2]);
                     pDef->updateControlPoint(cp);
                 }
             }
         }
-   }
+    }
 
     void
     PropertiesWindow::drawTextureAssetProperties
@@ -2755,11 +2988,11 @@ namespace octronic::dream::tool
         void* textureId = nullptr;
 
         auto textureDef = dynamic_cast<TextureDefinition*>(mDefinition);
-        auto projRunt = mContext->getProject()->getRuntime();
-        if (projRunt)
+        auto projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto txCache = projRunt->getTextureCache();
-            auto txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(textureDef));
+            TextureCache* txCache = projectRuntime->getTextureCache();
+            TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(textureDef));
             if (txRuntime)
             {
                 textureId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2770,30 +3003,30 @@ namespace octronic::dream::tool
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
-			nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
+            nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,mContext->getLastDirectory().c_str());
 
-			if ( result == NFD_OKAY )
-			{
-				LOG_ERROR("PropertiesWindow: Opening Texture File {}",filePath);
+            if ( result == NFD_OKAY )
+            {
+                LOG_ERROR("PropertiesWindow: Opening Texture File {}",filePath);
                 StorageManager* fm = mContext->getStorageManager();
-				File* file = fm->openFile(filePath);
-				mContext->setLastDirectory(file->getDirectory());
-				file->readBinary();
-				auto data = file->getBinaryData();
-				auto dataSize = file->getBinaryDataSize();
-				mContext->getProjectDirectory()->writeAssetData(textureDef,data,dataSize);
-				textureDef->setName(file->getNameWithoutExtension());
+                File* file = fm->openFile(filePath);
+                mContext->setLastDirectory(file->getDirectory());
+                file->readBinary();
+                auto data = file->getBinaryData();
+                auto dataSize = file->getBinaryDataSize();
+                mContext->getProjectDirectory()->writeAssetData(textureDef,data,dataSize);
+                textureDef->setName(file->getNameWithoutExtension());
                 fm->closeFile(file);
-				NFD_FreePath(filePath);
-			}
-			else if ( result == NFD_CANCEL )
-			{
-				LOG_DEBUG("PropertiesWindow: User pressed cancel.");
-			}
-			else
-			{
-				LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
-			}
+                NFD_FreePath(filePath);
+            }
+            else if ( result == NFD_CANCEL )
+            {
+                LOG_DEBUG("PropertiesWindow: User pressed cancel.");
+            }
+            else
+            {
+                LOG_ERROR("PropertiesWindow: Error: %s\n", NFD_GetError() );
+            }
         }
 
         ImGui::SameLine();
@@ -2828,16 +3061,16 @@ namespace octronic::dream::tool
     PropertiesWindow::replaceRuntimes
     (AssetDefinition* assetDef)
     {
-        auto pRunt = mContext->getProject()->getRuntime();
-        if (pRunt)
+        auto projectRuntime = mContext->getProject()->getRuntime();
+        if (projectRuntime)
         {
-            auto sRunt = pRunt->getActiveSceneRuntime();
-            if (sRunt)
+            auto sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            if (sceneRuntime)
             {
-                auto runts = sRunt->getEntitysWithRuntimeOf(assetDef);
-                for (auto soRunt : runts)
+                auto runts = sceneRuntime->getEntitysWithRuntimeOf(assetDef);
+                for (auto entityRuntime : runts)
                 {
-                    soRunt->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());
+                    entityRuntime->replaceAssetUuid(assetDef->getAssetType(),assetDef->getUuid());
                 }
             }
         }

@@ -47,6 +47,8 @@
 #undef min
 #endif
 
+using std::make_shared;
+
 namespace octronic::dream
 {
     SceneRuntime::SceneRuntime
@@ -58,6 +60,7 @@ namespace octronic::dream
         mRootEntityRuntime(nullptr),
         mLightingPassShader(nullptr),
         mShadowPassShader(nullptr),
+        mFontShader(nullptr),
         mInputScript(nullptr),
         mCamera(Camera(this)),
         mSceneStartTime(0),
@@ -65,7 +68,9 @@ namespace octronic::dream
         mMinDrawDistance(0.1f),
         mMaxDrawDistance(1000.0f),
         mMeshCullDistance(1000.0f),
-        mPlayerObject(nullptr)
+        mPlayerEntity(nullptr),
+        mInputScriptConstructionTask(),
+        mInputScriptDestructionTask(nullptr)
     {
         LOG_TRACE( "SceneRuntime: Constructing " );
     }
@@ -93,6 +98,8 @@ namespace octronic::dream
         }
 
         mLightingPassShader = nullptr;
+        mShadowPassShader = nullptr;
+        mFontShader = nullptr;
         mEntityRuntimeCleanUpQueue.clear();
         mState = SceneState::SCENE_STATE_DESTROYED;
     }
@@ -158,7 +165,7 @@ namespace octronic::dream
 
     EntityRuntime*
     SceneRuntime::getEntityRuntimeByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         if (!mRootEntityRuntime)
@@ -318,7 +325,7 @@ namespace octronic::dream
     SceneRuntime::useDefinition
     ()
     {
-        auto sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
+        SceneDefinition* sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
         {
@@ -339,32 +346,52 @@ namespace octronic::dream
         mCamera.setPitch(sceneDefinition->getCameraPitch());
         mCamera.setYaw(sceneDefinition->getCameraYaw());
 
+        //  Setup drawing parameters
         setMeshCullDistance(sceneDefinition->getMeshCullDistance());
         setMinDrawDistance(sceneDefinition->getMinDrawDistance());
         setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
 
-        // Load Lighting Shader
-        auto shaderCache = mProjectRuntime->getShaderCache();
-        auto shaderUuid = sceneDefinition->getLightingPassShader();
-        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderUuid));
-        shaderUuid = sceneDefinition->getShadowPassShader();
-        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderUuid));
+        // Load Light and Shadow pass Shaders
+        ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
+
+        UuidType lightPassShaderUuid = sceneDefinition->getLightingPassShader();
+        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(lightPassShaderUuid));
 
         if (mLightingPassShader == nullptr)
         {
-            LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",lightPassShaderUuid,getNameAndUuidString());
         }
+
+        UuidType shadowPassShaderUuid = sceneDefinition->getShadowPassShader();
+        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shadowPassShaderUuid));
 
         if (mShadowPassShader == nullptr)
         {
-            LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shaderUuid,getNameAndUuidString());
+            LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shadowPassShaderUuid,getNameAndUuidString());
         }
 
+        UuidType fontShaderUuid = sceneDefinition->getFontShader();
+        mFontShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(fontShaderUuid));
+
+        if (mFontShader == nullptr)
+        {
+            LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
+        }
+
+        mProjectRuntime->getShaderCache()->logShaders();
+
         // Scripts
-        auto scriptCache = mProjectRuntime->getScriptCache();
-        auto inputScriptUuid = sceneDefinition->getInputScript();
+        ScriptCache* scriptCache = mProjectRuntime->getScriptCache();
+        UuidType inputScriptUuid = sceneDefinition->getInputScript();
         mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
-        if (!mInputScript)
+        if (mInputScript)
+        {
+            LOG_TRACE("SceneRuntime: Setting up input script Tasks");
+            mInputScriptConstructionTask.setScript(mInputScript);
+            mInputScriptDestructionTask = make_shared<InputScriptDestructionTask>();
+            mInputScriptDestructionTask->setScript(mInputScript);
+        }
+        else
         {
             LOG_ERROR("SceneRuntime: Unable to load Input r Script {}",inputScriptUuid);
         }
@@ -373,26 +400,25 @@ namespace octronic::dream
          mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
 
         // Create Root EntityRuntime
-        auto sod = sceneDefinition->getRootEntityDefinition();
-        auto sor = new EntityRuntime(sod,this);
-        if (!sor->useDefinition())
+        EntityDefinition* entityDef = sceneDefinition->getRootEntityDefinition();
+        EntityRuntime* er = new EntityRuntime(entityDef,this);
+        if (!er->useDefinition())
         {
             LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
-            delete sor;
-            sor = nullptr;
+            delete er;
+            er = nullptr;
             return false;
         }
 
 
-        setRootEntityRuntime(sor);
+        setRootEntityRuntime(er);
         setState(SceneState::SCENE_STATE_LOADED);
-        mProjectRuntime->getShaderCache()->logShaders();
 
-        auto focused = getEntityRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
-        mCamera.setFocusedSceneObejct(focused);
+        EntityRuntime* focused = getEntityRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
+        mCamera.setFocusedEntity(focused);
 
-        auto player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
-        setPlayerObject(player);
+        EntityRuntime* player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
+        setPlayerEntity(player);
 
         return true;
     }
@@ -555,6 +581,16 @@ namespace octronic::dream
         mShadowPassShader = shadowPassShader;
     }
 
+    ShaderRuntime* SceneRuntime::getFontShader() const
+    {
+        return mFontShader;
+    }
+
+    void SceneRuntime::setFontShader(ShaderRuntime* fontShader)
+    {
+       mFontShader = fontShader;
+    }
+
     ScriptRuntime*
     SceneRuntime::getInputScript
     ()
@@ -627,6 +663,14 @@ namespace octronic::dream
         mSceneStartTime = sceneStartTime;
     }
 
+    /**
+     * @brief SceneRuntime::createSceneTasks
+     *
+     * Entitys with DiscreetAssetRuntimes need to push back their own tasks,
+     * All SharedAssetRuntimes should be pushed back only once.
+     * This is handled by TaskThread->hasTask, to check if any of the threads
+     * already have a copy of the task.
+     */
     void
     SceneRuntime::createSceneTasks
     ()
@@ -635,33 +679,36 @@ namespace octronic::dream
 
         updateLifetime();
 
-        auto taskManager = mProjectRuntime->getTaskManager();
-        auto physicsComponent = mProjectRuntime->getPhysicsComponent();
-        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
-        auto inputComponent = mProjectRuntime->getInputComponent();
-        auto scriptComponent = mProjectRuntime->getScriptComponent();
+        // Get Components
+        TaskManager* taskManager = mProjectRuntime->getTaskManager();
+        PhysicsComponent* physicsComponent = mProjectRuntime->getPhysicsComponent();
+        GraphicsComponent* graphicsComponent = mProjectRuntime->getGraphicsComponent();
+        InputComponent* inputComponent = mProjectRuntime->getInputComponent();
+        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
 
-        auto constructInput = mInputScript->getConstructionTask();
-        if (constructInput->getState() == TaskState::TASK_STATE_NEW)
+        // Input component needs to be constructed
+        if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_NEW)
         {
-           constructInput->setState(TaskState::TASK_STATE_QUEUED);
-           taskManager->pushTask(constructInput);
+           mInputScriptConstructionTask.setState(TaskState::TASK_STATE_QUEUED);
+           taskManager->pushTask(&mInputScriptConstructionTask);
         }
-        else if (constructInput->getState() == TaskState::TASK_STATE_COMPLETED)
+        // Input component in-flight
+        else if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_COMPLETED)
         {
             // Poll Data
             inputComponent->setCurrentSceneRuntime(this);
-            auto poll = inputComponent->getPollDataTask();
+            InputPollDataTask* poll = inputComponent->getPollDataTask();
             poll->clearState();
             taskManager->pushTask(poll);
 
             // Process Input
-            auto exec =inputComponent->getExecuteScriptTask();
+            InputExecuteScriptTask* exec = inputComponent->getExecuteScriptTask();
             exec->clearState();
             exec->dependsOn(inputComponent->getPollDataTask());
             taskManager->pushTask(exec);
         }
 
+        // Schedule the PhysicsWorld update Task
         PhysicsUpdateWorldTask* physicsUpdate = nullptr;
         if (physicsComponent->getEnabled())
         {
@@ -670,7 +717,7 @@ namespace octronic::dream
             taskManager->pushTask(physicsUpdate);
         }
 
-        // Process Entitys
+        // Process Entities
         mRootEntityRuntime->applyToAll
         (
             function<EntityRuntime*(EntityRuntime*)>(
@@ -680,16 +727,16 @@ namespace octronic::dream
                 // Animation
                 if (rt->hasAnimationRuntime())
                 {
-                    auto anim = rt->getAnimationRuntime();
-                    auto ut = anim->getUpdateTask();
+                    AnimationRuntime* anim = rt->getAnimationRuntime();
+                    AnimationUpdateTask* ut = anim->getUpdateTask();
                     ut->clearState();
                     taskManager->pushTask(ut);
                 }
                 // Audio
                 if (rt->hasAudioRuntime())
                 {
-                    auto audio = rt->getAudioRuntime();
-                    auto ut = audio->getMarkersUpdateTask();
+                    AudioRuntime* audio = rt->getAudioRuntime();
+                    AudioMarkersUpdateTask* ut = audio->getMarkersUpdateTask();
                     ut->clearState();
                     taskManager->pushTask(ut);
                 }
@@ -697,10 +744,10 @@ namespace octronic::dream
                 // Physics
                 if (physicsComponent->getEnabled() && rt->hasPhysicsObjectRuntime())
                 {
-                    auto pObj = rt->getPhysicsObjectRuntime();
+                    PhysicsObjectRuntime* pObj = rt->getPhysicsObjectRuntime();
                     if (!pObj->isInPhysicsWorld())
                     {
-                        auto ut = pObj->getAddObjectTask();
+                        PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
                         ut->clearState();
                         ut->dependsOn(physicsUpdate);
                         taskManager->pushTask(ut);
@@ -709,8 +756,8 @@ namespace octronic::dream
                 // Path
                 if (rt->hasPathRuntime())
                 {
-                    auto path = rt->getPathRuntime();
-                    auto ut = path->getUpdateTask();
+                    PathRuntime* path = rt->getPathRuntime();
+                    PathUpdateTask* ut = path->getUpdateTask();
                     ut->clearState();
                     taskManager->pushTask(ut);
                 }
@@ -718,8 +765,8 @@ namespace octronic::dream
                 // Scripting
                 if (scriptComponent->getEnabled() && rt->hasScriptRuntime())
                 {
-                    auto script = rt->getScriptRuntime();
-                    auto load = script->getConstructionTask();
+                    ScriptRuntime* script = rt->getScriptRuntime();
+                    EntityScriptConstructionTask* load = rt->getScriptConstructionTask();
                     if (load->getState() == TaskState::TASK_STATE_NEW)
                     {
                         // Don't clear state of load
@@ -728,9 +775,9 @@ namespace octronic::dream
                     }
                     else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
                     {
-                        if (!script->getInitialised(rt))
+                        if (!rt->getScriptInitialised())
                         {
-                            auto init = rt->getScriptOnInitTask();
+                            EntityScriptOnInitTask* init = rt->getScriptOnInitTask();
                             init->clearState();
                             taskManager->pushTask(init);
                         }
@@ -738,13 +785,13 @@ namespace octronic::dream
                         {
                             if (rt->hasEvents())
                             {
-                                auto event = rt->getScriptOnEventTask();
+                                EntityScriptOnEventTask* event = rt->getScriptOnEventTask();
                                 event->clearState();
                                 event->dependsOn(physicsUpdate);
                                 taskManager->pushTask(event);
                             }
 
-                            auto update = rt->getScriptOnUpdateTask();
+                            EntityScriptOnUpdateTask* update = rt->getScriptOnUpdateTask();
                             update->clearState();
                             taskManager->pushTask(update);
                         }
@@ -763,7 +810,7 @@ namespace octronic::dream
 
         if (physicsComponent->getDebug())
         {
-            auto drawDebug = physicsComponent->getDrawDebugTask();
+            PhysicsDrawDebugTask* drawDebug = physicsComponent->getDrawDebugTask();
             drawDebug->clearState();
             graphicsComponent->pushTask(drawDebug);
         }
@@ -774,7 +821,7 @@ namespace octronic::dream
     SceneRuntime::updateLifetime
     ()
     {
-        auto time = mProjectRuntime->getTime();
+        Time* time = mProjectRuntime->getTime();
         long timeDelta = time->getFrameTimeDelta();
         if (timeDelta <= Time::DELTA_MAX)
         {
@@ -788,16 +835,16 @@ namespace octronic::dream
     }
 
     void
-    SceneRuntime::setPlayerObject
+    SceneRuntime::setPlayerEntity
     (EntityRuntime* po)
     {
-        mPlayerObject = po;
+        mPlayerEntity = po;
     }
 
     EntityRuntime*
-    SceneRuntime::getPlayerObject
+    SceneRuntime::getPlayerEntity
     () const
     {
-       return mPlayerObject;
+       return mPlayerEntity;
     }
 }

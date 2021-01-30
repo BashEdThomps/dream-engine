@@ -45,6 +45,7 @@ namespace octronic::dream
          bool pushDestructionTask(const shared_ptr<DestructionTask>& dt);
          void setRunning(bool running);
          int getThreadId();
+         bool hasTask(Task* t);
          const vector<Task*>& getDebugTaskQueue();
     };
 }

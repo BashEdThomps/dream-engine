@@ -15,6 +15,7 @@
 #include "PhysicsDebugDrawer.h"
 
 #include "Components/Graphics/Camera.h"
+#include "Components/Graphics/GraphicsComponent.h"
 #include "Scene/Entity/BoundingBox.h"
 
 #include <algorithm>
@@ -88,32 +89,43 @@ namespace octronic::dream
         GLuint mVertexShader = 0;
         GLuint mFragmentShader = 0;
 
-        mVertexShaderSource = "#version 330 core\n"
-                              "\n"
-                              "layout (location = 0) in vec3 position;\n"
-                              "layout (location = 1) in vec3 color;\n"
-                              "\n"
-                              "out vec3 Color;\n"
-                              "\n"
-                              "uniform mat4 view;\n"
-                              "uniform mat4 projection;\n"
-                              "\n"
-                              "void main ()\n"
-                              "{\n"
-                              "    gl_Position = projection * view * vec4(position,1.0);\n"
-                              "    Color = color;\n"
-                              "}";
+        mVertexShaderSource =
+        #if defined(GL_ES_VERSION_3_0)
+        "#version 300 es\n"
+        #else
+        "#version 330 core\n"
+        #endif
+		"\n"
+		"layout (location = 0) in vec3 position;\n"
+		"layout (location = 1) in vec3 color;\n"
+		"\n"
+		"out vec3 Color;\n"
+		"\n"
+		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
+		"\n"
+		"void main ()\n"
+		"{\n"
+		"    gl_Position = projection * view * vec4(position,1.0);\n"
+		"    Color = color;\n"
+		"}";
 
-        mFragmentShaderSource = "#version 330 core\n"
-                                "\n"
-                                "in vec3  Color;\n"
-                                "\n"
-                                "out vec4 fragColor;\n"
-                                "\n"
-                                "void main()\n"
-                                "{\n"
-                                "    fragColor = vec4(Color,1.0);\n"
-                                "}";
+        mFragmentShaderSource =
+        #if defined (GL_ES_VERSION_3_0)
+        "#version 300 es\n"
+        "precision mediump float;\n"
+        #else
+        "#version 330 core\n"
+        #endif
+		"\n"
+		"in vec3  Color;\n"
+		"\n"
+		"out vec4 fragColor;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		"    fragColor = vec4(Color,1.0);\n"
+		"}";
         // Compile shaders
         GLint success;
         GLchar infoLog[512];
@@ -331,8 +343,11 @@ namespace octronic::dream
         GLCheckError();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GLCheckError();
+#if defined(GL_ES_VERSION_3_0)
+#else
         glEnable(GL_LINE_SMOOTH);
         GLCheckError();
+#endif
         glEnable(GL_DEPTH_TEST);
         GLCheckError();
     }
@@ -343,8 +358,11 @@ namespace octronic::dream
     {
         glDisable (GL_BLEND);
         GLCheckError();
+#if defined(GL_ES_VERSION_3_0)
+#else
         glDisable(GL_LINE_SMOOTH);
         GLCheckError();
+#endif
         glDisable(GL_DEPTH_TEST);
         GLCheckError();
     }

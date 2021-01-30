@@ -20,9 +20,11 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -35,9 +37,9 @@ public class DreamView extends GLSurfaceView
     public DreamView(Context context)
     {
         super(context);
-        // Pick an EGLConfig with RGB8 color, 16-bit depth, no stencil,
+        // Pick an EGLConfig with RGBA8 color, 16-bit depth, no stencil,
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
-        setEGLConfigChooser(8, 8, 8, 0, 16, 0);
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         setEGLContextClientVersion(3);
         setRenderer(new Renderer(context));
     }
@@ -48,6 +50,11 @@ public class DreamView extends GLSurfaceView
 
         public Renderer(Context context)
         {
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+
+            DreamJNI.resize(metrics.widthPixels,metrics.heightPixels);
             mContext = context;
         }
 

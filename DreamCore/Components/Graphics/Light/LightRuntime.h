@@ -20,7 +20,6 @@
 #include "LightDefinition.h"
 #include "Components/DiscreteAssetRuntime.h"
 
-using namespace glm;
 
 namespace octronic::dream
 {

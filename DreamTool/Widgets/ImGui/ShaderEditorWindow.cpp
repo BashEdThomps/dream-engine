@@ -28,13 +28,13 @@ namespace octronic::dream::tool
         {
 
             ImGui::Begin("Shader Editor",&mVisible);
-            auto projRunt = mContext->getProject()->getRuntime();
+            ProjectRuntime* projRunt = mContext->getProject()->getRuntime();
             ShaderRuntime* shaderInst = nullptr;
             {
-                auto scriptCache = projRunt->getShaderCache();
-                if (scriptCache)
+                ShaderCache* shaderCache = projRunt->getShaderCache();
+                if (shaderCache)
                 {
-                    shaderInst = dynamic_cast<ShaderRuntime*>(scriptCache->getRuntime(mShaderDefinition));
+                    shaderInst = static_cast<ShaderRuntime*>(shaderCache->getRuntime(mShaderDefinition));
                 }
             }
 
@@ -47,12 +47,12 @@ namespace octronic::dream::tool
                     auto currentVertexText = mVertexEditor.GetText();
                     shaderInst->setVertexSource(currentVertexText);
                     string vSource = shaderInst->getVertexSource();
-                    vertSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)vSource.c_str(), vSource.size(),Constants::SHADER_VERTEX_FILE_NAME);
+                    vertSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)vSource.c_str(), vSource.size(),Constants::SHADER_GLSL_VERTEX_FILE_NAME);
 
                     auto currentFragmentText = mFragmentEditor.GetText();
                     shaderInst->setFragmentSource(currentFragmentText);
                     string fSource = shaderInst->getFragmentSource();
-                    fragSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)fSource.c_str(),fSource.size(),Constants::SHADER_FRAGMENT_FILE_NAME);
+                    fragSuccess = mContext->getProjectDirectory()->writeAssetData(mShaderDefinition,(uint8_t*)fSource.c_str(),fSource.size(),Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
                     if (vertSuccess && fragSuccess)
                     {
                         mContext->getMenuBar()->setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
@@ -79,7 +79,7 @@ namespace octronic::dream::tool
 
             ImGui::PushFont(DreamToolWindow::MonoFont);
 
-            auto cposVert = mVertexEditor.GetCursorPosition();
+            TextEditor::Coordinates cposVert = mVertexEditor.GetCursorPosition();
             ImGui::Text(
                         "%6d/%-6d %6d lines  | %s | %s | %s",
                         cposVert.mLine + 1,
@@ -93,7 +93,7 @@ namespace octronic::dream::tool
 
             ImGui::NextColumn();
 
-            auto cposFrag = mFragmentEditor.GetCursorPosition();
+            TextEditor::Coordinates cposFrag = mFragmentEditor.GetCursorPosition();
             ImGui::Text(
                         "%6d/%-6d %6d lines  | %s | %s | %s",
                         cposFrag.mLine + 1,
@@ -125,8 +125,8 @@ namespace octronic::dream::tool
                     else
                     {
                         auto  templateName = templates.at(currentTemplateIndex);
-                        string vertTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_VERTEX_FILE_NAME);
-                        string fragTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_FRAGMENT_FILE_NAME);
+                        string vertTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+                        string fragTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
                         if (shaderInst)
                         {
                             mVertexEditor.SetText(vertTemplate);
@@ -152,21 +152,21 @@ namespace octronic::dream::tool
     (ShaderDefinition* scriptDefinition)
     {
         mShaderDefinition = scriptDefinition;
-        auto projRunt = mContext->getProject()->getRuntime();
-        ShaderRuntime* scriptInst = nullptr;
-        if (projRunt)
+        ProjectRuntime* projRuntime = mContext->getProject()->getRuntime();
+        ShaderRuntime* shaderRuntime = nullptr;
+        if (projRuntime)
         {
-            auto scriptCache = projRunt->getShaderCache();
-            if (scriptCache)
+            ShaderCache* shaderCache = projRuntime->getShaderCache();
+            if (shaderCache)
             {
-                scriptInst = dynamic_cast<ShaderRuntime*>(scriptCache->getRuntime(mShaderDefinition));
-                if (scriptInst)
+                shaderRuntime = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(mShaderDefinition));
+                if (shaderRuntime)
                 {
                     mVertexEditor.SetReadOnly(false);
-                    mVertexEditor.SetText(scriptInst->getVertexSource());
+                    mVertexEditor.SetText(shaderRuntime->getVertexSource());
 
                     mFragmentEditor.SetReadOnly(false);
-                    mFragmentEditor.SetText(scriptInst->getFragmentSource());
+                    mFragmentEditor.SetText(shaderRuntime->getFragmentSource());
                 }
             }
         }

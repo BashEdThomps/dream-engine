@@ -132,7 +132,7 @@ namespace octronic::dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         auto assetDef = mProject->getDefinition()->getAssetDefinitionByUuid(uuid);
@@ -276,12 +276,12 @@ namespace octronic::dream
         return retval;
     }
 
-    vector<uint32_t>
+    vector<UuidType>
     ProjectDirectory::cleanupAssetsDirectory
     ()
     const
     {
-        vector<uint32_t> retval;
+        vector<UuidType> retval;
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
@@ -305,7 +305,7 @@ namespace octronic::dream
                     Directory* subdir = mStorageManager->openDirectory(subdirPath);
                     if (subdir->exists())
                     {
-                        uint32_t name = static_cast<uint32_t>(std::stoi(subdir->getName()));
+                        UuidType name = static_cast<UuidType>(std::stoi(subdir->getName()));
                         LOG_ERROR("ProjectDirectory: Checking subdir {} has definition",name);
                         auto def = pDef->getAssetDefinitionByUuid(name);
                         if (!def)
@@ -385,7 +385,7 @@ namespace octronic::dream
         }
 
         mPath = file->getDirectory();
-        LOG_DEBUG("ProjectDirectory: Project path is: {}", mPath);
+        LOG_DEBUG("ProjectDirectory: Project path is: \"{}\"", mPath);
         mProject = new Project(this, mStorageManager);
         auto pDef = new ProjectDefinition(projectJson);
         mProject->setDefinition(pDef);

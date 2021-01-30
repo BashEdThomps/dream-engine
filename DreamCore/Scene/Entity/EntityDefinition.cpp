@@ -24,6 +24,10 @@
 
 #include <regex>
 
+using std::regex;
+using std::cmatch;
+using std::pair;
+
 namespace octronic::dream
 {
     EntityDefinition::EntityDefinition
@@ -39,7 +43,7 @@ namespace octronic::dream
         LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         if (randomUuid)
         {
-            mJson[Constants::UUID] = UuidTools::generateUuid();
+            mJson[Constants::UUID] = Uuid::generateUuid();
             LOG_TRACE( "EntityDefinition: With new UUID",getNameAndUuidString());
         }
         mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
@@ -333,7 +337,7 @@ namespace octronic::dream
 
         auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,getJson(),true);
         newSOD->loadChildEntityDefinitions(true);
-        newSOD->setUuid(UuidTools::generateUuid());
+        newSOD->setUuid(Uuid::generateUuid());
         string name = newSOD->getName();
         regex numRegex("(\\d+)$");
         cmatch match;
@@ -367,7 +371,7 @@ namespace octronic::dream
     (AssetType type)
     {
         auto asset = getAssetDefinition(type);
-        if (asset == 0)
+        if (asset == Uuid::INVALID)
         {
             return -1;
         }
@@ -385,7 +389,7 @@ namespace octronic::dream
 
     void
     EntityDefinition::setAssetDefinition
-    (AssetType type, uint32_t uuid)
+    (AssetType type, UuidType uuid)
     {
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
         if (mJson[Constants::ENTITY_ASSET_INSTANCES].is_null() ||
@@ -396,24 +400,24 @@ namespace octronic::dream
         mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr] = uuid;
     }
 
-    map<AssetType, uint32_t>
+    map<AssetType, UuidType>
     EntityDefinition::getAssetDefinitionsMap
     ()
     {
-        map<AssetType, uint32_t> assetsMap;
+        map<AssetType, UuidType> assetsMap;
         for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
             AssetType type = typePair.first;
-            uint32_t uuid = getAssetDefinition(type);
-            if (uuid != 0)
+            UuidType uuid = getAssetDefinition(type);
+            if (uuid != Uuid::INVALID)
             {
-                assetsMap.insert(pair<AssetType,uint32_t>(type, uuid));
+                assetsMap.insert(pair<AssetType,UuidType>(type, uuid));
             }
         }
         return assetsMap;
     }
 
-    uint32_t
+    UuidType
     EntityDefinition::getAssetDefinition
     (AssetType type)
     {
@@ -426,7 +430,7 @@ namespace octronic::dream
 
         if (!mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr].is_number())
         {
-            return 0;
+            return Uuid::INVALID;
         }
 
         LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
@@ -444,5 +448,53 @@ namespace octronic::dream
     (EntityDefinition* parentEntity)
     {
         mParentEntity = parentEntity;
+    }
+
+	void EntityDefinition::setFontColor(const Vector3& color)
+    {
+		mJson[Constants::ENTITY_FONT_COLOR] =  color.toJson();
+    }
+
+    Vector3 EntityDefinition::getFontColor()
+    {
+       Vector3 retval(1.f);
+       if (mJson[Constants::ENTITY_FONT_COLOR].is_null())
+       {
+           mJson[Constants::ENTITY_FONT_COLOR] = retval.toJson();
+       }
+       retval = Vector3(mJson[Constants::ENTITY_FONT_COLOR]);
+       return retval;
+    }
+
+	void EntityDefinition::setFontText(const string& text)
+    {
+		mJson[Constants::ENTITY_FONT_TEXT] = text;
+    }
+
+    string EntityDefinition::getFontText()
+    {
+        string retval = "";
+        if (mJson[Constants::ENTITY_FONT_TEXT].is_null())
+        {
+            mJson[Constants::ENTITY_FONT_TEXT] = retval;
+        }
+        retval = mJson[Constants::ENTITY_FONT_TEXT];
+        return retval;
+    }
+
+	void EntityDefinition::setFontScale(float s)
+    {
+		mJson[Constants::ENTITY_FONT_SCALE] = s;
+    }
+
+    float EntityDefinition::getFontScale()
+    {
+        float retval = 1.f;
+        if (mJson[Constants::ENTITY_FONT_SCALE].is_null())
+        {
+            mJson[Constants::ENTITY_FONT_SCALE] = retval;
+        }
+        retval = mJson[Constants::ENTITY_FONT_SCALE];
+        return retval;
     }
 }

@@ -23,6 +23,9 @@
 #include  <sstream>
 #include <regex>
 
+using std::regex;
+using std::cmatch;
+
 namespace octronic::dream
 {
     AssetDefinition::AssetDefinition
@@ -190,7 +193,7 @@ namespace octronic::dream
     {
         auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
         newAD->mJson = mJson;
-        newAD->setUuid(UuidTools::generateUuid());
+        newAD->setUuid(Uuid::generateUuid());
         string name = newAD->getName();
         regex numRegex("(\\d+)$");
         cmatch match;

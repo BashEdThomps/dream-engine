@@ -24,6 +24,8 @@
 
 #include <glm/common.hpp>
 
+using glm::perspective;
+
 namespace octronic::dream
 {
     Camera::Camera
@@ -405,7 +407,7 @@ namespace octronic::dream
     }
 
     void
-    Camera::setFocusedSceneObejct
+    Camera::setFocusedEntity
     (EntityRuntime* rt)
     {
         mFocusedEntity = rt;

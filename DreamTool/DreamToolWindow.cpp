@@ -18,7 +18,6 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 
-using namespace octronic::dream;
 static bool WindowSizeChanged = false;
 
 namespace octronic::dream::tool
@@ -33,7 +32,7 @@ namespace octronic::dream::tool
     GLFWErrorCallback
     (int _errno, const char* errmsg)
     {
-        cout << "GLFW Error: Number " << _errno << "\nMessage: " << errmsg << endl;
+        LOG_ERROR("GLFW Error: Number {}\nMessage: {}",_errno, errmsg);
     }
 
     DreamToolWindow::DreamToolWindow()

@@ -7,7 +7,7 @@ namespace octronic::dream
 {
     AudioMarkersUpdateTask::AudioMarkersUpdateTask
     (AudioRuntime* rt)
-        : Task(), mAudioRuntime(rt)
+        : Task("AudioMarkersUpdateTask"), mAudioRuntime(rt)
     {
     }
 
@@ -15,7 +15,7 @@ namespace octronic::dream
     AudioMarkersUpdateTask::execute
     ()
     {
-        LOG_CRITICAL("AudioMarkersUpdateTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("AudioMarkersUpdateTask: Executing on thread {}",mThreadId);
         if(mAudioRuntime->tryLock())
         {
             mAudioRuntime->updateMarkers();
@@ -24,6 +24,7 @@ namespace octronic::dream
         }
         else
         {
+          	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
             setState(TaskState::TASK_STATE_WAITING);
             mDeferralCount++;
         }

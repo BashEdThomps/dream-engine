@@ -16,11 +16,12 @@
 
 #pragma once
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 	#define AL_SILENCE_DEPRICATION
     #include <OpenAL/al.h>
     #include <OpenAL/alc.h>
-#else
+#elif defined(__ANDROID__)
+#elif defined(__linux__)
     #include <al.h>
     #include <alc.h>
 #endif

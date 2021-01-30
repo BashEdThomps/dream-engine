@@ -25,6 +25,8 @@
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Graphics/Model/ModelCache.h"
 #include "Components/Graphics/Light/LightRuntime.h"
+#include "Components/Graphics/Font/FontRuntime.h"
+#include "Components/Graphics/Font/FontCache.h"
 #include "Components/Physics/PhysicsObjectRuntime.h"
 #include "Components/Physics/PhysicsComponent.h"
 #include "Components/AssetDefinition.h"
@@ -49,20 +51,20 @@
 #include <glm/matrix.hpp>
 
 using std::vector;
+using std::make_shared;
 
 namespace octronic::dream
 {
-    EntityRuntime::EntityRuntime(
-        EntityDefinition* sd,
-        SceneRuntime* sr,
-        bool randomUuid
-    ):  Runtime(sd),
+    EntityRuntime::EntityRuntime(EntityDefinition* sd,SceneRuntime* sr,bool randomUuid)
+        : Runtime(sd),
         mAnimationRuntime(nullptr),
         mAudioRuntime(nullptr),
         mLightRuntime(nullptr),
         mPathRuntime(nullptr),
         mPhysicsObjectRuntime(nullptr),
         mScriptRuntime(nullptr),
+        mScriptInitialised(false),
+        mScriptError(false),
         mModelRuntime(nullptr),
         mSceneRuntime(sr),
         mParentRuntime(nullptr),
@@ -75,10 +77,15 @@ namespace octronic::dream
         mDeferredFor(0),
         mObjectLifetime(0),
         mDieAfter(0),
+        mScriptConstructionTask(this),
         mScriptOnInitTask(this),
         mScriptOnUpdateTask(this),
         mScriptOnEventTask(this),
-        mScriptOnDestroyTask(nullptr)
+        mScriptDestructionTask(nullptr),
+        mFontRuntime(nullptr),
+        mFontText(""),
+        mFontColor(1.f),
+        mFontScale(1.f)
     {
         LOG_TRACE( "EntityRuntime: Constructing Object" );
 
@@ -88,12 +95,12 @@ namespace octronic::dream
 
         if (mRandomUuid)
         {
-            mUuid = UuidTools::generateUuid();
+            mUuid = Uuid::generateUuid();
         }
 
         if (static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->getPlayerObject() == mUuid)
         {
-            mSceneRuntime->setPlayerObject(this);
+            mSceneRuntime->setPlayerEntity(this);
         }
 
         setAttribute("uuid",getUuidString());
@@ -112,6 +119,7 @@ namespace octronic::dream
 
         removeAnimationRuntime();
         removeAudioRuntime();
+        removeFontRuntime();
         removeLightRuntime();
         removeModelRuntime();
         removePathRuntime();
@@ -170,6 +178,18 @@ namespace octronic::dream
     }
 
     void
+    EntityRuntime::removeFontRuntime
+    ()
+    {
+        if (mFontRuntime != nullptr)
+        {
+            mFontRuntime->popInstance(this);
+            mFontRuntime = nullptr;
+        }
+     }
+
+
+    void
     EntityRuntime::removeScriptRuntime
     ()
     {
@@ -178,7 +198,7 @@ namespace octronic::dream
             mSceneRuntime
                 ->getProjectRuntime()
                 ->getTaskManager()
-                ->pushDestructionTask(mScriptOnDestroyTask);
+                ->pushDestructionTask(mScriptDestructionTask);
         }
         mScriptRuntime = nullptr;
     }
@@ -203,6 +223,12 @@ namespace octronic::dream
             delete mPhysicsObjectRuntime;
             mPhysicsObjectRuntime = nullptr;
         }
+    }
+
+    FontRuntime*
+    EntityRuntime::getFontRuntime()
+    {
+        return mFontRuntime;
     }
 
     AnimationRuntime*
@@ -267,10 +293,18 @@ namespace octronic::dream
                return getPhysicsObjectRuntime();
            case ASSET_TYPE_ENUM_SCRIPT:
                return getScriptRuntime();
+           case ASSET_TYPE_ENUM_FONT:
+               return getFontRuntime();
            default:
                break;
        }
        return nullptr;
+    }
+
+    bool
+    EntityRuntime::hasFontRuntime()
+    {
+        return mFontRuntime != nullptr;
     }
 
     bool
@@ -303,12 +337,12 @@ namespace octronic::dream
 
     void
     EntityRuntime::setAssetDefinitionsMap
-    (const map<AssetType,uint32_t>& assetMap)
+    (const map<AssetType,UuidType>& assetMap)
     {
         mAssetDefinitions = assetMap;
     }
 
-    map<AssetType,uint32_t>
+    map<AssetType,UuidType>
     EntityRuntime::getAssetDefinitionsMap
     ()
     {
@@ -439,14 +473,8 @@ namespace octronic::dream
         for (auto child : toDelete)
         {
             LOG_TRACE("EntityRuntime: Deleting child {}",child->getNameAndUuidString());
-            mChildRuntimes.erase
-            (
-                find
-                (
-                    mChildRuntimes.begin(),
-                    mChildRuntimes.end(),
-                    child
-                )
+            mChildRuntimes.erase(
+                find(mChildRuntimes.begin(), mChildRuntimes.end(), child)
             );
             delete child;
         }
@@ -497,6 +525,8 @@ namespace octronic::dream
                 case AssetType::ASSET_TYPE_ENUM_AUDIO:
                     result = createAudioRuntime(static_cast<AudioDefinition*>(def));
                     break;
+                case AssetType::ASSET_TYPE_ENUM_FONT:
+                    result = createFontRuntime(static_cast<FontDefinition*>(def));
                 case AssetType::ASSET_TYPE_ENUM_LIGHT:
                     result = createLightRuntime(static_cast<LightDefinition*>(def));
                     break;
@@ -525,7 +555,7 @@ namespace octronic::dream
 
     AssetDefinition*
     EntityRuntime::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
@@ -543,7 +573,7 @@ namespace octronic::dream
 
     bool
     EntityRuntime::replaceAssetUuid
-    (AssetType type, uint32_t uuid)
+    (AssetType type, UuidType uuid)
     {
         LOG_INFO("EntityRuntime: REPLACING asset Runtime from uuid {}", uuid);
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
@@ -563,6 +593,8 @@ namespace octronic::dream
                 return createAnimationRuntime(static_cast<AnimationDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_AUDIO:
                 return createAudioRuntime(static_cast<AudioDefinition*>(def));
+            case AssetType::ASSET_TYPE_ENUM_FONT:
+                return createFontRuntime(static_cast<FontDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_LIGHT:
                 return createLightRuntime(static_cast<LightDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_MODEL:
@@ -573,6 +605,7 @@ namespace octronic::dream
                 return createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                 return createScriptRuntime(static_cast<ScriptDefinition*>(def));
+
             default:
                 return false;
         }
@@ -665,11 +698,12 @@ namespace octronic::dream
             mScriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntime(definition));
             if (mScriptRuntime)
             {
+                mScriptConstructionTask.setScript(mScriptRuntime);
                 mScriptOnInitTask.setScript(mScriptRuntime);
                 mScriptOnUpdateTask.setScript(mScriptRuntime);
                 mScriptOnEventTask.setScript(mScriptRuntime);
-                mScriptOnDestroyTask = make_shared<ScriptOnDestroyTask>(mUuid,mParentRuntime);
-                mScriptOnDestroyTask->setScript(mScriptRuntime);
+                mScriptDestructionTask = make_shared<EntityScriptDestructionTask>(mUuid);
+                mScriptDestructionTask->setScript(mScriptRuntime);
                 return true;
             }
             else
@@ -692,9 +726,29 @@ namespace octronic::dream
         return mLightRuntime->useDefinition();
     }
 
+    bool
+    EntityRuntime::createFontRuntime
+    (FontDefinition* definition)
+    {
+        removeFontRuntime();
+        LOG_TRACE( "EntityRuntime: Creating Font Asset Runtime." );
+        auto fontCache = mSceneRuntime->getProjectRuntime()->getFontCache();
+        mFontRuntime = static_cast<FontRuntime*>(fontCache->getRuntime(definition));
+        if (mFontRuntime == nullptr)
+        {
+            LOG_ERROR("EntityRuntime: Error creating Font runtime");
+        }
+        EntityDefinition* entityDef = static_cast<EntityDefinition*>(mDefinition);
+        mFontColor = entityDef->getFontColor();
+        mFontScale = entityDef->getFontScale();
+        mFontText = entityDef->getFontText();
+        mFontRuntime->pushInstance(this);
+        return mFontRuntime != nullptr;
+    }
+
     EntityRuntime*
     EntityRuntime::getChildRuntimeByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -910,7 +964,7 @@ namespace octronic::dream
 
     EntityRuntime*
     EntityRuntime::addChildFromTemplateUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         auto sceneDef = static_cast<SceneDefinition*>(mSceneRuntime->getDefinition());
         auto def = sceneDef->getTemplateByUuid(uuid);
@@ -946,13 +1000,15 @@ namespace octronic::dream
             auto def = static_cast<EntityDefinition*>(mDefinition);
             LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
             setName(def->getName());
-            setUuid(mRandomUuid ? UuidTools::generateUuid() : def->getUuid());
+            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
             setHasCameraFocus(def->getHasCameraFocus());
             setHidden(def->getHidden());
             initTransform();
             setAssetDefinitionsMap(def->getAssetDefinitionsMap());
             setDeferredFor(def->getDeferred());
             setDieAfter(def->getDieAfter());
+            // Not sure what purpose this serves
+            // (may have been part of a count-down-until-spawn-time system)
             if (mDeferredFor == 0)
             {
                 return loadDeferred();
@@ -1163,21 +1219,21 @@ namespace octronic::dream
         return mDieAfter;
     }
 
-    ScriptOnInitTask*
+    EntityScriptOnInitTask*
     EntityRuntime::getScriptOnInitTask
     ()
     {
        return &mScriptOnInitTask;
     }
 
-    ScriptOnEventTask*
+    EntityScriptOnEventTask*
     EntityRuntime::getScriptOnEventTask
     ()
     {
        return &mScriptOnEventTask;
     }
 
-    ScriptOnUpdateTask*
+    EntityScriptOnUpdateTask*
     EntityRuntime::getScriptOnUpdateTask
     ()
     {
@@ -1236,11 +1292,67 @@ namespace octronic::dream
         return mAttributes;
     }
 
+    string EntityRuntime::getFontText() const
+    {
+        return mFontText;
+    }
+
+    void EntityRuntime::setFontText(const string& fontText)
+    {
+        mFontText = fontText;
+    }
+
+    Vector3 EntityRuntime::getFontColor() const
+    {
+        return mFontColor;
+    }
+
+    void EntityRuntime::setFontColor(const Vector3& fontColor)
+    {
+        mFontColor = fontColor;
+    }
+
+    float EntityRuntime::getFontScale() const
+    {
+        return mFontScale;
+    }
+
+    void EntityRuntime::setFontScale(float fontScale)
+    {
+        mFontScale = fontScale;
+    }
+
     bool
     EntityRuntime::isPlayerObject
     ()
     const
     {
-        return mSceneRuntime->getPlayerObject() == this;
+        return mSceneRuntime->getPlayerEntity() == this;
     }
+
+    void EntityRuntime::setScriptError(bool e)
+    {
+        mScriptError = e;
+    }
+
+    bool EntityRuntime::getScriptError() const
+    {
+        return mScriptError;
+    }
+
+    void EntityRuntime::setScriptInitialised(bool i)
+    {
+        mScriptInitialised = i;
+    }
+
+ 	bool EntityRuntime::getScriptInitialised() const
+    {
+        return mScriptInitialised;
+    }
+
+    EntityScriptConstructionTask* EntityRuntime::getScriptConstructionTask()
+    {
+        return &mScriptConstructionTask;
+    }
+
 }

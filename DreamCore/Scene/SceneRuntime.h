@@ -12,14 +12,16 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include "SceneState.h"
 
 #include "Common/Runtime.h"
 #include "Components/Transform.h"
 #include "Components/Graphics/Camera.h"
+#include "Components/Script/ScriptTasks.h"
+
+#include <memory>
+#include <string>
+#include <vector>
 
 using std::string;
 using std::vector;
@@ -38,30 +40,7 @@ namespace octronic::dream
 
     class SceneRuntime : public Runtime
     {
-        SceneState mState;
-        Vector3 mClearColour;
-        ProjectRuntime* mProjectRuntime;
-        vector<EntityRuntime*> mEntityRuntimeCleanUpQueue;
-        EntityRuntime* mRootEntityRuntime;
-        ShaderRuntime* mLightingPassShader;
-        ShaderRuntime* mShadowPassShader;
-        ScriptRuntime* mInputScript;
-        Camera mCamera;
-        unsigned long mSceneStartTime;
-        unsigned long mSceneCurrentTime;
-        float mMinDrawDistance;
-        float mMaxDrawDistance;
-        float mMeshCullDistance;
-        EntityRuntime* mPlayerObject;
 
-    protected:
-        void updateLifetime();
-        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
-        void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
-        void clearEntityRuntimeCleanUpQueue();
-        void processEntityRuntimeCleanUpQueue();
-        void createAllAssetRuntimes();
-        void setDeleteFlagOnAllEntityRuntimes();
 
     public:
         SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
@@ -95,11 +74,11 @@ namespace octronic::dream
         void createSceneTasks();
 
         bool hasRootEntityRuntime() const;
-        void setRootEntityRuntime(EntityRuntime* sceneObject);
+        void setRootEntityRuntime(EntityRuntime* e);
         EntityRuntime* getRootEntityRuntime() const;
 
         EntityRuntime* getEntityRuntimeByName(const string& name) const;
-        EntityRuntime* getEntityRuntimeByUuid(uint32_t uuid) const;
+        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) const;
 
         int countEntityRuntimes() const;
         int countChildrenOfEntityRuntime(EntityRuntime*) const;
@@ -116,6 +95,10 @@ namespace octronic::dream
 
         ShaderRuntime* getShadowPassShader() const;
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
+
+        ShaderRuntime* getFontShader() const;
+        void setFontShader(ShaderRuntime* fontShader);
+
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
         vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
@@ -137,7 +120,36 @@ namespace octronic::dream
         unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
-        void setPlayerObject(EntityRuntime* po);
-        EntityRuntime* getPlayerObject() const;
+        void setPlayerEntity(EntityRuntime* po);
+        EntityRuntime* getPlayerEntity() const;
+
+    protected:
+        void updateLifetime();
+        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
+        void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
+        void clearEntityRuntimeCleanUpQueue();
+        void processEntityRuntimeCleanUpQueue();
+        void createAllAssetRuntimes();
+        void setDeleteFlagOnAllEntityRuntimes();
+
+    private:
+        SceneState mState;
+        Vector3 mClearColour;
+        ProjectRuntime* mProjectRuntime;
+        vector<EntityRuntime*> mEntityRuntimeCleanUpQueue;
+        EntityRuntime* mRootEntityRuntime;
+        ShaderRuntime* mLightingPassShader;
+        ShaderRuntime* mShadowPassShader;
+        ShaderRuntime* mFontShader;
+        ScriptRuntime* mInputScript;
+        InputScriptConstructionTask mInputScriptConstructionTask;
+        shared_ptr<InputScriptDestructionTask> mInputScriptDestructionTask;
+        Camera mCamera;
+        unsigned long mSceneStartTime;
+        unsigned long mSceneCurrentTime;
+        float mMinDrawDistance;
+        float mMaxDrawDistance;
+        float mMeshCullDistance;
+        EntityRuntime* mPlayerEntity;
     };
 }

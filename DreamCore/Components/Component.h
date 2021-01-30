@@ -40,6 +40,7 @@ namespace octronic::dream
         virtual bool init() = 0;
 
         void setTime(Time*);
+        void setProjectRuntime(ProjectRuntime* pr);
 
         bool getEnabled() const;
         void setEnabled(bool enabled);

@@ -4,13 +4,13 @@
 namespace octronic::dream
 {
     TextureConstructionTask::TextureConstructionTask(TextureRuntime* rt)
-        : GraphicsComponentTask(), mTextureRuntime(rt)
+        : GraphicsComponentTask("TextureConstructionTask"), mTextureRuntime(rt)
     {
     }
 
     void TextureConstructionTask::execute()
     {
-        LOG_CRITICAL("TextureConstructionTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("TextureConstructionTask: {} Executing on Graphics thread",mTextureRuntime->getNameAndUuidString());
         // Assign texture to ID
         GLuint textureID;
 
@@ -54,13 +54,13 @@ namespace octronic::dream
 
     TextureDestructionTask::TextureDestructionTask
     ()
-        : GraphicsComponentDestructionTask()
+        : GraphicsComponentDestructionTask("TextureDestructionTask")
     {
     }
 
     void TextureDestructionTask::execute()
     {
-        LOG_CRITICAL("TextureDestructionTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("TextureDestructionTask: for texture {}, Executing on Graphics thread",mTextureId);
         glDeleteTextures(1,&mTextureId);
         setState(TaskState::TASK_STATE_COMPLETED);
     }

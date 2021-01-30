@@ -49,7 +49,7 @@ namespace octronic::dream
         {
             if (mJson[Constants::UUID].is_string())
             {
-               mJson[Constants::UUID] = UuidTools::generateUuid();
+               mJson[Constants::UUID] = Uuid::generateUuid();
             }
         }
 
@@ -108,22 +108,22 @@ namespace octronic::dream
          */
         inline bool
         hasUuid
-        (uint32_t uuid)
+        (UuidType uuid)
         {
-            uint32_t s = mJson[Constants::UUID];
+            UuidType s = mJson[Constants::UUID];
             return s == uuid;
         }
 
         /**
          * @return The Definition's uuid.
          */
-        inline uint32_t
+        inline UuidType
         getUuid
         ()
         {
             if (mJson[Constants::UUID].is_null())
             {
-                mJson[Constants::UUID] = UuidTools::generateUuid();
+                mJson[Constants::UUID] = Uuid::generateUuid();
             }
             return mJson[Constants::UUID];
         }
@@ -133,7 +133,7 @@ namespace octronic::dream
          */
         inline void
         setUuid
-        (uint32_t uuid)
+        (UuidType uuid)
         {
             mJson[Constants::UUID] = uuid;
         }

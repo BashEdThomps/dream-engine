@@ -1,0 +1,12 @@
+function onInit(entity)
+end
+
+function onUpdate(ntity)
+end
+
+function onEvent(entity, event)
+    event:setProcessed(true)
+end
+
+function onDestroy(entityUuid, parent)
+end

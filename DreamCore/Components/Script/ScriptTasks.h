@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common/Uuid.h"
 #include "Components/Task/Task.h"
 #include "Components/Graphics/GraphicsComponentTask.h"
 
@@ -8,56 +9,89 @@ namespace octronic::dream
     class EntityRuntime;
     class ScriptRuntime;
 
-    class ScriptConstructionTask : public Task
-    {
-        ScriptRuntime* mScript = nullptr;
-    public:
-        ScriptConstructionTask();
-        void execute() override;
-        void setScript(ScriptRuntime* rt);
-    };
+    // =========================================================================
 
-    class ScriptOnInitTask : public Task
+    class EntityScriptConstructionTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript = nullptr;
-
+        ScriptRuntime* mScript;
     public:
-        ScriptOnInitTask(EntityRuntime* rt);
-        void execute() override;
+        EntityScriptConstructionTask(EntityRuntime* rt);
+        void execute();
         void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptOnUpdateTask : public Task
+    // =========================================================================
+
+    class InputScriptConstructionTask : public Task
+    {
+        ScriptRuntime* mScript;
+    public:
+        InputScriptConstructionTask();
+        void execute();
+        void setScript(ScriptRuntime* rt);
+    };
+
+    // =========================================================================
+
+    class EntityScriptOnInitTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript = nullptr;
+        ScriptRuntime* mScript;
 
     public:
-        ScriptOnUpdateTask(EntityRuntime* rt);
-        void execute() override;
+        EntityScriptOnInitTask(EntityRuntime* rt);
+        void execute();
         void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptOnEventTask : public Task
+    // =========================================================================
+
+    class EntityScriptOnUpdateTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript = nullptr;
+        ScriptRuntime* mScript;
 
     public:
-        ScriptOnEventTask(EntityRuntime* rt);
-        void execute() override;
+        EntityScriptOnUpdateTask(EntityRuntime* rt);
+        void execute();
         void setScript(ScriptRuntime* rt);
     };
 
-    class ScriptOnDestroyTask : public DestructionTask
+    // =========================================================================
+
+    class EntityScriptOnEventTask : public Task
     {
-        EntityRuntime* mParentEntity;
-        ScriptRuntime* mScript = nullptr;
-        uint32_t mDestroyedObject;
+        EntityRuntime* mEntity;
+        ScriptRuntime* mScript;
+
     public:
-        ScriptOnDestroyTask(uint32_t destroyed, EntityRuntime* rt);
-        void execute() override;
+        EntityScriptOnEventTask(EntityRuntime* rt);
+        void execute();
         void setScript(ScriptRuntime* rt);
     };
+
+    // =========================================================================
+
+    class EntityScriptDestructionTask : public DestructionTask
+    {
+        UuidType mUuid;
+        ScriptRuntime* mScript;
+    public:
+        EntityScriptDestructionTask(UuidType uuid);
+        void execute();
+        void setScript(ScriptRuntime* rt);
+    };
+
+    // =========================================================================
+
+    class InputScriptDestructionTask : public DestructionTask
+    {
+        ScriptRuntime* mScript;
+    public:
+        InputScriptDestructionTask();
+        void execute();
+        void setScript(ScriptRuntime* rt);
+    };
+
 }

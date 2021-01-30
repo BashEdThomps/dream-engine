@@ -16,7 +16,6 @@
 #include "Common/Definition.h"
 #include "Components/Transform.h"
 
-using namespace std;
 
 namespace octronic::dream
 {
@@ -48,7 +47,7 @@ namespace octronic::dream
         float getMeshCullDistance();
 
         void addTemplate(EntityDefinition* _template);
-        EntityDefinition* getTemplateByUuid(uint32_t uuid);
+        EntityDefinition* getTemplateByUuid(UuidType uuid);
 
         void setMinDrawDistance(float mdd);
         float getMinDrawDistance();
@@ -94,19 +93,22 @@ namespace octronic::dream
         void setCameraYaw(float yaw);
         float getCameraYaw();
 
-        uint32_t getCameraFocusedOn();
-        void setCameraFocusedOn(uint32_t focus);
+        UuidType getCameraFocusedOn();
+        void setCameraFocusedOn(UuidType focus);
 
-        uint32_t getLightingPassShader();
-        void setLightingPassShader(uint32_t shader);
+        UuidType getLightingPassShader();
+        void setLightingPassShader(UuidType shader);
 
-        uint32_t getShadowPassShader();
-        void setShadowPassShader(uint32_t shader);
+        UuidType getShadowPassShader();
+        void setShadowPassShader(UuidType shader);
 
-        uint32_t getInputScript();
-        void setInputScript(uint32_t shader);
+        UuidType getFontShader();
+        void setFontShader(UuidType shader);
 
-        void setPlayerObject(uint32_t po);
-        uint32_t getPlayerObject();
+        UuidType getInputScript();
+        void setInputScript(UuidType shader);
+
+        void setPlayerObject(UuidType po);
+        UuidType getPlayerObject();
     };
 }

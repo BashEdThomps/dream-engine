@@ -18,7 +18,6 @@
 #include "Common/Runtime.h"
 #include <string>
 
-using namespace std;
 
 namespace octronic::dream
 {

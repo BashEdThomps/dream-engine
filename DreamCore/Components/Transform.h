@@ -22,10 +22,11 @@
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
 
-
-using namespace std;
-using namespace nlohmann;
-using namespace glm;
+using glm::vec3;
+using glm::quat;
+using glm::vec4;
+using glm::mat4;
+using nlohmann::json;
 
 namespace octronic::dream
 {

@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "Common/Uuid.h"
 #include "Common/Constants.h" // AssetType
 
 using std::string;
@@ -50,7 +51,7 @@ namespace octronic::dream
         File* readAssetData(AssetDefinition*, const string &format = "") const;
         bool writeAssetData(AssetDefinition*, uint8_t* data, size_t data_sz, const string &format = "") const;
 
-        string getAssetAbsolutePath(uint32_t) const;
+        string getAssetAbsolutePath(UuidType) const;
         string getAssetAbsolutePath(AssetDefinition*) const;
         string getAssetAbsolutePath(AssetDefinition*, const string &format) const;
         string getAssetDirectoryPath(AssetDefinition*) const;
@@ -62,7 +63,7 @@ namespace octronic::dream
         bool assetTypeDirectoryExists(AssetType type) const;
 
         bool createAssetTypeDirectory(AssetType type) const;
-        vector<uint32_t> cleanupAssetsDirectory() const;
+        vector<UuidType> cleanupAssetsDirectory() const;
 
         Project* newProject(Directory* projectDir);
         Project* openFromFile(File* file);

@@ -40,6 +40,7 @@ namespace octronic::dream::tool
 
     protected:
         void drawImGizmo();
+        void drawNonImGizmo();
         void drawPathControlPointImGuizmo(PathDefinition* pDef, PathControlPoint);
         void drawAnimationKeyframeImGuizmo(AnimationDefinition* pDef, AnimationKeyframe);
         int getStringIndexInVector(string str, vector<string> vec);

@@ -26,7 +26,7 @@ namespace octronic::dream
 		virtual Directory* openDirectory(const string& path);
 		void closeDirectory(Directory* d);
 
-	private:
+	protected:
 		vector<File*> mOpenFiles;
 		vector<Directory*> mOpenDirectories;
 	};

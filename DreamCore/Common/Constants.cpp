@@ -12,8 +12,6 @@
 
 #include "Constants.h"
 
-using namespace std;
-
 namespace octronic::dream
 {
     // Misc =====================================================================
@@ -52,13 +50,12 @@ namespace octronic::dream
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
     const string Constants::ASSET_TYPE_SHADER = "shader";
-
     const string Constants::ASSET_TYPE_TEXTURE = "texture";
     const string Constants::ASSET_TYPE_MATERIAL = "material";
 
     // Formats
     const string Constants::ASSET_FORMAT = "format";
-    const string Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT = "script.as";
+    const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
     const string Constants::ASSET_FORMAT_MODEL_OBJ = "assimp.obj";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
@@ -66,9 +63,11 @@ namespace octronic::dream
     const string Constants::ASSET_FORMAT_DREAM = "dream";
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
+    const string Constants::ASSET_FORMAT_SHADER_GLES = "gles";
     const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
     const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL = "directional";
     const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT = "spotlight";
+
     const string Constants::ASSET_ATTR_LIGHT_DIRECTION = "direction";
     const string Constants::ASSET_ATTR_LIGHT_CONSTANT = "constant";
     const string Constants::ASSET_ATTR_LIGHT_LINEAR = "linear";
@@ -91,7 +90,7 @@ namespace octronic::dream
     const string Constants::ASSET_ATTR_GROUP = "group";
     const string Constants::ASSET_ATTR_GROUP_DEFAULT = "None";
 
-    const string Constants::ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE = "AngelScript";
+    const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
     const string Constants::ASSET_FORMAT_MODEL_OBJ_READABLE = "Wavefront OBJ";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
@@ -124,6 +123,7 @@ namespace octronic::dream
     const string Constants::SCENE_CAMERA_FOCUSED_ON = "camera_focused_on";
     const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
+    const string Constants::SCENE_FONT_SHADER = "font_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
 
     // Entity ==============================================================
@@ -139,6 +139,9 @@ namespace octronic::dream
     const string Constants::ENTITY_DEFERRED = "deferred";
     const string Constants::ENTITY_DIE_AFTER = "die_after";
     const string Constants::ENTITY_PLAYER_OBJECT = "player_object";
+    const string Constants::ENTITY_FONT_COLOR = "font_color";
+    const string Constants::ENTITY_FONT_SCALE = "font_scale";
+    const string Constants::ENTITY_FONT_TEXT = "font_text";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
@@ -163,6 +166,10 @@ namespace octronic::dream
     const unsigned int Constants::XYZ_VECTOR_SIZE = 3;
     const unsigned int Constants::RGB_VECTOR_SIZE = 3;
     const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
+
+    // Font ================================================================
+	const string Constants::ASSET_ATTR_FONT_SHADER_ID = "shader_id";
+	const string Constants::ASSET_ATTR_FONT_SIZE = "size";
 
     // Path ================================================================
     const string Constants::ASSET_ATTR_ID            = "id";
@@ -277,11 +284,20 @@ namespace octronic::dream
     const string Constants::SHADER_FRAGMENT = ".frag";
     const string Constants::SHADER_VERTEX   = ".vert";
 
-    const string Constants::SHADER_FRAGMENT_FILE_NAME
+    const string Constants::SHADER_GLSL_FRAGMENT_FILE_NAME
         = Constants::ASSET_FORMAT_SHADER_GLSL + Constants::SHADER_FRAGMENT ;
 
-    const string Constants::SHADER_VERTEX_FILE_NAME
+    const string Constants::SHADER_GLSL_VERTEX_FILE_NAME
         = Constants::ASSET_FORMAT_SHADER_GLSL +Constants::SHADER_VERTEX;
+
+
+    const string Constants::SHADER_GLES_FRAGMENT_FILE_NAME
+        = Constants::ASSET_FORMAT_SHADER_GLES + Constants::SHADER_FRAGMENT ;
+
+    const string Constants::SHADER_GLES_VERTEX_FILE_NAME
+        = Constants::ASSET_FORMAT_SHADER_GLES +Constants::SHADER_VERTEX;
+
+
 
     // Audio ===================================================================
     const string Constants::ASSET_ATTR_SPECTRUM_ANALYSER = "spectrum_analyser";
@@ -371,7 +387,7 @@ namespace octronic::dream
 			COLLISION_SHAPE_BVH_TRIANGLE_MESH, COLLISION_SHAPE_HEIGHTFIELD_TERRAIN,
 			COLLISION_SHAPE_STATIC_PLANE, COLLISION_SHAPE_COMPOUND
 		}},
-        {ASSET_TYPE_ENUM_SCRIPT,{ASSET_FORMAT_SCRIPT_ANGELSCRIPT}},
+        {ASSET_TYPE_ENUM_SCRIPT,{ASSET_FORMAT_SCRIPT_LUA}},
         {ASSET_TYPE_ENUM_SHADER,{ASSET_FORMAT_SHADER_GLSL}},
         {ASSET_TYPE_ENUM_TEXTURE,{ASSET_FORMAT_DREAM}}
     };
@@ -441,7 +457,7 @@ namespace octronic::dream
     (const string& format)
     {
         // Script
-        if (format == ASSET_FORMAT_SCRIPT_ANGELSCRIPT) return ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE;
+        if (format == ASSET_FORMAT_SCRIPT_LUA) return ASSET_FORMAT_SCRIPT_LUA_READABLE;
         // Model
         else if (format == ASSET_FORMAT_MODEL_ASSIMP) return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
         else if (format == ASSET_FORMAT_MODEL_OBJ) return ASSET_FORMAT_MODEL_OBJ_READABLE;
@@ -479,7 +495,7 @@ namespace octronic::dream
     Constants::getAssetFormatStringFromReadableName
     (const string& format)
     {
-        if      (format == ASSET_FORMAT_SCRIPT_ANGELSCRIPT_READABLE) return ASSET_FORMAT_SCRIPT_ANGELSCRIPT;
+        if      (format == ASSET_FORMAT_SCRIPT_LUA_READABLE) return ASSET_FORMAT_SCRIPT_LUA;
         else if (format == ASSET_FORMAT_MODEL_ASSIMP_READABLE) return ASSET_FORMAT_MODEL_ASSIMP;
         else if (format == ASSET_FORMAT_MODEL_OBJ_READABLE) return ASSET_FORMAT_MODEL_OBJ;
         else if (format == ASSET_FORMAT_AUDIO_OGG_READABLE) return ASSET_FORMAT_AUDIO_OGG;

@@ -1,23 +1,26 @@
 #include "ShaderRuntime.h"
 #include "ShaderTasks.h"
+#include "Components/Graphics/GraphicsComponent.h"
 
+#define ERROR_BUF_SZ 4096
 namespace octronic::dream
 {
 
     ShaderCompileFragmentTask::ShaderCompileFragmentTask(ShaderRuntime* rt)
-        : GraphicsComponentTask(), mShaderRuntime(rt)
+        : GraphicsComponentTask("ShaderCompileFragmentTask"), mShaderRuntime(rt)
     {
     }
 
     void ShaderCompileFragmentTask::execute()
     {
         mShaderRuntime->lock();
-        LOG_CRITICAL("ShaderCompileFragmentTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ShaderCompileFragmentTask: {} Executing on Graphics thread",mShaderRuntime->getName());
         GLint success;
-        GLchar infoLog[512];
+        GLchar infoLog[ERROR_BUF_SZ];
         // Fragment Shader
         mShaderRuntime->setFragmentShader(glCreateShader(GL_FRAGMENT_SHADER));
         string fs = mShaderRuntime->getFragmentSource().c_str();
+
         const char *fSource = fs.c_str();
         glShaderSource(mShaderRuntime->getFragmentShader(), 1, &fSource, nullptr);
         glCompileShader(mShaderRuntime->getFragmentShader());
@@ -25,8 +28,13 @@ namespace octronic::dream
         glGetShaderiv(mShaderRuntime->getFragmentShader(), GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(mShaderRuntime->getFragmentShader(), 512, nullptr, infoLog);
-            LOG_ERROR( "ShaderCompileFragmentTask: FRAGMENT SHADER COMPILATION FAILED\n {}" , infoLog );
+            glGetShaderInfoLog(mShaderRuntime->getFragmentShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderCompileVertexTask:\n"
+                       "\tFRAGMENT SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                       mShaderRuntime->getNameAndUuidString(),
+                       infoLog );
             glDeleteShader(mShaderRuntime->getFragmentShader());
             mShaderRuntime->setFragmentShader(0);
             mShaderRuntime->unlock();
@@ -37,19 +45,20 @@ namespace octronic::dream
     }
 
     ShaderCompileVertexTask::ShaderCompileVertexTask(ShaderRuntime* rt)
-        : GraphicsComponentTask(), mShaderRuntime(rt)
+        : GraphicsComponentTask("ShaderCompileVertexTask"), mShaderRuntime(rt)
     {
     }
 
     void ShaderCompileVertexTask::execute()
     {
         mShaderRuntime->lock();
-        LOG_CRITICAL("ShaderCompileVertexTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ShaderCompileVertexTask: {} Executing on Graphics thread",mShaderRuntime->getName());
         GLint success;
-        GLchar infoLog[512];
+        GLchar infoLog[ERROR_BUF_SZ];
         // Vertex Shader
         mShaderRuntime->setVertexShader(glCreateShader(GL_VERTEX_SHADER));
         string vs = mShaderRuntime->getVertexSource().c_str();
+
         const char *vSource = vs.c_str();
         glShaderSource(mShaderRuntime->getVertexShader(), 1, &vSource, nullptr);
         glCompileShader(mShaderRuntime->getVertexShader());
@@ -57,8 +66,13 @@ namespace octronic::dream
         glGetShaderiv(mShaderRuntime->getVertexShader(), GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(mShaderRuntime->getVertexShader(), 512, nullptr, infoLog);
-            LOG_ERROR( "ShaderCompileVertexTask: VERTEX SHADER COMPILATION FAILED\n {}" ,infoLog );
+            glGetShaderInfoLog(mShaderRuntime->getVertexShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderCompileVertexTask:\n"
+                       "\tVERTEX SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                       mShaderRuntime->getNameAndUuidString(),
+                       infoLog );
             glDeleteShader(mShaderRuntime->getVertexShader());
             mShaderRuntime->setVertexShader(0);
             mShaderRuntime->unlock();
@@ -69,13 +83,13 @@ namespace octronic::dream
     }
 
     ShaderLinkTask::ShaderLinkTask(ShaderRuntime* rt)
-        : GraphicsComponentTask(), mShaderRuntime(rt)
+        : GraphicsComponentTask("ShaderLinkTask"), mShaderRuntime(rt)
     {
     }
 
     void ShaderLinkTask::execute()
     {
-        LOG_CRITICAL("ShaderLinkTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ShaderLinkTask: Linking Shader [{}] on Graphics thread",mShaderRuntime->getName());
         mShaderRuntime->lock();
         if (mShaderRuntime->getVertexShader() != 0 && mShaderRuntime->getFragmentShader() != 0)
         {
@@ -85,7 +99,11 @@ namespace octronic::dream
             mShaderRuntime->setShaderProgram(glCreateProgram());
             if (mShaderRuntime->getShaderProgram() == 0)
             {
-                LOG_ERROR("ShaderLinkTask: Unable to create shader program");
+                LOG_CRITICAL( "ShaderLinkTask:\n"
+                           "\tSHADER LINKING FAILED\n"
+                           "\tShaderRuntime: {}\n",
+                           mShaderRuntime->getNameAndUuidString());
+
                 mShaderRuntime->unlock();
                 return;
             }
@@ -96,11 +114,11 @@ namespace octronic::dream
 
             // Print linking errors if any
             glGetProgramiv(mShaderRuntime->getShaderProgram(), GL_LINK_STATUS, &success);
-            GLchar infoLog[512];
+            GLchar infoLog[ERROR_BUF_SZ];
             if (!success)
             {
-                glGetProgramInfoLog(mShaderRuntime->getShaderProgram(), 512, nullptr, infoLog);
-                LOG_ERROR( "ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                glGetProgramInfoLog(mShaderRuntime->getShaderProgram(), ERROR_BUF_SZ, nullptr, infoLog);
+                LOG_CRITICAL("ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
                 glDeleteProgram(mShaderRuntime->getShaderProgram());
                 mShaderRuntime->setShaderProgram(0);
                 mShaderRuntime->unlock();
@@ -133,7 +151,8 @@ namespace octronic::dream
     }
 
     ShaderFreeTask::ShaderFreeTask()
-        : GraphicsComponentDestructionTask(), mShaderProgram(0)
+        : GraphicsComponentDestructionTask("ShaderFreeTask"),
+          mShaderProgram(0)
     {
     }
 
@@ -144,7 +163,7 @@ namespace octronic::dream
 
     void ShaderFreeTask::execute()
     {
-        LOG_CRITICAL("ShaderFreeTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ShaderFreeTask: ShaderProgram:{} Executing on Graphics thread",mShaderProgram);
         glDeleteProgram(mShaderProgram);
         setState(TASK_STATE_COMPLETED);
     }

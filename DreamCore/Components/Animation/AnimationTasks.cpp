@@ -7,7 +7,7 @@ namespace octronic::dream
 {
     AnimationUpdateTask::AnimationUpdateTask
     (AnimationRuntime* rt)
-        : Task(),
+        : Task("AnimationUpdateTask"),
           mAnimationRuntime(rt)
     {
     }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <atomic>
 #include <mutex>
@@ -9,6 +10,7 @@ using std::map;
 using std::mutex;
 using std::atomic;
 using std::vector;
+using std::string;
 
 namespace octronic::dream
 {
@@ -16,7 +18,6 @@ namespace octronic::dream
     enum TaskState
     {
         TASK_STATE_NEW,
-        TASK_STATE_CLEAR,
         TASK_STATE_QUEUED,
         TASK_STATE_WAITING,
         TASK_STATE_ACTIVE,
@@ -53,9 +54,10 @@ namespace octronic::dream
         int mTaskId;
         int  mThreadId;
         unsigned int  mDeferralCount;
+        string mTaskName;
 
     public:
-        Task();
+        Task(const string& taskName);
         Task(const Task& other);
         virtual ~Task();
         virtual void execute() = 0;
@@ -63,6 +65,7 @@ namespace octronic::dream
         void clearState();
 
         void setThreadId(int t);
+        string getTaskName() const;
 
         unsigned int getDeferralCount();
         void incrementDeferralCount();
@@ -90,5 +93,9 @@ namespace octronic::dream
      *
      * Must be stacked as shared pointers
      */
-    class DestructionTask : public Task {};
+    class DestructionTask : public Task
+    {
+    public:
+        DestructionTask(const string& taskName);
+    };
 }

@@ -21,10 +21,10 @@ namespace octronic::dream
         ~ModelDefinition() override;
         bool isFormatAssimp();
 
-        bool addModelMaterial(const string& material, uint32_t shader);
+        bool addModelMaterial(const string& material, UuidType shader);
         json* getModelMaterials();
         void removeModelMaterial(const string& material);
         void clearModelMaterialList();
-        uint32_t getDreamMaterialForModelMaterial(const string& mat);
+        UuidType getDreamMaterialForModelMaterial(const string& mat);
     };
 }

@@ -33,7 +33,10 @@
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 
-using ::Assimp::Importer;
+using Assimp::Importer;
+using std::pair;
+using std::make_shared;
+
 
 namespace octronic::dream
 {

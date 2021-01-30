@@ -3,24 +3,26 @@
 //
 
 #include "AndroidFile.h"
-
-#include "AndroidFileManager.h"
+#include "AndroidStorageManager.h"
 
 #include <cstring>
 #include <android/asset_manager.h>
 
 namespace octronic::dream::android
 {
-   AndroidFile::AndroidFile(AndroidFileManager* fm, string path)
+   AndroidFile::AndroidFile(AndroidStorageManager* sm, const string& path)
       : File(path),
-        mFileManager(fm)
+        mStorageManager(sm)
    {
-      LOG_TRACE("AndroidFile: {} with asset handle {}", __FUNCTION__, path);
+       LOG_TRACE("AndroidFile: {} with asset handle {}", __FUNCTION__, path);
+       if (mPath.starts_with('/')) mPath = string(&mPath.c_str()[1]);
+       LOG_TRACE("AndroidFile: Android path remove leading '/' to become {}", mPath);
    }
 
-    bool AndroidFile::ReadBinary()
+    bool AndroidFile::readBinary()
     {
-        AAsset* asset = AAssetManager_open(mFileManager->GetAssetManager(), mPath.c_str(), AASSET_MODE_BUFFER);
+        LOG_DEBUG("AndroidFile: {}",__FUNCTION__);
+        AAsset* asset = AAssetManager_open(mStorageManager->getAssetManager(), mPath.c_str(), AASSET_MODE_BUFFER);
         if (asset == nullptr)
         {
             LOG_ERROR("AndroidFile: ReadBinary asset == nullptr");
@@ -47,8 +49,9 @@ namespace octronic::dream::android
         return false;
     }
 
-    bool AndroidFile::Exists() const
+    bool AndroidFile::exists() const
     {
+        LOG_DEBUG("AndroidFile: {}",__FUNCTION__);
        return true;
     }
 }

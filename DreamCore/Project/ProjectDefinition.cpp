@@ -30,6 +30,8 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
+using std::pair;
+
 namespace octronic::dream
 {
     ProjectDefinition::ProjectDefinition
@@ -51,12 +53,12 @@ namespace octronic::dream
 
     void
     ProjectDefinition::setStartupSceneUuid
-    (uint32_t sceneUuid)
+    (UuidType sceneUuid)
     {
         mJson[Constants::PROJECT_STARTUP_SCENE] = sceneUuid;
     }
 
-    uint32_t ProjectDefinition::getStartupSceneUuid()
+    UuidType ProjectDefinition::getStartupSceneUuid()
     {
         if (!mJson[Constants::PROJECT_STARTUP_SCENE].is_number())
         {
@@ -218,7 +220,7 @@ namespace octronic::dream
 
     AssetDefinition*
     ProjectDefinition::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
@@ -284,7 +286,7 @@ namespace octronic::dream
 
     SceneDefinition*
     ProjectDefinition::getSceneDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
@@ -371,7 +373,7 @@ namespace octronic::dream
     ()
     {
         json scene;
-        scene[Constants::UUID] = UuidTools::generateUuid();
+        scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
         Transform camTransform;
         scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
@@ -391,7 +393,7 @@ namespace octronic::dream
         LOG_DEBUG("ProjectDefinition: Creating new AssetDefinition with default Format {}", defaultFormat);
 
         assetDefinitionJson[Constants::NAME] = Constants::ASSET_DEFINITION_DEFAULT_NAME;
-        assetDefinitionJson[Constants::UUID] = UuidTools::generateUuid();
+        assetDefinitionJson[Constants::UUID] = Uuid::generateUuid();
         assetDefinitionJson[Constants::ASSET_TYPE] = Constants::getAssetTypeStringFromTypeEnum(type);
         assetDefinitionJson[Constants::ASSET_FORMAT] = defaultFormat;
         AssetDefinition* ad = createAssetDefinition(assetDefinitionJson);
@@ -403,7 +405,7 @@ namespace octronic::dream
     ProjectDefinition::getStartupSceneDefinition
     ()
     {
-        uint32_t startupScene = getStartupSceneUuid();
+        UuidType startupScene = getStartupSceneUuid();
         LOG_DEBUG("ProjectDefinition: Finding startup scene {}", startupScene);
         return getSceneDefinitionByUuid(startupScene);
     }
@@ -522,7 +524,7 @@ namespace octronic::dream
 
     long
     ProjectDefinition::getAssetDefinitionIndex
-    (AssetType type, uint32_t uuid)
+    (AssetType type, UuidType uuid)
     {
         vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         for (int i = 0; i < defs.size(); i++)
@@ -584,7 +586,7 @@ namespace octronic::dream
     {
         json j = json::object();
         j[Constants::NAME] = name;
-        j[Constants::UUID] = UuidTools::generateUuid();
+        j[Constants::UUID] = Uuid::generateUuid();
         j[Constants::PROJECT_AUTHOR] = "";
         j[Constants::PROJECT_DESCRIPTION] = "";
         j[Constants::PROJECT_STARTUP_SCENE] = "";

@@ -16,13 +16,13 @@
 
 #include "ScriptCache.h"
 
+#include "ScriptRuntime.h"
 #include "ScriptDefinition.h"
 #include "ScriptRuntime.h"
-#include "Common/Logger.h"
-#include "Components/Storage/File.h"
-#include "Components/Storage/StorageManager.h"
-#include "Components/Task/TaskManager.h"
 #include "Project/ProjectRuntime.h"
+#include "Common/Logger.h"
+#include "Components/Storage/StorageManager.h"
+#include "Components/Storage/File.h"
 
 namespace octronic::dream
 {
@@ -30,29 +30,58 @@ namespace octronic::dream
     (ProjectRuntime* runtime)
         : Cache (runtime)
     {
-        LOG_TRACE("ScriptCache: Constructing");
+        LOG_TRACE("Constructing");
     }
 
     ScriptCache::~ScriptCache
     ()
     {
-        LOG_TRACE("ScriptCache: Destructing");
+        LOG_TRACE("Destructing");
     }
 
-    SharedAssetRuntime*
-    ScriptCache::loadRuntime
-    (AssetDefinition* def)
+    SharedAssetRuntime* ScriptCache::loadRuntime(AssetDefinition* def)
     {
-        auto scriptDef = static_cast<ScriptDefinition*>(def);
-        auto newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
-        auto absPath = getAbsolutePath(scriptDef);
-        StorageManager* fm = mProjectRuntime->getStorageManager();
-        File* scriptFile = fm->openFile(absPath);
-        newScript->setSource(scriptFile->readString());
-        fm->closeFile(scriptFile);
-        scriptFile = nullptr;
-        newScript->useDefinition();
-        mRuntimes.push_back(newScript);
+        ScriptDefinition* scriptDef = static_cast<ScriptDefinition*>(def);
+        for (SharedAssetRuntime* inst : mRuntimes)
+        {
+            if (inst->getUuid() == scriptDef->getUuid())
+            {
+                return inst;
+            }
+        }
+        string absPath = getAbsolutePath(scriptDef);
+        StorageManager* sm = mProjectRuntime->getStorageManager();
+        File* scriptFile = sm->openFile(absPath);
+
+
+
+        ScriptRuntime* newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
+
+        if (!scriptFile->exists())
+        {
+            LOG_ERROR("ScriptCache: Script file does not exist");
+            newScript->setSource("");
+        }
+        else
+        {
+        	newScript->setSource(scriptFile->readString());
+        }
+
+        if (!newScript->useDefinition())
+        {
+         	delete newScript;
+            newScript = nullptr;
+            sm->closeFile(scriptFile);
+            scriptFile = nullptr;
+        	LOG_ERROR("ScriptCache: Error Loading Script\n{}\n",newScript->getSource());
+        }
+        else
+        {
+        	LOG_TRACE("ScriptCache: Loaded Script Source\n{}\n",newScript->getSource());
+        	mRuntimes.push_back(newScript);
+            sm->closeFile(scriptFile);
+            scriptFile = nullptr;
+        }
         return newScript;
     }
 }

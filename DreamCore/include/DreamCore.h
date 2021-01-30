@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Components/Storage/File.h"
-#include "Components/Storage/StorageManager.h"
 
 // Common
 #include "Common/Constants.h"
@@ -18,6 +16,9 @@
 #include "Components/Audio/AudioRuntime.h"
 #include "Components/Audio/AudioDefinition.h"
 #include "Components/Audio/AudioComponent.h"
+#include "Components/Audio/AudioLoader.h"
+#include "Components/Audio/OggLoader.h"
+#include "Components/Audio/WavLoader.h"
 
 // Graphics
 #include "Components/Graphics/GraphicsComponent.h"
@@ -37,6 +38,13 @@
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Texture/TextureDefinition.h"
 #include "Components/Graphics/Texture/TextureCache.h"
+
+// Storage
+#include "Components/Storage/ProjectDirectory.h"
+#include "Components/Storage/Directory.h"
+#include "Components/Storage/File.h"
+#include "Components/Storage/StorageManager.h"
+
 
 // Input
 #include "Components/Input/InputComponent.h"
@@ -63,7 +71,6 @@
 #include "Scene/Entity/EntityRuntime.h"
 
 // Project
-#include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectDefinition.h"
 #include "Project/ProjectRuntime.h"
 #include "Project/Project.h"

@@ -17,15 +17,15 @@
 
 #include <iostream>
 
-using namespace std;
 
 typedef uint32_t UuidType;
 
 namespace octronic::dream
 {
-    class UuidTools
+    class Uuid
     {
     public:
+    	const static UuidType INVALID;
         static UuidType generateUuid();
     };
 }

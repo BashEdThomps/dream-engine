@@ -1,13 +1,5 @@
 # Dependencies #################################################################
 
-# Angelscript
-set (angelscript_src_dir Dependencies/angelscript-2.35.0)
-set (angelscript_output_dir ${CMAKE_BINARY_DIR}/build_angelscript)
-file(MAKE_DIRECTORY ${angelscript_output_dir})
-add_subdirectory(${angelscript_src_dir}/angelscript/projects/cmake ${angelscript_output_dir} EXCLUDE_FROM_ALL)
-include_directories(${angelscript_src_dir}/angelscript/include)
-include_directories(${angelscript_src_dir}/add_on)
-
 # Assimp
 set (assimp_src_dir Dependencies/assimp-5.0.1/)
 set (assimp_output_dir ${CMAKE_BINARY_DIR}/build_assimp)

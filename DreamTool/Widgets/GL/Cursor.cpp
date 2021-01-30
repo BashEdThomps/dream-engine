@@ -2,6 +2,8 @@
 #include "DreamToolContext.h"
 #include <DreamCore.h>
 
+using glm::radians;
+
 namespace octronic::dream::tool
 {
     Cursor::Cursor(DreamToolContext* state)

@@ -46,12 +46,17 @@ namespace octronic::dream::tool
            << templateName
            << Constants::DIR_PATH_SEP
            << format;
-        LOG_ERROR("TemplatesModel: Loading template from {}" , ss.str());
+        LOG_DEBUG("TemplatesModel: Loading template from {}" , ss.str());
         StorageManager* fm = mContext->getStorageManager();
         File* templateFile = fm->openFile(ss.str());
-        auto retval = templateFile->readString();
-        fm->closeFile(templateFile);
-        return retval;
+        if (templateFile->exists())
+        {
+			auto retval = templateFile->readString();
+			fm->closeFile(templateFile);
+			return retval;
+        }
+        LOG_DEBUG("TemplatesModel: Template file {} does not exist" , ss.str());
+        return "";
     }
 
     string

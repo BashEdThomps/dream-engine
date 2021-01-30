@@ -1,5 +1,6 @@
 #include "GLPreviewWindowComponent.h"
 
+#include "DreamToolContext.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 using octronic::dream::ProjectRuntime;
@@ -21,7 +22,7 @@ namespace octronic::dream::tool
     GLPreviewWindowComponent::~GLPreviewWindowComponent ()
     {
         LOG_TRACE("GLPreviewWindowComponent: {}", __FUNCTION__);
-		if (mFBO > 0)
+        if (mFBO > 0)
         {
             glDeleteFramebuffers(1,&mFBO);
             mFBO = 0;
@@ -63,7 +64,7 @@ namespace octronic::dream::tool
         {
             LOG_DEBUG("GLPreviewWindowComponent: Clearing existing FBO");
             glDeleteFramebuffers(1,&mFBO);
-        	GLCheckError();
+            GLCheckError();
             mFBO = 0;
         }
 
@@ -81,7 +82,7 @@ namespace octronic::dream::tool
         {
             LOG_DEBUG("GLPreviewWindowComponent: Clearing existing Texture");
             glDeleteTextures(1,&mTexture);
-        	GLCheckError();
+            GLCheckError();
             mTexture = 0;
         }
 
@@ -92,7 +93,7 @@ namespace octronic::dream::tool
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0);
         GLCheckError();
 
         // Create Depth Buffer =================================================
@@ -102,7 +103,7 @@ namespace octronic::dream::tool
             LOG_DEBUG("GLPreviewWindowComponent: Clearing existing Depth Buffer");
             glDeleteRenderbuffers(1,&mDepthBuffer);
             mDepthBuffer = 0;
-        	GLCheckError();
+            GLCheckError();
         }
 
         LOG_DEBUG("GLPreviewWindowComponent: Generating new Depth Buffer");
@@ -122,7 +123,7 @@ namespace octronic::dream::tool
             GLuint fb_error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
             LOG_ERROR("GLPreviewWindowComponent: Unable to create window framebuffer, error = {}",
                       GLGetFrameBufferError(fb_error));
-        	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+            assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -161,13 +162,55 @@ namespace octronic::dream::tool
 
         if (mWidth != mLastWidth || mHeight != mLastHeight)
         {
-        	LOG_DEBUG("GLPreviewWindowComponent: Got content area {}x{} -> {}x{}", mLastWidth, mLastHeight, mWidth, mHeight);
+            LOG_DEBUG("GLPreviewWindowComponent: Got content area {}x{} -> {}x{}", mLastWidth, mLastHeight, mWidth, mHeight);
             init();
             setWindowSizeChangedFlag(true);
         }
 
         ImGuiIO& io = ImGui::GetIO();
-        ImGui::Image((void*)(intptr_t)mTexture,ImVec2(mWidth,mHeight),UV1, UV2);
+        Project* project = mContext->getProject();
+        if (project)
+        {
+            ProjectRuntime* pRunt = project->getRuntime();
+            if (pRunt)
+            {
+                SceneRuntime* asRunt = pRunt->getActiveSceneRuntime();
+                if (asRunt)
+                {
+                    ImGui::Image((void*)(intptr_t)mTexture,ImVec2(mWidth,mHeight),UV1, UV2);
+                }
+                else
+                {
+                    string nas = "No Active Scene";
+                    const char* nas_c = nas.c_str();
+                    ImVec2 str_sz = ImGui::CalcTextSize(nas_c);
+                    ImGui::SetCursorPos(ImVec2(
+                    	(mWidth  / 2.f) - (str_sz.x /2.f),
+                    	(mHeight / 2.f) - (str_sz.y /2.f)));
+                    ImGui::Text("%s",nas_c);
+                }
+            }
+            else
+            {
+                string npr = "No Project Runtime Loaded";
+				const char* npr_c = npr.c_str();
+				ImVec2 str_sz = ImGui::CalcTextSize(npr_c);
+				ImGui::SetCursorPos(ImVec2(
+					(mWidth  / 2.f) - (str_sz.x /2.f),
+					(mHeight / 2.f) - (str_sz.y /2.f)));
+				ImGui::Text("%s",npr_c);
+            }
+        }
+        else
+        {
+            string npl = "No Project Loaded";
+			const char* npl_c = npl.c_str();
+			ImVec2 str_sz = ImGui::CalcTextSize(npl_c);
+			ImGui::SetCursorPos(ImVec2(
+				(mWidth  / 2.f) - (str_sz.x /2.f),
+				(mHeight / 2.f) - (str_sz.y /2.f)));
+			ImGui::Text("%s",npl_c);
+	}
 
         ImGui::End();
         ImGui::PopStyleVar();
@@ -175,7 +218,7 @@ namespace octronic::dream::tool
 
     void GLPreviewWindowComponent::getCurrentDimensions()
     {
-		// This is done in draw()
+        // This is done in draw()
         LOG_DEBUG("GLPreviewWindowComponent: {}", __FUNCTION__);
     }
 

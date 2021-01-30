@@ -24,7 +24,7 @@ namespace octronic::dream
     public:
        PhysicsObjectDefinition* parent;
        Transform transform;
-       uint32_t uuid;
+       UuidType uuid;
 
        const json getJson()
        {
@@ -94,8 +94,8 @@ namespace octronic::dream
         float getFriction();
         void  setFriction(float r);
 
-        uint32_t getCollisionModel();
-        void setCollisionModel(uint32_t);
+        UuidType getCollisionModel();
+        void setCollisionModel(UuidType);
 
         Vector3 getLinearFactor();
         void setLinearFactor(const Vector3& lf);

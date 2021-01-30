@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DreamCore.h>
+#include <OpenALAudioComponent.h>
 
 #include "InputTarget.h"
 #include "DreamToolWindow.h"
@@ -36,6 +37,7 @@
 using octronic::dream::ProjectRuntime;
 using octronic::dream::SceneRuntime;
 using octronic::dream::StorageManager;
+using octronic::dream::open_al::OpenALAudioComponent;
 
 namespace octronic::dream::tool
 {
@@ -125,6 +127,7 @@ namespace octronic::dream::tool
         ModelDefinitionBatchImporter mModelDefinitionBatchImporter;
         ProjectDirectory mProjectDirectory;
         StorageManager mStorageManager;
+        OpenALAudioComponent mAudioComponent;
 
         int mCommandArgumentsCount;
         char** mCommandArgumentsVector;

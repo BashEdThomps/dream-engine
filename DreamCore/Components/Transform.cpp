@@ -25,10 +25,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-using namespace glm;
-using std::cout;
-using std::endl;
-
 namespace octronic::dream
 {
 

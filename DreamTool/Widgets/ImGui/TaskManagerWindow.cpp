@@ -38,7 +38,7 @@ namespace octronic::dream::tool
                     ImGui::Text("Worker Thread %d (%3lu Tasks)", t->getThreadId(),debugQueue.size());
                     for (Task* task : debugQueue)
                     {
-                        ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
+                        ImGui::Text("[%.3d]%s Deferred: %.3d",task->getTaskId(), task->getTaskName().c_str(), task->getDeferralCount());
                     }
                     ImGui::NextColumn();
                 }
@@ -49,7 +49,7 @@ namespace octronic::dream::tool
                 auto gfxTaskQueue = gfxComponent->getDebugTaskQueue();
                 for (GraphicsComponentTask* task : gfxTaskQueue)
                 {
-                    ImGui::Text("[%.3d/%.3d]",task->getTaskId(), task->getDeferralCount());
+                    ImGui::Text("[%.3d]%s Deferred: %.3d",task->getTaskId(), task->getTaskName().c_str(), task->getDeferralCount());
                 }
             }
             else

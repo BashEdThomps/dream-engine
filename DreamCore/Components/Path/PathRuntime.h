@@ -22,8 +22,8 @@
 #include "PathTasks.h"
 #include "Components/DiscreteAssetRuntime.h"
 
-using namespace tinyspline;
-using namespace std;
+using std::vector;
+using std::pair;
 
 namespace octronic::dream
 {

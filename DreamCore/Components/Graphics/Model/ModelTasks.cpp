@@ -6,14 +6,14 @@
 namespace octronic::dream
 {
     ModelInitMeshTask::ModelInitMeshTask(ModelMesh* mesh)
-        : GraphicsComponentTask(),
+        : GraphicsComponentTask("ModelMeshInitTask"),
           mMesh(mesh)
     {
     }
 
     void ModelInitMeshTask::execute()
     {
-        LOG_CRITICAL("ModelTasks: Executing on thread {}",mThreadId);
+        LOG_TRACE("ModelInitMeshTask: for mesh: {}, Executing on Graphics thread",mMesh->getName());
         GLuint vao, vbo, ibo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -53,7 +53,8 @@ namespace octronic::dream
         mMesh->clearIndices();
     }
 
-    ModelFreeMeshTask::ModelFreeMeshTask() : GraphicsComponentDestructionTask ()
+    ModelFreeMeshTask::ModelFreeMeshTask() :
+        GraphicsComponentDestructionTask ("ModelMeshFreeTask")
     {
     }
 
@@ -66,7 +67,7 @@ namespace octronic::dream
 
     void ModelFreeMeshTask::execute()
     {
-        LOG_CRITICAL("ModelTasks: Executing on thread {}",mThreadId);
+        LOG_TRACE("ModelTasks: Executing on thread {}",mThreadId);
 
         if (mVAO > 0)
         {

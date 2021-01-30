@@ -1,5 +1,4 @@
 #version 330 core
-
 // Draw - NonTextured
 
 layout (location = 0) out vec3 gPosition;

@@ -12,14 +12,17 @@
 
 #pragma once
 
+extern "C"
+{
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
+}
+
 #include "ScriptRuntime.h"
 #include "ScriptCache.h"
 #include "Components/Component.h"
-#include "Components/Storage/ProjectDirectory.h"
 
-class asScriptModule;
-class asIScriptContext;
-class asIScriptEngine;
 
 namespace octronic::dream
 {
@@ -27,7 +30,6 @@ namespace octronic::dream
     class EntityRuntime;
     class Event;
     class ScriptCache;
-
 
     class ScriptPrintListener
     {
@@ -38,34 +40,29 @@ namespace octronic::dream
 
     class ScriptComponent : public Component
     {
-        static void whyYouFail(int r, int line);
     public:
 
         static vector<ScriptPrintListener*> PrintListeners;
         static void AddPrintListener(ScriptPrintListener* listener);
-        static asIScriptEngine* Engine;
-        static vector<asIScriptContext*> ContextPool;
+        static lua_State* State;
+
         ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
        ~ScriptComponent() override;
 
         bool init() override;
-        static asIScriptContext* RequestContextCallback(asIScriptEngine *engine, void *param);
-        static void ReturnContextToPool(asIScriptEngine *engine, asIScriptContext *ctx, void *param);
 
     private:
+        const static string COMPONENTS_TBL;
         ScriptCache* mScriptCache;
 
         // API Exposure Methods ======================================================
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
-        void exposeClasses();
-        void exposeAssetDefinition();
         void exposeAnimationRuntime();
         void exposePathRuntime();
         void exposeModelRuntime();
         void exposeCamera();
         void exposeProjectRuntime();
-        void exposeProject();
         void exposeProjectDirectory();
         void exposeEvent();
         void exposeWindowComponent();
@@ -84,5 +81,6 @@ namespace octronic::dream
         void exposeTransform();
         void exposeGLM();
         void exposeDefinition();
+        void exposeOctronicMath();
     };
 }

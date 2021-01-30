@@ -395,14 +395,14 @@ namespace octronic::dream
     }
 
     void
-    PhysicsObjectRuntime::setCenterOfMassTransform
+    PhysicsObjectRuntime::setCenterOfMassTransformTx
     (const Transform& tx)
     {
        mRigidBody->setCenterOfMassTransform(tx.getBtTransform());
     }
 
     void
-    PhysicsObjectRuntime::setCenterOfMassTransform
+    PhysicsObjectRuntime::setCenterOfMassTransformMat4
     (mat4 tx)
     {
         btTransform transform;
@@ -411,7 +411,7 @@ namespace octronic::dream
     }
 
     void
-    PhysicsObjectRuntime::setCenterOfMassTransform
+    PhysicsObjectRuntime::setCenterOfMassTransform3f
     (float x, float y, float z)
     {
         btTransform transform;
@@ -422,10 +422,10 @@ namespace octronic::dream
 
 
     void
-    PhysicsObjectRuntime::setCenterOfMassTransform
+    PhysicsObjectRuntime::setCenterOfMassTransform3fv
     (const Vector3& tx)
     {
-        cout << "POR: Setting COM " << tx.x() << "," << tx.y() << "," << tx.z() << endl;
+        LOG_DEBUG("PhysicsObjectRuntime: Setting Center of mass {},{},{}", tx.x(), tx.y(), tx.z());
         auto mtx = mRigidBody->getCenterOfMassTransform();
         mtx.setOrigin(tx.toBullet());
         mRigidBody->setCenterOfMassTransform(mtx);
@@ -454,7 +454,7 @@ namespace octronic::dream
 
     PhysicsObjectDefinition*
     PhysicsObjectRuntime::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         // TODO why from def?
         auto proj = static_cast<AssetDefinition*>(mDefinition)->getProject();

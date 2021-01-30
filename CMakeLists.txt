@@ -22,6 +22,7 @@ endif()
 
 set(DREAM_BUILD_CORE ON)
 set(DREAM_BUILD_GLFW ON)
+set(DREAM_BUILD_OPENAL ON)
 set(DREAM_BUILD_TOOL ON)
 set(DREAM_BUILD_DOC  OFF)
 
@@ -60,6 +61,10 @@ include (Dependencies/Dependencies.txt)
 # DreamCore Library
 if (DREAM_BUILD_CORE)
     add_subdirectory (DreamCore)
+endif()
+
+if (DREAM_BUILD_OPENAL)
+	add_subdirectory(DreamOpenAL)
 endif()
 
 # DreamGLFW Executable

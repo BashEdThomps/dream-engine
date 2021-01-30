@@ -44,6 +44,7 @@ namespace octronic::dream
           mDefinition(nullptr),
           mRuntime(nullptr),
           mWindowComponent(nullptr),
+          mAudioComponent(nullptr),
           mStorageManager(fm)
     {
         LOG_TRACE("Project: Constructing");
@@ -72,7 +73,7 @@ namespace octronic::dream
     ()
     {
         LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
-        mRuntime = new ProjectRuntime(this, mWindowComponent,mStorageManager);
+        mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
         mRuntime->lock();
         if (!mRuntime->useDefinition())
         {
@@ -129,7 +130,7 @@ namespace octronic::dream
 
     AssetDefinition*
     Project::getAssetDefinitionByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     const
     {
         if (mDefinition != nullptr)
@@ -152,6 +153,11 @@ namespace octronic::dream
     {
         mWindowComponent = windowComponent;
     }
+
+    void Project::setAudioComponent(AudioComponent* audioComponent)
+	{
+        mAudioComponent = audioComponent;
+	}
 
     ProjectDirectory*
     Project::getDirectory

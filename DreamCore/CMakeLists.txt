@@ -59,12 +59,13 @@ add_library(
 	Components/Script/ScriptDefinition.cpp
 
 	Components/Audio/AudioComponent.cpp
-	Components/Audio/Ogg/OggAudioRuntime.cpp
-	Components/Audio/Wav/WavAudioRuntime.cpp
-	Components/Audio/AudioRuntime.cpp
-	Components/Audio/AudioDefinition.cpp
 	Components/Audio/AudioCache.cpp
+	Components/Audio/AudioDefinition.cpp
 	Components/Audio/AudioTasks.cpp
+	Components/Audio/AudioRuntime.cpp
+	Components/Audio/AudioLoader.cpp
+	Components/Audio/OggLoader.cpp
+	Components/Audio/WavLoader.cpp
 
 	Components/Window/WindowComponent.cpp
 
@@ -78,25 +79,33 @@ add_library(
 	Components/Graphics/Camera.cpp
 	Components/Graphics/Frustum.cpp
 	Components/Graphics/GraphicsComponent.cpp
+
 	Components/Graphics/Model/ModelAnimation.cpp
 	Components/Graphics/Model/ModelRuntime.cpp
 	Components/Graphics/Model/ModelCache.cpp
 	Components/Graphics/Model/ModelTasks.cpp
 	Components/Graphics/Model/ModelDefinition.cpp
 	Components/Graphics/Model/ModelMesh.cpp
+
 	Components/Graphics/Texture/TextureRuntime.cpp
 	Components/Graphics/Texture/TextureTasks.cpp
 	Components/Graphics/Texture/TextureCache.cpp
 	Components/Graphics/Texture/TextureDefinition.cpp
+
 	Components/Graphics/Shader/ShaderTasks.cpp
 	Components/Graphics/Shader/ShaderCache.cpp
 	Components/Graphics/Shader/ShaderDefinition.cpp
 	Components/Graphics/Shader/ShaderRuntime.cpp
 	Components/Graphics/Shader/ShaderUniform.cpp
+
 	Components/Graphics/Light/LightRuntime.cpp
 	Components/Graphics/Light/LightDefinition.cpp
+
 	Components/Graphics/Font/FontDefinition.cpp
 	Components/Graphics/Font/FontRuntime.cpp
+	Components/Graphics/Font/FontCache.cpp
+	Components/Graphics/Font/FontTasks.cpp
+
 	Components/Graphics/Material/MaterialCache.cpp
 	Components/Graphics/Material/MaterialRuntime.cpp
 	Components/Graphics/Material/MaterialDefinition.cpp
@@ -116,7 +125,23 @@ IF (WIN32)
         DreamCore
     )
 ELSEIF(ANDROID)
-    #Soon
+	target_link_libraries(
+		${PROJECT_NAME}
+		android
+		EGL
+		GLESv3
+		assimp
+		BulletCollision
+		BulletDynamics
+		freetype
+		LinearMath
+		lua
+		ogg
+		spdlog
+		tinyspline
+		vorbis
+		vorbisfile
+	)
 ELSEIF (UNIX AND NOT APPLE) # Linux
     target_link_libraries(
          DreamCore
@@ -128,18 +153,18 @@ ELSEIF(APPLE)
         DreamCore
         -lpthread
         -ldl
-		angelscript
 		assimp
 		BulletCollision
 		BulletDynamics
+		freetype
 		glad
+		lua
 		LinearMath
 		ogg
 		spdlog
 		tinyspline
 		vorbis
 		vorbisfile
-		"-framework OpenAL"
         "-framework CoreFoundation"
     )
 ENDIF()

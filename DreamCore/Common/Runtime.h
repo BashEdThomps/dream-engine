@@ -39,7 +39,7 @@ namespace octronic::dream
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
-        uint32_t mUuid;
+        UuidType mUuid;
         /**
          * @brief Name of this Runtime, given by it's Definition.
          */
@@ -70,7 +70,7 @@ namespace octronic::dream
          * @return The Runtime's UUID - Same as it's Definition, unless specified
          * to be random, mDefinition was null.
          */
-        inline uint32_t
+        inline UuidType
         getUuid
         ()
         const
@@ -91,14 +91,14 @@ namespace octronic::dream
 
         inline void
         setUuid
-        (uint32_t uuid)
+        (UuidType uuid)
         {
             mUuid = uuid;
         }
 
         inline bool
         hasUuid
-        (uint32_t uuid)
+        (UuidType uuid)
         const
         {
             return mUuid == uuid;

@@ -121,7 +121,7 @@ namespace octronic::dream
 
     EntityDefinition*
     SceneDefinition::getTemplateByUuid
-    (uint32_t uuid)
+    (UuidType uuid)
     {
         for (EntityDefinition* next : mTemplates)
         {
@@ -289,7 +289,7 @@ namespace octronic::dream
     {
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
-        rootDefJson[Constants::UUID] = UuidTools::generateUuid();
+        rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
         mRootEntityDefinition = new EntityDefinition
@@ -419,7 +419,7 @@ namespace octronic::dream
        return  mJson[Constants::SCENE_CAMERA_YAW];
     }
 
-    uint32_t
+    UuidType
     SceneDefinition::getCameraFocusedOn
     ()
     {
@@ -433,12 +433,12 @@ namespace octronic::dream
 
     void
     SceneDefinition::setCameraFocusedOn
-    (uint32_t focusedOn)
+    (UuidType focusedOn)
     {
         mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
     }
 
-    uint32_t
+    UuidType
     SceneDefinition::getLightingPassShader
     ()
     {
@@ -452,12 +452,12 @@ namespace octronic::dream
 
     void
     SceneDefinition::setLightingPassShader
-    (uint32_t shader)
+    (UuidType shader)
     {
        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
     }
 
-    uint32_t
+    UuidType
     SceneDefinition::getShadowPassShader
     ()
     {
@@ -471,12 +471,31 @@ namespace octronic::dream
 
     void
     SceneDefinition::setShadowPassShader
-    (uint32_t shader)
+    (UuidType shader)
     {
        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
 
-    uint32_t
+    UuidType
+    SceneDefinition::getFontShader
+    ()
+    {
+       if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
+       {
+           mJson[Constants::SCENE_FONT_SHADER] = 0;
+       }
+       return  mJson[Constants::SCENE_FONT_SHADER];
+
+    }
+
+    void
+    SceneDefinition::setFontShader
+    (UuidType shader)
+    {
+       mJson[Constants::SCENE_FONT_SHADER] = shader;
+    }
+
+    UuidType
     SceneDefinition::getInputScript
     ()
     {
@@ -490,19 +509,19 @@ namespace octronic::dream
 
     void
     SceneDefinition::setInputScript
-    (uint32_t shader)
+    (UuidType shader)
     {
        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
     }
 
     void
     SceneDefinition::setPlayerObject
-    (uint32_t po)
+    (UuidType po)
     {
         mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
     }
 
-    uint32_t SceneDefinition::getPlayerObject()
+    UuidType SceneDefinition::getPlayerObject()
     {
         if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
         {

@@ -111,7 +111,7 @@ namespace octronic::dream
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
 
-        void setFocusedSceneObejct(EntityRuntime*);
+        void setFocusedEntity(EntityRuntime*);
         EntityRuntime* getFocusedEntity() const;
 
         float getFocusPitch() const;

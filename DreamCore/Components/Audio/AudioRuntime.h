@@ -17,86 +17,59 @@
 
 #include "AudioStatus.h"
 #include "AudioTasks.h"
+#include "AudioLoader.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
-#include "Common/ALHeader.h"
 
-#include <vector>
 #include <deque>
 
 using std::deque;
-using std::vector;
+using glm::vec3;
 
 
 namespace octronic::dream
 {
     class AudioDefinition;
     class AudioComponent;
+
     /**
      * @brief AudioRuntime data for an OpenAL based Audio Clip.
      */
     class AudioRuntime : public SharedAssetRuntime
     {
-    protected:
-        bool mLooping;
-        ALenum mFormat;
-        ALsizei mFrequency;
-        vector<char> mAudioDataBuffer;
-        ALuint mSource;
-        ALuint mBuffer;
-        long long mStartTime;
-        int mLastSampleOffset;
-        int mChannels;
-        deque<Event> mMarkerEvents;
-        deque<Event> mMarkerEventsCache;
-        ALint mDurationInSamples;
-
-        void generateEventList();
-        ALuint generateSource();
-        ALuint generateBuffer();
-        bool loadIntoAL();
-        AudioMarkersUpdateTask mMarkersUpdateTask;
-
     public:
 
-        AudioRuntime(AudioDefinition* def, ProjectRuntime* project);
-        ~AudioRuntime() override;
+        AudioRuntime(AudioLoader* loader, AudioDefinition* def, ProjectRuntime* project);
+        virtual ~AudioRuntime() override;
 
-        void setLooping(bool);
         bool isLooping() const ;
-
-        vector<ALchar> getAudioDataBuffer()const ;
-
-        ALsizei getFrequency()const ;
-        ALenum  getFormat()const ;
-
-        void setBuffer(ALuint buffer);
-        ALuint getBuffer()const ;
-
-        void setSource(ALuint source);
-        ALuint getSource() const;
-
-        void play();
-        void pause();
-        void stop();
-
-        void setSourcePosision(glm::vec3 pos);
         long long getStartTime() const;
         void setStartTime(long long startTime);
-
-        void setVolume(float volume);
-
-        int getChannels() const;
-
         void updateMarkers();
-        AudioStatus getState();
-
-        ALint getSampleOffset() const;
-        void setSampleOffset(ALint offset);
-
-        vector<char> getAudioBuffer(size_t offset, size_t length) const;
-        int getDurationInSamples();
-
         AudioMarkersUpdateTask* getMarkersUpdateTask();
+        AudioLoader* getAudioLoader() const;
+
+        virtual void play() = 0;
+        virtual void pause() = 0;
+        virtual void stop() = 0;
+        virtual void setLooping(bool);
+        virtual void setSourcePosision(vec3 pos) =0;
+        virtual void setVolume(float volume) = 0;
+        virtual AudioStatus getState() = 0;
+        virtual unsigned int getSampleOffset() const = 0;
+        virtual void setSampleOffset(unsigned int offset) = 0;
+        virtual int getDurationInSamples() = 0;
+
+    protected:
+        void generateEventList();
+
+    protected:
+        bool mLooping;
+        long long mStartTime;
+        int mLastSampleOffset;
+        deque<Event> mMarkerEvents;
+        deque<Event> mMarkerEventsCache;
+        AudioMarkersUpdateTask mMarkersUpdateTask;
+        AudioLoader* mLoader;
     };
 }

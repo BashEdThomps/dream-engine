@@ -66,6 +66,11 @@
 			  LOG_ERROR("GLHeader: OpenGL Error Check {}:{} ", file, line);
 			  switch (errorCode)
 			  {
+#if defined (GL_ES_VERSION_3_0)
+			  	case GL_INVALID_FRAMEBUFFER_OPERATION:
+			  		LOG_ERROR("\tGL_INVALID_FRAMEBUFFER_OPERATION");
+			  		break;
+#endif
 				  case GL_NO_ERROR:
 					  LOG_ERROR("\tGL_NO_ERROR");
 					  break;
@@ -110,10 +115,12 @@
                 return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
 			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
                 return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+#ifndef __ANDROID__
 			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 return "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
 			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
                 return "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
+#endif
 			case GL_FRAMEBUFFER_UNSUPPORTED:
                 return "GL_FRAMEBUFFER_UNSUPPORTED";
 			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:

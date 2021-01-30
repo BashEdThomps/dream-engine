@@ -31,8 +31,7 @@ namespace octronic::dream
      */
     class TaskManager
     {
-        vector<TaskThread*> mThreadVector;
-        atomic<size_t> mNextThread;
+
     public:
          TaskManager();
          ~TaskManager();
@@ -43,5 +42,10 @@ namespace octronic::dream
          void clearFences();
          void waitForFence();
          vector<TaskThread*> getThreadVector() const;
+
+    protected:
+         vector<TaskThread*> mThreadVector;
+         atomic<size_t> mNextThread;
+         unsigned int mHardwareThreadCount;
     };
 }
