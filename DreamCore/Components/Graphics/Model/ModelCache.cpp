@@ -21,11 +21,13 @@
 #include "ModelDefinition.h"
 #include "Project/ProjectRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     ModelCache::ModelCache
     (ProjectRuntime* rt, ShaderCache* shaderCache, MaterialCache* matCache)
-        : Cache(rt),
+        : Cache("ModelCache",rt),
           mShaderCache(shaderCache),
           mMaterialCache(matCache)
     {
@@ -42,6 +44,8 @@ namespace octronic::dream
     ModelCache::loadRuntime
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ModelCache: Loading {} from disk",  def->getUuid());
         auto model = new ModelRuntime(mShaderCache, mMaterialCache, def, mProjectRuntime);
         if (model->useDefinition())

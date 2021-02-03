@@ -15,13 +15,14 @@
 
 #pragma once
 
+#include "Common/LockableObject.h"
 #include <string>
 
 using std::string;
 
 namespace octronic::dream
 {
-    class File
+    class File : public LockableObject
     {
 		friend class StorageManager;
 

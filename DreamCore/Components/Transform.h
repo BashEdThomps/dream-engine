@@ -87,12 +87,12 @@ namespace octronic::dream
         /**
          * @brief Get the matrix as a bullet transform object
          */
-        btTransform getBtTransform() const;
+        btTransform getBtTransform();
 
         /**
          * @brief Get the matrix as a glm matrix object.
          */
-        mat4 getMatrix() const;
+        mat4 getMatrix();
 
         /**
          * @brief Set the internal matrix object from a glm matrix.
@@ -109,7 +109,7 @@ namespace octronic::dream
          * @brief Decompose the matrix into it's constituent parts.
          * @see MatrixDecomposition
          */
-        MatrixDecomposition decomposeMatrix(bool conjugate = false) const;
+        MatrixDecomposition decomposeMatrix(bool conjugate = false);
 
         /**
          * @brief Regenerate the matrix from it's constituent parts.
@@ -142,7 +142,7 @@ namespace octronic::dream
          * @brief Get the JSON serialised representation of this object's
          * matrix.
          */
-        json getJson() const;
+        json getJson();
 
         /**
          * @brief Populate the underlying matrix values from those given in the
@@ -155,6 +155,6 @@ namespace octronic::dream
          * @param other Other transform
          * @return Distance between this and other Transform
          */
-        float distanceFrom(const Transform& other) const;
+        float distanceFrom(const Transform& other);
     };
 }

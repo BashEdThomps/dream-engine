@@ -25,24 +25,32 @@
 #include "Components/Storage/StorageManager.h"
 #include "Project/ProjectRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
 
     FontCache::FontCache(ProjectRuntime* pr)
-        : Cache(pr),
+        : Cache("FontCache",pr),
           mFreeTypeLibrary(nullptr)
 
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         initFreetypeLibrary();
     }
 
     FontCache::~FontCache()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         FT_Done_FreeType(mFreeTypeLibrary);
     }
 
     bool FontCache::initFreetypeLibrary()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("FontCache: {}",__FUNCTION__);
         FT_Error ft_error = FT_Init_FreeType(&mFreeTypeLibrary);
         if( ft_error )
@@ -55,6 +63,8 @@ namespace octronic::dream
 
     SharedAssetRuntime* FontCache::loadRuntime(AssetDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // Check Definition
         if (definition == nullptr)
         {

@@ -30,11 +30,11 @@ namespace octronic::dream
          * @param def Definition from which to create Runtime.
          * @param runtime Owner of this AssetRuntime.
          */
-        DiscreteAssetRuntime(AssetDefinition* def, EntityRuntime* runtime);
+        DiscreteAssetRuntime(const string& className, AssetDefinition* def, EntityRuntime* runtime);
         ~DiscreteAssetRuntime() override;
 
         EntityRuntime* getEntityRuntime();
-        string getAssetFilePath(string fmt = "") override;
+        string getAssetFilePath(const string& fmt = "") override;
         string getAssetDirectoryPath() override;
 
     protected:

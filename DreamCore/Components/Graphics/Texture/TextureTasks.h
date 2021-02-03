@@ -18,7 +18,7 @@ namespace octronic::dream
 
     class TextureDestructionTask : public GraphicsComponentDestructionTask
     {
-        GLuint mTextureId;
+        GLuint mTextureID;
     public:
         TextureDestructionTask();
         void setGLID(GLuint id);

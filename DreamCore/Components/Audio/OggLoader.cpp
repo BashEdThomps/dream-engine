@@ -26,6 +26,7 @@
 #include <vorbis/vorbisfile.h>
 
 using octronic::dream::File;
+using std::unique_lock;
 
 static size_t seekIndex = 0;
 
@@ -45,8 +46,8 @@ size_t octronic_dream_oggloader_read
     {
         capped_count = elementCount;
     }
-    LOG_DEBUG("OggLoader: Accessing index[{}/{}] Requesting {} elements (capped to {})",
-              seekIndex, f->getBinaryDataSize(), elementCount,capped_count);
+    //LOG_TRACE("OggLoader: Accessing index[{}/{}] Requesting {} elements (capped to {})",
+    //          seekIndex, f->getBinaryDataSize(), elementCount,capped_count);
     uint8_t* data = f->getBinaryData();
     memcpy(buffer,&data[seekIndex], capped_count);
     seekIndex += capped_count;
@@ -72,6 +73,8 @@ namespace octronic::dream
     OggLoader::loadIntoBuffer
     (AudioDefinition* audioDefinition, ProjectRuntime* projectRuntime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("OggLoader: {}",__FUNCTION__);
 
         Project* project = projectRuntime->getProject();

@@ -31,12 +31,14 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
 
     PathRuntime::PathRuntime
     (PathDefinition* definition, EntityRuntime* runtime)
-        : DiscreteAssetRuntime(definition,runtime),
+        : DiscreteAssetRuntime("PathRuntime",definition,runtime),
           mWrapPath(false),
           mCurrentIndex(0),
           mUStep(0.05),
@@ -45,12 +47,16 @@ namespace octronic::dream
           mDistanceToTravel(0.0f),
           mUpdateTask(this)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("PathRuntime: Constructing Object");
     }
 
     PathRuntime::~PathRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("PathRuntime: Destroying Object");
     }
 
@@ -58,6 +64,8 @@ namespace octronic::dream
     PathRuntime::update
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto transform = stepPath();
         mEntityRuntime->getTransform().setMatrix(transform);
     }
@@ -66,6 +74,8 @@ namespace octronic::dream
     PathRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto animDef = static_cast<PathDefinition*>(mDefinition);
         LOG_DEBUG(
             "PathRuntime: Loading {} spline with {} control points for {} ",
@@ -104,6 +114,8 @@ namespace octronic::dream
     PathRuntime::generate
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto animDef = static_cast<PathDefinition*>(mDefinition);
         auto splineType = animDef->getSplineTypeEnum();
 
@@ -223,6 +235,8 @@ namespace octronic::dream
     PathRuntime::setWrapPath
     (bool wrapPath)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mWrapPath = wrapPath;
     }
 
@@ -237,6 +251,8 @@ namespace octronic::dream
     PathRuntime::setCurrentIndex
     (size_t currentIndex)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCurrentIndex = currentIndex;
     }
 
@@ -244,6 +260,8 @@ namespace octronic::dream
     PathRuntime::stepPath
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mSplinePoints.empty())
         {
             return mat4(1.0f);
@@ -286,6 +304,8 @@ namespace octronic::dream
 
     void PathRuntime::nextPoint()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCurrentIndex++;
         if (mCurrentIndex >= mSplinePoints.size())
         {
@@ -300,6 +320,8 @@ namespace octronic::dream
     PathRuntime::setToCurrentPoint
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
         quat thisOrient = mSplineTangents.at(mCurrentIndex);
         mat4 mat(1.0f);
@@ -350,6 +372,8 @@ namespace octronic::dream
     PathRuntime::setUStep
     (double uStep)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mUStep = uStep;
     }
 
@@ -357,6 +381,8 @@ namespace octronic::dream
     PathRuntime::getHeading
     (vec3 point, vec3 t1, vec3 t2)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mat4 mtx = lookAt(t1,t2,vec3(0,1,0));
         quat q = quat(mtx);
         q.x = -q.x;
@@ -368,6 +394,8 @@ namespace octronic::dream
 
     PathUpdateTask* PathRuntime::getUpdateTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return &mUpdateTask;
     }
 

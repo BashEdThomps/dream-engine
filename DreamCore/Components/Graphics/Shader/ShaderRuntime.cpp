@@ -42,12 +42,13 @@ using glm::ivec4;
 using glm::uvec2;
 using glm::uvec3;
 using glm::uvec4;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     ShaderRuntime::ShaderRuntime
     (ShaderDefinition* definition, ProjectRuntime* rt)
-        : SharedAssetRuntime(definition,rt),
+        : SharedAssetRuntime("ShaderRuntime",definition,rt),
           mPointLightCount(0),
           mPointLightCountLocation(UNIFORM_NOT_FOUND),
           mSpotLightCount(0),
@@ -67,6 +68,8 @@ namespace octronic::dream
           mLinkTask(this),
           mFreeTask(nullptr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "ShaderRuntime: Constructing Object" );
         mRuntimeMatricies.reserve(MAX_RUNTIMES);
     }
@@ -74,11 +77,11 @@ namespace octronic::dream
     ShaderRuntime::~ShaderRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         deleteUniforms();
         LOG_TRACE( "ShaderRuntime: Destroying Object" );
         mFreeTask = make_shared<ShaderFreeTask>();
-        mFreeTask->clearState();
-        mFreeTask->setState(TaskState::TASK_STATE_QUEUED);
         mFreeTask->setShaderProgram(mShaderProgram);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mFreeTask);
     }
@@ -95,6 +98,8 @@ namespace octronic::dream
     ShaderRuntime::setShaderProgram
     (GLuint sp)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mShaderProgram = sp;
     }
 
@@ -102,6 +107,8 @@ namespace octronic::dream
     ShaderRuntime::countMaterials
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        return static_cast<int>(mMaterials.size());
     }
 
@@ -109,6 +116,8 @@ namespace octronic::dream
     ShaderRuntime::setModelMatrix
     (const mat4& value, const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLint location = getUniformLocation(name);
 
         if (location == UNIFORM_NOT_FOUND)
@@ -126,6 +135,8 @@ namespace octronic::dream
     ShaderRuntime::setViewMatrix
     (const mat4& value, const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLint location = getUniformLocation(name);
 
         if (location == UNIFORM_NOT_FOUND)
@@ -141,6 +152,8 @@ namespace octronic::dream
     ShaderRuntime::setProjectionMatrix
     (const mat4& value, const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLint location = getUniformLocation(name);
 
         if (location == UNIFORM_NOT_FOUND)
@@ -157,6 +170,8 @@ namespace octronic::dream
     ShaderRuntime::setViewerPosition
     (const Vector3& value, const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLint uCamPos = getUniformLocation(name);
 
         if (uCamPos == UNIFORM_NOT_FOUND)
@@ -173,7 +188,10 @@ namespace octronic::dream
     ShaderRuntime::useDefinition
     ()
     {
-        if (!compileVertex() || !compileFragment()) return false;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        if (!compileVertex()) return false;
+        if (!compileFragment()) return false;
         if (!linkProgram()) return false;
         return true;
     }
@@ -182,6 +200,8 @@ namespace octronic::dream
     ShaderRuntime::compileVertex
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntime->getStorageManager();
 #if defined (GL_ES_VERSION_3_0)
@@ -198,7 +218,6 @@ namespace octronic::dream
 			);
 			// 2. Push a Vertex Compile Task
 			mCompileVertexTask.clearState();
-			mCompileVertexTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileVertexTask);
             fm->closeFile(vertexReader);
             vertexReader = nullptr;
@@ -214,6 +233,8 @@ namespace octronic::dream
     ShaderRuntime::compileFragment
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntime->getStorageManager();
 #if defined (GL_ES_VERSION_3_0)
@@ -231,7 +252,6 @@ namespace octronic::dream
 
 			// 2. Push a Fragment Compile Task
 			mCompileFragmentTask.clearState();
-			mCompileFragmentTask.setState(TaskState::TASK_STATE_QUEUED);
 			mProjectRuntime->getGraphicsComponent()->pushTask(&mCompileFragmentTask);
             fm->closeFile(fragmentReader);
             fragmentReader = nullptr;
@@ -247,11 +267,13 @@ namespace octronic::dream
    ShaderRuntime::linkProgram
    ()
    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        // Push a shader Link Task
        mLinkTask.clearState();
+
        mLinkTask.dependsOn(&mCompileVertexTask);
        mLinkTask.dependsOn(&mCompileFragmentTask);
-       mLinkTask.setState(TaskState::TASK_STATE_QUEUED);
        mProjectRuntime->getGraphicsComponent()->pushTask(&mLinkTask);
        return true;
    }
@@ -260,6 +282,8 @@ namespace octronic::dream
     ShaderRuntime::use
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mShaderProgram != 0)
         {
             mPointLightCount = 0;
@@ -302,6 +326,8 @@ namespace octronic::dream
     ShaderRuntime::getUniformLocation
     (const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto iter = mUinformCache.find(name);
         if (iter == mUinformCache.end())
         {
@@ -316,6 +342,8 @@ namespace octronic::dream
     ShaderRuntime::addUniform
     (UniformType type, const string& name, int count, void* data)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto uniform : mUniformVector)
         {
             if (uniform->getName() == name)
@@ -335,6 +363,8 @@ namespace octronic::dream
     ShaderRuntime::bindMaterial
     (MaterialRuntime* material)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLuint id;
         if (material == nullptr)
         {
@@ -432,6 +462,8 @@ namespace octronic::dream
     ShaderRuntime::bindLight
     (LightRuntime* light)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ShaderRuntime: Binding light {} ({})",light->getNameAndUuidString(),light->getType());
         DirLight dirData;
         SpotLight spotData;
@@ -494,7 +526,7 @@ namespace octronic::dream
                 break;
 
             case LT_NONE:
-                LOG_ERROR("ShaderRuntime: Cannot bind light with type NONE");
+                LOG_INFO("ShaderRuntime: Cannot bind light with type NONE");
                 break;
         }
     }
@@ -512,6 +544,8 @@ namespace octronic::dream
     ShaderRuntime::syncUniforms
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ShaderRuntime: Synchronising uniforms for {}",getNameAndUuidString());
         GLCheckError();
         GLuint prog = getShaderProgram();
@@ -653,6 +687,8 @@ namespace octronic::dream
     ShaderRuntime::deleteUniforms
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (ShaderUniform* uniform : mUniformVector)
        {
            delete uniform;
@@ -664,6 +700,8 @@ namespace octronic::dream
     ShaderRuntime::bindLightQueue
     (const vector<LightRuntime*>& lightQueue)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto light : lightQueue)
         {
             bindLight(light);
@@ -674,6 +712,8 @@ namespace octronic::dream
     ShaderRuntime::bindRuntimes
     (const vector<EntityRuntime*>& runtimes)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         static mat4 data[100];
         size_t nRuntimes = runtimes.size();
         nRuntimes = (nRuntimes > MAX_RUNTIMES ? MAX_RUNTIMES : nRuntimes);
@@ -696,6 +736,8 @@ namespace octronic::dream
     ShaderRuntime::addMaterial
     (MaterialRuntime* material)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // not in map
         if (find(mMaterials.begin(), mMaterials.end(), material) == mMaterials.end())
         {
@@ -721,6 +763,8 @@ namespace octronic::dream
     ShaderRuntime::logMaterials
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        LOG_DEBUG("ShaderRuntime: Materials for {}",getNameAndUuidString());
        for (auto material : mMaterials)
        {
@@ -733,6 +777,8 @@ namespace octronic::dream
     ShaderRuntime::drawGeometryPass
     (Camera* camera)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (auto material : mMaterials)
        {
            if (material->countMeshes() == 0) continue;
@@ -746,6 +792,8 @@ namespace octronic::dream
     ShaderRuntime::drawShadowPass
     (ShaderRuntime* shadowPassShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (auto material : mMaterials)
        {
            if (material->countMeshes() == 0) continue;
@@ -765,6 +813,8 @@ namespace octronic::dream
     ShaderRuntime::setRecompile
     (bool recompile)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRecompile = recompile;
     }
 
@@ -779,6 +829,8 @@ namespace octronic::dream
     ShaderRuntime::setVertexSource
     (const string& vertexSource)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mVertexSource = vertexSource;
     }
 
@@ -794,6 +846,8 @@ namespace octronic::dream
     ShaderRuntime::setFragmentSource
     (const string& fragmentSource)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mFragmentSource = fragmentSource;
     }
 
@@ -808,6 +862,8 @@ namespace octronic::dream
     ShaderRuntime::setVertexShader
     (const GLuint& vertexShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mVertexShader = vertexShader;
     }
 
@@ -822,6 +878,8 @@ namespace octronic::dream
     ShaderRuntime::setFragmentShader
     (const GLuint& fragmentShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mFragmentShader = fragmentShader;
     }
 
@@ -836,6 +894,8 @@ namespace octronic::dream
     ShaderRuntime::setPointLightCountLocation
     (const GLint& pointLightCountLocation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mPointLightCountLocation = pointLightCountLocation;
     }
 
@@ -850,6 +910,8 @@ namespace octronic::dream
     ShaderRuntime::setSpotLightCountLocation
     (const GLint& spotLightCountLocation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mSpotLightCountLocation = spotLightCountLocation;
     }
 
@@ -864,12 +926,16 @@ namespace octronic::dream
     ShaderRuntime::setDirectionalLightCountLocation
     (const GLint& directionalLightCountLocation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mDirectionalLightCountLocation = directionalLightCountLocation;
     }
 
     void
     ShaderRuntime::setFontPositionUniform(const vec2& pos)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        GLuint location = getUniformLocation("uModel");
        mat4 model(1.f);
        model = glm::translate(model,vec3(pos.x,pos.y,0.f));
@@ -887,6 +953,8 @@ namespace octronic::dream
     void
     ShaderRuntime::setFontColorUniform(const Vector3& color)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        GLuint location = getUniformLocation("uColor");
        vec3 glm_val = color.toGLM();
        if (location == UNIFORM_NOT_FOUND)
@@ -901,6 +969,8 @@ namespace octronic::dream
 
     void ShaderRuntime::setFontProjection(const mat4& proj)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         GLuint location = getUniformLocation("uProjection");
 
        if (location == UNIFORM_NOT_FOUND)
@@ -916,6 +986,9 @@ namespace octronic::dream
 
     bool ShaderRuntime::performFragmentCompilation()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
         GLint success;
         GLchar infoLog[ERROR_BUF_SZ];
         // Fragment Shader
@@ -940,12 +1013,15 @@ namespace octronic::dream
             setFragmentShader(0);
             return false;
         }
+        LOG_TRACE("ShaderRuntime: Fragment compile successful");
         return true;
-
     }
 
 	bool ShaderRuntime::performVertexCompilation()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
         GLint success;
         GLchar infoLog[ERROR_BUF_SZ];
         // Vertex Shader
@@ -971,11 +1047,15 @@ namespace octronic::dream
             setVertexShader(0);
             return false;
         }
+        LOG_TRACE("ShaderRuntime: Vertex compile successful");
         return true;
     }
 
 	bool ShaderRuntime::performLinking()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
         if (getVertexShader() != 0 && getFragmentShader() != 0)
         {
             GLint success;
@@ -1029,6 +1109,7 @@ namespace octronic::dream
                                                  ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT));
             }
         }
+        LOG_TRACE("ShaderRuntime: Linking successful");
         return true;
     }
 

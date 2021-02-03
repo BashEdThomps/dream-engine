@@ -26,7 +26,6 @@ using octronic::dream::AudioDefinition;
 using octronic::dream::AudioComponent;
 using octronic::dream::AudioLoader;
 using octronic::dream::AudioStatus;
-using octronic::dream::AudioMarkersUpdateTask;
 
 namespace octronic::dream::open_al
 {
@@ -60,8 +59,6 @@ namespace octronic::dream::open_al
 
         void setSource(ALuint source);
         ALuint getSource() const;
-
-        AudioMarkersUpdateTask* getMarkersUpdateTask();
 
     protected:
         bool loadIntoAL();

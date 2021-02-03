@@ -39,13 +39,13 @@ namespace octronic::dream
          * @brief Default Constructor
          * @param asset AssetDefinition to construct runtime from
          */
-        AssetRuntime(AssetDefinition* asset);
+        AssetRuntime(const string& className, AssetDefinition* asset);
         virtual ~AssetRuntime();
 
-        virtual string getAssetFilePath(string fmt = "") = 0;
+        virtual string getAssetFilePath(const string& fmt = "") = 0;
         virtual string getAssetDirectoryPath() = 0;
 
-        bool getLoaded() const;
+        bool getLoaded();
         void setLoaded(bool);
 
         void collectGarbage() override;

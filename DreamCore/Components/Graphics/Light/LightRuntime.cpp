@@ -21,13 +21,15 @@
 #include "Common/Logger.h"
 #include "Scene/Entity/EntityRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     LightRuntime::LightRuntime
     (
         LightDefinition* definition,
         EntityRuntime* transform
-    ) : DiscreteAssetRuntime(definition,transform),
+    ) : DiscreteAssetRuntime("LightRuntime",definition,transform),
         mAmbient(0.0f),
         mDiffuse(0.0f),
         mSpecular(0.0f),
@@ -56,6 +58,8 @@ namespace octronic::dream
 
     void LightRuntime::setAmbient(const Vector3& ambient)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mAmbient = ambient;
     }
 
@@ -66,6 +70,8 @@ namespace octronic::dream
 
     void LightRuntime::setDiffuse(const Vector3& diffuse)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mDiffuse = diffuse;
     }
 
@@ -76,6 +82,8 @@ namespace octronic::dream
 
     void LightRuntime::setSpecular(const Vector3& specular)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mSpecular = specular;
     }
 
@@ -86,6 +94,8 @@ namespace octronic::dream
 
     void LightRuntime::setConstant(float constant)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mConstant = constant;
     }
 
@@ -96,6 +106,8 @@ namespace octronic::dream
 
     void LightRuntime::setLinear(float linear)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mLinear = linear;
     }
 
@@ -106,6 +118,8 @@ namespace octronic::dream
 
     void LightRuntime::setQuadratic(float quadratic)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mQuadratic = quadratic;
     }
 
@@ -116,6 +130,8 @@ namespace octronic::dream
 
     void LightRuntime::setCutOff(float cutOff)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCutOff = cutOff;
     }
 
@@ -128,6 +144,8 @@ namespace octronic::dream
     LightRuntime::setOuterCutOff
     (float outerCutOff)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mOuterCutOff = outerCutOff;
     }
 
@@ -142,11 +160,15 @@ namespace octronic::dream
     LightRuntime::setType
     (const LightType& type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mType = type;
     }
 
     void LightRuntime::loadType()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto assetDef = static_cast<AssetDefinition*>(mDefinition);
         if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
         {
@@ -233,6 +255,8 @@ namespace octronic::dream
     LightRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto lightDef = static_cast<LightDefinition*>(mDefinition);
 
         mAmbient = lightDef->getAmbient();

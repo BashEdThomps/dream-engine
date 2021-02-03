@@ -25,20 +25,25 @@
 
 using std::regex;
 using std::cmatch;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     AssetDefinition::AssetDefinition
-    (ProjectDefinition* parent, const json &jsonDef)
-        : Definition(jsonDef),
+    (const string& className, ProjectDefinition* parent, const json &jsonDef)
+        : Definition(className, jsonDef),
           mProjectDefinition(parent)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("AssetDefinition: Constructing {}", getNameAndUuidString());
     }
 
     AssetDefinition::~AssetDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("AssetDefinition: Destructing {}", getNameAndUuidString());
     }
 
@@ -46,6 +51,8 @@ namespace octronic::dream
     AssetDefinition::getAssetType
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
     }
 
@@ -53,6 +60,8 @@ namespace octronic::dream
     AssetDefinition::setType
     (string type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_TYPE] = type;
     }
 
@@ -60,6 +69,8 @@ namespace octronic::dream
     AssetDefinition::getType
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_TYPE].is_null())
         {
             mJson[Constants::ASSET_TYPE] = "";
@@ -71,6 +82,8 @@ namespace octronic::dream
     AssetDefinition::setFormat
     (string format)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_FORMAT] = format;
     }
 
@@ -78,6 +91,8 @@ namespace octronic::dream
     AssetDefinition::getFormat
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_FORMAT].is_null())
         {
             mJson[Constants::ASSET_FORMAT] = "";
@@ -90,6 +105,8 @@ namespace octronic::dream
     AssetDefinition::isTypeAnimation
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_ANIMATION;
     }
 
@@ -97,11 +114,15 @@ namespace octronic::dream
     AssetDefinition::isTypeLight
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_LIGHT;
     }
 
     bool AssetDefinition::isTypeMaterial()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        return getType() == Constants::ASSET_TYPE_MATERIAL;
     }
 
@@ -109,6 +130,8 @@ namespace octronic::dream
     AssetDefinition::isTypeFont
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_FONT;
     }
 
@@ -116,6 +139,8 @@ namespace octronic::dream
     AssetDefinition::isTypePhysicsObject
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
     }
 
@@ -123,6 +148,8 @@ namespace octronic::dream
     AssetDefinition::isTypeTexture
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_TEXTURE;
     }
 
@@ -130,6 +157,8 @@ namespace octronic::dream
     AssetDefinition::isTypePath
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_PATH;
     }
 
@@ -137,6 +166,8 @@ namespace octronic::dream
     AssetDefinition::isTypeAudio
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_AUDIO;
     }
 
@@ -144,6 +175,8 @@ namespace octronic::dream
     AssetDefinition::isTypeModel
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_MODEL;
     }
 
@@ -151,6 +184,8 @@ namespace octronic::dream
     AssetDefinition::isTypeScript
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_SCRIPT;
     }
 
@@ -158,6 +193,8 @@ namespace octronic::dream
     AssetDefinition::isTypeShader
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getType() == Constants::ASSET_TYPE_SHADER;
     }
 
@@ -165,6 +202,8 @@ namespace octronic::dream
     AssetDefinition::getGroup
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_GROUP].is_null())
         {
             mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
@@ -176,6 +215,8 @@ namespace octronic::dream
     AssetDefinition::setGroup
     (string group)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_GROUP] = group;
     }
 
@@ -184,6 +225,8 @@ namespace octronic::dream
     AssetDefinition::getProject
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mProjectDefinition;
     }
 
@@ -191,6 +234,8 @@ namespace octronic::dream
     AssetDefinition::duplicate
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
         newAD->mJson = mJson;
         newAD->setUuid(Uuid::generateUuid());

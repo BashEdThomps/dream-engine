@@ -22,9 +22,10 @@
     #define _USE_MATH_DEFINES // for C++
 #endif
 
-#include "Scene/Entity/BoundingBox.h"
 #include "Common/Math.h"
+#include "Common/LockableObject.h"
 #include "Components/Transform.h"
+#include "Scene/Entity/BoundingBox.h"
 #include "Frustum.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -35,6 +36,7 @@
 
 using glm::mat4;
 
+
 namespace octronic::dream
 {
     class SceneRuntime;
@@ -43,7 +45,7 @@ namespace octronic::dream
     /**
      * @brief Implements a Camera in 3D Space.
      */
-    class Camera
+    class Camera : public LockableObject
     {
     private:
         // Camera Attributes

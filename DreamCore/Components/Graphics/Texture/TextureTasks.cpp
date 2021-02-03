@@ -11,22 +11,13 @@ namespace octronic::dream
     void TextureConstructionTask::execute()
     {
         LOG_TRACE("TextureConstructionTask: {} Executing on Graphics thread",mTextureRuntime->getNameAndUuidString());
-        if (!mTextureRuntime->tryLock())
+        if (!mTextureRuntime->loadIntoGL())
         {
-            if (!mTextureRuntime->loadIntoGL())
-            {
-                setState(TaskState::TASK_STATE_FAILED);
-            }
-            else
-            {
-                setState(TaskState::TASK_STATE_COMPLETED);
-            }
-            mTextureRuntime->unlock();
+            setState(TaskState::TASK_STATE_FAILED);
         }
         else
         {
-            mDeferralCount++;
-            setState(TaskState::TASK_STATE_WAITING);
+            setState(TaskState::TASK_STATE_COMPLETED);
         }
     }
 
@@ -38,13 +29,13 @@ namespace octronic::dream
 
     void TextureDestructionTask::execute()
     {
-        LOG_TRACE("TextureDestructionTask: for texture {}, Executing on Graphics thread",mTextureId);
-        glDeleteTextures(1,&mTextureId);
+        LOG_TRACE("TextureDestructionTask: for texture {}, Executing on Graphics thread",mTextureID);
+        glDeleteTextures(1,&mTextureID);
         setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     void TextureDestructionTask::setGLID(GLuint id)
     {
-        mTextureId = id;
+        mTextureID = id;
     }
 }

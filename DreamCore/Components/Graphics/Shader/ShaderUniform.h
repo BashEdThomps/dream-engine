@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "Common/LockableObject.h"
 #include "Common/GLHeader.h"
 #include <glm/glm.hpp>
 
@@ -41,7 +42,7 @@ namespace octronic::dream
         FLOAT4,
     };
 
-    class ShaderUniform
+    class ShaderUniform : public LockableObject
     {
     public:
         ShaderUniform(UniformType type, string name, int count, void* data);

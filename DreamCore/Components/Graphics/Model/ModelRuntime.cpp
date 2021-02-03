@@ -36,6 +36,7 @@
 using Assimp::Importer;
 using std::pair;
 using std::make_shared;
+using std::unique_lock;
 
 
 namespace octronic::dream
@@ -47,7 +48,7 @@ namespace octronic::dream
         AssetDefinition* definition,
         ProjectRuntime* runtime
     )
-        : SharedAssetRuntime(definition,runtime),
+        : SharedAssetRuntime("ModelRuntime",definition,runtime),
           mMaterialCache(texCache),
           mShaderCache(shaderCache),
           mModelMatrix(mat4(1.0f)),
@@ -59,6 +60,8 @@ namespace octronic::dream
     ModelRuntime::~ModelRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "ModelRuntime: Destroying Object");
         for (auto mesh : mMeshes)
         {
@@ -71,6 +74,8 @@ namespace octronic::dream
     ModelRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         string path = getAssetFilePath();
         LOG_INFO( "ModelRuntime: Loading Model - {}" , path);
 
@@ -104,6 +109,8 @@ namespace octronic::dream
     ModelRuntime::processNode
     (aiNode* node, const aiScene* scene)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         processAnimationData(node);
         // Process all the node's meshes (if any)
         aiMatrix4x4 rootTx = node->mTransformation;
@@ -128,6 +135,8 @@ namespace octronic::dream
     ModelRuntime::processVertexData
     (aiMesh* mesh)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         vector<Vertex>  vertices;
         for(GLuint i = 0; i < mesh->mNumVertices; i++)
         {
@@ -200,6 +209,8 @@ namespace octronic::dream
     ModelRuntime::processIndexData
     (aiMesh* mesh)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         vector<GLuint> indices;
         // Process indices
         for(GLuint i = 0; i < mesh->mNumFaces; i++)
@@ -217,6 +228,8 @@ namespace octronic::dream
     ModelRuntime::processBoneData
     (aiMesh* mesh)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (unsigned int i = 0; i < mesh->mNumBones; i++)
        {
           aiBone* nextBone = mesh->mBones[i];
@@ -235,6 +248,8 @@ namespace octronic::dream
     ModelRuntime::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         processBoneData(mesh);
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
@@ -262,7 +277,8 @@ namespace octronic::dream
                 return nullptr;
             }
             LOG_DEBUG( "ModelRuntime: Using Material {}" , material->getName());
-            BoundingBox bb = updateBoundingBox(mesh);
+            BoundingBox bb;
+            updateBoundingBox(mesh,bb);
             mBoundingBox.integrate(bb);
 
             auto aMesh = new ModelMesh
@@ -284,6 +300,8 @@ namespace octronic::dream
     ModelRuntime::getBoundingBox
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mBoundingBox;
     }
 
@@ -291,6 +309,8 @@ namespace octronic::dream
     ModelRuntime::addRuntime
     (EntityRuntime* inst)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto mesh : mMeshes)
         {
             mesh->addRuntime(inst);
@@ -301,6 +321,8 @@ namespace octronic::dream
     ModelRuntime::removeRuntime
     (EntityRuntime* inst)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto mesh : mMeshes)
         {
             mesh->removeRuntime(inst);
@@ -326,6 +348,8 @@ namespace octronic::dream
     ModelRuntime::loadImporter
     (string path)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
 
         StorageManager* fm = mProjectRuntime->getStorageManager();
@@ -358,56 +382,56 @@ namespace octronic::dream
         return importer;
     }
 
-    BoundingBox
+    void
     ModelRuntime::updateBoundingBox
-    (aiMesh* mesh)
+    (aiMesh* mesh, BoundingBox& bb)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "ModelRuntime: Updating bounding box");
 
-        BoundingBox bb;
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (bb.maximum.x() < vertex.x)
+            if (bb.getMaximum().x() < vertex.x)
             {
-                bb.maximum.setX(vertex.x);
+                bb.getMaximum().setX(vertex.x);
             }
 
-            if (bb.maximum.y() > vertex.y)
+            if (bb.getMaximum().y() > vertex.y)
             {
-                bb.maximum.setY(vertex.y);
+                bb.getMaximum().setY(vertex.y);
             }
 
-            if (bb.maximum.z() < vertex.z)
+            if (bb.getMaximum().z() < vertex.z)
             {
-                bb.maximum.setZ(vertex.z);
+                bb.getMaximum().setZ(vertex.z);
             }
 
             // Maximum
-            if (bb.minimum.x() > vertex.x)
+            if (bb.getMinimum().x() > vertex.x)
             {
-                bb.minimum.setX(vertex.x);
+                bb.getMinimum().setX(vertex.x);
             }
 
-            if (bb.minimum.y() > vertex.y)
+            if (bb.getMinimum().y() > vertex.y)
             {
-                bb.minimum.setY(vertex.y);
+                bb.getMinimum().setY(vertex.y);
             }
 
-            if (bb.minimum.z() > vertex.z)
+            if (bb.getMinimum().z() > vertex.z)
             {
-                bb.minimum.setZ(vertex.z);
+                bb.getMinimum().setZ(vertex.z);
             }
         }
 
         float maxBound;
-        maxBound = (bb.maximum.x() > bb.maximum.y() ? bb.maximum.x() : bb.maximum.y());
-        maxBound = (maxBound > bb.maximum.z() ? maxBound : bb.maximum.z());
-        bb.maxDimension = maxBound;
-        return bb;
+        maxBound = (bb.getMaximum().x() > bb.getMaximum().y() ? bb.getMaximum().x() : bb.getMaximum().y());
+        maxBound = (maxBound > bb.getMaximum().z() ? maxBound : bb.getMaximum().z());
+        bb.setMaxDimension(maxBound);
     }
 
     map<string,Bone>&
@@ -431,12 +455,16 @@ namespace octronic::dream
 
     void ModelRuntime::setGlobalInverseTransform(const mat4& globalInverseTransform)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mGlobalInverseTransform = globalInverseTransform;
     }
 
     glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
     (const aiMatrix4x4& from)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         glm::mat4 to;
         to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
         to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;

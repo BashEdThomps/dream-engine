@@ -19,28 +19,41 @@
 #include "TaskThread.h"
 #include "Common/Logger.h"
 
+#include <mutex>
+
+using std::unique_lock;
+
 namespace octronic::dream
 {
     TaskManager::TaskManager()
-        : mNextThread(0),
-          mHardwareThreadCount(thread::hardware_concurrency()-1)
+        : LockableObject("TaskManager"),
+          mNextThread(0),
+          mHardwareThreadCount(thread::hardware_concurrency())
     {
-        LOG_CRITICAL("TaskManager: Constructing with {} hardware threads available",
-                     mHardwareThreadCount);
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_CRITICAL("TaskManager: Constructing with {} hardware threads available", mHardwareThreadCount);
         startAllThreads();
     }
 
     TaskManager::~TaskManager()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("TaskManager: Destroying Object");
         joinAllThreads();
     }
 
     void TaskManager::startAllThreads()
     {
-        LOG_DEBUG("TaskManager: Starting all threads...");
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 
-        for (int i=0; i <  mHardwareThreadCount; i++)
+        LOG_DEBUG("TaskManager: Creating {} threads...",mHardwareThreadCount);
+
+        for (unsigned int i=0; i <  mHardwareThreadCount; i++)
         {
             LOG_DEBUG("TaskManager: Spawning thread {}",i);
             mThreadVector.push_back(new TaskThread(i));
@@ -49,7 +62,11 @@ namespace octronic::dream
 
     void TaskManager::joinAllThreads()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("TaskManager: Joining all threads...");
+
         for (TaskThread* t : mThreadVector)
         {
             t->setRunning(false);
@@ -62,27 +79,32 @@ namespace octronic::dream
         mThreadVector.clear();
     }
 
-    void TaskManager::pushTask(Task* t)
+    void TaskManager::pushTask(Task* task)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        assert(task != nullptr);
+
         for (TaskThread* thread : mThreadVector)
         {
-            if (thread->hasTask(t))
+            if (thread->hasTask(task))
             {
-                LOG_ERROR("TaskManager: Thread {} already has task {}({})",
-                          thread->getThreadId(), t->getTaskName(), t->getTaskId());
+                LOG_INFO("TaskManager: Thread {} already has task {}",thread->getThreadID(), task->getDebugString());
                 return;
             }
         }
         while (true)
         {
-            bool result = mThreadVector.at(mNextThread)->pushTask(t);
+            bool result = mThreadVector.at(mNextThread)->pushTask(task);
             if (result)
             {
-                LOG_DEBUG("TaskManager: {}({}) pushed task to thread {}",t->getTaskName(),t->getTaskId(), mNextThread);
+                LOG_DEBUG("TaskManager: {} pushed task to thread {}",task->getDebugString(), mNextThread);
             }
             else
             {
-                LOG_ERROR("TaskManager: Failed to push task {}({}) to thread {}",t->getTaskName(), t->getTaskId(), mNextThread);
+                LOG_ERROR("TaskManager: Failed to push task {} to thread {}",task->getDebugString(), mNextThread);
             }
             mNextThread++;
             mNextThread = mNextThread % mThreadVector.size();
@@ -94,6 +116,9 @@ namespace octronic::dream
 
     void TaskManager::pushDestructionTask(const shared_ptr<DestructionTask>& dt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         while (true)
         {
             bool result = mThreadVector.at(mNextThread)->pushDestructionTask(dt);
@@ -113,45 +138,53 @@ namespace octronic::dream
     }
 
 
-    void TaskManager::clearFences()
+    void TaskManager::allowThreadsToRun()
     {
-        LOG_TRACE("TaskManager: Clearing all fences");
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         for (TaskThread* t : mThreadVector)
         {
-            t->clearFence();
+            t->clearWaitingToRunFence();
         }
     }
 
-    void TaskManager::waitForFence()
+    void TaskManager::waitForThreadsToFinish()
     {
-        LOG_TRACE("TaskManager: ... Waiting for fence ...");
-        int trys = 0;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_TRACE("TaskManager: ... Waiting for Threads to Finish ...");
+        int tries = 0;
         while (true)
         {
+			tries++;
+            //assert(tries < 1000);
+			LOG_TRACE("TaskManager: Waiting for Threads to Finish for {} Time",tries);
             bool result = true;
-            for (TaskThread* t : mThreadVector)
+            for (TaskThread* task_thread : mThreadVector)
             {
-                trys++;
-                LOG_TRACE("TaskManager: Waiting for fence for {} time",trys);
-
-                result = (result && t->getFence());
+                result = (result && task_thread->getWaitingToRunFence());
                 if (!result)
                 {
-                    LOG_TRACE("TaskManager: Thread {} is still working", t->getThreadId());
+                    LOG_TRACE("TaskManager: Thread {} is still working on {} tasks", task_thread->getThreadID(), task_thread->getNumTasks());
                     break;
                 }
             }
             if (result)
             {
-                LOG_TRACE("TaskManager: All Fences hit");
-                break;
+                LOG_TRACE("TaskManager: All Threads have Finished");
+                return;
             }
             std::this_thread::yield();
         }
     }
 
-    vector<TaskThread*> TaskManager::getThreadVector() const
+    vector<TaskThread*>& TaskManager::getThreadVector()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         return mThreadVector;
     }
 }

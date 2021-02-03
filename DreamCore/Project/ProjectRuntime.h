@@ -81,7 +81,7 @@ namespace octronic::dream
 
         bool initComponents();
 
-        void collectGarbage(SceneRuntime* rt);
+        void collectSceneGarbage(SceneRuntime* rt);
         void collectGarbage() override;
 
         void updateAll();

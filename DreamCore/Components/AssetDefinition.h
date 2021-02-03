@@ -36,7 +36,7 @@ namespace octronic::dream
          * @param project ProjectDefinition that owns this AssetDefinition
          * @param data JSON object from which to construct the AssetDefinition
          */
-        AssetDefinition(ProjectDefinition* project, const json& data);
+        AssetDefinition(const string& className, ProjectDefinition* project, const json& data);
         virtual ~AssetDefinition();
 
         /**

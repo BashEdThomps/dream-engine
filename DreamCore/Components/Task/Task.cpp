@@ -6,197 +6,219 @@
 
 using std::find;
 using std::stringstream;
+using std::unique_lock;
+using std::to_string;
 
 namespace octronic::dream
 {
     // Static ==================================================================
 
-    int Task::TaskID = 0;
+    int Task::TaskIDGenerator = 0;
+    const int Task::INVALID_THREAD_ID = -1;
+    const int Task::INVALID_TASK_ID = -1;
 
-    mutex Task::TaskStatesMutex;
-    map<int,TaskState> Task::TaskStates;
-
-    mutex Task::WaitingForMutex;
-    map<int,vector<Task*> > Task::WaitingFor;
-
-    mutex Task::WaitingForMeMutex;
-    map<int,vector<Task*> > Task::WaitingForMe;
+    string Task::stateToString(TaskState state)
+    {
+        switch(state)
+        {
+            case TASK_STATE_CONSTRUCTED: return "Constructed";
+			case TASK_STATE_QUEUED:      return "Queued";
+			case TASK_STATE_ACTIVE:      return "Active";
+			case TASK_STATE_COMPLETED:   return "Completed";
+			case TASK_STATE_FAILED:      return "Failed";
+            default:                     return "Unknown?";
+        }
+    }
 
     // Task ====================================================================
 
     Task::Task(const string& taskName)
-        : mTaskId(TaskID++),
-          mThreadId(-1),
+        : LockableObject("Task"),
+          mTaskID(TaskIDGenerator++),
+          mThreadID(INVALID_THREAD_ID),
           mDeferralCount(0),
           mTaskName(taskName)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        mTaskID = taskIDGenerator();
+        mWaitingFor.clear();
+        mWaitingForMe.clear();
         clearState();
-        TaskStatesMutex.lock();
-        if (TaskStates.count(mTaskId) == 0)
-        {
-            TaskStates[mTaskId] = TASK_STATE_NEW;
-        }
-        TaskStatesMutex.unlock();
-
-        WaitingForMutex.lock();
-        if (WaitingFor.count(mTaskId) == 0)
-        {
-            WaitingFor[mTaskId] = vector<Task*>();
-        }
-        WaitingForMutex.unlock();
-
-        WaitingForMeMutex.lock();
-        if (WaitingForMe.count(mTaskId) == 0)
-        {
-            WaitingForMe[mTaskId] = vector<Task*>();
-        }
-        WaitingForMeMutex.unlock();
     }
 
-    Task::Task(const Task& other)
-        : mTaskId(other.mTaskId),
-          mThreadId(other.mThreadId),
-          mDeferralCount(other.mDeferralCount)
-    {
+    Task::~Task()
+    {}
 
+    int Task::getTaskID()
+    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        return mTaskID;
     }
 
-    Task::~Task() {}
-
-    int Task::getTaskId() const
+    string Task::getDebugString()
     {
-        return mTaskId;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        stringstream ss;
+        ss << "["
+		   << (getThreadID() == INVALID_THREAD_ID ? "NONE" : to_string(getThreadID()))
+           << "." << getTaskID() << "]"
+           << getTaskName();
+        return ss.str();
     }
 
 
-    bool Task::operator==(const Task& other)
+    bool Task::operator==(Task& other)
     {
-        return mTaskId == other.mTaskId;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        return mTaskID == other.getTaskID();
     }
 
-    string Task::getTaskName() const
+    string Task::getTaskName()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mTaskName;
     }
 
+    int Task::getThreadID()
+    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        return mThreadID;
+    }
 
     void Task::incrementDeferralCount()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mDeferralCount++;
+        LOG_INFO("Task: {} Deferred for {} time", getDebugString(), mDeferralCount);
+        //assert(mDeferralCount < 1000);
     }
 
-    void Task::setThreadId(int t)
+    void Task::setThreadID(int t)
     {
-        mThreadId = t;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        assert(t > INVALID_THREAD_ID);
+        mThreadID = t;
     }
 
     unsigned int Task::getDeferralCount()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mDeferralCount;
     }
 
     void Task::clearState()
     {
-        WaitingForMutex.lock();
-        WaitingFor[mTaskId].clear();
-        WaitingForMutex.unlock();
-
-        WaitingForMeMutex.lock();
-        WaitingForMe[mTaskId].clear();
-        WaitingForMeMutex.unlock();
-
-        mThreadId = -1;
-
-        TaskStatesMutex.lock();
-        TaskStates[mTaskId] = TaskState::TASK_STATE_NEW;
-        TaskStatesMutex.unlock();
-
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        mThreadID = INVALID_THREAD_ID;
+        mTaskState = TaskState::TASK_STATE_CONSTRUCTED;
         mDeferralCount = 0;
     }
 
     void Task::clearDependency(Task* t)
     {
-        WaitingForMutex.lock();
-        auto itr = std::find(WaitingFor[mTaskId].begin(), WaitingFor[mTaskId].end(), t);
-        if (itr != WaitingFor[mTaskId].end())
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        LOG_TRACE("Task: {} clearing dependency on {}", getDebugString(), t->getDebugString());
+
+        auto itr = std::find(mWaitingFor.begin(), mWaitingFor.end(), t);
+        if (itr != mWaitingFor.end())
         {
-            WaitingFor[mTaskId].erase(itr);
+            mWaitingFor.erase(itr);
+        	LOG_TRACE("Task: {} has {} dependencies left", getDebugString(), mWaitingFor.size());
         }
         else
         {
-            LOG_CRITICAL(
-            	"Task: *** WAIT, WHAT!!! *** {}({})Task was not waiting for target {}({})",
-            	mTaskName,mTaskId,t->getTaskName(),t->getTaskId());
+            LOG_CRITICAL("Task: *** WAIT, WHAT!!! *** {} was not waiting for 'dependency' {}",getDebugString(),t->getDebugString());
+            assert(false);
         }
-        WaitingForMutex.unlock();
     }
 
-    void Task::notifyDependents()
+    void Task::notifyTasksWaitingForMe()
     {
-        WaitingForMeMutex.lock();
-        for (Task* t : WaitingForMe[mTaskId])
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+    	LOG_TRACE("Task: {} is notifying dependant it's {} dependants", getDebugString(), mWaitingForMe.size());
+        for (Task* t : mWaitingForMe)
         {
-            LOG_TRACE("Task: {}({}) is notifying dependant task {}({}) of completion",
-                      mTaskName, mTaskId, t->getTaskName(), t->getTaskId());
+            LOG_TRACE("Task: {} is notifying dependant task {} of completion", getDebugString(), t->getDebugString());
             t->clearDependency(this);
         }
-        WaitingForMe[mTaskId].clear();
-        WaitingForMeMutex.unlock();
+        mWaitingForMe.clear();
     }
 
     bool Task::isWaitingForDependencies()
     {
-        WaitingForMutex.lock();
-        bool retval = !WaitingFor[mTaskId].empty();
-        if (retval)
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        bool is_waiting = !mWaitingFor.empty();
+
+        if (is_waiting)
         {
-            TaskStatesMutex.lock();
-            TaskStates[mTaskId] = TaskState::TASK_STATE_WAITING;
-            TaskStatesMutex.unlock();
             stringstream ss;
-
-            for (Task* t : WaitingFor[mTaskId])
+            for (Task* t : mWaitingFor)
             {
-               ss << "\n\t--> " << t->getTaskName() << "(" << t->getTaskId() << ")";
+                ss << "\n\t--> " << t->getDebugString();
             }
-
-            LOG_TRACE("Task: {}({})is waiting for {} dependencies to finish {}",
-                      mTaskName, mTaskId, WaitingFor[mTaskId].size(), ss.str());
+            LOG_TRACE("Task: {} is waiting for {} dependencies to finish {}", getDebugString(), mWaitingFor.size(), ss.str());
         }
-        WaitingForMutex.unlock();
-        return retval;
+        return is_waiting;
+    }
+
+    void Task::isWaitingForMe(Task* t)
+    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_TRACE("Task: {} is dependant on me: {}",t->getDebugString(), getDebugString());
+        mWaitingForMe.push_back(t);
     }
 
     void Task::dependsOn(Task* t)
     {
-        WaitingForMutex.lock();
-        if (WaitingFor.count(mTaskId) == 0)
-        {
-            WaitingFor[mTaskId] = vector<Task*>();
-        }
-        WaitingFor[mTaskId].push_back(t);
-        WaitingForMutex.unlock();
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 
-        WaitingForMeMutex.lock();
-        if (WaitingForMe.count(t->mTaskId) == 0)
-        {
-            WaitingForMe[t->mTaskId] = vector<Task*>();
-        }
-        WaitingForMe[t->mTaskId].push_back(this);
-        WaitingForMeMutex.unlock();
+        LOG_TRACE("Task: {} is dependant on: {}",getDebugString(), t->getDebugString());
+        t->isWaitingForMe(this);
+
+        mWaitingFor.push_back(t);
     }
 
-    void Task::setState(const TaskState& s)
+    void Task::setState(TaskState s)
     {
-        TaskStatesMutex.lock();
-        TaskStates[mTaskId] = s;
-        TaskStatesMutex.unlock();
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+      	mTaskState = s;
+        LOG_TRACE("Task: {} is changing state to {}",getDebugString(), stateToString(getState()));
     }
 
-    TaskState Task::getState() const
+    TaskState Task::getState()
     {
-        return TaskStates[mTaskId];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        return mTaskState;
     }
+
+    int Task::taskIDGenerator()
+    {
+
+        return TaskIDGenerator++;
+    }
+
 
     // DestructionTask =====================================================
 

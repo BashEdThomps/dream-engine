@@ -29,13 +29,15 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     AnimationRuntime::AnimationRuntime
     (
         AnimationDefinition* definition,
         EntityRuntime* runtime
-    ) : DiscreteAssetRuntime(definition,runtime),
+    ) : DiscreteAssetRuntime("AnimationDefinition",definition,runtime),
         mRunning(false),
         mCurrentTime(0),
         mDuration(1),
@@ -56,6 +58,8 @@ namespace octronic::dream
     AnimationRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         auto animDef = static_cast<AnimationDefinition*>(mDefinition);
         mKeyframes = animDef->getKeyframes();
         mRelative = animDef->getRelative();
@@ -68,6 +72,9 @@ namespace octronic::dream
     AnimationRuntime::stepAnimation
     (double deltaTime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         if (mRunning)
         {
             LOG_TRACE("AnimationRuntime: Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
@@ -84,8 +91,9 @@ namespace octronic::dream
     long
     AnimationRuntime::getCurrentTime
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         return mCurrentTime;
     }
 
@@ -93,14 +101,17 @@ namespace octronic::dream
     AnimationRuntime::setCurrentTime
     (long currentTime)
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         mCurrentTime = currentTime;
     }
 
     bool
     AnimationRuntime::getRunning
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         return mRunning;
     }
 
@@ -108,11 +119,15 @@ namespace octronic::dream
     AnimationRuntime::setRunning
     (bool running)
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         mRunning = running;
     }
 
     AnimationUpdateTask *AnimationRuntime::getUpdateTask()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
        return &mUpdateTask;
     }
 
@@ -120,6 +135,8 @@ namespace octronic::dream
     AnimationRuntime::createTweens
     ()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         orderByTime();
         int numKeyframes = mKeyframes.size();
         mDuration = mKeyframes.at(numKeyframes-1).getTime();
@@ -179,6 +196,8 @@ namespace octronic::dream
     AnimationRuntime::run
     ()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         mRunning = true;
     }
 
@@ -186,6 +205,9 @@ namespace octronic::dream
     AnimationRuntime::pause
     ()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
+
         mRunning = !mRunning;
     }
 
@@ -193,6 +215,9 @@ namespace octronic::dream
     AnimationRuntime::reset
     ()
     {
+        const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
+
         mCurrentTime = 0;
         seekAll(0);
     }
@@ -201,6 +226,9 @@ namespace octronic::dream
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("AnimationRuntime: Seeing to {}",pos);
         vec3 newTx, newRx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
@@ -231,8 +259,10 @@ namespace octronic::dream
 
     long
     AnimationRuntime::getDuration
-    () const
+    ()
     {
+       const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
        return mDuration;
     }
 
@@ -240,11 +270,15 @@ namespace octronic::dream
     AnimationRuntime::orderByTime
     ()
     {
+       const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
         std::sort(mKeyframes.begin(),mKeyframes.end());
     }
 
     void AnimationRuntime::update()
     {
+       const unique_lock<mutex> lg(getMutex());
+        if (!lg.owns_lock()) getMutex().lock();
        auto timeDelta =
             mEntityRuntime
                ->getSceneRuntime()
@@ -258,6 +292,8 @@ namespace octronic::dream
     AnimationRuntime::applyEasing
     (tweeny::tween<float>& twn, AnimationEasing::EasingType easing)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         switch(easing)
         {
             case AnimationEasing::EasingType::EasingLinear:

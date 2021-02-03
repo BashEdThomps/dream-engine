@@ -16,19 +16,9 @@ namespace octronic::dream
     InputPollDataTask::execute
     ()
     {
-        if (mComponent->tryLock())
-        {
-            LOG_TRACE("InputPollDataTask: Executing on worker {}",mThreadId);
-            mComponent->pollData();
-            mComponent->unlock();
-            setState(TaskState::TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
-        }
+		LOG_TRACE("InputPollDataTask: Executing on worker {}",getThreadID());
+		mComponent->pollData();
+		setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     InputExecuteScriptTask::InputExecuteScriptTask
@@ -39,28 +29,15 @@ namespace octronic::dream
 
     void InputExecuteScriptTask::execute()
     {
-        LOG_TRACE("InputExecuteScriptTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("InputExecuteScriptTask: Executing on thread {}",getThreadID());
 
-        if (mComponent->tryLock())
-        {
-            LOG_TRACE("InputExecuteScriptTask: Executing...");
-
-            if (mComponent->executeInputScript())
-            {
-                setState(TaskState::TASK_STATE_COMPLETED);
-            }
-            else
-            {
-                setState(TaskState::TASK_STATE_WAITING);
-                mDeferralCount++;
-            }
-            mComponent->unlock();
-        }
-        else
-        {
-          	LOG_TRACE("{}: Failed to lock target runtime",mTaskName);
-        	setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
-        }
+		if (mComponent->executeInputScript())
+		{
+			setState(TaskState::TASK_STATE_COMPLETED);
+		}
+		else
+		{
+			incrementDeferralCount();
+		}
     }
 }

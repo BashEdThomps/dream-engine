@@ -17,28 +17,36 @@
 #pragma once
 #define GLM_FORCE_RADIANS
 #include "Common/Math.h"
+#include "Common/LockableObject.h"
 
 namespace octronic::dream
 {
-    class BoundingBox
+    class BoundingBox : public LockableObject
     {
     public:
         BoundingBox(
-            const Vector3& minimum = Vector3(-0.5f,-0.5f,-0.5f),
-            const Vector3& maximum = Vector3(0.5f,0.5f,0.5f)
-        );
+                const Vector3& minimum = Vector3(-0.5f,-0.5f,-0.5f),
+                const Vector3& maximum = Vector3(0.5f,0.5f,0.5f)
+                );
+
+        BoundingBox(const BoundingBox& other);
 
         ~BoundingBox();
 
+        void from(const BoundingBox& bb);
         void integrate(const BoundingBox& bb);
 
-        float maxDimension;
-        void setToLimits();
-        Vector3 minimum;
-        Vector3 maximum;
-        Vector3 getCenter() const;
         Vector3 getNegativeVertex(const Vector3& position, const Vector3& normal) const;
         Vector3 getPositiveVertex(const Vector3& position, const Vector3& normal) const;
+        void setToLimits();
+        Vector3 getCenter() const;
+        Vector3& getMaximum();
+        Vector3& getMinimum();
+        void setMaxDimension(float md);
+    private:
+        float maxDimension;
+        Vector3 minimum;
+        Vector3 maximum;
     };
 }
 

@@ -46,11 +46,13 @@
 
 #include <thread>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     ProjectRuntime::ProjectRuntime
     (Project* project, WindowComponent* windowComponent, AudioComponent* ac, StorageManager* fm)
-        : Runtime(project->getDefinition()),
+        : Runtime("ProjectRuntime",project->getDefinition()),
           mDone(false),
           mTime(nullptr),
           mProject(project),
@@ -70,6 +72,10 @@ namespace octronic::dream
           mScriptCache(nullptr),
           mFontCache(nullptr)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG( "ProjectRuntime: Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
     }
@@ -77,6 +83,9 @@ namespace octronic::dream
     ProjectRuntime::~ProjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG( "ProjectRuntime: Destructing" );
         deleteCaches();
         deleteComponents();
@@ -101,6 +110,9 @@ namespace octronic::dream
     ProjectRuntime::setDone
     (bool done)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mDone = done;
     }
 
@@ -116,6 +128,9 @@ namespace octronic::dream
     ProjectRuntime::initComponents
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
 
         mTime = new Time();
@@ -171,6 +186,9 @@ namespace octronic::dream
     ProjectRuntime::initWindowComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (!mWindowComponent)
         {
@@ -178,9 +196,7 @@ namespace octronic::dream
             return false;
         }
         auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        projDef->lock();
         mWindowComponent->setName(projDef->getName());
-        projDef->unlock();
         return true;
     }
 
@@ -188,6 +204,9 @@ namespace octronic::dream
     ProjectRuntime::initAudioComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if(mAudioComponent == nullptr)
         {
@@ -199,34 +218,30 @@ namespace octronic::dream
         // Audio component must be initialised outside of dream
 
         /*
-        mAudioComponent->lock();
         if (!mAudioComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise AudioComponent." );
             mAudioComponent->unlock();
             return false;
         }
-        mAudioComponent->unlock();
         */
         return true;
     }
 
     bool ProjectRuntime::initInputComponent()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        projectDef->lock();
         mInputComponent = new InputComponent(this);
-        projectDef->unlock();
-        mInputComponent->lock();
 
         if (!mInputComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
-            mInputComponent->unlock();
             return false;
         }
-        mInputComponent->unlock();
         return true;
     }
 
@@ -234,17 +249,17 @@ namespace octronic::dream
     ProjectRuntime::initPhysicsComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mPhysicsComponent = new PhysicsComponent(this);
-        mPhysicsComponent->lock();
         mPhysicsComponent->setTime(mTime);
         if (!mPhysicsComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
-            mPhysicsComponent->unlock();
             return false;
         }
-        mPhysicsComponent->unlock();
         return true;
     }
 
@@ -252,18 +267,18 @@ namespace octronic::dream
     ProjectRuntime::initGraphicsComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mGraphicsComponent = new GraphicsComponent(this,mWindowComponent);
-        mGraphicsComponent->lock();
         mGraphicsComponent->setTime(mTime);
         mGraphicsComponent->setShaderCache(mShaderCache);
         if (!mGraphicsComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
-            mGraphicsComponent->unlock();
             return false;
         }
-        mGraphicsComponent->unlock();
         return true;
     }
 
@@ -271,16 +286,16 @@ namespace octronic::dream
     ProjectRuntime::initScriptComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mScriptComponent = new ScriptComponent(this,mScriptCache);
-        mScriptComponent->lock();
         if(!mScriptComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
-            mScriptComponent->unlock();
             return false;
         }
-        mScriptComponent->unlock();
         return true;
     }
 
@@ -288,6 +303,9 @@ namespace octronic::dream
     ProjectRuntime::initTaskManager
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mTaskManager = new TaskManager();
         return true;
@@ -297,6 +315,9 @@ namespace octronic::dream
     ProjectRuntime::initCaches
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         mAudioCache = new AudioCache(this);
         mTextureCache = new TextureCache(this);
@@ -312,6 +333,9 @@ namespace octronic::dream
     ProjectRuntime::deleteCaches
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (mAudioCache != nullptr)
         {
@@ -360,6 +384,9 @@ namespace octronic::dream
     ProjectRuntime::deleteComponents
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (mTaskManager != nullptr)
         {
@@ -458,6 +485,10 @@ namespace octronic::dream
     ProjectRuntime::updateLogic
     (SceneRuntime* sr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mTaskManager->waitForThreadsToFinish();
         LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Logic called @ {}\n"
@@ -473,8 +504,9 @@ namespace octronic::dream
         }
 
         sr->createSceneTasks();
-        mTaskManager->clearFences();
-        mTaskManager->waitForFence();
+        mTaskManager->allowThreadsToRun();
+        std::this_thread::yield();
+        mTaskManager->waitForThreadsToFinish();
         mGraphicsComponent->handleResize();
         sr->getCamera()->update();
         return true;
@@ -484,6 +516,9 @@ namespace octronic::dream
     ProjectRuntime::updateGraphics
     (SceneRuntime* sr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Graphics called @ {}\n"
@@ -518,6 +553,9 @@ namespace octronic::dream
     ProjectRuntime::setWindowWidth
     (int w)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mWindowComponent != nullptr)
         {
             mWindowComponent->setWidth(w);
@@ -540,6 +578,9 @@ namespace octronic::dream
     ProjectRuntime::setWindowHeight
     (int h)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mWindowComponent != nullptr)
         {
             mWindowComponent->setHeight(h);
@@ -547,9 +588,12 @@ namespace octronic::dream
     }
 
     void
-    ProjectRuntime::collectGarbage
+    ProjectRuntime::collectSceneGarbage
     (SceneRuntime* rt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("\n"
         "=======================================================================\n"
         "CollectGarbage Called @ {}\n"
@@ -563,6 +607,9 @@ namespace octronic::dream
     ProjectRuntime::collectGarbage
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         for (auto rt : mSceneRuntimesToRemove)
         {
@@ -578,12 +625,16 @@ namespace octronic::dream
     ProjectRuntime::updateAll
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
 
         if (mSceneRuntimeVector.empty())
         {
-            mTaskManager->clearFences();
-            mTaskManager->waitForFence();
+            mTaskManager->allowThreadsToRun();
+            std::this_thread::yield();
+            mTaskManager->waitForThreadsToFinish();
             mGraphicsComponent->executeTaskQueue();
             mGraphicsComponent->executeDestructionTaskQueue();
         }
@@ -602,7 +653,7 @@ namespace octronic::dream
                         updateLogic(rt);
                         updateGraphics(rt);
                         mWindowComponent->updateWindow(rt);
-                        collectGarbage(rt);
+                        collectSceneGarbage(rt);
                         break;
                     case SceneState::SCENE_STATE_TO_DESTROY:
                         destructSceneRuntime(rt);
@@ -654,6 +705,9 @@ namespace octronic::dream
     ProjectRuntime::setSceneRuntimeAsActive
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         int nRuntimes = mSceneRuntimeVector.size();
         for (int i=0;i<nRuntimes;i++)
@@ -685,6 +739,9 @@ namespace octronic::dream
     ProjectRuntime::addSceneRuntime
     (SceneRuntime* rt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
         if (itr == mSceneRuntimeVector.end())
         {
@@ -696,6 +753,9 @@ namespace octronic::dream
     ProjectRuntime::removeSceneRuntime
     (SceneRuntime* rt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
         if (itr != mSceneRuntimeVector.end())
         {
@@ -707,6 +767,9 @@ namespace octronic::dream
     ProjectRuntime::constructSceneRuntime
     (SceneRuntime* rt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
         return rt->useDefinition();
     }
@@ -731,6 +794,9 @@ namespace octronic::dream
     ProjectRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         if (!initCaches())
         {
@@ -803,6 +869,9 @@ namespace octronic::dream
     ProjectRuntime::destructSceneRuntime
     (SceneRuntime* rt, bool clearCaches)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         rt->destroyRuntime();
         if (clearCaches)
@@ -815,56 +884,46 @@ namespace octronic::dream
     ProjectRuntime::clearAllCaches
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mTaskManager->clearFences();
-        mTaskManager->waitForFence();
+        mTaskManager->allowThreadsToRun();
+        std::this_thread::yield();
+        mTaskManager->waitForThreadsToFinish();
         if (mAudioCache != nullptr)
         {
-            mAudioCache->lock();
             mAudioCache->clear();
-            mAudioCache->unlock();
         }
 
         if (mModelCache != nullptr)
         {
-            mModelCache->lock();
             mModelCache->clear();
-            mModelCache->unlock();
         }
 
         if (mShaderCache != nullptr)
         {
-            mShaderCache->lock();
             mShaderCache->clear();
-            mShaderCache->unlock();
         }
 
         if (mMaterialCache != nullptr)
         {
-            mMaterialCache->lock();
             mMaterialCache->clear();
-            mMaterialCache->unlock();
         }
 
         if (mTextureCache != nullptr)
         {
-            mTextureCache->lock();
             mTextureCache->clear();
-            mTextureCache->unlock();
         }
 
         if (mScriptCache != nullptr)
         {
-            mScriptCache->lock();
             mScriptCache->clear();
-            mScriptCache->unlock();
         }
 
         if (mFontCache != nullptr)
         {
-            mFontCache->lock();
             mFontCache->clear();
-            mFontCache->unlock();
         }
     }
 
@@ -900,12 +959,9 @@ namespace octronic::dream
     {
         for (auto srt : mSceneRuntimeVector)
         {
-            srt->lock();
             if (srt->getState() == SceneState::SCENE_STATE_ACTIVE) {
-                srt->unlock();
                 return true;
             }
-            srt->unlock();
         }
         return false;
     }
@@ -917,14 +973,11 @@ namespace octronic::dream
     {
         for (auto srt : mSceneRuntimeVector)
         {
-            srt->lock();
             if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
                 srt->getState() < SceneState::SCENE_STATE_DESTROYED)
             {
-                srt->unlock();
                 return true;
             }
-            srt->unlock();
         }
         return false;
     }
@@ -938,12 +991,10 @@ namespace octronic::dream
         bool result = false;
         for (auto srt : mSceneRuntimeVector)
         {
-            srt->lock();
             if (srt->getUuid() == uuid)
             {
                 result = true;
             }
-            srt->unlock();
 
             if (result) break;
         }
@@ -957,6 +1008,9 @@ namespace octronic::dream
 
     float ProjectRuntime::getAverageFramerate()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
        float f = 0.0;
        for (const auto& dur : mFrameDurationHistory)
        {

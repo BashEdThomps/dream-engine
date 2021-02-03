@@ -36,6 +36,7 @@
 #include "Scene/Entity/EntityRuntime.h"
 
 #define SOL_CHECK_ARGUMENTS 1
+#define SOL_ALL_SAFETIES_ON 1
 #include <sol.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -44,8 +45,12 @@ using std::exception;
 using std::cout;
 using std::cerr;
 using std::string;
+using std::lock_guard;
 
-static int l_my_print(lua_State* L)
+// Static ======================================================================
+
+static int
+_octronic_dream_sol_print(lua_State* L)
 {
     int nargs = lua_gettop(L);
     stringstream stream;
@@ -62,41 +67,78 @@ static int l_my_print(lua_State* L)
     return 0;
 }
 
-static const struct luaL_Reg printlib [] = {{"print", l_my_print}, {nullptr, nullptr}};
+static const struct luaL_Reg printlib [] = {{"print", _octronic_dream_sol_print}, {nullptr, nullptr}};
 
-namespace octronic::dream
+int _octronic_dream_sol_exception_handler
+(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description)
 {
+    LOG_ERROR("LUA: Exception handler called\n\n{}\n\n {}",maybe_exception->what(), description);
+    return sol::stack::push(L, "Something exploded");
+}
+
+inline void
+_octronic_dream_sol_panic(sol::optional<std::string> maybe_msg)
+{
+    LOG_ERROR("*** OH NO, PANIK: Lua is in a panic state and will now abort() the application ***");
+    LOG_ERROR("Do you feel lucky? Lets see...");
+    if (maybe_msg)
+    {
+        const std::string& msg = maybe_msg.value();
+        LOG_ERROR("\tLucky: Error message = \"{}\"",msg);
+    }
+    else
+    {
+        LOG_ERROR("\tUnlucky: There was no error message... :/");
+    }
+    // When this function exits, Lua will exhibit default behavior and abort()
+}
+
+namespace octronic::dream // ===================================================
+{
+    const string ScriptComponent::LUA_ON_INIT_FUNCTION = "onInit";
+    const string ScriptComponent::LUA_ON_UPDATE_FUNCTION = "onUpdate";
+    const string ScriptComponent::LUA_ON_INPUT_FUNCTION = "onInput";
+    const string ScriptComponent::LUA_ON_EVENT_FUNCTION = "onEvent";
+    const string ScriptComponent::LUA_COMPONENTS_TBL = "Components";
+
+    // public
     ScriptComponent::ScriptComponent
     (ProjectRuntime* runtime, ScriptCache* cache)
-        : Component(runtime),
+        : Component("ScriptComponent",runtime),
           mScriptCache(cache)
     {
+        const lock_guard<mutex> lg(getMutex());
         LOG_TRACE( "Constructing Object" );
     }
 
+    // public
     ScriptComponent::~ScriptComponent
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         LOG_TRACE("Destroying Object");
-        lock();
         if (State != nullptr)
         {
             lua_close(State);
             State = nullptr;
         }
-        unlock();
     }
 
-    bool
+
+    bool // public
     ScriptComponent::init
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
+
         LOG_DEBUG( "Initialising LuaComponent" );
         State = luaL_newstate();
+        lua_atpanic( State, sol::c_call<decltype(&_octronic_dream_sol_panic), &_octronic_dream_sol_panic> );
         sol::state_view sView(State);
         sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::string);
+        sView.set_exception_handler(_octronic_dream_sol_exception_handler);
         sol::table comps(State, sol::create);
-        sView[COMPONENTS_TBL] = comps;
+        sView[LUA_COMPONENTS_TBL] = comps;
 
         // Register print callback
 
@@ -109,11 +151,231 @@ namespace octronic::dream
         return true;
     }
 
+    // Function Execution =======================================================
+
+    bool // public
+    ScriptComponent::executeScriptOnUpdate
+    (ScriptRuntime* script, EntityRuntime* entity)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+    	LOG_DEBUG("ScriptRuntime: Calling onUpdate for {}",entity->getNameAndUuidString());
+		sol::state_view solStateView(ScriptComponent::State);
+		sol::protected_function onUpdateFunction = solStateView[entity->getUuid()][LUA_ON_UPDATE_FUNCTION];
+		auto result = onUpdateFunction(entity);
+		if (!result.valid())
+		{
+			// An error has occured
+			sol::error err = result;
+			string what = err.what();
+			LOG_ERROR("ScriptRuntime: {} Could not execute onUpdate in lua script:\n{}",
+						 entity->getNameAndUuidString(),
+						 what);
+			entity->setScriptError(true);
+			assert(false);
+			return false;
+		}
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::executeScriptOnInit
+    (ScriptRuntime* script, EntityRuntime* entity)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+        if (entity->getScriptError())
+        {
+            LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.", entity->getNameAndUuidString());
+            return true;
+        }
+
+        if (entity->getScriptInitialised())
+        {
+            LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}", entity->getNameAndUuidString());
+            return true;
+        }
+
+        LOG_DEBUG("ScriptRuntime: Calling onInit in {} for {}",  script->getName(), entity->getName());
+
+		sol::state_view solStateView(ScriptComponent::State);
+		sol::protected_function onInitFunction = solStateView[entity->getUuid()][LUA_ON_INIT_FUNCTION];
+
+		auto initResult = onInitFunction(entity);
+		if (!initResult.valid())
+		{
+			// An error has occured
+			sol::error err = initResult;
+			string what = err.what();
+			LOG_ERROR(
+						"ScriptRuntime: {}\nCould not execute onInit in lua script:\n{}",
+						entity->getNameAndUuidString(),
+						what
+						);
+			entity->setScriptError(true);
+			assert(false);
+			return false;
+		}
+		entity->setScriptInitialised(true);
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::executeScriptOnEvent
+    (ScriptRuntime* script, EntityRuntime* entity)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+        if (entity->getScriptError())
+        {
+            LOG_ERROR( "ScriptRuntime: Cannot execute {} in error state ",  script->getNameAndUuidString());
+            entity->clearEventQueue();
+            return true;
+        }
+
+        if (!entity->hasEvents())
+        {
+            return true;
+        }
+
+
+        LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", entity->getNameAndUuidString());
+		sol::state_view solStateView(ScriptComponent::State);
+		sol::protected_function onEventFunction = solStateView[entity->getUuid()][LUA_ON_EVENT_FUNCTION];
+
+		for (const Event& e : *entity->getEventQueue())
+		{
+			auto result = onEventFunction(entity,e);
+			if (!result.valid())
+			{
+				// An error has occured
+				sol::error err = result;
+				string what = err.what();
+				LOG_ERROR("ScriptRuntime: {}:\nCould not execute onEvent in lua script:\n{}",
+						  entity->getNameAndUuidString(), what);
+				entity->setScriptError(true);
+				assert(false);
+				return false;
+			}
+		}
+		entity->clearEventQueue();
+		entity->unlockEventQueue();
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::executeScriptOnInput
+    (ScriptRuntime* script, InputComponent* inputComp, SceneRuntime* sr)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+        LOG_TRACE("ScriptRuntime: Calling onInput function with {}",script->getUuid());
+		sol::state_view solStateView(ScriptComponent::State);
+		sol::protected_function onInputFunction = solStateView[script->getUuid()][LUA_ON_INPUT_FUNCTION];
+		auto result = onInputFunction(inputComp, sr);
+		if (!result.valid())
+		{
+			// An error has occured
+			sol::error err = result;
+			string what = err.what();
+			LOG_ERROR("ScriptRuntime: Could not execute onInput in lua script:\n{}",what);
+			assert(false);
+			return false;
+		}
+		return true;
+    }
+
+
+    bool  // public
+    ScriptComponent::registerInputScript
+    (ScriptRuntime* script)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+        LOG_TRACE("ScriptRuntime: Registering Input Script");
+		sol::state_view solStateView(ScriptComponent::State);
+		sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+		solStateView[script->getUuid()] = environment;
+		auto exec_result = solStateView.safe_script(
+					script->getSource(), environment,
+					[](lua_State*, sol::protected_function_result pfr){
+				return pfr;});
+		// it did not work
+		if(!exec_result.valid())
+		{
+			// An error has occured
+			sol::error err = exec_result;
+			string what = err.what();
+			LOG_ERROR("ScriptRuntime: Could not execute lua script:\n{}",what);
+			assert(false);
+			return false;
+		}
+		LOG_DEBUG("ScriptRuntime: Loaded Input Script Successfully");
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::removeInputScript
+    (ScriptRuntime* script)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+        LOG_TRACE("ScriptRuntime: Removing Input Script Table");
+		sol::state_view solStateView(ScriptComponent::State);
+		solStateView[script->getUuid()] = nullptr;
+		LOG_DEBUG("ScriptRuntime: Removed input script Successfully");
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::createEntityState
+    (ScriptRuntime* script, EntityRuntime* entity)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+		if (entity)
+		{
+			LOG_DEBUG("ScriptRuntime: loadScript called for {}", entity->getNameAndUuidString() );
+		}
+
+		LOG_DEBUG("ScriptRuntime: calling scriptLoadFromString in lua for {}" , entity->getNameAndUuidString() );
+		sol::state_view solStateView(ScriptComponent::State);
+
+		// Create an environment for this entity runtime
+		sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+		solStateView[entity->getUuid()] = environment;
+
+		auto exec_result = solStateView.safe_script(script->getSource(), environment, [](lua_State*, sol::protected_function_result pfr) {return pfr;});
+
+		// it did not work
+		if(!exec_result.valid())
+		{
+			// An error has occured
+			sol::error err = exec_result;
+			std::string what = err.what();
+			LOG_ERROR("ScriptRuntime: {} Error while executing lua script:\n{}", entity->getUuid(),what);
+			entity->setScriptError(true);
+			assert(false);
+			return false;
+		}
+		return true;
+    }
+
+    bool // public
+    ScriptComponent::removeEntityState
+    (UuidType uuid)
+    {
+        const lock_guard<mutex>lg(getMutex());
+
+		sol::state_view stateView(ScriptComponent::State);
+		stateView[uuid] = sol::lua_nil;
+		LOG_DEBUG( "ScriptRuntime: Removed script lua table for {}" , uuid);
+		return true;
+    }
+
     // API Exposure Methods ======================================================
 
-
-
-    void
+    void // private
     ScriptComponent::exposeProjectRuntime
     ()
     {
@@ -131,7 +393,7 @@ namespace octronic::dream
         stateView["Runtime"] = mProjectRuntime;
     }
 
-    void
+    void // private
     ScriptComponent::exposeProjectDirectory
     ()
     {
@@ -145,7 +407,7 @@ namespace octronic::dream
         stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
     }
 
-    void
+    void // private
     ScriptComponent::exposeCamera
     ()
     {
@@ -192,7 +454,7 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposePathRuntime
     ()
     {
@@ -209,17 +471,17 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeGraphicsComponent
     ()
     {
         debugRegisteringClass("GraphicsComponent");
         sol::state_view stateView(State);
         stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
-        stateView[COMPONENTS_TBL]["Graphics"] = mProjectRuntime->getGraphicsComponent();
+        stateView[LUA_COMPONENTS_TBL]["Graphics"] = mProjectRuntime->getGraphicsComponent();
     }
 
-    void
+    void // private
     ScriptComponent::exposeLightRuntime
     ()
     {
@@ -228,7 +490,7 @@ namespace octronic::dream
         stateView.new_usertype<LightRuntime>("LightRuntime");
     }
 
-    void
+    void // private
     ScriptComponent::exposeShaderRuntime
     ()
     {
@@ -260,20 +522,21 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposePhysicsComponent
     ()
     {
         debugRegisteringClass("PhysicsComponent");
         sol::state_view stateView(State);
-        stateView.new_usertype<PhysicsComponent>("PhysicsComponent",
-                                                 "setDebug",&PhysicsComponent::setDebug
-                                                 );
+        stateView.new_usertype<PhysicsComponent>(
+                    "PhysicsComponent",
+                    "setDebug",&PhysicsComponent::setDebug
+                    );
 
-        stateView[COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
+        stateView[LUA_COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
     }
 
-    void
+    void // private
     ScriptComponent::exposePhysicsObjectRuntime
     ()
     {
@@ -304,7 +567,7 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeEntityRuntime
     ()
     {
@@ -312,6 +575,7 @@ namespace octronic::dream
         sol::state_view stateView(State);
         stateView.new_usertype<EntityRuntime>(
                     "EntityRuntime",
+                    sol::base_classes, sol::bases<Runtime>(),
                     "getName",&EntityRuntime::getName,
                     "getNameAndUuidString",&EntityRuntime::getNameAndUuidString,
                     "getScene",&EntityRuntime::getSceneRuntime,
@@ -350,7 +614,7 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeTransform
     ()
     {
@@ -378,7 +642,7 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeTime
     ()
     {
@@ -395,7 +659,7 @@ namespace octronic::dream
         stateView["Time"] = mProjectRuntime->getTime();
     }
 
-    void
+    void // private
     ScriptComponent::exposeModelRuntime
     ()
     {
@@ -404,7 +668,7 @@ namespace octronic::dream
         stateView.new_usertype<ModelRuntime>("ModelRuntime");
     }
 
-    void
+    void // private
     ScriptComponent::exposeEvent
     ()
     {
@@ -413,7 +677,9 @@ namespace octronic::dream
         stateView.new_usertype<Event>(
                     "Event",
                     "getAttribute",&Event::getAttribute,
-                    "setAttribute",&Event::setAttribute
+                    "setAttribute",&Event::setAttribute,
+                    "getProcessed",&Event::getProcessed,
+                    "setProcessed",&Event::setProcessed
                     );
 
         /*
@@ -426,7 +692,7 @@ namespace octronic::dream
         */
     }
 
-    void
+    void // private
     ScriptComponent::exposeWindowComponent
     ()
     {
@@ -437,10 +703,10 @@ namespace octronic::dream
                     "getWidth",&WindowComponent::getWidth,
                     "getHeight",&WindowComponent::getHeight
                     );
-        stateView[COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
+        stateView[LUA_COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
     }
 
-    void
+    void // private
     ScriptComponent::exposeInputComponent
     ()
     {
@@ -448,6 +714,7 @@ namespace octronic::dream
         sol::state_view stateView(State);
         stateView.new_usertype<InputComponent>(
                     "InputComponent",
+                    sol::base_classes, sol::bases<Component>(),
                     "isKeyDown",&InputComponent::isKeyDown,
                     "getKeyboardState",&InputComponent::getKeyboardState,
                     "getMouseState",&InputComponent::getMouseState,
@@ -628,27 +895,27 @@ namespace octronic::dream
                     "KEY_RIGHT_SUPER",  347,
                     "KEY_MENU",  348
                     );
-        stateView[COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
+        stateView[LUA_COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
     }
 
-    void
+    void // private
     ScriptComponent::exposeAudioComponent
     ()
     {
         debugRegisteringClass("AudioComponent");
         sol::state_view stateView(State);
         stateView.new_usertype<AudioComponent>("AudioComponent");
-        stateView[COMPONENTS_TBL]["Audio"] = mProjectRuntime->getAudioComponent();
+        stateView[LUA_COMPONENTS_TBL]["Audio"] = mProjectRuntime->getAudioComponent();
     }
 
-    void
+    void // private
     ScriptComponent::exposeScriptRuntime
     ()
     {
         // TODO
     }
 
-    void
+    void // private
     ScriptComponent::exposeAudioRuntime
     ()
     {
@@ -660,7 +927,6 @@ namespace octronic::dream
                     "play",&AudioRuntime::play,
                     "pause",&AudioRuntime::pause,
                     "stop",&AudioRuntime::stop
-
                     );
 
         stateView.new_enum(
@@ -671,7 +937,7 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeSceneRuntime
     ()
     {
@@ -679,13 +945,14 @@ namespace octronic::dream
         sol::state_view stateView(State);
         stateView.new_usertype<SceneRuntime>(
                     "SceneRuntime",
+                    sol::base_classes, sol::bases<Runtime>(),
                     "getCamera",&SceneRuntime::getCamera,
                     "getProjectRuntime", &SceneRuntime::getProjectRuntime,
                     "getEntityRuntimeByUuid",&SceneRuntime::getEntityRuntimeByUuid
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeGLM
     ()
     {
@@ -765,16 +1032,19 @@ namespace octronic::dream
                     [](const glm::mat4& mtx, int col) -> glm::vec3{return  mtx[col];});
     }
 
-    void
+    void // private
     ScriptComponent::exposeDefinition
     ()
     {
-        debugRegisteringClass("Definitions");
+        debugRegisteringClass("Definition");
         sol::state_view stateView(State);
-        stateView.new_usertype<Definition>("Definition");
+        stateView.new_usertype<Definition>(
+                    "Definition",
+                    sol::base_classes, sol::bases<LockableObject>()
+                    );
     }
 
-    void
+    void // private
     ScriptComponent::exposeAnimationRuntime
     ()
     {
@@ -788,11 +1058,10 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
     ScriptComponent::exposeOctronicMath()
     {
         sol::state_view stateView(State);
-
         debugRegisteringClass("Vector2");
         stateView.new_usertype<Vector2>(
                     "Vector2",
@@ -818,46 +1087,134 @@ namespace octronic::dream
                     );
     }
 
-    void
+    void // private
+    ScriptComponent::exposeLockableObject()
+    {
+        debugRegisteringClass("LockableObject");
+        sol::state_view stateView(State);
+        stateView.new_usertype<LockableObject>("LockableObject");
+    }
+
+    void // private
+    ScriptComponent::exposeRuntime()
+    {
+        debugRegisteringClass("Runtime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<Runtime>(
+                    "Runtime",
+                    sol::base_classes, sol::bases<LockableObject>()
+                    );
+    }
+
+    void // private
+    ScriptComponent::exposeComponent()
+    {
+        debugRegisteringClass("Component");
+        sol::state_view stateView(State);
+        stateView.new_usertype<Component>(
+                    "Component",
+                    sol::base_classes, sol::bases<LockableObject>()
+                    );
+    }
+
+    void // private
+    ScriptComponent::exposeCache()
+    {
+        debugRegisteringClass("Cache");
+        sol::state_view stateView(State);
+        stateView.new_usertype<Cache>(
+                    "Cache",
+                    sol::base_classes, sol::bases<LockableObject>()
+                    );
+    }
+
+    void // private
+    ScriptComponent::exposeAssetRuntime()
+    {
+        debugRegisteringClass("AssetRuntime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<AssetRuntime>(
+                    "AssetRuntime",
+                    sol::base_classes, sol::bases<Runtime>()
+                    );
+    }
+
+    void // private
+    ScriptComponent::exposeSharedAssetRuntime()
+    {
+        debugRegisteringClass("SharedAssetRuntime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<SharedAssetRuntime>(
+                    "SharedAssetRuntime",
+                    sol::base_classes, sol::bases<AssetRuntime>()
+                    );
+    }
+
+    void // private
+    ScriptComponent::exposeDiscreteAssetRuntime()
+    {
+        debugRegisteringClass("DiscreteAssetRuntime");
+        sol::state_view stateView(State);
+        stateView.new_usertype<DiscreteAssetRuntime>(
+                    "DiscreteAssetRuntime",
+                    sol::base_classes, sol::bases<AssetRuntime>()
+                    );
+    }
+
+    void // private
     ScriptComponent::debugRegisteringClass
     (const string& className)
     {
         LOG_DEBUG( "Registering Class {}",  className );
     }
 
-    void
+    void // private
     ScriptComponent::exposeAPI
     ()
     {
+        // Base Classes
+        exposeLockableObject();
+        exposeRuntime();
+        exposeComponent();
+        exposeCache();
         exposeDefinition();
-        exposeProjectRuntime();
-        exposeProjectDirectory();
-        exposeSceneRuntime();
+        exposeAssetRuntime();
+        exposeSharedAssetRuntime();
+        exposeDiscreteAssetRuntime();
+
+        // Runtimes
+        exposeAnimationRuntime();
+        exposeAudioRuntime();
         exposeEntityRuntime();
-        exposeEvent();
-        exposeTime();
-        exposeTransform();
-        exposeCamera();
-        exposeGLM();
+        exposeLightRuntime();
+        exposeModelRuntime();
+        exposePathRuntime();
+        exposePhysicsObjectRuntime();
+        exposeProjectRuntime();
+        exposeSceneRuntime();
+        exposeScriptRuntime();
+        exposeShaderRuntime();
+
+        // Components
         exposeAudioComponent();
         exposeInputComponent();
         exposeGraphicsComponent();
-        exposeWindowComponent();
         exposePhysicsComponent();
-        exposeAnimationRuntime();
-        exposeAudioRuntime();
-        exposeModelRuntime();
-        exposeLightRuntime();
-        exposeShaderRuntime();
-        exposePathRuntime();
-        exposeScriptRuntime();
-        exposePhysicsObjectRuntime();
+        exposeWindowComponent();
+
+        // Misc
+        exposeProjectDirectory();
+        exposeCamera();
+        exposeEvent();
+        exposeTime();
+        exposeTransform();
+        exposeGLM();
         exposeOctronicMath();
     }
 
     vector<ScriptPrintListener*> ScriptComponent::PrintListeners;
 
-    void
+    void // public static
     ScriptComponent::AddPrintListener
     (ScriptPrintListener* listener)
     {
@@ -865,8 +1222,5 @@ namespace octronic::dream
     }
 
     ScriptPrintListener::~ScriptPrintListener(){}
-
     lua_State* ScriptComponent::State = nullptr;
-
-    const string ScriptComponent::COMPONENTS_TBL = "Components";
 }

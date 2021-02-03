@@ -58,7 +58,6 @@ else()
         DreamCore
 		DreamOpenAL
 		ImGui
-		ImGuizmo
 		ImTextEditor
 		nfd
         -lpthread

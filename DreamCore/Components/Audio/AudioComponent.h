@@ -29,7 +29,7 @@ namespace octronic::dream
     class AudioComponent : public Component
     {
     public:
-        AudioComponent();
+        AudioComponent(const string& className);
         virtual ~AudioComponent();
         virtual void setListenerPosition(const vec3&) = 0;
         virtual void setVolume(float) = 0;

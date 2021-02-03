@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Task.h"
+#include "Common/LockableObject.h"
+
 #include <thread>
 #include <vector>
 #include <mutex>
 #include <atomic>
 #include <memory>
-
-#include "Task.h"
 
 using std::thread;
 using std::mutex;
@@ -21,31 +22,28 @@ namespace octronic::dream
      * TaskThread encapsulates a std::Thread running a while loop, which executes
      * incoming Tasks.
      */
-    class TaskThread
+    class TaskThread : public LockableObject
     {
-    protected:
-        thread mThread;
-        vector<Task*> mDebugTaskQueue;
-        vector<Task*> mTaskQueue;
-        mutex mTaskQueueMutex;
-        vector< shared_ptr<DestructionTask> > mDestructionTaskQueue;
-        mutex mDestructionTaskQueueMutex;
-        atomic<bool> mRunning;
-        atomic<bool> mFence;
-        atomic<int> mThreadId;
-    public:
 
+    public:
          TaskThread (int id);
-         TaskThread(const TaskThread&& that);
          void join();
          void executeTaskQueue();
-         void clearFence();
-         bool getFence();
+         void clearWaitingToRunFence();
+         bool getWaitingToRunFence();
          bool pushTask(Task* t);
          bool pushDestructionTask(const shared_ptr<DestructionTask>& dt);
          void setRunning(bool running);
-         int getThreadId();
+         int getThreadID();
          bool hasTask(Task* t);
-         const vector<Task*>& getDebugTaskQueue();
+         size_t getNumTasks();
+
+    private:
+        thread mThread;
+        vector<Task*> mTaskQueue;
+        vector< shared_ptr<DestructionTask> > mDestructionTaskQueue;
+        atomic<bool> mRunning;
+        atomic<bool> mWaitingToRunFence;
+        atomic<int> mThreadID;
     };
 }

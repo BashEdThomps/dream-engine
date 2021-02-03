@@ -31,14 +31,18 @@
 #include "Common/Constants.h"
 
 using std::pair;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     ProjectDefinition::ProjectDefinition
     (const json& data)
-        : Definition(data)
+        : Definition("ProjectDefinition",data)
 
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectDefinition: Constructing {}", getNameAndUuidString());
     }
 
@@ -46,6 +50,9 @@ namespace octronic::dream
     ProjectDefinition::~ProjectDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("ProjectDefinition: Destructing {}", getNameAndUuidString());
         deleteSceneDefinitions();
         deleteAssetDefinitions();
@@ -55,11 +62,17 @@ namespace octronic::dream
     ProjectDefinition::setStartupSceneUuid
     (UuidType sceneUuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::PROJECT_STARTUP_SCENE] = sceneUuid;
     }
 
     UuidType ProjectDefinition::getStartupSceneUuid()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mJson[Constants::PROJECT_STARTUP_SCENE].is_number())
         {
             mJson[Constants::PROJECT_STARTUP_SCENE] = 0;
@@ -71,6 +84,9 @@ namespace octronic::dream
     ProjectDefinition::setDescription
     (const string &description)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::PROJECT_DESCRIPTION] = description;
     }
 
@@ -78,6 +94,9 @@ namespace octronic::dream
     ProjectDefinition::getDescription
     (void)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mJson[Constants::PROJECT_DESCRIPTION];
     }
 
@@ -85,6 +104,9 @@ namespace octronic::dream
     ProjectDefinition::setAuthor
     (const string &author)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::PROJECT_AUTHOR] = author;
     }
 
@@ -92,6 +114,9 @@ namespace octronic::dream
     ProjectDefinition::getAuthor
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mJson[Constants::PROJECT_AUTHOR];
     }
 
@@ -99,6 +124,9 @@ namespace octronic::dream
     ProjectDefinition::loadChildDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         loadAssetDefinitions();
         loadSceneDefinitions();
     }
@@ -107,6 +135,9 @@ namespace octronic::dream
     ProjectDefinition::loadAssetDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("ProjectDefinition: Loading AssetDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_ASSET_ARRAY])
@@ -120,6 +151,9 @@ namespace octronic::dream
     ProjectDefinition::loadSceneDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("ProjectDefinition: Loading ScenesDefinitions from JSON");
 
         for (const json& it : mJson[Constants::PROJECT_SCENE_ARRAY])
@@ -133,6 +167,9 @@ namespace octronic::dream
     ProjectDefinition::createAssetDefinition
     (const json &assetDefinitionJs)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         AssetType type = Constants::getAssetTypeEnumFromString(assetDefinitionJs[Constants::ASSET_TYPE]);
 
         switch (type)
@@ -170,6 +207,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionGroups
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mAssetDefinitionGroups;
     }
 
@@ -177,6 +217,9 @@ namespace octronic::dream
     ProjectDefinition::loadAssetDefinition
     (const json &assetDefinitionJs)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         AssetDefinition* newDef = createAssetDefinition(assetDefinitionJs);
         if (newDef != nullptr)
         {
@@ -188,6 +231,9 @@ namespace octronic::dream
     ProjectDefinition::removeAssetDefinition
     (AssetDefinition* assetDefinition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG(
                     "ProjectDefinition: Removing AssetDefinition {} from {}",
                     assetDefinition->getNameAndUuidString(),
@@ -215,6 +261,9 @@ namespace octronic::dream
     ProjectDefinition::countAssetDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mAssetDefinitions.size();
     }
 
@@ -222,6 +271,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             if ((*it)->hasUuid(uuid))
@@ -236,6 +288,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionByName
     (const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
             if ((*it)->hasName(name))
@@ -250,6 +305,9 @@ namespace octronic::dream
     ProjectDefinition::addAssetDefinition
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
        mAssetDefinitions.push_back(def);
        regroupAssetDefinitions();
     }
@@ -258,6 +316,9 @@ namespace octronic::dream
     ProjectDefinition::loadSceneDefinition
     (const json &scene)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         auto so = new SceneDefinition(this, scene);
         so->loadRootEntityDefinition();
         mSceneDefinitions.push_back(so);
@@ -267,6 +328,9 @@ namespace octronic::dream
     ProjectDefinition::countScenesDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mSceneDefinitions.size();
     }
 
@@ -274,6 +338,9 @@ namespace octronic::dream
     ProjectDefinition::getSceneDefinitionByName
     (const string &name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
             if ((*it)->hasName(name))
@@ -288,6 +355,9 @@ namespace octronic::dream
     ProjectDefinition::getSceneDefinitionByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
             if ((*it)->hasUuid(uuid))
@@ -302,6 +372,9 @@ namespace octronic::dream
     ProjectDefinition::getSceneDefinitionsVector
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<SceneDefinition*> list;
         for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
         {
@@ -314,6 +387,9 @@ namespace octronic::dream
     ProjectDefinition::removeSceneDefinition
     (SceneDefinition* sceneDef)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG(
                     "ProjectDefinition: Removing SceneDefinition {} from {}",
                     sceneDef->getNameAndUuidString(),
@@ -343,6 +419,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionsVector
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
@@ -355,6 +434,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionsVector
     (AssetType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetDefinition*> definitionsList;
         for (auto it = begin(mAssetDefinitions); it != end(mAssetDefinitions); it++)
         {
@@ -372,6 +454,9 @@ namespace octronic::dream
     ProjectDefinition::createNewSceneDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         json scene;
         scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
@@ -387,6 +472,9 @@ namespace octronic::dream
     ProjectDefinition::createNewAssetDefinition
     (AssetType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         json assetDefinitionJson;
 
         string defaultFormat = (*Constants::DREAM_ASSET_FORMATS_MAP.at(type).begin());
@@ -405,6 +493,9 @@ namespace octronic::dream
     ProjectDefinition::getStartupSceneDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         UuidType startupScene = getStartupSceneUuid();
         LOG_DEBUG("ProjectDefinition: Finding startup scene {}", startupScene);
         return getSceneDefinitionByUuid(startupScene);
@@ -414,6 +505,9 @@ namespace octronic::dream
     ProjectDefinition::getJson
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
         for (AssetDefinition* ad : getAssetDefinitionsVector())
         {
@@ -433,6 +527,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionsMap
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetDefinition*> ads = getAssetDefinitionsVector();
         map<AssetType, vector<AssetDefinition*> > handlesMap;
 
@@ -467,6 +564,9 @@ namespace octronic::dream
 
     void ProjectDefinition::deleteAssetDefinitions()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto ad : mAssetDefinitions)
         {
             delete ad;
@@ -476,6 +576,9 @@ namespace octronic::dream
 
     void ProjectDefinition::deleteSceneDefinitions()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (auto sd : mSceneDefinitions)
         {
             delete sd;
@@ -487,6 +590,9 @@ namespace octronic::dream
     ProjectDefinition::getSceneDefinitionIndex
     (SceneDefinition* sDef)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<SceneDefinition*> defs = getSceneDefinitionsVector();
         auto it = std::find(defs.begin(), defs.end(), sDef);
         if (it == defs.end())
@@ -503,6 +609,9 @@ namespace octronic::dream
     ProjectDefinition::getSceneDefinitionAtIndex
     (int index)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return getSceneDefinitionsVector().at(index);
     }
 
@@ -510,6 +619,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionIndex
     (AssetType type, AssetDefinition* sDef)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         auto it = std::find(defs.begin(), defs.end(), sDef);
         if (it == defs.end())
@@ -526,6 +638,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionIndex
     (AssetType type, UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetDefinition*> defs = getAssetDefinitionsVector(type);
         for (int i = 0; i < defs.size(); i++)
         {
@@ -538,6 +653,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetDefinitionAtIndex
     (AssetType type, int idx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return getAssetDefinitionsVector(type).at(idx);
     }
 
@@ -545,6 +663,9 @@ namespace octronic::dream
     ProjectDefinition::getAssetNamesVector
     (AssetType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<string> retval;
         auto assets = getAssetDefinitionsVector(type);
         for (auto asset : assets)
@@ -558,6 +679,9 @@ namespace octronic::dream
     ProjectDefinition::regroupAssetDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mAssetDefinitionGroups.clear();
         for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
@@ -579,6 +703,8 @@ namespace octronic::dream
             }
         }
     }
+
+    // Static ==================================================================
 
     ProjectDefinition*
     ProjectDefinition::createNewProjectDefinition

@@ -2,6 +2,7 @@
 
 #include "File.h"
 #include "Directory.h"
+#include "Common/LockableObject.h"
 
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@ namespace octronic::dream
 	class File;
 	class Directory;
 
-	class StorageManager
+	class StorageManager : public LockableObject
 	{
 	public:
 		StorageManager();

@@ -25,7 +25,7 @@ namespace octronic::dream::open_al
 
     OpenALAudioComponent::OpenALAudioComponent
     ()
-        : AudioComponent(),
+        : AudioComponent("OpenALAudioComponent"),
           mDevice(nullptr),
           mContext(nullptr)
     {
@@ -90,14 +90,19 @@ namespace octronic::dream::open_al
     AudioRuntime* OpenALAudioComponent::newAudioRuntime(AudioDefinition* def)
     {
         AudioRuntime* aRunt = nullptr;
+        AudioLoader* loader = nullptr;
+
         if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
         {
-        	aRunt = new OpenALAudioRuntime(new OggLoader(),def,mProjectRuntime);
+            loader = new OggLoader();
         }
         else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
         {
-        	aRunt = new OpenALAudioRuntime(new WavLoader(),def,mProjectRuntime);
+            loader = new WavLoader();
         }
+
+        aRunt = new OpenALAudioRuntime(loader,def,mProjectRuntime);
+
         return aRunt;
     }
 }

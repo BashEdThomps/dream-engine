@@ -47,85 +47,85 @@ namespace octronic::dream
         ~SceneRuntime() override;
 
         Camera* getCamera();
-        SceneState getState() const;
+        SceneState getState();
         void setState(SceneState state);
 
-        Vector3 getGravity() const;
+        Vector3 getGravity();
         void setGravity(const Vector3& gravity);
 
-        Vector3 getClearColour() const;
+        Vector3 getClearColour();
         void setClearColour(const Vector3& clearColour);
 
         bool useDefinition() override;
         void destroyRuntime();
 
-        bool getPhysicsDebug() const;
+        bool getPhysicsDebug();
         void setPhysicsDebug(bool physicsDebug);
 
         void setMeshCullDistance(float);
-        float getMeshCullDistance() const;
+        float getMeshCullDistance();
 
-        float getMinDrawDistance() const;
+        float getMinDrawDistance();
         void setMinDrawDistance(float);
 
-        float getMaxDrawDistance() const;
+        float getMaxDrawDistance();
         void setMaxDrawDistance(float);
 
         void createSceneTasks();
 
-        bool hasRootEntityRuntime() const;
+        bool hasRootEntityRuntime();
         void setRootEntityRuntime(EntityRuntime* e);
-        EntityRuntime* getRootEntityRuntime() const;
+        EntityRuntime* getRootEntityRuntime() ;
 
-        EntityRuntime* getEntityRuntimeByName(const string& name) const;
-        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) const;
+        EntityRuntime* getEntityRuntimeByName(const string& name) ;
+        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) ;
 
-        int countEntityRuntimes() const;
-        int countChildrenOfEntityRuntime(EntityRuntime*) const;
+        int countEntityRuntimes() ;
+        int countChildrenOfEntityRuntime(EntityRuntime*) ;
 
         void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
-        ProjectRuntime* getProjectRuntime() const;
+        ProjectRuntime* getProjectRuntime() ;
 
-        void showScenegraph() const;
+        void showScenegraph() ;
         void collectGarbage() override;
 
-        ShaderRuntime* getLightingPassShader() const;
+        ShaderRuntime* getLightingPassShader() ;
         void setLightingPassShader(ShaderRuntime* lightingShader);
 
-        ShaderRuntime* getShadowPassShader() const;
+        ShaderRuntime* getShadowPassShader() ;
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
-        ShaderRuntime* getFontShader() const;
+        ShaderRuntime* getFontShader() ;
         void setFontShader(ShaderRuntime* fontShader);
 
 
-        vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
-        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
+        vector<AssetRuntime*> getAssetRuntimes(AssetType) ;
+        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) ;
 
         /**
          * @return Gets the ScriptRuntime that handles Input
          */
-        ScriptRuntime* getInputScript() const;
+        ScriptRuntime* getInputScript() ;
 
         /**
          * @return Gets the nearest Entity to the Camera's position excluding
          * the Entity the Camera is focused on.
          */
-        EntityRuntime* getNearestToCamera() const;
+        EntityRuntime* getNearestToCamera() ;
 
-        unsigned long getSceneCurrentTime() const;
+        unsigned long getSceneCurrentTime() ;
         void setSceneCurrentTime(unsigned long sceneCurrentTime);
 
-        unsigned long getSceneStartTime() const;
+        unsigned long getSceneStartTime() ;
         void setSceneStartTime(unsigned long sceneStartTime);
 
         void setPlayerEntity(EntityRuntime* po);
-        EntityRuntime* getPlayerEntity() const;
+        EntityRuntime* getPlayerEntity() ;
 
     protected:
         void updateLifetime();
-        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
+        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() ;
         void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
         void clearEntityRuntimeCleanUpQueue();
         void processEntityRuntimeCleanUpQueue();

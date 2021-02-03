@@ -9,13 +9,16 @@
 #include "AudioComponent.h"
 #include "AudioRuntime.h"
 
+using std::lock_guard;
+
 namespace octronic::dream
 {
 
     AudioCache::AudioCache
     (ProjectRuntime* parent)
-        : Cache(parent)
+        : Cache("AudioCache",parent)
     {
+        const lock_guard<mutex> lg(getMutex());
     }
 
     AudioCache::~AudioCache
@@ -28,6 +31,7 @@ namespace octronic::dream
     AudioCache::clear
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         for (AssetRuntime* runt : mRuntimes)
         {
             delete runt;
@@ -39,6 +43,7 @@ namespace octronic::dream
     AudioCache::loadRuntime
     (AssetDefinition* def)
     {
+        const lock_guard<mutex> lg(getMutex());
         auto aDef = static_cast<AudioDefinition*>(def);
         AudioComponent* ac = mProjectRuntime->getAudioComponent();
         AudioRuntime* asset = ac->newAudioRuntime(aDef);

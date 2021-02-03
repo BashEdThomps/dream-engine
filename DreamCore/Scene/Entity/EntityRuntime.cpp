@@ -52,41 +52,45 @@
 
 using std::vector;
 using std::make_shared;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     EntityRuntime::EntityRuntime(EntityDefinition* sd,SceneRuntime* sr,bool randomUuid)
-        : Runtime(sd),
-        mAnimationRuntime(nullptr),
-        mAudioRuntime(nullptr),
-        mLightRuntime(nullptr),
-        mPathRuntime(nullptr),
-        mPhysicsObjectRuntime(nullptr),
-        mScriptRuntime(nullptr),
-        mScriptInitialised(false),
-        mScriptError(false),
-        mModelRuntime(nullptr),
-        mSceneRuntime(sr),
-        mParentRuntime(nullptr),
-        mBoundingBox(),
-        mHasCameraFocus(false),
-        mDeleted(false),
-        mHidden(false),
-        mAlwaysDraw(false),
-        mRandomUuid(randomUuid),
-        mDeferredFor(0),
-        mObjectLifetime(0),
-        mDieAfter(0),
-        mScriptConstructionTask(this),
-        mScriptOnInitTask(this),
-        mScriptOnUpdateTask(this),
-        mScriptOnEventTask(this),
-        mScriptDestructionTask(nullptr),
-        mFontRuntime(nullptr),
-        mFontText(""),
-        mFontColor(1.f),
-        mFontScale(1.f)
+        : Runtime("EntityRuntime",sd),
+          mAnimationRuntime(nullptr),
+          mAudioRuntime(nullptr),
+          mLightRuntime(nullptr),
+          mPathRuntime(nullptr),
+          mPhysicsObjectRuntime(nullptr),
+          mScriptRuntime(nullptr),
+          mScriptInitialised(false),
+          mScriptError(false),
+          mModelRuntime(nullptr),
+          mSceneRuntime(sr),
+          mParentRuntime(nullptr),
+          mBoundingBox(),
+          mHasCameraFocus(false),
+          mDeleted(false),
+          mHidden(false),
+          mAlwaysDraw(false),
+          mRandomUuid(randomUuid),
+          mDeferredFor(0),
+          mObjectLifetime(0),
+          mDieAfter(0),
+          mScriptConstructionTask(this),
+          mScriptOnInitTask(this),
+          mScriptOnUpdateTask(this),
+          mScriptOnEventTask(this),
+          mScriptDestructionTask(nullptr),
+          mFontRuntime(nullptr),
+          mFontText(""),
+          mFontColor(1.f),
+          mFontScale(1.f)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "EntityRuntime: Constructing Object" );
 
         mEventQueueMutex.lock();
@@ -109,6 +113,9 @@ namespace octronic::dream
     EntityRuntime::~EntityRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "EntityRuntime: Destroying Object" );
 
         for (auto child : mChildRuntimes)
@@ -131,6 +138,9 @@ namespace octronic::dream
     EntityRuntime::removeAnimationRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mAnimationRuntime != nullptr)
         {
             delete mAnimationRuntime;
@@ -142,6 +152,9 @@ namespace octronic::dream
     EntityRuntime::removeAudioRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mAudioRuntime = nullptr;
     }
 
@@ -149,6 +162,9 @@ namespace octronic::dream
     EntityRuntime::removePathRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mPathRuntime != nullptr)
         {
             delete mPathRuntime;
@@ -160,6 +176,9 @@ namespace octronic::dream
     EntityRuntime::removeModelRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mModelRuntime != nullptr)
         {
             mModelRuntime->removeRuntime(this);
@@ -170,6 +189,9 @@ namespace octronic::dream
     EntityRuntime::removeLightRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mLightRuntime != nullptr)
         {
             delete mLightRuntime;
@@ -181,24 +203,30 @@ namespace octronic::dream
     EntityRuntime::removeFontRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mFontRuntime != nullptr)
         {
             mFontRuntime->popInstance(this);
             mFontRuntime = nullptr;
         }
-     }
+    }
 
 
     void
     EntityRuntime::removeScriptRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mScriptRuntime)
         {
             mSceneRuntime
-                ->getProjectRuntime()
-                ->getTaskManager()
-                ->pushDestructionTask(mScriptDestructionTask);
+                    ->getProjectRuntime()
+                    ->getTaskManager()
+                    ->pushDestructionTask(mScriptDestructionTask);
         }
         mScriptRuntime = nullptr;
     }
@@ -207,15 +235,18 @@ namespace octronic::dream
     EntityRuntime::removePhysicsObjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (hasPhysicsObjectRuntime())
         {
             auto physicsComp = mSceneRuntime
-                ->getProjectRuntime()
-                ->getPhysicsComponent();
-           if (physicsComp != nullptr)
-           {
+                    ->getProjectRuntime()
+                    ->getPhysicsComponent();
+            if (physicsComp != nullptr)
+            {
                 physicsComp->removePhysicsObjectRuntime(getPhysicsObjectRuntime());
-           }
+            }
         }
 
         if (mPhysicsObjectRuntime != nullptr)
@@ -228,6 +259,9 @@ namespace octronic::dream
     FontRuntime*
     EntityRuntime::getFontRuntime()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mFontRuntime;
     }
 
@@ -235,6 +269,9 @@ namespace octronic::dream
     EntityRuntime::getAnimationRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mAnimationRuntime;
     }
 
@@ -242,6 +279,9 @@ namespace octronic::dream
     EntityRuntime::getPathRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mPathRuntime;
     }
 
@@ -249,6 +289,9 @@ namespace octronic::dream
     EntityRuntime::getAudioRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mAudioRuntime;
     }
 
@@ -256,6 +299,9 @@ namespace octronic::dream
     EntityRuntime::getModelRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mModelRuntime;
     }
 
@@ -263,6 +309,9 @@ namespace octronic::dream
     EntityRuntime::getScriptRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mScriptRuntime;
     }
 
@@ -270,6 +319,9 @@ namespace octronic::dream
     EntityRuntime::getLightRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mLightRuntime;
     }
 
@@ -277,33 +329,39 @@ namespace octronic::dream
     EntityRuntime::getAssetRuntime
     (AssetType type)
     {
-       switch (type)
-       {
-           case ASSET_TYPE_ENUM_ANIMATION:
-               return getAnimationRuntime();
-           case ASSET_TYPE_ENUM_PATH:
-               return getPathRuntime();
-           case ASSET_TYPE_ENUM_AUDIO:
-               return getAudioRuntime();
-           case ASSET_TYPE_ENUM_LIGHT:
-               return getLightRuntime();
-           case ASSET_TYPE_ENUM_MODEL:
-               return getModelRuntime();
-           case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-               return getPhysicsObjectRuntime();
-           case ASSET_TYPE_ENUM_SCRIPT:
-               return getScriptRuntime();
-           case ASSET_TYPE_ENUM_FONT:
-               return getFontRuntime();
-           default:
-               break;
-       }
-       return nullptr;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        switch (type)
+        {
+            case ASSET_TYPE_ENUM_ANIMATION:
+                return getAnimationRuntime();
+            case ASSET_TYPE_ENUM_PATH:
+                return getPathRuntime();
+            case ASSET_TYPE_ENUM_AUDIO:
+                return getAudioRuntime();
+            case ASSET_TYPE_ENUM_LIGHT:
+                return getLightRuntime();
+            case ASSET_TYPE_ENUM_MODEL:
+                return getModelRuntime();
+            case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+                return getPhysicsObjectRuntime();
+            case ASSET_TYPE_ENUM_SCRIPT:
+                return getScriptRuntime();
+            case ASSET_TYPE_ENUM_FONT:
+                return getFontRuntime();
+            default:
+                break;
+        }
+        return nullptr;
     }
 
     bool
     EntityRuntime::hasFontRuntime()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mFontRuntime != nullptr;
     }
 
@@ -311,6 +369,9 @@ namespace octronic::dream
     EntityRuntime::hasAnimationRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mAnimationRuntime != nullptr;
     }
 
@@ -318,6 +379,9 @@ namespace octronic::dream
     EntityRuntime::hasLightRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mLightRuntime != nullptr;
     }
 
@@ -325,6 +389,9 @@ namespace octronic::dream
     EntityRuntime::hasModelRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mModelRuntime != nullptr;
     }
 
@@ -332,6 +399,8 @@ namespace octronic::dream
     EntityRuntime::hasScriptRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mScriptRuntime != nullptr;
     }
 
@@ -339,6 +408,8 @@ namespace octronic::dream
     EntityRuntime::setAssetDefinitionsMap
     (const map<AssetType,UuidType>& assetMap)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mAssetDefinitions = assetMap;
     }
 
@@ -346,6 +417,8 @@ namespace octronic::dream
     EntityRuntime::getAssetDefinitionsMap
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mAssetDefinitions;
     }
 
@@ -360,6 +433,8 @@ namespace octronic::dream
     EntityRuntime::setAlwaysDraw
     (bool alwaysDraw)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mAlwaysDraw = alwaysDraw;
     }
 
@@ -367,6 +442,8 @@ namespace octronic::dream
     EntityRuntime::getPhysicsObjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mPhysicsObjectRuntime;
     }
 
@@ -374,6 +451,8 @@ namespace octronic::dream
     EntityRuntime::getTransform
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mTransform;
     }
 
@@ -381,6 +460,8 @@ namespace octronic::dream
     EntityRuntime::initTransform
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         if (mDefinition)
         {
             auto definedTransform = static_cast<EntityDefinition*>(mDefinition)->getTransform();
@@ -393,6 +474,8 @@ namespace octronic::dream
     EntityRuntime::hasEvents
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         bool retval = false;
         mEventQueueMutex.lock();
         retval = !mEventQueue.empty();
@@ -404,10 +487,12 @@ namespace octronic::dream
     EntityRuntime::addEvent
     (const Event& event)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         if (!mDeleted)
         {
             LOG_TRACE("EntityRuntime: Event posted from {} to {}",
-                event.getAttribute("uuid"), getNameAndUuidString());
+                      event.getAttribute("uuid"), getNameAndUuidString());
             mEventQueueMutex.lock();
             mEventQueue.push_back(std::move(event));
             mEventQueueMutex.unlock();
@@ -416,18 +501,24 @@ namespace octronic::dream
 
     bool EntityRuntime::tryLockEventQueue()
     {
-       return mEventQueueMutex.try_lock();
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        return mEventQueueMutex.try_lock();
     }
 
     void EntityRuntime::unlockEventQueue()
     {
-       mEventQueueMutex.unlock();
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        mEventQueueMutex.unlock();
     }
 
     vector<Event>*
     EntityRuntime::getEventQueue
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return &mEventQueue;
     }
 
@@ -435,6 +526,8 @@ namespace octronic::dream
     EntityRuntime::clearEventQueue
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("EntityRuntime: Clearing event queue");
 
         if(tryLockEventQueue())
@@ -458,24 +551,26 @@ namespace octronic::dream
     EntityRuntime::collectGarbage
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("EntityRuntime: Collecting Garbage {}" ,getNameAndUuidString());
 
         vector<EntityRuntime*> toDelete;
 
         for (auto child : mChildRuntimes)
         {
-           if (child->getDeleted())
-           {
+            if (child->getDeleted())
+            {
                 toDelete.push_back(child);
-           }
+            }
         }
 
         for (auto child : toDelete)
         {
             LOG_TRACE("EntityRuntime: Deleting child {}",child->getNameAndUuidString());
             mChildRuntimes.erase(
-                find(mChildRuntimes.begin(), mChildRuntimes.end(), child)
-            );
+                        find(mChildRuntimes.begin(), mChildRuntimes.end(), child)
+                        );
             delete child;
         }
 
@@ -486,6 +581,8 @@ namespace octronic::dream
     EntityRuntime::hasPhysicsObjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mPhysicsObjectRuntime != nullptr;
     }
 
@@ -493,6 +590,8 @@ namespace octronic::dream
     EntityRuntime::hasPathRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mPathRuntime != nullptr;
     }
 
@@ -500,6 +599,8 @@ namespace octronic::dream
     EntityRuntime::hasAudioRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mAudioRuntime != nullptr;
     }
 
@@ -507,6 +608,8 @@ namespace octronic::dream
     EntityRuntime::createAssetRuntimes
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         for (auto assetPair : mAssetDefinitions)
         {
             AssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
@@ -557,6 +660,8 @@ namespace octronic::dream
     EntityRuntime::getAssetDefinitionByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
         {
@@ -575,6 +680,8 @@ namespace octronic::dream
     EntityRuntime::replaceAssetUuid
     (AssetType type, UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_INFO("EntityRuntime: REPLACING asset Runtime from uuid {}", uuid);
         auto project = mSceneRuntime->getProjectRuntime()->getProject();
         if (project == nullptr)
@@ -615,14 +722,16 @@ namespace octronic::dream
     EntityRuntime::createPhysicsObjectRuntime
     (PhysicsObjectDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         removePhysicsObjectRuntime();
         LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
         mPhysicsObjectRuntime = new PhysicsObjectRuntime(
-            definition,
-            mSceneRuntime->getProjectRuntime()->getPhysicsComponent(),
-            mSceneRuntime->getProjectRuntime()->getModelCache(),
-            this
-        );
+                    definition,
+                    mSceneRuntime->getProjectRuntime()->getPhysicsComponent(),
+                    mSceneRuntime->getProjectRuntime()->getModelCache(),
+                    this
+                    );
         return mPhysicsObjectRuntime->useDefinition();
     }
 
@@ -630,6 +739,8 @@ namespace octronic::dream
     EntityRuntime::createAnimationRuntime
     (AnimationDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
         removeAnimationRuntime();
         mAnimationRuntime = new AnimationRuntime(definition,this);
@@ -640,6 +751,8 @@ namespace octronic::dream
     EntityRuntime::createPathRuntime
     (PathDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
         removePathRuntime();
         mPathRuntime = new PathRuntime(definition,this);
@@ -650,6 +763,8 @@ namespace octronic::dream
     EntityRuntime::createAudioRuntime
     (AudioDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto cache = mSceneRuntime->getProjectRuntime()->getAudioCache();
         if (cache != nullptr)
         {
@@ -667,6 +782,8 @@ namespace octronic::dream
     EntityRuntime::createModelRuntime
     (ModelDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         removeModelRuntime();
         LOG_INFO("EntityRuntime: Creating Model asset Runtime.");
         auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
@@ -690,6 +807,8 @@ namespace octronic::dream
     EntityRuntime::createScriptRuntime
     (ScriptDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         removeScriptRuntime();
         LOG_TRACE("EntityRuntime: Creating Script asset Runtime.");
         auto scriptCache = mSceneRuntime->getProjectRuntime()->getScriptCache();
@@ -720,6 +839,8 @@ namespace octronic::dream
     EntityRuntime::createLightRuntime
     (LightDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         removeLightRuntime();
         LOG_TRACE( "EntityRuntime: Creating Light Asset Runtime." );
         mLightRuntime = new LightRuntime(definition,this);
@@ -730,6 +851,8 @@ namespace octronic::dream
     EntityRuntime::createFontRuntime
     (FontDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         removeFontRuntime();
         LOG_TRACE( "EntityRuntime: Creating Font Asset Runtime." );
         auto fontCache = mSceneRuntime->getProjectRuntime()->getFontCache();
@@ -750,6 +873,8 @@ namespace octronic::dream
     EntityRuntime::getChildRuntimeByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if (*it != nullptr)
@@ -767,6 +892,8 @@ namespace octronic::dream
     EntityRuntime::getChildRuntimes
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mChildRuntimes;
     }
 
@@ -774,6 +901,8 @@ namespace octronic::dream
     EntityRuntime::isParentOf
     (EntityRuntime*  child)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
             if ((*it) == child)
@@ -788,6 +917,8 @@ namespace octronic::dream
     EntityRuntime::setParentRuntime
     (EntityRuntime* parent)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mParentRuntime = parent;
         setAttribute("parent",mParentRuntime->getUuidString());
     }
@@ -796,6 +927,8 @@ namespace octronic::dream
     EntityRuntime::getParentRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mParentRuntime;
     }
 
@@ -803,26 +936,32 @@ namespace octronic::dream
     EntityRuntime::getSceneRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mSceneRuntime;
     }
 
     EntityDefinition*
     EntityRuntime::getEntityDefinition()
     {
-       return static_cast<EntityDefinition*>(getDefinition());
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        return static_cast<EntityDefinition*>(getDefinition());
     }
 
     bool
     EntityRuntime::loadChildrenFromDefinition
     (EntityDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         vector<EntityDefinition*> definitions = definition->getChildDefinitionsList();
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
             auto sod = (*it);
             if (sod->getIsTemplate())
             {
-               static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->addTemplate(sod);
+                static_cast<SceneDefinition*>(mSceneRuntime->getDefinition())->addTemplate(sod);
             }
             else
             {
@@ -836,6 +975,8 @@ namespace octronic::dream
     EntityRuntime::setTransform
     (Transform* transform)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mTransform.setMatrix(transform->getMatrix());
     }
 
@@ -843,43 +984,51 @@ namespace octronic::dream
     EntityRuntime::translateWithChildren
     (const Vector3& translation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>(
-                [&](EntityRuntime* rt)
-                {
-                    rt->getTransform().translate(translation);
-                    return static_cast<EntityRuntime*>(nullptr);
-                }
-            )
-        );
+                (
+                    function<EntityRuntime*(EntityRuntime*)>(
+                        [&](EntityRuntime* rt)
+                    {
+                        rt->getTransform().translate(translation);
+                        return static_cast<EntityRuntime*>(nullptr);
+                    }
+                    )
+                );
     }
 
     void
     EntityRuntime::preTranslateWithChildren
     (const Vector3& translation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         applyToAll(
-            function<EntityRuntime*(EntityRuntime*)>(
-            [&](EntityRuntime* rt)
-            {
-                rt->getTransform().preTranslate(translation);
-                return static_cast<EntityRuntime*>(nullptr);
-            }
-        ));
+                    function<EntityRuntime*(EntityRuntime*)>(
+                        [&](EntityRuntime* rt)
+                    {
+                        rt->getTransform().preTranslate(translation);
+                        return static_cast<EntityRuntime*>(nullptr);
+                    }
+                    ));
     }
 
     Transform
     EntityRuntime::getInitialTransform
     ()
     {
-       return mInitialTransform;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        return mInitialTransform;
     }
 
     void
     EntityRuntime::transformOffsetInitial
     (const mat4& matrix)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mTransform.setMatrix(matrix * mInitialTransform.getMatrix());
     }
 
@@ -887,6 +1036,8 @@ namespace octronic::dream
     EntityRuntime::translateOffsetInitial
     (const Vector3& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mTransform.setMatrix(glm::translate(mat4(1.0),tx.toGLM())* mInitialTransform.getMatrix());
     }
 
@@ -901,6 +1052,8 @@ namespace octronic::dream
     EntityRuntime::setHasCameraFocus
     (bool cf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mHasCameraFocus = cf;
     }
 
@@ -929,6 +1082,8 @@ namespace octronic::dream
     EntityRuntime::setHidden
     (bool hidden)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mHidden = hidden;
     }
 
@@ -936,6 +1091,8 @@ namespace octronic::dream
     EntityRuntime::removeChildRuntime
     (EntityRuntime* child)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         child->setDeleted(true);
     }
 
@@ -943,6 +1100,8 @@ namespace octronic::dream
     EntityRuntime::addChildRuntime
     (EntityRuntime* rt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mChildRuntimes.push_back(rt);
     }
 
@@ -950,6 +1109,8 @@ namespace octronic::dream
     EntityRuntime::createAndAddChildRuntime
     (EntityDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto* child = new EntityRuntime(def, mSceneRuntime, mRandomUuid);
         child->setParentRuntime(this);
         if (!child->useDefinition())
@@ -966,8 +1127,16 @@ namespace octronic::dream
     EntityRuntime::addChildFromTemplateUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        // Get the scene def
         auto sceneDef = static_cast<SceneDefinition*>(mSceneRuntime->getDefinition());
+
+        // Get the template def
         auto def = sceneDef->getTemplateByUuid(uuid);
+
+        // Check template is good
         if (def)
         {
             if (!def->getIsTemplate())
@@ -975,19 +1144,23 @@ namespace octronic::dream
                 LOG_ERROR("EntityRuntime: This SO is not a Template, too dangerous");
                 return nullptr;
             }
+
+            // Create child
             auto* child = new EntityRuntime(def, mSceneRuntime, true);
             child->setParentRuntime(this);
+            // Use definitoin
             if (!child->useDefinition())
             {
-                LOG_ERROR("EntityRuntime: Error creating child runtime");
+                LOG_DEBUG("EntityRuntime: Error creating child runtime");
                 delete child;
                 return nullptr;
             }
+            // Add runtime
             addChildRuntime(child);
-            LOG_ERROR("EntityRuntime: Successfully added child from template {}",def->getNameAndUuidString());
+            LOG_DEBUG("EntityRuntime: Successfully added child from template {}",def->getNameAndUuidString());
             return child;
         }
-        LOG_ERROR("EntityRuntime: Cannt create child, definition not found");
+        LOG_DEBUG("EntityRuntime: Cannt create child, definition not found");
         return nullptr;
     }
 
@@ -995,6 +1168,8 @@ namespace octronic::dream
     EntityRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         if (mDefinition)
         {
             auto def = static_cast<EntityDefinition*>(mDefinition);
@@ -1022,6 +1197,8 @@ namespace octronic::dream
     EntityRuntime::loadDeferred
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         if (!createAssetRuntimes())
         {
             return false;
@@ -1037,6 +1214,8 @@ namespace octronic::dream
     EntityRuntime::getBoundingBox
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         if (mModelRuntime != nullptr)
         {
             return mModelRuntime->getBoundingBox();
@@ -1048,13 +1227,17 @@ namespace octronic::dream
     EntityRuntime::setBoundingBox
     (const BoundingBox& boundingBox)
     {
-        mBoundingBox = boundingBox;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        mBoundingBox.from(boundingBox);
     }
 
     float
     EntityRuntime::distanceFrom
     (EntityRuntime* other)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return mTransform.distanceFrom(other->getTransform());
     }
 
@@ -1062,6 +1245,8 @@ namespace octronic::dream
     EntityRuntime::distanceFrom
     (const Vector3& other)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return glm::distance(vec3(mTransform.getMatrix()[3]),other.toGLM());
     }
 
@@ -1069,10 +1254,12 @@ namespace octronic::dream
     EntityRuntime::visibleInFrustum
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto cam = mSceneRuntime->getCamera();
         if (cam)
         {
-           return cam->visibleInFrustum(this);
+            return cam->visibleInFrustum(this);
         }
         return false;
     }
@@ -1081,10 +1268,12 @@ namespace octronic::dream
     EntityRuntime::containedInFrustum
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto cam = mSceneRuntime->getCamera();
         if (cam)
         {
-           return cam->containedInFrustum(this);
+            return cam->containedInFrustum(this);
         }
         return false;
     }
@@ -1093,10 +1282,12 @@ namespace octronic::dream
     EntityRuntime::containedInFrustumAfterTransform
     (const mat4& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto cam = mSceneRuntime->getCamera();
         if (cam)
         {
-           return cam->containedInFrustumAfterTransform(this,tx);
+            return cam->containedInFrustumAfterTransform(this,tx);
         }
         return false;
 
@@ -1106,6 +1297,8 @@ namespace octronic::dream
     EntityRuntime::exceedsFrustumPlaneAtTranslation
     (Frustum::Plane plane, const Vector3& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         auto cam = mSceneRuntime->getCamera();
         if (cam)
         {
@@ -1118,6 +1311,8 @@ namespace octronic::dream
     EntityRuntime::applyToAll
     (const function<bool(EntityRuntime*)>& fn)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         bool retval = fn(this);
 
         size_t n = mChildRuntimes.size();
@@ -1136,6 +1331,8 @@ namespace octronic::dream
     EntityRuntime::applyToAll
     (const function<EntityRuntime*(EntityRuntime*)>& fn)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         EntityRuntime* retval = fn(this);
 
         if (retval != nullptr)
@@ -1163,15 +1360,17 @@ namespace octronic::dream
     EntityRuntime::translateOffsetInitialWithChildren
     (const Vector3& translation)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         static mat4 ident(1.0f);
         applyToAll
-        (function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
-        {
-            auto initial = rt->getInitialTransform().getMatrix();
-            rt->getTransform().setMatrix(glm::translate(ident,translation.toGLM())* initial);
-            return static_cast<EntityRuntime*>(nullptr);
-        }
-        ));
+                (function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
+                 {
+                     auto initial = rt->getInitialTransform().getMatrix();
+                     rt->getTransform().setMatrix(glm::translate(ident,translation.toGLM())* initial);
+                     return static_cast<EntityRuntime*>(nullptr);
+                 }
+                 ));
     }
 
     long
@@ -1186,6 +1385,8 @@ namespace octronic::dream
     EntityRuntime::setDeferredFor
     (long deferred)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mDeferredFor = deferred;
     }
 
@@ -1194,13 +1395,15 @@ namespace octronic::dream
     ()
     const
     {
-       return mObjectLifetime;
+        return mObjectLifetime;
     }
 
     void
     EntityRuntime::setObjectLifetime
     (long d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mObjectLifetime = d;
     }
 
@@ -1208,6 +1411,8 @@ namespace octronic::dream
     EntityRuntime::setDieAfter
     (long d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mDieAfter = d;
     }
 
@@ -1223,26 +1428,32 @@ namespace octronic::dream
     EntityRuntime::getScriptOnInitTask
     ()
     {
-       return &mScriptOnInitTask;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        return &mScriptOnInitTask;
     }
 
     EntityScriptOnEventTask*
     EntityRuntime::getScriptOnEventTask
     ()
     {
-       return &mScriptOnEventTask;
+        return &mScriptOnEventTask;
     }
 
     EntityScriptOnUpdateTask*
     EntityRuntime::getScriptOnUpdateTask
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return &mScriptOnUpdateTask;
     }
     void
     EntityRuntime::updateLifetime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         long timeDelta = getSceneRuntime()->getProjectRuntime()->getTime()->getFrameTimeDelta();
         if (mDeferredFor > 0)
         {
@@ -1270,18 +1481,20 @@ namespace octronic::dream
     (const string& key)
     const
     {
-       if (mAttributes.count(key) > 0)
-       {
-           return mAttributes.at(key);
-       }
-       return "";
+        if (mAttributes.count(key) > 0)
+        {
+            return mAttributes.at(key);
+        }
+        return "";
     }
 
     void
     EntityRuntime::setAttribute
     (const string& key, const string& value)
     {
-       mAttributes[key] = value;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+        mAttributes[key] = value;
     }
 
     const map<string,string>&
@@ -1299,6 +1512,8 @@ namespace octronic::dream
 
     void EntityRuntime::setFontText(const string& fontText)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mFontText = fontText;
     }
 
@@ -1309,6 +1524,8 @@ namespace octronic::dream
 
     void EntityRuntime::setFontColor(const Vector3& fontColor)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mFontColor = fontColor;
     }
 
@@ -1332,6 +1549,8 @@ namespace octronic::dream
 
     void EntityRuntime::setScriptError(bool e)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mScriptError = e;
     }
 
@@ -1342,16 +1561,20 @@ namespace octronic::dream
 
     void EntityRuntime::setScriptInitialised(bool i)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mScriptInitialised = i;
     }
 
- 	bool EntityRuntime::getScriptInitialised() const
+    bool EntityRuntime::getScriptInitialised() const
     {
         return mScriptInitialised;
     }
 
     EntityScriptConstructionTask* EntityRuntime::getScriptConstructionTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         return &mScriptConstructionTask;
     }
 

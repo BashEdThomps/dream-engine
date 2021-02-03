@@ -25,12 +25,14 @@
 #include "Scene/SceneRuntime.h"
 #include "Components/Task/Task.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
 
     DiscreteAssetRuntime::DiscreteAssetRuntime
-    (AssetDefinition* def, EntityRuntime* runtime)
-        : AssetRuntime (def),
+    (const string& className, AssetDefinition* def, EntityRuntime* runtime)
+        : AssetRuntime (className, def),
           mEntityRuntime(runtime)
     {
     }
@@ -41,8 +43,11 @@ namespace octronic::dream
 
     string
     DiscreteAssetRuntime::getAssetFilePath
-    (string fmt)
+    (const string& fmt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         auto pDir = mEntityRuntime
                 ->getSceneRuntime()
                 ->getProjectRuntime()
@@ -55,6 +60,9 @@ namespace octronic::dream
     DiscreteAssetRuntime::getAssetDirectoryPath
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         auto pDir = mEntityRuntime
                 ->getSceneRuntime()
                 ->getProjectRuntime()
@@ -67,6 +75,9 @@ namespace octronic::dream
     DiscreteAssetRuntime::getEntityRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         return mEntityRuntime;
     }
 }

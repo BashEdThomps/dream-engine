@@ -14,9 +14,9 @@
 
 extern "C"
 {
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 }
 
 #include "ScriptRuntime.h"
@@ -47,40 +47,70 @@ namespace octronic::dream
         static lua_State* State;
 
         ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
-       ~ScriptComponent() override;
+        ~ScriptComponent() override;
 
         bool init() override;
 
+        bool executeScriptOnUpdate(ScriptRuntime* script, EntityRuntime* entity);
+        bool executeScriptOnInit(ScriptRuntime* script, EntityRuntime* entity);
+        bool executeScriptOnEvent(ScriptRuntime* script, EntityRuntime* entity);
+        bool executeScriptOnInput(ScriptRuntime* script, InputComponent* inputComp, SceneRuntime* sr);
+        bool registerInputScript(ScriptRuntime* script);
+        bool removeInputScript(ScriptRuntime* script);
+        bool createEntityState(ScriptRuntime* script, EntityRuntime* entity);
+    	bool removeEntityState(UuidType uuid);
+
+
     private:
-        const static string COMPONENTS_TBL;
+        const static string LUA_COMPONENTS_TBL;
+        const static string LUA_ON_INIT_FUNCTION;
+        const static string LUA_ON_UPDATE_FUNCTION;
+        const static string LUA_ON_INPUT_FUNCTION;
+        const static string LUA_ON_EVENT_FUNCTION;
         ScriptCache* mScriptCache;
 
-        // API Exposure Methods ======================================================
+        // API Exposure Methods ================================================
+
         void debugRegisteringClass(const string& classname);
         void exposeAPI();
+
+        // Base Classes
+        void exposeLockableObject();
+        void exposeRuntime();
+        void exposeComponent();
+        void exposeCache();
+        void exposeDefinition();
+        void exposeAssetRuntime();
+        void exposeSharedAssetRuntime();
+        void exposeDiscreteAssetRuntime();
+
+        // Runtimes
         void exposeAnimationRuntime();
-        void exposePathRuntime();
-        void exposeModelRuntime();
-        void exposeCamera();
-        void exposeProjectRuntime();
-        void exposeProjectDirectory();
-        void exposeEvent();
-        void exposeWindowComponent();
-        void exposeGraphicsComponent();
-        void exposeInputComponent();
-        void exposeAudioComponent();
         void exposeAudioRuntime();
-        void exposeLightRuntime();
-        void exposeScriptRuntime();
-        void exposePhysicsComponent();
-        void exposePhysicsObjectRuntime();
-        void exposeShaderRuntime();
-        void exposeSceneRuntime();
         void exposeEntityRuntime();
+        void exposeLightRuntime();
+        void exposeModelRuntime();
+        void exposePathRuntime();
+        void exposePhysicsObjectRuntime();
+        void exposeProjectRuntime();
+        void exposeSceneRuntime();
+        void exposeScriptRuntime();
+        void exposeShaderRuntime();
+
+        // Components
+        void exposeAudioComponent();
+        void exposeInputComponent();
+        void exposeGraphicsComponent();
+        void exposePhysicsComponent();
+        void exposeWindowComponent();
+
+        // Misc
+        void exposeProjectDirectory();
+        void exposeCamera();
+        void exposeEvent();
         void exposeTime();
         void exposeTransform();
         void exposeGLM();
-        void exposeDefinition();
         void exposeOctronicMath();
     };
 }

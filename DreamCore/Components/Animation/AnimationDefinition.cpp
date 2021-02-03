@@ -15,12 +15,16 @@
 #include "Common/Constants.h"
 #include "Common/Logger.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     AnimationDefinition::AnimationDefinition
     (ProjectDefinition* pd, const json& js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("AnimationDefinition",pd,js)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_KEYFRAMES].is_null())
         {
             mJson[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
@@ -30,6 +34,8 @@ namespace octronic::dream
     AnimationDefinition::~AnimationDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("AnimationDefinition: Destructing");
     }
 
@@ -37,6 +43,8 @@ namespace octronic::dream
     AnimationDefinition::getKeyframes
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         vector<AnimationKeyframe> keyframes;
         for (auto js : mJson[Constants::ASSET_ATTR_KEYFRAMES])
         {
@@ -51,6 +59,8 @@ namespace octronic::dream
     AnimationDefinition::addKeyframe
     (const AnimationKeyframe& kf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
     }
 
@@ -58,6 +68,8 @@ namespace octronic::dream
     AnimationDefinition::updateKeyframe
     (const AnimationKeyframe& kf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
         auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
         for (;itr != end; itr++)
@@ -88,6 +100,8 @@ namespace octronic::dream
     AnimationDefinition::removeKeyframe
     (const AnimationKeyframe& kf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
         auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
         for (;itr != end; itr++)
@@ -104,6 +118,8 @@ namespace octronic::dream
     AnimationDefinition::getRelative
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
         {
             mJson[Constants::ANIMATION_RELATIVE] = false;
@@ -115,6 +131,8 @@ namespace octronic::dream
     AnimationDefinition::setRelative
     (bool relative)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
        mJson[Constants::ANIMATION_RELATIVE] = relative;
     }
 
@@ -122,17 +140,19 @@ namespace octronic::dream
     AnimationDefinition::nextKeyframeID
     ()
     {
-        int maxId = 0;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+		if (!lg.owns_lock()) getMutex().lock();
+        int maxID = 0;
         auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
         auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
         for (;itr != end; itr++)
         {
-            int nextId = (*itr)[Constants::KEYFRAME_ID];
-            if (nextId > maxId)
+            int nextID = (*itr)[Constants::KEYFRAME_ID];
+            if (nextID > maxID)
             {
-               maxId = nextId;
+               maxID = nextID;
             }
         }
-        return maxId+1;
+        return maxID+1;
     }
 }

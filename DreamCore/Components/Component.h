@@ -35,7 +35,7 @@ namespace octronic::dream
     {
 
     public:
-        Component(ProjectRuntime* pr);
+        Component(const string& className, ProjectRuntime* pr);
         virtual ~Component();
         virtual bool init() = 0;
 

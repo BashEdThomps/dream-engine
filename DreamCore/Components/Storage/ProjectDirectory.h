@@ -20,6 +20,7 @@
 
 #include "Common/Uuid.h"
 #include "Common/Constants.h" // AssetType
+#include "Common/LockableObject.h"
 
 using std::string;
 using std::vector;
@@ -37,7 +38,7 @@ namespace octronic::dream
      * location on disk. All IO should be done through the ProjectDirectory, to
      * facilitate cross-platform abstractions.
      */
-    class ProjectDirectory
+    class ProjectDirectory : public LockableObject
     {
     public:
         ProjectDirectory(StorageManager* fm);

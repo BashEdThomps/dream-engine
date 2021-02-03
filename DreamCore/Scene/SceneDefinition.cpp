@@ -19,20 +19,28 @@
 #include "Components/Transform.h"
 #include "Project/ProjectDefinition.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     SceneDefinition::SceneDefinition
     (ProjectDefinition* projectDefinition, const json& data)
-        : Definition(data),
+        : Definition("SceneDefinition",data),
           mRootEntityDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "SceneDefinition: Constructing {}", getNameAndUuidString() );
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "SceneDefinition: Destructing {}", getNameAndUuidString() );
         if (mRootEntityDefinition != nullptr)
         {
@@ -45,6 +53,9 @@ namespace octronic::dream
     SceneDefinition::loadRootEntityDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
         if (rsoJson.is_null())
         {
@@ -53,11 +64,11 @@ namespace octronic::dream
         }
 
         mRootEntityDefinition = new EntityDefinition
-        (
-            nullptr,
-            this,
-            rsoJson
-        );
+                (
+                    nullptr,
+                    this,
+                    rsoJson
+                    );
         mRootEntityDefinition->loadChildEntityDefinitions();
     }
 
@@ -65,6 +76,9 @@ namespace octronic::dream
     SceneDefinition::setCameraMovementSpeed
     (float speed)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
     }
 
@@ -72,6 +86,9 @@ namespace octronic::dream
     SceneDefinition::getCameraMovementSpeed
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED].is_null())
         {
             mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
@@ -83,6 +100,9 @@ namespace octronic::dream
     SceneDefinition::setPhysicsDebug
     (bool debug)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
     }
 
@@ -90,6 +110,9 @@ namespace octronic::dream
     SceneDefinition::getPhysicsDebug
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_PHYSICS_DEBUG].is_null())
         {
             mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
@@ -99,11 +122,17 @@ namespace octronic::dream
 
     void SceneDefinition::setMeshCullDistance(float mcd)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
     }
 
     float SceneDefinition::getMeshCullDistance()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_MESH_CULL_DISTANCE].is_null())
         {
             mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
@@ -115,6 +144,9 @@ namespace octronic::dream
     SceneDefinition::addTemplate
     (EntityDefinition* _template)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mTemplates.push_back(_template);
     }
 
@@ -123,6 +155,9 @@ namespace octronic::dream
     SceneDefinition::getTemplateByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         for (EntityDefinition* next : mTemplates)
         {
             if (next->getUuid() == uuid)
@@ -137,9 +172,12 @@ namespace octronic::dream
     SceneDefinition::getCameraTranslation
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         return unwrapVector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
     }
@@ -148,15 +186,21 @@ namespace octronic::dream
     SceneDefinition::setCameraTranslation
     (const Vector3& transform)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         // Translation
         mJson[Constants::SCENE_CAMERA_TRANSLATION] = wrapVector3(transform);
     }
 
     Vector3 SceneDefinition::getCameraLookAt()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
         {
-           setCameraLookAt(Vector3(0.0f));
+            setCameraLookAt(Vector3(0.0f));
         }
         return unwrapVector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
     }
@@ -165,6 +209,9 @@ namespace octronic::dream
     SceneDefinition::setCameraLookAt
     (const Vector3& lookAt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = wrapVector3(lookAt);
     }
 
@@ -172,6 +219,9 @@ namespace octronic::dream
     SceneDefinition::getGravity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         Vector3 gravity;
 
         if (mJson[Constants::SCENE_GRAVITY].is_null())
@@ -188,6 +238,9 @@ namespace octronic::dream
     SceneDefinition::setGravity
     (const Vector3& gravity)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_GRAVITY] = wrapVector3(gravity);
     }
 
@@ -195,6 +248,9 @@ namespace octronic::dream
     SceneDefinition::setGravityX
     (float x)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
     }
 
@@ -202,6 +258,9 @@ namespace octronic::dream
     SceneDefinition::setGravityY
     (float y)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
     }
 
@@ -209,6 +268,9 @@ namespace octronic::dream
     SceneDefinition::setGravityZ
     (float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
     }
 
@@ -216,6 +278,9 @@ namespace octronic::dream
     SceneDefinition::getClearColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         Vector3 colour;
 
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
@@ -237,6 +302,9 @@ namespace octronic::dream
     SceneDefinition::setClearColour
     (const Vector3& colour)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
         {
             mJson[Constants::SCENE_CLEAR_COLOUR] = {};
@@ -251,6 +319,9 @@ namespace octronic::dream
     SceneDefinition::setClearColourR
     (float r)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
     }
 
@@ -258,6 +329,8 @@ namespace octronic::dream
     SceneDefinition::setClearColourG
     (float g)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
 
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
     }
@@ -266,6 +339,9 @@ namespace octronic::dream
     SceneDefinition::setClearColourB
     (float b)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
     }
 
@@ -273,6 +349,9 @@ namespace octronic::dream
     SceneDefinition::getRootEntityDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mRootEntityDefinition;
     }
 
@@ -280,6 +359,9 @@ namespace octronic::dream
     SceneDefinition::getProjectDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mProjectDefinition;
     }
 
@@ -287,17 +369,20 @@ namespace octronic::dream
     SceneDefinition::createNewRootEntityDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
         Transform transform;
         rootDefJson[Constants::TRANSFORM] = transform.getJson();
         mRootEntityDefinition = new EntityDefinition
-        (
-            nullptr,
-            this,
-            rootDefJson
-        );
+                (
+                    nullptr,
+                    this,
+                    rootDefJson
+                    );
         return mRootEntityDefinition;
     }
 
@@ -305,129 +390,177 @@ namespace octronic::dream
     SceneDefinition::getJson
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
         return mJson;
     }
 
     void SceneDefinition::setMinDrawDistance(float mdd)
     {
-       mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
     }
 
     float SceneDefinition::getMinDrawDistance()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_MIN_DRAW_DISTANCE].is_null())
         {
-           mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
+            mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
         }
         return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
     }
 
     void SceneDefinition::setMaxDrawDistance(float mdd)
     {
-       mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
     }
 
     float SceneDefinition::getMaxDrawDistance()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_MAX_DRAW_DISTANCE].is_null())
         {
-           mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
+            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
         }
         return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
     }
 
     float SceneDefinition::getCameraTranslationX()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
     }
 
     float SceneDefinition::getCameraTranslationY()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
     }
 
     float SceneDefinition::getCameraTranslationZ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
     }
 
     void SceneDefinition::setCameraTranslationX(float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
     }
 
     void SceneDefinition::setCameraTranslationY(float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
     }
 
     void SceneDefinition::setCameraTranslationZ(float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
         {
-           setCameraTranslation(Vector3(0.0f));
+            setCameraTranslation(Vector3(0.0f));
         }
         mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
     }
 
     void SceneDefinition::setCameraPitch(float pitch)
     {
-       mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
     }
 
     void SceneDefinition::setCameraYaw(float yaw)
     {
-       mJson[Constants::SCENE_CAMERA_YAW] = yaw;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_CAMERA_YAW] = yaw;
     }
 
     float SceneDefinition::getCameraPitch()
     {
-       if (mJson[Constants::SCENE_CAMERA_PITCH].is_null())
-       {
-           mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
-       }
-       return  mJson[Constants::SCENE_CAMERA_PITCH];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (mJson[Constants::SCENE_CAMERA_PITCH].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
+        }
+        return  mJson[Constants::SCENE_CAMERA_PITCH];
     }
 
     float SceneDefinition::getCameraYaw()
     {
-       if (mJson[Constants::SCENE_CAMERA_YAW].is_null())
-       {
-           mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
-       }
-       return  mJson[Constants::SCENE_CAMERA_YAW];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (mJson[Constants::SCENE_CAMERA_YAW].is_null())
+        {
+            mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
+        }
+        return  mJson[Constants::SCENE_CAMERA_YAW];
     }
 
     UuidType
     SceneDefinition::getCameraFocusedOn
     ()
     {
-       if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
-       {
-           mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
-       }
-       return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
+        {
+            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
+        }
+        return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
 
     }
 
@@ -435,6 +568,9 @@ namespace octronic::dream
     SceneDefinition::setCameraFocusedOn
     (UuidType focusedOn)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
     }
 
@@ -442,11 +578,14 @@ namespace octronic::dream
     SceneDefinition::getLightingPassShader
     ()
     {
-       if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
-       {
-           mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
-       }
-       return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
+        {
+            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
 
     }
 
@@ -454,18 +593,24 @@ namespace octronic::dream
     SceneDefinition::setLightingPassShader
     (UuidType shader)
     {
-       mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getShadowPassShader
     ()
     {
-       if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
-       {
-           mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
-       }
-       return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
+        {
+            mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
 
     }
 
@@ -473,18 +618,24 @@ namespace octronic::dream
     SceneDefinition::setShadowPassShader
     (UuidType shader)
     {
-       mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getFontShader
     ()
     {
-       if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
-       {
-           mJson[Constants::SCENE_FONT_SHADER] = 0;
-       }
-       return  mJson[Constants::SCENE_FONT_SHADER];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
+        {
+            mJson[Constants::SCENE_FONT_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_FONT_SHADER];
 
     }
 
@@ -492,18 +643,24 @@ namespace octronic::dream
     SceneDefinition::setFontShader
     (UuidType shader)
     {
-       mJson[Constants::SCENE_FONT_SHADER] = shader;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_FONT_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getInputScript
     ()
     {
-       if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
-       {
-           mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
-       }
-       return  mJson[Constants::SCENE_INPUT_SCRIPT];
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
+        {
+            mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
+        }
+        return  mJson[Constants::SCENE_INPUT_SCRIPT];
 
     }
 
@@ -511,18 +668,27 @@ namespace octronic::dream
     SceneDefinition::setInputScript
     (UuidType shader)
     {
-       mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
     }
 
     void
     SceneDefinition::setPlayerObject
     (UuidType po)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
     }
 
     UuidType SceneDefinition::getPlayerObject()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
         {
             mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;

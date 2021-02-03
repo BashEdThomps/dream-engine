@@ -30,7 +30,8 @@ namespace octronic::dream
 {
     Camera::Camera
     (SceneRuntime* parent)
-        : mTranslation(0.0f),
+        : LockableObject("Camera"),
+          mTranslation(0.0f),
           mFront(0.0f, 0.0f, -1.0f),
           mUp(0.0f),
           mRight(0.0),

@@ -50,8 +50,8 @@ namespace octronic::dream
          * @param def Definition from which the Runtime was instanciated.
          */
         Runtime
-        (Definition* def)
-            : LockableObject(),
+        (const string& className, Definition* def)
+            : LockableObject(className),
               mDefinition(def),
               mUuid(def == nullptr ? 0 : def->getUuid()),
               mName(def == nullptr ? "" : def->getName()) {}

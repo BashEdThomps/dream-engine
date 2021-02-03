@@ -18,20 +18,39 @@
 #include <limits>
 
 using std::numeric_limits;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     BoundingBox::BoundingBox(const Vector3& min, const Vector3& max)
-        : maxDimension(max.x()*2),
+        : LockableObject("BoundingBox"),
+          maxDimension(max.x()*2),
           minimum(min),
           maximum(max)
     {
+    }
+
+
+    BoundingBox::BoundingBox(const BoundingBox& other)
+        : LockableObject("BoundingBox"),
+          maxDimension(other.maxDimension),
+          minimum(other.minimum),
+          maximum(other.maximum)
+    {
+
     }
 
     BoundingBox::~BoundingBox
     ()
     {
 
+    }
+
+    void BoundingBox::from(const BoundingBox &bb)
+    {
+       maxDimension = bb.maxDimension;
+       minimum = bb.minimum;
+       maximum = bb.maximum;
     }
 
     Vector3
@@ -45,6 +64,9 @@ namespace octronic::dream
     BoundingBox::setToLimits
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         maximum = Vector3(numeric_limits<float>::min());
         minimum = Vector3(numeric_limits<float>::max());
     }
@@ -77,6 +99,9 @@ namespace octronic::dream
     BoundingBox::integrate
     (const BoundingBox& bb)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         // Maximum
         if (maximum.x() < bb.maximum.x())
         {
@@ -115,4 +140,19 @@ namespace octronic::dream
 
         maxDimension = maxBound;
     }
+
+    Vector3& BoundingBox::getMaximum()
+    {
+        return maximum;
+    }
+
+    Vector3& BoundingBox::getMinimum()
+    {
+        return minimum;
+    }
+
+    void BoundingBox::setMaxDimension(float md)
+	{
+		maxDimension = md;
+	}
 }

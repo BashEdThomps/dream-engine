@@ -15,11 +15,13 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     LightDefinition::LightDefinition
     (ProjectDefinition* pd, const json &js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("LightDefinition",pd,js)
     {
         LOG_TRACE("LightDefinition: Constructing");
     }
@@ -33,6 +35,8 @@ namespace octronic::dream
     LightDefinition::setDiffuse
     (const Vector3& diffuse)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
@@ -47,6 +51,8 @@ namespace octronic::dream
     LightDefinition::getDiffuse
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         Vector3 diffuse;
         if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
         {
@@ -65,6 +71,8 @@ namespace octronic::dream
     LightDefinition::setAmbient
     (const Vector3& ambient)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
@@ -78,6 +86,8 @@ namespace octronic::dream
     LightDefinition::getAmbient
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         Vector3 ambient;
         if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
         {
@@ -96,6 +106,8 @@ namespace octronic::dream
     LightDefinition::setSpecular
     (const Vector3& specular)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
@@ -108,6 +120,8 @@ namespace octronic::dream
     Vector3
     LightDefinition::getSpecular()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         Vector3 specular;
         if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
         {
@@ -124,6 +138,8 @@ namespace octronic::dream
 
     void LightDefinition::setType(LightType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         string typeStr;
         switch (type)
         {
@@ -146,6 +162,8 @@ namespace octronic::dream
     LightDefinition::getType
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LightType type;
         if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
         {
@@ -168,11 +186,15 @@ namespace octronic::dream
 
     void LightDefinition::setCutOff(float cutOff)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = cutOff;
     }
 
     float LightDefinition::getCutOff()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = 0.0f;
@@ -182,11 +204,15 @@ namespace octronic::dream
 
     void LightDefinition::setOuterCutOff(float outerCutOff)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = outerCutOff;
     }
 
     float LightDefinition::getOuterCutOff()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = 0.0f;
@@ -196,11 +222,15 @@ namespace octronic::dream
 
     void LightDefinition::setConstant(float ant)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = ant;
     }
 
     float LightDefinition::getConstant()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = 0.0f;
@@ -210,11 +240,15 @@ namespace octronic::dream
 
     void LightDefinition::setLinear(float linear)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = linear;
     }
 
     float LightDefinition::getLinear()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_LIGHT_LINEAR].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = 0.0f;
@@ -224,11 +258,15 @@ namespace octronic::dream
 
     void LightDefinition::setQuadratic(float quadratic)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = quadratic;
     }
 
     float LightDefinition::getQuadratic()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC].is_null())
         {
             mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = 0.0f;
@@ -238,11 +276,15 @@ namespace octronic::dream
 
     float LightDefinition::getDiffuseBlue()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getDiffuse().z();
     }
 
     void LightDefinition::setDiffuseBlue(float diffuseBlue)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getDiffuse();
         current.setZ(diffuseBlue);
         setDiffuse(current);
@@ -250,11 +292,15 @@ namespace octronic::dream
 
     float LightDefinition::getDiffuseGreen()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getDiffuse().y();
     }
 
     void LightDefinition::setDiffuseGreen(float diffuseGreen)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getDiffuse();
         current.setY(diffuseGreen);
         setDiffuse(current);
@@ -267,6 +313,8 @@ namespace octronic::dream
 
     void LightDefinition::setDiffuseRed(float diffuseRed)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getDiffuse();
         current.setX(diffuseRed);
         setDiffuse(current);
@@ -279,6 +327,8 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientBlue(float blue)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getAmbient();
         current.setZ(blue);
         setAmbient(current);
@@ -291,6 +341,8 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientGreen(float ambientGreen)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getAmbient();
         current.setY(ambientGreen);
         setAmbient(current);
@@ -303,6 +355,8 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientRed(float ambientRed)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getAmbient();
         current.setX(ambientRed);
         setAmbient(current);
@@ -315,6 +369,8 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularBlue(float specularBlue)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getSpecular();
         current.setZ(specularBlue);
         setSpecular(current);
@@ -327,6 +383,8 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularGreen(float specularGreen)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getSpecular();
         current.setY(specularGreen);
         setSpecular(current);
@@ -339,6 +397,8 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularRed(float specularRed)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto current = getSpecular();
         current.setX(specularRed);
         setSpecular(current);

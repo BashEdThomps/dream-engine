@@ -62,7 +62,7 @@ namespace octronic::dream::glfw
     }
 
     GLFWWindowComponent::GLFWWindowComponent
-    () : WindowComponent(),
+    () : WindowComponent("GLFWWindowComponent"),
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f),
          mLastWidth(0.f),

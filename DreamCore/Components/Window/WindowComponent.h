@@ -31,7 +31,7 @@ namespace octronic::dream
     class WindowComponent : public Component
     {
     public:
-      WindowComponent();
+      WindowComponent(const string& className);
       virtual ~WindowComponent();
 
       bool init() = 0;

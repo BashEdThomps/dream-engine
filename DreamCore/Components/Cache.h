@@ -31,7 +31,7 @@ namespace octronic::dream
          * @brief Default Constructor.
          * @param parent ProjectRuntime that created this Cache.
          */
-        Cache(ProjectRuntime* parent);
+        Cache(const string& className, ProjectRuntime* parent);
 
         /**
          * @brief Default Destructor
@@ -93,7 +93,7 @@ namespace octronic::dream
          * @brief runtimeCount
          * @return the number of Runtimes in this Cache
          */
-        size_t runtimeCount() const;
+        size_t runtimeCount();
     protected:
 
         /**

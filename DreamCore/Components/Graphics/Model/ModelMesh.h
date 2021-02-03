@@ -20,6 +20,7 @@
 #include "ModelTasks.h"
 
 #include "Common/GLHeader.h"
+#include "Common/LockableObject.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Light/LightRuntime.h"
@@ -46,7 +47,7 @@ namespace octronic::dream
     class EntityRuntime;
     class Camera;
 
-    class ModelMesh
+    class ModelMesh :public LockableObject
     {
     public:
         static long DrawCalls;

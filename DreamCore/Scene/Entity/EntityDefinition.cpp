@@ -27,6 +27,7 @@
 using std::regex;
 using std::cmatch;
 using std::pair;
+using std::unique_lock;
 
 namespace octronic::dream
 {
@@ -36,10 +37,13 @@ namespace octronic::dream
             const json &jsonData,
             bool randomUuid
             )
-        : Definition(jsonData),
+        : Definition("EntityDefinition",jsonData),
           mParentEntity(parent),
           mSceneDefinition(sceneDefinition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         if (randomUuid)
         {
@@ -52,6 +56,9 @@ namespace octronic::dream
     EntityDefinition::~EntityDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE( "EntityDefinition: Destructing {}", getNameAndUuidString() );
         deleteChildEntityDefinitions();
     }
@@ -59,8 +66,10 @@ namespace octronic::dream
     int
     EntityDefinition::getChildCount
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         return mChildDefinitions.size();
     }
 
@@ -68,13 +77,17 @@ namespace octronic::dream
     EntityDefinition::getTransform
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return Transform(mJson[Constants::TRANSFORM]);
     }
 
     void
     EntityDefinition::setTransform
-    (const Transform& tform)
+    (Transform& tform)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::TRANSFORM] = tform.getJson();
     }
 
@@ -82,6 +95,8 @@ namespace octronic::dream
     EntityDefinition::setHasCameraFocus
     (bool fc)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = fc;
     }
 
@@ -89,6 +104,8 @@ namespace octronic::dream
     EntityDefinition::getHasCameraFocus
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ENTITY_HAS_CAMERA_FOCUS].is_null())
         {
             mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = false;
@@ -100,6 +117,8 @@ namespace octronic::dream
     EntityDefinition::loadChildEntityDefinitions
     (bool randomUuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         json childrenArray = mJson[Constants::ENTITY_CHILDREN];
 
         if (!childrenArray.is_null() && childrenArray.is_array())
@@ -123,6 +142,8 @@ namespace octronic::dream
     EntityDefinition::deleteChildEntityDefinitions
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (auto child : mChildDefinitions)
        {
            delete child;
@@ -134,6 +155,8 @@ namespace octronic::dream
     EntityDefinition::getChildDefinitionsList
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mChildDefinitions;
     }
 
@@ -141,6 +164,8 @@ namespace octronic::dream
     EntityDefinition::addChildDefinition
     (EntityDefinition* child)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mChildDefinitions.push_back(child);
     }
 
@@ -148,6 +173,8 @@ namespace octronic::dream
     EntityDefinition::adoptChildDefinition
     (EntityDefinition* child)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         child->setParentEntity(this);
         mChildDefinitions.push_back(child);
     }
@@ -156,6 +183,8 @@ namespace octronic::dream
     EntityDefinition::removeChildDefinition
     (EntityDefinition* child, bool andDelete)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto iter = begin(mChildDefinitions);
         auto endPos = end(mChildDefinitions);
         while (iter != endPos)
@@ -187,6 +216,8 @@ namespace octronic::dream
     EntityDefinition::createNewChildDefinition
     (json* fromJson)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("EntityDefinition: Creating new child scene object");
 
         json defJson;
@@ -224,6 +255,8 @@ namespace octronic::dream
     EntityDefinition::getSceneDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mSceneDefinition;
     }
 
@@ -231,6 +264,8 @@ namespace octronic::dream
     EntityDefinition::getJson
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_CHILDREN] = json::array();
         for (EntityDefinition* sod : mChildDefinitions)
         {
@@ -241,6 +276,8 @@ namespace octronic::dream
 
     bool EntityDefinition::getAlwaysDraw()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ENTITY_ALWAYS_DRAW].is_null())
         {
             mJson[Constants::ENTITY_ALWAYS_DRAW] = false;
@@ -250,16 +287,21 @@ namespace octronic::dream
 
     void EntityDefinition::setAlwaysDraw(bool alwaysDraw)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_ALWAYS_DRAW] = alwaysDraw;
     }
 
     void EntityDefinition::setIsTemplate(bool d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
         mJson[Constants::ENTITY_TEMPLATE] = d;
     }
 
     bool EntityDefinition::getIsTemplate()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ENTITY_TEMPLATE].is_null())
         {
             mJson[Constants::ENTITY_TEMPLATE] = false;
@@ -271,6 +313,8 @@ namespace octronic::dream
     EntityDefinition::getDeferred
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ENTITY_DEFERRED].is_number())
         {
             mJson[Constants::ENTITY_DEFERRED] = 0;
@@ -282,6 +326,8 @@ namespace octronic::dream
     EntityDefinition::setDeferred
     (long d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_DEFERRED] = d;
     }
 
@@ -289,6 +335,8 @@ namespace octronic::dream
     EntityDefinition::getDieAfter
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ENTITY_DIE_AFTER].is_number())
         {
             mJson[Constants::ENTITY_DIE_AFTER] = 0;
@@ -300,17 +348,23 @@ namespace octronic::dream
     EntityDefinition::setDieAfter
     (long d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_DIE_AFTER] = d;
     }
 
 
     void EntityDefinition::setHidden(bool d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ENTITY_HIDDEN] = d;
     }
 
     bool EntityDefinition::getHidden()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ENTITY_HIDDEN].is_null())
         {
             mJson[Constants::ENTITY_HIDDEN] = false;
@@ -320,14 +374,18 @@ namespace octronic::dream
 
     EntityDefinition*
     EntityDefinition::getParentEntity
-    () const
+    ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mParentEntity;
     }
 
     EntityDefinition*
     EntityDefinition::duplicate()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // Nothing to assign duplicate to
         if (mParentEntity == nullptr)
         {
@@ -370,6 +428,8 @@ namespace octronic::dream
     EntityDefinition::getSelectedAssetIndex
     (AssetType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto asset = getAssetDefinition(type);
         if (asset == Uuid::INVALID)
         {
@@ -382,6 +442,9 @@ namespace octronic::dream
     EntityDefinition::setSelectedAssetIndex
     (AssetType type, int index)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         auto typesVector = mSceneDefinition->getProjectDefinition()->getAssetDefinitionsVector(type);
         auto asset = typesVector.at(index);
         setAssetDefinition(type,asset->getUuid());
@@ -391,6 +454,9 @@ namespace octronic::dream
     EntityDefinition::setAssetDefinition
     (AssetType type, UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
         if (mJson[Constants::ENTITY_ASSET_INSTANCES].is_null() ||
             mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
@@ -404,6 +470,9 @@ namespace octronic::dream
     EntityDefinition::getAssetDefinitionsMap
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         map<AssetType, UuidType> assetsMap;
         for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
         {
@@ -421,6 +490,9 @@ namespace octronic::dream
     EntityDefinition::getAssetDefinition
     (AssetType type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
         if (mJson[Constants::ENTITY_ASSET_INSTANCES].is_null() ||
             mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
@@ -440,6 +512,9 @@ namespace octronic::dream
     void
     EntityDefinition::setEmptyAssetsObject()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         mJson[Constants::ENTITY_ASSET_INSTANCES] = json::object();
     }
 
@@ -447,16 +522,25 @@ namespace octronic::dream
     EntityDefinition::setParentEntity
     (EntityDefinition* parentEntity)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         mParentEntity = parentEntity;
     }
 
 	void EntityDefinition::setFontColor(const Vector3& color)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
 		mJson[Constants::ENTITY_FONT_COLOR] =  color.toJson();
     }
 
     Vector3 EntityDefinition::getFontColor()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
        Vector3 retval(1.f);
        if (mJson[Constants::ENTITY_FONT_COLOR].is_null())
        {
@@ -468,11 +552,17 @@ namespace octronic::dream
 
 	void EntityDefinition::setFontText(const string& text)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
 		mJson[Constants::ENTITY_FONT_TEXT] = text;
     }
 
     string EntityDefinition::getFontText()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         string retval = "";
         if (mJson[Constants::ENTITY_FONT_TEXT].is_null())
         {
@@ -484,11 +574,17 @@ namespace octronic::dream
 
 	void EntityDefinition::setFontScale(float s)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
 		mJson[Constants::ENTITY_FONT_SCALE] = s;
     }
 
     float EntityDefinition::getFontScale()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         float retval = 1.f;
         if (mJson[Constants::ENTITY_FONT_SCALE].is_null())
         {

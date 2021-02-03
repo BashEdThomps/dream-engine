@@ -21,7 +21,7 @@ namespace octronic::dream
 {
     ShaderDefinition::ShaderDefinition
     (ProjectDefinition* pd, const json &js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("ShaderDefinition",pd,js)
     {
 
     }

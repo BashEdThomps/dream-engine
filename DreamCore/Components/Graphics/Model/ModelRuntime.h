@@ -85,7 +85,7 @@ namespace octronic::dream
         mat4 mGlobalInverseTransform;
 
         // Methods
-        BoundingBox updateBoundingBox(aiMesh* mesh);
+        void updateBoundingBox(aiMesh* mesh, BoundingBox& bb);
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
         void processNode(aiNode*, const aiScene*);

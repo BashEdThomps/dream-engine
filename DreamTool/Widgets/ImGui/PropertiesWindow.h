@@ -41,8 +41,6 @@ namespace octronic::dream::tool
     protected:
         void drawImGizmo();
         void drawNonImGizmo();
-        void drawPathControlPointImGuizmo(PathDefinition* pDef, PathControlPoint);
-        void drawAnimationKeyframeImGuizmo(AnimationDefinition* pDef, AnimationKeyframe);
         int getStringIndexInVector(string str, vector<string> vec);
         bool drawDeleteEntityButton();
         bool drawDeleteSceneButton();
@@ -67,7 +65,6 @@ namespace octronic::dream::tool
         void setDefinition(Definition* def);
         void setPropertyType(PropertyType t);
         void clear();
-        void drawPhysicsImGizmo(CompoundChildDefinition);
         void replaceRuntimes(AssetDefinition* assetDef);
     private:
         vector<PropertiesTarget> mHistory;

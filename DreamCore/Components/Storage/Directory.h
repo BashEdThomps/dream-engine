@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common/LockableObject.h"
+
 #include <string>
 #include <vector>
 
@@ -10,7 +12,8 @@ namespace octronic::dream
 {
     class File;
     class StorageManager;
-    class Directory
+
+    class Directory : public LockableObject
     {
         friend class StorageManager;
     public:

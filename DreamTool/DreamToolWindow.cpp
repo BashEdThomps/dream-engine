@@ -16,7 +16,6 @@
 #include "Widgets/ImGui/ImGuiWidget.h"
 #include "Widgets/GL/GLWidget.h"
 #include <imgui_internal.h>
-#include <ImGuizmo.h>
 
 static bool WindowSizeChanged = false;
 
@@ -335,8 +334,6 @@ namespace octronic::dream::tool
 
 		//debug("Window {} ImGui Widgets", mImGuiWidgets.size());
 
-        //ImGuizmo::BeginFrame();
-        //ImGuizmo::Enable(true);
 
         for (ImGuiWidget* widget : mImGuiWidgets)
 		{
@@ -371,8 +368,6 @@ namespace octronic::dream::tool
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGuizmo::BeginFrame();
-        ImGuizmo::Enable(true);
         // Rendering
         for (ImGuiWidget* widget : mImGuiWidgets)
         {

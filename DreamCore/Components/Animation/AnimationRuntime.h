@@ -44,7 +44,7 @@ namespace octronic::dream
         void update();
         void stepAnimation(double time);
 
-        long getCurrentTime() const;
+        long getCurrentTime();
         void setCurrentTime(long currentTime);
 
         bool mRunning;
@@ -53,9 +53,9 @@ namespace octronic::dream
         void pause();
         void reset();
         void seekAll(unsigned int pos);
-        long getDuration() const;
+        long getDuration();
 
-        bool getRunning() const;
+        bool getRunning();
         void setRunning(bool running);
 
         AnimationUpdateTask* getUpdateTask();

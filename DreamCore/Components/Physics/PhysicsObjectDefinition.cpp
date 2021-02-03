@@ -11,11 +11,13 @@
  */
 #include "PhysicsObjectDefinition.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
     (ProjectDefinition* pd, const json &js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("PhysicsObjectDefinition",pd,js)
     {
 
     }
@@ -24,6 +26,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setMass
     (float mass)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MASS] = mass;
     }
 
@@ -31,6 +35,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getMass
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
         {
             mJson[Constants::ASSET_ATTR_MASS] = 0;
@@ -42,6 +48,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setMargin
     (float margin)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MARGIN] = margin;
     }
 
@@ -49,6 +57,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getMargin
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
         {
             mJson[Constants::ASSET_ATTR_MARGIN] = 0;
@@ -60,6 +70,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setKinematic
     (bool kinematic)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
     }
 
@@ -67,6 +79,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getKinematic
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_KINEMATIC].is_null())
         {
             mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
@@ -78,6 +92,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::makeHalfExtentsObject
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_SIZE].is_null())
         {
             mJson[Constants::ASSET_ATTR_SIZE] = json::object();
@@ -88,6 +104,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setHalfExtentsX
     (float halfExtentX)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
     }
@@ -96,6 +114,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getHalfExtentsX
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         if (mJson[Constants::ASSET_ATTR_SIZE][Constants::X].is_null())
         {
@@ -108,6 +128,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setHalfExtentsY
     (float halfExtentY)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
 
@@ -117,6 +139,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getHalfExtentsY
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Y].is_null())
         {
@@ -129,6 +153,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setHalfExtentsZ
     (float halfExtentZ)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
     }
@@ -137,6 +163,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getHalfExtentsZ
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeHalfExtentsObject();
         if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Z].is_null())
         {
@@ -149,6 +177,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::makeNormalObject
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_NORMAL].is_null())
         {
             mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
@@ -159,6 +189,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setNormalX
     (float halfExtentX)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
     }
@@ -167,6 +199,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getNormalX
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::X].is_null())
         {
@@ -179,6 +213,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setNormalY
     (float halfExtentY)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
     }
@@ -187,6 +223,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getNormalY
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y].is_null())
         {
@@ -199,6 +237,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setNormalZ
     (float halfExtentZ)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
     }
@@ -207,6 +247,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getNormalZ
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeNormalObject();
         if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z].is_null())
         {
@@ -219,6 +261,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getRadius
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_RADIUS].is_null())
         {
             mJson[Constants::ASSET_ATTR_RADIUS] = 0;
@@ -230,11 +274,15 @@ namespace octronic::dream
     PhysicsObjectDefinition::setRadius
     (float rad)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_RADIUS] = rad;
     }
 
     float PhysicsObjectDefinition::getHeight()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_HEIGHT].is_null())
         {
             mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
@@ -245,6 +293,8 @@ namespace octronic::dream
 
     void PhysicsObjectDefinition::setHeight(float height)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_HEIGHT] = height;
     }
 
@@ -252,6 +302,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getConstant
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_CONSTANT].is_null())
         {
             mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
@@ -263,6 +315,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setConstant
     (float constant)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
     }
 
@@ -270,6 +324,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getControllableCharacter
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_CONTROLLABLE].is_null())
         {
             mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
@@ -282,16 +338,22 @@ namespace octronic::dream
     PhysicsObjectDefinition::setControllableCharacter
     (bool controllable)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
     }
 
     void PhysicsObjectDefinition::setCcdSweptSphereRadius(float rad)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
     }
 
     float PhysicsObjectDefinition::getCcdSweptSphereRadius()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 
         if (mJson[Constants::ASSET_ATTR_CCD_SPR].is_null())
         {
@@ -304,6 +366,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getRestitution
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_RESTITUTION].is_null())
         {
             mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
@@ -316,6 +380,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setRestitution
     (float r)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
     }
 
@@ -323,6 +389,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getFriction
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_FRICTION].is_null())
         {
             mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
@@ -335,6 +403,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setFriction
     (float r)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_FRICTION] = r;
     }
 
@@ -343,6 +413,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::addCompoundChild
     (CompoundChildDefinition def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        makeCompoundChildren();
        mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
     }
@@ -351,6 +423,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getCompoundChildren
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeCompoundChildren();
         vector<CompoundChildDefinition> retval;
         for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
@@ -369,6 +443,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::updateCompoundChildTransform
     (CompoundChildDefinition def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeCompoundChildren();
         for
         (
@@ -391,6 +467,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::removeCompoundChild
     (CompoundChildDefinition def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         makeCompoundChildren();
         for
         (
@@ -411,6 +489,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::makeCompoundChildren
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].is_null())
         {
             mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
@@ -421,6 +501,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getCollisionModel
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
         {
             mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
@@ -433,6 +515,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setCollisionModel
     (UuidType modelUuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }
 
@@ -440,6 +524,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getLinearFactor
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
         {
             mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(Vector3(0.0f));
@@ -451,6 +537,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setLinearFactor
     (const Vector3& lf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(lf);
     }
 
@@ -458,6 +546,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getAngularFactor
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
         {
             mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(Vector3(0.0f));
@@ -470,6 +560,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setAngularFactor
     (const Vector3& af)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(af);
     }
 
@@ -477,6 +569,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getLinearVelocity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
         {
             mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(Vector3(0.0f));
@@ -488,6 +582,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setLinearVelocity
     (const Vector3& lf)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(lf);
     }
 
@@ -495,6 +591,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::getAngularVelocity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
         {
             mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(Vector3(0.0f));
@@ -507,6 +605,8 @@ namespace octronic::dream
     PhysicsObjectDefinition::setAngularVelocity
     (const Vector3& af)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(af);
     }
 }

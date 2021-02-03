@@ -14,20 +14,13 @@ namespace octronic::dream
     {
         LOG_TRACE("FontConstructionTask: {} Executing on Graphics thread",mFontRuntime->getNameAndUuidString());
 
-        if (mFontRuntime->tryLock())
-        {
-        	if (!mFontRuntime->loadIntoGL())
-            {
-        		setState(TaskState::TASK_STATE_FAILED);
-                mFontRuntime->unlock();
-            }
-        	setState(TaskState::TASK_STATE_COMPLETED);
-            mFontRuntime->unlock();
-        }
+		if (!mFontRuntime->loadIntoGL())
+		{
+			setState(TaskState::TASK_STATE_FAILED);
+		}
         else
         {
-            mDeferralCount++;
-        	setState(TaskState::TASK_STATE_WAITING);
+			setState(TaskState::TASK_STATE_COMPLETED);
         }
     }
 

@@ -12,17 +12,8 @@ namespace octronic::dream
 
     void PathUpdateTask::execute()
     {
-        LOG_CRITICAL("PathUpdateTask: Executing on thread {}",mThreadId);
-        if( mPathRuntime->tryLock())
-        {
-            mPathRuntime->update();
-            mPathRuntime->unlock();
-            setState(TaskState::TASK_STATE_COMPLETED);
-        }
-        else
-        {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
-        }
+        LOG_CRITICAL("PathUpdateTask: Executing on thread {}",getThreadID());
+		mPathRuntime->update();
+		setState(TaskState::TASK_STATE_COMPLETED);
     }
 }

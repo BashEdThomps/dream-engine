@@ -22,7 +22,7 @@ namespace octronic::dream
 {
     TextureDefinition::TextureDefinition
     (ProjectDefinition* pd, const json& js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("TextureDefinition",pd,js)
     {
     }
 

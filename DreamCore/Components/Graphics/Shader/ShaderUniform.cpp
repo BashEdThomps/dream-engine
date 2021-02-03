@@ -24,16 +24,21 @@ using glm::ivec4;
 using glm::uvec2;
 using glm::uvec3;
 using glm::uvec4;
+using std::unique_lock;
 
 namespace octronic::dream
 {
-  ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
-        : mType(type),
+    ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
+        : LockableObject("ShaderUniform"),
+          mType(type),
           mName(name),
           mCount(count),
           mLocation(0),
           mNeedsUpdate(true)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,count);
         switch (type)
         {
@@ -92,6 +97,8 @@ namespace octronic::dream
 
     ShaderUniform::~ShaderUniform()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ShaderUniform: Destructing {} {}", mName, mCount);
         switch (mType)
         {
@@ -150,6 +157,8 @@ namespace octronic::dream
 
     void ShaderUniform::setCount(int count)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCount = count;
         setNeedsUpdate(true);
     }
@@ -161,6 +170,8 @@ namespace octronic::dream
 
     void ShaderUniform::setLocation(GLint location)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mLocation = location;
         setNeedsUpdate(true);
     }
@@ -172,6 +183,8 @@ namespace octronic::dream
 
     void ShaderUniform::setNeedsUpdate(bool needsUpdate)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mNeedsUpdate = needsUpdate;
     }
 
@@ -182,6 +195,8 @@ namespace octronic::dream
 
     void ShaderUniform::setData(void* data)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         size_t size = 0;
         switch (mType)
         {
@@ -244,6 +259,8 @@ namespace octronic::dream
     ShaderUniform::setName
     (const string& name)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mName = name;
         setNeedsUpdate(true);
     }
@@ -259,6 +276,8 @@ namespace octronic::dream
     ShaderUniform::setType
     (const UniformType& type)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mType = type;
         setNeedsUpdate(true);
     }

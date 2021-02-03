@@ -26,13 +26,15 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     ModelMesh::ModelMesh
     (ModelRuntime* parent, const string& name, const vector<Vertex>& vertices,
      const vector<GLuint>& indices, MaterialRuntime* material, const BoundingBox& bb)
-        : mParent(parent),
+        : LockableObject("ModelMesh"),
+          mParent(parent),
           mMaterial(material),
           mName(name),
           mVAO(0),
@@ -46,6 +48,8 @@ namespace octronic::dream
           mInitMeshTask(this),
           mFreeMeshTask(nullptr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ModelMesh: Constructing Mesh for {}", parent->getName());
         init();
     }
@@ -53,10 +57,11 @@ namespace octronic::dream
     ModelMesh::~ModelMesh
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ModelMesh: Destroying Mesh for {}",mParent->getNameAndUuidString());
         mFreeMeshTask = make_shared<ModelFreeMeshTask>();
         mFreeMeshTask->clearState();
-        mFreeMeshTask->setState(TaskState::TASK_STATE_QUEUED);
         mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
         mParent->getProjectRuntime()->getGraphicsComponent()->pushDestructionTask(mFreeMeshTask);
     }
@@ -93,8 +98,9 @@ namespace octronic::dream
     ModelMesh::init
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mInitMeshTask.clearState();
-        mInitMeshTask.setState(TaskState::TASK_STATE_QUEUED);
         mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mInitMeshTask);
     }
 
@@ -102,6 +108,8 @@ namespace octronic::dream
     ModelMesh::logRuntimes
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        for (auto runtime : mRuntimes)
        {
            LOG_DEBUG("\t\t\tRuntime for {}", runtime->getNameAndUuidString());
@@ -112,6 +120,8 @@ namespace octronic::dream
     ModelMesh::addRuntime
     (EntityRuntime* runt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ModelMesh: Adding Runtime of mesh for {}", runt->getNameAndUuidString());
         mRuntimes.push_back(runt);
     }
@@ -120,6 +130,8 @@ namespace octronic::dream
     ModelMesh::removeRuntime
     (EntityRuntime* runt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("ModelMesh: Removing Runtime of mesh for {}", runt->getNameAndUuidString());
         auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
         if (itr != mRuntimes.end())
@@ -147,6 +159,8 @@ namespace octronic::dream
     ModelMesh::drawGeometryPassRuntimes
     (Camera* camera, ShaderRuntime* shader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRuntimesInFrustum.clear();
         for (auto* sor : mRuntimes)
         {
@@ -276,6 +290,8 @@ namespace octronic::dream
     bool
     ModelMesh::loadIntoGL()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         glGenVertexArrays(1, &mVAO);
         glGenBuffers(1, &mVBO);
         glGenBuffers(1, &mIBO);

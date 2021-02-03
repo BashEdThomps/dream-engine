@@ -9,13 +9,13 @@
 #include "Components/SharedAssetRuntime.h"
 #include "Project/ProjectRuntime.h"
 
-
+using std::unique_lock;
 
 namespace octronic::dream
 {
     TextureCache::TextureCache
     (ProjectRuntime* runtime)
-        : Cache(runtime)
+        : Cache("TextureCache",runtime)
     {
     }
 
@@ -27,6 +27,8 @@ namespace octronic::dream
     TextureCache::loadRuntime
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!def)
         {
             LOG_ERROR("TextureCache: Cannot load texture, TextureDefinition is null");
@@ -54,6 +56,8 @@ namespace octronic::dream
     TextureCache::clear
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto* runtime : mRuntimes)
         {
             delete runtime;

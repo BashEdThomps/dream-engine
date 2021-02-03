@@ -19,7 +19,7 @@ namespace octronic::dream
 
     void EntityScriptConstructionTask::execute()
     {
-        LOG_TRACE("EntityScriptConstructionTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("EntityScriptConstructionTask: Executing on thread {}",getThreadID());
 
         if(mScript->createEntityState(mEntity))
         {
@@ -27,8 +27,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -48,7 +47,7 @@ namespace octronic::dream
 
     void EntityScriptOnInitTask::execute()
     {
-        LOG_TRACE("EntityScriptExecuteOnInitTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("EntityScriptExecuteOnInitTask: Executing on thread {}",getThreadID());
 
         if(mScript->executeOnInit(mEntity))
         {
@@ -56,8 +55,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -76,7 +74,7 @@ namespace octronic::dream
 
     void EntityScriptOnUpdateTask::execute()
     {
-        LOG_TRACE("EntityScriptOnUpdateTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("EntityScriptOnUpdateTask: Executing on thread {}",getThreadID());
 
         if(mScript->executeOnUpdate(mEntity))
         {
@@ -84,8 +82,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -105,7 +102,7 @@ namespace octronic::dream
 
     void EntityScriptOnEventTask::execute()
     {
-        LOG_TRACE("ScriptOnEventTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("ScriptOnEventTask: Executing on thread {}",getThreadID());
 
         if(mScript->executeOnEvent(mEntity))
         {
@@ -113,8 +110,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -135,7 +131,7 @@ namespace octronic::dream
 
     void EntityScriptDestructionTask::execute()
     {
-        LOG_TRACE("EntityScriptDestructionTask:Executing on thread {}",mThreadId);
+        LOG_TRACE("EntityScriptDestructionTask:Executing on thread {}",getThreadID());
 
         if(mScript->removeEntityState(mUuid))
         {
@@ -143,8 +139,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -163,7 +158,7 @@ namespace octronic::dream
 
     void InputScriptConstructionTask::execute()
     {
-        LOG_TRACE("InputScriptConstructionTask: Executing on thread {}",mThreadId);
+        LOG_TRACE("InputScriptConstructionTask: Executing on thread {}",getThreadID());
 
         if(mScript->registerInputScript())
         {
@@ -171,8 +166,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 
@@ -191,7 +185,7 @@ namespace octronic::dream
 
     void InputScriptDestructionTask::execute()
     {
-        LOG_TRACE("InputScriptDestructionTask:Executing on thread {}",mThreadId);
+        LOG_TRACE("InputScriptDestructionTask:Executing on thread {}",getThreadID());
 
         if(mScript->removeInputScript())
         {
@@ -199,8 +193,7 @@ namespace octronic::dream
         }
         else
         {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
+            incrementDeferralCount();
         }
     }
 

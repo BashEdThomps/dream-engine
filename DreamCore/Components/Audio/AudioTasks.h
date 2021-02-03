@@ -7,10 +7,10 @@ namespace octronic::dream
     class AudioRuntime;
     class AudioMarkersUpdateTask : public Task
     {
-    protected:
-        AudioRuntime* mAudioRuntime;
     public:
         AudioMarkersUpdateTask(AudioRuntime* rt);
         void execute();
+    protected:
+        AudioRuntime* mAudioRuntime;
     };
 }

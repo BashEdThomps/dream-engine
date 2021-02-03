@@ -20,24 +20,32 @@
 using std::regex;
 using std::stringstream;
 using std::cmatch;
+using std::unique_lock;
 
 namespace octronic::dream
 {
 
     Directory::Directory(StorageManager* fileManager, const string& dir)
-        : mStorageManager(fileManager),
+        : LockableObject("Directory"),
+          mStorageManager(fileManager),
           mPath(dir)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
     }
 
     Directory::~Directory()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
     }
 
     vector<string> Directory::list(const string& regexStr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("Directory: {}", __FUNCTION__);
         auto usingRegex = !regexStr.empty();
         vector<string> directoryContents;
@@ -78,6 +86,8 @@ namespace octronic::dream
 
     vector<string> Directory::listSubdirectories(const string& regexStr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("Directory: {}", __FUNCTION__);
         auto usingRegex = !regexStr.empty();
         vector<string> directoryContents;
@@ -136,6 +146,8 @@ namespace octronic::dream
 
     void Directory::setPath(const string& path)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mPath = path;
     }
 
@@ -153,6 +165,8 @@ namespace octronic::dream
 
     bool Directory::exists()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         DIR* dir = opendir(mPath.c_str());
         if (dir)
         {
@@ -164,6 +178,8 @@ namespace octronic::dream
 
     bool Directory::create()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 #ifdef WIN32
         return mkdir(mPath.c_str()) == 0;
 #else
@@ -173,6 +189,8 @@ namespace octronic::dream
 
     bool Directory::deleteDirectory()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("Directory: Deleting directory {}",mPath);
         auto files = list();
         for (auto file : files)
@@ -209,6 +227,8 @@ namespace octronic::dream
 
     File* Directory::file(const string& fileName)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         stringstream ss;
         ss << mPath << Constants::DIR_PATH_SEP << fileName;
         return mStorageManager->openFile(ss.str());
@@ -216,6 +236,8 @@ namespace octronic::dream
 
     bool Directory::isDirectory()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         bool result = false;
         struct stat sb;
         if (stat(mPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))

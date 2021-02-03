@@ -35,7 +35,7 @@ namespace octronic::dream
         bool createEntityState(EntityRuntime* rt);
         bool removeEntityState(UuidType uuid);
 
-        string getSource() const;
+        string getSource();
         void setSource(const string& source);
 
         bool executeOnInit(EntityRuntime* state);
@@ -48,9 +48,6 @@ namespace octronic::dream
         bool removeInputScript();
     private:
         string mSource;
-        const static string LUA_ON_INIT_FUNCTION;
-        const static string LUA_ON_UPDATE_FUNCTION;
-        const static string LUA_ON_INPUT_FUNCTION;
-        const static string LUA_ON_EVENT_FUNCTION;
+
     };
 }

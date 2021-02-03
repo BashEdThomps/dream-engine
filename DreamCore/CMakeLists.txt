@@ -79,6 +79,7 @@ add_library(
 	Components/Graphics/Camera.cpp
 	Components/Graphics/Frustum.cpp
 	Components/Graphics/GraphicsComponent.cpp
+	Components/Graphics/GraphicsComponentTasks.cpp
 
 	Components/Graphics/Model/ModelAnimation.cpp
 	Components/Graphics/Model/ModelRuntime.cpp
@@ -112,6 +113,8 @@ add_library(
 
 	Common/Constants.cpp
 	Common/Uuid.cpp
+	Common/LockableObject.cpp
+	Common/Definition.cpp
 
 	Scene/SceneRuntime.cpp
 	Scene/SceneDefinition.cpp

@@ -67,7 +67,7 @@ Java_com_octronic_dream_DreamJNI_init(JNIEnv* env, jobject obj, jobject assetMan
     android_logger->flush_on(LOG_LEVEL_TRACE);
     spdlog::set_pattern("[%H:%M:%S]%l: %v");
 
-    LOG_LEVEL(LOG_LEVEL_TRACE);
+    LOG_LEVEL(LOG_LEVEL_OFF);
 
     LOG_DEBUG("Version:    {}", GetGLString(GL_VERSION));
     LOG_DEBUG("Vendor:     {}", GetGLString(GL_VENDOR));

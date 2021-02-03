@@ -13,21 +13,13 @@ namespace octronic::dream
     void ShaderCompileFragmentTask::execute()
     {
         LOG_TRACE("ShaderCompileFragmentTask: {} Executing on Graphics thread",mShaderRuntime->getName());
-        if (!mShaderRuntime->tryLock())
+        if (!mShaderRuntime->performFragmentCompilation())
         {
-        	if (!mShaderRuntime->performFragmentCompilation())
-            {
-                setState(TASK_STATE_FAILED);
-            }
-            else
-            {
-				setState(TASK_STATE_COMPLETED);
-            }
-			mShaderRuntime->unlock();
+            setState(TASK_STATE_FAILED);
         }
         else
         {
-        	setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_COMPLETED);
         }
     }
 
@@ -39,23 +31,14 @@ namespace octronic::dream
     void ShaderCompileVertexTask::execute()
     {
         LOG_TRACE("ShaderCompileVertexTask: {} Executing on Graphics thread",mShaderRuntime->getName());
-        if (!mShaderRuntime->tryLock())
+        if (!mShaderRuntime->performVertexCompilation())
         {
-            if (!mShaderRuntime->performVertexCompilation())
-            {
-                setState(TASK_STATE_FAILED);
-            }
-            else
-            {
-				setState(TASK_STATE_COMPLETED);
-            }
-			mShaderRuntime->unlock();
+            setState(TASK_STATE_FAILED);
         }
         else
         {
-        	setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_COMPLETED);
         }
-
     }
 
     ShaderLinkTask::ShaderLinkTask(ShaderRuntime* rt)
@@ -67,21 +50,13 @@ namespace octronic::dream
     {
         LOG_TRACE("ShaderLinkTask: Linking Shader [{}] on Graphics thread",mShaderRuntime->getName());
 
-        if (!mShaderRuntime->tryLock())
+        if (!mShaderRuntime->performLinking())
         {
-            if (!mShaderRuntime->performLinking())
-            {
-                setState(TASK_STATE_FAILED);
-            }
-            else
-            {
-				setState(TASK_STATE_COMPLETED);
-            }
-			mShaderRuntime->unlock();
+            setState(TASK_STATE_FAILED);
         }
         else
         {
-        	setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_COMPLETED);
         }
     }
 

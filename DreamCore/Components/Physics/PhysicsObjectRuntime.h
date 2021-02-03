@@ -25,6 +25,7 @@
 #include "Components/Transform.h"
 #include "PhysicsTasks.h"
 
+using std::atomic;
 
 namespace octronic::dream
 {
@@ -37,24 +38,9 @@ namespace octronic::dream
 
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
-    private:
-        btCollisionShape *mCollisionShape;
-        btMotionState *mMotionState;
-        btRigidBody *mRigidBody;
-        btRigidBody::btRigidBodyConstructionInfo *mRigidBodyConstructionInfo;
-        bool mInPhysicsWorld;
-        PhysicsComponent* mPhysicsComponent;
-        ModelCache* mModelCache;
-        PhysicsAddObjectTask mAddObjectTask;
-
-        PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);
-        btCollisionShape* createTriangleMeshShape(ModelRuntime*);
-
     public:
-        PhysicsObjectRuntime(
-            PhysicsObjectDefinition*, PhysicsComponent*,
-            ModelCache*, EntityRuntime*
-        );
+        PhysicsObjectRuntime(PhysicsObjectDefinition*, PhysicsComponent*,
+            ModelCache*, EntityRuntime*);
         ~PhysicsObjectRuntime() override;
         bool useDefinition() override;
         btCollisionShape* createCollisionShape(PhysicsObjectDefinition*);
@@ -70,12 +56,12 @@ namespace octronic::dream
         void applyTorque(const Vector3&);
         void clearForces();
 
-        void setCenterOfMassTransformTx(const Transform& tx);
+        void setCenterOfMassTransformTx(Transform& tx);
         void setCenterOfMassTransform3fv(const Vector3& tx);
         void setCenterOfMassTransform3f(float x, float y, float z);
         void setCenterOfMassTransformMat4(mat4 tx);
 
-        void setWorldTransform(const Transform& tx);
+        void setWorldTransform(Transform& tx);
 
         Vector3 getLinearVelocity();
         void setLinearVelocity(float, float, float);
@@ -103,5 +89,19 @@ namespace octronic::dream
         void setKinematic(bool setKenematic);
 
         PhysicsAddObjectTask* getAddObjectTask();
+
+    private:
+        PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);
+        btCollisionShape* createTriangleMeshShape(ModelRuntime*);
+	private:
+        btCollisionShape* mCollisionShape;
+        btMotionState* mMotionState;
+        btRigidBody* mRigidBody;
+        btRigidBody::btRigidBodyConstructionInfo* mRigidBodyConstructionInfo;
+        atomic<bool> mInPhysicsWorld;
+        PhysicsComponent* mPhysicsComponent;
+        ModelCache* mModelCache;
+        PhysicsAddObjectTask mAddObjectTask;
+
     };
 }

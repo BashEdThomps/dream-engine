@@ -38,7 +38,7 @@ namespace octronic::dream
 
     void ModelFreeMeshTask::execute()
     {
-        LOG_TRACE("ModelTasks: Executing on thread {}",mThreadId);
+        LOG_TRACE("ModelTasks: Executing on thread {}",getThreadID());
 
         if (mVAO > 0)
         {

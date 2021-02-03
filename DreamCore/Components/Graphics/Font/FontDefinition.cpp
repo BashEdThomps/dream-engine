@@ -11,21 +11,27 @@
  */
 #include "FontDefinition.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     FontDefinition::FontDefinition
     (ProjectDefinition* pd, const json &js)
-        :AssetDefinition(pd,js)
+        :AssetDefinition("FontDefinition",pd,js)
     {
     }
 
 	void FontDefinition::setSize(unsigned int size)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
     }
 
 	unsigned int FontDefinition::getSize()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         unsigned int size = 1;
         if (mJson[Constants::ASSET_ATTR_FONT_SIZE].is_null())
         {

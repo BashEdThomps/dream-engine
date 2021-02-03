@@ -16,6 +16,7 @@
 
 using std::make_shared;
 using std::max;
+using std::unique_lock;
 
 /**
  * https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02
@@ -24,7 +25,7 @@ using std::max;
 namespace octronic::dream
 {
 	FontRuntime::FontRuntime(FontDefinition* fd, ProjectRuntime* er)
-        : SharedAssetRuntime(fd, er),
+        : SharedAssetRuntime("FontRuntime",fd, er),
           mAtlasTexture(0),
           mAtlasWidth(0),
           mAtlasHeight(0),
@@ -35,29 +36,36 @@ namespace octronic::dream
           mFontDestructionTask(nullptr),
           mFontFile(nullptr)
 	{
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         memset(&mCharacterInfo, 0, sizeof(FontCharacterInfo)*CHAR_INFO_SZ);
 	}
 
     FontRuntime::~FontRuntime()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         mFontDestructionTask = make_shared<FontDestructionTask>();
         mFontDestructionTask->setFontAtlasTexture(mAtlasTexture);
         mFontDestructionTask->setFontVao(mVao);
         mFontDestructionTask->setFontVbo(mVbo);
-        mFontDestructionTask->setState(TaskState::TASK_STATE_QUEUED);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mFontDestructionTask);
     }
 
     void FontRuntime::pushConstructionTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         mProjectRuntime->getGraphicsComponent()->pushTask(&mFontConstructionTask);
     }
 
 	bool FontRuntime::useDefinition()
 	{
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         FontDefinition* fontDef = static_cast<FontDefinition*>(mDefinition);
 
@@ -107,11 +115,15 @@ namespace octronic::dream
 
     void FontRuntime::setSize(int size)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mSize = size;
     }
 
     float FontRuntime::getWidthOf(string s)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {} {}", __FUNCTION__,s);
         float width = 0.f;
         for (string::iterator it = s.begin(); it != s.end(); it++)
@@ -123,6 +135,8 @@ namespace octronic::dream
 
     void FontRuntime::draw(EntityRuntime* entity)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         if (mFontConstructionTask.getState() != TaskState::TASK_STATE_COMPLETED)
         {
@@ -206,6 +220,8 @@ namespace octronic::dream
 
     void FontRuntime::setFontFile(File* file)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mFontFile = file;
     }
 
@@ -222,6 +238,8 @@ namespace octronic::dream
 
     void FontRuntime::pushInstance(EntityRuntime* entityRuntime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         auto itr = std::find(mInstances.begin(), mInstances.end(),entityRuntime);
 
@@ -233,6 +251,8 @@ namespace octronic::dream
 
     void FontRuntime::popInstance(EntityRuntime* entityRuntime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 		LOG_TRACE("FontRuntime: {}", __FUNCTION__);
         auto itr = std::find(mInstances.begin(), mInstances.end(), entityRuntime);
 
@@ -244,30 +264,42 @@ namespace octronic::dream
 
     vector<EntityRuntime*>& FontRuntime::getInstanceVector()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mInstances;
     }
 
     void FontRuntime::setVao(GLuint vao)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mVao = vao;
     }
 	void FontRuntime::setVbo(GLuint vbo)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mVbo = vbo;
     }
 
 	void FontRuntime::setAtlasTexture(GLuint atlasTexture)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mAtlasTexture = atlasTexture;
     }
 
 	void FontRuntime::setAtlasWidth(unsigned int atlasWidth)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mAtlasWidth = atlasWidth;
     }
 
 	void FontRuntime::setAtlasHeight(unsigned int atlasHeight)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mAtlasHeight = atlasHeight;
     }
 
@@ -289,6 +321,8 @@ namespace octronic::dream
 
     bool FontRuntime::loadIntoGL()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // VAO
         glGenVertexArrays(1,&mVao);
         GLCheckError();

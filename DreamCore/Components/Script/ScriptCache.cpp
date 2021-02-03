@@ -24,23 +24,31 @@
 #include "Components/Storage/StorageManager.h"
 #include "Components/Storage/File.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     ScriptCache::ScriptCache
     (ProjectRuntime* runtime)
-        : Cache (runtime)
+        : Cache ("ScriptCache",runtime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Constructing");
     }
 
     ScriptCache::~ScriptCache
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Destructing");
     }
 
     SharedAssetRuntime* ScriptCache::loadRuntime(AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         ScriptDefinition* scriptDef = static_cast<ScriptDefinition*>(def);
         for (SharedAssetRuntime* inst : mRuntimes)
         {

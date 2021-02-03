@@ -5,21 +5,27 @@
 #include <algorithm>
 
 using std::find;
+using std::unique_lock;
 
 namespace octronic::dream
 {
 
     TaskThread::TaskThread (int id)
-        : mThread(thread(&TaskThread::executeTaskQueue,this)),
+        : LockableObject("TaskThread"),
+          mThread(thread(&TaskThread::executeTaskQueue,this)),
           mRunning(false),
-          mFence(true),
-          mThreadId(id)
+          mWaitingToRunFence(true),
+          mThreadID(id)
     {
+        assert(mThreadID > Task::INVALID_THREAD_ID);
     }
 
     void TaskThread::join()
     {
-        LOG_TRACE("TaskThread: Joining Thread {}",mThreadId);
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_TRACE("TaskThread[{}]: Joining Thread",getThreadID());
         mThread.join();
     }
 
@@ -28,213 +34,251 @@ namespace octronic::dream
         mRunning = true;
         while (mRunning)
         {
-            if (mFence)
+            if (mWaitingToRunFence)
             {
                 std::this_thread::yield();
                 continue;
             }
 
-            mDebugTaskQueue.clear();
-            if(mTaskQueueMutex.try_lock())
+            // Process the logical task queue ==================================
+
+            const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        	if (!lg.owns_lock()) getMutex().lock();
+
+            while(!mTaskQueue.empty())
             {
-        		vector<Task*> completed;
-                while (!mTaskQueue.empty())
+                vector<Task*> completed;
+                LOG_TRACE("TaskThread[{}]: Thread has {} tasks",getThreadID(),mTaskQueue.size());
+
+                for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); ++itr)
                 {
-                    LOG_TRACE("TaskThread: Worker {} has {} tasks",getThreadId(),mTaskQueue.size());
-                    for (auto itr = mTaskQueue.begin(); itr != mTaskQueue.end(); itr++)
+                    Task* task = (*itr);
+                    LOG_INFO("TaskThread[{}]: Processing task {}",getThreadID(),task->getDebugString());
+                    // Check if ready to execute
+                    try
                     {
-                        if (find(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),
-                                 (*itr)) == mDebugTaskQueue.end())
+                        switch(task->getState())
                         {
-                            mDebugTaskQueue.push_back((*itr));
-                        }
-
-                        Task* t = (*itr);
-                        // Check if ready to execute
-
-                        // Task has expired and does not need to execute
-                        if (t->getState() == TaskState::TASK_STATE_EXPIRED)
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) has expired on thread {}, welp",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                            t->setState(TaskState::TASK_STATE_COMPLETED);
-                        }
-                        // Task failed
-                        else if (t->getState() == TaskState::TASK_STATE_FAILED)
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) FAILED on thread {}, welp",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                           assert(false);
-                        }
-                        // Task is in good state, is it waiting for dependencies?
-                        // if so, defer
-                        else if (t->isWaitingForDependencies())
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) is waiting for dependencies on thread {}",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                            t->incrementDeferralCount();
-                        }
-                        // Not waiting for dependencies, so mark active and
-                        // execute
-                        else
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) is ready on thread {}",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                            t->setState(TaskState::TASK_STATE_ACTIVE);
-                            t->execute();
-                        }
-
-                        // Task was completed, i.e. not deferred and not
-                        // failed
-                        if (t->getState() == TaskState::TASK_STATE_COMPLETED)
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) was completed on thread {}",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                            completed.push_back(t);
+                            case TASK_STATE_CONSTRUCTED:
+                                LOG_ERROR("TaskThread[{}]: Task {} constructed, should not have been pushed to queue", getThreadID(),task->getDebugString());
+                                assert(false);
+                                break;
+                            // Task failed
+                            case TaskState::TASK_STATE_FAILED:
+                            {
+                                LOG_TRACE("TaskThread[{}]: Task {} FAILED, welp", getThreadID(), task->getDebugString());
+                                assert(false);
+                                break;
+                            }
+                            // Not waiting for dependencies, so mark active and
+                            // execute
+                            case TaskState::TASK_STATE_QUEUED:
+                            {
+                                if (!task->isWaitingForDependencies())
+								{
+                                    LOG_TRACE("TaskThread[{}]: Task {} is ready", getThreadID(), task->getDebugString());
+                                	assert(task->getThreadID() > Task::INVALID_THREAD_ID);
+									task->setState(TaskState::TASK_STATE_ACTIVE);
+									task->execute();
+								}
+                                else
+                                {
+                                    LOG_TRACE("TaskThread[{}]: Task {} is waiting",getThreadID(), task->getDebugString());
+									task->incrementDeferralCount();
+                                }
+                                break;
+                            }
+                            // Task was completed, i.e. not deferred and not failed
+							case TaskState::TASK_STATE_COMPLETED:
+							{
+								LOG_TRACE("TaskThread[{}]: Task {} was completed", getThreadID(), task->getDebugString());
+								task->notifyTasksWaitingForMe();
+								completed.push_back(task);
+                                break;
+							}
+							case TASK_STATE_ACTIVE:
+                            {
+								LOG_TRACE("TaskThread[{}]: Task {} is active... Retrying task", getThreadID(), task->getDebugString());
+                                // retry execution
+                                task->execute();
+                                break;
+                            }
                         }
                     }
-
-                    // Iterate over the completed tasks and remove them from
-                    // the task queue
-                    for (Task* t : completed)
+                    catch (const std::exception& ex)
                     {
-                        t->notifyDependents();
-                        auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
-                        if (itr != mTaskQueue.end())
-                        {
-                            LOG_TRACE("TaskThread: Task {}({}) is being popped off thread {}'s queue",
-                                      t->getTaskName(), t->getTaskId(), mThreadId);
-                            mTaskQueue.erase(itr);
-                        }
+                        LOG_ERROR("TaskThread[{}]: Exception with task {}",getThreadID(), ex.what());
+                        task->incrementDeferralCount();
+                        //task->setState(TaskState::TASK_STATE_FAILED);
                     }
-                    completed.clear();
                 }
-                mTaskQueueMutex.unlock();
-            }
 
-            // Process the destruction task queue
-            if(mDestructionTaskQueueMutex.try_lock())
-            {
-                vector<shared_ptr<DestructionTask>> completed;
-                for (auto itr = mDestructionTaskQueue.begin();
-                     itr != mDestructionTaskQueue.end(); itr++)
+                // Iterate over the completed tasks and remove them from
+                // the task queue
+                for (Task* t : completed)
                 {
-                    shared_ptr<DestructionTask>& t = (*itr);
-                    if (t->isWaitingForDependencies())
+                    auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
+                    if (itr != mTaskQueue.end())
                     {
-                        t->incrementDeferralCount();
+                        LOG_TRACE("TaskThread[{}]: Task {} is being popped off the queue", getThreadID(), t->getDebugString());
+                        mTaskQueue.erase(itr);
                     }
                     else
                     {
-                        t->setState(TaskState::TASK_STATE_ACTIVE);
-                        t->execute();
-                    }
-
-                    if (t->getState() == TaskState::TASK_STATE_COMPLETED)
-                    {
-                        completed.push_back(t);
+                        LOG_ERROR("TaskThread[{}]: Error, Processed task was not in the queue to remove?", getThreadID());
+                        assert(false);
                     }
                 }
-
-                // Remove completed DestructionTasks from queue
-                for (shared_ptr<DestructionTask>& t : completed)
-                {
-                    t->notifyDependents();
-                    auto itr = find(mDestructionTaskQueue.begin(),
-                                    mDestructionTaskQueue.end(), t);
-
-                    if (itr != mDestructionTaskQueue.end())
-                    {
-                        mDestructionTaskQueue.erase(itr);
-                    }
-                }
-                mDestructionTaskQueueMutex.unlock();
+                completed.clear();
             }
 
-            LOG_TRACE("TaskThread: Worker {} has finished running it's task queue, Setting Fence",getThreadId());
-            mFence = true;
+            // Process the destruction task queue ==============================
+
+            vector<shared_ptr<DestructionTask>> completed;
+            for (auto itr = mDestructionTaskQueue.begin();
+                 itr != mDestructionTaskQueue.end(); itr++)
+            {
+                shared_ptr<DestructionTask>& t = (*itr);
+                if (t->isWaitingForDependencies())
+                {
+                    t->incrementDeferralCount();
+                }
+                else
+                {
+                    t->setState(TaskState::TASK_STATE_ACTIVE);
+                    t->execute();
+                }
+
+                if (t->getState() == TaskState::TASK_STATE_COMPLETED)
+                {
+                    t->notifyTasksWaitingForMe();
+                    completed.push_back(t);
+                }
+            }
+
+            // Remove completed DestructionTasks from queue
+            for (shared_ptr<DestructionTask>& t : completed)
+            {
+                auto itr = find(mDestructionTaskQueue.begin(),
+                                mDestructionTaskQueue.end(), t);
+
+                if (itr != mDestructionTaskQueue.end())
+                {
+                    mDestructionTaskQueue.erase(itr);
+                }
+            }
+
+            LOG_TRACE("TaskThread[{}]: Thread has finished it's task queue, Setting Fence",getThreadID());
+            mWaitingToRunFence = true;
             std::this_thread::yield();
         }
-        LOG_TRACE("TaskThread: ---------- Worker {} is ending it's task queue",getThreadId());
     }
 
-    void TaskThread::clearFence()
+    void TaskThread::clearWaitingToRunFence()
     {
-        if (!mFence)
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        if (!mWaitingToRunFence)
         {
-            LOG_ERROR("TaskThread: Thread {} attempted to clear an unset fence",getThreadId());
-            LOG_ERROR("TaskThread: has the following Tasks (count == {})",getThreadId(), mTaskQueue.size());
+            LOG_ERROR("TaskThread[{}]: Attempted to clear an unset fence",getThreadID());
+            LOG_ERROR("TaskThread[{}]: Has the following Tasks (count == {})",getThreadID(), mTaskQueue.size());
             for (Task* t: mTaskQueue)
             {
-                LOG_ERROR("\tID:{} Name:{}",t->getTaskId(),t->getTaskName());
+                LOG_ERROR("\t{}",t->getDebugString());
             }
-            LOG_ERROR("TaskThread: has the following DestructionTasks (count == {})",getThreadId(), mDestructionTaskQueue.size());
+            LOG_ERROR("TaskThread[{}]: Has the following DestructionTasks (count == {})",getThreadID(), mDestructionTaskQueue.size());
             for (shared_ptr<DestructionTask>& t: mDestructionTaskQueue)
             {
-                LOG_ERROR("\tID:{} Name:{}",t->getTaskId(),t->getTaskName());
+                LOG_ERROR("\t{}",t->getDebugString());
             }
         }
-        assert(mFence);
-        mFence = false;
-        LOG_TRACE("TaskThread: Cleared fence for thread {}",getThreadId());
+        assert(mWaitingToRunFence);
+        mWaitingToRunFence = false;
+        LOG_TRACE("TaskThread[{}]: Cleared fence",getThreadID());
     }
 
-    bool TaskThread::getFence()
+    bool TaskThread::getWaitingToRunFence()
     {
-        return mFence;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        LOG_TRACE("TaskThread[{}]: {}",getThreadID(),__FUNCTION__);
+
+        if (mTaskQueue.empty())
+        {
+            LOG_TRACE("TaskThread[{}]:\tTaskQueue is empty :)",getThreadID());
+        }
+        for(Task* task : mTaskQueue)
+        {
+            LOG_TRACE("TaskThread[{}]:\t{} state: {}",getThreadID(),task->getDebugString(), Task::stateToString(task->getState()));
+        }
+
+        return mWaitingToRunFence;
     }
 
     bool TaskThread::pushTask(Task* t)
     {
-        if(mTaskQueueMutex.try_lock())
-        {
-            assert(mFence);
-            mTaskQueue.push_back(t);
-            assert(mThreadId >= 0);
-            t->setThreadId(mThreadId);
-            mTaskQueueMutex.unlock();
-            return true;
-        }
-        return false;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_TRACE("TaskThread[{}]: {}", getThreadID(), __FUNCTION__);
+
+        assert(mThreadID > Task::INVALID_THREAD_ID);
+
+        assert(mWaitingToRunFence);
+        t->clearState();
+        t->setState(TaskState::TASK_STATE_QUEUED);
+        t->setThreadID(mThreadID);
+        mTaskQueue.push_back(t);
+        return true;
     }
 
     bool TaskThread::pushDestructionTask(const shared_ptr<DestructionTask>& dt)
     {
-        if(mDestructionTaskQueueMutex.try_lock())
-        {
-            assert(mFence);
-            dt->setThreadId(mThreadId);
-            mDestructionTaskQueue.push_back(dt);
-            mDestructionTaskQueueMutex.unlock();
-            return true;
-        }
-        return false;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
+        LOG_TRACE("TaskThread[{}]: {}", getThreadID(), __FUNCTION__);
+
+        assert(dt->getThreadID() == Task::INVALID_THREAD_ID);
+        assert(mThreadID > Task::INVALID_THREAD_ID);
+
+        assert(mWaitingToRunFence);
+        dt->clearState();
+        dt->setThreadID(mThreadID);
+        dt->setState(TaskState::TASK_STATE_QUEUED);
+        mDestructionTaskQueue.push_back(dt);
+        return true;
     }
 
     void TaskThread::setRunning(bool running)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRunning = running;
     }
 
-    int TaskThread::getThreadId()
+    int TaskThread::getThreadID()
     {
-        return mThreadId;
-    }
-
-    const vector<Task*>& TaskThread::getDebugTaskQueue()
-    {
-        sort(mDebugTaskQueue.begin(),mDebugTaskQueue.end(),
-             [&](Task* t1, Task* t2) {return t1->getTaskId() > t2->getTaskId();});
-        return mDebugTaskQueue;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        return mThreadID;
     }
 
     bool TaskThread::hasTask(Task *t)
     {
-        bool found = false;
-        mTaskQueueMutex.lock();
-		auto itr = find(mTaskQueue.begin(), mTaskQueue.end(), t);
-        if (itr != mTaskQueue.end()) found = true;
-        mTaskQueueMutex.unlock();
-        return found;
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        auto itr = find(mTaskQueue.begin(), mTaskQueue.end(), t);
+        if (itr != mTaskQueue.end()) return true;
+        return false;
+    }
+
+
+    size_t TaskThread::getNumTasks()
+    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        return mTaskQueue.size();
     }
 }

@@ -27,20 +27,26 @@ using std::stringstream;
 using std::ifstream;
 using std::ios;
 using std::istreambuf_iterator;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     File::File(string path)
-        : mPath(path),
+        : LockableObject("File"),
+          mPath(path),
           mBinaryData(nullptr),
           mBinaryDataSize(0),
           mStringData("")
 	{
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "File:  {} {}" ,__FUNCTION__, mPath );
     }
 
     File::~File()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "File: {} {}" ,__FUNCTION__, mPath );
         if (mBinaryData != nullptr && mBinaryDataSize != 0)
         {
@@ -73,6 +79,8 @@ namespace octronic::dream
 
     string File::readString()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mPath.empty()) return mStringData;
 
         if (!readBinary())
@@ -100,6 +108,8 @@ namespace octronic::dream
 
     bool File::readBinary()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("File: {}", __FUNCTION__);
 
         if (mPath.empty()) return false;

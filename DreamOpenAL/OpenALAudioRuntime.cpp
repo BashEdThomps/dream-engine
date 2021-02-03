@@ -26,8 +26,6 @@ namespace octronic::dream::open_al
           mALDurationInSamples(0)
     {
         LOG_DEBUG("OpenALAudioRuntime: {}", __FUNCTION__);
-        setLooping(false);
-        generateEventList();
     }
 
     OpenALAudioRuntime::~OpenALAudioRuntime()

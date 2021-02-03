@@ -22,11 +22,13 @@
 #include "Components/Graphics/Camera.h"
 #include "Project/ProjectRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     ShaderCache::ShaderCache
     (ProjectRuntime* rt)
-        : Cache(rt)
+        : Cache("ShaderCache",rt)
     {
         LOG_TRACE( "ShaderCache: Constructing" );
     }
@@ -41,6 +43,8 @@ namespace octronic::dream
     ShaderCache::loadRuntime
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         ShaderRuntime* shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
 
         if (!shaderRuntime->useDefinition())

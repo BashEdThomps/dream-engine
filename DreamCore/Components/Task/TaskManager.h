@@ -16,6 +16,7 @@
 #pragma once
 
 #include "TaskThread.h"
+#include "Common/LockableObject.h"
 #include <memory>
 
 using std::vector;
@@ -32,7 +33,7 @@ namespace octronic::dream
      * Graphics-related tasks are executed on the main thread by the
      * GraphicsComponent.
      */
-    class TaskManager
+    class TaskManager : public LockableObject
     {
 
     public:
@@ -42,13 +43,13 @@ namespace octronic::dream
          void joinAllThreads();
          void pushTask(Task* t);
          void pushDestructionTask(const shared_ptr<DestructionTask>& dt);
-         void clearFences();
-         void waitForFence();
-         vector<TaskThread*> getThreadVector() const;
+         void allowThreadsToRun();
+         void waitForThreadsToFinish();
+         vector<TaskThread*>& getThreadVector();
 
     protected:
          vector<TaskThread*> mThreadVector;
          atomic<size_t> mNextThread;
-         unsigned int mHardwareThreadCount;
+         atomic<unsigned int> mHardwareThreadCount;
     };
 }

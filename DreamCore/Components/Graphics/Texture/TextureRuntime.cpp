@@ -12,12 +12,13 @@
 #include <stb_image.h>
 
 using std::make_shared;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     TextureRuntime::TextureRuntime
     (TextureDefinition* def, ProjectRuntime* rt)
-        : SharedAssetRuntime (def,rt),
+        : SharedAssetRuntime ("TextureRuntime",def,rt),
           mGLID(0),
           mWidth(0),
           mHeight(0),
@@ -30,9 +31,10 @@ namespace octronic::dream
     TextureRuntime::~TextureRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mTextureDestructionTask = make_shared<TextureDestructionTask>();
         mTextureDestructionTask->setGLID(mGLID);
-        mTextureDestructionTask->setState(TaskState::TASK_STATE_QUEUED);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
     }
 
@@ -47,6 +49,8 @@ namespace octronic::dream
     TextureRuntime::setWidth
     (int width)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mWidth = width;
     }
 
@@ -61,6 +65,8 @@ namespace octronic::dream
     TextureRuntime::setHeight
     (int height)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mHeight = height;
     }
 
@@ -75,6 +81,8 @@ namespace octronic::dream
     TextureRuntime::setChannels
     (int channels)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mChannels = channels;
     }
 
@@ -89,11 +97,15 @@ namespace octronic::dream
     TextureRuntime::setImage
     (unsigned char* image)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mImage = image;
     }
 
     void TextureRuntime::pushConstructionTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureConstructionTask);
     }
 
@@ -108,6 +120,8 @@ namespace octronic::dream
     TextureRuntime::setGLID
     (const GLuint& gLID)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mGLID = gLID;
     }
 
@@ -123,6 +137,8 @@ namespace octronic::dream
     TextureRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
 
         // All aboard
@@ -183,6 +199,8 @@ namespace octronic::dream
 
     bool TextureRuntime::loadIntoGL()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
         // Assign texture to ID
         GLuint textureID;

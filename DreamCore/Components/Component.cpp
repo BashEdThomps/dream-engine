@@ -16,12 +16,14 @@
 #include "Component.h"
 #include "Time.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
 
     Component::Component
-    (ProjectRuntime* pr)
-        : LockableObject(),
+    (const string& className, ProjectRuntime* pr)
+        : LockableObject(className),
           mEnabled(true),
           mProjectRuntime(pr)
     {
@@ -38,6 +40,8 @@ namespace octronic::dream
     Component::setTime
     (Time* time)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mTime = time;
     }
 
@@ -48,11 +52,15 @@ namespace octronic::dream
 
     void Component::setEnabled(bool enabled)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mEnabled = enabled;
     }
 
     void Component::setProjectRuntime(ProjectRuntime *pr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mProjectRuntime = pr;
     }
 }

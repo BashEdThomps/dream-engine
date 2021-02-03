@@ -37,13 +37,13 @@ namespace octronic::dream
 
         ~EntityDefinition() override;
 
-        int getChildCount() const;
+        int getChildCount();
 
         void setHasCameraFocus(bool fc);
         bool getHasCameraFocus();
 
         Transform getTransform();
-        void setTransform(const Transform& tform);
+        void setTransform(Transform& tform);
 
         vector<EntityDefinition*>& getChildDefinitionsList();
         void adoptChildDefinition(EntityDefinition* child);
@@ -54,7 +54,7 @@ namespace octronic::dream
         SceneDefinition* getSceneDefinition();
         json getJson() override;
 
-        EntityDefinition* getParentEntity() const;
+        EntityDefinition* getParentEntity();
         void setParentEntity(EntityDefinition* parentEntity);
         EntityDefinition* duplicate();
 

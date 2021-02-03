@@ -20,11 +20,11 @@ endif()
 
 # Build Options ################################################################
 
-set(DREAM_BUILD_CORE ON)
-set(DREAM_BUILD_GLFW ON)
+set(DREAM_BUILD_CORE   ON)
+set(DREAM_BUILD_GLFW   ON)
 set(DREAM_BUILD_OPENAL ON)
-set(DREAM_BUILD_TOOL ON)
-set(DREAM_BUILD_DOC  OFF)
+set(DREAM_BUILD_TOOL   ON)
+set(DREAM_BUILD_DOC    OFF)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)

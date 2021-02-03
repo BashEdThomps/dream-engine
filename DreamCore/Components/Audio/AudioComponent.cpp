@@ -21,8 +21,8 @@
 namespace octronic::dream
 {
     AudioComponent::AudioComponent
-    ()
-    : Component(nullptr)
+    (const string& className)
+    : Component(className,nullptr)
     {
         LOG_TRACE("AudioComponent: Constructing");
     }

@@ -26,12 +26,13 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     InputComponent::InputComponent
     (ProjectRuntime* rt)
-        : Component (rt),
+        : Component ("InputComponent",rt),
           mCurrentSceneRuntime(nullptr),
           mJoystickMapping(JsPsxMapping),
           mJoystickNavigation(nullptr),
@@ -39,6 +40,8 @@ namespace octronic::dream
           mExecuteScriptTask(this),
           mJoystickCount(0)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("InputComponent: Constructing");
         //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
         mJoystickNavigation = make_shared<JoystickFaceForwardNavigation>(&mJoystickState,&mJoystickMapping);
@@ -47,6 +50,8 @@ namespace octronic::dream
     InputComponent::~InputComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("InputComponent: Destructing");
     }
 
@@ -54,6 +59,8 @@ namespace octronic::dream
     InputComponent::init
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("InputComponent: Initialising...");
         return true;
     }
@@ -62,6 +69,8 @@ namespace octronic::dream
     InputComponent::executeInputScript
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mCurrentSceneRuntime)
         {
             mJoystickNavigation->update(mCurrentSceneRuntime);
@@ -78,6 +87,8 @@ namespace octronic::dream
     InputComponent::pollData
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mLastKeyboardState = mKeyboardState;
         mLastMouseState = mMouseState;
         mLastJoystickState = mJoystickState;
@@ -87,6 +98,8 @@ namespace octronic::dream
     InputComponent::isKeyDown
     (int key)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mKeyboardState.KeysDown[key];
     }
 
@@ -94,6 +107,8 @@ namespace octronic::dream
     InputComponent::getKeyboardState
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mKeyboardState;
     }
 
@@ -101,6 +116,8 @@ namespace octronic::dream
     InputComponent::setKeyboardState
     (const KeyboardState& keyboardState)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mKeyboardState = keyboardState;
     }
 
@@ -108,6 +125,8 @@ namespace octronic::dream
     InputComponent::getMouseState
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mMouseState;
     }
 
@@ -115,6 +134,8 @@ namespace octronic::dream
     InputComponent::setMouseState
     (const MouseState& mouseState)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mMouseState = mouseState;
     }
 
@@ -122,6 +143,8 @@ namespace octronic::dream
     InputComponent::getJoystickState
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mJoystickState;
     }
 
@@ -129,6 +152,8 @@ namespace octronic::dream
     InputComponent::setJoystickState
     (const JoystickState& joystickState)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJoystickState = joystickState;
     }
 
@@ -136,6 +161,8 @@ namespace octronic::dream
     InputComponent::mouseDeltaX
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mMouseState.PosX - mLastMouseState.PosX;
     }
 
@@ -143,6 +170,8 @@ namespace octronic::dream
     InputComponent::mouseDeltaY
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mMouseState.PosY - mLastMouseState.PosY;
     }
 
@@ -150,6 +179,8 @@ namespace octronic::dream
     InputComponent::getJoystickMapping
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mJoystickMapping;
     }
 
@@ -157,6 +188,8 @@ namespace octronic::dream
     InputComponent::getPollDataTask
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return &mPollDataTask;
     }
 
@@ -164,6 +197,8 @@ namespace octronic::dream
     InputComponent::getExecuteScriptTask
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return &mExecuteScriptTask;
     }
 
@@ -178,6 +213,8 @@ namespace octronic::dream
     InputComponent::setCurrentSceneRuntime
     (SceneRuntime *currentSceneRuntime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCurrentSceneRuntime = currentSceneRuntime;
     }
 
@@ -185,6 +222,8 @@ namespace octronic::dream
     InputComponent::getJoystickNavigation
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mJoystickNavigation.get();
     }
 
@@ -200,6 +239,8 @@ namespace octronic::dream
     InputComponent::setJoystickCount
     (int joystickCount)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJoystickCount = joystickCount;
     }
 }

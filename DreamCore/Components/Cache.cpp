@@ -6,11 +6,13 @@
 #include "SharedAssetRuntime.h"
 #include "AssetDefinition.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     Cache::Cache
-    (ProjectRuntime* parent)
-        : LockableObject (),
+    (const string& className, ProjectRuntime* parent)
+        : LockableObject (className),
           mProjectRuntime(parent)
     {
 
@@ -19,6 +21,8 @@ namespace octronic::dream
     Cache::~Cache
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         clear();
     }
 
@@ -26,6 +30,8 @@ namespace octronic::dream
     Cache::getAbsolutePath
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mProjectRuntime
                 ->getProject()
                 ->getDirectory()
@@ -34,6 +40,9 @@ namespace octronic::dream
 
     void Cache::removeRuntimeByUuid(UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+
         AssetRuntime* target = nullptr;
 
         for (auto* runtime : mRuntimes)
@@ -58,6 +67,8 @@ namespace octronic::dream
 
     void Cache::removeRuntime(AssetDefinition *def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (def == nullptr)
         {
             return;
@@ -70,6 +81,8 @@ namespace octronic::dream
     Cache::clear
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         for (auto* runtime : mRuntimes)
         {
             delete runtime;
@@ -81,6 +94,8 @@ namespace octronic::dream
     Cache::getAssetDefinitionByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mProjectRuntime->getAssetDefinitionByUuid(uuid);
     }
 
@@ -88,6 +103,8 @@ namespace octronic::dream
     Cache::getRuntime
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (def == nullptr)
         {
             return nullptr;
@@ -107,6 +124,8 @@ namespace octronic::dream
     Cache::getRuntime
     (UuidType id)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (id == 0)
         {
             return nullptr;
@@ -126,11 +145,15 @@ namespace octronic::dream
     Cache::getRuntimeVector
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mRuntimes;
     }
 
-    size_t Cache::runtimeCount() const
+    size_t Cache::runtimeCount()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mRuntimes.size();
     }
 }

@@ -21,12 +21,13 @@
 #include "Common/Constants.h"
 
 using nlohmann::json;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     ModelDefinition::ModelDefinition
     (ProjectDefinition* pd, const json &js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("ModelDefinition",pd,js)
     {
         LOG_TRACE("ModelDefinition: Constructing {}", getNameAndUuidString());
     }
@@ -40,6 +41,8 @@ namespace octronic::dream
     ModelDefinition::isFormatAssimp
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
     }
 
@@ -47,6 +50,8 @@ namespace octronic::dream
     ModelDefinition::addModelMaterial
     (const string &material, UuidType shader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
              mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
@@ -72,6 +77,8 @@ namespace octronic::dream
     ModelDefinition::getModelMaterials
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
         {
             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
@@ -83,6 +90,8 @@ namespace octronic::dream
     ModelDefinition::removeModelMaterial
     (const string &material)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {
@@ -104,6 +113,8 @@ namespace octronic::dream
     ModelDefinition::clearModelMaterialList
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
     }
 
@@ -111,6 +122,8 @@ namespace octronic::dream
     ModelDefinition::getDreamMaterialForModelMaterial
     (const string &mat)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
         for (auto nextShader : shaderMap)
         {

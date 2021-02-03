@@ -19,19 +19,22 @@
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
     (AudioLoader* loader, AudioDefinition* def, ProjectRuntime* project)
-        : SharedAssetRuntime(def,project),
+        : SharedAssetRuntime("AudioRuntime",def,project),
           mLoader(loader),
           mLooping(false),
           mStartTime(0),
           mLastSampleOffset(0),
           mMarkersUpdateTask(this)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-        setLooping(false);
         generateEventList();
     }
 
@@ -44,6 +47,8 @@ namespace octronic::dream
     AudioRuntime::setLooping
     (bool looping)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         mLooping = looping;
     }
@@ -163,6 +168,8 @@ namespace octronic::dream
     AudioRuntime::setStartTime
     (long long startTime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mStartTime = startTime;
     }
 

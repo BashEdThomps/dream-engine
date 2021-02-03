@@ -30,11 +30,13 @@
 #include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     MaterialCache::MaterialCache
     (ProjectRuntime* parent, ShaderCache* shaderCache, TextureCache* textureCache)
-        : Cache(parent),
+        : Cache("MaterialCache",parent),
           mShaderCache(shaderCache),
           mTextureCache(textureCache)
     {
@@ -51,6 +53,8 @@ namespace octronic::dream
     MaterialCache::loadRuntime
     (AssetDefinition* def)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (!def)
         {
             LOG_ERROR("MaterialCache: Material Definition is null");

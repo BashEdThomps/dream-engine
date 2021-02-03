@@ -9,13 +9,13 @@ namespace octronic::dream
     class SharedAssetRuntime : public AssetRuntime
     {
     public:
-        SharedAssetRuntime(AssetDefinition* def, ProjectRuntime* runtime);
+        SharedAssetRuntime(const string& className, AssetDefinition* def, ProjectRuntime* runtime);
         ~SharedAssetRuntime() override;
 
-        string getAssetFilePath(string fmt = "") override;
+        string getAssetFilePath(const string& fmt = "") override;
         string getAssetDirectoryPath() override;
 
-        ProjectRuntime* getProjectRuntime() const;
+        ProjectRuntime* getProjectRuntime();
 
     protected:
         ProjectRuntime* mProjectRuntime;

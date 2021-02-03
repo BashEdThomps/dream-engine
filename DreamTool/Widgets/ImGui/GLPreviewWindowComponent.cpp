@@ -9,7 +9,7 @@ namespace octronic::dream::tool
 {
     GLPreviewWindowComponent::GLPreviewWindowComponent
     (DreamToolContext* project, bool visible)
-        : ImGuiWidget(project,visible), WindowComponent(),
+        : ImGuiWidget(project,visible), WindowComponent("GLPreviewWindowComponent"),
           mTexture(0),
           mDepthBuffer(0),
           mLastWidth(0.f),

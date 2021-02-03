@@ -4,24 +4,17 @@
 
 namespace octronic::dream
 {
-    // Type Wrappers
     class GraphicsComponentTask : public Task
     {
     public:
-        GraphicsComponentTask(const string& taskName)
-            : Task(taskName)
-        {
-
-        }
+        GraphicsComponentTask(const string& taskName);
+        string getDebugString() override;
     };
 
     class GraphicsComponentDestructionTask : public DestructionTask
     {
     public:
-        GraphicsComponentDestructionTask(const string& taskName)
-            : DestructionTask(taskName)
-        {
-
-        }
+        GraphicsComponentDestructionTask(const string& taskName);
+        string getDebugString() override;
     };
 }

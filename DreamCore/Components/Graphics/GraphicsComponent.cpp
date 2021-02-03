@@ -52,11 +52,12 @@ using glm::mat4;
 using glm::vec2;
 using glm::vec3;
 using glm::ortho;
+using std::unique_lock;
 
 namespace octronic::dream
 {
     GraphicsComponent::GraphicsComponent(ProjectRuntime* pr, WindowComponent* windowComponent)
-        : Component(pr),
+        : Component("GraphicsComponent",pr),
           mWindowComponent(windowComponent),
           mShaderCache(nullptr),
           mMaxFrameBufferSize(0),
@@ -79,12 +80,16 @@ namespace octronic::dream
           // Font
           mFontShader(nullptr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: Constructing");
         GLCheckError();
     }
 
     GraphicsComponent::~GraphicsComponent()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: Destroying Object");
         clearLightQueue();
         freeGeometryBuffers();
@@ -95,6 +100,8 @@ namespace octronic::dream
 
     bool GraphicsComponent::init()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("GraphicsComponent: Initialising");
 
         // Define the viewport dimensions
@@ -146,6 +153,8 @@ namespace octronic::dream
 
     void GraphicsComponent::onWindowDimensionsChanged()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         // Define the viewport dimensions
         int windowWidth  = mWindowComponent->getWidth();
@@ -168,6 +177,8 @@ namespace octronic::dream
 
     void GraphicsComponent::handleResize()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (mWindowComponent->getWindowSizeChangedFlag())
         {
@@ -180,6 +191,8 @@ namespace octronic::dream
 
     void GraphicsComponent::renderGeometryPass(SceneRuntime* sr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (!mEnabled)
         {
@@ -235,6 +248,8 @@ namespace octronic::dream
     GraphicsComponent::freeGeometryBuffers
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (mGeometryPassFB != 0)
         {
@@ -306,6 +321,8 @@ namespace octronic::dream
     GraphicsComponent::setupGeometryBuffers
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
         auto width = mWindowComponent->getWidth();
@@ -426,6 +443,8 @@ namespace octronic::dream
     GraphicsComponent::setupScreenQuad
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         float quadVertices[] = {
             // positions        // texture Coords
@@ -463,6 +482,8 @@ namespace octronic::dream
     GraphicsComponent::renderLightingPass
     (SceneRuntime* sr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
         // Graphics is disabled
@@ -628,7 +649,7 @@ namespace octronic::dream
             }
             GLCheckError();
 
-            LOG_ERROR("GraphicsComponent: Blit from SourceFB:{} to DestinationFB:{} size {}x{}",
+            LOG_TRACE("GraphicsComponent: Blit from SourceFB:{} to DestinationFB:{} size {}x{}",
                       read_fb, draw_fb, width,height);
 
             glBlitFramebuffer(
@@ -648,6 +669,8 @@ namespace octronic::dream
     GraphicsComponent::setupShadowBuffers
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         glGenFramebuffers(1,&mShadowPassFB);
         GLCheckError();
@@ -719,6 +742,8 @@ namespace octronic::dream
     GraphicsComponent::renderShadowPass
     (SceneRuntime* sr)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (!mEnabled)
         {
@@ -781,6 +806,8 @@ namespace octronic::dream
 
     void GraphicsComponent::freeShadowBuffers()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (mShadowPassFB != 0)
         {
@@ -799,6 +826,8 @@ namespace octronic::dream
 
     void GraphicsComponent::renderFonts(SceneRuntime* sceneRuntime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
 
@@ -859,6 +888,8 @@ namespace octronic::dream
 
     void GraphicsComponent::addToLightQueue(EntityRuntime* runt)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         auto light = runt->getLightRuntime();
         if (light->getType() == LightType::LT_DIRECTIONAL)
@@ -870,6 +901,8 @@ namespace octronic::dream
 
     void GraphicsComponent::clearLightQueue()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         static mutex m;
         m.lock();
@@ -879,20 +912,26 @@ namespace octronic::dream
 
     void GraphicsComponent::setShaderCache(ShaderCache* cache)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mShaderCache = cache;
     }
 
-    ShaderRuntime* GraphicsComponent::getLightingShader() const
+    ShaderRuntime* GraphicsComponent::getLightingShader()
+    const
     {
         return mLightingPassShader;
     }
 
     void GraphicsComponent::setLightingShader(ShaderRuntime* lightingShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mLightingPassShader = lightingShader;
     }
 
-    ShaderRuntime* GraphicsComponent::getShadowPassShader() const
+    ShaderRuntime* GraphicsComponent::getShadowPassShader()
+    const
     {
         return mShadowPassShader;
     }
@@ -902,59 +941,76 @@ namespace octronic::dream
         mShadowPassShader = shadowPassShader;
     }
 
-    ShaderRuntime* GraphicsComponent::getFontShader() const
+    ShaderRuntime* GraphicsComponent::getFontShader()
+    const
     {
         return mFontShader;
     }
 
     void GraphicsComponent::setFontShader(ShaderRuntime* fontShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mFontShader = fontShader;
     }
 
-    GLuint GraphicsComponent::getGeometryPassPositionBuffer() const
+    GLuint GraphicsComponent::getGeometryPassPositionBuffer()
+    const
     {
         return mGeometryPassPositionBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassAlbedoBuffer() const
+    GLuint GraphicsComponent::getGeometryPassAlbedoBuffer()
+    const
     {
         return mGeometryPassAlbedoBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassNormalBuffer() const
+    GLuint GraphicsComponent::getGeometryPassNormalBuffer()
+    const
     {
         return mGeometryPassNormalBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassDepthBuffer() const
+    GLuint GraphicsComponent::getGeometryPassDepthBuffer()
+    const
     {
         return mGeometryPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getShadowPassDepthBuffer() const
+    GLuint GraphicsComponent::getShadowPassDepthBuffer()
+    const
     {
         return mShadowPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassIgnoreBuffer() const
+    GLuint GraphicsComponent::getGeometryPassIgnoreBuffer()
+    const
     {
         return mGeometryPassIgnoreBuffer;
     }
 
     void GraphicsComponent::pushTask(GraphicsComponentTask* t)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        t->setState(TaskState::TASK_STATE_QUEUED);
         mTaskQueue.push_back(t);
     }
 
     void GraphicsComponent::pushDestructionTask
     (const shared_ptr<GraphicsComponentDestructionTask>& t)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        t->setState(TaskState::TASK_STATE_QUEUED);
         mDestructionTaskQueue.push_back(t);
     }
 
     void GraphicsComponent::executeTaskQueue()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         vector<GraphicsComponentTask*> completed;
         while (!mTaskQueue.empty())
@@ -983,6 +1039,7 @@ namespace octronic::dream
                 // Task has completed
                 if (t->getState() == TaskState::TASK_STATE_COMPLETED)
                 {
+                    t->notifyTasksWaitingForMe();
                     completed.push_back(t);
                 }
             }
@@ -992,7 +1049,6 @@ namespace octronic::dream
                 auto itr = find(mTaskQueue.begin(),mTaskQueue.end(), t);
                 if (itr != mTaskQueue.end())
                 {
-                    t->notifyDependents();
                     mTaskQueue.erase(itr);
                 }
             }
@@ -1003,12 +1059,15 @@ namespace octronic::dream
 
     void GraphicsComponent::executeDestructionTaskQueue()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
         {
             const auto& t = (*itr);
             t->setState(TaskState::TASK_STATE_ACTIVE);
             t->execute();
+            t->notifyTasksWaitingForMe();
         }
         mDestructionTaskQueue.clear();
     }
@@ -1018,7 +1077,8 @@ namespace octronic::dream
         return mDebugTaskQueue;
     }
 
-    void GraphicsComponent::checkFrameBufferDimensions() const
+    void GraphicsComponent::checkFrameBufferDimensions()
+    const
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         int width = mWindowComponent->getWidth();

@@ -31,6 +31,8 @@
 #include "Project/ProjectDefinition.h"
 #include "Project/ProjectRuntime.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     PhysicsObjectRuntime::PhysicsObjectRuntime
@@ -39,7 +41,7 @@ namespace octronic::dream
         PhysicsComponent* comp,
         ModelCache* modelCache,
         EntityRuntime* transform)
-        : DiscreteAssetRuntime(definition,transform),
+        : DiscreteAssetRuntime("PhysicsObjectRuntime",definition,transform),
          mCollisionShape(nullptr),
          mMotionState(nullptr),
          mRigidBody(nullptr),
@@ -49,12 +51,16 @@ namespace octronic::dream
          mModelCache(modelCache),
          mAddObjectTask(mPhysicsComponent,this)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "PhysicsObjectRuntime: Constructing" );
     }
 
     PhysicsObjectRuntime::~PhysicsObjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE( "PhysicsObjectRuntime: Destroying" );
 
         /***** Deletes are handled by PhysicsComponent! *****/
@@ -88,6 +94,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getCollisionShape
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mCollisionShape;
     }
 
@@ -96,6 +104,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto pod = static_cast<PhysicsObjectDefinition*>(mDefinition);
         mCollisionShape = createCollisionShape(pod);
         if (!mCollisionShape)
@@ -152,6 +162,8 @@ namespace octronic::dream
      PhysicsObjectRuntime::setCameraControllableCharacter
      ()
      {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
         mRigidBody->setActivationState(DISABLE_DEACTIVATION);
         mRigidBody->setAngularFactor(btVector3(0,1,0));
@@ -162,6 +174,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setKinematic
     (bool setKenematic)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (setKenematic)
         {
             mRigidBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
@@ -172,6 +186,8 @@ namespace octronic::dream
     PhysicsAddObjectTask*
     PhysicsObjectRuntime::getAddObjectTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        return &mAddObjectTask;
     }
 
@@ -179,6 +195,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::createCollisionShape
     (PhysicsObjectDefinition* pod)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         string format = pod->getFormat();
         btCollisionShape *collisionShape = nullptr;
 
@@ -268,7 +286,7 @@ namespace octronic::dream
             collisionShape = new btCompoundShape();
             btCompoundShape* compound = static_cast<btCompoundShape*>(collisionShape);
 
-            for (const CompoundChildDefinition& child : pod->getCompoundChildren())
+            for (CompoundChildDefinition& child : pod->getCompoundChildren())
             {
                 auto def = getAssetDefinitionByUuid(child.uuid);
                 btCollisionShape *shape = createCollisionShape(def);
@@ -292,6 +310,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::createTriangleMeshShape
     (ModelRuntime* model)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto* triMesh = new btTriangleMesh();
         auto  meshes = model->getMeshes();
 
@@ -337,6 +357,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getRigidBody
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mRigidBody;
     }
 
@@ -344,6 +366,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getWorldTransform
     (btTransform &transform)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mMotionState->getWorldTransform(transform);
     }
 
@@ -351,6 +375,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getCollisionObject
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mRigidBody;
     }
 
@@ -358,18 +384,24 @@ namespace octronic::dream
     PhysicsObjectRuntime::getCenterOfMassPosition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        return Vector3(mRigidBody->getCenterOfMassPosition());
     }
 
     void
     PhysicsObjectRuntime::applyCentralImpulse(const Vector3& force)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->applyCentralImpulse(force.toBullet());
     }
 
     void
     PhysicsObjectRuntime::applyTorqueImpulse(const Vector3& torque)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->applyTorqueImpulse(torque.toBullet());
     }
 
@@ -377,6 +409,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::applyForce
     (const Vector3& force)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mRigidBody->applyForce(force.toBullet(),btVector3(0.0f,0.0f,0.0f));
     }
 
@@ -384,6 +418,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::applyTorque
     (const Vector3& torque)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->applyTorque(torque.toBullet());
     }
 
@@ -391,13 +427,17 @@ namespace octronic::dream
     PhysicsObjectRuntime::clearForces
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->clearForces();
     }
 
     void
     PhysicsObjectRuntime::setCenterOfMassTransformTx
-    (const Transform& tx)
+    (Transform& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mRigidBody->setCenterOfMassTransform(tx.getBtTransform());
     }
 
@@ -405,6 +445,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setCenterOfMassTransformMat4
     (mat4 tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         btTransform transform;
         transform.setFromOpenGLMatrix(value_ptr(tx));
         mRigidBody->setCenterOfMassTransform(transform);
@@ -414,6 +456,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setCenterOfMassTransform3f
     (float x, float y, float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         btTransform transform;
         auto current = mRigidBody->getCenterOfMassTransform();
         current.setOrigin(btVector3(x,y,z));
@@ -425,6 +469,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setCenterOfMassTransform3fv
     (const Vector3& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("PhysicsObjectRuntime: Setting Center of mass {},{},{}", tx.x(), tx.y(), tx.z());
         auto mtx = mRigidBody->getCenterOfMassTransform();
         mtx.setOrigin(tx.toBullet());
@@ -433,8 +479,10 @@ namespace octronic::dream
 
     void
     PhysicsObjectRuntime::setWorldTransform
-    (const Transform& tx)
+    (Transform& tx)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mRigidBody->setWorldTransform(tx.getBtTransform());
     }
 
@@ -442,6 +490,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setLinearVelocity
     (float x, float y, float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setLinearVelocity(btVector3(x,y,z));
     }
 
@@ -449,6 +499,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getLinearVelocity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return Vector3(mRigidBody->getLinearVelocity());
     }
 
@@ -456,6 +508,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getAssetDefinitionByUuid
     (UuidType uuid)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         // TODO why from def?
         auto proj = static_cast<AssetDefinition*>(mDefinition)->getProject();
         return static_cast<PhysicsObjectDefinition*>(proj->getAssetDefinitionByUuid(uuid));
@@ -465,6 +519,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setLinearFactor
     (float x, float y, float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setLinearFactor(btVector3(x,y,z));
     }
 
@@ -472,6 +528,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setAngularFactor
     (float x, float y, float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setAngularFactor(btVector3(x,y,z));
     }
 
@@ -479,6 +537,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setAngularVelocity
     (float x, float y, float z)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setAngularVelocity(btVector3(x,y,z));
     }
 
@@ -486,6 +546,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setRestitution
     (float r)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        mRigidBody->setRestitution(r);
     }
 
@@ -500,6 +562,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setFriction
     (float friction)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mRigidBody->setFriction(friction);
     }
 
@@ -514,6 +578,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setMass
     (float mass)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mPhysicsComponent->removeRigidBody(mRigidBody);
         btVector3 inertia(0.0f,0.0f,0.0f);
         mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
@@ -525,6 +591,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::setCcdSweptSphereRadius
     (float ccd)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (ccd != 0.0f)
         {
             mRigidBody->setCcdMotionThreshold(1e-7f);
@@ -536,6 +604,8 @@ namespace octronic::dream
     PhysicsObjectRuntime::getCcdSweptSphereRadius
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mRigidBody->getCcdSweptSphereRadius();
     }
 
@@ -549,11 +619,15 @@ namespace octronic::dream
 
     bool PhysicsObjectRuntime::isInPhysicsWorld()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mInPhysicsWorld;
     }
 
     void PhysicsObjectRuntime::setInPhysicsWorld(bool inPhysicsWorld)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mInPhysicsWorld = inPhysicsWorld;
     }
 

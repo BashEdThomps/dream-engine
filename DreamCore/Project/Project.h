@@ -16,6 +16,7 @@
 #pragma once
 
 #include "Common/Uuid.h"
+#include "Common/LockableObject.h"
 
 #include <string>
 #include <vector>
@@ -38,7 +39,7 @@ namespace octronic::dream
     class StorageManager;
     class AudioComponent;
 
-    class Project
+    class Project : public LockableObject
     {
 
 

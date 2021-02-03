@@ -12,12 +12,13 @@
 #include "WindowComponent.h"
 
 #include "Common/Constants.h"
+using std::unique_lock;
 
 namespace octronic::dream
 {
 
-    WindowComponent::WindowComponent()
-        : Component(nullptr),
+    WindowComponent::WindowComponent(const string& className)
+        : Component(className,nullptr),
           mWidth(0),
           mHeight(0),
           mShouldClose(false),
@@ -37,6 +38,9 @@ namespace octronic::dream
     WindowComponent::setWidth
     (int width)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mWidth = width;
     }
 
@@ -44,6 +48,9 @@ namespace octronic::dream
     WindowComponent::setHeight
     (int height)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mHeight = height;
     }
 
@@ -67,6 +74,9 @@ namespace octronic::dream
     WindowComponent::setName
     (string name)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mName = name;
     }
 
@@ -82,6 +92,9 @@ namespace octronic::dream
     WindowComponent::close
     ()
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mShouldClose = true;
     }
 
@@ -97,6 +110,9 @@ namespace octronic::dream
     WindowComponent::setShouldClose
     (bool close)
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mShouldClose = close;
     }
 
@@ -114,6 +130,9 @@ namespace octronic::dream
 
     void WindowComponent::setWindowSizeChangedFlag(bool f)
 	{
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mWindowSizeChangedFlag =  f;
     }
 

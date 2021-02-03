@@ -14,18 +14,8 @@ namespace octronic::dream
 
     void AnimationUpdateTask::execute()
     {
-        LOG_CRITICAL("AnimationUpdateTask: Executing on thread {}",mThreadId);
-
-        if(mAnimationRuntime->tryLock())
-        {
-            mAnimationRuntime->update();
-            mAnimationRuntime->unlock();
-            setState(TaskState::TASK_STATE_COMPLETED);
-        }
-        else
-        {
-            setState(TaskState::TASK_STATE_WAITING);
-            mDeferralCount++;
-        }
+        LOG_CRITICAL("AnimationUpdateTask: Executing on thread {}",getThreadID());
+		mAnimationRuntime->update();
+		setState(TaskState::TASK_STATE_COMPLETED);
     }
 }

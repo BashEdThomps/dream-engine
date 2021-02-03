@@ -20,11 +20,15 @@
 
 #include <iostream>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     Time::Time
-    () : LockableObject()
+    () : LockableObject("Time")
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mCurrentFrameTime = 0;
         mLastFrameTime = 0;
     }
@@ -39,6 +43,8 @@ namespace octronic::dream
     Time::updateFrameTime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "Time: Update Called" );
         mLastFrameTime = mCurrentFrameTime;
         mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
@@ -56,6 +62,8 @@ namespace octronic::dream
     Time::show
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE
         (
            "Time: CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
@@ -69,6 +77,8 @@ namespace octronic::dream
     Time::getCurrentFrameTime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mCurrentFrameTime;
     }
 
@@ -76,6 +86,8 @@ namespace octronic::dream
     Time::getLastFrameTime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mLastFrameTime;
     }
 
@@ -83,6 +95,8 @@ namespace octronic::dream
     Time::getFrameTimeDelta
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mCurrentFrameTime - mLastFrameTime;
     }
 
@@ -90,6 +104,8 @@ namespace octronic::dream
     Time::perSecond
     (double value)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         double scalar = getFrameTimeDelta()/1000.0;
         double ret = value*scalar;
         LOG_TRACE("Time: Scaled by time {} to {} with {}",value,ret,scalar);
@@ -100,6 +116,8 @@ namespace octronic::dream
     Time::getAbsoluteTime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return std::chrono::duration_cast<std::chrono::milliseconds>
         (steady_clock::now().time_since_epoch()).count();
     }

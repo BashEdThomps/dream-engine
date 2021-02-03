@@ -4,10 +4,16 @@
 #include "Directory.h"
 #include "Common/Logger.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     StorageManager::StorageManager()
+        :LockableObject("StorageManager")
     {
+
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {}", __FUNCTION__);
     }
 
@@ -16,7 +22,10 @@ namespace octronic::dream
     }
 
     File* StorageManager::openFile(const string& file_path)
+
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
 
         auto file_itr = std::find_if( mOpenFiles.begin(), mOpenFiles.end(),
@@ -40,6 +49,8 @@ namespace octronic::dream
 
     void StorageManager::closeFile(File *file)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file->getPath());
         auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
         	[&](File* next_file)
@@ -61,7 +72,9 @@ namespace octronic::dream
     }
 
     Directory* StorageManager::openDirectory(const string& path)
-    {
+     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
 
         auto dir_itr = std::find_if(
@@ -87,6 +100,8 @@ namespace octronic::dream
 
     void StorageManager::closeDirectory(Directory* d)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {} {}", __FUNCTION__, d->getPath());
         auto dir_itr = std::find_if(
         	mOpenDirectories.begin(),

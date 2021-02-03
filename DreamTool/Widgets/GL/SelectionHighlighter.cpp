@@ -53,8 +53,8 @@ namespace octronic::dream::tool
         }
 
         BoundingBox bounds = mSelectedEntityRuntime->getBoundingBox();
-        LOG_ERROR("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.minimum.x() ,bounds.minimum.y(), bounds.minimum.z());
-        LOG_ERROR("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.maximum.x() ,bounds.maximum.y(), bounds.maximum.z());
+        LOG_ERROR("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.getMinimum().x() ,bounds.getMinimum().y(), bounds.getMinimum().z());
+        LOG_ERROR("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.getMaximum().x() ,bounds.getMaximum().y(), bounds.getMaximum().z());
 
         mVertexBuffer.clear();
         // Top Quad
@@ -74,14 +74,14 @@ namespace octronic::dream::tool
         bottomBackL.Color  = mSelectionColour;
         bottomBackR.Color  = mSelectionColour;
 
-        topFrontL.Position    = vec3(bounds.minimum.x()-mOffset, bounds.maximum.y()+mOffset, bounds.maximum.z()+mOffset);
-        topFrontR.Position    = vec3(bounds.maximum.x()+mOffset, bounds.maximum.y()+mOffset, bounds.maximum.z()+mOffset);
-        topBackL.Position     = vec3(bounds.minimum.x()-mOffset, bounds.maximum.y()+mOffset, bounds.minimum.z()-mOffset);
-        topBackR.Position     = vec3(bounds.maximum.x()+mOffset, bounds.maximum.y()+mOffset, bounds.minimum.z()-mOffset);
-        bottomFrontL.Position = vec3(bounds.minimum.x()-mOffset, bounds.minimum.y()-mOffset, bounds.maximum.z()+mOffset);
-        bottomFrontR.Position = vec3(bounds.maximum.x()+mOffset, bounds.minimum.y()-mOffset, bounds.maximum.z()+mOffset);
-        bottomBackL.Position  = vec3(bounds.minimum.x()-mOffset, bounds.minimum.y()-mOffset, bounds.minimum.z()-mOffset);
-        bottomBackR.Position  = vec3(bounds.maximum.x()+mOffset, bounds.minimum.y()-mOffset, bounds.minimum.z()-mOffset);
+        topFrontL.Position    = vec3(bounds.getMinimum().x()-mOffset, bounds.getMaximum().y()+mOffset, bounds.getMaximum().z()+mOffset);
+        topFrontR.Position    = vec3(bounds.getMaximum().x()+mOffset, bounds.getMaximum().y()+mOffset, bounds.getMaximum().z()+mOffset);
+        topBackL.Position     = vec3(bounds.getMinimum().x()-mOffset, bounds.getMaximum().y()+mOffset, bounds.getMinimum().z()-mOffset);
+        topBackR.Position     = vec3(bounds.getMaximum().x()+mOffset, bounds.getMaximum().y()+mOffset, bounds.getMinimum().z()-mOffset);
+        bottomFrontL.Position = vec3(bounds.getMinimum().x()-mOffset, bounds.getMinimum().y()-mOffset, bounds.getMaximum().z()+mOffset);
+        bottomFrontR.Position = vec3(bounds.getMaximum().x()+mOffset, bounds.getMinimum().y()-mOffset, bounds.getMaximum().z()+mOffset);
+        bottomBackL.Position  = vec3(bounds.getMinimum().x()-mOffset, bounds.getMinimum().y()-mOffset, bounds.getMinimum().z()-mOffset);
+        bottomBackR.Position  = vec3(bounds.getMaximum().x()+mOffset, bounds.getMinimum().y()-mOffset, bounds.getMinimum().z()-mOffset);
 
         if (mOutlineOnly)
         {

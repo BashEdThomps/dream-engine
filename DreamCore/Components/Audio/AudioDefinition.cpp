@@ -21,11 +21,14 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
+using std::unique_lock;
+using std::lock_guard;
+
 namespace octronic::dream
 {
     AudioDefinition::AudioDefinition
     (ProjectDefinition* pd, const json &js)
-        : AssetDefinition(pd,js)
+        : AssetDefinition("AudioDefinition",pd,js)
     {
         LOG_TRACE("AudioDefinition: Constructing");
     }
@@ -39,6 +42,7 @@ namespace octronic::dream
     AudioDefinition::isFormatWav
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         return getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV;
     }
 
@@ -46,6 +50,7 @@ namespace octronic::dream
     AudioDefinition::isFormatOgg
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         return getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG;
     }
 
@@ -53,6 +58,7 @@ namespace octronic::dream
     AudioDefinition::setLoop
     (bool loop)
     {
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_LOOP] = loop;
     }
 
@@ -60,6 +66,7 @@ namespace octronic::dream
     AudioDefinition::getLoop
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         if (mJson[Constants::ASSET_ATTR_LOOP].is_null())
         {
             mJson[Constants::ASSET_ATTR_LOOP] = false;
@@ -71,6 +78,7 @@ namespace octronic::dream
     AudioDefinition::getSpectrumAnalyser
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         if (mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER].is_null())
         {
             mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = false;
@@ -82,6 +90,7 @@ namespace octronic::dream
     AudioDefinition::setSpectrumAnalyser
     (bool sa)
     {
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = sa;
     }
 
@@ -89,6 +98,7 @@ namespace octronic::dream
     AudioDefinition::getMarkerName
     (unsigned int index)
     {
+        const lock_guard<mutex> lg(getMutex());
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME];
     }
 
@@ -96,6 +106,7 @@ namespace octronic::dream
     AudioDefinition::setMarkerName
     (unsigned int index, string name)
     {
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME] = name;
     }
 
@@ -103,6 +114,7 @@ namespace octronic::dream
     AudioDefinition::getMarkerSampleIndex
     (unsigned int index)
     {
+        const lock_guard<mutex> lg(getMutex());
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX];
     }
 
@@ -110,12 +122,13 @@ namespace octronic::dream
     AudioDefinition::setMarkerSampleIndex
     (unsigned int index, int smpl)
     {
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = smpl;
     }
 
     int AudioDefinition::getMarkerRepeat(unsigned int index)
     {
-
+        const lock_guard<mutex> lg(getMutex());
         if (mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT].is_null())
             mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = 0;
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT];
@@ -123,13 +136,13 @@ namespace octronic::dream
 
     void AudioDefinition::setMarkerRepeat(unsigned int index, int repeat)
     {
-
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = repeat;
     }
 
     int AudioDefinition::getMarkerRepeatPeriod(unsigned int index)
     {
-
+        const lock_guard<mutex> lg(getMutex());
         if (mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD].is_null())
             mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = 0;
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD];
@@ -137,7 +150,7 @@ namespace octronic::dream
 
     void AudioDefinition::setMarkerRepeatPeriod(unsigned int index, int rp)
     {
-
+        const lock_guard<mutex> lg(getMutex());
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = rp;
     }
 
@@ -145,6 +158,7 @@ namespace octronic::dream
     AudioDefinition::createMarker
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         json marker = json::object();
         marker[Constants::ASSET_ATTR_AUDIO_EM_INDEX] = countMarkers();
         marker[Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = "-1";
@@ -157,6 +171,7 @@ namespace octronic::dream
     AudioDefinition::removeMarker
     (const int index)
     {
+        const lock_guard<mutex> lg(getMutex());
         auto itr = std::find_if(
             mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].begin(),
             mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].end(),
@@ -177,6 +192,7 @@ namespace octronic::dream
     AudioDefinition::countMarkers
     ()
     {
+        const lock_guard<mutex> lg(getMutex());
         return static_cast<int>(
             mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size()
         );

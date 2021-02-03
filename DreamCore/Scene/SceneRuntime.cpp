@@ -48,12 +48,14 @@
 #endif
 
 using std::make_shared;
+using std::unique_lock;
+using std::mutex;
 
 namespace octronic::dream
 {
     SceneRuntime::SceneRuntime
     (SceneDefinition* sd, ProjectRuntime* project)
-        : Runtime(sd),
+        : Runtime("SceneRuntime",sd),
         mState(SceneState::SCENE_STATE_TO_LOAD),
         mClearColour(Vector3(0.0f)),
         mProjectRuntime(project),
@@ -78,6 +80,9 @@ namespace octronic::dream
     SceneRuntime::~SceneRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_TRACE("SceneRuntime: Destructing");
         if (mState != SCENE_STATE_DESTROYED)
         {
@@ -89,7 +94,10 @@ namespace octronic::dream
     SceneRuntime::destroyRuntime
     ()
     {
-        LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
+		LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
 
         if (mRootEntityRuntime != nullptr)
         {
@@ -107,8 +115,10 @@ namespace octronic::dream
     SceneState
     SceneRuntime::getState
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mState;
     }
 
@@ -116,6 +126,9 @@ namespace octronic::dream
     SceneRuntime::setState
     (SceneState state)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (state >= mState || (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
         {
             mState = state;
@@ -129,8 +142,10 @@ namespace octronic::dream
     Vector3
     SceneRuntime::getGravity
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mProjectRuntime)
         {
             return mProjectRuntime->getPhysicsComponent()->getGravity();
@@ -142,6 +157,9 @@ namespace octronic::dream
     SceneRuntime::setGravity
     (const Vector3& gravity)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mProjectRuntime)
         {
             mProjectRuntime->getPhysicsComponent()->setGravity(gravity);
@@ -151,8 +169,10 @@ namespace octronic::dream
     Vector3
     SceneRuntime::getClearColour
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mClearColour;
     }
 
@@ -160,14 +180,19 @@ namespace octronic::dream
     SceneRuntime::setClearColour
     (const Vector3& clearColour)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mClearColour = clearColour;
     }
 
     EntityRuntime*
     SceneRuntime::getEntityRuntimeByUuid
     (UuidType uuid)
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mRootEntityRuntime)
         {
             return nullptr;
@@ -196,8 +221,10 @@ namespace octronic::dream
     EntityRuntime*
     SceneRuntime::getEntityRuntimeByName
     (const string& name)
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mRootEntityRuntime)
         {
             return nullptr;
@@ -226,8 +253,10 @@ namespace octronic::dream
     int
     SceneRuntime::countEntityRuntimes
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mRootEntityRuntime)
         {
             return 0;
@@ -250,8 +279,10 @@ namespace octronic::dream
     void
     SceneRuntime::showScenegraph
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mRootEntityRuntime)
         {
             LOG_DEBUG( "SceneRuntime: Scenegraph is empty (no root EntityRuntime)" );
@@ -276,14 +307,19 @@ namespace octronic::dream
     SceneRuntime::setRootEntityRuntime
     (EntityRuntime* root)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mRootEntityRuntime = root;
     }
 
     EntityRuntime*
     SceneRuntime::getRootEntityRuntime
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mRootEntityRuntime;
     }
 
@@ -291,6 +327,9 @@ namespace octronic::dream
     SceneRuntime::collectGarbage
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
         mRootEntityRuntime->applyToAll
         (
@@ -308,16 +347,20 @@ namespace octronic::dream
     ProjectRuntime*
     SceneRuntime::getProjectRuntime
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mProjectRuntime;
     }
 
     bool
     SceneRuntime::hasRootEntityRuntime
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mRootEntityRuntime != nullptr;
     }
 
@@ -325,6 +368,9 @@ namespace octronic::dream
     SceneRuntime::useDefinition
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         SceneDefinition* sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
         if (sceneDefinition == nullptr)
@@ -426,8 +472,10 @@ namespace octronic::dream
     bool
     SceneRuntime::getPhysicsDebug
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mProjectRuntime)
         {
             return mProjectRuntime->getPhysicsComponent()->getDebug();
@@ -439,6 +487,9 @@ namespace octronic::dream
     SceneRuntime::setPhysicsDebug
     (bool physicsDebug)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (mProjectRuntime)
         {
             mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
@@ -447,8 +498,11 @@ namespace octronic::dream
 
     ShaderRuntime*
     SceneRuntime::getLightingPassShader
-    () const
+    ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mLightingPassShader;
     }
 
@@ -456,6 +510,9 @@ namespace octronic::dream
     SceneRuntime::setLightingPassShader
     (ShaderRuntime* lightingShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mLightingPassShader = lightingShader;
     }
 
@@ -463,14 +520,19 @@ namespace octronic::dream
     SceneRuntime::setMeshCullDistance
     (float mcd)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
       mMeshCullDistance = mcd;
     }
 
     float
     SceneRuntime::getMeshCullDistance
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mMeshCullDistance;
     }
 
@@ -478,30 +540,39 @@ namespace octronic::dream
     SceneRuntime::setMinDrawDistance
     (float f)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mMinDrawDistance = f;
     }
 
     float
     SceneRuntime::getMinDrawDistance
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mMinDrawDistance;
     }
 
     float
     SceneRuntime::getMaxDrawDistance
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mMaxDrawDistance;
     }
 
     vector<AssetRuntime*>
     SceneRuntime::getAssetRuntimes
     (AssetType t)
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<AssetRuntime*> runtimes;
         if (mRootEntityRuntime)
         {
@@ -527,8 +598,10 @@ namespace octronic::dream
     vector<EntityRuntime*>
     SceneRuntime::getEntitysWithRuntimeOf
     (AssetDefinition* def)
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         vector<EntityRuntime*> runtimes;
         if (mRootEntityRuntime)
         {
@@ -556,6 +629,9 @@ namespace octronic::dream
     SceneRuntime::setMaxDrawDistance
     (float f)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mMaxDrawDistance = f;
     }
 
@@ -563,14 +639,19 @@ namespace octronic::dream
     SceneRuntime::getCamera
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return &mCamera;
     }
 
     ShaderRuntime*
     SceneRuntime::getShadowPassShader
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mShadowPassShader;
     }
 
@@ -578,32 +659,45 @@ namespace octronic::dream
     SceneRuntime::setShadowPassShader
     (ShaderRuntime* shadowPassShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mShadowPassShader = shadowPassShader;
     }
 
-    ShaderRuntime* SceneRuntime::getFontShader() const
+    ShaderRuntime* SceneRuntime::getFontShader()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mFontShader;
     }
 
     void SceneRuntime::setFontShader(ShaderRuntime* fontShader)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
        mFontShader = fontShader;
     }
 
     ScriptRuntime*
     SceneRuntime::getInputScript
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mInputScript;
     }
 
     EntityRuntime*
     SceneRuntime::getNearestToCamera
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         if (!mRootEntityRuntime)
         {
             return nullptr;
@@ -639,20 +733,29 @@ namespace octronic::dream
 
     unsigned long
     SceneRuntime::getSceneCurrentTime
-    () const
+    ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mSceneCurrentTime;
     }
 
     void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mSceneCurrentTime = sceneCurrentTime;
     }
 
     unsigned long
     SceneRuntime::getSceneStartTime
-    () const
+    ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         return mSceneStartTime;
     }
 
@@ -660,6 +763,9 @@ namespace octronic::dream
     SceneRuntime::setSceneStartTime
     (unsigned long sceneStartTime)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         mSceneStartTime = sceneStartTime;
     }
 
@@ -675,6 +781,9 @@ namespace octronic::dream
     SceneRuntime::createSceneTasks
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
 
         updateLifetime();
@@ -687,34 +796,31 @@ namespace octronic::dream
         ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
 
         // Input component needs to be constructed
-        if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_NEW)
+        if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_CONSTRUCTED)
         {
-           mInputScriptConstructionTask.setState(TaskState::TASK_STATE_QUEUED);
            taskManager->pushTask(&mInputScriptConstructionTask);
         }
         // Input component in-flight
         else if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_COMPLETED)
         {
+            InputPollDataTask* inputPollDataTask = nullptr;
             // Poll Data
+            inputPollDataTask = inputComponent->getPollDataTask();
             inputComponent->setCurrentSceneRuntime(this);
-            InputPollDataTask* poll = inputComponent->getPollDataTask();
-            poll->clearState();
-            taskManager->pushTask(poll);
+            taskManager->pushTask(inputPollDataTask);
 
             // Process Input
-            InputExecuteScriptTask* exec = inputComponent->getExecuteScriptTask();
-            exec->clearState();
-            exec->dependsOn(inputComponent->getPollDataTask());
-            taskManager->pushTask(exec);
+            InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
+            inputExecuteTask->dependsOn(inputPollDataTask);
+            taskManager->pushTask(inputExecuteTask);
         }
 
         // Schedule the PhysicsWorld update Task
-        PhysicsUpdateWorldTask* physicsUpdate = nullptr;
+        PhysicsUpdateWorldTask* physicsWorldUpdateTask = nullptr;
         if (physicsComponent->getEnabled())
         {
-            physicsUpdate = physicsComponent->getUpdateWorldTask();
-            physicsUpdate->clearState();
-            taskManager->pushTask(physicsUpdate);
+            physicsWorldUpdateTask = physicsComponent->getUpdateWorldTask();
+            taskManager->pushTask(physicsWorldUpdateTask);
         }
 
         // Process Entities
@@ -723,13 +829,13 @@ namespace octronic::dream
             function<EntityRuntime*(EntityRuntime*)>(
             [&](EntityRuntime* rt)
             {
+                LOG_TRACE("SceneRuntime: Pushing tasks of {}", rt->getNameAndUuidString());
                 rt->updateLifetime();
                 // Animation
                 if (rt->hasAnimationRuntime())
                 {
                     AnimationRuntime* anim = rt->getAnimationRuntime();
                     AnimationUpdateTask* ut = anim->getUpdateTask();
-                    ut->clearState();
                     taskManager->pushTask(ut);
                 }
                 // Audio
@@ -737,7 +843,6 @@ namespace octronic::dream
                 {
                     AudioRuntime* audio = rt->getAudioRuntime();
                     AudioMarkersUpdateTask* ut = audio->getMarkersUpdateTask();
-                    ut->clearState();
                     taskManager->pushTask(ut);
                 }
 
@@ -748,8 +853,10 @@ namespace octronic::dream
                     if (!pObj->isInPhysicsWorld())
                     {
                         PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
-                        ut->clearState();
-                        ut->dependsOn(physicsUpdate);
+                        if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
+                        {
+                        	ut->dependsOn(physicsWorldUpdateTask);
+                        }
                         taskManager->pushTask(ut);
                     }
                 }
@@ -758,7 +865,6 @@ namespace octronic::dream
                 {
                     PathRuntime* path = rt->getPathRuntime();
                     PathUpdateTask* ut = path->getUpdateTask();
-                    ut->clearState();
                     taskManager->pushTask(ut);
                 }
 
@@ -767,10 +873,9 @@ namespace octronic::dream
                 {
                     ScriptRuntime* script = rt->getScriptRuntime();
                     EntityScriptConstructionTask* load = rt->getScriptConstructionTask();
-                    if (load->getState() == TaskState::TASK_STATE_NEW)
+                    if (load->getState() == TaskState::TASK_STATE_CONSTRUCTED)
                     {
                         // Don't clear state of load
-                        load->setState(TaskState::TASK_STATE_QUEUED);
                         taskManager->pushTask(load);
                     }
                     else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
@@ -778,7 +883,6 @@ namespace octronic::dream
                         if (!rt->getScriptInitialised())
                         {
                             EntityScriptOnInitTask* init = rt->getScriptOnInitTask();
-                            init->clearState();
                             taskManager->pushTask(init);
                         }
                         else
@@ -786,13 +890,11 @@ namespace octronic::dream
                             if (rt->hasEvents())
                             {
                                 EntityScriptOnEventTask* event = rt->getScriptOnEventTask();
-                                event->clearState();
-                                event->dependsOn(physicsUpdate);
+                                event->dependsOn(physicsWorldUpdateTask);
                                 taskManager->pushTask(event);
                             }
 
                             EntityScriptOnUpdateTask* update = rt->getScriptOnUpdateTask();
-                            update->clearState();
                             taskManager->pushTask(update);
                         }
                     }
@@ -803,7 +905,7 @@ namespace octronic::dream
                 {
                    graphicsComponent->addToLightQueue(rt);
                 }
-                //rt->unlock();
+
                 return static_cast<EntityRuntime*>(nullptr);
             }
         ));
@@ -814,6 +916,8 @@ namespace octronic::dream
             drawDebug->clearState();
             graphicsComponent->pushTask(drawDebug);
         }
+
+        LOG_TRACE("SceneRuntime: Finished {}",__FUNCTION__);
     }
 
 
@@ -821,6 +925,9 @@ namespace octronic::dream
     SceneRuntime::updateLifetime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
+
         Time* time = mProjectRuntime->getTime();
         long timeDelta = time->getFrameTimeDelta();
         if (timeDelta <= Time::DELTA_MAX)
@@ -838,13 +945,17 @@ namespace octronic::dream
     SceneRuntime::setPlayerEntity
     (EntityRuntime* po)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mPlayerEntity = po;
     }
 
     EntityRuntime*
     SceneRuntime::getPlayerEntity
-    () const
+    ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
        return mPlayerEntity;
     }
 }

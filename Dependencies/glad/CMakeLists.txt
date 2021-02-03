@@ -1,5 +1,6 @@
-cmake_minimum_required (VERSION 2.6)
-project (glad C)  # project here actually means solution in premake
+cmake_minimum_required (VERSION 3.0)
+
+project (glad C)  
 
 add_library (
     glad

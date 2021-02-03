@@ -7,7 +7,6 @@
 #include "PropertiesWindow.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <nfd.h>
-#include <ImGuizmo.h>
 #include "DreamToolContext.h"
 #include <DreamCore.h>
 
@@ -1288,253 +1287,6 @@ namespace octronic::dream::tool
     }
 
     void
-    PropertiesWindow::drawImGizmo
-    ()
-    {
-        float *matrix = nullptr;
-        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
-        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
-
-        if (entityRuntime)
-        {
-            matrix = entityRuntime->getTransform().getMatrixFloatPointer();
-        }
-        else
-        {
-            return;
-        }
-
-        static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-        static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-        static bool withChildren = false;
-
-        if(ImGui::CollapsingHeader("Transform"))
-        {
-            ImGui::Columns(3);
-            if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
-            {
-                mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-            }
-            ImGui::NextColumn();
-            if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
-            {
-                mCurrentGizmoOperation = ImGuizmo::ROTATE;
-            }
-            ImGui::NextColumn();
-            if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
-            {
-                mCurrentGizmoOperation = ImGuizmo::SCALE;
-            }
-
-            ImGui::Columns(1);
-
-            float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-            ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
-
-            ImGui::InputFloat3("Translation", matrixTranslation);
-            ImGui::InputFloat3("Rotation", matrixRotation);
-            ImGui::InputFloat3("Scale", matrixScale);
-
-            ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
-
-            ImGui::Separator();
-            ImGui::Checkbox("With Children",&withChildren);
-            ImGui::Separator();
-
-            ImGui::Checkbox("Snap to Grid", &mGizmoUseSnap);
-
-            switch (mCurrentGizmoOperation)
-            {
-                case ImGuizmo::TRANSLATE:
-                    ImGui::InputFloat3("Snap", &mGizmoSnap.x);
-                    break;
-                case ImGuizmo::ROTATE:
-                    ImGui::InputFloat("Angle Snap", &mGizmoSnap.x);
-                    break;
-                case ImGuizmo::SCALE:
-                    ImGui::InputFloat("Scale Snap", &mGizmoSnap.x);
-                    break;
-                default:
-                    break;
-            }
-
-            ImGui::Separator();
-
-            ImGui::Columns(2);
-
-            if (mCurrentGizmoOperation != ImGuizmo::SCALE)
-            {
-                if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
-                {
-                    mCurrentGizmoMode = ImGuizmo::LOCAL;
-                }
-                ImGui::NextColumn();
-                if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
-                {
-                    mCurrentGizmoMode = ImGuizmo::WORLD;
-                }
-                ImGui::Separator();
-                ImGui::NextColumn();
-            }
-
-            if(ImGui::Button("Capture Initial"))
-            {
-                if (entityDefinition && entityRuntime)
-                {
-                    entityDefinition->setTransform(entityRuntime->getTransform());
-
-                    if (withChildren)
-                    {
-                        entityRuntime->applyToAll(
-                                    function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
-                                        if (rt != entityRuntime){
-                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-                                            d->setTransform(rt->getTransform());
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }));
-                    }
-                }
-            }
-
-            ImGui::NextColumn();
-            if(ImGui::Button("Restore Initial"))
-            {
-                if (entityDefinition && entityRuntime)
-                {
-                    Transform tmp = entityDefinition->getTransform();
-                    entityRuntime->setTransform(&tmp);
-                    if (withChildren)
-                    {
-                        entityRuntime->applyToAll
-                                (
-                                    function<EntityRuntime*(EntityRuntime*)>(
-                                        [&](EntityRuntime* rt)
-                                    {
-                                        if (rt != entityRuntime)
-                                        {
-                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-                                            Transform tmp = d->getTransform();
-                                            rt->setTransform(&tmp);
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }
-                                    ));
-                    }
-
-                }
-
-            }
-
-            ImGui::Columns(1);
-        }
-
-        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
-        if (projectRuntime)
-        {
-            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            if (sceneRuntime)
-            {
-                Camera* cam = sceneRuntime->getCamera();
-                if (cam)
-                {
-                    mat4 view = cam->getViewMatrix();
-                    mat4 proj = cam->getProjectionMatrix();
-                    ImGuiIO& io = ImGui::GetIO();
-                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-                    //ImGuizmo::DrawCube(glm::value_ptr(view),glm::value_ptr(proj),matrix);
-                    //ImGuizmo::DrawGrid(glm::value_ptr(view),glm::value_ptr(proj),matrix,1.0f);
-                    mat4 delta(1.0f);
-                    ImGuizmo::Manipulate
-                            (
-                                glm::value_ptr(view),
-                                glm::value_ptr(proj),
-                                mCurrentGizmoOperation,
-                                mCurrentGizmoMode,
-                                matrix,
-                                value_ptr(delta),
-                                mGizmoUseSnap ? &mGizmoSnap.x : nullptr
-                                                );
-
-                    if (entityRuntime && withChildren)
-                    {
-                        Vector3 tx(delta[3][0],delta[3][1],delta[3][2]);
-                        entityRuntime->applyToAll
-                                (
-                                    function<EntityRuntime*(EntityRuntime*)>(
-                                        [&](EntityRuntime* rt)
-                                    {
-                                        if (rt != entityRuntime)
-                                        {
-                                            rt->getTransform().preTranslate(tx);
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }
-                                    ));
-                    }
-                }
-            }
-        }
-    }
-
-    void
-    PropertiesWindow::drawPhysicsImGizmo
-    (CompoundChildDefinition ccd)
-    {
-        float* matrix = ccd.transform.getMatrixFloatPointer();
-
-        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
-        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
-        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
-
-        ImGui::InputFloat3("##Translation", matrixTranslation);
-        ImGui::SameLine();
-        if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE))
-        {
-            currentGizmoOperation = ImGuizmo::TRANSLATE;
-        }
-
-        ImGui::InputFloat3("##Rotation", matrixRotation);
-        ImGui::SameLine();
-        if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE))
-        {
-            currentGizmoOperation = ImGuizmo::ROTATE;
-        }
-
-        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
-
-        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
-        if (projectRuntime)
-        {
-        	SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            if (sceneRuntime)
-            {
-                Camera* cam = sceneRuntime->getCamera();
-                if (cam)
-                {
-                    mat4 proj = cam->getProjectionMatrix();
-                    mat4 view = cam->getViewMatrix();
-                    ImGuiIO& io = ImGui::GetIO();
-                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-                    ImGuizmo::Manipulate
-                            (
-                                glm::value_ptr(view),
-                                glm::value_ptr(proj),
-                                currentGizmoOperation,
-                                currentGizmoMode,
-                                matrix,
-                                nullptr,
-                                mGizmoUseSnap ? &mGizmoSnap.x : nullptr
-                                                );
-                    ccd.parent->updateCompoundChildTransform(ccd);
-                    replaceRuntimes(ccd.parent);
-                }
-            }
-        }
-    }
-
-    void
     PropertiesWindow::drawAssetProperties
     ()
     {
@@ -1770,53 +1522,13 @@ namespace octronic::dream::tool
             ImGui::PopID();
             if (selected == kf.getID())
             {
-                drawAnimationKeyframeImGuizmo(animDef, kf);
+                //drawAnimationKeyframeImGuizmo(animDef, kf);
             }
             mContext->getAnimationViewer()->regenerate();
         }
         ImGui::Columns(1);
     }
 
-    void
-    PropertiesWindow::drawAnimationKeyframeImGuizmo
-    (AnimationDefinition* def, AnimationKeyframe kf)
-    {
-        mat4 mtx(1.0f);
-        mtx = glm::translate(mtx, kf.getTranslation());
-        float* matrix = glm::value_ptr(mtx);
-
-        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
-        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
-
-        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
-        if (projectRuntime)
-        {
-            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            if (sceneRuntime)
-            {
-                Camera* cam = sceneRuntime->getCamera();
-                if (cam)
-                {
-                    mat4 proj = cam->getProjectionMatrix();
-                    mat4 view = cam->getViewMatrix();
-                    ImGuiIO& io = ImGui::GetIO();
-                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-                    ImGuizmo::Manipulate
-                            (
-                                glm::value_ptr(view),
-                                glm::value_ptr(proj),
-                                currentGizmoOperation,
-                                currentGizmoMode,
-                                matrix,
-                                nullptr,
-                                nullptr
-                                );
-                    kf.setTranslation(vec3(mtx[3]));
-                    def->updateKeyframe(kf);
-                }
-            }
-        }
-    }
 
     void
     PropertiesWindow::drawAudioAssetProperties
@@ -2793,7 +2505,7 @@ namespace octronic::dream::tool
                     if (ImGui::CollapsingHeader(shapeDef->getName().c_str()))
                     {
                         selectedToTransform = shape.uuid;
-                        drawPhysicsImGizmo(shape);
+                        //drawPhysicsImGizmo(shape);
                         if(ImGui::Button("Remove Shape"))
                         {
                             pod->removeCompoundChild(shape);
@@ -2956,7 +2668,7 @@ namespace octronic::dream::tool
             if (selected == cp.id)
             {
                 mContext->getPathViewer()->setSelectedControlPoint(cp.id);
-                drawPathControlPointImGuizmo(pathDef,cp);
+                //drawPathControlPointImGuizmo(pathDef,cp);
                 needsRegen = true;
             }
         }
@@ -2969,47 +2681,6 @@ namespace octronic::dream::tool
         if (ImGui::Button("Deselect"))
         {
             selected = -1;
-        }
-    }
-
-    void
-    PropertiesWindow::drawPathControlPointImGuizmo
-    (PathDefinition* pDef, PathControlPoint cp)
-    {
-        mat4 mtx(1.0f);
-        mtx = glm::translate(mtx, cp.position.toGLM());
-        float* matrix = glm::value_ptr(mtx);
-
-        static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
-        static ImGuizmo::MODE currentGizmoMode(ImGuizmo::WORLD);
-
-        auto projectRuntime = mContext->getProject()->getRuntime();
-        if (projectRuntime)
-        {
-            auto sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            if (sceneRuntime)
-            {
-                Camera* cam = sceneRuntime->getCamera();
-                if (cam)
-                {
-                    auto proj = cam->getProjectionMatrix();
-                    auto view = cam->getViewMatrix();
-                    ImGuiIO& io = ImGui::GetIO();
-                    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-                    ImGuizmo::Manipulate
-                            (
-                                glm::value_ptr(view),
-                                glm::value_ptr(proj),
-                                currentGizmoOperation,
-                                currentGizmoMode,
-                                matrix,
-                                nullptr,
-                                nullptr
-                                );
-                    cp.position = Vector3(mtx[3][0],mtx[3][1],mtx[3][2]);
-                    pDef->updateControlPoint(cp);
-                }
-            }
         }
     }
 

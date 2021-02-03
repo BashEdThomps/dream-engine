@@ -36,23 +36,30 @@
 #include <algorithm>
 #include <thread>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     Project::Project
     (ProjectDirectory* dir, StorageManager* fm)
-        : mDirectory(dir),
+        : LockableObject("Project"),
+          mDirectory(dir),
           mDefinition(nullptr),
           mRuntime(nullptr),
           mWindowComponent(nullptr),
           mAudioComponent(nullptr),
           mStorageManager(fm)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Project: Constructing");
     }
 
     Project::~Project
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Project: Destructing");
 
         if (mRuntime != nullptr)
@@ -72,23 +79,18 @@ namespace octronic::dream
     Project::createProjectRuntime
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
         mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
-        mRuntime->lock();
         if (!mRuntime->useDefinition())
         {
             LOG_CRITICAL("Project: Failed to create project runtime");
             delete mRuntime;
             mRuntime = nullptr;
         }
-        if (mRuntime)
-        {
-            mRuntime->unlock();
-        }
         return mRuntime;
     }
-
-
 
     bool
     Project::hasProjectRuntime
@@ -100,6 +102,8 @@ namespace octronic::dream
 
     void Project::resetProjectRuntime()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("Project: Resetting project runtime");
         delete mRuntime;
         mRuntime = nullptr;
@@ -144,6 +148,8 @@ namespace octronic::dream
     Project::setDefinition
     (ProjectDefinition* definition)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mDefinition = definition;
     }
 
@@ -151,13 +157,17 @@ namespace octronic::dream
     Project::setWindowComponent
     (WindowComponent* windowComponent)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mWindowComponent = windowComponent;
     }
 
     void Project::setAudioComponent(AudioComponent* audioComponent)
-	{
+    {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if(!lg.owns_lock()) getMutex().lock();
         mAudioComponent = audioComponent;
-	}
+    }
 
     ProjectDirectory*
     Project::getDirectory

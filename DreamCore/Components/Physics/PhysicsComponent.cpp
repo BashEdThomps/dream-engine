@@ -29,11 +29,13 @@
 #include <btBulletDynamicsCommon.h>
 #include <iostream>
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     PhysicsComponent::PhysicsComponent
     (ProjectRuntime* pr)
-        : Component(pr),
+        : Component("PhysicsComponent",pr),
           mDebugDrawer(nullptr),
           mDynamicsWorld(nullptr),
           mBroadphase(nullptr),
@@ -50,6 +52,8 @@ namespace octronic::dream
     PhysicsComponent::~PhysicsComponent
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "PhysicsComponent: Destroying Object" );
 
         int i = 0;
@@ -132,14 +136,25 @@ namespace octronic::dream
     PhysicsComponent::stepSimulation
     ()
     {
-        mDynamicsWorld->stepSimulation(mTime->getFrameTimeDelta()/1000.0);
-        checkContactManifolds();
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
+        double time_delta = mTime->getFrameTimeDelta()/1000.0;
+
+        LOG_TRACE("PhysicsComponent: {}", __FUNCTION__, time_delta);
+
+        if (time_delta > 0.0)
+        {
+			mDynamicsWorld->stepSimulation(time_delta);
+			checkContactManifolds();
+        }
     }
 
     void
     PhysicsComponent::setGravity
     (const Vector3& gravity)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("PhysicsComponent: Setting Gravity {},{},{}" , gravity.x(), gravity.y(), gravity.z());
         if (mDynamicsWorld != nullptr)
         {
@@ -151,6 +166,8 @@ namespace octronic::dream
     PhysicsComponent::getGravity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mDynamicsWorld != nullptr)
         {
             auto gv = mDynamicsWorld->getGravity();
@@ -163,6 +180,8 @@ namespace octronic::dream
     PhysicsComponent::init
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "PhysicsComponent: Initialising Component");
         mBroadphase = new btDbvtBroadphase();
         mCollisionConfiguration = new btDefaultCollisionConfiguration();
@@ -185,6 +204,8 @@ namespace octronic::dream
     PhysicsComponent::addRigidBody
     (btRigidBody *rigidBody)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "PhysicsComponent: Adding Rigid Body to Dynamics World" );
         if (rigidBody != nullptr)
         {
@@ -201,6 +222,8 @@ namespace octronic::dream
     PhysicsComponent::removePhysicsObjectRuntime
     (PhysicsObjectRuntime* obj)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         removeRigidBody(obj->getRigidBody());
     }
 
@@ -208,6 +231,8 @@ namespace octronic::dream
     PhysicsComponent::removeRigidBody
     (btRigidBody *rigidBody)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG( "PhysicsComponent: Removing Rigid Body from Dynamics World" );
         if (rigidBody != nullptr)
         {
@@ -223,6 +248,8 @@ namespace octronic::dream
     PhysicsComponent::addPhysicsObjectRuntime
     (PhysicsObjectRuntime* physicsObjejct)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto rb = physicsObjejct->getRigidBody();
         addRigidBody(rb);
     }
@@ -231,6 +258,8 @@ namespace octronic::dream
     PhysicsComponent::setCamera
     (Camera* camera)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mDebugDrawer != nullptr)
         {
             mDebugDrawer->setCamera(camera);
@@ -241,11 +270,15 @@ namespace octronic::dream
     PhysicsComponent::setDebug
     (bool debug)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mDebug = debug;
     }
 
     bool PhysicsComponent::getDebug()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mDebug;
     }
 
@@ -253,6 +286,8 @@ namespace octronic::dream
     PhysicsComponent::checkContactManifolds
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("PhysicsComponent: Checking contact manifolds");
         auto scene = mProjectRuntime->getActiveSceneRuntime();
         int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
@@ -331,6 +366,8 @@ namespace octronic::dream
     PhysicsComponent::getEntityRuntime
     (SceneRuntime* scene, const btCollisionObject* collObj)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return scene->getRootEntityRuntime()->applyToAll
                 (
                     function<EntityRuntime*(EntityRuntime*)>
@@ -355,21 +392,29 @@ namespace octronic::dream
     PhysicsComponent::drawDebug
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mDebugDrawer->drawAll();
     }
 
     PhysicsDebugDrawer* PhysicsComponent::getDebugDrawer()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mDebugDrawer;
     }
 
     PhysicsUpdateWorldTask *PhysicsComponent::getUpdateWorldTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return &mUpdateWorldTask;
     }
 
     PhysicsDrawDebugTask* PhysicsComponent::getDrawDebugTask()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return &mDrawDebugTask;
     }
 }

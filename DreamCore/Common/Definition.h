@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include "LockableObject.h"
+#include "Common/LockableObject.h"
 
-#include "Constants.h"
+#include "Common/Constants.h"
 #include "Components/Transform.h"
-#include "Math.h"
-#include "Uuid.h"
+#include "Common/Math.h"
+#include "Common/Uuid.h"
 
 #include <sstream>
 #include <json.hpp>
@@ -33,144 +33,71 @@ namespace octronic::dream
      */
     class Definition : public LockableObject
     {
-    protected:
-        /**
-         * @brief Internal JSON structure that defines the object.
-         */
-        json mJson;
+    
 
     public:
         /**
          * @brief Default constructor.
          * @param data Set the internal mJson variable to this data.
+         * @param className name of the class
          */
-        inline Definition
-        (const json& data) : LockableObject(), mJson(data)
-        {
-            if (mJson[Constants::UUID].is_string())
-            {
-               mJson[Constants::UUID] = Uuid::generateUuid();
-            }
-        }
-
-        virtual inline ~Definition() {}
+        Definition(const string& className, const json& data);
+        virtual  ~Definition();
 
         /**
          * @brief Get the current json object describing this object
          * @return JSON data object.
          */
-        virtual inline json
-        getJson
-        ()
-        {
-            return mJson;
-        }
+        virtual json getJson();
 
         /**
          * @param name Name to compare.
          * @return True if this Definition has the given name.
          */
-        inline bool
-        hasName
-        (const string& name)
-        {
-            string s = mJson[Constants::NAME];
-            return s.compare(name) == 0;
-        }
+        bool hasName(const string& name);
 
         /**
          * @return The Definition's name.
          */
-        inline string
-        getName
-        ()
-        {
-            if (mJson[Constants::NAME].is_null())
-            {
-                mJson[Constants::NAME] = "";
-            }
-            return mJson[Constants::NAME];
-        }
+        string getName();
 
         /**
          * @param name The name to give the Definition.
          */
-        inline void
-        setName
-        (const string& name)
-        {
-            mJson[Constants::NAME] = name;
-        }
+        void setName(const string& name);
 
         /**
          * @param uuid uuid to compare.
          * @return True if this Definition has the give uuid.
          */
-        inline bool
-        hasUuid
-        (UuidType uuid)
-        {
-            UuidType s = mJson[Constants::UUID];
-            return s == uuid;
-        }
+        bool hasUuid(UuidType uuid);
 
         /**
          * @return The Definition's uuid.
          */
-        inline UuidType
-        getUuid
-        ()
-        {
-            if (mJson[Constants::UUID].is_null())
-            {
-                mJson[Constants::UUID] = Uuid::generateUuid();
-            }
-            return mJson[Constants::UUID];
-        }
+        UuidType getUuid();
 
         /**
          * @param uuid Uuid to give the Definition;
          */
-        inline void
-        setUuid
-        (UuidType uuid)
-        {
-            mJson[Constants::UUID] = uuid;
-        }
+        void setUuid(UuidType uuid);
 
         /**
          * @return A combined name and uuid string in the following format:
          * "[ NAME : UUID ]"
          */
-        inline string
-        getNameAndUuidString
-        ()
-        {
-            stringstream ss;
-            ss << "[" << getName() << " : " << getUuid() << "]";
-            return ss.str();
-        }
+        string getNameAndUuidString();
 
-        json
-        inline wrapVector3(const Vector3& v)
-        {
-           json retval = json::object();
-           retval[Constants::X] = v.x();
-           retval[Constants::Y] = v.y();
-           retval[Constants::Z] = v.z();
-           return retval;
-        }
+        /**
+         * @brief vector<-->json wrapping functions
+         */
+        json wrapVector3(const Vector3& v);
+        Vector3 unwrapVector3(const json& j);
 
-        Vector3
-        inline unwrapVector3
-        (const json& j)
-        {
-            return Vector3
-            (
-                j[Constants::X],
-                j[Constants::Y],
-                j[Constants::Z]
-            );
-        }
+    protected:
+        /**
+         * @brief Internal JSON structure that defines the object.
+         */
+        json mJson;
     };
 }

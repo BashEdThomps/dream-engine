@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common/LockableObject.h"
+
 #include <string>
 #include <vector>
 #include <atomic>
@@ -17,13 +19,11 @@ namespace octronic::dream
 
     enum TaskState
     {
-        TASK_STATE_NEW,
-        TASK_STATE_QUEUED,
-        TASK_STATE_WAITING,
-        TASK_STATE_ACTIVE,
-        TASK_STATE_COMPLETED,
-        TASK_STATE_FAILED,
-        TASK_STATE_EXPIRED
+        TASK_STATE_CONSTRUCTED,  // Constructed but not yet queued
+        TASK_STATE_QUEUED,       // Constructed and queued for execution
+        TASK_STATE_ACTIVE,       // Currently being executed
+        TASK_STATE_FAILED,       // Execution has failed
+        TASK_STATE_COMPLETED     // Execution has completed
     };
 
     /**
@@ -44,51 +44,55 @@ namespace octronic::dream
      * @see Task::isWaitingForDependencies
      * @see Task::dependsOn
      */
-    class Task
+    class Task : public LockableObject
     {
-        static int TaskID;
-
-        static mutex TaskStatesMutex;
-        static map<int,TaskState> TaskStates;
-
-        static mutex WaitingForMutex;
-        static map<int,vector<Task*> > WaitingFor;
-
-        static mutex WaitingForMeMutex;
-        static map<int,vector<Task*> > WaitingForMe;
-
-    protected:
-        int mTaskId;
-        int  mThreadId;
-        unsigned int  mDeferralCount;
-        string mTaskName;
-
     public:
+        static int TaskIDGenerator;
+        const static int INVALID_THREAD_ID;
+        const static int INVALID_TASK_ID;
+
         Task(const string& taskName);
-        Task(const Task& other);
         virtual ~Task();
+
         virtual void execute() = 0;
 
-        void clearState();
+        int getTaskID();
+        int getThreadID();
 
-        void setThreadId(int t);
-        string getTaskName() const;
+        void setThreadID(int t);
+        string getTaskName();
 
         unsigned int getDeferralCount();
         void incrementDeferralCount();
 
-        void setState(const TaskState& s);
-        TaskState getState() const;
+        void clearState();
+        void setState(TaskState s);
+        TaskState getState();
 
         void clearDependency(Task* t);
-        void notifyDependents();
+        void notifyTasksWaitingForMe();
         bool isWaitingForDependencies();
-
         void dependsOn(Task* t);
 
-        bool operator==(const Task& other);
+        bool operator==(Task& other);
 
-        int getTaskId() const;
+        virtual string getDebugString();
+        static string stateToString(TaskState);
+        static int taskIDGenerator();
+
+    private:
+        void isWaitingForMe(Task* t);
+
+    protected:
+
+    private:
+        int mTaskID;
+        int mThreadID;
+        unsigned int  mDeferralCount;
+        string mTaskName;
+        TaskState mTaskState;
+        vector<Task*> mWaitingFor;
+        vector<Task*> mWaitingForMe;
     };
 
     /**
@@ -98,7 +102,7 @@ namespace octronic::dream
      * clean-up operations after their parent object has been destroyed, or is otherwise
      * no longer available.
      *
-     * Must be stacked as shared pointers
+     * Must be instanciated on stack as shared pointers
      */
     class DestructionTask : public Task
     {

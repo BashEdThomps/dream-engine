@@ -21,11 +21,13 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     MaterialDefinition::MaterialDefinition
     (ProjectDefinition* pd, const json &js)
-        :AssetDefinition(pd,js)
+        :AssetDefinition("MaterialDefinition",pd,js)
     {
         LOG_TRACE("MaterialDefinition: Constructing");
     }
@@ -40,6 +42,8 @@ namespace octronic::dream
     MaterialDefinition::getShader
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
@@ -51,6 +55,8 @@ namespace octronic::dream
     MaterialDefinition::setShader
     (UuidType val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
     }
 
@@ -59,6 +65,8 @@ namespace octronic::dream
     MaterialDefinition::getDiffuseTexture
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
@@ -70,6 +78,8 @@ namespace octronic::dream
     MaterialDefinition::setDiffuseTexture
     (UuidType val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
     }
 
@@ -77,6 +87,8 @@ namespace octronic::dream
     MaterialDefinition::getSpecularTexture
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
@@ -88,6 +100,8 @@ namespace octronic::dream
     MaterialDefinition::setSpecularTexture
     (UuidType val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
     }
 
@@ -95,6 +109,8 @@ namespace octronic::dream
     MaterialDefinition::getNormalTexture
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
@@ -106,6 +122,8 @@ namespace octronic::dream
     MaterialDefinition::setNormalTexture
     (UuidType val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
     }
 
@@ -113,6 +131,8 @@ namespace octronic::dream
     MaterialDefinition::getDisplacementTexture
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
@@ -125,6 +145,8 @@ namespace octronic::dream
     MaterialDefinition::setDisplacementTexture
     (UuidType val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
     }
 
@@ -133,6 +155,8 @@ namespace octronic::dream
     MaterialDefinition::getDiffuseColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
@@ -148,6 +172,8 @@ namespace octronic::dream
     MaterialDefinition::setDiffuseColour
     (RGB val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = wrapColourObject(val);
     }
 
@@ -155,6 +181,8 @@ namespace octronic::dream
     MaterialDefinition::getSpecularColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
@@ -170,6 +198,8 @@ namespace octronic::dream
     MaterialDefinition::setSpecularColour
     (RGB val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = wrapColourObject(val);
     }
 
@@ -177,6 +207,8 @@ namespace octronic::dream
     MaterialDefinition::getAmbientColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
@@ -191,6 +223,8 @@ namespace octronic::dream
     MaterialDefinition::setAmbientColour
     (RGB val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = wrapColourObject(val);
     }
 
@@ -198,6 +232,8 @@ namespace octronic::dream
     MaterialDefinition::getReflectiveColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
@@ -213,6 +249,8 @@ namespace octronic::dream
     MaterialDefinition::setReflectiveColour
     (RGB val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = wrapColourObject(val);
     }
 
@@ -220,6 +258,8 @@ namespace octronic::dream
     MaterialDefinition::getEmissiveColour
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
@@ -235,6 +275,8 @@ namespace octronic::dream
     MaterialDefinition::setEmissiveColour
     (RGB val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = wrapColourObject(val);
     }
 
@@ -242,6 +284,8 @@ namespace octronic::dream
     MaterialDefinition::wrapColourObject
     (RGB v)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         auto obj = json::object();
         obj[Constants::RED]   = v.r;
         obj[Constants::GREEN] = v.g;
@@ -253,6 +297,8 @@ namespace octronic::dream
     MaterialDefinition::unwrapColourObject
     (json obj)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
        float r = obj[Constants::RED];
        float g = obj[Constants::GREEN];
        float b = obj[Constants::BLUE];
@@ -263,6 +309,8 @@ namespace octronic::dream
     MaterialDefinition::black
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return wrapColourObject(RGB{0.f,0.f,0.f});
     }
 
@@ -270,6 +318,8 @@ namespace octronic::dream
     MaterialDefinition::getOpacity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
@@ -281,6 +331,8 @@ namespace octronic::dream
     MaterialDefinition::setOpacity
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
     }
 
@@ -288,6 +340,8 @@ namespace octronic::dream
     MaterialDefinition::getBumpScaling
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
@@ -300,6 +354,8 @@ namespace octronic::dream
     MaterialDefinition::setBumpScaling
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
     }
 
@@ -307,6 +363,8 @@ namespace octronic::dream
     MaterialDefinition::getHardness
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
@@ -318,6 +376,8 @@ namespace octronic::dream
     MaterialDefinition::setHardness
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
 
         mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
     }
@@ -326,6 +386,8 @@ namespace octronic::dream
     MaterialDefinition::getReflectivity
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
@@ -337,6 +399,8 @@ namespace octronic::dream
     MaterialDefinition::setReflectivity
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
     }
 
@@ -344,6 +408,8 @@ namespace octronic::dream
     MaterialDefinition::getShininessStrength
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
@@ -355,6 +421,8 @@ namespace octronic::dream
     MaterialDefinition::setShininessStrength
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
     }
 
@@ -362,6 +430,8 @@ namespace octronic::dream
     MaterialDefinition::getRefractionIndex
     ()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if(mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
@@ -373,11 +443,15 @@ namespace octronic::dream
     MaterialDefinition::setRefractionIndex
     (float val)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
     }
 
     bool MaterialDefinition::getIgnore()
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         if (mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE].is_null())
         {
             mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
@@ -387,6 +461,8 @@ namespace octronic::dream
 
     void MaterialDefinition::setIgnore(bool ignore)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
             mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
     }
 }

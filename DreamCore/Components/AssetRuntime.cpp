@@ -18,11 +18,13 @@
 #include "AssetDefinition.h"
 #include "Common/Uuid.h"
 
+using std::unique_lock;
+
 namespace octronic::dream
 {
     AssetRuntime::AssetRuntime
-    (AssetDefinition* definition)
-      : Runtime(definition),
+    (const string& className, AssetDefinition* definition)
+      : Runtime(className, definition),
         mLoaded(false)
     {
     }
@@ -35,8 +37,9 @@ namespace octronic::dream
     bool
     AssetRuntime::getLoaded
     ()
-    const
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         return mLoaded;
     }
 
@@ -44,6 +47,8 @@ namespace octronic::dream
     AssetRuntime::setLoaded
     (bool loaded)
     {
+        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
+        if (!lg.owns_lock()) getMutex().lock();
         mLoaded = loaded;
     }
 
