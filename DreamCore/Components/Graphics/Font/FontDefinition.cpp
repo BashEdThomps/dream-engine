@@ -11,7 +11,7 @@
  */
 #include "FontDefinition.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -21,24 +21,27 @@ namespace octronic::dream
     {
     }
 
-	void FontDefinition::setSize(unsigned int size)
+    void FontDefinition::setSize(unsigned int size)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+
+        } dreamElseLockFailed
     }
 
-	unsigned int FontDefinition::getSize()
+    unsigned int FontDefinition::getSize()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        unsigned int size = 1;
-        if (mJson[Constants::ASSET_ATTR_FONT_SIZE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
-        }
-        size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
-        return size;
+        if(dreamTryLock()) {
+            dreamLock();
+            unsigned int size = 1;
+            if (mJson.find(Constants::ASSET_ATTR_FONT_SIZE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+            }
+            size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
+            return size;
+        } dreamElseLockFailed
     }
 }
 

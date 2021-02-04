@@ -24,7 +24,7 @@
 #include "Components/Storage/StorageManager.h"
 #include "Components/Storage/File.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -32,64 +32,60 @@ namespace octronic::dream
     (ProjectRuntime* runtime)
         : Cache ("ScriptCache",runtime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Constructing");
     }
 
     ScriptCache::~ScriptCache
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Destructing");
     }
 
     SharedAssetRuntime* ScriptCache::loadRuntime(AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptDefinition* scriptDef = static_cast<ScriptDefinition*>(def);
-        for (SharedAssetRuntime* inst : mRuntimes)
+        if(dreamTryLock())
         {
-            if (inst->getUuid() == scriptDef->getUuid())
+            dreamLock();
+            ScriptDefinition* scriptDef = static_cast<ScriptDefinition*>(def);
+            for (SharedAssetRuntime* inst : mRuntimes)
             {
-                return inst;
+                if (inst->getUuid() == scriptDef->getUuid())
+                {
+                    return inst;
+                }
             }
-        }
-        string absPath = getAbsolutePath(scriptDef);
-        StorageManager* sm = mProjectRuntime->getStorageManager();
-        File* scriptFile = sm->openFile(absPath);
 
+            string absPath = getAbsolutePath(scriptDef);
+            StorageManager* sm = mProjectRuntime->getStorageManager();
+            File* scriptFile = sm->openFile(absPath);
+            ScriptRuntime* newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
 
+            if (!scriptFile->exists())
+            {
+                LOG_ERROR("ScriptCache: Script file does not exist");
+                newScript->setSource("");
+            }
+            else
+            {
+                newScript->setSource(scriptFile->readString());
+            }
 
-        ScriptRuntime* newScript = new ScriptRuntime(scriptDef,mProjectRuntime);
-
-        if (!scriptFile->exists())
-        {
-            LOG_ERROR("ScriptCache: Script file does not exist");
-            newScript->setSource("");
-        }
-        else
-        {
-        	newScript->setSource(scriptFile->readString());
-        }
-
-        if (!newScript->useDefinition())
-        {
-         	delete newScript;
-            newScript = nullptr;
-            sm->closeFile(scriptFile);
-            scriptFile = nullptr;
-        	LOG_ERROR("ScriptCache: Error Loading Script\n{}\n",newScript->getSource());
-        }
-        else
-        {
-        	LOG_TRACE("ScriptCache: Loaded Script Source\n{}\n",newScript->getSource());
-        	mRuntimes.push_back(newScript);
-            sm->closeFile(scriptFile);
-            scriptFile = nullptr;
-        }
-        return newScript;
+            if (!newScript->useDefinition())
+            {
+                delete newScript;
+                newScript = nullptr;
+                sm->closeFile(scriptFile);
+                scriptFile = nullptr;
+                LOG_ERROR("ScriptCache: Error Loading Script\n{}\n",newScript->getSource());
+            }
+            else
+            {
+                LOG_TRACE("ScriptCache: Loaded Script Source\n{}\n",newScript->getSource());
+                mRuntimes.push_back(newScript);
+                sm->closeFile(scriptFile);
+                scriptFile = nullptr;
+            }
+            return newScript;
+        } dreamElseLockFailed
     }
 }

@@ -24,7 +24,7 @@ using glm::ivec4;
 using glm::uvec2;
 using glm::uvec3;
 using glm::uvec4;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -36,8 +36,6 @@ namespace octronic::dream
           mLocation(0),
           mNeedsUpdate(true)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
 
         LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,count);
         switch (type)
@@ -97,8 +95,6 @@ namespace octronic::dream
 
     ShaderUniform::~ShaderUniform()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ShaderUniform: Destructing {} {}", mName, mCount);
         switch (mType)
         {
@@ -157,10 +153,11 @@ namespace octronic::dream
 
     void ShaderUniform::setCount(int count)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mCount = count;
-        setNeedsUpdate(true);
+        if(dreamTryLock()) {
+            dreamLock();
+            mCount = count;
+            setNeedsUpdate(true);
+        } dreamElseLockFailed
     }
 
     GLint ShaderUniform::getLocation() const
@@ -170,10 +167,11 @@ namespace octronic::dream
 
     void ShaderUniform::setLocation(GLint location)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mLocation = location;
-        setNeedsUpdate(true);
+        if(dreamTryLock()) {
+            dreamLock();
+            mLocation = location;
+            setNeedsUpdate(true);
+        } dreamElseLockFailed
     }
 
     bool ShaderUniform::getNeedsUpdate() const
@@ -183,9 +181,10 @@ namespace octronic::dream
 
     void ShaderUniform::setNeedsUpdate(bool needsUpdate)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mNeedsUpdate = needsUpdate;
+        if(dreamTryLock()) {
+            dreamLock();
+            mNeedsUpdate = needsUpdate;
+        } dreamElseLockFailed
     }
 
     void* ShaderUniform::getData() const
@@ -195,57 +194,58 @@ namespace octronic::dream
 
     void ShaderUniform::setData(void* data)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        size_t size = 0;
-        switch (mType)
-        {
-            case INT1:
-                size = sizeof(GLint)*static_cast<unsigned long>(mCount);
-                break;
-            case INT2:
-                size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
-                break;
-            case INT3:
-                size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
-                break;
-            case INT4:
-                size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
-                break;
+        if(dreamTryLock()) {
+            dreamLock();
+            size_t size = 0;
+            switch (mType)
+            {
+                case INT1:
+                    size = sizeof(GLint)*static_cast<unsigned long>(mCount);
+                    break;
+                case INT2:
+                    size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
+                    break;
+                case INT3:
+                    size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
+                    break;
+                case INT4:
+                    size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
+                    break;
 
-            case UINT1:
-                size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
-                break;
-            case UINT2:
-                size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
-                break;
-            case UINT3:
-                size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
-                break;
-            case UINT4:
-                size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
-                break;
+                case UINT1:
+                    size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
+                    break;
+                case UINT2:
+                    size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
+                    break;
+                case UINT3:
+                    size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
+                    break;
+                case UINT4:
+                    size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
+                    break;
 
-            case FLOAT1:
-                size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
-                break;
-            case FLOAT2:
-                size = sizeof(vec2)*static_cast<unsigned long>(mCount);
-                break;
-            case FLOAT3:
-                size = sizeof(vec3)*static_cast<unsigned long>(mCount);
-                break;
-            case FLOAT4:
-                size = sizeof(vec4)*static_cast<unsigned long>(mCount);
-                break;
-        }
+                case FLOAT1:
+                    size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
+                    break;
+                case FLOAT2:
+                    size = sizeof(vec2)*static_cast<unsigned long>(mCount);
+                    break;
+                case FLOAT3:
+                    size = sizeof(vec3)*static_cast<unsigned long>(mCount);
+                    break;
+                case FLOAT4:
+                    size = sizeof(vec4)*static_cast<unsigned long>(mCount);
+                    break;
+            }
 
-        if (size > 0)
-        {
-            if (memcmp(mData,data,size) == 0) return;
-            memcpy(mData,data,size);
-            setNeedsUpdate(true);
-        }
+            if (size > 0)
+            {
+                if (memcmp(mData,data,size) == 0) return;
+                memcpy(mData,data,size);
+                setNeedsUpdate(true);
+            }
+        } dreamElseLockFailed
     }
 
     string
@@ -259,10 +259,11 @@ namespace octronic::dream
     ShaderUniform::setName
     (const string& name)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mName = name;
-        setNeedsUpdate(true);
+        if(dreamTryLock()) {
+            dreamLock();
+            mName = name;
+            setNeedsUpdate(true);
+        } dreamElseLockFailed
     }
 
     UniformType
@@ -276,10 +277,11 @@ namespace octronic::dream
     ShaderUniform::setType
     (const UniformType& type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mType = type;
-        setNeedsUpdate(true);
+        if(dreamTryLock()) {
+            dreamLock();
+            mType = type;
+            setNeedsUpdate(true);
+        } dreamElseLockFailed
     }
 
 }

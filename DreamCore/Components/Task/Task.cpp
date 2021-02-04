@@ -6,7 +6,7 @@
 
 using std::find;
 using std::stringstream;
-using std::unique_lock;
+
 using std::to_string;
 
 namespace octronic::dream
@@ -22,10 +22,10 @@ namespace octronic::dream
         switch(state)
         {
             case TASK_STATE_CONSTRUCTED: return "Constructed";
-			case TASK_STATE_QUEUED:      return "Queued";
-			case TASK_STATE_ACTIVE:      return "Active";
-			case TASK_STATE_COMPLETED:   return "Completed";
-			case TASK_STATE_FAILED:      return "Failed";
+            case TASK_STATE_QUEUED:      return "Queued";
+            case TASK_STATE_ACTIVE:      return "Active";
+            case TASK_STATE_COMPLETED:   return "Completed";
+            case TASK_STATE_FAILED:      return "Failed";
             default:                     return "Unknown?";
         }
     }
@@ -33,14 +33,12 @@ namespace octronic::dream
     // Task ====================================================================
 
     Task::Task(const string& taskName)
-        : LockableObject("Task"),
+        :
           mTaskID(TaskIDGenerator++),
           mThreadID(INVALID_THREAD_ID),
           mDeferralCount(0),
           mTaskName(taskName)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         mTaskID = taskIDGenerator();
         mWaitingFor.clear();
         mWaitingForMe.clear();
@@ -50,77 +48,45 @@ namespace octronic::dream
     Task::~Task()
     {}
 
-    int Task::getTaskID()
+    int Task::getTaskID() const
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return mTaskID;
     }
 
-    string Task::getDebugString()
-    {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-        stringstream ss;
-        ss << "["
-		   << (getThreadID() == INVALID_THREAD_ID ? "NONE" : to_string(getThreadID()))
-           << "." << getTaskID() << "]"
-           << getTaskName();
-        return ss.str();
-    }
-
-
     bool Task::operator==(Task& other)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         return mTaskID == other.getTaskID();
     }
 
-    string Task::getTaskName()
+    string Task::getTaskName() const
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return mTaskName;
     }
 
-    int Task::getThreadID()
+    int Task::getThreadID() const
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return mThreadID;
     }
 
     void Task::incrementDeferralCount()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         mDeferralCount++;
-        LOG_INFO("Task: {} Deferred for {} time", getDebugString(), mDeferralCount);
-        //assert(mDeferralCount < 1000);
+        LOG_INFO("Task: {} Deferred for {} time", getTaskName(), mDeferralCount);
     }
 
     void Task::setThreadID(int t)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         assert(t > INVALID_THREAD_ID);
         mThreadID = t;
     }
 
-    unsigned int Task::getDeferralCount()
+    unsigned int Task::getDeferralCount() const
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return mDeferralCount;
     }
 
     void Task::clearState()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         mThreadID = INVALID_THREAD_ID;
         mTaskState = TaskState::TASK_STATE_CONSTRUCTED;
         mDeferralCount = 0;
@@ -128,31 +94,28 @@ namespace octronic::dream
 
     void Task::clearDependency(Task* t)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("Task: {} clearing dependency on {}", getDebugString(), t->getDebugString());
+
+        LOG_TRACE("Task: {} clearing dependency on {}", getTaskName(), t->getTaskName());
 
         auto itr = std::find(mWaitingFor.begin(), mWaitingFor.end(), t);
         if (itr != mWaitingFor.end())
         {
             mWaitingFor.erase(itr);
-        	LOG_TRACE("Task: {} has {} dependencies left", getDebugString(), mWaitingFor.size());
+            LOG_TRACE("Task: {} has {} dependencies left", getTaskName(), mWaitingFor.size());
         }
         else
         {
-            LOG_CRITICAL("Task: *** WAIT, WHAT!!! *** {} was not waiting for 'dependency' {}",getDebugString(),t->getDebugString());
+            LOG_CRITICAL("Task: *** WAIT, WHAT!!! *** {} was not waiting for 'dependency' {}",getTaskName(),t->getTaskName());
             assert(false);
         }
     }
 
     void Task::notifyTasksWaitingForMe()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-    	LOG_TRACE("Task: {} is notifying dependant it's {} dependants", getDebugString(), mWaitingForMe.size());
+        LOG_TRACE("Task: {} is notifying dependant it's {} dependants", getTaskName(), mWaitingForMe.size());
         for (Task* t : mWaitingForMe)
         {
-            LOG_TRACE("Task: {} is notifying dependant task {} of completion", getDebugString(), t->getDebugString());
+            LOG_TRACE("Task: {} is notifying dependant task {} of completion", getTaskName(), t->getTaskName());
             t->clearDependency(this);
         }
         mWaitingForMe.clear();
@@ -160,8 +123,6 @@ namespace octronic::dream
 
     bool Task::isWaitingForDependencies()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
 
         bool is_waiting = !mWaitingFor.empty();
 
@@ -170,28 +131,22 @@ namespace octronic::dream
             stringstream ss;
             for (Task* t : mWaitingFor)
             {
-                ss << "\n\t--> " << t->getDebugString();
+                ss << "\n\t--> " << t->getTaskName();
             }
-            LOG_TRACE("Task: {} is waiting for {} dependencies to finish {}", getDebugString(), mWaitingFor.size(), ss.str());
+            LOG_TRACE("Task: {} is waiting for {} dependencies to finish {}", getTaskName(), mWaitingFor.size(), ss.str());
         }
         return is_waiting;
     }
 
     void Task::isWaitingForMe(Task* t)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-        LOG_TRACE("Task: {} is dependant on me: {}",t->getDebugString(), getDebugString());
+        LOG_TRACE("Task: {} is dependant on me: {}",t->getTaskName(), getTaskName());
         mWaitingForMe.push_back(t);
     }
 
     void Task::dependsOn(Task* t)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-        LOG_TRACE("Task: {} is dependant on: {}",getDebugString(), t->getDebugString());
+        LOG_TRACE("Task: {} is dependant on: {}",getTaskName(), t->getTaskName());
         t->isWaitingForMe(this);
 
         mWaitingFor.push_back(t);
@@ -199,24 +154,29 @@ namespace octronic::dream
 
     void Task::setState(TaskState s)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-      	mTaskState = s;
-        LOG_TRACE("Task: {} is changing state to {}",getDebugString(), stateToString(getState()));
+        mTaskState = s;
+        LOG_TRACE("Task: {} is changing state to {}",getTaskName(), stateToString(getState()));
     }
 
-    TaskState Task::getState()
+    TaskState Task::getState() const
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return mTaskState;
     }
 
     int Task::taskIDGenerator()
     {
-
         return TaskIDGenerator++;
+    }
+
+    bool Task::readyToPush() const
+    {
+        return mTaskState == TaskState::TASK_STATE_CONSTRUCTED ||
+                mTaskState == TaskState::TASK_STATE_COMPLETED;
+    }
+
+    bool Task::hasState(const TaskState& s) const
+    {
+        return mTaskState == s;
     }
 
 

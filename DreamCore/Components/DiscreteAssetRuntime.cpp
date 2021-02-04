@@ -25,7 +25,7 @@
 #include "Scene/SceneRuntime.h"
 #include "Components/Task/Task.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -45,39 +45,43 @@ namespace octronic::dream
     DiscreteAssetRuntime::getAssetFilePath
     (const string& fmt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        auto pDir = mEntityRuntime
-                ->getSceneRuntime()
-                ->getProjectRuntime()
-                ->getProject()
-                ->getDirectory();
-        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
+            auto pDir = mEntityRuntime
+                    ->getSceneRuntime()
+                    ->getProjectRuntime()
+                    ->getProject()
+                    ->getDirectory();
+            return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
+        } dreamElseLockFailed
     }
 
     string
     DiscreteAssetRuntime::getAssetDirectoryPath
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        auto pDir = mEntityRuntime
-                ->getSceneRuntime()
-                ->getProjectRuntime()
-                ->getProject()
-                ->getDirectory();
-        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
+            auto pDir = mEntityRuntime
+                    ->getSceneRuntime()
+                    ->getProjectRuntime()
+                    ->getProject()
+                    ->getDirectory();
+            return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     DiscreteAssetRuntime::getEntityRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mEntityRuntime;
+            return mEntityRuntime;
+
+        } dreamElseLockFailed
     }
 }

@@ -1330,6 +1330,7 @@ namespace octronic::dream::tool
         }
         ImGui::Separator();
         AssetType type = Constants::getAssetTypeEnumFromString(assetDef->getType());
+
         switch (type)
         {
             case AssetType::ASSET_TYPE_ENUM_ANIMATION:
@@ -1365,6 +1366,8 @@ namespace octronic::dream::tool
             case AssetType::ASSET_TYPE_ENUM_TEXTURE:
                 drawTextureAssetProperties();
                 break;
+            case AssetType::ASSET_TYPE_ENUM_SPRITE:
+                drawSpriteAssetProperties();
             case AssetType::ASSET_TYPE_ENUM_NONE:
                 break;
         }
@@ -1460,7 +1463,7 @@ namespace octronic::dream::tool
             ImGui::NextColumn();
 
             // Tx
-            vec3 vTx = kf.getTranslation();
+            vec3 vTx = kf.getTranslation().toGLM();
             float tx[3] = {vTx.x, vTx.y, vTx.z};
             ImGui::PushItemWidth(-1);
             if (ImGui::InputFloat3("##translation",&tx[0]))
@@ -1474,7 +1477,7 @@ namespace octronic::dream::tool
             ImGui::PopItemWidth();
 
             // Rx
-            vec3 vRx = kf.getRotation();
+            vec3 vRx = kf.getRotation().toGLM();
             float rx[3] = {degrees(vRx.x), degrees(vRx.y), degrees(vRx.z)};
             ImGui::PushItemWidth(-1);
             if (ImGui::InputFloat3("##rotation",&rx[0]))
@@ -1488,7 +1491,7 @@ namespace octronic::dream::tool
             ImGui::PopItemWidth();
 
             // Scale
-            vec3 vScale = kf.getScale();
+            vec3 vScale = kf.getScale().toGLM();
             float scale[3] = {vScale.x, vScale.y, vScale.z};
             ImGui::PushItemWidth(-1);
             if (ImGui::InputFloat3("##scale",&scale[0]))
@@ -1845,13 +1848,13 @@ namespace octronic::dream::tool
 
         float diffuseColor[3] =
         {
-            materialDef->getDiffuseColour().r,
-            materialDef->getDiffuseColour().g,
-            materialDef->getDiffuseColour().b
+            materialDef->getDiffuseColour().r(),
+            materialDef->getDiffuseColour().g(),
+            materialDef->getDiffuseColour().b()
         };
         if (ImGui::ColorEdit3("Diffuse", diffuseColor))
         {
-            materialDef->setDiffuseColour(RGB{
+            materialDef->setDiffuseColour(Vector3{
                                               diffuseColor[0],
                                               diffuseColor[1],
                                               diffuseColor[2]
@@ -1859,14 +1862,14 @@ namespace octronic::dream::tool
         }
 
         float specularColor[3] = {
-            materialDef->getSpecularColour().r,
-            materialDef->getSpecularColour().g,
-            materialDef->getSpecularColour().b
+            materialDef->getSpecularColour().r(),
+            materialDef->getSpecularColour().g(),
+            materialDef->getSpecularColour().b()
         };
         if (ImGui::ColorEdit3("Specular", specularColor))
         {
             materialDef->setSpecularColour(
-                        RGB
+                        Vector3
                         {
                             specularColor[0],
                             specularColor[1],
@@ -1876,14 +1879,14 @@ namespace octronic::dream::tool
         }
 
         float ambientColor[3] = {
-            materialDef->getAmbientColour().r,
-            materialDef->getAmbientColour().g,
-            materialDef->getAmbientColour().b
+            materialDef->getAmbientColour().r(),
+            materialDef->getAmbientColour().g(),
+            materialDef->getAmbientColour().b()
         };
         if (ImGui::ColorEdit3("Ambient", ambientColor))
         {
             materialDef->setAmbientColour(
-                        RGB{
+                        Vector3{
                             ambientColor[0],
                             ambientColor[1],
                             ambientColor[2]
@@ -1892,14 +1895,14 @@ namespace octronic::dream::tool
         }
 
         float reflectiveColor[3] = {
-            materialDef->getReflectiveColour().r,
-            materialDef->getReflectiveColour().g,
-            materialDef->getReflectiveColour().b
+            materialDef->getReflectiveColour().r(),
+            materialDef->getReflectiveColour().g(),
+            materialDef->getReflectiveColour().b()
         };
         if (ImGui::ColorEdit3("Reflective", reflectiveColor))
         {
             materialDef->setReflectiveColour(
-                        RGB
+                        Vector3
                         {
                             reflectiveColor[0],
                             reflectiveColor[1],
@@ -1909,14 +1912,14 @@ namespace octronic::dream::tool
         }
 
         float emissiveColor[3] = {
-            materialDef->getEmissiveColour().r,
-            materialDef->getEmissiveColour().g,
-            materialDef->getEmissiveColour().b
+            materialDef->getEmissiveColour().r(),
+            materialDef->getEmissiveColour().g(),
+            materialDef->getEmissiveColour().b(),
         };
         if(ImGui::ColorEdit3("Emissive", emissiveColor))
         {
             materialDef->setEmissiveColour(
-                        RGB
+                        Vector3
                         {
                             emissiveColor[0],
                             emissiveColor[1],
@@ -2777,5 +2780,11 @@ namespace octronic::dream::tool
                 }
             }
         }
+    }
+
+
+    void PropertiesWindow::drawSpriteAssetProperties()
+    {
+
     }
 }

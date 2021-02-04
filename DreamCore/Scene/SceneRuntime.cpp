@@ -48,7 +48,7 @@
 #endif
 
 using std::make_shared;
-using std::unique_lock;
+
 using std::mutex;
 
 namespace octronic::dream
@@ -56,23 +56,23 @@ namespace octronic::dream
     SceneRuntime::SceneRuntime
     (SceneDefinition* sd, ProjectRuntime* project)
         : Runtime("SceneRuntime",sd),
-        mState(SceneState::SCENE_STATE_TO_LOAD),
-        mClearColour(Vector3(0.0f)),
-        mProjectRuntime(project),
-        mRootEntityRuntime(nullptr),
-        mLightingPassShader(nullptr),
-        mShadowPassShader(nullptr),
-        mFontShader(nullptr),
-        mInputScript(nullptr),
-        mCamera(Camera(this)),
-        mSceneStartTime(0),
-        mSceneCurrentTime(0),
-        mMinDrawDistance(0.1f),
-        mMaxDrawDistance(1000.0f),
-        mMeshCullDistance(1000.0f),
-        mPlayerEntity(nullptr),
-        mInputScriptConstructionTask(),
-        mInputScriptDestructionTask(nullptr)
+          mState(SceneState::SCENE_STATE_TO_LOAD),
+          mClearColour(Vector3(0.0f)),
+          mProjectRuntime(project),
+          mRootEntityRuntime(nullptr),
+          mLightingPassShader(nullptr),
+          mShadowPassShader(nullptr),
+          mFontShader(nullptr),
+          mInputScript(nullptr),
+          mCamera(Camera(this)),
+          mSceneStartTime(0),
+          mSceneCurrentTime(0),
+          mMinDrawDistance(0.1f),
+          mMaxDrawDistance(1000.0f),
+          mMeshCullDistance(1000.0f),
+          mPlayerEntity(nullptr),
+          mInputScriptConstructionTask(),
+          mInputScriptDestructionTask(nullptr)
     {
         LOG_TRACE( "SceneRuntime: Constructing " );
     }
@@ -80,9 +80,6 @@ namespace octronic::dream
     SceneRuntime::~SceneRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE("SceneRuntime: Destructing");
         if (mState != SCENE_STATE_DESTROYED)
         {
@@ -94,534 +91,563 @@ namespace octronic::dream
     SceneRuntime::destroyRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-		LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
+            LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
 
-        if (mRootEntityRuntime != nullptr)
-        {
-            delete mRootEntityRuntime;
-            mRootEntityRuntime = nullptr;
-        }
+            if (mRootEntityRuntime != nullptr)
+            {
+                delete mRootEntityRuntime;
+                mRootEntityRuntime = nullptr;
+            }
 
-        mLightingPassShader = nullptr;
-        mShadowPassShader = nullptr;
-        mFontShader = nullptr;
-        mEntityRuntimeCleanUpQueue.clear();
-        mState = SceneState::SCENE_STATE_DESTROYED;
+            mLightingPassShader = nullptr;
+            mShadowPassShader = nullptr;
+            mFontShader = nullptr;
+            mEntityRuntimeCleanUpQueue.clear();
+            mState = SceneState::SCENE_STATE_DESTROYED;
+        } dreamElseLockFailed
+
     }
 
     SceneState
     SceneRuntime::getState
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mState;
+            return mState;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setState
     (SceneState state)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (state >= mState || (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
-        {
-            mState = state;
-        }
-        else
-        {
-            LOG_WARN("SceneRuntime: Cannot switch scene state from {} to {}",mState,state);
-        }
+            if (state >= mState || (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
+            {
+                mState = state;
+            }
+            else
+            {
+                LOG_WARN("SceneRuntime: Cannot switch scene state from {} to {}",mState,state);
+            }
+        } dreamElseLockFailed
     }
 
     Vector3
     SceneRuntime::getGravity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mProjectRuntime)
-        {
-            return mProjectRuntime->getPhysicsComponent()->getGravity();
-        }
-        return Vector3(0.0f);
+            if (mProjectRuntime)
+            {
+                return mProjectRuntime->getPhysicsComponent()->getGravity();
+            }
+            return Vector3(0.0f);
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setGravity
     (const Vector3& gravity)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mProjectRuntime)
-        {
-            mProjectRuntime->getPhysicsComponent()->setGravity(gravity);
-        }
+            if (mProjectRuntime)
+            {
+                mProjectRuntime->getPhysicsComponent()->setGravity(gravity);
+            }
+        } dreamElseLockFailed
     }
 
     Vector3
     SceneRuntime::getClearColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mClearColour;
+            return mClearColour;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setClearColour
     (const Vector3& clearColour)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mClearColour = clearColour;
+            mClearColour = clearColour;
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     SceneRuntime::getEntityRuntimeByUuid
     (UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mRootEntityRuntime)
-        {
-            return nullptr;
-        }
+            if (!mRootEntityRuntime)
+            {
+                return nullptr;
+            }
 
-        return mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime* currentRuntime)
-                {
-                    if (!currentRuntime)
-                    {
-                        return static_cast<EntityRuntime*>(nullptr);
-                    }
-                    if (currentRuntime->hasUuid(uuid))
-                    {
-                        return currentRuntime;
-                    }
-                    return static_cast<EntityRuntime*>(nullptr);
-                }
-            )
-        );
+            return mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime* currentRuntime)
+                        {
+                            if (!currentRuntime)
+                            {
+                                return static_cast<EntityRuntime*>(nullptr);
+                            }
+                            if (currentRuntime->hasUuid(uuid))
+                            {
+                                return currentRuntime;
+                            }
+                            return static_cast<EntityRuntime*>(nullptr);
+                        }
+                        )
+                    );
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     SceneRuntime::getEntityRuntimeByName
     (const string& name)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mRootEntityRuntime)
-        {
-            return nullptr;
-        }
-        return mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime* currentRuntime)
-                {
-                    if (!currentRuntime)
-                    {
-                        return static_cast<EntityRuntime*>(nullptr);
-                    }
+            if (!mRootEntityRuntime)
+            {
+                return nullptr;
+            }
+            return mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime* currentRuntime)
+                        {
+                            if (!currentRuntime)
+                            {
+                                return static_cast<EntityRuntime*>(nullptr);
+                            }
 
-                    if (currentRuntime->hasName(name))
-                    {
-                        return currentRuntime;
-                    }
-                    return static_cast<EntityRuntime*>(nullptr);
-                }
-            )
-        );
+                            if (currentRuntime->hasName(name))
+                            {
+                                return currentRuntime;
+                            }
+                            return static_cast<EntityRuntime*>(nullptr);
+                        }
+                        )
+                    );
+        } dreamElseLockFailed
     }
 
     int
     SceneRuntime::countEntityRuntimes
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mRootEntityRuntime)
-        {
-            return 0;
-        }
-        int count = 0;
-        mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime*)
-                {
-                    count++;
-                    return static_cast<EntityRuntime*>(nullptr);
-                }
-            )
-        );
-        return count;
+            if (!mRootEntityRuntime)
+            {
+                return 0;
+            }
+            int count = 0;
+            mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime*)
+                        {
+                            count++;
+                            return static_cast<EntityRuntime*>(nullptr);
+                        }
+                        )
+                    );
+            return count;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::showScenegraph
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mRootEntityRuntime)
-        {
-            LOG_DEBUG( "SceneRuntime: Scenegraph is empty (no root EntityRuntime)" );
-            return;
-        }
+            if (!mRootEntityRuntime)
+            {
+                LOG_DEBUG( "SceneRuntime: Scenegraph is empty (no root EntityRuntime)" );
+                return;
+            }
 
-        mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime*)
-                {
-                    LOG_DEBUG("SceneRuntime: showScenegraph not implemented");
-                    //obj->showStatus();
-                    return nullptr;
-                }
-            )
-        );
+            mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime*)
+                        {
+                            LOG_DEBUG("SceneRuntime: showScenegraph not implemented");
+                            //obj->showStatus();
+                            return nullptr;
+                        }
+                        )
+                    );
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setRootEntityRuntime
     (EntityRuntime* root)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mRootEntityRuntime = root;
+            mRootEntityRuntime = root;
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     SceneRuntime::getRootEntityRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mRootEntityRuntime;
+            return mRootEntityRuntime;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::collectGarbage
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
-        mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime* runt)
-                {
-                    runt->collectGarbage();
-                    return static_cast<EntityRuntime*>(nullptr);
-                }
-            )
-        );
+            LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
+            mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime* runt)
+                        {
+                            runt->collectGarbage();
+                            return static_cast<EntityRuntime*>(nullptr);
+                        }
+                        )
+                    );
+        } dreamElseLockFailed
     }
 
     ProjectRuntime*
     SceneRuntime::getProjectRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mProjectRuntime;
+            return mProjectRuntime;
+        } dreamElseLockFailed
     }
 
     bool
     SceneRuntime::hasRootEntityRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mRootEntityRuntime != nullptr;
+            return mRootEntityRuntime != nullptr;
+        } dreamElseLockFailed
     }
 
     bool
     SceneRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        SceneDefinition* sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
+            SceneDefinition* sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
-        if (sceneDefinition == nullptr)
-        {
-            LOG_ERROR("SceneRuntime: SceneDefinition is null");
-            return false;
-        }
+            if (sceneDefinition == nullptr)
+            {
+                LOG_ERROR("SceneRuntime: SceneDefinition is null");
+                return false;
+            }
 
-        LOG_DEBUG( "SceneRuntime: Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
+            LOG_DEBUG( "SceneRuntime: Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
 
-        // Assign Runtime attributes from Definition
-        setName(sceneDefinition->getName());
-        setUuid(sceneDefinition->getUuid());
-        setClearColour(sceneDefinition->getClearColour());
+            // Assign Runtime attributes from Definition
+            setName(sceneDefinition->getName());
+            setUuid(sceneDefinition->getUuid());
+            setClearColour(sceneDefinition->getClearColour());
 
-        // Setup Camera
-        mCamera.setTranslation(sceneDefinition->getCameraTranslation());
-        mCamera.setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
-        mCamera.setPitch(sceneDefinition->getCameraPitch());
-        mCamera.setYaw(sceneDefinition->getCameraYaw());
+            // Setup Camera
+            mCamera.setTranslation(sceneDefinition->getCameraTranslation());
+            mCamera.setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
+            mCamera.setPitch(sceneDefinition->getCameraPitch());
+            mCamera.setYaw(sceneDefinition->getCameraYaw());
 
-        //  Setup drawing parameters
-        setMeshCullDistance(sceneDefinition->getMeshCullDistance());
-        setMinDrawDistance(sceneDefinition->getMinDrawDistance());
-        setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
+            //  Setup drawing parameters
+            setMeshCullDistance(sceneDefinition->getMeshCullDistance());
+            setMinDrawDistance(sceneDefinition->getMinDrawDistance());
+            setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
 
-        // Load Light and Shadow pass Shaders
-        ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
+            // Load Light and Shadow pass Shaders
+            ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
 
-        UuidType lightPassShaderUuid = sceneDefinition->getLightingPassShader();
-        mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(lightPassShaderUuid));
+            UuidType lightPassShaderUuid = sceneDefinition->getLightingPassShader();
+            mLightingPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(lightPassShaderUuid));
 
-        if (mLightingPassShader == nullptr)
-        {
-            LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",lightPassShaderUuid,getNameAndUuidString());
-        }
+            if (mLightingPassShader == nullptr)
+            {
+                LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",lightPassShaderUuid,getNameAndUuidString());
+            }
 
-        UuidType shadowPassShaderUuid = sceneDefinition->getShadowPassShader();
-        mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shadowPassShaderUuid));
+            UuidType shadowPassShaderUuid = sceneDefinition->getShadowPassShader();
+            mShadowPassShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shadowPassShaderUuid));
 
-        if (mShadowPassShader == nullptr)
-        {
-            LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shadowPassShaderUuid,getNameAndUuidString());
-        }
+            if (mShadowPassShader == nullptr)
+            {
+                LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shadowPassShaderUuid,getNameAndUuidString());
+            }
 
-        UuidType fontShaderUuid = sceneDefinition->getFontShader();
-        mFontShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(fontShaderUuid));
+            UuidType fontShaderUuid = sceneDefinition->getFontShader();
+            mFontShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(fontShaderUuid));
 
-        if (mFontShader == nullptr)
-        {
-            LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
-        }
+            if (mFontShader == nullptr)
+            {
+                LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
+            }
 
-        mProjectRuntime->getShaderCache()->logShaders();
+            mProjectRuntime->getShaderCache()->logShaders();
 
-        // Scripts
-        ScriptCache* scriptCache = mProjectRuntime->getScriptCache();
-        UuidType inputScriptUuid = sceneDefinition->getInputScript();
-        mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
-        if (mInputScript)
-        {
-            LOG_TRACE("SceneRuntime: Setting up input script Tasks");
-            mInputScriptConstructionTask.setScript(mInputScript);
-            mInputScriptDestructionTask = make_shared<InputScriptDestructionTask>();
-            mInputScriptDestructionTask->setScript(mInputScript);
-        }
-        else
-        {
-            LOG_ERROR("SceneRuntime: Unable to load Input r Script {}",inputScriptUuid);
-        }
+            // Scripts
+            ScriptCache* scriptCache = mProjectRuntime->getScriptCache();
+            UuidType inputScriptUuid = sceneDefinition->getInputScript();
+            mInputScript = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(inputScriptUuid));
+            if (mInputScript)
+            {
+                LOG_TRACE("SceneRuntime: Setting up input script Tasks");
+                mInputScriptConstructionTask.setScript(mInputScript);
+                mInputScriptDestructionTask = make_shared<InputScriptDestructionTask>();
+                mInputScriptDestructionTask->setScript(mInputScript);
+            }
+            else
+            {
+                LOG_ERROR("SceneRuntime: Unable to load Input r Script {}",inputScriptUuid);
+            }
 
-         // Physics
-         mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
+            // Physics
+            mProjectRuntime->getPhysicsComponent()->setGravity(sceneDefinition->getGravity());
 
-        // Create Root EntityRuntime
-        EntityDefinition* entityDef = sceneDefinition->getRootEntityDefinition();
-        EntityRuntime* er = new EntityRuntime(entityDef,this);
-        if (!er->useDefinition())
-        {
-            LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
-            delete er;
-            er = nullptr;
-            return false;
-        }
+            // Create Root EntityRuntime
+            EntityDefinition* entityDef = sceneDefinition->getRootEntityDefinition();
+            EntityRuntime* er = new EntityRuntime(entityDef,this);
+            if (!er->useDefinition())
+            {
+                LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
+                delete er;
+                er = nullptr;
+                return false;
+            }
 
 
-        setRootEntityRuntime(er);
-        setState(SceneState::SCENE_STATE_LOADED);
+            setRootEntityRuntime(er);
+            setState(SceneState::SCENE_STATE_LOADED);
 
-        EntityRuntime* focused = getEntityRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
-        mCamera.setFocusedEntity(focused);
+            EntityRuntime* focused = getEntityRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
+            mCamera.setFocusedEntity(focused);
 
-        EntityRuntime* player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
-        setPlayerEntity(player);
+            EntityRuntime* player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
+            setPlayerEntity(player);
 
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     SceneRuntime::getPhysicsDebug
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mProjectRuntime)
-        {
-            return mProjectRuntime->getPhysicsComponent()->getDebug();
-        }
-        return false;
+            if (mProjectRuntime)
+            {
+                return mProjectRuntime->getPhysicsComponent()->getDebug();
+            }
+            return false;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setPhysicsDebug
     (bool physicsDebug)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mProjectRuntime)
-        {
-            mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
-        }
+            if (mProjectRuntime)
+            {
+                mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
+            }
+        } dreamElseLockFailed
     }
 
     ShaderRuntime*
     SceneRuntime::getLightingPassShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mLightingPassShader;
+            return mLightingPassShader;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setLightingPassShader
     (ShaderRuntime* lightingShader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mLightingPassShader = lightingShader;
+            mLightingPassShader = lightingShader;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setMeshCullDistance
     (float mcd)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-      mMeshCullDistance = mcd;
+            mMeshCullDistance = mcd;
+        } dreamElseLockFailed
     }
 
     float
     SceneRuntime::getMeshCullDistance
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mMeshCullDistance;
+            return mMeshCullDistance;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setMinDrawDistance
     (float f)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mMinDrawDistance = f;
+            mMinDrawDistance = f;
+        } dreamElseLockFailed
     }
 
     float
     SceneRuntime::getMinDrawDistance
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mMinDrawDistance;
+            return mMinDrawDistance;
+        } dreamElseLockFailed
     }
 
     float
     SceneRuntime::getMaxDrawDistance
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mMaxDrawDistance;
+            return mMaxDrawDistance;
+        } dreamElseLockFailed
     }
 
     vector<AssetRuntime*>
     SceneRuntime::getAssetRuntimes
     (AssetType t)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        vector<AssetRuntime*> runtimes;
-        if (mRootEntityRuntime)
-        {
-            mRootEntityRuntime->applyToAll
-            (
-                function<EntityRuntime*(EntityRuntime*)>
-                (
-                    [&](EntityRuntime* currentRuntime)
-                    {
-                        AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
-                        if (inst)
-                        {
-                            runtimes.push_back(inst);
-                        }
-                        return static_cast<EntityRuntime*>(nullptr);
-                    }
-                )
-            );
-        }
-        return runtimes;
+            vector<AssetRuntime*> runtimes;
+            if (mRootEntityRuntime)
+            {
+                mRootEntityRuntime->applyToAll
+                        (
+                            function<EntityRuntime*(EntityRuntime*)>
+                            (
+                                [&](EntityRuntime* currentRuntime)
+                            {
+                                AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
+                                if (inst)
+                                {
+                                    runtimes.push_back(inst);
+                                }
+                                return static_cast<EntityRuntime*>(nullptr);
+                            }
+                            )
+                        );
+            }
+            return runtimes;
+        } dreamElseLockFailed
     }
 
     vector<EntityRuntime*>
     SceneRuntime::getEntitysWithRuntimeOf
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        vector<EntityRuntime*> runtimes;
-        if (mRootEntityRuntime)
-        {
-            mRootEntityRuntime->applyToAll
-            (
-                function<EntityRuntime*(EntityRuntime*)>
-                (
-                    [&](EntityRuntime* currentRuntime)
-                    {
-                        AssetRuntime* inst = currentRuntime->getAssetRuntime(def->getAssetType());
-                        if (inst && inst->getUuid() == def->getUuid())
-                        {
-                            runtimes.push_back(currentRuntime);
-                        }
-                        return static_cast<EntityRuntime*>(nullptr);
-                    }
-                )
-            );
-        }
-        return runtimes;
+            vector<EntityRuntime*> runtimes;
+            if (mRootEntityRuntime)
+            {
+                mRootEntityRuntime->applyToAll
+                        (
+                            function<EntityRuntime*(EntityRuntime*)>
+                            (
+                                [&](EntityRuntime* currentRuntime)
+                            {
+                                AssetRuntime* inst = currentRuntime->getAssetRuntime(def->getAssetType());
+                                if (inst && inst->getUuid() == def->getUuid())
+                                {
+                                    runtimes.push_back(currentRuntime);
+                                }
+                                return static_cast<EntityRuntime*>(nullptr);
+                            }
+                            )
+                        );
+            }
+            return runtimes;
+        } dreamElseLockFailed
     }
 
 
@@ -629,144 +655,156 @@ namespace octronic::dream
     SceneRuntime::setMaxDrawDistance
     (float f)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mMaxDrawDistance = f;
+            mMaxDrawDistance = f;
+        } dreamElseLockFailed
     }
 
     Camera*
     SceneRuntime::getCamera
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return &mCamera;
+            return &mCamera;
+        } dreamElseLockFailed
     }
 
     ShaderRuntime*
     SceneRuntime::getShadowPassShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mShadowPassShader;
+            return mShadowPassShader;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setShadowPassShader
     (ShaderRuntime* shadowPassShader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mShadowPassShader = shadowPassShader;
+            mShadowPassShader = shadowPassShader;
+        } dreamElseLockFailed
     }
 
     ShaderRuntime* SceneRuntime::getFontShader()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mFontShader;
+            return mFontShader;
+        } dreamElseLockFailed
     }
 
     void SceneRuntime::setFontShader(ShaderRuntime* fontShader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-       mFontShader = fontShader;
+            mFontShader = fontShader;
+        } dreamElseLockFailed
     }
 
     ScriptRuntime*
     SceneRuntime::getInputScript
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mInputScript;
+            return mInputScript;
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     SceneRuntime::getNearestToCamera
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mRootEntityRuntime)
-        {
-            return nullptr;
-        }
+            if (!mRootEntityRuntime)
+            {
+                return nullptr;
+            }
 
-        float distance = std::numeric_limits<float>::max();
-        Vector3 camTrans = mCamera.getTranslation();
-        EntityRuntime* nearest = mRootEntityRuntime;
-        EntityRuntime* focused = mCamera.getFocusedEntity();
+            float distance = std::numeric_limits<float>::max();
+            Vector3 camTrans = mCamera.getTranslation();
+            EntityRuntime* nearest = mRootEntityRuntime;
+            EntityRuntime* focused = mCamera.getFocusedEntity();
 
-        mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>
-            (
-                [&](EntityRuntime* next)
-                {
-                    if (next == focused)
-                    {
-                        return nullptr;
-                    }
-                    float nextDistance = next->distanceFrom(camTrans);
-                    if (nextDistance < distance)
-                    {
-                        distance = nextDistance;
-                        nearest = next;
-                    }
-                   return nullptr;
-                }
-            )
-        );
-        return nearest;
+            mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>
+                        (
+                            [&](EntityRuntime* next)
+                        {
+                            if (next == focused)
+                            {
+                                return nullptr;
+                            }
+                            float nextDistance = next->distanceFrom(camTrans);
+                            if (nextDistance < distance)
+                            {
+                                distance = nextDistance;
+                                nearest = next;
+                            }
+                            return nullptr;
+                        }
+                        )
+                    );
+            return nearest;
+        } dreamElseLockFailed
     }
 
     unsigned long
     SceneRuntime::getSceneCurrentTime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mSceneCurrentTime;
+            return mSceneCurrentTime;
+        } dreamElseLockFailed
     }
 
     void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mSceneCurrentTime = sceneCurrentTime;
+            mSceneCurrentTime = sceneCurrentTime;
+        } dreamElseLockFailed
     }
 
     unsigned long
     SceneRuntime::getSceneStartTime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mSceneStartTime;
+            return mSceneStartTime;
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setSceneStartTime
     (unsigned long sceneStartTime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mSceneStartTime = sceneStartTime;
+            mSceneStartTime = sceneStartTime;
+        } dreamElseLockFailed
     }
 
     /**
@@ -781,143 +819,167 @@ namespace octronic::dream
     SceneRuntime::createSceneTasks
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
+            LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
 
-        updateLifetime();
+            updateLifetime();
 
-        // Get Components
-        TaskManager* taskManager = mProjectRuntime->getTaskManager();
-        PhysicsComponent* physicsComponent = mProjectRuntime->getPhysicsComponent();
-        GraphicsComponent* graphicsComponent = mProjectRuntime->getGraphicsComponent();
-        InputComponent* inputComponent = mProjectRuntime->getInputComponent();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            // Get Components
+            TaskManager* taskManager = mProjectRuntime->getTaskManager();
+            PhysicsComponent* physicsComponent = mProjectRuntime->getPhysicsComponent();
+            GraphicsComponent* graphicsComponent = mProjectRuntime->getGraphicsComponent();
+            InputComponent* inputComponent = mProjectRuntime->getInputComponent();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
 
-        // Input component needs to be constructed
-        if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_CONSTRUCTED)
-        {
-           taskManager->pushTask(&mInputScriptConstructionTask);
-        }
-        // Input component in-flight
-        else if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_COMPLETED)
-        {
-            InputPollDataTask* inputPollDataTask = nullptr;
-            // Poll Data
-            inputPollDataTask = inputComponent->getPollDataTask();
-            inputComponent->setCurrentSceneRuntime(this);
-            taskManager->pushTask(inputPollDataTask);
-
-            // Process Input
-            InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
-            inputExecuteTask->dependsOn(inputPollDataTask);
-            taskManager->pushTask(inputExecuteTask);
-        }
-
-        // Schedule the PhysicsWorld update Task
-        PhysicsUpdateWorldTask* physicsWorldUpdateTask = nullptr;
-        if (physicsComponent->getEnabled())
-        {
-            physicsWorldUpdateTask = physicsComponent->getUpdateWorldTask();
-            taskManager->pushTask(physicsWorldUpdateTask);
-        }
-
-        // Process Entities
-        mRootEntityRuntime->applyToAll
-        (
-            function<EntityRuntime*(EntityRuntime*)>(
-            [&](EntityRuntime* rt)
+            // Input component needs to be constructed
+            if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_CONSTRUCTED)
             {
-                LOG_TRACE("SceneRuntime: Pushing tasks of {}", rt->getNameAndUuidString());
-                rt->updateLifetime();
-                // Animation
-                if (rt->hasAnimationRuntime())
+                taskManager->pushTask(&mInputScriptConstructionTask);
+            }
+            // Input component in-flight
+            else if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_COMPLETED)
+            {
+                InputPollDataTask* inputPollDataTask  = inputComponent->getPollDataTask();
+                if (inputPollDataTask->readyToPush())
                 {
-                    AnimationRuntime* anim = rt->getAnimationRuntime();
-                    AnimationUpdateTask* ut = anim->getUpdateTask();
-                    taskManager->pushTask(ut);
-                }
-                // Audio
-                if (rt->hasAudioRuntime())
-                {
-                    AudioRuntime* audio = rt->getAudioRuntime();
-                    AudioMarkersUpdateTask* ut = audio->getMarkersUpdateTask();
-                    taskManager->pushTask(ut);
-                }
+					inputComponent->setCurrentSceneRuntime(this);
+					taskManager->pushTask(inputPollDataTask);
+            	}
 
-                // Physics
-                if (physicsComponent->getEnabled() && rt->hasPhysicsObjectRuntime())
+                // Process Input
+                InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
+                if (inputExecuteTask->readyToPush())
                 {
-                    PhysicsObjectRuntime* pObj = rt->getPhysicsObjectRuntime();
-                    if (!pObj->isInPhysicsWorld())
-                    {
-                        PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
-                        if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
-                        {
-                        	ut->dependsOn(physicsWorldUpdateTask);
-                        }
-                        taskManager->pushTask(ut);
-                    }
+					inputExecuteTask->dependsOn(inputPollDataTask);
+					taskManager->pushTask(inputExecuteTask);
                 }
-                // Path
-                if (rt->hasPathRuntime())
-                {
-                    PathRuntime* path = rt->getPathRuntime();
-                    PathUpdateTask* ut = path->getUpdateTask();
-                    taskManager->pushTask(ut);
-                }
+            }
 
-                // Scripting
-                if (scriptComponent->getEnabled() && rt->hasScriptRuntime())
+            // Schedule the PhysicsWorld update Task
+            PhysicsUpdateWorldTask* physicsWorldUpdateTask = nullptr;
+            if (physicsComponent->getEnabled())
+            {
+                physicsWorldUpdateTask = physicsComponent->getUpdateWorldTask();
+                if (physicsWorldUpdateTask->readyToPush())
                 {
-                    ScriptRuntime* script = rt->getScriptRuntime();
-                    EntityScriptConstructionTask* load = rt->getScriptConstructionTask();
-                    if (load->getState() == TaskState::TASK_STATE_CONSTRUCTED)
-                    {
-                        // Don't clear state of load
-                        taskManager->pushTask(load);
-                    }
-                    else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
-                    {
-                        if (!rt->getScriptInitialised())
+                	taskManager->pushTask(physicsWorldUpdateTask);
+                }
+            }
+
+            // Process Entities
+            mRootEntityRuntime->applyToAll
+                    (
+                        function<EntityRuntime*(EntityRuntime*)>(
+                            [&](EntityRuntime* rt)
                         {
-                            EntityScriptOnInitTask* init = rt->getScriptOnInitTask();
-                            taskManager->pushTask(init);
-                        }
-                        else
-                        {
-                            if (rt->hasEvents())
+                            LOG_TRACE("SceneRuntime: Pushing tasks of {}", rt->getNameAndUuidString());
+                            rt->updateLifetime();
+                            // Animation
+                            if (rt->hasAnimationRuntime())
                             {
-                                EntityScriptOnEventTask* event = rt->getScriptOnEventTask();
-                                event->dependsOn(physicsWorldUpdateTask);
-                                taskManager->pushTask(event);
+                                AnimationRuntime* anim = rt->getAnimationRuntime();
+                                AnimationUpdateTask* ut = anim->getUpdateTask();
+                                if (ut->readyToPush())
+                                {
+                                	taskManager->pushTask(ut);
+                                }
+                            }
+                            // Audio
+                            if (rt->hasAudioRuntime())
+                            {
+                                AudioRuntime* audio = rt->getAudioRuntime();
+                                AudioMarkersUpdateTask* ut = audio->getMarkersUpdateTask();
+                                if (ut->readyToPush())
+                                {
+                                	taskManager->pushTask(ut);
+                                }
                             }
 
-                            EntityScriptOnUpdateTask* update = rt->getScriptOnUpdateTask();
-                            taskManager->pushTask(update);
+                            // Physics
+                            if (physicsComponent->getEnabled() && rt->hasPhysicsObjectRuntime())
+                            {
+                                PhysicsObjectRuntime* pObj = rt->getPhysicsObjectRuntime();
+                                if (!pObj->isInPhysicsWorld())
+                                {
+                                    PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
+                                	if (ut->readyToPush())
+                                    {
+										if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
+										{
+											ut->dependsOn(physicsWorldUpdateTask);
+										}
+										taskManager->pushTask(ut);
+                                    }
+                                }
+                            }
+                            // Path
+                            if (rt->hasPathRuntime())
+                            {
+                                PathRuntime* path = rt->getPathRuntime();
+                                PathUpdateTask* ut = path->getUpdateTask();
+
+                                if (ut->readyToPush())
+                                {
+                                	taskManager->pushTask(ut);
+                                }
+                            }
+
+                            // Scripting
+                            if (scriptComponent->getEnabled() && rt->hasScriptRuntime())
+                            {
+                                ScriptRuntime* script = rt->getScriptRuntime();
+                                EntityScriptConstructionTask* load = rt->getScriptConstructionTask();
+                                if (load->getState() == TaskState::TASK_STATE_CONSTRUCTED)
+                                {
+                                    // Don't clear state of load
+                                    taskManager->pushTask(load);
+                                }
+                                else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
+                                {
+                                    if (!rt->getScriptInitialised())
+                                    {
+                                        EntityScriptOnInitTask* init = rt->getScriptOnInitTask();
+                                        taskManager->pushTask(init);
+                                    }
+                                    else
+                                    {
+                                        if (rt->hasEvents())
+                                        {
+                                            EntityScriptOnEventTask* event = rt->getScriptOnEventTask();
+                                            if (event->readyToPush())
+                                            {
+												event->dependsOn(physicsWorldUpdateTask);
+												taskManager->pushTask(event);
+                                            }
+                                        }
+
+                                        EntityScriptOnUpdateTask* update = rt->getScriptOnUpdateTask();
+                                        taskManager->pushTask(update);
+                                    }
+                                }
+                            }
+
+                            // Graphics
+                            if (!rt->getHidden() && rt->hasLightRuntime())
+                            {
+                                graphicsComponent->addToLightQueue(rt);
+                            }
+
+                            return static_cast<EntityRuntime*>(nullptr);
                         }
-                    }
-                }
+                        ));
 
-                // Graphics
-                if (!rt->getHidden() && rt->hasLightRuntime())
-                {
-                   graphicsComponent->addToLightQueue(rt);
-                }
-
-                return static_cast<EntityRuntime*>(nullptr);
+            if (physicsComponent->getDebug())
+            {
+                PhysicsDrawDebugTask* drawDebug = physicsComponent->getDrawDebugTask();
+                drawDebug->clearState();
+                graphicsComponent->pushTask(drawDebug);
             }
-        ));
 
-        if (physicsComponent->getDebug())
-        {
-            PhysicsDrawDebugTask* drawDebug = physicsComponent->getDrawDebugTask();
-            drawDebug->clearState();
-            graphicsComponent->pushTask(drawDebug);
-        }
-
-        LOG_TRACE("SceneRuntime: Finished {}",__FUNCTION__);
+            LOG_TRACE("SceneRuntime: Finished {}",__FUNCTION__);
+        } dreamElseLockFailed
     }
 
 
@@ -925,37 +987,40 @@ namespace octronic::dream
     SceneRuntime::updateLifetime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        Time* time = mProjectRuntime->getTime();
-        long timeDelta = time->getFrameTimeDelta();
-        if (timeDelta <= Time::DELTA_MAX)
-        {
-            long frameTime = time->getCurrentFrameTime();
-            if (getSceneStartTime() <= 0)
+            Time* time = mProjectRuntime->getTime();
+            long timeDelta = time->getFrameTimeDelta();
+            if (timeDelta <= Time::DELTA_MAX)
             {
-               setSceneStartTime(frameTime);
+                long frameTime = time->getCurrentFrameTime();
+                if (getSceneStartTime() <= 0)
+                {
+                    setSceneStartTime(frameTime);
+                }
+                setSceneCurrentTime(frameTime-getSceneStartTime());
             }
-            setSceneCurrentTime(frameTime-getSceneStartTime());
-        }
+        } dreamElseLockFailed
     }
 
     void
     SceneRuntime::setPlayerEntity
     (EntityRuntime* po)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        mPlayerEntity = po;
+        if(dreamTryLock()) {
+            dreamLock();
+            mPlayerEntity = po;
+        } dreamElseLockFailed
     }
 
     EntityRuntime*
     SceneRuntime::getPlayerEntity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-       return mPlayerEntity;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mPlayerEntity;
+        } dreamElseLockFailed
     }
 }

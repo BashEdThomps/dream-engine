@@ -11,7 +11,7 @@
  */
 #include "PhysicsObjectDefinition.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -26,112 +26,123 @@ namespace octronic::dream
     PhysicsObjectDefinition::setMass
     (float mass)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MASS] = mass;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MASS] = mass;
+
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getMass
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MASS] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MASS];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MASS] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MASS];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setMargin
     (float margin)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MARGIN] = margin;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MARGIN] = margin;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getMargin
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MARGIN] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MARGIN];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MARGIN] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MARGIN];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setKinematic
     (bool kinematic)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
+        } dreamElseLockFailed
     }
 
     bool
     PhysicsObjectDefinition::getKinematic
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_KINEMATIC].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
-        }
-        return mJson[Constants::ASSET_ATTR_KINEMATIC];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_KINEMATIC) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
+            }
+            return mJson[Constants::ASSET_ATTR_KINEMATIC];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::makeHalfExtentsObject
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_SIZE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE] = json::object();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_SIZE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_SIZE] = json::object();
+            }
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsX
     (float halfExtentX)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getHalfExtentsX
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::X].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::X) == mJson[Constants::ASSET_ATTR_SIZE].end())
+            {
+                mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsY
     (float halfExtentY)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
+        } dreamElseLockFailed
 
     }
 
@@ -139,198 +150,215 @@ namespace octronic::dream
     PhysicsObjectDefinition::getHalfExtentsY
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Y].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Y) == mJson[Constants::ASSET_ATTR_SIZE].end())
+            {
+                mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsZ
     (float halfExtentZ)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getHalfExtentsZ
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE][Constants::Z].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeHalfExtentsObject();
+            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Z) == mJson[Constants::ASSET_ATTR_SIZE].end())
+            {
+                mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::makeNormalObject
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_NORMAL].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_NORMAL) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
+            }
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setNormalX
     (float halfExtentX)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getNormalX
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::X].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::X) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+            {
+                mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setNormalY
     (float halfExtentY)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getNormalY
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Y) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+            {
+                mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setNormalZ
     (float halfExtentZ)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getNormalZ
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
+        if(dreamTryLock()) {
+            dreamLock();
+            makeNormalObject();
+            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Z) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+            {
+                mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getRadius
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_RADIUS].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_RADIUS] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_RADIUS];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_RADIUS) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_RADIUS] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_RADIUS];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setRadius
     (float rad)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_RADIUS] = rad;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_RADIUS] = rad;
+        } dreamElseLockFailed
     }
 
     float PhysicsObjectDefinition::getHeight()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_HEIGHT].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_HEIGHT];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_HEIGHT) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_HEIGHT];
+        } dreamElseLockFailed
 
     }
 
     void PhysicsObjectDefinition::setHeight(float height)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_HEIGHT] = height;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_HEIGHT] = height;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getConstant
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_CONSTANT].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_CONSTANT];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_CONSTANT) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_CONSTANT];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setConstant
     (float constant)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
+        } dreamElseLockFailed
     }
 
     bool
     PhysicsObjectDefinition::getControllableCharacter
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_CONTROLLABLE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
-        }
-        return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_CONTROLLABLE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
+            }
+            return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
+        } dreamElseLockFailed
 
     }
 
@@ -338,41 +366,45 @@ namespace octronic::dream
     PhysicsObjectDefinition::setControllableCharacter
     (bool controllable)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
+        } dreamElseLockFailed
     }
 
     void PhysicsObjectDefinition::setCcdSweptSphereRadius(float rad)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
+        } dreamElseLockFailed
     }
 
     float PhysicsObjectDefinition::getCcdSweptSphereRadius()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::ASSET_ATTR_CCD_SPR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_CCD_SPR];
+            if (mJson.find(Constants::ASSET_ATTR_CCD_SPR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_CCD_SPR];
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getRestitution
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_RESTITUTION].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_RESTITUTION];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_RESTITUTION) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_RESTITUTION];
+        } dreamElseLockFailed
 
     }
 
@@ -380,22 +412,24 @@ namespace octronic::dream
     PhysicsObjectDefinition::setRestitution
     (float r)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
+        } dreamElseLockFailed
     }
 
     float
     PhysicsObjectDefinition::getFriction
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_FRICTION].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_FRICTION];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_FRICTION) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_FRICTION];
+        } dreamElseLockFailed
 
     }
 
@@ -403,9 +437,10 @@ namespace octronic::dream
     PhysicsObjectDefinition::setFriction
     (float r)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_FRICTION] = r;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_FRICTION] = r;
+        } dreamElseLockFailed
     }
 
 
@@ -413,53 +448,56 @@ namespace octronic::dream
     PhysicsObjectDefinition::addCompoundChild
     (CompoundChildDefinition def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-       makeCompoundChildren();
-       mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
+        if(dreamTryLock()) {
+            dreamLock();
+            makeCompoundChildren();
+            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
+        } dreamElseLockFailed
     }
 
     vector<CompoundChildDefinition>
     PhysicsObjectDefinition::getCompoundChildren
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeCompoundChildren();
-        vector<CompoundChildDefinition> retval;
-        for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
-        {
-           CompoundChildDefinition def;
-           def.parent = this;
-           def.uuid = childJson[Constants::UUID];
-           def.transform.fromJson(childJson[Constants::TRANSFORM]);
-           retval.push_back(def);
+        if(dreamTryLock()) {
+            dreamLock();
+            makeCompoundChildren();
+            vector<CompoundChildDefinition> retval;
+            for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
+            {
+                CompoundChildDefinition def;
+                def.parent = this;
+                def.uuid = childJson[Constants::UUID];
+                def.transform.fromJson(childJson[Constants::TRANSFORM]);
+                retval.push_back(def);
 
-        }
-        return retval;
+            }
+            return retval;
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::updateCompoundChildTransform
     (CompoundChildDefinition def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeCompoundChildren();
-        for
-        (
-            auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-            iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-            iter++
-       )
-       {
-            UuidType jsUuid = (*iter)[Constants::UUID];
-            if (def.uuid == jsUuid)
+        if(dreamTryLock()) {
+            dreamLock();
+            makeCompoundChildren();
+            for
+                    (
+                     auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                     iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                     iter++
+                     )
             {
-               (*iter)[Constants::TRANSFORM] = def.transform.getJson();
-                return;
+                UuidType jsUuid = (*iter)[Constants::UUID];
+                if (def.uuid == jsUuid)
+                {
+                    (*iter)[Constants::TRANSFORM] = def.transform.getJson();
+                    return;
+                }
             }
-       }
+        } dreamElseLockFailed
 
     }
 
@@ -467,92 +505,99 @@ namespace octronic::dream
     PhysicsObjectDefinition::removeCompoundChild
     (CompoundChildDefinition def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        makeCompoundChildren();
-        for
-        (
-            auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-            iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-            iter++
-       )
-       {
-            if (*iter == def.getJson())
+        if(dreamTryLock()) {
+            dreamLock();
+            makeCompoundChildren();
+            for
+                    (
+                     auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                     iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                     iter++
+                     )
             {
-               mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].erase(iter);
-               return;
+                if (*iter == def.getJson())
+                {
+                    mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].erase(iter);
+                    return;
+                }
             }
-        }
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::makeCompoundChildren
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
+            }
+        } dreamElseLockFailed
     }
 
     UuidType
     PhysicsObjectDefinition::getCollisionModel
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
+            }
 
-        return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
+            return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setCollisionModel
     (UuidType modelUuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
+        } dreamElseLockFailed
     }
 
     Vector3
     PhysicsObjectDefinition::getLinearFactor
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
-        {
-            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
+            {
+                mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3(0.0f).toJson();
+            }
+            return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setLinearFactor
     (const Vector3& lf)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = wrapVector3(lf);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = lf.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     PhysicsObjectDefinition::getAngularFactor
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
-        {
-            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
+            {
+                mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3(0.0f).toJson();
+            }
+            return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
+        } dreamElseLockFailed
 
     }
 
@@ -560,44 +605,48 @@ namespace octronic::dream
     PhysicsObjectDefinition::setAngularFactor
     (const Vector3& af)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = wrapVector3(af);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = af.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     PhysicsObjectDefinition::getLinearVelocity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
-        {
-            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
+            {
+                mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3(0.0f).toJson();
+            }
+            return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
+        } dreamElseLockFailed
     }
 
     void
     PhysicsObjectDefinition::setLinearVelocity
     (const Vector3& lf)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = wrapVector3(lf);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = lf.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     PhysicsObjectDefinition::getAngularVelocity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
-        {
-            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
+            {
+                mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3(0.0f).toJson();
+            }
+            return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
+        } dreamElseLockFailed
 
     }
 
@@ -605,8 +654,9 @@ namespace octronic::dream
     PhysicsObjectDefinition::setAngularVelocity
     (const Vector3& af)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = wrapVector3(af);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = af.toJson();
+        } dreamElseLockFailed
     }
 }

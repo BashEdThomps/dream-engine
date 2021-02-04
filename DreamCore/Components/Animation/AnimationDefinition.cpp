@@ -15,144 +15,158 @@
 #include "Common/Constants.h"
 #include "Common/Logger.h"
 
-using std::unique_lock;
+using std::lock_guard;
+
 
 namespace octronic::dream
 {
+    // public
     AnimationDefinition::AnimationDefinition
     (ProjectDefinition* pd, const json& js)
         : AssetDefinition("AnimationDefinition",pd,js)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_KEYFRAMES].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
-        }
+		if (mJson.find(Constants::ASSET_ATTR_KEYFRAMES) == mJson.end())
+		{
+			mJson[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
+		}
     }
 
-    AnimationDefinition::~AnimationDefinition
-    ()
+    // public
+    AnimationDefinition::~AnimationDefinition()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("AnimationDefinition: Destructing");
     }
 
-    vector<AnimationKeyframe>
+    vector<AnimationKeyframe> // public
     AnimationDefinition::getKeyframes
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        vector<AnimationKeyframe> keyframes;
-        for (auto js : mJson[Constants::ASSET_ATTR_KEYFRAMES])
+        if (dreamTryLock())
         {
-            AnimationKeyframe newKeyframe(js[Constants::KEYFRAME_ID]);
-            newKeyframe.fromJson(js);
-            keyframes.push_back(newKeyframe);
+            dreamLock();
+            vector<AnimationKeyframe> keyframes;
+            for (auto js : mJson[Constants::ASSET_ATTR_KEYFRAMES])
+            {
+                AnimationKeyframe newKeyframe(js[Constants::KEYFRAME_ID]);
+                newKeyframe.fromJson(js);
+                keyframes.push_back(newKeyframe);
+            }
+            return keyframes;
         }
-        return keyframes;
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationDefinition::addKeyframe
     (const AnimationKeyframe& kf)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationDefinition::updateKeyframe
     (const AnimationKeyframe& kf)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-        for (;itr != end; itr++)
+
+        if (dreamTryLock())
         {
-           if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
-           {
-               // Time
-               (*itr)[Constants::KEYFRAME_TIME] = kf.getTime();
-               (*itr)[Constants::KEYFRAME_EASING_TYPE] = kf.getEasingType();
-               // Translation
-               (*itr)[Constants::KEYFRAME_TRANSLATION][Constants::X] = kf.getTranslation().x;
-               (*itr)[Constants::KEYFRAME_TRANSLATION][Constants::Y] = kf.getTranslation().y;
-               (*itr)[Constants::KEYFRAME_TRANSLATION][Constants::Z] = kf.getTranslation().z;
-               // Rotation
-               (*itr)[Constants::KEYFRAME_ROTATION][Constants::X] = kf.getRotation().x;
-               (*itr)[Constants::KEYFRAME_ROTATION][Constants::Y] = kf.getRotation().y;
-               (*itr)[Constants::KEYFRAME_ROTATION][Constants::Z] = kf.getRotation().z;
-               // Translation
-               (*itr)[Constants::KEYFRAME_SCALE][Constants::X] = kf.getScale().x;
-               (*itr)[Constants::KEYFRAME_SCALE][Constants::Y] = kf.getScale().y;
-               (*itr)[Constants::KEYFRAME_SCALE][Constants::Z] = kf.getScale().z;
-               return;
-           }
+            dreamLock();
+            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+            for (;itr != end; itr++)
+            {
+                if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
+                {
+                    // Time
+                    (*itr)[Constants::KEYFRAME_TIME] = kf.getTime();
+                    (*itr)[Constants::KEYFRAME_EASING_TYPE] = kf.getEasingType();
+                    // Translation
+                    (*itr)[Constants::KEYFRAME_TRANSLATION] = kf.getTranslation().toJson();
+                    // Rotation
+                    (*itr)[Constants::KEYFRAME_ROTATION] = kf.getRotation().toJson();
+                    // Translation
+                    (*itr)[Constants::KEYFRAME_SCALE] = kf.getScale().toJson();
+                    return;
+                }
+            }
         }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationDefinition::removeKeyframe
     (const AnimationKeyframe& kf)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-        for (;itr != end; itr++)
+        if (dreamTryLock())
         {
-           if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
-           {
-               mJson[Constants::ASSET_ATTR_KEYFRAMES].erase(itr);
-               return;
-           }
+            dreamLock();
+            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+            for (;itr != end; itr++)
+            {
+                if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
+                {
+                    mJson[Constants::ASSET_ATTR_KEYFRAMES].erase(itr);
+                    return;
+                }
+            }
         }
+        dreamElseLockFailed
     }
 
-    bool
+    bool // public
     AnimationDefinition::getRelative
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
+        if (dreamTryLock())
         {
-            mJson[Constants::ANIMATION_RELATIVE] = false;
+            dreamLock();
+            if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
+            {
+                mJson[Constants::ANIMATION_RELATIVE] = false;
+            }
+            return mJson[Constants::ANIMATION_RELATIVE];
         }
-        return mJson[Constants::ANIMATION_RELATIVE];
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationDefinition::setRelative
     (bool relative)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-       mJson[Constants::ANIMATION_RELATIVE] = relative;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mJson[Constants::ANIMATION_RELATIVE] = relative;
+        }
+        dreamElseLockFailed
     }
 
-    int
+    int // public
     AnimationDefinition::nextKeyframeID
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-		if (!lg.owns_lock()) getMutex().lock();
-        int maxID = 0;
-        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-        for (;itr != end; itr++)
+        if (dreamTryLock())
         {
-            int nextID = (*itr)[Constants::KEYFRAME_ID];
-            if (nextID > maxID)
+            dreamLock();
+            int maxID = 0;
+            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+            for (;itr != end; itr++)
             {
-               maxID = nextID;
+                int nextID = (*itr)[Constants::KEYFRAME_ID];
+                if (nextID > maxID)
+                {
+                    maxID = nextID;
+                }
             }
+            return maxID+1;
         }
-        return maxID+1;
+        dreamElseLockFailed
     }
 }

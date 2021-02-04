@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <thread>
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -50,16 +50,12 @@ namespace octronic::dream
           mAudioComponent(nullptr),
           mStorageManager(fm)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("Project: Constructing");
+      	LOG_TRACE("Project: Constructing");
     }
 
     Project::~Project
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("Project: Destructing");
 
         if (mRuntime != nullptr)
@@ -75,21 +71,24 @@ namespace octronic::dream
         }
     }
 
-    ProjectRuntime*
+    ProjectRuntime* // public
     Project::createProjectRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
-        mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
-        if (!mRuntime->useDefinition())
+        if (dreamTryLock())
         {
-            LOG_CRITICAL("Project: Failed to create project runtime");
-            delete mRuntime;
-            mRuntime = nullptr;
+            dreamLock();
+			LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
+			mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
+			if (!mRuntime->useDefinition())
+			{
+				LOG_CRITICAL("Project: Failed to create project runtime");
+				delete mRuntime;
+				mRuntime = nullptr;
+			}
+			return mRuntime;
         }
-        return mRuntime;
+        dreamElseLockFailed
     }
 
     bool
@@ -102,14 +101,17 @@ namespace octronic::dream
 
     void Project::resetProjectRuntime()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("Project: Resetting project runtime");
-        delete mRuntime;
-        mRuntime = nullptr;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            LOG_DEBUG("Project: Resetting project runtime");
+			delete mRuntime;
+			mRuntime = nullptr;
+        }
+        dreamElseLockFailed
     }
 
-    bool
+    bool // public
     Project::hasProjectDefinition
     ()
     const
@@ -117,7 +119,7 @@ namespace octronic::dream
         return mDefinition != nullptr;
     }
 
-    ProjectRuntime*
+    ProjectRuntime* // public
     Project::getRuntime
     ()
     const
@@ -125,14 +127,14 @@ namespace octronic::dream
         return mRuntime;
     }
 
-    ProjectDefinition*
+    ProjectDefinition* // public
     Project::getDefinition
     () const
     {
         return mDefinition;
     }
 
-    AssetDefinition*
+    AssetDefinition* // public
     Project::getAssetDefinitionByUuid
     (UuidType uuid)
     const
@@ -144,32 +146,42 @@ namespace octronic::dream
         return nullptr;
     }
 
-    void
+    void // public
     Project::setDefinition
     (ProjectDefinition* definition)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        mDefinition = definition;
+        if (dreamTryLock())
+        {
+            dreamLock();
+        	mDefinition = definition;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     Project::setWindowComponent
     (WindowComponent* windowComponent)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        mWindowComponent = windowComponent;
+        if (dreamTryLock())
+        {
+            dreamLock();
+        	mWindowComponent = windowComponent;
+        }
+        dreamElseLockFailed
     }
 
-    void Project::setAudioComponent(AudioComponent* audioComponent)
+    void  // public
+    Project::setAudioComponent(AudioComponent* audioComponent)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-        mAudioComponent = audioComponent;
+        if (dreamTryLock())
+        {
+            dreamLock();
+        	mAudioComponent = audioComponent;
+        }
+        dreamElseLockFailed
     }
 
-    ProjectDirectory*
+    ProjectDirectory* // public
     Project::getDirectory
     ()
     const

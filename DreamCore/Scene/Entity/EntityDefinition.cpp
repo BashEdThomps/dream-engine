@@ -27,22 +27,20 @@
 using std::regex;
 using std::cmatch;
 using std::pair;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
     EntityDefinition::EntityDefinition
     (EntityDefinition* parent,
-            SceneDefinition* sceneDefinition,
-            const json &jsonData,
-            bool randomUuid
-            )
+     SceneDefinition* sceneDefinition,
+     const json &jsonData,
+     bool randomUuid
+     )
         : Definition("EntityDefinition",jsonData),
           mParentEntity(parent),
           mSceneDefinition(sceneDefinition)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
 
         LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         if (randomUuid)
@@ -56,9 +54,6 @@ namespace octronic::dream
     EntityDefinition::~EntityDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE( "EntityDefinition: Destructing {}", getNameAndUuidString() );
         deleteChildEntityDefinitions();
     }
@@ -67,187 +62,193 @@ namespace octronic::dream
     EntityDefinition::getChildCount
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mChildDefinitions.size();
+            return mChildDefinitions.size();
+        } dreamElseLockFailed
     }
 
     Transform
     EntityDefinition::getTransform
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return Transform(mJson[Constants::TRANSFORM]);
+        if(dreamTryLock()) {
+            dreamLock();
+            return Transform(mJson[Constants::TRANSFORM]);
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setTransform
     (Transform& tform)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::TRANSFORM] = tform.getJson();
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::TRANSFORM] = tform.getJson();
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setHasCameraFocus
     (bool fc)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = fc;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = fc;
+        } dreamElseLockFailed
     }
 
     bool
     EntityDefinition::getHasCameraFocus
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ENTITY_HAS_CAMERA_FOCUS].is_null())
-        {
-            mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = false;
-        }
-        return mJson[Constants::ENTITY_HAS_CAMERA_FOCUS];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ENTITY_HAS_CAMERA_FOCUS) == mJson.end())
+            {
+                mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = false;
+            }
+            return mJson[Constants::ENTITY_HAS_CAMERA_FOCUS];
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::loadChildEntityDefinitions
     (bool randomUuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        json childrenArray = mJson[Constants::ENTITY_CHILDREN];
+        if(dreamTryLock()) {
+            dreamLock();
+            json childrenArray = mJson[Constants::ENTITY_CHILDREN];
 
-        if (!childrenArray.is_null() && childrenArray.is_array())
-        {
-            for (const json& childDefinition : childrenArray)
+            if (!childrenArray.is_null() && childrenArray.is_array())
             {
-                auto sod = new EntityDefinition
-                (
-                    this,
-                    mSceneDefinition,
-                    childDefinition,
-                    randomUuid
-                );
-                sod->loadChildEntityDefinitions(randomUuid);
-                mChildDefinitions.push_back(sod);
+                for (const json& childDefinition : childrenArray)
+                {
+                    auto sceneObjectDefinition = new EntityDefinition(this,mSceneDefinition,childDefinition,randomUuid);
+                    sceneObjectDefinition->loadChildEntityDefinitions(randomUuid);
+                    mChildDefinitions.push_back(sceneObjectDefinition);
+                }
             }
-        }
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::deleteChildEntityDefinitions
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-       for (auto child : mChildDefinitions)
-       {
-           delete child;
-       }
-       mChildDefinitions.clear();
+        if(dreamTryLock()) {
+            dreamLock();
+            for (auto child : mChildDefinitions)
+            {
+                delete child;
+            }
+            mChildDefinitions.clear();
+        } dreamElseLockFailed
     }
 
     vector<EntityDefinition*>&
     EntityDefinition::getChildDefinitionsList
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mChildDefinitions;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mChildDefinitions;
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::addChildDefinition
     (EntityDefinition* child)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mChildDefinitions.push_back(child);
+        if(dreamTryLock()) {
+            dreamLock();
+            mChildDefinitions.push_back(child);
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::adoptChildDefinition
     (EntityDefinition* child)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        child->setParentEntity(this);
-        mChildDefinitions.push_back(child);
+        if(dreamTryLock()) {
+            dreamLock();
+            child->setParentEntity(this);
+            mChildDefinitions.push_back(child);
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::removeChildDefinition
     (EntityDefinition* child, bool andDelete)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto iter = begin(mChildDefinitions);
-        auto endPos = end(mChildDefinitions);
-        while (iter != endPos)
-        {
-            if ((*iter) == child)
+        if(dreamTryLock()) {
+            dreamLock();
+            auto iter = begin(mChildDefinitions);
+            auto endPos = end(mChildDefinitions);
+            while (iter != endPos)
             {
-                LOG_DEBUG
-                (
-                    "EntityDefinition: Found child to {} remove from {}",
-                    child->getNameAndUuidString(),
-                    getNameAndUuidString()
-                );
-                if (andDelete)
+                if ((*iter) == child)
                 {
-                    delete (*iter);
+                    LOG_DEBUG
+                            (
+                                "EntityDefinition: Found child to {} remove from {}",
+                                child->getNameAndUuidString(),
+                                getNameAndUuidString()
+                                );
+                    if (andDelete)
+                    {
+                        delete (*iter);
+                    }
+                    else
+                    {
+                        (*iter)->setParentEntity(nullptr);
+                    }
+                    mChildDefinitions.erase(iter);
+                    return;
                 }
-                else
-                {
-                    (*iter)->setParentEntity(nullptr);
-                }
-                mChildDefinitions.erase(iter);
-                return;
+                iter++;
             }
-            iter++;
-        }
+        } dreamElseLockFailed
     }
 
     EntityDefinition*
     EntityDefinition::createNewChildDefinition
     (json* fromJson)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("EntityDefinition: Creating new child scene object");
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_DEBUG("EntityDefinition: Creating new child scene object");
 
-        json defJson;
+            json defJson;
 
-        if (fromJson == nullptr)
-        {
-            LOG_DEBUG("EntityDefinition: from scratch");
-            defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
+            if (fromJson == nullptr)
+            {
+                LOG_DEBUG("EntityDefinition: from scratch");
+                defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
 
-            Transform transform;
-            defJson[Constants::TRANSFORM] = transform.getJson();
-        }
-        else
-        {
-            LOG_DEBUG("EntityDefinition: from template copy");
-            defJson = json::parse(fromJson->dump());
-        }
+                Transform transform;
+                defJson[Constants::TRANSFORM] = transform.getJson();
+            }
+            else
+            {
+                LOG_DEBUG("EntityDefinition: from template copy");
+                defJson = json::parse(fromJson->dump());
+            }
 
-        EntityDefinition* soDefinition;
-        soDefinition = new EntityDefinition
-        (
-            this,
-            mSceneDefinition,
-            defJson,
-            true
-        );
-        soDefinition->loadChildEntityDefinitions(true);
-        addChildDefinition(soDefinition);
+            EntityDefinition* soDefinition;
+            soDefinition = new EntityDefinition
+                    (
+                        this,
+                        mSceneDefinition,
+                        defJson,
+                        true
+                        );
+            soDefinition->loadChildEntityDefinitions(true);
+            addChildDefinition(soDefinition);
 
-        return soDefinition;
+            return soDefinition;
+        } dreamElseLockFailed
     }
 
 
@@ -255,342 +256,371 @@ namespace octronic::dream
     EntityDefinition::getSceneDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mSceneDefinition;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mSceneDefinition;
+        } dreamElseLockFailed
     }
 
     json
     EntityDefinition::getJson
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_CHILDREN] = json::array();
-        for (EntityDefinition* sod : mChildDefinitions)
-        {
-            mJson[Constants::ENTITY_CHILDREN].push_back(sod->getJson());
-        }
-        return mJson;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_CHILDREN] = json::array();
+            for (EntityDefinition* sceneObjectDefinition : mChildDefinitions)
+            {
+                mJson[Constants::ENTITY_CHILDREN].push_back(sceneObjectDefinition->getJson());
+            }
+            return mJson;
+        } dreamElseLockFailed
     }
 
     bool EntityDefinition::getAlwaysDraw()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ENTITY_ALWAYS_DRAW].is_null())
-        {
-            mJson[Constants::ENTITY_ALWAYS_DRAW] = false;
-        }
-        return mJson[Constants::ENTITY_ALWAYS_DRAW];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ENTITY_ALWAYS_DRAW) == mJson.end())
+            {
+                mJson[Constants::ENTITY_ALWAYS_DRAW] = false;
+            }
+            return mJson[Constants::ENTITY_ALWAYS_DRAW];
+        } dreamElseLockFailed
     }
 
     void EntityDefinition::setAlwaysDraw(bool alwaysDraw)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_ALWAYS_DRAW] = alwaysDraw;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_ALWAYS_DRAW] = alwaysDraw;
+        } dreamElseLockFailed
     }
 
     void EntityDefinition::setIsTemplate(bool d)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        mJson[Constants::ENTITY_TEMPLATE] = d;
+        if(dreamTryLock()) {
+            mJson[Constants::ENTITY_TEMPLATE] = d;
+        } dreamElseLockFailed
     }
 
     bool EntityDefinition::getIsTemplate()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ENTITY_TEMPLATE].is_null())
-        {
-            mJson[Constants::ENTITY_TEMPLATE] = false;
-        }
-        return mJson[Constants::ENTITY_TEMPLATE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ENTITY_TEMPLATE) == mJson.end())
+            {
+                mJson[Constants::ENTITY_TEMPLATE] = false;
+            }
+            return mJson[Constants::ENTITY_TEMPLATE];
+        } dreamElseLockFailed
     }
 
     long
     EntityDefinition::getDeferred
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ENTITY_DEFERRED].is_number())
-        {
-            mJson[Constants::ENTITY_DEFERRED] = 0;
-        }
-        return mJson[Constants::ENTITY_DEFERRED];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ENTITY_DEFERRED].is_number())
+            {
+                mJson[Constants::ENTITY_DEFERRED] = 0;
+            }
+            return mJson[Constants::ENTITY_DEFERRED];
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setDeferred
     (long d)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_DEFERRED] = d;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_DEFERRED] = d;
+        } dreamElseLockFailed
     }
 
     long
     EntityDefinition::getDieAfter
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ENTITY_DIE_AFTER].is_number())
-        {
-            mJson[Constants::ENTITY_DIE_AFTER] = 0;
-        }
-        return mJson[Constants::ENTITY_DIE_AFTER];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ENTITY_DIE_AFTER].is_number())
+            {
+                mJson[Constants::ENTITY_DIE_AFTER] = 0;
+            }
+            return mJson[Constants::ENTITY_DIE_AFTER];
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setDieAfter
     (long d)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_DIE_AFTER] = d;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_DIE_AFTER] = d;
+        } dreamElseLockFailed
     }
 
 
     void EntityDefinition::setHidden(bool d)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ENTITY_HIDDEN] = d;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ENTITY_HIDDEN] = d;
+        } dreamElseLockFailed
     }
 
     bool EntityDefinition::getHidden()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ENTITY_HIDDEN].is_null())
-        {
-            mJson[Constants::ENTITY_HIDDEN] = false;
-        }
-        return mJson[Constants::ENTITY_HIDDEN];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ENTITY_HIDDEN) == mJson.end())
+            {
+                mJson[Constants::ENTITY_HIDDEN] = false;
+            }
+            return mJson[Constants::ENTITY_HIDDEN];
+        } dreamElseLockFailed
     }
 
     EntityDefinition*
     EntityDefinition::getParentEntity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mParentEntity;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mParentEntity;
+        } dreamElseLockFailed
     }
 
     EntityDefinition*
     EntityDefinition::duplicate()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        // Nothing to assign duplicate to
-        if (mParentEntity == nullptr)
-        {
-            LOG_ERROR("EntityDefinition: Cannot Duplicate. No parent to assign duplicate to");
-            return nullptr;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            // Nothing to assign duplicate to
+            if (mParentEntity == nullptr)
+            {
+                LOG_ERROR("EntityDefinition: Cannot Duplicate. No parent to assign duplicate to");
+                return nullptr;
+            }
 
-        auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,getJson(),true);
-        newSOD->loadChildEntityDefinitions(true);
-        newSOD->setUuid(Uuid::generateUuid());
-        string name = newSOD->getName();
-        regex numRegex("(\\d+)$");
-        cmatch match;
-        string resultStr;
-        auto num = -1;
+            auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,getJson(),true);
+            newSOD->loadChildEntityDefinitions(true);
+            newSOD->setUuid(Uuid::generateUuid());
+            string name = newSOD->getName();
+            regex numRegex("(\\d+)$");
+            cmatch match;
+            string resultStr;
+            auto num = -1;
 
-        if (regex_search(name.c_str(),match,numRegex))
-        {
-            resultStr = match[0].str();
-            num = atoi(resultStr.c_str());
-        }
+            if (regex_search(name.c_str(),match,numRegex))
+            {
+                resultStr = match[0].str();
+                num = atoi(resultStr.c_str());
+            }
 
-        if (num > -1)
-        {
-            num++;
-            name = name.substr(0,name.length()-resultStr.length());
-            name.append(std::to_string(num));
-            newSOD->setName(name);
-        }
-        else
-        {
-            newSOD->setName(getName()+".1");
-        }
+            if (num > -1)
+            {
+                num++;
+                name = name.substr(0,name.length()-resultStr.length());
+                name.append(std::to_string(num));
+                newSOD->setName(name);
+            }
+            else
+            {
+                newSOD->setName(getName()+".1");
+            }
 
-        mParentEntity->addChildDefinition(newSOD);
-        return newSOD;
+            mParentEntity->addChildDefinition(newSOD);
+            return newSOD;
+        } dreamElseLockFailed
     }
 
     int
     EntityDefinition::getSelectedAssetIndex
     (AssetType type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto asset = getAssetDefinition(type);
-        if (asset == Uuid::INVALID)
-        {
-            return -1;
-        }
-        return mSceneDefinition->getProjectDefinition()->getAssetDefinitionIndex(type,asset);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto asset = getAssetDefinition(type);
+            if (asset == Uuid::INVALID)
+            {
+                return -1;
+            }
+            return mSceneDefinition->getProjectDefinition()->getAssetDefinitionIndex(type,asset);
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setSelectedAssetIndex
     (AssetType type, int index)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        auto typesVector = mSceneDefinition->getProjectDefinition()->getAssetDefinitionsVector(type);
-        auto asset = typesVector.at(index);
-        setAssetDefinition(type,asset->getUuid());
+            auto typesVector = mSceneDefinition->getProjectDefinition()->getAssetDefinitionsVector(type);
+            auto asset = typesVector.at(index);
+            setAssetDefinition(type,asset->getUuid());
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setAssetDefinition
     (AssetType type, UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        if (mJson[Constants::ENTITY_ASSET_INSTANCES].is_null() ||
-            mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
-        {
-            setEmptyAssetsObject();
-        }
-        mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr] = uuid;
+            auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+            if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
+                mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
+            {
+                setEmptyAssetsObject();
+            }
+            mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr] = uuid;
+        } dreamElseLockFailed
     }
 
     map<AssetType, UuidType>
     EntityDefinition::getAssetDefinitionsMap
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        map<AssetType, UuidType> assetsMap;
-        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
-        {
-            AssetType type = typePair.first;
-            UuidType uuid = getAssetDefinition(type);
-            if (uuid != Uuid::INVALID)
+            map<AssetType, UuidType> assetsMap;
+            for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
             {
-                assetsMap.insert(pair<AssetType,UuidType>(type, uuid));
+                AssetType type = typePair.first;
+                UuidType uuid = getAssetDefinition(type);
+                if (uuid != Uuid::INVALID)
+                {
+                    assetsMap.insert(pair<AssetType,UuidType>(type, uuid));
+                }
             }
-        }
-        return assetsMap;
+            return assetsMap;
+        } dreamElseLockFailed
     }
 
     UuidType
     EntityDefinition::getAssetDefinition
     (AssetType type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        if (mJson[Constants::ENTITY_ASSET_INSTANCES].is_null() ||
-            mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
-        {
-            setEmptyAssetsObject();
-        }
+            // TODO, is this correct?
+            // Yes, if there was an array, replae with an object
+            auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+            if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
+                mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
+            {
+                setEmptyAssetsObject();
+            }
 
-        if (!mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr].is_number())
-        {
-            return Uuid::INVALID;
-        }
+            if (!mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr].is_number())
+            {
+                return Uuid::INVALID;
+            }
 
-        LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
-        return mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr];
+            LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
+            return mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr];
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setEmptyAssetsObject()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::ENTITY_ASSET_INSTANCES] = json::object();
+            mJson[Constants::ENTITY_ASSET_INSTANCES] = json::object();
+        } dreamElseLockFailed
     }
 
     void
     EntityDefinition::setParentEntity
     (EntityDefinition* parentEntity)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mParentEntity = parentEntity;
+            mParentEntity = parentEntity;
+        } dreamElseLockFailed
     }
 
-	void EntityDefinition::setFontColor(const Vector3& color)
+    void EntityDefinition::setFontColor(const Vector3& color)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-		mJson[Constants::ENTITY_FONT_COLOR] =  color.toJson();
+            mJson[Constants::ENTITY_FONT_COLOR] =  color.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3 EntityDefinition::getFontColor()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-       Vector3 retval(1.f);
-       if (mJson[Constants::ENTITY_FONT_COLOR].is_null())
-       {
-           mJson[Constants::ENTITY_FONT_COLOR] = retval.toJson();
-       }
-       retval = Vector3(mJson[Constants::ENTITY_FONT_COLOR]);
-       return retval;
+            Vector3 retval(1.f);
+            if (mJson.find(Constants::ENTITY_FONT_COLOR) == mJson.end())
+            {
+                mJson[Constants::ENTITY_FONT_COLOR] = retval.toJson();
+            }
+            retval = Vector3(mJson[Constants::ENTITY_FONT_COLOR]);
+            return retval;
+        } dreamElseLockFailed
     }
 
-	void EntityDefinition::setFontText(const string& text)
+    void EntityDefinition::setFontText(const string& text)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-		mJson[Constants::ENTITY_FONT_TEXT] = text;
+            mJson[Constants::ENTITY_FONT_TEXT] = text;
+        } dreamElseLockFailed
     }
 
     string EntityDefinition::getFontText()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        string retval = "";
-        if (mJson[Constants::ENTITY_FONT_TEXT].is_null())
-        {
-            mJson[Constants::ENTITY_FONT_TEXT] = retval;
-        }
-        retval = mJson[Constants::ENTITY_FONT_TEXT];
-        return retval;
+            string retval = "";
+            if (mJson.find(Constants::ENTITY_FONT_TEXT) == mJson.end())
+            {
+                mJson[Constants::ENTITY_FONT_TEXT] = retval;
+            }
+            retval = mJson[Constants::ENTITY_FONT_TEXT];
+            return retval;
+        } dreamElseLockFailed
     }
 
-	void EntityDefinition::setFontScale(float s)
+    void EntityDefinition::setFontScale(float s)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-		mJson[Constants::ENTITY_FONT_SCALE] = s;
+            mJson[Constants::ENTITY_FONT_SCALE] = s;
+        } dreamElseLockFailed
     }
 
     float EntityDefinition::getFontScale()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        float retval = 1.f;
-        if (mJson[Constants::ENTITY_FONT_SCALE].is_null())
-        {
-            mJson[Constants::ENTITY_FONT_SCALE] = retval;
-        }
-        retval = mJson[Constants::ENTITY_FONT_SCALE];
-        return retval;
+            float retval = 1.f;
+            if (mJson.find(Constants::ENTITY_FONT_SCALE) == mJson.end())
+            {
+                mJson[Constants::ENTITY_FONT_SCALE] = retval;
+            }
+            retval = mJson[Constants::ENTITY_FONT_SCALE];
+            return retval;
+        } dreamElseLockFailed
     }
 }

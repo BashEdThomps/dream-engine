@@ -1,12 +1,11 @@
 #pragma once
 
+#include "Common/Vector.h"
 #include "AnimationEasing.h"
 
 #include <json.hpp>
-#include <glm/vec3.hpp>
 
 using nlohmann::json;
-using glm::vec3;
 
 namespace octronic::dream
 {
@@ -19,14 +18,14 @@ namespace octronic::dream
         long getTime() const;
         void setTime(long time);
 
-        vec3 getTranslation() const;
-        void setTranslation(const vec3& translation);
+        Vector3 getTranslation() const;
+        void setTranslation(const Vector3& translation);
 
-        vec3 getRotation() const;
-        void setRotation(const vec3& rotation);
+        Vector3 getRotation() const;
+        void setRotation(const Vector3& rotation);
 
-        vec3 getScale() const;
-        void setScale(const vec3& scale);
+        Vector3 getScale() const;
+        void setScale(const Vector3& scale);
 
         void fromJson(const json& js);
         json toJson() const ;
@@ -46,9 +45,9 @@ namespace octronic::dream
     private:
         int mID;
         long mTime;
-        vec3 mTranslation;
-        vec3 mRotation;
-        vec3 mScale;
+        Vector3 mTranslation;
+        Vector3 mRotation;
+        Vector3 mScale;
         AnimationEasing::EasingType mEasingType;
     };
 }

@@ -29,29 +29,41 @@ using nlohmann::json;
 
 namespace octronic::dream
 {
-    class Entity;
-    class Scene;
     class Event;
-    class AnimationRuntime;
-    class AudioRuntime;
-    class PathRuntime;
-    class ModelRuntime;
-    class LightRuntime;
-    class PhysicsObjectRuntime;
-    class SceneRuntime;
     class EntityDefinition;
+    class SceneRuntime;
+
     class AssetDefinition;
-    class PathDefinition;
-    class FontRuntime;
+    class AssetRuntime;
+
+    class AnimationRuntime;
     class AnimationDefinition;
+
     class AudioDefinition;
+    class AudioRuntime;
+
+    class FontDefinition;
+    class FontRuntime;
+
     class LightDefinition;
+    class LightRuntime;
+
     class ModelDefinition;
+    class ModelRuntime;
+
+    class PathDefinition;
+    class PathRuntime;
+
     class PhysicsObjectDefinition;
+    class PhysicsObjectRuntime;
+
     class ScriptDefinition;
     class ScriptRuntime;
-    class AssetRuntime;
-    class FontDefinition;
+
+    class SpriteDefinition;
+    class SpriteRuntime;
+
+
 
     class EntityRuntime : public Runtime
     {
@@ -73,6 +85,7 @@ namespace octronic::dream
         bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
         bool createLightRuntime(LightDefinition*);
         bool createFontRuntime(FontDefinition*);
+        bool createSpriteRuntime(SpriteDefinition*);
 
         FontRuntime* getFontRuntime();
         AnimationRuntime* getAnimationRuntime();
@@ -82,6 +95,7 @@ namespace octronic::dream
         ScriptRuntime* getScriptRuntime();
         PhysicsObjectRuntime* getPhysicsObjectRuntime();
         LightRuntime* getLightRuntime();
+        SpriteRuntime* getSpriteRuntime();
         AssetRuntime* getAssetRuntime(AssetType);
 
         bool hasAnimationRuntime();
@@ -92,6 +106,7 @@ namespace octronic::dream
         bool hasPhysicsObjectRuntime();
         bool hasLightRuntime();
         bool hasFontRuntime();
+        bool hasSpriteRuntime();
 
         Transform& getTransform();
         Transform getInitialTransform();
@@ -128,7 +143,6 @@ namespace octronic::dream
         void setScriptError(bool i);
         bool getScriptError() const;
 
-
         bool isParentOf(EntityRuntime* child);
         void setParentRuntime(EntityRuntime* parent);
         EntityRuntime* getParentRuntime();
@@ -150,6 +164,7 @@ namespace octronic::dream
         void removeScriptRuntime();
         void removePhysicsObjectRuntime();
         void removeFontRuntime();
+        void removeSpriteRuntime();
 
         bool replaceAssetUuid(AssetType type, UuidType uuid);
         AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
@@ -214,6 +229,7 @@ namespace octronic::dream
         bool mScriptError;
         ModelRuntime* mModelRuntime;
         FontRuntime* mFontRuntime;
+        SpriteRuntime* mSpriteRuntime;
 
         Transform mInitialTransform;
         Transform mTransform;
@@ -241,7 +257,5 @@ namespace octronic::dream
         string mFontText;
         Vector3 mFontColor;
 		float mFontScale;
-
-
     };
 }

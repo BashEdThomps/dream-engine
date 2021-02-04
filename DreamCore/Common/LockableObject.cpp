@@ -15,7 +15,7 @@ namespace octronic::dream
 
     }
 
-    mutex& LockableObject::getMutex()
+    dream_mutex_type& LockableObject::getMutex()
     {
         return mMutex;
     }

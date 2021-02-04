@@ -37,7 +37,7 @@ namespace octronic::dream
     PhysicsUpdateWorldTask::execute
     ()
     {
-        LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getDebugString());
+        LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getTaskName());
         mComponent->stepSimulation();
         setState(TaskState::TASK_STATE_COMPLETED);
     }

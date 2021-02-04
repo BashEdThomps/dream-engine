@@ -21,36 +21,25 @@
 
 #include <mutex>
 
-using std::unique_lock;
-
 namespace octronic::dream
 {
     TaskManager::TaskManager()
-        : LockableObject("TaskManager"),
+        :
           mNextThread(0),
           mHardwareThreadCount(thread::hardware_concurrency())
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_CRITICAL("TaskManager: Constructing with {} hardware threads available", mHardwareThreadCount);
         startAllThreads();
     }
 
     TaskManager::~TaskManager()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE("TaskManager: Destroying Object");
         joinAllThreads();
     }
 
     void TaskManager::startAllThreads()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_DEBUG("TaskManager: Creating {} threads...",mHardwareThreadCount);
 
         for (unsigned int i=0; i <  mHardwareThreadCount; i++)
@@ -62,9 +51,6 @@ namespace octronic::dream
 
     void TaskManager::joinAllThreads()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_DEBUG("TaskManager: Joining all threads...");
 
         for (TaskThread* t : mThreadVector)
@@ -81,17 +67,13 @@ namespace octronic::dream
 
     void TaskManager::pushTask(Task* task)
     {
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         assert(task != nullptr);
 
         for (TaskThread* thread : mThreadVector)
         {
             if (thread->hasTask(task))
             {
-                LOG_INFO("TaskManager: Thread {} already has task {}",thread->getThreadID(), task->getDebugString());
+                LOG_INFO("TaskManager: Thread {} already has task {}",thread->getThreadID(), task->getTaskName());
                 return;
             }
         }
@@ -100,11 +82,11 @@ namespace octronic::dream
             bool result = mThreadVector.at(mNextThread)->pushTask(task);
             if (result)
             {
-                LOG_DEBUG("TaskManager: {} pushed task to thread {}",task->getDebugString(), mNextThread);
+                LOG_DEBUG("TaskManager: {} pushed task to thread {}",task->getTaskName(), mNextThread);
             }
             else
             {
-                LOG_ERROR("TaskManager: Failed to push task {} to thread {}",task->getDebugString(), mNextThread);
+                LOG_ERROR("TaskManager: Failed to push task {} to thread {}",task->getTaskName(), mNextThread);
             }
             mNextThread++;
             mNextThread = mNextThread % mThreadVector.size();
@@ -116,8 +98,6 @@ namespace octronic::dream
 
     void TaskManager::pushDestructionTask(const shared_ptr<DestructionTask>& dt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
 
         while (true)
         {
@@ -140,8 +120,6 @@ namespace octronic::dream
 
     void TaskManager::allowThreadsToRun()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
 
         for (TaskThread* t : mThreadVector)
         {
@@ -151,16 +129,13 @@ namespace octronic::dream
 
     void TaskManager::waitForThreadsToFinish()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE("TaskManager: ... Waiting for Threads to Finish ...");
         int tries = 0;
         while (true)
         {
-			tries++;
+            tries++;
             //assert(tries < 1000);
-			LOG_TRACE("TaskManager: Waiting for Threads to Finish for {} Time",tries);
+            LOG_TRACE("TaskManager: Waiting for Threads to Finish for {} Time",tries);
             bool result = true;
             for (TaskThread* task_thread : mThreadVector)
             {
@@ -182,9 +157,6 @@ namespace octronic::dream
 
     vector<TaskThread*>& TaskManager::getThreadVector()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         return mThreadVector;
     }
 }

@@ -2,7 +2,7 @@
 
 #include "Common/Logger.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -19,8 +19,6 @@ namespace octronic::dream
 
     AudioLoader::~AudioLoader()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         if (mAudioBuffer != nullptr) delete mAudioBuffer;
     }
 
@@ -33,9 +31,9 @@ namespace octronic::dream
                  mChannels, mSampleRate, mAudioBufferSize);
 
         return mChannels        != 0 &&
-               mSampleRate      != 0 &&
-               mAudioBufferSize != 0 &&
-               mAudioBuffer     != nullptr;
+                mSampleRate      != 0 &&
+                mAudioBufferSize != 0 &&
+                mAudioBuffer     != nullptr;
 
     }
 

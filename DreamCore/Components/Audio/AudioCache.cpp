@@ -18,7 +18,6 @@ namespace octronic::dream
     (ProjectRuntime* parent)
         : Cache("AudioCache",parent)
     {
-        const lock_guard<mutex> lg(getMutex());
     }
 
     AudioCache::~AudioCache
@@ -31,36 +30,42 @@ namespace octronic::dream
     AudioCache::clear
     ()
     {
-        const lock_guard<mutex> lg(getMutex());
-        for (AssetRuntime* runt : mRuntimes)
+        if (dreamTryLock())
         {
-            delete runt;
-        }
-        mRuntimes.clear();
+            dreamLock();
+            for (AssetRuntime* runt : mRuntimes)
+            {
+                delete runt;
+            }
+            mRuntimes.clear();
+        } dreamElseLockFailed
     }
 
     SharedAssetRuntime*
     AudioCache::loadRuntime
     (AssetDefinition* def)
     {
-        const lock_guard<mutex> lg(getMutex());
-        auto aDef = static_cast<AudioDefinition*>(def);
-        AudioComponent* ac = mProjectRuntime->getAudioComponent();
-        AudioRuntime* asset = ac->newAudioRuntime(aDef);
-
-        if (asset)
+        if (dreamTryLock())
         {
-            if (!asset->useDefinition())
-            {
-               delete asset;
-               asset = nullptr;
-            }
-            else
-            {
-            	mRuntimes.push_back(asset);
-            }
-        }
+            dreamLock();
 
-        return asset;
+            auto aDef = static_cast<AudioDefinition*>(def);
+            AudioComponent* ac = mProjectRuntime->getAudioComponent();
+            AudioRuntime* asset = ac->newAudioRuntime(aDef);
+
+            if (asset)
+            {
+                if (!asset->useDefinition())
+                {
+                    delete asset;
+                    asset = nullptr;
+                }
+                else
+                {
+                    mRuntimes.push_back(asset);
+                }
+            }
+            return asset;
+        } dreamElseLockFailed
     }
 }

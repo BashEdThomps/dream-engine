@@ -26,7 +26,7 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -40,8 +40,6 @@ namespace octronic::dream
           mExecuteScriptTask(this),
           mJoystickCount(0)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("InputComponent: Constructing");
         //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
         mJoystickNavigation = make_shared<JoystickFaceForwardNavigation>(&mJoystickState,&mJoystickMapping);
@@ -50,8 +48,6 @@ namespace octronic::dream
     InputComponent::~InputComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("InputComponent: Destructing");
     }
 
@@ -59,147 +55,162 @@ namespace octronic::dream
     InputComponent::init
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("InputComponent: Initialising...");
-        return true;
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_DEBUG("InputComponent: Initialising...");
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     InputComponent::executeInputScript
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mCurrentSceneRuntime)
-        {
-            mJoystickNavigation->update(mCurrentSceneRuntime);
-            auto inputScript = mCurrentSceneRuntime->getInputScript();
-            if (inputScript)
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mCurrentSceneRuntime)
             {
-                return inputScript->executeOnInput(this, mCurrentSceneRuntime);
+                mJoystickNavigation->update(mCurrentSceneRuntime);
+                auto inputScript = mCurrentSceneRuntime->getInputScript();
+                if (inputScript)
+                {
+                    return inputScript->executeOnInput(this, mCurrentSceneRuntime);
+                }
             }
-        }
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     void
     InputComponent::pollData
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mLastKeyboardState = mKeyboardState;
-        mLastMouseState = mMouseState;
-        mLastJoystickState = mJoystickState;
+        if(dreamTryLock()) {
+            dreamLock();
+            mLastKeyboardState = mKeyboardState;
+            mLastMouseState = mMouseState;
+            mLastJoystickState = mJoystickState;
+        } dreamElseLockFailed
     }
 
     bool
     InputComponent::isKeyDown
     (int key)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mKeyboardState.KeysDown[key];
+        if(dreamTryLock()) {
+            dreamLock();
+            return mKeyboardState.KeysDown[key];
+        } dreamElseLockFailed
     }
 
     KeyboardState&
     InputComponent::getKeyboardState
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mKeyboardState;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mKeyboardState;
+        } dreamElseLockFailed
     }
 
     void
     InputComponent::setKeyboardState
     (const KeyboardState& keyboardState)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mKeyboardState = keyboardState;
+        if(dreamTryLock()) {
+            dreamLock();
+            mKeyboardState = keyboardState;
+        } dreamElseLockFailed
     }
 
     MouseState&
     InputComponent::getMouseState
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mMouseState;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mMouseState;
+        } dreamElseLockFailed
     }
 
     void
     InputComponent::setMouseState
     (const MouseState& mouseState)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mMouseState = mouseState;
+        if(dreamTryLock()) {
+            dreamLock();
+            mMouseState = mouseState;
+        } dreamElseLockFailed
     }
 
     JoystickState&
     InputComponent::getJoystickState
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mJoystickState;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mJoystickState;
+        } dreamElseLockFailed
     }
 
     void
     InputComponent::setJoystickState
     (const JoystickState& joystickState)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJoystickState = joystickState;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJoystickState = joystickState;
+        } dreamElseLockFailed
     }
 
     float
     InputComponent::mouseDeltaX
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mMouseState.PosX - mLastMouseState.PosX;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mMouseState.PosX - mLastMouseState.PosX;
+        } dreamElseLockFailed
     }
 
     float
     InputComponent::mouseDeltaY
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mMouseState.PosY - mLastMouseState.PosY;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mMouseState.PosY - mLastMouseState.PosY;
+        } dreamElseLockFailed
     }
 
     JoystickMapping&
     InputComponent::getJoystickMapping
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mJoystickMapping;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mJoystickMapping;
+        } dreamElseLockFailed
     }
 
     InputPollDataTask*
     InputComponent::getPollDataTask
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return &mPollDataTask;
+        if(dreamTryLock()) {
+            dreamLock();
+            return &mPollDataTask;
+        } dreamElseLockFailed
     }
 
     InputExecuteScriptTask*
     InputComponent::getExecuteScriptTask
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return &mExecuteScriptTask;
+        if(dreamTryLock()) {
+            dreamLock();
+            return &mExecuteScriptTask;
+        } dreamElseLockFailed
     }
 
     SceneRuntime*
@@ -213,18 +224,20 @@ namespace octronic::dream
     InputComponent::setCurrentSceneRuntime
     (SceneRuntime *currentSceneRuntime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mCurrentSceneRuntime = currentSceneRuntime;
+        if(dreamTryLock()) {
+            dreamLock();
+            mCurrentSceneRuntime = currentSceneRuntime;
+        } dreamElseLockFailed
     }
 
     JoystickNavigation*
     InputComponent::getJoystickNavigation
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mJoystickNavigation.get();
+        if(dreamTryLock()) {
+            dreamLock();
+            return mJoystickNavigation.get();
+        } dreamElseLockFailed
     }
 
     int
@@ -239,8 +252,9 @@ namespace octronic::dream
     InputComponent::setJoystickCount
     (int joystickCount)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJoystickCount = joystickCount;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJoystickCount = joystickCount;
+        } dreamElseLockFailed
     }
 }

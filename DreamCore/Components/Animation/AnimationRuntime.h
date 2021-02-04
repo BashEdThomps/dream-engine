@@ -40,20 +40,19 @@ namespace octronic::dream
         ~AnimationRuntime() override;
         bool useDefinition() override;
 
-        void orderByTime();
-        void update();
-        void stepAnimation(double time);
-
-        long getCurrentTime();
-        void setCurrentTime(long currentTime);
-
-        bool mRunning;
         void createTweens();
         void run();
         void pause();
         void reset();
+        void update();
+        void stepAnimation(double time);
+        void orderByTime();
         void seekAll(unsigned int pos);
+
         long getDuration();
+
+        void setCurrentTime(long currentTime);
+        long getCurrentTime();
 
         bool getRunning();
         void setRunning(bool running);
@@ -62,6 +61,9 @@ namespace octronic::dream
 
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
+
+    private:
+        bool mRunning;
         vector<AnimationKeyframe> mKeyframes;
         long mCurrentTime;
         long mDuration;

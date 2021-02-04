@@ -358,7 +358,7 @@ namespace octronic::dream::tool
                 bool newClicked = ImGui::MenuItem(buf);
                 if (newClicked)
                 {
-                    auto newDef = projDef->createNewAssetDefinition(type);
+                    AssetDefinition* newDef = projDef->createNewAssetDefinition(type);
                     mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset,newDef,nullptr);
                     projDef->regroupAssetDefinitions();
                 }

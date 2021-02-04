@@ -11,7 +11,7 @@
 #include <sstream>
 
 using std::stringstream;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -20,8 +20,6 @@ namespace octronic::dream
           mProject(nullptr),
           mStorageManager(fileManager)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ProjectDirectory: {}", __FUNCTION__);
     }
 
@@ -31,16 +29,12 @@ namespace octronic::dream
           mProject(proj),
           mStorageManager(fileManager)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ProjectDirectory: {}", __FUNCTION__);
     }
 
     ProjectDirectory::~ProjectDirectory
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ProjectDirectory: {}", __FUNCTION__);
         closeProject();
     }
@@ -343,8 +337,8 @@ namespace octronic::dream
     ProjectDirectory::newProject
     (Directory* projectDir)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+        dreamLock();
         if (mProject)
         {
             closeProject();
@@ -368,14 +362,15 @@ namespace octronic::dream
 
         saveProject();
         return mProject;
+        } dreamElseLockFailed
     }
 
     Project*
     ProjectDirectory::openFromFile
     (File* file)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+        dreamLock();
         LOG_DEBUG("ProjectDirectory: Loading project from FileReader", file->getPath());
 
         string projectJsonStr = file->readString();
@@ -404,14 +399,15 @@ namespace octronic::dream
         mProject->setDefinition(pDef);
         pDef->loadChildDefinitions();
         return mProject;
+        } dreamElseLockFailed
     }
 
     Project*
     ProjectDirectory::openFromDirectory
     (Directory* directory)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+        dreamLock();
         string projectFileName = findProjectFileInDirectory(directory);
 
         if (projectFileName.empty())
@@ -431,20 +427,22 @@ namespace octronic::dream
         projectFile = nullptr;
 
         return retval;
+        } dreamElseLockFailed
     }
 
     void
     ProjectDirectory::closeProject
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+        dreamLock();
         mPath = "";
         if (mProject)
         {
             delete mProject;
             mProject = nullptr;
         }
+        } dreamElseLockFailed
     }
 
     string

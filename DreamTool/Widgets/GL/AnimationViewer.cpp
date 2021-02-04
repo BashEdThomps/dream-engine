@@ -105,8 +105,8 @@ namespace octronic::dream::tool
 
        for (size_t i=1; i < keyframes.size(); i++)
        {
-           vec3 current = keyframes.at(i-1).getTranslation();
-           vec3 next = keyframes.at(i).getTranslation();
+           vec3 current = keyframes.at(i-1).getTranslation().toGLM();
+           vec3 next = keyframes.at(i).getTranslation().toGLM();
 
            GLWidgetVertex v1,v2;
            v1.Position  = current;
@@ -122,7 +122,7 @@ namespace octronic::dream::tool
     AnimationViewer::generateNode
     (const  AnimationKeyframe& kf)
     {
-        vec3 pos = kf.getTranslation();
+        vec3 pos = kf.getTranslation().toGLM();
         int index = kf.getID();
 
         LOG_TRACE("AnimationViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);

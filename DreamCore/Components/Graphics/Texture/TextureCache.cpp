@@ -9,7 +9,7 @@
 #include "Components/SharedAssetRuntime.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -27,42 +27,46 @@ namespace octronic::dream
     TextureCache::loadRuntime
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!def)
+        if(dreamTryLock())
         {
-            LOG_ERROR("TextureCache: Cannot load texture, TextureDefinition is null");
-            return nullptr;
-        }
-        auto textureDef = static_cast<TextureDefinition*>(def);
-        auto texture = new TextureRuntime(textureDef,mProjectRuntime);
+            dreamLock();
+            if (!def)
+            {
+                LOG_ERROR("TextureCache: Cannot load texture, TextureDefinition is null");
+                return nullptr;
+            }
+            auto textureDef = static_cast<TextureDefinition*>(def);
+            auto texture = new TextureRuntime(textureDef,mProjectRuntime);
 
 
 
-        if (!texture->useDefinition())
-        {
-           delete texture;
-            texture = nullptr;
-        }
-        else
-        {
-        	mRuntimes.push_back(texture);
-        }
+            if (!texture->useDefinition())
+            {
+                delete texture;
+                texture = nullptr;
+            }
+            else
+            {
+                mRuntimes.push_back(texture);
+            }
 
-        return texture;
+            return texture;
+        } dreamElseLockFailed
     }
 
     void
     TextureCache::clear
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        for (auto* runtime : mRuntimes)
+        if(dreamTryLock())
         {
-            delete runtime;
-        }
-        mRuntimes.clear();
+            dreamLock();
+            for (auto* runtime : mRuntimes)
+            {
+                delete runtime;
+            }
+            mRuntimes.clear();
+        } dreamElseLockFailed
     }
 }
 

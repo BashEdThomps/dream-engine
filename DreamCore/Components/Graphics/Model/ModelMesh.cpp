@@ -26,7 +26,7 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -48,8 +48,6 @@ namespace octronic::dream
           mInitMeshTask(this),
           mFreeMeshTask(nullptr)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ModelMesh: Constructing Mesh for {}", parent->getName());
         init();
     }
@@ -57,8 +55,6 @@ namespace octronic::dream
     ModelMesh::~ModelMesh
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ModelMesh: Destroying Mesh for {}",mParent->getNameAndUuidString());
         mFreeMeshTask = make_shared<ModelFreeMeshTask>();
         mFreeMeshTask->clearState();
@@ -98,53 +94,57 @@ namespace octronic::dream
     ModelMesh::init
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mInitMeshTask.clearState();
-        mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mInitMeshTask);
+        if(dreamTryLock()) {
+            dreamLock();
+            mInitMeshTask.clearState();
+            mParent->getProjectRuntime()->getGraphicsComponent()->pushTask(&mInitMeshTask);
+        } dreamElseLockFailed
     }
 
     void
     ModelMesh::logRuntimes
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-       for (auto runtime : mRuntimes)
-       {
-           LOG_DEBUG("\t\t\tRuntime for {}", runtime->getNameAndUuidString());
-       }
+        if(dreamTryLock()) {
+            dreamLock();
+            for (auto runtime : mRuntimes)
+            {
+                LOG_DEBUG("\t\t\tRuntime for {}", runtime->getNameAndUuidString());
+            }
+        } dreamElseLockFailed
     }
 
     void
     ModelMesh::addRuntime
     (EntityRuntime* runt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("ModelMesh: Adding Runtime of mesh for {}", runt->getNameAndUuidString());
-        mRuntimes.push_back(runt);
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_DEBUG("ModelMesh: Adding Runtime of mesh for {}", runt->getNameAndUuidString());
+            mRuntimes.push_back(runt);
+        } dreamElseLockFailed
     }
 
     void
     ModelMesh::removeRuntime
     (EntityRuntime* runt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("ModelMesh: Removing Runtime of mesh for {}", runt->getNameAndUuidString());
-        auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
-        if (itr != mRuntimes.end())
-        {
-           mRuntimes.erase(itr);
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_DEBUG("ModelMesh: Removing Runtime of mesh for {}", runt->getNameAndUuidString());
+            auto itr = find (mRuntimes.begin(), mRuntimes.end(), runt);
+            if (itr != mRuntimes.end())
+            {
+                mRuntimes.erase(itr);
+            }
+        } dreamElseLockFailed
     }
 
     MaterialRuntime*
     ModelMesh::getMaterial
     ()
     {
-       return mMaterial;
+        return mMaterial;
     }
 
     GLuint
@@ -159,37 +159,38 @@ namespace octronic::dream
     ModelMesh::drawGeometryPassRuntimes
     (Camera* camera, ShaderRuntime* shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mRuntimesInFrustum.clear();
-        for (auto* sor : mRuntimes)
-        {
-            // TODO -- Per mesh Culling
-            if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
+        if(dreamTryLock()) {
+            dreamLock();
+            mRuntimesInFrustum.clear();
+            for (auto* sor : mRuntimes)
             {
-                mRuntimesInFrustum.push_back(sor);
+                // TODO -- Per mesh Culling
+                if(camera->visibleInFrustum(mBoundingBox, sor->getTransform().getMatrix()))
+                {
+                    mRuntimesInFrustum.push_back(sor);
+                }
             }
-        }
-        if (mRuntimesInFrustum.empty())
-        {
-            LOG_DEBUG("ModelMesh: (Geometry) No Runtimes of {} in Frustum", getName());
-            return;
-        }
-        LOG_TRACE("ModelMesh: (Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
-        shader->bindVertexArray(mVAO);
-        shader->bindRuntimes(mRuntimesInFrustum);
-        size_t size = mRuntimesInFrustum.size();
-        if (size > ShaderRuntime::MAX_RUNTIMES)
-        {
-            LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
-            size = ShaderRuntime::MAX_RUNTIMES;
-        }
-        size_t indices = mIndicesCount;
-        size_t tris = indices/3;
-        MeshesDrawn += size;
-        TrianglesDrawn += tris*size;
-        glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
-        DrawCalls++;
+            if (mRuntimesInFrustum.empty())
+            {
+                LOG_DEBUG("ModelMesh: (Geometry) No Runtimes of {} in Frustum", getName());
+                return;
+            }
+            LOG_TRACE("ModelMesh: (Geometry) Drawing {} Runtimes of mesh {} for Geometry pass", mRuntimes.size(), getName());
+            shader->bindVertexArray(mVAO);
+            shader->bindRuntimes(mRuntimesInFrustum);
+            size_t size = mRuntimesInFrustum.size();
+            if (size > ShaderRuntime::MAX_RUNTIMES)
+            {
+                LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+                size = ShaderRuntime::MAX_RUNTIMES;
+            }
+            size_t indices = mIndicesCount;
+            size_t tris = indices/3;
+            MeshesDrawn += size;
+            TrianglesDrawn += tris*size;
+            glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
+            DrawCalls++;
+        } dreamElseLockFailed
     }
 
     void
@@ -290,42 +291,43 @@ namespace octronic::dream
     bool
     ModelMesh::loadIntoGL()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        glGenVertexArrays(1, &mVAO);
-        glGenBuffers(1, &mVBO);
-        glGenBuffers(1, &mIBO);
+        if(dreamTryLock()) {
+            dreamLock();
+            glGenVertexArrays(1, &mVAO);
+            glGenBuffers(1, &mVBO);
+            glGenBuffers(1, &mIBO);
 
-        glBindVertexArray(mVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(getVertices().size() * sizeof(Vertex)), &getVertices()[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(getIndices().size() * sizeof(GLuint)),&getIndices()[0], GL_STATIC_DRAW);
-        // Vertex Positions
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
-        // Vertex Normals
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
-        // Vertex Texture Coords
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
-        // Vertex Tangents
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
-        // Vertex Bitangents
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
-        glBindVertexArray(0);
-        clearVertices();
-        clearIndices();
+            glBindVertexArray(mVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+            glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(getVertices().size() * sizeof(Vertex)), &getVertices()[0], GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(getIndices().size() * sizeof(GLuint)),&getIndices()[0], GL_STATIC_DRAW);
+            // Vertex Positions
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                                  static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
+            // Vertex Normals
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
+                                  static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
+            // Vertex Texture Coords
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                                  static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
+            // Vertex Tangents
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
+                                  static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
+            // Vertex Bitangents
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
+                                  static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
+            glBindVertexArray(0);
+            clearVertices();
+            clearIndices();
 
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     long ModelMesh::DrawCalls = 0;

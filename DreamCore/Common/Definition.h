@@ -33,7 +33,7 @@ namespace octronic::dream
      */
     class Definition : public LockableObject
     {
-    
+
 
     public:
         /**
@@ -87,12 +87,6 @@ namespace octronic::dream
          * "[ NAME : UUID ]"
          */
         string getNameAndUuidString();
-
-        /**
-         * @brief vector<-->json wrapping functions
-         */
-        json wrapVector3(const Vector3& v);
-        Vector3 unwrapVector3(const json& j);
 
     protected:
         /**

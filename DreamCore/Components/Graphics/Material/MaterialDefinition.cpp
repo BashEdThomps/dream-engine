@@ -21,7 +21,7 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -42,22 +42,26 @@ namespace octronic::dream
     MaterialDefinition::getShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
+        } dreamElseLockFailed
+
+
     }
 
     void
     MaterialDefinition::setShader
     (UuidType val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
+        } dreamElseLockFailed
     }
 
     // Textures
@@ -65,79 +69,86 @@ namespace octronic::dream
     MaterialDefinition::getDiffuseTexture
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setDiffuseTexture
     (UuidType val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
+        } dreamElseLockFailed
     }
 
     UuidType
     MaterialDefinition::getSpecularTexture
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setSpecularTexture
     (UuidType val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
+        } dreamElseLockFailed
     }
 
     UuidType
     MaterialDefinition::getNormalTexture
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setNormalTexture
     (UuidType val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
+        } dreamElseLockFailed
     }
 
     UuidType
     MaterialDefinition::getDisplacementTexture
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
+        } dreamElseLockFailed
 
     }
 
@@ -145,208 +156,187 @@ namespace octronic::dream
     MaterialDefinition::setDisplacementTexture
     (UuidType val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
+        } dreamElseLockFailed
     }
 
     // Colour
-    RGB
+    Vector3
     MaterialDefinition::getDiffuseColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
+            }
 
-        return unwrapColourObject(
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR]
-        );
+            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR]);
+        } dreamElseLockFailed
 
     }
 
     void
     MaterialDefinition::setDiffuseColour
-    (RGB val)
+    (Vector3 val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = wrapColourObject(val);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = val.toJson();
+        } dreamElseLockFailed
     }
 
-    RGB
+    Vector3
     MaterialDefinition::getSpecularColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
+            }
 
-        return unwrapColourObject(
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR]
-        );
+            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR]);
+        } dreamElseLockFailed
 
     }
 
     void
     MaterialDefinition::setSpecularColour
-    (RGB val)
+    (Vector3 val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = wrapColourObject(val);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = val.toJson();
+        } dreamElseLockFailed
     }
 
-    RGB
+    Vector3
     MaterialDefinition::getAmbientColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
+            }
 
-        return unwrapColourObject(
-            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR]
-        );
+            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR]);
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setAmbientColour
-    (RGB val)
+    (Vector3 val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = wrapColourObject(val);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = val.toJson();
+        } dreamElseLockFailed
     }
 
-    RGB
+    Vector3
     MaterialDefinition::getReflectiveColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
+            }
 
-        return unwrapColourObject(
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR]
-        );
-
+            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR]);
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setReflectiveColour
-    (RGB val)
+    (Vector3 val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = wrapColourObject(val);
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = val.toJson();
+        } dreamElseLockFailed
     }
 
-    RGB
+    Vector3
     MaterialDefinition::getEmissiveColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
+            }
 
-        return unwrapColourObject(
-            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR]
-        );
+            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR]);
+        } dreamElseLockFailed
 
     }
 
     void
     MaterialDefinition::setEmissiveColour
-    (RGB val)
+    (Vector3 val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = wrapColourObject(val);
-    }
-
-    json
-    MaterialDefinition::wrapColourObject
-    (RGB v)
-    {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto obj = json::object();
-        obj[Constants::RED]   = v.r;
-        obj[Constants::GREEN] = v.g;
-        obj[Constants::BLUE]  = v.b;
-        return obj;
-    }
-
-    RGB
-    MaterialDefinition::unwrapColourObject
-    (json obj)
-    {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-       float r = obj[Constants::RED];
-       float g = obj[Constants::GREEN];
-       float b = obj[Constants::BLUE];
-       return RGB{r,g,b};
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = val.toJson();
+        } dreamElseLockFailed
     }
 
     json
     MaterialDefinition::black
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return wrapColourObject(RGB{0.f,0.f,0.f});
+        if(dreamTryLock()) {
+            dreamLock();
+            return Vector3(0.f).toJson();
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getOpacity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_OPACITY) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setOpacity
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getBumpScaling
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING];
+        } dreamElseLockFailed
 
     }
 
@@ -354,116 +344,127 @@ namespace octronic::dream
     MaterialDefinition::setBumpScaling
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getHardness
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_HARDNESS) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setHardness
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
+            mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getReflectivity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setReflectivity
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getShininessStrength
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setShininessStrength
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
+        } dreamElseLockFailed
     }
 
     float
     MaterialDefinition::getRefractionIndex
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX];
+        } dreamElseLockFailed
     }
 
     void
     MaterialDefinition::setRefractionIndex
     (float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
+        } dreamElseLockFailed
     }
 
     bool MaterialDefinition::getIgnore()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_MATERIAL_IGNORE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
+            }
+            return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
+        } dreamElseLockFailed
     }
 
     void MaterialDefinition::setIgnore(bool ignore)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
             mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
+        } dreamElseLockFailed
     }
 }
 

@@ -26,7 +26,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol.h>
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -37,9 +37,6 @@ namespace octronic::dream
         : SharedAssetRuntime("ScriptRuntime",definition,rt),
           mSource("")
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE( "ScriptRuntime: {} {}",__FUNCTION__, getNameAndUuidString());
         return;
     }
@@ -47,8 +44,6 @@ namespace octronic::dream
     ScriptRuntime::~ScriptRuntime
     ()
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, mDefinition->getNameAndUuidString());
     }
 
@@ -56,49 +51,54 @@ namespace octronic::dream
     ScriptRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto path = getAssetFilePath();
-        LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
-        return true;
+        if(dreamTryLock()) {
+            dreamLock();
+            auto path = getAssetFilePath();
+            LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ScriptRuntime::createEntityState
     (EntityRuntime* entity)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->createEntityState(this, entity);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->createEntityState(this, entity);
+        } dreamElseLockFailed
     }
 
     bool
     ScriptRuntime::removeEntityState
     (UuidType uuid)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->removeEntityState(uuid);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->removeEntityState(uuid);
+        } dreamElseLockFailed
     }
 
     string
     ScriptRuntime::getSource
     ()
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mSource;
+        if(dreamTryLock()) {
+            dreamLock();
+            return mSource;
+        } dreamElseLockFailed
     }
 
     void
     ScriptRuntime::setSource
     (const string& source)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mSource = source;
+        if(dreamTryLock()) {
+            dreamLock();
+            mSource = source;
+        } dreamElseLockFailed
     }
 
     // Function Execution =======================================================
@@ -107,56 +107,62 @@ namespace octronic::dream
     ScriptRuntime::executeOnUpdate
     (EntityRuntime* entity)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->executeScriptOnUpdate(this, entity);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->executeScriptOnUpdate(this, entity);
+        } dreamElseLockFailed
     }
 
     bool
     ScriptRuntime::executeOnInit
     (EntityRuntime* entity)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->executeScriptOnInit(this, entity);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->executeScriptOnInit(this, entity);
+        } dreamElseLockFailed
     }
 
     bool
     ScriptRuntime::executeOnEvent
     (EntityRuntime* entity)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->executeScriptOnEvent(this, entity);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->executeScriptOnEvent(this, entity);
+        } dreamElseLockFailed
     }
 
     bool
     ScriptRuntime::executeOnInput
     (InputComponent* inputComp, SceneRuntime* sr)
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->executeScriptOnInput(this, inputComp, sr);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->executeScriptOnInput(this, inputComp, sr);
+        } dreamElseLockFailed
     }
 
 
     bool ScriptRuntime::registerInputScript()
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->registerInputScript(this);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->registerInputScript(this);
+        } dreamElseLockFailed
     }
 
     bool ScriptRuntime::removeInputScript()
     {
-        const unique_lock<mutex>lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-		return scriptComponent->removeInputScript(this);
+        if(dreamTryLock()) {
+            dreamLock();
+            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
+            return scriptComponent->removeInputScript(this);
+        } dreamElseLockFailed
     }
 }

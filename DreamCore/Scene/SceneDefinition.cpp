@@ -19,7 +19,7 @@
 #include "Components/Transform.h"
 #include "Project/ProjectDefinition.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -29,18 +29,12 @@ namespace octronic::dream
           mRootEntityDefinition(nullptr),
           mProjectDefinition(projectDefinition)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE( "SceneDefinition: Constructing {}", getNameAndUuidString() );
     }
 
     SceneDefinition::~SceneDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-
         LOG_TRACE( "SceneDefinition: Destructing {}", getNameAndUuidString() );
         if (mRootEntityDefinition != nullptr)
         {
@@ -53,101 +47,104 @@ namespace octronic::dream
     SceneDefinition::loadRootEntityDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
-        if (rsoJson.is_null())
-        {
-            LOG_ERROR( "SceneDefinition: No root Entity found!!" );
-            return;
-        }
+            if (mJson.find(Constants::SCENE_ROOT_ENTITY) == mJson.end())
+            {
+                LOG_ERROR( "SceneDefinition: No root Entity found!!" );
+                return;
+            }
+            json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
 
-        mRootEntityDefinition = new EntityDefinition
-                (
-                    nullptr,
-                    this,
-                    rsoJson
-                    );
-        mRootEntityDefinition->loadChildEntityDefinitions();
+            mRootEntityDefinition = new EntityDefinition(nullptr, this, rsoJson );
+            mRootEntityDefinition->loadChildEntityDefinitions();
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setCameraMovementSpeed
     (float speed)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
+            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
+        } dreamElseLockFailed
     }
 
     float
     SceneDefinition::getCameraMovementSpeed
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
-        }
-        return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
+            if (mJson.find(Constants::SCENE_CAMERA_MOVEMENT_SPEED) == mJson.end())
+            {
+                mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
+            }
+            return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setPhysicsDebug
     (bool debug)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
+            mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
+        } dreamElseLockFailed
     }
 
     bool
     SceneDefinition::getPhysicsDebug
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_PHYSICS_DEBUG].is_null())
-        {
-            mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
-        }
-        return mJson[Constants::SCENE_PHYSICS_DEBUG];
+            if (mJson.find(Constants::SCENE_PHYSICS_DEBUG) == mJson.end())
+            {
+                mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
+            }
+            return mJson[Constants::SCENE_PHYSICS_DEBUG];
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setMeshCullDistance(float mcd)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
+            mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getMeshCullDistance()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_MESH_CULL_DISTANCE].is_null())
-        {
-            mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
-        }
-        return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
+            if (mJson.find(Constants::SCENE_MESH_CULL_DISTANCE) == mJson.end())
+            {
+                mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
+            }
+            return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::addTemplate
     (EntityDefinition* _template)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mTemplates.push_back(_template);
+            mTemplates.push_back(_template);
+        } dreamElseLockFailed
     }
 
 
@@ -155,412 +152,433 @@ namespace octronic::dream
     SceneDefinition::getTemplateByUuid
     (UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        for (EntityDefinition* next : mTemplates)
-        {
-            if (next->getUuid() == uuid)
+            for (EntityDefinition* next : mTemplates)
             {
-                return next;
+                if (next->getUuid() == uuid)
+                {
+                    return next;
+                }
             }
-        }
-        return nullptr;
+            return nullptr;
+        } dreamElseLockFailed
     }
 
     Vector3
     SceneDefinition::getCameraTranslation
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            return Vector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setCameraTranslation
     (const Vector3& transform)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        // Translation
-        mJson[Constants::SCENE_CAMERA_TRANSLATION] = wrapVector3(transform);
+            // Translation
+            mJson[Constants::SCENE_CAMERA_TRANSLATION] = transform.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3 SceneDefinition::getCameraLookAt()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_LOOK_AT].is_null())
-        {
-            setCameraLookAt(Vector3(0.0f));
-        }
-        return unwrapVector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
+            if (mJson.find(Constants::SCENE_CAMERA_LOOK_AT) == mJson.end())
+            {
+                setCameraLookAt(Vector3(0.0f));
+            }
+            return Vector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setCameraLookAt
     (const Vector3& lookAt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CAMERA_LOOK_AT][Constants::X] = wrapVector3(lookAt);
+            mJson[Constants::SCENE_CAMERA_LOOK_AT] = lookAt.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     SceneDefinition::getGravity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        Vector3 gravity;
+            Vector3 gravity;
 
-        if (mJson[Constants::SCENE_GRAVITY].is_null())
-        {
-            mJson[Constants::SCENE_GRAVITY] = wrapVector3(Vector3(0.0f));
-        }
+            if (mJson.find(Constants::SCENE_GRAVITY) == mJson.end())
+            {
+                mJson[Constants::SCENE_GRAVITY] = Vector3(0.0f).toJson();
+            }
 
-        gravity = unwrapVector3(mJson[Constants::SCENE_GRAVITY]);
+            gravity = Vector3(mJson[Constants::SCENE_GRAVITY]);
 
-        return gravity;
+            return gravity;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setGravity
     (const Vector3& gravity)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_GRAVITY] = wrapVector3(gravity);
+            mJson[Constants::SCENE_GRAVITY] = gravity.toJson();
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setGravityX
     (float x)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
+            mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setGravityY
     (float y)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
+            mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setGravityZ
     (float z)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
+            mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
+        } dreamElseLockFailed
     }
 
     Vector3
     SceneDefinition::getClearColour
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        Vector3 colour;
+            Vector3 colour;
 
-        if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
-        {
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = 0.0f;
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = 0.0f;
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = 0.0f;
+            if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
+            {
+                mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
+            }
 
-        }
-
-        colour.setX(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]);
-        colour.setY(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]);
-        colour.setZ(mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]);
-
-        return colour;
+            colour = Vector3(mJson[Constants::SCENE_CLEAR_COLOUR]);
+            return colour;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setClearColour
     (const Vector3& colour)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CLEAR_COLOUR].is_null())
-        {
-            mJson[Constants::SCENE_CLEAR_COLOUR] = {};
-        }
+            if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
+            {
+                mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
+            }
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]   = colour.x();
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN] = colour.y();
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = colour.z();
+            mJson[Constants::SCENE_CLEAR_COLOUR] = colour.toJson();
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setClearColourR
     (float r)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setClearColourG
     (float g)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setClearColourB
     (float b)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
+            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
+        } dreamElseLockFailed
     }
 
     EntityDefinition*
     SceneDefinition::getRootEntityDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mRootEntityDefinition;
+            return mRootEntityDefinition;
+        } dreamElseLockFailed
     }
 
     ProjectDefinition*
     SceneDefinition::getProjectDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        return mProjectDefinition;
+            return mProjectDefinition;
+        } dreamElseLockFailed
     }
 
     EntityDefinition*
     SceneDefinition::createNewRootEntityDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        json rootDefJson;
-        rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
-        rootDefJson[Constants::UUID] = Uuid::generateUuid();
-        Transform transform;
-        rootDefJson[Constants::TRANSFORM] = transform.getJson();
-        mRootEntityDefinition = new EntityDefinition
-                (
-                    nullptr,
-                    this,
-                    rootDefJson
-                    );
-        return mRootEntityDefinition;
+            json rootDefJson;
+            rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
+            rootDefJson[Constants::UUID] = Uuid::generateUuid();
+            Transform transform;
+            rootDefJson[Constants::TRANSFORM] = transform.getJson();
+            mRootEntityDefinition = new EntityDefinition(nullptr,this,rootDefJson);
+            return mRootEntityDefinition;
+        } dreamElseLockFailed
     }
 
     json
     SceneDefinition::getJson
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
-        return mJson;
+            mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
+            return mJson;
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setMinDrawDistance(float mdd)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
+            mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getMinDrawDistance()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_MIN_DRAW_DISTANCE].is_null())
-        {
-            mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
-        }
-        return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
+            if (mJson.find(Constants::SCENE_MIN_DRAW_DISTANCE) == mJson.end())
+            {
+                mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
+            }
+            return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setMaxDrawDistance(float mdd)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
+            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getMaxDrawDistance()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_MAX_DRAW_DISTANCE].is_null())
-        {
-            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
-        }
-        return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
+            if (mJson.find(Constants::SCENE_MAX_DRAW_DISTANCE) == mJson.end())
+            {
+                mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
+            }
+            return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraTranslationX()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraTranslationY()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraTranslationZ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationX(float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationY(float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationZ(float val)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_TRANSLATION].is_null())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
+            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+            {
+                setCameraTranslation(Vector3(0.0f));
+            }
+            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraPitch(float pitch)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
+            mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
+        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraYaw(float yaw)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CAMERA_YAW] = yaw;
+            mJson[Constants::SCENE_CAMERA_YAW] = yaw;
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraPitch()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_PITCH].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
-        }
-        return  mJson[Constants::SCENE_CAMERA_PITCH];
+            if (mJson.find(Constants::SCENE_CAMERA_PITCH) == mJson.end())
+            {
+                mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
+            }
+            return  mJson[Constants::SCENE_CAMERA_PITCH];
+        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraYaw()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (mJson[Constants::SCENE_CAMERA_YAW].is_null())
-        {
-            mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
-        }
-        return  mJson[Constants::SCENE_CAMERA_YAW];
+            if (mJson.find(Constants::SCENE_CAMERA_YAW) == mJson.end())
+            {
+                mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
+            }
+            return  mJson[Constants::SCENE_CAMERA_YAW];
+        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getCameraFocusedOn
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
-        {
-            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
-        }
-        return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
+            if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
+            {
+                mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
+            }
+            return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
+        } dreamElseLockFailed
 
     }
 
@@ -568,24 +586,26 @@ namespace octronic::dream
     SceneDefinition::setCameraFocusedOn
     (UuidType focusedOn)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
+            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
+        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getLightingPassShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
-        {
-            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
-        }
-        return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
+            if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
+            {
+                mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
+            }
+            return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
+        } dreamElseLockFailed
 
     }
 
@@ -593,24 +613,26 @@ namespace octronic::dream
     SceneDefinition::setLightingPassShader
     (UuidType shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
+            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
+        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getShadowPassShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
-        {
-            mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
-        }
-        return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
+            if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
+            {
+                mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
+            }
+            return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
+        } dreamElseLockFailed
 
     }
 
@@ -618,24 +640,26 @@ namespace octronic::dream
     SceneDefinition::setShadowPassShader
     (UuidType shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
+            mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
+        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getFontShader
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
-        {
-            mJson[Constants::SCENE_FONT_SHADER] = 0;
-        }
-        return  mJson[Constants::SCENE_FONT_SHADER];
+            if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
+            {
+                mJson[Constants::SCENE_FONT_SHADER] = 0;
+            }
+            return  mJson[Constants::SCENE_FONT_SHADER];
+        } dreamElseLockFailed
 
     }
 
@@ -643,24 +667,26 @@ namespace octronic::dream
     SceneDefinition::setFontShader
     (UuidType shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_FONT_SHADER] = shader;
+            mJson[Constants::SCENE_FONT_SHADER] = shader;
+        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getInputScript
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
-        {
-            mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
-        }
-        return  mJson[Constants::SCENE_INPUT_SCRIPT];
+            if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
+            {
+                mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
+            }
+            return  mJson[Constants::SCENE_INPUT_SCRIPT];
+        } dreamElseLockFailed
 
     }
 
@@ -668,31 +694,34 @@ namespace octronic::dream
     SceneDefinition::setInputScript
     (UuidType shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
+            mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
+        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setPlayerObject
     (UuidType po)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
+            mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
+        } dreamElseLockFailed
     }
 
     UuidType SceneDefinition::getPlayerObject()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 
-        if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
-        {
-            mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
-        }
-        return mJson[Constants::ENTITY_PLAYER_OBJECT];
+            if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
+            {
+                mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
+            }
+            return mJson[Constants::ENTITY_PLAYER_OBJECT];
+        } dreamElseLockFailed
     }
 }

@@ -13,7 +13,7 @@
 
 #include "Common/Constants.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -33,8 +33,6 @@ namespace octronic::dream
     ScriptDefinition::isFormatLua
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
     }
 }

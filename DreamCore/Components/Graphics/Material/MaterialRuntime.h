@@ -26,7 +26,7 @@ using glm::vec3;
 
 namespace octronic::dream
 {
-    struct RGB;
+    struct Vector3;
     class ModelMesh;
     class ShaderRuntime;
     class MaterialDefinition;
@@ -111,7 +111,5 @@ namespace octronic::dream
         ShaderRuntime*  mShader;
 
         vector<ModelMesh*> mUsedBy;
-
-        vec3 rgbToVec3(RGB color);
     };
 }

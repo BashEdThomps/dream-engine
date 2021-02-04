@@ -21,7 +21,7 @@
 #include "ModelDefinition.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -44,20 +44,22 @@ namespace octronic::dream
     ModelCache::loadRuntime
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("ModelCache: Loading {} from disk",  def->getUuid());
-        auto model = new ModelRuntime(mShaderCache, mMaterialCache, def, mProjectRuntime);
-        if (model->useDefinition())
+        if(dreamTryLock())
         {
-            mRuntimes.push_back(model);
-        }
-        else
-        {
-            LOG_ERROR("ModelCache: Unable to create runtime for model {}", def->getNameAndUuidString());
-            delete model;
-            model = nullptr;
-        }
-        return model;
+            dreamLock();
+            LOG_DEBUG("ModelCache: Loading {} from disk",  def->getUuid());
+            auto model = new ModelRuntime(mShaderCache, mMaterialCache, def, mProjectRuntime);
+            if (model->useDefinition())
+            {
+                mRuntimes.push_back(model);
+            }
+            else
+            {
+                LOG_ERROR("ModelCache: Unable to create runtime for model {}", def->getNameAndUuidString());
+                delete model;
+                model = nullptr;
+            }
+            return model;
+        } dreamElseLockFailed
     }
 }

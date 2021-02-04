@@ -31,113 +31,43 @@ namespace octronic::dream
      */
     class Runtime : public LockableObject
     {
-    protected:
-        /**
-         * @brief Definition from which this runtime was instanciated.
-         */
-        Definition* mDefinition;
-        /**
-         * @brief UUID of this Runtime, given by it's Definition.
-         */
-        UuidType mUuid;
-        /**
-         * @brief Name of this Runtime, given by it's Definition.
-         */
-        string mName;
     public:
         /**
          * @brief Default Constructor
          * @param def Definition from which the Runtime was instanciated.
          */
-        Runtime
-        (const string& className, Definition* def)
-            : LockableObject(className),
-              mDefinition(def),
-              mUuid(def == nullptr ? 0 : def->getUuid()),
-              mName(def == nullptr ? "" : def->getName()) {}
+        Runtime(const string& className, Definition* def);
 
         /**
          * @brief Default destructor.
          */
-        virtual
-        ~Runtime
-        ()
-        {
-
-        }
+        virtual ~Runtime();
 
         /**
          * @return The Runtime's UUID - Same as it's Definition, unless specified
          * to be random, mDefinition was null.
          */
-        inline UuidType
-        getUuid
-        ()
-        const
-        {
-            return mUuid;
-        }
+        UuidType getUuid()const;
         /**
          * @return The Runtime's UUID as a std::string (used for dictionaries in
          * scripting).
          */
-        inline string
-        getUuidString
-        ()
-        const
-        {
-            return std::to_string(mUuid);
-        }
+        string getUuidString()const;
 
-        inline void
-        setUuid
-        (UuidType uuid)
-        {
-            mUuid = uuid;
-        }
+        void setUuid(UuidType uuid);
 
-        inline bool
-        hasUuid
-        (UuidType uuid)
-        const
-        {
-            return mUuid == uuid;
-        }
+        bool hasUuid(UuidType uuid) const;
 
         /**
          * @return The Runtime's Name - same as it's Definition.
          */
-        inline string
-        getName
-        ()
-        const
-        {
-            return mName;
-        }
+        string getName() const;
 
-        inline void
-        setName
-        (const string& name)
-        {
-            mName = name;
-        }
+        void setName(const string& name);
 
-        inline bool
-        hasName
-        (const string& name)
-        const
-        {
-            return getName().compare(name) == 0;
-        }
+        bool hasName(const string& name) const;
 
-        inline string
-        getNameAndUuidString
-        ()
-        {
-            stringstream ss;
-            ss << "[" << getName() << " : " << getUuid() << "]";
-            return ss.str();
-        }
+        string getNameAndUuidString();
 
         /**
          * @brief Use information from the give Definition to create the Runtime
@@ -155,11 +85,20 @@ namespace octronic::dream
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        inline Definition*
-        getDefinition
-        ()
-        {
-            return mDefinition;
-        }
+        Definition* getDefinition();
+
+    protected:
+        /**
+         * @brief Definition from which this runtime was instanciated.
+         */
+        Definition* mDefinition;
+        /**
+         * @brief UUID of this Runtime, given by it's Definition.
+         */
+        UuidType mUuid;
+        /**
+         * @brief Name of this Runtime, given by it's Definition.
+         */
+        string mName;
     };
 }

@@ -29,20 +29,19 @@ A Project will contain several 'Asset' objects. An Asset describes something
 that can be added into a Scene, such as a 3D model, Audio Clip, Spline Path, etc. 
 (full list below).
 
-#### Asset Definitions
+#### AssetDefinitions
 Asset Definitions are used to define an Asset's properties at start-up.
 They are defined once at the Project level and can be reused multiple times 
-within your Screen to create Asset Instances. These Asset Instances are then 
-assigned to Entities within a scene. Asset Definitions are defined at the Project 
-level so that they can be shared by many Scenes and Entities. There are several 
-types of Asset available in Dream.
+within your Screen to create implement Entities. Asset Definitions are defined at the Project 
+level so that they can be shared by many Scenes and Entities. There are several types of Asset 
+available in Dream.
 
 * Animation
 * Audio
 * Font
 * Light
+* Material
 * Model
-* Object Emitter
 * Path
 * Physics Object
 * Script
@@ -57,10 +56,10 @@ environment or stage within your application.
 
 ### Entities
 Entities are used to construct a 'Scenegraph' that describes the relationship of 
-objects within the Scene. A Scene has a single 'Root' Entity with 0-n children. 
+objects within the Scene. A Scene has a single 'Root' Entity with 0-N children. 
 Entities are arranged within a parent-child relationship tree, through which they 
-can inherit their initial transformation. Each Entity is assigned zero or more 
-'Assets Definitions' to instanciate at startup.
+can inherit their initial transformation, visibility, etc. Each Entity is assigned zero or more 
+'AssetsDefinitions' to use at startup.
 
 ## DreamTool
 DreamTool is the Project editor for Dream. It is cross-platrofm, written with 

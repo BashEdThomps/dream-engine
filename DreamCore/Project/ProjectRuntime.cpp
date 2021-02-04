@@ -46,8 +46,6 @@
 
 #include <thread>
 
-using std::unique_lock;
-
 namespace octronic::dream
 {
     ProjectRuntime::ProjectRuntime
@@ -72,10 +70,6 @@ namespace octronic::dream
           mScriptCache(nullptr),
           mFontCache(nullptr)
     {
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-
         LOG_DEBUG( "ProjectRuntime: Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
     }
@@ -83,9 +77,6 @@ namespace octronic::dream
     ProjectRuntime::~ProjectRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
-
         LOG_DEBUG( "ProjectRuntime: Destructing" );
         deleteCaches();
         deleteComponents();
@@ -95,7 +86,6 @@ namespace octronic::dream
             delete mTime;
             mTime = nullptr;
         }
-
     }
 
     WindowComponent*
@@ -110,10 +100,12 @@ namespace octronic::dream
     ProjectRuntime::setDone
     (bool done)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        mDone = done;
+            mDone = done;
+
+        } dreamElseLockFailed
     }
 
     Time*
@@ -128,96 +120,98 @@ namespace octronic::dream
     ProjectRuntime::initComponents
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
+            LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
 
-        mTime = new Time();
+            mTime = new Time();
 
-        if (!initWindowComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init WindowComponent");
-            return false;
-        }
+            if (!initWindowComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init WindowComponent");
+                return false;
+            }
 
-        if(!initGraphicsComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
-            return false;
-        }
+            if(!initGraphicsComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
+                return false;
+            }
 
-        if (!initInputComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init InputComponent");
-            return false;
-        }
+            if (!initInputComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init InputComponent");
+                return false;
+            }
 
-        if(!initPhysicsComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init PhysicsComponent");
-            return false;
-        }
+            if(!initPhysicsComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init PhysicsComponent");
+                return false;
+            }
 
-        if(!initAudioComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init AudioComponent");
-            return false;
-        }
+            if(!initAudioComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init AudioComponent");
+                return false;
+            }
 
-        if (!initScriptComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init ScriptComponent");
-            return false;
-        }
+            if (!initScriptComponent())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init ScriptComponent");
+                return false;
+            }
 
-        if (!initTaskManager())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init TaskManager");
-            return false;
-        }
+            if (!initTaskManager())
+            {
+                LOG_ERROR("ProjectRuntime: Failed to init TaskManager");
+                return false;
+            }
 
-        LOG_DEBUG( "ProjectRuntime: Successfully created Components." );
+            LOG_DEBUG( "ProjectRuntime: Successfully created Components." );
 
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initWindowComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (!mWindowComponent)
-        {
-            LOG_CRITICAL("ProjectRuntime: Window component is null");
-            return false;
-        }
-        auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        mWindowComponent->setName(projDef->getName());
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            if (!mWindowComponent)
+            {
+                LOG_CRITICAL("ProjectRuntime: Window component is null");
+                return false;
+            }
+            auto projDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+            mWindowComponent->setName(projDef->getName());
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initAudioComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if(mAudioComponent == nullptr)
-        {
-            LOG_ERROR("ProjectRuntime: AudioComponent is null");
-            return false;
-        }
-        mAudioComponent->setProjectRuntime(this);
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            if(mAudioComponent == nullptr)
+            {
+                LOG_ERROR("ProjectRuntime: AudioComponent is null");
+                return false;
+            }
+            mAudioComponent->setProjectRuntime(this);
 
-        // Audio component must be initialised outside of dream
+            // Audio component must be initialised outside of dream
 
-        /*
+            /*
         if (!mAudioComponent->init())
         {
             LOG_ERROR( "ProjectRuntime: Unable to initialise AudioComponent." );
@@ -225,204 +219,213 @@ namespace octronic::dream
             return false;
         }
         */
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     bool ProjectRuntime::initInputComponent()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
-        mInputComponent = new InputComponent(this);
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            auto projectDef = dynamic_cast<ProjectDefinition*>(mDefinition);
+            mInputComponent = new InputComponent(this);
 
-        if (!mInputComponent->init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
-            return false;
-        }
-        return true;
+            if (!mInputComponent->init())
+            {
+                LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initPhysicsComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mPhysicsComponent = new PhysicsComponent(this);
-        mPhysicsComponent->setTime(mTime);
-        if (!mPhysicsComponent->init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
-            return false;
-        }
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mPhysicsComponent = new PhysicsComponent(this);
+            mPhysicsComponent->setTime(mTime);
+            if (!mPhysicsComponent->init())
+            {
+                LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initGraphicsComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mGraphicsComponent = new GraphicsComponent(this,mWindowComponent);
-        mGraphicsComponent->setTime(mTime);
-        mGraphicsComponent->setShaderCache(mShaderCache);
-        if (!mGraphicsComponent->init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
-            return false;
-        }
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mGraphicsComponent = new GraphicsComponent(this,mWindowComponent);
+            mGraphicsComponent->setTime(mTime);
+            mGraphicsComponent->setShaderCache(mShaderCache);
+            if (!mGraphicsComponent->init())
+            {
+                LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initScriptComponent
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mScriptComponent = new ScriptComponent(this,mScriptCache);
-        if(!mScriptComponent->init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
-            return false;
-        }
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mScriptComponent = new ScriptComponent(this,mScriptCache);
+            if(!mScriptComponent->init())
+            {
+                LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initTaskManager
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mTaskManager = new TaskManager();
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mTaskManager = new TaskManager();
+            return true;
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::initCaches
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mAudioCache = new AudioCache(this);
-        mTextureCache = new TextureCache(this);
-        mShaderCache  = new ShaderCache(this);
-        mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
-        mModelCache   = new ModelCache(this,mShaderCache, mMaterialCache);
-        mScriptCache  = new ScriptCache(this);
-        mFontCache = new FontCache(this);
-        return true;
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mAudioCache = new AudioCache(this);
+            mTextureCache = new TextureCache(this);
+            mShaderCache  = new ShaderCache(this);
+            mMaterialCache = new MaterialCache(this,mShaderCache,mTextureCache);
+            mModelCache   = new ModelCache(this,mShaderCache, mMaterialCache);
+            mScriptCache  = new ScriptCache(this);
+            mFontCache = new FontCache(this);
+            return true;
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::deleteCaches
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (mAudioCache != nullptr)
-        {
-            delete mAudioCache;
-            mAudioCache = nullptr;
-        }
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            if (mAudioCache != nullptr)
+            {
+                delete mAudioCache;
+                mAudioCache = nullptr;
+            }
 
-        if (mModelCache != nullptr)
-        {
-            delete mModelCache;
-            mModelCache = nullptr;
-        }
+            if (mModelCache != nullptr)
+            {
+                delete mModelCache;
+                mModelCache = nullptr;
+            }
 
-        if (mShaderCache != nullptr)
-        {
-            delete mShaderCache;
-            mShaderCache = nullptr;
-        }
+            if (mShaderCache != nullptr)
+            {
+                delete mShaderCache;
+                mShaderCache = nullptr;
+            }
 
-        if (mMaterialCache != nullptr)
-        {
-            delete mMaterialCache;
-            mMaterialCache = nullptr;
-        }
+            if (mMaterialCache != nullptr)
+            {
+                delete mMaterialCache;
+                mMaterialCache = nullptr;
+            }
 
-        if (mTextureCache != nullptr)
-        {
-            delete mTextureCache;
-            mTextureCache = nullptr;
-        }
+            if (mTextureCache != nullptr)
+            {
+                delete mTextureCache;
+                mTextureCache = nullptr;
+            }
 
-        if (mScriptCache != nullptr)
-        {
-            delete mScriptCache;
-            mScriptCache = nullptr;
-        }
+            if (mScriptCache != nullptr)
+            {
+                delete mScriptCache;
+                mScriptCache = nullptr;
+            }
 
-        if (mFontCache != nullptr)
-        {
-            delete mFontCache;
-            mFontCache = nullptr;
-        }
+            if (mFontCache != nullptr)
+            {
+                delete mFontCache;
+                mFontCache = nullptr;
+            }
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::deleteComponents
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (mTaskManager != nullptr)
-        {
-            delete mTaskManager;
-            mTaskManager = nullptr;
-        }
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            if (mTaskManager != nullptr)
+            {
+                delete mTaskManager;
+                mTaskManager = nullptr;
+            }
 
-        if (mAudioComponent != nullptr)
-        {
-            //delete mAudioComponent;
-            mAudioComponent = nullptr;
-        }
+            if (mAudioComponent != nullptr)
+            {
+                //delete mAudioComponent;
+                mAudioComponent = nullptr;
+            }
 
-        if (mInputComponent != nullptr)
-        {
-            delete mInputComponent;
-            mInputComponent = nullptr;
-        }
+            if (mInputComponent != nullptr)
+            {
+                delete mInputComponent;
+                mInputComponent = nullptr;
+            }
 
-        if (mGraphicsComponent != nullptr)
-        {
-            delete mGraphicsComponent;
-            mGraphicsComponent = nullptr;
-        }
+            if (mGraphicsComponent != nullptr)
+            {
+                delete mGraphicsComponent;
+                mGraphicsComponent = nullptr;
+            }
 
-        if (mPhysicsComponent != nullptr)
-        {
-            delete mPhysicsComponent;
-            mPhysicsComponent = nullptr;
-        }
+            if (mPhysicsComponent != nullptr)
+            {
+                delete mPhysicsComponent;
+                mPhysicsComponent = nullptr;
+            }
 
-        if (mScriptComponent != nullptr)
-        {
-            delete mScriptComponent;
-            mScriptComponent = nullptr;
-        }
+            if (mScriptComponent != nullptr)
+            {
+                delete mScriptComponent;
+                mScriptComponent = nullptr;
+            }
+        } dreamElseLockFailed
     }
 
     bool
@@ -485,56 +488,58 @@ namespace octronic::dream
     ProjectRuntime::updateLogic
     (SceneRuntime* sr)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        mTaskManager->waitForThreadsToFinish();
-        LOG_DEBUG("\n"
+            mTaskManager->waitForThreadsToFinish();
+            LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Logic called @ {}\n"
         "=======================================================================\n",
-        mTime->getAbsoluteTime());
-        mTime->updateFrameTime();
+                      mTime->getAbsoluteTime());
+            mTime->updateFrameTime();
 
-        mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
+            mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
 
-        if (mFrameDurationHistory.size() > MaxFrameCount)
-        {
-            mFrameDurationHistory.pop_front();
-        }
+            if (mFrameDurationHistory.size() > MaxFrameCount)
+            {
+                mFrameDurationHistory.pop_front();
+            }
 
-        sr->createSceneTasks();
-        mTaskManager->allowThreadsToRun();
-        std::this_thread::yield();
-        mTaskManager->waitForThreadsToFinish();
-        mGraphicsComponent->handleResize();
-        sr->getCamera()->update();
-        return true;
+            sr->createSceneTasks();
+            mTaskManager->allowThreadsToRun();
+            std::this_thread::yield();
+            mTaskManager->waitForThreadsToFinish();
+            mGraphicsComponent->handleResize();
+            sr->getCamera()->update();
+            return true;
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::updateGraphics
     (SceneRuntime* sr)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_DEBUG("\n"
+            LOG_DEBUG("\n"
         "=======================================================================\n"
         "Update Graphics called @ {}\n"
         "=======================================================================\n",
-        mTime->getAbsoluteTime());
-        // Draw 3D/PhysicsDebug/2D
-        ModelMesh::ClearCounters();
-        mGraphicsComponent->executeTaskQueue();
-        mGraphicsComponent->renderGeometryPass(sr);
-        mGraphicsComponent->renderShadowPass(sr);
-        mGraphicsComponent->renderLightingPass(sr);
-        mGraphicsComponent->renderFonts(sr);
-        mGraphicsComponent->executeDestructionTaskQueue();
-        ShaderRuntime::InvalidateState();
-        mPhysicsComponent->setCamera(sr->getCamera());
-        mPhysicsComponent->drawDebug();
+                      mTime->getAbsoluteTime());
+            // Draw 3D/PhysicsDebug/2D
+            ModelMesh::ClearCounters();
+            mGraphicsComponent->executeTaskQueue();
+            mGraphicsComponent->renderGeometryPass(sr);
+            mGraphicsComponent->renderShadowPass(sr);
+            mGraphicsComponent->renderLightingPass(sr);
+            mGraphicsComponent->renderFonts(sr);
+            mGraphicsComponent->executeDestructionTaskQueue();
+            ShaderRuntime::InvalidateState();
+            mPhysicsComponent->setCamera(sr->getCamera());
+            mPhysicsComponent->drawDebug();
+        } dreamElseLockFailed
     }
 
     int
@@ -553,13 +558,14 @@ namespace octronic::dream
     ProjectRuntime::setWindowWidth
     (int w)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        if (mWindowComponent != nullptr)
-        {
-            mWindowComponent->setWidth(w);
-        }
+            if (mWindowComponent != nullptr)
+            {
+                mWindowComponent->setWidth(w);
+            }
+        } dreamElseLockFailed
     }
 
     int
@@ -578,94 +584,98 @@ namespace octronic::dream
     ProjectRuntime::setWindowHeight
     (int h)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        if (mWindowComponent != nullptr)
-        {
-            mWindowComponent->setHeight(h);
-        }
+            if (mWindowComponent != nullptr)
+            {
+                mWindowComponent->setHeight(h);
+            }
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::collectSceneGarbage
     (SceneRuntime* rt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_DEBUG("\n"
+            LOG_DEBUG("\n"
         "=======================================================================\n"
         "CollectGarbage Called @ {}\n"
         "=======================================================================",
-        mTime->getAbsoluteTime());
+                      mTime->getAbsoluteTime());
 
-        rt->collectGarbage();
+            rt->collectGarbage();
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::collectGarbage
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        for (auto rt : mSceneRuntimesToRemove)
-        {
-            auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
-            if (itr != mSceneRuntimeVector.end())
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            for (auto rt : mSceneRuntimesToRemove)
             {
-                mSceneRuntimeVector.erase(itr);
+                auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
+                if (itr != mSceneRuntimeVector.end())
+                {
+                    mSceneRuntimeVector.erase(itr);
+                }
             }
-        }
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::updateAll
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
+            LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
 
-        if (mSceneRuntimeVector.empty())
-        {
-            mTaskManager->allowThreadsToRun();
-            std::this_thread::yield();
-            mTaskManager->waitForThreadsToFinish();
-            mGraphicsComponent->executeTaskQueue();
-            mGraphicsComponent->executeDestructionTaskQueue();
-        }
-        else
-        {
-            for (auto rt : mSceneRuntimeVector)
+            if (mSceneRuntimeVector.empty())
             {
-                switch (rt->getState())
+                mTaskManager->allowThreadsToRun();
+                std::this_thread::yield();
+                mTaskManager->waitForThreadsToFinish();
+                mGraphicsComponent->executeTaskQueue();
+                mGraphicsComponent->executeDestructionTaskQueue();
+            }
+            else
+            {
+                for (auto rt : mSceneRuntimeVector)
                 {
-                    case SceneState::SCENE_STATE_TO_LOAD:
-                        constructSceneRuntime(rt);
-                        break;
-                    case SceneState::SCENE_STATE_LOADED:
-                        break;
-                    case SceneState::SCENE_STATE_ACTIVE:
-                        updateLogic(rt);
-                        updateGraphics(rt);
-                        mWindowComponent->updateWindow(rt);
-                        collectSceneGarbage(rt);
-                        break;
-                    case SceneState::SCENE_STATE_TO_DESTROY:
-                        destructSceneRuntime(rt);
-                        break;
-                    case SceneState::SCENE_STATE_DESTROYED:
-                        mSceneRuntimesToRemove.push_back(rt);
-                        break;
+                    switch (rt->getState())
+                    {
+                        case SceneState::SCENE_STATE_TO_LOAD:
+                            constructSceneRuntime(rt);
+                            break;
+                        case SceneState::SCENE_STATE_LOADED:
+                            break;
+                        case SceneState::SCENE_STATE_ACTIVE:
+                            updateLogic(rt);
+                            updateGraphics(rt);
+                            mWindowComponent->updateWindow(rt);
+                            collectSceneGarbage(rt);
+                            break;
+                        case SceneState::SCENE_STATE_TO_DESTROY:
+                            destructSceneRuntime(rt);
+                            break;
+                        case SceneState::SCENE_STATE_DESTROYED:
+                            mSceneRuntimesToRemove.push_back(rt);
+                            break;
+                    }
                 }
             }
-        }
-        collectGarbage();
-        LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
+            collectGarbage();
+            LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
+        } dreamElseLockFailed
     }
 
     SceneRuntime*
@@ -705,26 +715,27 @@ namespace octronic::dream
     ProjectRuntime::setSceneRuntimeAsActive
     (UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        int nRuntimes = mSceneRuntimeVector.size();
-        for (int i=0;i<nRuntimes;i++)
-        {
-            auto srt = mSceneRuntimeVector.at(i);
-            if (srt->getUuid() == uuid)
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            int nRuntimes = mSceneRuntimeVector.size();
+            for (int i=0;i<nRuntimes;i++)
             {
-                srt->setState(SceneState::SCENE_STATE_ACTIVE);
-            }
-            else
-            {
-                if (srt->getState() == SceneState::SCENE_STATE_ACTIVE)
+                auto srt = mSceneRuntimeVector.at(i);
+                if (srt->getUuid() == uuid)
                 {
-                    srt->setState(SceneState::SCENE_STATE_LOADED);
+                    srt->setState(SceneState::SCENE_STATE_ACTIVE);
+                }
+                else
+                {
+                    if (srt->getState() == SceneState::SCENE_STATE_ACTIVE)
+                    {
+                        srt->setState(SceneState::SCENE_STATE_LOADED);
+                    }
                 }
             }
-        }
+        } dreamElseLockFailed
     }
 
     vector<SceneRuntime*>
@@ -739,39 +750,42 @@ namespace octronic::dream
     ProjectRuntime::addSceneRuntime
     (SceneRuntime* rt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
-        if (itr == mSceneRuntimeVector.end())
-        {
-            mSceneRuntimeVector.push_back(rt);
-        }
+            auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+            if (itr == mSceneRuntimeVector.end())
+            {
+                mSceneRuntimeVector.push_back(rt);
+            }
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::removeSceneRuntime
     (SceneRuntime* rt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
-        if (itr != mSceneRuntimeVector.end())
-        {
-            mSceneRuntimeVector.erase(itr);
-        }
+            auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+            if (itr != mSceneRuntimeVector.end())
+            {
+                mSceneRuntimeVector.erase(itr);
+            }
+        } dreamElseLockFailed
     }
 
     bool
     ProjectRuntime::constructSceneRuntime
     (SceneRuntime* rt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
-        return rt->useDefinition();
+            LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
+            return rt->useDefinition();
+        } dreamElseLockFailed
     }
 
     Project*
@@ -794,21 +808,22 @@ namespace octronic::dream
     ProjectRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (!initCaches())
-        {
-            return false;
-        }
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            if (!initCaches())
+            {
+                return false;
+            }
 
-        if (!initComponents())
-        {
-            return false;
-        }
+            if (!initComponents())
+            {
+                return false;
+            }
 
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 
     AudioCache*
@@ -869,62 +884,64 @@ namespace octronic::dream
     ProjectRuntime::destructSceneRuntime
     (SceneRuntime* rt, bool clearCaches)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        rt->destroyRuntime();
-        if (clearCaches)
-        {
-            clearAllCaches();
-        }
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            rt->destroyRuntime();
+            if (clearCaches)
+            {
+                clearAllCaches();
+            }
+        } dreamElseLockFailed
     }
 
     void
     ProjectRuntime::clearAllCaches
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mTaskManager->allowThreadsToRun();
-        std::this_thread::yield();
-        mTaskManager->waitForThreadsToFinish();
-        if (mAudioCache != nullptr)
-        {
-            mAudioCache->clear();
-        }
+            LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+            mTaskManager->allowThreadsToRun();
+            std::this_thread::yield();
+            mTaskManager->waitForThreadsToFinish();
+            if (mAudioCache != nullptr)
+            {
+                mAudioCache->clear();
+            }
 
-        if (mModelCache != nullptr)
-        {
-            mModelCache->clear();
-        }
+            if (mModelCache != nullptr)
+            {
+                mModelCache->clear();
+            }
 
-        if (mShaderCache != nullptr)
-        {
-            mShaderCache->clear();
-        }
+            if (mShaderCache != nullptr)
+            {
+                mShaderCache->clear();
+            }
 
-        if (mMaterialCache != nullptr)
-        {
-            mMaterialCache->clear();
-        }
+            if (mMaterialCache != nullptr)
+            {
+                mMaterialCache->clear();
+            }
 
-        if (mTextureCache != nullptr)
-        {
-            mTextureCache->clear();
-        }
+            if (mTextureCache != nullptr)
+            {
+                mTextureCache->clear();
+            }
 
-        if (mScriptCache != nullptr)
-        {
-            mScriptCache->clear();
-        }
+            if (mScriptCache != nullptr)
+            {
+                mScriptCache->clear();
+            }
 
-        if (mFontCache != nullptr)
-        {
-            mFontCache->clear();
-        }
+            if (mFontCache != nullptr)
+            {
+                mFontCache->clear();
+            }
+        } dreamElseLockFailed
     }
 
     AssetDefinition*
@@ -1008,15 +1025,16 @@ namespace octronic::dream
 
     float ProjectRuntime::getAverageFramerate()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if(!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-       float f = 0.0;
-       for (const auto& dur : mFrameDurationHistory)
-       {
-           f += dur;
-       }
-       return f/MaxFrameCount;
+            float f = 0.0;
+            for (const auto& dur : mFrameDurationHistory)
+            {
+                f += dur;
+            }
+            return f/MaxFrameCount;
+        } dreamElseLockFailed
     }
 
     int ProjectRuntime::MaxFrameCount = 100;

@@ -8,13 +8,11 @@ namespace octronic::dream
     {
     public:
         GraphicsComponentTask(const string& taskName);
-        string getDebugString() override;
     };
 
     class GraphicsComponentDestructionTask : public DestructionTask
     {
     public:
         GraphicsComponentDestructionTask(const string& taskName);
-        string getDebugString() override;
     };
 }

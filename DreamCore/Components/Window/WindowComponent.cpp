@@ -12,11 +12,10 @@
 #include "WindowComponent.h"
 
 #include "Common/Constants.h"
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
-
     WindowComponent::WindowComponent(const string& className)
         : Component(className,nullptr),
           mWidth(0),
@@ -39,9 +38,11 @@ namespace octronic::dream
     (int width)
     {
 
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mWidth = width;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mWidth = width;
+        } dreamElseLockFailed
     }
 
     void
@@ -49,9 +50,11 @@ namespace octronic::dream
     (int height)
     {
 
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mHeight = height;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mHeight = height;
+        } dreamElseLockFailed
     }
 
     int
@@ -74,10 +77,11 @@ namespace octronic::dream
     WindowComponent::setName
     (string name)
     {
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mName = name;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mName = name;
+        } dreamElseLockFailed
     }
 
     string
@@ -92,10 +96,11 @@ namespace octronic::dream
     WindowComponent::close
     ()
     {
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mShouldClose = true;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mShouldClose = true;
+        } dreamElseLockFailed
     }
 
     bool
@@ -110,10 +115,11 @@ namespace octronic::dream
     WindowComponent::setShouldClose
     (bool close)
     {
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mShouldClose = close;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mShouldClose = close;
+        } dreamElseLockFailed
     }
 
     double WindowComponent::getMouseX()
@@ -125,15 +131,16 @@ namespace octronic::dream
     double WindowComponent::getMouseY()
     const
     {
-       return mMouseY;
+        return mMouseY;
     }
 
     void WindowComponent::setWindowSizeChangedFlag(bool f)
-	{
-
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mWindowSizeChangedFlag =  f;
+    {
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mWindowSizeChangedFlag =  f;
+        } dreamElseLockFailed
     }
 
     bool WindowComponent::getWindowSizeChangedFlag() const

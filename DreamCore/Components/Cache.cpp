@@ -6,7 +6,7 @@
 #include "SharedAssetRuntime.h"
 #include "AssetDefinition.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -21,8 +21,6 @@ namespace octronic::dream
     Cache::~Cache
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         clear();
     }
 
@@ -30,130 +28,145 @@ namespace octronic::dream
     Cache::getAbsolutePath
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mProjectRuntime
-                ->getProject()
-                ->getDirectory()
-                ->getAssetAbsolutePath(def);
+        if(dreamTryLock()){
+            dreamLock();
+            return mProjectRuntime
+                    ->getProject()
+                    ->getDirectory()
+                    ->getAssetAbsolutePath(def);
+        } dreamElseLockFailed
     }
 
     void Cache::removeRuntimeByUuid(UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()){
+            dreamLock();
 
-        AssetRuntime* target = nullptr;
+            AssetRuntime* target = nullptr;
 
-        for (auto* runtime : mRuntimes)
-        {
-            if (runtime->getUuid() == uuid)
+            for (auto* runtime : mRuntimes)
             {
-                target = runtime;
+                if (runtime->getUuid() == uuid)
+                {
+                    target = runtime;
+                }
             }
-        }
 
-        if (target)
-        {
-            auto target_itr = find(mRuntimes.begin(), mRuntimes.end(), target);
-            if (target_itr != mRuntimes.end())
+            if (target)
             {
-                mRuntimes.erase(target_itr);
+                auto target_itr = find(mRuntimes.begin(), mRuntimes.end(), target);
+                if (target_itr != mRuntimes.end())
+                {
+                    mRuntimes.erase(target_itr);
+                }
+                delete target;
+                target = nullptr;
             }
-            delete target;
-            target = nullptr;
-        }
+        } dreamElseLockFailed
     }
 
     void Cache::removeRuntime(AssetDefinition *def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (def == nullptr)
-        {
-            return;
-        }
+        if(dreamTryLock()){
+            dreamLock();
+            if (def == nullptr)
+            {
+                return;
+            }
 
-        removeRuntimeByUuid(def->getUuid());
+            removeRuntimeByUuid(def->getUuid());
+        } dreamElseLockFailed
     }
 
     void
     Cache::clear
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        for (auto* runtime : mRuntimes)
+        if(dreamTryLock())
         {
-            delete runtime;
-        }
-        mRuntimes.clear();
+            dreamLock();
+            for (auto* runtime : mRuntimes)
+            {
+                delete runtime;
+            }
+            mRuntimes.clear();
+        } dreamElseLockFailed
     }
 
     AssetDefinition*
     Cache::getAssetDefinitionByUuid
     (UuidType uuid)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mProjectRuntime->getAssetDefinitionByUuid(uuid);
+        if(dreamTryLock())
+        {
+            dreamLock();
+            return mProjectRuntime->getAssetDefinitionByUuid(uuid);
+        } dreamElseLockFailed
     }
 
     SharedAssetRuntime*
     Cache::getRuntime
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (def == nullptr)
+        if(dreamTryLock())
         {
-            return nullptr;
-        }
-
-        for (auto* runtime : mRuntimes)
-        {
-            if (runtime->getUuid() == def->getUuid())
+            dreamLock();
+            if (def == nullptr)
             {
-                return runtime;
+                return nullptr;
             }
-        }
-        return loadRuntime(def);
+
+            for (auto* runtime : mRuntimes)
+            {
+                if (runtime->getUuid() == def->getUuid())
+                {
+                    return runtime;
+                }
+            }
+            return loadRuntime(def);
+        } dreamElseLockFailed
     }
 
     SharedAssetRuntime*
     Cache::getRuntime
     (UuidType id)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (id == 0)
+        if(dreamTryLock())
         {
-            return nullptr;
-        }
-
-        for (auto runtime : mRuntimes)
-        {
-            if (runtime->getUuid() == id)
+            dreamLock();
+            if (id == 0)
             {
-                return runtime;
+                return nullptr;
             }
-        }
-        return loadRuntime(getAssetDefinitionByUuid(id));
+
+            for (auto runtime : mRuntimes)
+            {
+                if (runtime->getUuid() == id)
+                {
+                    return runtime;
+                }
+            }
+            return loadRuntime(getAssetDefinitionByUuid(id));
+        } dreamElseLockFailed
     }
 
     const vector<SharedAssetRuntime*>&
     Cache::getRuntimeVector
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mRuntimes;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            return mRuntimes;
+        } dreamElseLockFailed
     }
 
     size_t Cache::runtimeCount()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mRuntimes.size();
+        if(dreamTryLock())
+        {
+            dreamLock();
+            return mRuntimes.size();
+        } dreamElseLockFailed
     }
 }

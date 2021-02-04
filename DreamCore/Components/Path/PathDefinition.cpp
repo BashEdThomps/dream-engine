@@ -13,7 +13,7 @@
 
 #include "Common/Constants.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -33,239 +33,257 @@ namespace octronic::dream
     PathDefinition::setWrap
     (bool wrap)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_WRAP] = wrap;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_WRAP] = wrap;
+
+        } dreamElseLockFailed
     }
 
     bool
     PathDefinition::getWrap
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_WRAP].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_WRAP] = false;
-        }
-        return mJson[Constants::ASSET_ATTR_WRAP];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_WRAP) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_WRAP] = false;
+            }
+            return mJson[Constants::ASSET_ATTR_WRAP];
+        } dreamElseLockFailed
     }
 
     vector<PathControlPoint>
     PathDefinition::getControlPoints
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        vector<PathControlPoint> retval;
-        ensureControlPointsArray();
+        if(dreamTryLock()) {
+            dreamLock();
+            vector<PathControlPoint> retval;
+            ensureControlPointsArray();
 
-        for (auto cpJS : mJson[Constants::ASSET_ATTR_CONTROL_POINTS])
-        {
-            retval.push_back(unwrapControlPoint(cpJS));
-        }
+            for (auto cpJS : mJson[Constants::ASSET_ATTR_CONTROL_POINTS])
+            {
+                retval.push_back(unwrapControlPoint(cpJS));
+            }
 
-        return retval;
+            return retval;
+        } dreamElseLockFailed
     }
 
     PathControlPoint
     PathDefinition::addControlPoint
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        PathControlPoint cp;
-        cp.id = nextID();
-        ensureControlPointsArray();
-        mJson[Constants::ASSET_ATTR_CONTROL_POINTS].push_back(wrapControlPoint(cp));
-        return cp;
+        if(dreamTryLock()) {
+            dreamLock();
+            PathControlPoint cp;
+            cp.id = nextID();
+            ensureControlPointsArray();
+            mJson[Constants::ASSET_ATTR_CONTROL_POINTS].push_back(wrapControlPoint(cp));
+            return cp;
+        } dreamElseLockFailed
     }
 
     string
     PathDefinition::getSplineType
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::DREAM_PATH_SPLINE_TYPE].is_null())
-        {
-            mJson[Constants::DREAM_PATH_SPLINE_TYPE] = Constants::DREAM_PATH_TYPE_CLAMPED;
-        }
-        return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::DREAM_PATH_SPLINE_TYPE) == mJson.end())
+            {
+                mJson[Constants::DREAM_PATH_SPLINE_TYPE] = Constants::DREAM_PATH_TYPE_CLAMPED;
+            }
+            return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::setSplineType
     (const string& type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::DREAM_PATH_SPLINE_TYPE] = type;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::DREAM_PATH_SPLINE_TYPE] = type;
+        } dreamElseLockFailed
     }
 
     tsBSplineType
     PathDefinition::getSplineTypeEnum
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        string type = getSplineType();
-        if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
-        {
-            return TS_OPENED;
-        }
-        else if (type.compare(Constants::DREAM_PATH_TYPE_CLAMPED) == 0)
-        {
-            return TS_CLAMPED;
-        }
-        else if (type.compare(Constants::DREAM_PATH_TYPE_BEZIER) == 0)
-        {
-            return TS_BEZIERS;
-        }
-        else
-        {
-            return TS_NONE;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            string type = getSplineType();
+            if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
+            {
+                return TS_OPENED;
+            }
+            else if (type.compare(Constants::DREAM_PATH_TYPE_CLAMPED) == 0)
+            {
+                return TS_CLAMPED;
+            }
+            else if (type.compare(Constants::DREAM_PATH_TYPE_BEZIER) == 0)
+            {
+                return TS_BEZIERS;
+            }
+            else
+            {
+                return TS_NONE;
+            }
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::setStepScalar
     (double scalar)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_STEP_SCALAR] = scalar;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_STEP_SCALAR] = scalar;
+        } dreamElseLockFailed
     }
 
     double
     PathDefinition::getStepScalar
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_STEP_SCALAR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_STEP_SCALAR] = 1.0;
-        }
-        return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_STEP_SCALAR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_STEP_SCALAR] = 1.0;
+            }
+            return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
+        } dreamElseLockFailed
     }
 
     PathControlPoint
     PathDefinition::unwrapControlPoint
     (const json& js)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        PathControlPoint cp;
-        cp.id = js[Constants::ASSET_ATTR_ID];
-        cp.index = js[Constants::ASSET_ATTR_INDEX];
-        cp.position = unwrapVector3(js[Constants::ASSET_ATTR_POSITION]);
-        return cp;
+        if(dreamTryLock()) {
+            dreamLock();
+            PathControlPoint cp;
+            cp.id = js[Constants::ASSET_ATTR_ID];
+            cp.index = js[Constants::ASSET_ATTR_INDEX];
+            cp.position = Vector3(js[Constants::ASSET_ATTR_POSITION]);
+            return cp;
+        } dreamElseLockFailed
     }
 
     json
     PathDefinition::wrapControlPoint
     (const PathControlPoint& cp)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        json js;
-        js[Constants::ASSET_ATTR_POSITION] = wrapVector3(cp.position);
-        js[Constants::ASSET_ATTR_ID] = cp.id;
-        js[Constants::ASSET_ATTR_INDEX] = cp.index;
-        return js;
+        if(dreamTryLock()) {
+            dreamLock();
+            json js;
+            js[Constants::ASSET_ATTR_POSITION] = cp.position.toJson();
+            js[Constants::ASSET_ATTR_ID] = cp.id;
+            js[Constants::ASSET_ATTR_INDEX] = cp.index;
+            return js;
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::deleteControlPoint
     (const PathControlPoint& cp)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ensureControlPointsArray();
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (; itr != end; itr++)
-        {
-            if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+        if(dreamTryLock()) {
+            dreamLock();
+            ensureControlPointsArray();
+            auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+            auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
+            for (; itr != end; itr++)
             {
-                mJson[Constants::ASSET_ATTR_CONTROL_POINTS].erase(itr) ;
-                return;
+                if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+                {
+                    mJson[Constants::ASSET_ATTR_CONTROL_POINTS].erase(itr) ;
+                    return;
+                }
             }
-        }
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::updateControlPoint
     (const PathControlPoint& cp)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ensureControlPointsArray();
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (; itr != end; itr++)
-        {
-            if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+        if(dreamTryLock()) {
+            dreamLock();
+            ensureControlPointsArray();
+            auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+            auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
+            for (; itr != end; itr++)
             {
-                (*itr) = wrapControlPoint(cp);
-                return;
+                if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+                {
+                    (*itr) = wrapControlPoint(cp);
+                    return;
+                }
             }
-        }
+        } dreamElseLockFailed
     }
 
     int
     PathDefinition::nextID
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        int maxID = 0;
-        ensureControlPointsArray();
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (;itr != end; itr++)
-        {
-            int nextID = (*itr)[Constants::ASSET_ATTR_ID];
-            if (nextID > maxID)
+        if(dreamTryLock()) {
+            dreamLock();
+            int maxID = 0;
+            ensureControlPointsArray();
+            auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+            auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
+            for (;itr != end; itr++)
             {
-                maxID = nextID;
+                int nextID = (*itr)[Constants::ASSET_ATTR_ID];
+                if (nextID > maxID)
+                {
+                    maxID = nextID;
+                }
             }
-        }
-        return maxID+1;
+            return maxID+1;
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::ensureControlPointsArray
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_CONTROL_POINTS].is_array())
-        {
-            mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_CONTROL_POINTS].is_array())
+            {
+                mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
+            }
+        } dreamElseLockFailed
     }
 
     float
     PathDefinition::getVelocity
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!mJson[Constants::ASSET_ATTR_VELOCITY].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_VELOCITY] = 1.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_VELOCITY];
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!mJson[Constants::ASSET_ATTR_VELOCITY].is_number())
+            {
+                mJson[Constants::ASSET_ATTR_VELOCITY] = 1.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_VELOCITY];
+        } dreamElseLockFailed
     }
 
     void
     PathDefinition::setVelocity
     (float v)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_VELOCITY] = v;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_VELOCITY] = v;
+        } dreamElseLockFailed
     }
 }

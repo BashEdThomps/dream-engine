@@ -23,7 +23,7 @@
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -43,8 +43,6 @@ namespace octronic::dream
     WavLoader::loadIntoBuffer
     (AudioDefinition* audioDefinition, ProjectRuntime* projectRuntime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("WavLoader: {}",__FUNCTION__);
         Project* project = projectRuntime->getProject();
         ProjectDirectory* pDir = project->getDirectory();

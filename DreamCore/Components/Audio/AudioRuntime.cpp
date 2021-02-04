@@ -19,8 +19,6 @@
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
 
-using std::unique_lock;
-
 namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
@@ -32,8 +30,6 @@ namespace octronic::dream
           mLastSampleOffset(0),
           mMarkersUpdateTask(this)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         generateEventList();
     }
@@ -47,10 +43,12 @@ namespace octronic::dream
     AudioRuntime::setLooping
     (bool looping)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-        mLooping = looping;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
+            mLooping = looping;
+        } dreamElseLockFailed
     }
 
     bool
@@ -168,9 +166,11 @@ namespace octronic::dream
     AudioRuntime::setStartTime
     (long long startTime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mStartTime = startTime;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mStartTime = startTime;
+        } dreamElseLockFailed
     }
 
     AudioMarkersUpdateTask* AudioRuntime::getMarkersUpdateTask()
@@ -180,7 +180,7 @@ namespace octronic::dream
 
 
     AudioLoader* AudioRuntime::getAudioLoader() const
-	{
-		return mLoader;
-	}
+    {
+        return mLoader;
+    }
 }

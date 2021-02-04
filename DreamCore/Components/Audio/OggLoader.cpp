@@ -26,7 +26,7 @@
 #include <vorbis/vorbisfile.h>
 
 using octronic::dream::File;
-using std::unique_lock;
+
 
 static size_t seekIndex = 0;
 
@@ -73,8 +73,6 @@ namespace octronic::dream
     OggLoader::loadIntoBuffer
     (AudioDefinition* audioDefinition, ProjectRuntime* projectRuntime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("OggLoader: {}",__FUNCTION__);
 
         Project* project = projectRuntime->getProject();

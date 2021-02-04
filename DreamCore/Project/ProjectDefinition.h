@@ -28,9 +28,7 @@ namespace octronic::dream
 
     class ProjectDefinition : public Definition
     {
-    private:
-        vector<SceneDefinition*> mSceneDefinitions;
-        vector<AssetDefinition*> mAssetDefinitions;
+
     public:
         ProjectDefinition(const json& data);
         ~ProjectDefinition() override;
@@ -77,18 +75,22 @@ namespace octronic::dream
         AssetDefinition* getAssetDefinitionAtIndex(AssetType, int);
 
         vector<string> getAssetNamesVector(AssetType);
-        void regroupAssetDefinitions();
 
         map<AssetType, vector<string> >& getAssetDefinitionGroups();
+        void regroupAssetDefinitions();
 
+    public: // static
         static ProjectDefinition* createNewProjectDefinition(const string& name = Constants::PROJECT_DEFAULT_NAME);
 
     private:
         void loadSceneDefinitions();
         void loadAssetDefinitions();
-        void loadAssetDefinition(const json& assetDefinition);
-        void loadSceneDefinition(const json& sceneDefinition);
+        void loadSingleAssetDefinition(const json& assetDefinition);
+        void loadSingleSceneDefinition(const json& sceneDefinition);
         AssetDefinition* createAssetDefinition(const json& assetDefinitionJs);
+    private:
         map<AssetType,vector<string> > mAssetDefinitionGroups;
+        vector<SceneDefinition*> mSceneDefinitions;
+        vector<AssetDefinition*> mAssetDefinitions;
     };
 }

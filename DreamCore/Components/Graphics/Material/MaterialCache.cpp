@@ -30,7 +30,7 @@
 #include "Components/Storage/ProjectDirectory.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -53,28 +53,29 @@ namespace octronic::dream
     MaterialCache::loadRuntime
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (!def)
-        {
-            LOG_ERROR("MaterialCache: Material Definition is null");
-            return nullptr;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (!def)
+            {
+                LOG_ERROR("MaterialCache: Material Definition is null");
+                return nullptr;
+            }
 
-        MaterialDefinition* matDef = static_cast<MaterialDefinition*>(def);
-        MaterialRuntime* material = new MaterialRuntime(matDef,mProjectRuntime);
+            MaterialDefinition* matDef = static_cast<MaterialDefinition*>(def);
+            MaterialRuntime* material = new MaterialRuntime(matDef,mProjectRuntime);
 
-        if(!material->useDefinition())
-        {
-            LOG_ERROR("MaterialCache: Material useDefinition Failed");
-           	delete material;
-            material = nullptr;
-        }
-        else
-        {
-        	mRuntimes.push_back(material);
-        }
+            if(!material->useDefinition())
+            {
+                LOG_ERROR("MaterialCache: Material useDefinition Failed");
+                delete material;
+                material = nullptr;
+            }
+            else
+            {
+                mRuntimes.push_back(material);
+            }
 
-        return material;
+            return material;
+        } dreamElseLockFailed
     }
 } // End of Dream

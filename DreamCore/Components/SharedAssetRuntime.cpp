@@ -6,7 +6,7 @@
 #include "Project/ProjectRuntime.h"
 #include "Components/Storage/ProjectDirectory.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -25,28 +25,34 @@ namespace octronic::dream
     string SharedAssetRuntime::getAssetFilePath
     (const string& fmt)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto pDir = mProjectRuntime->getProject()->getDirectory();
-        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
+        if(dreamTryLock())
+        {
+            dreamLock();
+            auto pDir = mProjectRuntime->getProject()->getDirectory();
+            return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
+        } dreamElseLockFailed
 
     }
 
     string SharedAssetRuntime::getAssetDirectoryPath
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto pDir = mProjectRuntime->getProject()->getDirectory();
-        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
+        if(dreamTryLock())
+        {
+            dreamLock();
+            auto pDir = mProjectRuntime->getProject()->getDirectory();
+            return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
+        } dreamElseLockFailed
     }
 
     ProjectRuntime*
     SharedAssetRuntime::getProjectRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return mProjectRuntime;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            return mProjectRuntime;
+        } dreamElseLockFailed
     }
 }

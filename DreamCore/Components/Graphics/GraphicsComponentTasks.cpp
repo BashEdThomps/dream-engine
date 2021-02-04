@@ -13,13 +13,6 @@ namespace octronic::dream
 
     }
 
-    string GraphicsComponentTask::getDebugString()
-    {
-        stringstream ss;
-        ss <<"[GFX." << getTaskID() << "]" << getTaskName();
-        return ss.str();
-    }
-
     // GraphicsComponentDestructionTask ========================================
 
     GraphicsComponentDestructionTask::GraphicsComponentDestructionTask
@@ -29,10 +22,4 @@ namespace octronic::dream
 
     }
 
-    string GraphicsComponentDestructionTask::getDebugString()
-    {
-        stringstream ss;
-        ss <<"[GFX." << getTaskID() << "]" << getTaskName();
-        return ss.str();
-    }
 }

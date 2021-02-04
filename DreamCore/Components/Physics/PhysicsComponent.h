@@ -15,11 +15,13 @@
 
 #pragma once
 
+#include "PhysicsTasks.h"
+#include "Common/Vector.h"
+#include "Components/Component.h"
+
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
-#include "Components/Component.h"
-#include "Common/Math.h"
-#include "PhysicsTasks.h"
+
 
 using glm::mat4;
 

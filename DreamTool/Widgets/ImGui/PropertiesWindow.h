@@ -60,6 +60,7 @@ namespace octronic::dream::tool
         void drawShaderAssetProperties();
         void drawPathAssetProperties();
         void drawTextureAssetProperties();
+        void drawSpriteAssetProperties();
 
         void setRuntime(Runtime* runt);
         void setDefinition(Definition* def);

@@ -15,7 +15,7 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -35,275 +35,276 @@ namespace octronic::dream
     LightDefinition::setDiffuse
     (const Vector3& diffuse)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
+            }
 
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]   = diffuse.x();
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN] = diffuse.y();
-        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]  = diffuse.z();
+            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]  = diffuse.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     LightDefinition::getDiffuse
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        Vector3 diffuse;
-        if (mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]=json::object();
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE] = 0.0f;
-        }
-        diffuse.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::RED]));
-        diffuse.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::GREEN]));
-        diffuse.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE][Constants::BLUE]));
-        return diffuse;
+        if(dreamTryLock()) {
+            dreamLock();
+            Vector3 diffuse(0.f);
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]=diffuse.toJson();
+            }
+            diffuse = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]);
+            return diffuse;
+        } dreamElseLockFailed
     }
 
     void
     LightDefinition::setAmbient
     (const Vector3& ambient)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
-        }
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]   = ambient.x();
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN] = ambient.y();
-        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]  = ambient.z();
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
+            }
+            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = ambient.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     LightDefinition::getAmbient
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        Vector3 ambient;
-        if (mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]=json::object();
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE] = 0.0f;
-        }
-        ambient.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::RED]));
-        ambient.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::GREEN]));
-        ambient.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT][Constants::BLUE]));
-        return ambient;
+        if(dreamTryLock()) {
+            dreamLock();
+            Vector3 ambient(0.f);
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]=ambient.toJson();
+            }
+            ambient = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]);
+            return ambient;
+        } dreamElseLockFailed
     }
 
     void
     LightDefinition::setSpecular
     (const Vector3& specular)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
-        }
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]   = specular.x();
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN] = specular.y();
-        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]  = specular.z();
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
+            }
+            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = specular.toJson();
+        } dreamElseLockFailed
     }
 
     Vector3
     LightDefinition::getSpecular()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        Vector3 specular;
-        if (mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR]=json::object();
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN] = 0.0f;
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE] = 0.0f;
-        }
-        specular.setX(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::RED]));
-        specular.setY(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::GREEN]));
-        specular.setZ(static_cast<float>(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR][Constants::BLUE]));
-        return specular;
+        if(dreamTryLock()) {
+            dreamLock();
+            Vector3 specular(0.f);
+            if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR]=specular.toJson();
+            }
+            specular = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] );
+            return specular;
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setType(LightType type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        string typeStr;
-        switch (type)
-        {
-           case LT_DIRECTIONAL:
-                typeStr = Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL;
-                break;
-           case LT_POINT:
-                typeStr = Constants::ASSET_FORMAT_LIGHT_POINT;
-                break;
-           case LT_SPOTLIGHT:
-                typeStr = Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT;
-                break;
-            case LT_NONE:
-                typeStr = "";
-        }
-        setFormat(typeStr);
+        if(dreamTryLock()) {
+            dreamLock();
+            string typeStr;
+            switch (type)
+            {
+                case LT_DIRECTIONAL:
+                    typeStr = Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL;
+                    break;
+                case LT_POINT:
+                    typeStr = Constants::ASSET_FORMAT_LIGHT_POINT;
+                    break;
+                case LT_SPOTLIGHT:
+                    typeStr = Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT;
+                    break;
+                case LT_NONE:
+                    typeStr = "";
+            }
+            setFormat(typeStr);
+        } dreamElseLockFailed
     }
 
     LightType
     LightDefinition::getType
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LightType type;
-        if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
-        {
-            type = LT_POINT;
-        }
-        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
-        {
-            type = LT_DIRECTIONAL;
-        }
-        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
-        {
-            type = LT_SPOTLIGHT;
-        }
-        else
-        {
-            type = LT_NONE;
-        }
-        return type;
+        if(dreamTryLock()) {
+            dreamLock();
+            LightType type;
+            if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
+            {
+                type = LT_POINT;
+            }
+            else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
+            {
+                type = LT_DIRECTIONAL;
+            }
+            else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
+            {
+                type = LT_SPOTLIGHT;
+            }
+            else
+            {
+                type = LT_NONE;
+            }
+            return type;
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setCutOff(float cutOff)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = cutOff;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = cutOff;
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getCutOff()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_LIGHT_CUTOFF) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF];
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setOuterCutOff(float outerCutOff)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = outerCutOff;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = outerCutOff;
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getOuterCutOff()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF];
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setConstant(float ant)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = ant;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = ant;
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getConstant()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_LIGHT_CONSTANT) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT];
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setLinear(float linear)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = linear;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = linear;
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getLinear()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_LIGHT_LINEAR].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_LIGHT_LINEAR];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_LIGHT_LINEAR) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_LIGHT_LINEAR];
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setQuadratic(float quadratic)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = quadratic;
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = quadratic;
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getQuadratic()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_LIGHT_QUADRATIC) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = 0.0f;
+            }
+            return mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC];
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getDiffuseBlue()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return getDiffuse().z();
+        if(dreamTryLock()) {
+            dreamLock();
+            return getDiffuse().z();
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setDiffuseBlue(float diffuseBlue)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getDiffuse();
-        current.setZ(diffuseBlue);
-        setDiffuse(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getDiffuse();
+            current.setZ(diffuseBlue);
+            setDiffuse(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getDiffuseGreen()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return getDiffuse().y();
+        if(dreamTryLock()) {
+            dreamLock();
+            return getDiffuse().y();
+        } dreamElseLockFailed
     }
 
     void LightDefinition::setDiffuseGreen(float diffuseGreen)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getDiffuse();
-        current.setY(diffuseGreen);
-        setDiffuse(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getDiffuse();
+            current.setY(diffuseGreen);
+            setDiffuse(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getDiffuseRed()
@@ -313,11 +314,12 @@ namespace octronic::dream
 
     void LightDefinition::setDiffuseRed(float diffuseRed)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getDiffuse();
-        current.setX(diffuseRed);
-        setDiffuse(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getDiffuse();
+            current.setX(diffuseRed);
+            setDiffuse(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getAmbientBlue()
@@ -327,11 +329,12 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientBlue(float blue)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getAmbient();
-        current.setZ(blue);
-        setAmbient(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getAmbient();
+            current.setZ(blue);
+            setAmbient(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getAmbientGreen()
@@ -341,11 +344,12 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientGreen(float ambientGreen)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getAmbient();
-        current.setY(ambientGreen);
-        setAmbient(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getAmbient();
+            current.setY(ambientGreen);
+            setAmbient(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getAmbientRed()
@@ -355,11 +359,12 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientRed(float ambientRed)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getAmbient();
-        current.setX(ambientRed);
-        setAmbient(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getAmbient();
+            current.setX(ambientRed);
+            setAmbient(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getSpecularBlue()
@@ -369,11 +374,12 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularBlue(float specularBlue)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getSpecular();
-        current.setZ(specularBlue);
-        setSpecular(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getSpecular();
+            current.setZ(specularBlue);
+            setSpecular(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getSpecularGreen()
@@ -383,11 +389,12 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularGreen(float specularGreen)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getSpecular();
-        current.setY(specularGreen);
-        setSpecular(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getSpecular();
+            current.setY(specularGreen);
+            setSpecular(current);
+        } dreamElseLockFailed
     }
 
     float LightDefinition::getSpecularRed()
@@ -397,10 +404,11 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularRed(float specularRed)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto current = getSpecular();
-        current.setX(specularRed);
-        setSpecular(current);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto current = getSpecular();
+            current.setX(specularRed);
+            setSpecular(current);
+        } dreamElseLockFailed
     }
 }

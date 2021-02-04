@@ -22,8 +22,6 @@
 #include "Components/Graphics/Camera.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
-
 namespace octronic::dream
 {
     ShaderCache::ShaderCache
@@ -43,21 +41,22 @@ namespace octronic::dream
     ShaderCache::loadRuntime
     (AssetDefinition* def)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        ShaderRuntime* shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
+        if(dreamTryLock()) {
+            dreamLock();
+            ShaderRuntime* shaderRuntime = new ShaderRuntime(static_cast<ShaderDefinition*>(def), mProjectRuntime);
 
-        if (!shaderRuntime->useDefinition())
-        {
-            LOG_ERROR("ShaderCache: Error while loading shader {}", def->getUuid());
-            delete shaderRuntime;
-            shaderRuntime = nullptr;
-        }
-        else
-        {
-        	mRuntimes.push_back(shaderRuntime);
-        }
-        return shaderRuntime;
+            if (!shaderRuntime->useDefinition())
+            {
+                LOG_ERROR("ShaderCache: Error while loading shader {}", def->getUuid());
+                delete shaderRuntime;
+                shaderRuntime = nullptr;
+            }
+            else
+            {
+                mRuntimes.push_back(shaderRuntime);
+            }
+            return shaderRuntime;
+        } dreamElseLockFailed
     }
 
     void

@@ -107,6 +107,10 @@ add_library(
 	Components/Graphics/Font/FontCache.cpp
 	Components/Graphics/Font/FontTasks.cpp
 
+	Components/Graphics/Sprite/SpriteDefinition.cpp
+	Components/Graphics/Sprite/SpriteRuntime.cpp
+	Components/Graphics/Sprite/SpriteTasks.cpp
+
 	Components/Graphics/Material/MaterialCache.cpp
 	Components/Graphics/Material/MaterialRuntime.cpp
 	Components/Graphics/Material/MaterialDefinition.cpp
@@ -115,6 +119,9 @@ add_library(
 	Common/Uuid.cpp
 	Common/LockableObject.cpp
 	Common/Definition.cpp
+	Common/Runtime.cpp
+	Common/Vector.cpp
+	Common/ThreadLockFailedException.cpp
 
 	Scene/SceneRuntime.cpp
 	Scene/SceneDefinition.cpp

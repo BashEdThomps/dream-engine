@@ -107,7 +107,6 @@ namespace octronic::dream // ===================================================
         : Component("ScriptComponent",runtime),
           mScriptCache(cache)
     {
-        const lock_guard<mutex> lg(getMutex());
         LOG_TRACE( "Constructing Object" );
     }
 
@@ -115,7 +114,6 @@ namespace octronic::dream // ===================================================
     ScriptComponent::~ScriptComponent
     ()
     {
-        const lock_guard<mutex> lg(getMutex());
         LOG_TRACE("Destroying Object");
         if (State != nullptr)
         {
@@ -129,26 +127,29 @@ namespace octronic::dream // ===================================================
     ScriptComponent::init
     ()
     {
-        const lock_guard<mutex> lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock(); ;
 
-        LOG_DEBUG( "Initialising LuaComponent" );
-        State = luaL_newstate();
-        lua_atpanic( State, sol::c_call<decltype(&_octronic_dream_sol_panic), &_octronic_dream_sol_panic> );
-        sol::state_view sView(State);
-        sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::string);
-        sView.set_exception_handler(_octronic_dream_sol_exception_handler);
-        sol::table comps(State, sol::create);
-        sView[LUA_COMPONENTS_TBL] = comps;
+            LOG_DEBUG( "Initialising LuaComponent" );
+            State = luaL_newstate();
+            lua_atpanic( State, sol::c_call<decltype(&_octronic_dream_sol_panic), &_octronic_dream_sol_panic> );
+            sol::state_view sView(State);
+            sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::string);
+            sView.set_exception_handler(_octronic_dream_sol_exception_handler);
+            sol::table comps(State, sol::create);
+            sView[LUA_COMPONENTS_TBL] = comps;
 
-        // Register print callback
+            // Register print callback
 
-        lua_getglobal(State, "_G");
-        luaL_setfuncs(State, printlib, 0);
-        lua_pop(State, 1);
+            lua_getglobal(State, "_G");
+            luaL_setfuncs(State, printlib, 0);
+            lua_pop(State, 1);
 
-        LOG_DEBUG( "Got a sol state" );
-        exposeAPI();
-        return true;
+            LOG_DEBUG( "Got a sol state" );
+            exposeAPI();
+            return true;
+        } dreamElseLockFailed
     }
 
     // Function Execution =======================================================
@@ -157,132 +158,144 @@ namespace octronic::dream // ===================================================
     ScriptComponent::executeScriptOnUpdate
     (ScriptRuntime* script, EntityRuntime* entity)
     {
-        const lock_guard<mutex>lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock();
 
-    	LOG_DEBUG("ScriptRuntime: Calling onUpdate for {}",entity->getNameAndUuidString());
-		sol::state_view solStateView(ScriptComponent::State);
-		sol::protected_function onUpdateFunction = solStateView[entity->getUuid()][LUA_ON_UPDATE_FUNCTION];
-		auto result = onUpdateFunction(entity);
-		if (!result.valid())
-		{
-			// An error has occured
-			sol::error err = result;
-			string what = err.what();
-			LOG_ERROR("ScriptRuntime: {} Could not execute onUpdate in lua script:\n{}",
-						 entity->getNameAndUuidString(),
-						 what);
-			entity->setScriptError(true);
-			assert(false);
-			return false;
-		}
-		return true;
+            LOG_DEBUG("ScriptRuntime: Calling onUpdate for {}",entity->getNameAndUuidString());
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onUpdateFunction = solStateView[entity->getUuid()][LUA_ON_UPDATE_FUNCTION];
+            auto result = onUpdateFunction(entity);
+            if (!result.valid())
+            {
+                // An error has occured
+                sol::error err = result;
+                string what = err.what();
+                LOG_ERROR("ScriptRuntime: {} Could not execute onUpdate in lua script:\n{}",
+                          entity->getNameAndUuidString(),
+                          what);
+                entity->setScriptError(true);
+                //assert(false);
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::executeScriptOnInit
     (ScriptRuntime* script, EntityRuntime* entity)
     {
-        const lock_guard<mutex>lg(getMutex());
-
-        if (entity->getScriptError())
+        if(dreamTryLock())
         {
-            LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.", entity->getNameAndUuidString());
+            dreamLock();
+            if (entity->getScriptError())
+            {
+                LOG_ERROR("ScriptRuntime: Cannot init, script for {} in error state.", entity->getNameAndUuidString());
+                return true;
+            }
+
+            if (entity->getScriptInitialised())
+            {
+                LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}", entity->getNameAndUuidString());
+                return true;
+            }
+
+            LOG_DEBUG("ScriptRuntime: Calling onInit in {} for {}",  script->getName(), entity->getName());
+
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onInitFunction = solStateView[entity->getUuid()][LUA_ON_INIT_FUNCTION];
+
+            auto initResult = onInitFunction(entity);
+            if (!initResult.valid())
+            {
+                // An error has occured
+                sol::error err = initResult;
+                string what = err.what();
+                LOG_ERROR(
+                            "ScriptRuntime: {}\nCould not execute onInit in lua script:\n{}",
+                            entity->getNameAndUuidString(),
+                            what
+                            );
+                entity->setScriptError(true);
+                //assert(false);
+                return false;
+            }
+            entity->setScriptInitialised(true);
             return true;
-        }
-
-        if (entity->getScriptInitialised())
-        {
-            LOG_TRACE("ScriptRuntime: Script has all ready been initialised for {}", entity->getNameAndUuidString());
-            return true;
-        }
-
-        LOG_DEBUG("ScriptRuntime: Calling onInit in {} for {}",  script->getName(), entity->getName());
-
-		sol::state_view solStateView(ScriptComponent::State);
-		sol::protected_function onInitFunction = solStateView[entity->getUuid()][LUA_ON_INIT_FUNCTION];
-
-		auto initResult = onInitFunction(entity);
-		if (!initResult.valid())
-		{
-			// An error has occured
-			sol::error err = initResult;
-			string what = err.what();
-			LOG_ERROR(
-						"ScriptRuntime: {}\nCould not execute onInit in lua script:\n{}",
-						entity->getNameAndUuidString(),
-						what
-						);
-			entity->setScriptError(true);
-			assert(false);
-			return false;
-		}
-		entity->setScriptInitialised(true);
-		return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::executeScriptOnEvent
     (ScriptRuntime* script, EntityRuntime* entity)
     {
-        const lock_guard<mutex>lg(getMutex());
-
-        if (entity->getScriptError())
+        if(dreamTryLock())
         {
-            LOG_ERROR( "ScriptRuntime: Cannot execute {} in error state ",  script->getNameAndUuidString());
+            dreamLock();
+
+            if (entity->getScriptError())
+            {
+                LOG_ERROR( "ScriptRuntime: Cannot execute {} in error state ",  script->getNameAndUuidString());
+                entity->clearEventQueue();
+                return true;
+            }
+
+            if (!entity->hasEvents())
+            {
+                return true;
+            }
+
+
+            LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", entity->getNameAndUuidString());
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onEventFunction = solStateView[entity->getUuid()][LUA_ON_EVENT_FUNCTION];
+
+            for (const Event& e : *entity->getEventQueue())
+            {
+                auto result = onEventFunction(entity,e);
+                if (!result.valid())
+                {
+                    // An error has occured
+                    sol::error err = result;
+                    string what = err.what();
+                    LOG_ERROR("ScriptRuntime: {}:\nCould not execute onEvent in lua script:\n{}",
+                              entity->getNameAndUuidString(), what);
+                    entity->setScriptError(true);
+                    //assert(false);
+                    return false;
+                }
+            }
             entity->clearEventQueue();
+            entity->unlockEventQueue();
             return true;
-        }
 
-        if (!entity->hasEvents())
-        {
-            return true;
-        }
-
-
-        LOG_DEBUG( "ScriptRuntime: Calling onEvent for {}", entity->getNameAndUuidString());
-		sol::state_view solStateView(ScriptComponent::State);
-		sol::protected_function onEventFunction = solStateView[entity->getUuid()][LUA_ON_EVENT_FUNCTION];
-
-		for (const Event& e : *entity->getEventQueue())
-		{
-			auto result = onEventFunction(entity,e);
-			if (!result.valid())
-			{
-				// An error has occured
-				sol::error err = result;
-				string what = err.what();
-				LOG_ERROR("ScriptRuntime: {}:\nCould not execute onEvent in lua script:\n{}",
-						  entity->getNameAndUuidString(), what);
-				entity->setScriptError(true);
-				assert(false);
-				return false;
-			}
-		}
-		entity->clearEventQueue();
-		entity->unlockEventQueue();
-		return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::executeScriptOnInput
     (ScriptRuntime* script, InputComponent* inputComp, SceneRuntime* sr)
     {
-        const lock_guard<mutex>lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock();
+            LOG_TRACE("ScriptRuntime: Calling onInput function with {}",script->getUuid());
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::protected_function onInputFunction = solStateView[script->getUuid()][LUA_ON_INPUT_FUNCTION];
+            auto result = onInputFunction(inputComp, sr);
+            if (!result.valid())
+            {
+                // An error has occured
+                sol::error err = result;
+                string what = err.what();
+                LOG_ERROR("ScriptRuntime: Could not execute onInput in lua script:\n{}",what);
+                //assert(false);
+                return false;
+            }
+            return true;
 
-        LOG_TRACE("ScriptRuntime: Calling onInput function with {}",script->getUuid());
-		sol::state_view solStateView(ScriptComponent::State);
-		sol::protected_function onInputFunction = solStateView[script->getUuid()][LUA_ON_INPUT_FUNCTION];
-		auto result = onInputFunction(inputComp, sr);
-		if (!result.valid())
-		{
-			// An error has occured
-			sol::error err = result;
-			string what = err.what();
-			LOG_ERROR("ScriptRuntime: Could not execute onInput in lua script:\n{}",what);
-			assert(false);
-			return false;
-		}
-		return true;
+        } dreamElseLockFailed
     }
 
 
@@ -290,87 +303,97 @@ namespace octronic::dream // ===================================================
     ScriptComponent::registerInputScript
     (ScriptRuntime* script)
     {
-        const lock_guard<mutex>lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock();
+            LOG_TRACE("ScriptRuntime: Registering Input Script");
+            sol::state_view solStateView(ScriptComponent::State);
+            sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+            solStateView[script->getUuid()] = environment;
+            auto exec_result = solStateView.safe_script(
+                        script->getSource(), environment,
+                        [](lua_State*, sol::protected_function_result pfr){
+                    return pfr;});
+            // it did not work
+            if(!exec_result.valid())
+            {
+                // An error has occured
+                sol::error err = exec_result;
+                string what = err.what();
+                LOG_ERROR("ScriptRuntime: Could not execute lua script:\n{}",what);
+                //assert(false);
+                return false;
+            }
+            LOG_DEBUG("ScriptRuntime: Loaded Input Script Successfully");
+            return true;
 
-        LOG_TRACE("ScriptRuntime: Registering Input Script");
-		sol::state_view solStateView(ScriptComponent::State);
-		sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
-		solStateView[script->getUuid()] = environment;
-		auto exec_result = solStateView.safe_script(
-					script->getSource(), environment,
-					[](lua_State*, sol::protected_function_result pfr){
-				return pfr;});
-		// it did not work
-		if(!exec_result.valid())
-		{
-			// An error has occured
-			sol::error err = exec_result;
-			string what = err.what();
-			LOG_ERROR("ScriptRuntime: Could not execute lua script:\n{}",what);
-			assert(false);
-			return false;
-		}
-		LOG_DEBUG("ScriptRuntime: Loaded Input Script Successfully");
-		return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::removeInputScript
     (ScriptRuntime* script)
     {
-        const lock_guard<mutex>lg(getMutex());
-
-        LOG_TRACE("ScriptRuntime: Removing Input Script Table");
-		sol::state_view solStateView(ScriptComponent::State);
-		solStateView[script->getUuid()] = nullptr;
-		LOG_DEBUG("ScriptRuntime: Removed input script Successfully");
-		return true;
+        if(dreamTryLock())
+        {
+            dreamLock();
+            LOG_TRACE("ScriptRuntime: Removing Input Script Table");
+            sol::state_view solStateView(ScriptComponent::State);
+            solStateView[script->getUuid()] = nullptr;
+            LOG_DEBUG("ScriptRuntime: Removed input script Successfully");
+            return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::createEntityState
     (ScriptRuntime* script, EntityRuntime* entity)
     {
-        const lock_guard<mutex>lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock();
+            if (entity)
+            {
+                LOG_DEBUG("ScriptRuntime: loadScript called for {}", entity->getNameAndUuidString() );
+            }
 
-		if (entity)
-		{
-			LOG_DEBUG("ScriptRuntime: loadScript called for {}", entity->getNameAndUuidString() );
-		}
+            LOG_DEBUG("ScriptRuntime: calling scriptLoadFromString in lua for {}" , entity->getNameAndUuidString() );
+            sol::state_view solStateView(ScriptComponent::State);
 
-		LOG_DEBUG("ScriptRuntime: calling scriptLoadFromString in lua for {}" , entity->getNameAndUuidString() );
-		sol::state_view solStateView(ScriptComponent::State);
+            // Create an environment for this entity runtime
+            sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+            solStateView[entity->getUuid()] = environment;
 
-		// Create an environment for this entity runtime
-		sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
-		solStateView[entity->getUuid()] = environment;
+            auto exec_result = solStateView.safe_script(script->getSource(), environment, [](lua_State*, sol::protected_function_result pfr) {return pfr;});
 
-		auto exec_result = solStateView.safe_script(script->getSource(), environment, [](lua_State*, sol::protected_function_result pfr) {return pfr;});
-
-		// it did not work
-		if(!exec_result.valid())
-		{
-			// An error has occured
-			sol::error err = exec_result;
-			std::string what = err.what();
-			LOG_ERROR("ScriptRuntime: {} Error while executing lua script:\n{}", entity->getUuid(),what);
-			entity->setScriptError(true);
-			assert(false);
-			return false;
-		}
-		return true;
+            // it did not work
+            if(!exec_result.valid())
+            {
+                // An error has occured
+                sol::error err = exec_result;
+                std::string what = err.what();
+                LOG_ERROR("ScriptRuntime: {} Error while executing lua script:\n{}", entity->getUuid(),what);
+                entity->setScriptError(true);
+                //assert(false);
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     bool // public
     ScriptComponent::removeEntityState
     (UuidType uuid)
     {
-        const lock_guard<mutex>lg(getMutex());
+        if(dreamTryLock())
+        {
+            dreamLock();
+            sol::state_view stateView(ScriptComponent::State);
+            stateView[uuid] = sol::lua_nil;
+            LOG_DEBUG( "ScriptRuntime: Removed script lua table for {}" , uuid);
+            return true;
 
-		sol::state_view stateView(ScriptComponent::State);
-		stateView[uuid] = sol::lua_nil;
-		LOG_DEBUG( "ScriptRuntime: Removed script lua table for {}" , uuid);
-		return true;
+        } dreamElseLockFailed
     }
 
     // API Exposure Methods ======================================================
@@ -391,6 +414,7 @@ namespace octronic::dream // ===================================================
                     );
 
         stateView["Runtime"] = mProjectRuntime;
+
     }
 
     void // private

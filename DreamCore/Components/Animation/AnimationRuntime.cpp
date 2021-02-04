@@ -29,271 +29,307 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-using std::unique_lock;
-
 namespace octronic::dream
 {
     AnimationRuntime::AnimationRuntime
-    (
-        AnimationDefinition* definition,
-        EntityRuntime* runtime
-    ) : DiscreteAssetRuntime("AnimationDefinition",definition,runtime),
-        mRunning(false),
-        mCurrentTime(0),
-        mDuration(1),
-        mRelative(false),
-        mOriginalTransform(runtime->getTransform().getMatrix()),
-        mUpdateTask(this)
+    (AnimationDefinition* definition,EntityRuntime* runtime)
+        : DiscreteAssetRuntime("AnimationDefinition",definition,runtime),
+          mRunning(false),
+          mCurrentTime(0),
+          mDuration(1),
+          mRelative(false),
+          mOriginalTransform(runtime->getTransform().getMatrix()),
+          mUpdateTask(this)
     {
         LOG_TRACE("AnimationRuntime: Constructing Object");
     }
 
-    AnimationRuntime::~AnimationRuntime
-    ()
+    AnimationRuntime::~AnimationRuntime()
     {
         LOG_TRACE("AnimationRuntime: Destroying Object");
     }
 
-    bool
-    AnimationRuntime::useDefinition
-    ()
+    bool // public
+    AnimationRuntime::useDefinition()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        auto animDef = static_cast<AnimationDefinition*>(mDefinition);
-        mKeyframes = animDef->getKeyframes();
-        mRelative = animDef->getRelative();
-        createTweens();
-        mLoaded = true;
-        return mLoaded;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            auto animDef = static_cast<AnimationDefinition*>(mDefinition);
+            mKeyframes = animDef->getKeyframes();
+            mRelative = animDef->getRelative();
+            createTweens();
+            mLoaded = true;
+            return mLoaded;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::stepAnimation
     (double deltaTime)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-        if (mRunning)
+        if (dreamTryLock())
         {
-            LOG_TRACE("AnimationRuntime: Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
-            mCurrentTime += deltaTime;
-            if (mCurrentTime > mDuration)
+            dreamLock();
+            if (mRunning)
             {
-                mCurrentTime = mDuration;
-                mRunning = false;
+                LOG_TRACE("AnimationRuntime: Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
+                mCurrentTime += deltaTime;
+                if (mCurrentTime > mDuration)
+                {
+                    mCurrentTime = mDuration;
+                    mRunning = false;
+                }
+                seekAll(mCurrentTime);
             }
-            seekAll(mCurrentTime);
         }
+        dreamElseLockFailed
     }
 
-    long
+    long // public
     AnimationRuntime::getCurrentTime
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        return mCurrentTime;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            return mCurrentTime;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::setCurrentTime
     (long currentTime)
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        mCurrentTime = currentTime;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mCurrentTime = currentTime;
+        }
+        dreamElseLockFailed
     }
 
-    bool
+    bool // public
     AnimationRuntime::getRunning
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        return mRunning;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            return mRunning;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::setRunning
     (bool running)
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        mRunning = running;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mRunning = running;
+        }
+        dreamElseLockFailed
     }
 
-    AnimationUpdateTask *AnimationRuntime::getUpdateTask()
+    AnimationUpdateTask* // public
+    AnimationRuntime::getUpdateTask()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-       return &mUpdateTask;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            return &mUpdateTask;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::createTweens
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        orderByTime();
-        int numKeyframes = mKeyframes.size();
-        mDuration = mKeyframes.at(numKeyframes-1).getTime();
-
-        for (int i=0; i < numKeyframes; i++)
+        if (dreamTryLock())
         {
-            vec3 tx = mKeyframes.at(i).getTranslation();
-            vec3 rx = mKeyframes.at(i).getRotation();
-            vec3 sx = mKeyframes.at(i).getScale();
-            AnimationEasing::EasingType easing = mKeyframes.at(i).getEasingType();
+            dreamLock();
+            orderByTime();
+            int numKeyframes = mKeyframes.size();
+            mDuration = mKeyframes.at(numKeyframes-1).getTime();
 
-            if (i==0)
+            for (int i=0; i < numKeyframes; i++)
             {
-                mTweenTranslationX = tweeny::from(tx.x);
-                mTweenTranslationY = tweeny::from(tx.y);
-                mTweenTranslationZ = tweeny::from(tx.z);
+                vec3 tx = mKeyframes.at(i).getTranslation().toGLM();
+                vec3 rx = mKeyframes.at(i).getRotation().toGLM();
+                vec3 sx = mKeyframes.at(i).getScale().toGLM();
+                AnimationEasing::EasingType easing = mKeyframes.at(i).getEasingType();
 
-                mTweenRotationX = tweeny::from(rx.x);
-                mTweenRotationY = tweeny::from(rx.y);
-                mTweenRotationZ = tweeny::from(rx.z);
+                if (i==0)
+                {
+                    mTweenTranslationX = tweeny::from(tx.x);
+                    mTweenTranslationY = tweeny::from(tx.y);
+                    mTweenTranslationZ = tweeny::from(tx.z);
 
-                mTweenScaleX = tweeny::from(sx.x);
-                mTweenScaleY = tweeny::from(sx.y);
-                mTweenScaleZ = tweeny::from(sx.z);
-            }
-            else
-            {
-                long lastFrameTime = mKeyframes.at(i-1).getTime();
-                long thisFrameTime = mKeyframes.at(i).getTime();
-                long duringTime = (thisFrameTime-lastFrameTime);
+                    mTweenRotationX = tweeny::from(rx.x);
+                    mTweenRotationY = tweeny::from(rx.y);
+                    mTweenRotationZ = tweeny::from(rx.z);
 
-                mTweenTranslationX.to(tx.x).during(duringTime);
-                applyEasing(mTweenTranslationX,easing);
-                mTweenTranslationY.to(tx.y).during(duringTime);
-                applyEasing(mTweenTranslationY,easing);
-                mTweenTranslationZ.to(tx.z).during(duringTime);
-                applyEasing(mTweenTranslationZ,easing);
+                    mTweenScaleX = tweeny::from(sx.x);
+                    mTweenScaleY = tweeny::from(sx.y);
+                    mTweenScaleZ = tweeny::from(sx.z);
+                }
+                else
+                {
+                    long lastFrameTime = mKeyframes.at(i-1).getTime();
+                    long thisFrameTime = mKeyframes.at(i).getTime();
+                    long duringTime = (thisFrameTime-lastFrameTime);
 
-                mTweenRotationX.to(rx.x).during(duringTime);
-                applyEasing(mTweenRotationX,easing);
-                mTweenRotationY.to(rx.y).during(duringTime);
-                applyEasing(mTweenRotationY,easing);
-                mTweenRotationZ.to(rx.z).during(duringTime);
-                applyEasing(mTweenRotationZ,easing);
+                    mTweenTranslationX.to(tx.x).during(duringTime);
+                    applyEasing(mTweenTranslationX,easing);
+                    mTweenTranslationY.to(tx.y).during(duringTime);
+                    applyEasing(mTweenTranslationY,easing);
+                    mTweenTranslationZ.to(tx.z).during(duringTime);
+                    applyEasing(mTweenTranslationZ,easing);
 
-                mTweenScaleX.to(sx.x).during(duringTime);
-                applyEasing(mTweenScaleX,easing);
-                mTweenScaleY.to(sx.y).during(duringTime);
-                applyEasing(mTweenScaleY,easing);
-                mTweenScaleZ.to(sx.z).during(duringTime);
-                applyEasing(mTweenScaleZ,easing);
+                    mTweenRotationX.to(rx.x).during(duringTime);
+                    applyEasing(mTweenRotationX,easing);
+                    mTweenRotationY.to(rx.y).during(duringTime);
+                    applyEasing(mTweenRotationY,easing);
+                    mTweenRotationZ.to(rx.z).during(duringTime);
+                    applyEasing(mTweenRotationZ,easing);
+
+                    mTweenScaleX.to(sx.x).during(duringTime);
+                    applyEasing(mTweenScaleX,easing);
+                    mTweenScaleY.to(sx.y).during(duringTime);
+                    applyEasing(mTweenScaleY,easing);
+                    mTweenScaleZ.to(sx.z).during(duringTime);
+                    applyEasing(mTweenScaleZ,easing);
+                }
             }
         }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::run
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        mRunning = true;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mRunning = true;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::pause
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-
-        mRunning = !mRunning;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mRunning = !mRunning;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::reset
     ()
     {
-        const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-
-        mCurrentTime = 0;
-        seekAll(0);
+        if (dreamTryLock())
+        {
+            dreamLock();
+            mCurrentTime = 0;
+            seekAll(0);
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::seekAll
     (unsigned int pos)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-
-        LOG_TRACE("AnimationRuntime: Seeing to {}",pos);
-        vec3 newTx, newRx, newSx;
-        newTx.x = mTweenTranslationX.seek(pos);
-        newTx.y = mTweenTranslationY.seek(pos);
-        newTx.z = mTweenTranslationZ.seek(pos);
-
-        newRx.x = mTweenRotationX.seek(pos);
-        newRx.y = mTweenRotationY.seek(pos);
-        newRx.z = mTweenRotationZ.seek(pos);
-
-        newSx.x = mTweenScaleX.seek(pos);
-        newSx.y = mTweenScaleY.seek(pos);
-        newSx.z = mTweenScaleZ.seek(pos);
-
-        mat4 matrix(1.0f);
-        if (mRelative)
+        if (dreamTryLock())
         {
-            matrix = glm::translate(mOriginalTransform,newTx);
+            dreamLock();
+            LOG_TRACE("AnimationRuntime: Seeing to {}",pos);
+            vec3 newTx, newRx, newSx;
+            newTx.x = mTweenTranslationX.seek(pos);
+            newTx.y = mTweenTranslationY.seek(pos);
+            newTx.z = mTweenTranslationZ.seek(pos);
+
+            newRx.x = mTweenRotationX.seek(pos);
+            newRx.y = mTweenRotationY.seek(pos);
+            newRx.z = mTweenRotationZ.seek(pos);
+
+            newSx.x = mTweenScaleX.seek(pos);
+            newSx.y = mTweenScaleY.seek(pos);
+            newSx.z = mTweenScaleZ.seek(pos);
+
+            mat4 matrix(1.0f);
+            if (mRelative)
+            {
+                matrix = glm::translate(mOriginalTransform,newTx);
+            }
+            else
+            {
+                matrix = glm::translate(matrix,newTx);
+            }
+            matrix = matrix*mat4_cast(quat(newRx));
+            matrix = glm::scale(matrix,newSx);
+            mEntityRuntime->getTransform().setMatrix(matrix);
         }
-        else
-        {
-           matrix = glm::translate(matrix,newTx);
-        }
-        matrix = matrix*mat4_cast(quat(newRx));
-        matrix = glm::scale(matrix,newSx);
-        mEntityRuntime->getTransform().setMatrix(matrix);
+        dreamElseLockFailed
+
     }
 
-    long
+    long // public
     AnimationRuntime::getDuration
     ()
     {
-       const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-       return mDuration;
+        if (dreamTryLock())
+        {
+            dreamLock();
+            return mDuration;
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // public
     AnimationRuntime::orderByTime
     ()
     {
-       const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-        std::sort(mKeyframes.begin(),mKeyframes.end());
+        if (dreamTryLock())
+        {
+            dreamLock();
+            std::sort(mKeyframes.begin(),mKeyframes.end());
+        }
+        dreamElseLockFailed
     }
 
-    void AnimationRuntime::update()
+    void // public
+    AnimationRuntime::update()
     {
-       const unique_lock<mutex> lg(getMutex());
-        if (!lg.owns_lock()) getMutex().lock();
-       auto timeDelta =
-            mEntityRuntime
-               ->getSceneRuntime()
-               ->getProjectRuntime()
-               ->getTime()
-               ->getFrameTimeDelta();
-       stepAnimation(timeDelta);
+        if (dreamTryLock())
+        {
+            dreamLock();
+            auto timeDelta =
+                    mEntityRuntime
+                    ->getSceneRuntime()
+                    ->getProjectRuntime()
+                    ->getTime()
+                    ->getFrameTimeDelta();
+            stepAnimation(timeDelta);
+        }
+        dreamElseLockFailed
     }
 
-    void
+    void // private
     AnimationRuntime::applyEasing
     (tweeny::tween<float>& twn, AnimationEasing::EasingType easing)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         switch(easing)
         {
             case AnimationEasing::EasingType::EasingLinear:

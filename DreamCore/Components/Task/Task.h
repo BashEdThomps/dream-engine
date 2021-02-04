@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/LockableObject.h"
+#include "TaskState.h"
 
 #include <string>
 #include <vector>
@@ -16,16 +16,6 @@ using std::string;
 
 namespace octronic::dream
 {
-
-    enum TaskState
-    {
-        TASK_STATE_CONSTRUCTED,  // Constructed but not yet queued
-        TASK_STATE_QUEUED,       // Constructed and queued for execution
-        TASK_STATE_ACTIVE,       // Currently being executed
-        TASK_STATE_FAILED,       // Execution has failed
-        TASK_STATE_COMPLETED     // Execution has completed
-    };
-
     /**
      * @brief Task is the base class of any Runtime Logic thread task, allowing
      * logic to be dispatched to any available thread managed by the TaskManager.
@@ -44,7 +34,7 @@ namespace octronic::dream
      * @see Task::isWaitingForDependencies
      * @see Task::dependsOn
      */
-    class Task : public LockableObject
+    class Task
     {
     public:
         static int TaskIDGenerator;
@@ -56,27 +46,28 @@ namespace octronic::dream
 
         virtual void execute() = 0;
 
-        int getTaskID();
-        int getThreadID();
+        int getTaskID() const;
+        int getThreadID() const;
 
         void setThreadID(int t);
-        string getTaskName();
+        string getTaskName() const;
 
-        unsigned int getDeferralCount();
+        unsigned int getDeferralCount() const;
         void incrementDeferralCount();
 
         void clearState();
         void setState(TaskState s);
-        TaskState getState();
+        TaskState getState() const;
 
         void clearDependency(Task* t);
         void notifyTasksWaitingForMe();
         bool isWaitingForDependencies();
         void dependsOn(Task* t);
+        bool hasState(const TaskState& s) const;
+        bool readyToPush() const;
 
         bool operator==(Task& other);
 
-        virtual string getDebugString();
         static string stateToString(TaskState);
         static int taskIDGenerator();
 

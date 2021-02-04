@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Common/Math.h"
+#include "Common/Vector.h"
 #include "Common/LockableObject.h"
 
 #include <string>

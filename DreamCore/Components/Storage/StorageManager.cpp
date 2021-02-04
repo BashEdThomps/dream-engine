@@ -4,7 +4,7 @@
 #include "Directory.h"
 #include "Common/Logger.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -12,8 +12,6 @@ namespace octronic::dream
         :LockableObject("StorageManager")
     {
 
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("StorageManager: {}", __FUNCTION__);
     }
 
@@ -22,105 +20,108 @@ namespace octronic::dream
     }
 
     File* StorageManager::openFile(const string& file_path)
-
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
 
-        auto file_itr = std::find_if( mOpenFiles.begin(), mOpenFiles.end(),
-        	[&](File* next_file)
-        	{
-                return next_file->getPath().compare(file_path) == 0;
-    		}
-        );
+            auto file_itr = std::find_if( mOpenFiles.begin(), mOpenFiles.end(),
+                                          [&](File* next_file)
+            {
+                    return next_file->getPath().compare(file_path) == 0;
+        }
+                    );
 
-        if (file_itr != mOpenFiles.end())
-        {
-           return (*file_itr);
-        }
-        else
-        {
-            File* f = new File(file_path);
-        	mOpenFiles.push_back(f);
-            return f;
-        }
+            if (file_itr != mOpenFiles.end())
+            {
+                return (*file_itr);
+            }
+            else
+            {
+                File* f = new File(file_path);
+                mOpenFiles.push_back(f);
+                return f;
+            }
+        } dreamElseLockFailed
     }
 
     void StorageManager::closeFile(File *file)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file->getPath());
-        auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
-        	[&](File* next_file)
-			{
-			   return next_file->getPath().compare(file->getPath()) == 0;
-			}
-        );
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file->getPath());
+            auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
+                                         [&](File* next_file)
+            {
+                    return next_file->getPath().compare(file->getPath()) == 0;
+        }
+                    );
 
-        if (file_itr != mOpenFiles.end())
-        {
-            delete (*file_itr);
-            mOpenFiles.erase(file_itr);
-        }
-        else
-        {
-            LOG_ERROR("StorageManager: FATAL - Attempted to close File not opened by StorageManager");
-            assert(false);
-        }
+            if (file_itr != mOpenFiles.end())
+            {
+                delete (*file_itr);
+                mOpenFiles.erase(file_itr);
+            }
+            else
+            {
+                LOG_ERROR("StorageManager: FATAL - Attempted to close File not opened by StorageManager");
+                assert(false);
+            }
+        } dreamElseLockFailed
     }
 
     Directory* StorageManager::openDirectory(const string& path)
-     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
+    {
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
 
-        auto dir_itr = std::find_if(
-        	mOpenDirectories.begin(),
-        	mOpenDirectories.end(),
-        	[&](Directory* next_dir)
-        	{
-        		return next_dir->getPath().compare(path) == 0;
-			}
-        );
+            auto dir_itr = std::find_if(
+                        mOpenDirectories.begin(),
+                        mOpenDirectories.end(),
+                        [&](Directory* next_dir)
+            {
+                    return next_dir->getPath().compare(path) == 0;
+        }
+                    );
 
-        if (dir_itr != mOpenDirectories.end())
-        {
-           return (*dir_itr);
-        }
-        else
-        {
-        	Directory* d = new Directory(this, path);
-            mOpenDirectories.push_back(d);
-        	return d;
-        }
+            if (dir_itr != mOpenDirectories.end())
+            {
+                return (*dir_itr);
+            }
+            else
+            {
+                Directory* d = new Directory(this, path);
+                mOpenDirectories.push_back(d);
+                return d;
+            }
+        } dreamElseLockFailed
     }
 
     void StorageManager::closeDirectory(Directory* d)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, d->getPath());
-        auto dir_itr = std::find_if(
-        	mOpenDirectories.begin(),
-        	mOpenDirectories.end(),
-        	[&](Directory* next_dir)
-        	{
-        		return next_dir->getPath().compare(d->getPath()) == 0;
-			}
-        );
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("StorageManager: {} {}", __FUNCTION__, d->getPath());
+            auto dir_itr = std::find_if(
+                        mOpenDirectories.begin(),
+                        mOpenDirectories.end(),
+                        [&](Directory* next_dir)
+            {
+                    return next_dir->getPath().compare(d->getPath()) == 0;
+        }
+                    );
 
-        if (dir_itr != mOpenDirectories.end())
-        {
-           delete (*dir_itr);
-            mOpenDirectories.erase(dir_itr);
-        }
-        else
-        {
-            LOG_ERROR("StorageManager: FATAL - Attempted to close Directory not opened by StorageManager");
-            assert(false);
-        }
+            if (dir_itr != mOpenDirectories.end())
+            {
+                delete (*dir_itr);
+                mOpenDirectories.erase(dir_itr);
+            }
+            else
+            {
+                LOG_ERROR("StorageManager: FATAL - Attempted to close Directory not opened by StorageManager");
+                assert(false);
+            }
+        } dreamElseLockFailed
     }
 }

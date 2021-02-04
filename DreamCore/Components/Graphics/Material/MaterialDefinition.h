@@ -11,16 +11,11 @@
  */
 #pragma once
 
+#include "Common/Math.h"
 #include "Components/AssetDefinition.h"
 
 namespace octronic::dream
 {
-    struct RGB
-    {
-        float r;
-        float g;
-        float b;
-    };
 
     class MaterialDefinition : public AssetDefinition
     {
@@ -46,20 +41,20 @@ namespace octronic::dream
         void setDisplacementTexture(UuidType);
 
         // Colour
-        RGB getDiffuseColour();
-        void setDiffuseColour(RGB);
+        Vector3 getDiffuseColour();
+        void setDiffuseColour(Vector3);
 
-        RGB getSpecularColour();
-        void setSpecularColour(RGB);
+        Vector3 getSpecularColour();
+        void setSpecularColour(Vector3);
 
-        RGB getAmbientColour();
-        void setAmbientColour(RGB);
+        Vector3 getAmbientColour();
+        void setAmbientColour(Vector3);
 
-        RGB getReflectiveColour();
-        void setReflectiveColour(RGB);
+        Vector3 getReflectiveColour();
+        void setReflectiveColour(Vector3);
 
-        RGB getEmissiveColour();
-        void setEmissiveColour(RGB);
+        Vector3 getEmissiveColour();
+        void setEmissiveColour(Vector3);
 
         float getOpacity();
         void  setOpacity(float);
@@ -83,8 +78,6 @@ namespace octronic::dream
         void setIgnore(bool);
 
     private:
-        json wrapColourObject(RGB);
-        RGB unwrapColourObject(json);
         json black();
 
     };

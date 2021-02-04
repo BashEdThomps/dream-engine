@@ -9,9 +9,9 @@ namespace octronic::dream
     (int id)
         : mID(id),
           mTime(0),
-          mTranslation(vec3(0.0f)),
-          mRotation(vec3(0.0f)),
-          mScale(vec3(1.0f)),
+          mTranslation(Vector3(0.0f)),
+          mRotation(Vector3(0.0f)),
+          mScale(Vector3(1.0f)),
           mEasingType(AnimationEasing::EasingType::EasingBounceInOut)
     {
 
@@ -42,40 +42,34 @@ namespace octronic::dream
     AnimationKeyframe::fromJson
     (const json &js)
     {
-        if (!js[Constants::KEYFRAME_ID].is_null())
+        if (js.find(Constants::KEYFRAME_ID) != js.end())
         {
             mID = js[Constants::KEYFRAME_ID];
         }
 
-        if (!js[Constants::KEYFRAME_TIME].is_null())
+        if (js.find(Constants::KEYFRAME_TIME) != js.end())
         {
             mTime = js[Constants::KEYFRAME_TIME];
         }
 
-        if (!js[Constants::KEYFRAME_EASING_TYPE].is_null())
+        if (js.find(Constants::KEYFRAME_EASING_TYPE) != js.end())
         {
             mEasingType = static_cast<AnimationEasing::EasingType>(js[Constants::KEYFRAME_EASING_TYPE]);
         }
 
-        if (!js[Constants::KEYFRAME_TRANSLATION].is_null())
+        if (js.find(Constants::KEYFRAME_TRANSLATION) != js.end())
         {
-            mTranslation.x = js[Constants::KEYFRAME_TRANSLATION][Constants::X];
-            mTranslation.y = js[Constants::KEYFRAME_TRANSLATION][Constants::Y];
-            mTranslation.z = js[Constants::KEYFRAME_TRANSLATION][Constants::Z];
+            mTranslation = Vector3(js[Constants::KEYFRAME_TRANSLATION]);
         }
 
-        if (!js[Constants::KEYFRAME_ROTATION].is_null())
+        if (js.find(Constants::KEYFRAME_ROTATION) != js.end())
         {
-            mRotation.x = js[Constants::KEYFRAME_ROTATION][Constants::X];
-            mRotation.y = js[Constants::KEYFRAME_ROTATION][Constants::Y];
-            mRotation.z = js[Constants::KEYFRAME_ROTATION][Constants::Z];
+            mRotation = Vector3(js[Constants::KEYFRAME_ROTATION]);
         }
 
-        if (!js[Constants::KEYFRAME_SCALE].is_null())
+        if (js.find(Constants::KEYFRAME_SCALE) != js.end())
         {
-            mScale.x = js[Constants::KEYFRAME_SCALE][Constants::X];
-            mScale.y = js[Constants::KEYFRAME_SCALE][Constants::Y];
-            mScale.z = js[Constants::KEYFRAME_SCALE][Constants::Z];
+            mScale = Vector3(js[Constants::KEYFRAME_SCALE]);
         }
     }
 
@@ -88,21 +82,9 @@ namespace octronic::dream
         js[Constants::KEYFRAME_ID] = mID;
         js[Constants::KEYFRAME_TIME] = mTime;
         js[Constants::KEYFRAME_EASING_TYPE] = static_cast<unsigned int>(mEasingType);
-
-        js[Constants::KEYFRAME_TRANSLATION] = json::object();
-        js[Constants::KEYFRAME_TRANSLATION][Constants::X] = mTranslation.x;
-        js[Constants::KEYFRAME_TRANSLATION][Constants::Y] = mTranslation.y;
-        js[Constants::KEYFRAME_TRANSLATION][Constants::Z] = mTranslation.z;
-
-        js[Constants::KEYFRAME_ROTATION] = json::object();
-        js[Constants::KEYFRAME_ROTATION][Constants::X] = mRotation.x;
-        js[Constants::KEYFRAME_ROTATION][Constants::Y] = mRotation.y;
-        js[Constants::KEYFRAME_ROTATION][Constants::Z] = mRotation.z;
-
-        js[Constants::KEYFRAME_SCALE] = json::object();
-        js[Constants::KEYFRAME_SCALE][Constants::X] = mScale.x;
-        js[Constants::KEYFRAME_SCALE][Constants::Y] = mScale.y;
-        js[Constants::KEYFRAME_SCALE][Constants::Z] = mScale.z;
+        js[Constants::KEYFRAME_TRANSLATION] = mTranslation.toJson();
+        js[Constants::KEYFRAME_ROTATION] = mRotation.toJson();
+        js[Constants::KEYFRAME_SCALE] = mScale.toJson();
 
         return js;
     }
@@ -162,7 +144,7 @@ namespace octronic::dream
         mID = iD;
     }
 
-    vec3
+    Vector3
     AnimationKeyframe::getTranslation
     ()
     const
@@ -172,12 +154,12 @@ namespace octronic::dream
 
     void
     AnimationKeyframe::setTranslation
-    (const vec3& translation)
+    (const Vector3& translation)
     {
         mTranslation = translation;
     }
 
-    vec3
+    Vector3
     AnimationKeyframe::getRotation
     ()
     const
@@ -187,12 +169,12 @@ namespace octronic::dream
 
     void
     AnimationKeyframe::setRotation
-    (const vec3& rotation)
+    (const Vector3& rotation)
     {
         mRotation = rotation;
     }
 
-    vec3
+    Vector3
     AnimationKeyframe::getScale
     ()
     const
@@ -202,7 +184,7 @@ namespace octronic::dream
 
     void
     AnimationKeyframe::setScale
-    (const vec3& scale)
+    (const Vector3& scale)
     {
         mScale = scale;
     }

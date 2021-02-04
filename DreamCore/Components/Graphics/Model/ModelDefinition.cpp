@@ -21,7 +21,7 @@
 #include "Common/Constants.h"
 
 using nlohmann::json;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -41,106 +41,112 @@ namespace octronic::dream
     ModelDefinition::isFormatAssimp
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
+        if(dreamTryLock()) {
+            dreamLock();
+            return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
+        } dreamElseLockFailed
     }
 
     bool // Indicates whether a new insertion was made
     ModelDefinition::addModelMaterial
     (const string &material, UuidType shader)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
-        {
-             mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
-        }
-
-        for (json& matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
-        {
-            if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
             {
-                matShad[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
-                return false;
+                mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
             }
-        }
 
-        auto shaderJson = json::object();
-        shaderJson[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = material;
-        shaderJson[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
-        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].push_back(shaderJson);
-        return true;
+            for (json& matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
+            {
+                if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
+                {
+                    matShad[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
+                    return false;
+                }
+            }
+
+            auto shaderJson = json::object();
+            shaderJson[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = material;
+            shaderJson[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].push_back(shaderJson);
+            return true;
+        } dreamElseLockFailed
     }
 
     json*
     ModelDefinition::getModelMaterials
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if(mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].is_null())
-        {
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
-        }
-        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+        if(dreamTryLock()) {
+            dreamLock();
+            if(mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
+            {
+                mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
+            }
+            return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+        } dreamElseLockFailed
     }
 
     void
     ModelDefinition::removeModelMaterial
     (const string &material)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
-        for (auto nextShader : shaderMap)
-        {
-            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
-            if (materialName.is_string())
+        if(dreamTryLock()) {
+            dreamLock();
+            auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+            for (auto nextShader : shaderMap)
             {
-                string materialNameStr = materialName;
-                if (material == materialNameStr)
+                auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
+                if (materialName.is_string())
                 {
-                    LOG_DEBUG("ModelDefinition: Removing material form {} shader map {}",getName(),material);
-                    shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
+                    string materialNameStr = materialName;
+                    if (material == materialNameStr)
+                    {
+                        LOG_DEBUG("ModelDefinition: Removing material form {} shader map {}",getName(),material);
+                        shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
+                    }
                 }
             }
-        }
-        LOG_ERROR("ModelDefinition: Could not remove {} from {} shader map, object not found",getName(), material);
+            LOG_ERROR("ModelDefinition: Could not remove {} from {} shader map, object not found",getName(), material);
+        } dreamElseLockFailed
     }
 
     void
     ModelDefinition::clearModelMaterialList
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
+        } dreamElseLockFailed
     }
 
     UuidType
     ModelDefinition::getDreamMaterialForModelMaterial
     (const string &mat)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
-        for (auto nextShader : shaderMap)
-        {
-            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
-            if (materialName.is_string())
+        if(dreamTryLock()) {
+            dreamLock();
+            auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+            for (auto nextShader : shaderMap)
             {
-                string materialNameStr = materialName;
-                if (mat == materialNameStr)
+                auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
+                if (materialName.is_string())
                 {
-                    if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
+                    string materialNameStr = materialName;
+                    if (mat == materialNameStr)
                     {
-                        nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
+                        if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
+                        {
+                            nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
+                        }
+                        return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                     }
-                    return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 }
             }
-        }
-        return 0;
+            return 0;
+        } dreamElseLockFailed
     }
 }

@@ -21,15 +21,13 @@
 #include "Common/Logger.h"
 #include "Scene/Entity/EntityRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
     LightRuntime::LightRuntime
-    (
-        LightDefinition* definition,
-        EntityRuntime* transform
-    ) : DiscreteAssetRuntime("LightRuntime",definition,transform),
+    (LightDefinition* definition,EntityRuntime* transform
+            ) : DiscreteAssetRuntime("LightRuntime",definition,transform),
         mAmbient(0.0f),
         mDiffuse(0.0f),
         mSpecular(0.0f),
@@ -58,9 +56,10 @@ namespace octronic::dream
 
     void LightRuntime::setAmbient(const Vector3& ambient)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mAmbient = ambient;
+        if(dreamTryLock()) {
+            dreamLock();
+            mAmbient = ambient;
+        } dreamElseLockFailed
     }
 
     Vector3 LightRuntime::getDiffuse() const
@@ -70,9 +69,10 @@ namespace octronic::dream
 
     void LightRuntime::setDiffuse(const Vector3& diffuse)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mDiffuse = diffuse;
+        if(dreamTryLock()) {
+            dreamLock();
+            mDiffuse = diffuse;
+        } dreamElseLockFailed
     }
 
     Vector3 LightRuntime::getSpecular() const
@@ -82,9 +82,10 @@ namespace octronic::dream
 
     void LightRuntime::setSpecular(const Vector3& specular)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mSpecular = specular;
+        if(dreamTryLock()) {
+            dreamLock();
+            mSpecular = specular;
+        } dreamElseLockFailed
     }
 
     float LightRuntime::getConstant() const
@@ -94,9 +95,10 @@ namespace octronic::dream
 
     void LightRuntime::setConstant(float constant)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mConstant = constant;
+        if(dreamTryLock()) {
+            dreamLock();
+            mConstant = constant;
+        } dreamElseLockFailed
     }
 
     float LightRuntime::getLinear() const
@@ -106,9 +108,10 @@ namespace octronic::dream
 
     void LightRuntime::setLinear(float linear)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mLinear = linear;
+        if(dreamTryLock()) {
+            dreamLock();
+            mLinear = linear;
+        } dreamElseLockFailed
     }
 
     float LightRuntime::getQuadratic() const
@@ -118,9 +121,10 @@ namespace octronic::dream
 
     void LightRuntime::setQuadratic(float quadratic)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mQuadratic = quadratic;
+        if(dreamTryLock()) {
+            dreamLock();
+            mQuadratic = quadratic;
+        } dreamElseLockFailed
     }
 
     float LightRuntime::getCutOff() const
@@ -130,9 +134,10 @@ namespace octronic::dream
 
     void LightRuntime::setCutOff(float cutOff)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mCutOff = cutOff;
+        if(dreamTryLock()) {
+            dreamLock();
+            mCutOff = cutOff;
+        } dreamElseLockFailed
     }
 
     float LightRuntime::getOuterCutOff() const
@@ -144,9 +149,10 @@ namespace octronic::dream
     LightRuntime::setOuterCutOff
     (float outerCutOff)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mOuterCutOff = outerCutOff;
+        if(dreamTryLock()) {
+            dreamLock();
+            mOuterCutOff = outerCutOff;
+        } dreamElseLockFailed
     }
 
     LightType
@@ -160,28 +166,30 @@ namespace octronic::dream
     LightRuntime::setType
     (const LightType& type)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mType = type;
+        if(dreamTryLock()) {
+            dreamLock();
+            mType = type;
+        } dreamElseLockFailed
     }
 
     void LightRuntime::loadType()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto assetDef = static_cast<AssetDefinition*>(mDefinition);
-        if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
-        {
-            mType = LightType::LT_DIRECTIONAL;
-        }
-        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
-        {
-            mType = LightType::LT_POINT;
-        }
-        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
-        {
-            mType = LightType::LT_SPOTLIGHT;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            auto assetDef = static_cast<AssetDefinition*>(mDefinition);
+            if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
+            {
+                mType = LightType::LT_DIRECTIONAL;
+            }
+            else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
+            {
+                mType = LightType::LT_POINT;
+            }
+            else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
+            {
+                mType = LightType::LT_SPOTLIGHT;
+            }
+        } dreamElseLockFailed
     }
 
     PointLight
@@ -190,18 +198,18 @@ namespace octronic::dream
     const
     {
         Vector3 tx(
-            mEntityRuntime->getTransform().getMatrix()[3][0],
-            mEntityRuntime->getTransform().getMatrix()[3][1],
-            mEntityRuntime->getTransform().getMatrix()[3][2]);
+                    mEntityRuntime->getTransform().getMatrix()[3][0],
+                mEntityRuntime->getTransform().getMatrix()[3][1],
+                mEntityRuntime->getTransform().getMatrix()[3][2]);
         return PointLight
         {
             tx,
-            mConstant,
-            mLinear,
-            mQuadratic,
-            mAmbient,
-            mDiffuse,
-            mSpecular
+                    mConstant,
+                    mLinear,
+                    mQuadratic,
+                    mAmbient,
+                    mDiffuse,
+                    mSpecular
         };
     }
 
@@ -212,25 +220,25 @@ namespace octronic::dream
     {
         MatrixDecomposition decomp = mEntityRuntime->getTransform().decomposeMatrix();
         Vector3 tx(
-            decomp.translation.x,
-            decomp.translation.y,
-            decomp.translation.z
-        );
+                    decomp.translation.x,
+                    decomp.translation.y,
+                    decomp.translation.z
+                    );
         auto e = eulerAngles(decomp.rotation);
         Vector3 euler(e.x,e.y,e.z);
 
         return SpotLight
         {
             tx,
-            euler,
-            mAmbient,
-            mDiffuse,
-            mSpecular,
-            mCutOff,
-            mOuterCutOff,
-            mConstant,
-            mLinear,
-            mQuadratic,
+                    euler,
+                    mAmbient,
+                    mDiffuse,
+                    mSpecular,
+                    mCutOff,
+                    mOuterCutOff,
+                    mConstant,
+                    mLinear,
+                    mQuadratic,
         };
     }
 
@@ -245,9 +253,9 @@ namespace octronic::dream
         return DirLight
         {
             euler,
-            mAmbient,
-            mDiffuse,
-            mSpecular
+                    mAmbient,
+                    mDiffuse,
+                    mSpecular
         };
     }
 
@@ -255,37 +263,38 @@ namespace octronic::dream
     LightRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto lightDef = static_cast<LightDefinition*>(mDefinition);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto lightDef = static_cast<LightDefinition*>(mDefinition);
 
-        mAmbient = lightDef->getAmbient();
-        mDiffuse = lightDef->getDiffuse();
-        mSpecular = lightDef->getSpecular();
+            mAmbient = lightDef->getAmbient();
+            mDiffuse = lightDef->getDiffuse();
+            mSpecular = lightDef->getSpecular();
 
-        loadType();
+            loadType();
 
-        switch(mType)
-        {
-            case LT_NONE:
-                break;
-            case LT_POINT:
-                mConstant    = lightDef->getConstant();
-                mLinear      = lightDef->getLinear();
-                mQuadratic   = lightDef->getQuadratic();
-                break;
-            case LT_SPOTLIGHT:
-                mCutOff      = lightDef->getCutOff();
-                mOuterCutOff = lightDef->getOuterCutOff();
-                mConstant    = lightDef->getConstant();
-                mLinear      = lightDef->getLinear();
-                mQuadratic   = lightDef->getQuadratic();
-                break;
-            case LT_DIRECTIONAL:
-                break;
-        }
+            switch(mType)
+            {
+                case LT_NONE:
+                    break;
+                case LT_POINT:
+                    mConstant    = lightDef->getConstant();
+                    mLinear      = lightDef->getLinear();
+                    mQuadratic   = lightDef->getQuadratic();
+                    break;
+                case LT_SPOTLIGHT:
+                    mCutOff      = lightDef->getCutOff();
+                    mOuterCutOff = lightDef->getOuterCutOff();
+                    mConstant    = lightDef->getConstant();
+                    mLinear      = lightDef->getLinear();
+                    mQuadratic   = lightDef->getQuadratic();
+                    break;
+                case LT_DIRECTIONAL:
+                    break;
+            }
 
-        mLoaded = true;
-        return mLoaded;
+            mLoaded = true;
+            return mLoaded;
+        } dreamElseLockFailed
     }
 } // End of Dream

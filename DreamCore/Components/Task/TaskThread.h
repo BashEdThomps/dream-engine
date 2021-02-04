@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Task.h"
-#include "Common/LockableObject.h"
 
 #include <thread>
 #include <vector>
@@ -22,7 +21,7 @@ namespace octronic::dream
      * TaskThread encapsulates a std::Thread running a while loop, which executes
      * incoming Tasks.
      */
-    class TaskThread : public LockableObject
+    class TaskThread
     {
 
     public:
@@ -30,13 +29,13 @@ namespace octronic::dream
          void join();
          void executeTaskQueue();
          void clearWaitingToRunFence();
-         bool getWaitingToRunFence();
+         bool getWaitingToRunFence() const;
          bool pushTask(Task* t);
          bool pushDestructionTask(const shared_ptr<DestructionTask>& dt);
          void setRunning(bool running);
-         int getThreadID();
+         int getThreadID() const;
          bool hasTask(Task* t);
-         size_t getNumTasks();
+         size_t getNumTasks() const;
 
     private:
         thread mThread;

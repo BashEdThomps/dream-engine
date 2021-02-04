@@ -25,7 +25,7 @@
 #include "Components/Storage/StorageManager.h"
 #include "Project/ProjectRuntime.h"
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -35,57 +35,55 @@ namespace octronic::dream
           mFreeTypeLibrary(nullptr)
 
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         initFreetypeLibrary();
     }
 
     FontCache::~FontCache()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         FT_Done_FreeType(mFreeTypeLibrary);
     }
 
     bool FontCache::initFreetypeLibrary()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("FontCache: {}",__FUNCTION__);
-        FT_Error ft_error = FT_Init_FreeType(&mFreeTypeLibrary);
-        if( ft_error )
-        {
-            LOG_ERROR("FontManager: Unable to initialise FreeType Library: {}",ft_error);
-            return false;
-        }
-        return true;
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("FontCache: {}",__FUNCTION__);
+            FT_Error ft_error = FT_Init_FreeType(&mFreeTypeLibrary);
+            if( ft_error )
+            {
+                LOG_ERROR("FontManager: Unable to initialise FreeType Library: {}",ft_error);
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     SharedAssetRuntime* FontCache::loadRuntime(AssetDefinition* definition)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        // Check Definition
-        if (definition == nullptr)
-        {
-            LOG_ERROR("FontCache: Cannot load Font, definition is null");
-            return nullptr;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            // Check Definition
+            if (definition == nullptr)
+            {
+                LOG_ERROR("FontCache: Cannot load Font, definition is null");
+                return nullptr;
+            }
 
-        // Create Runtime
-        FontDefinition* fontDef = static_cast<FontDefinition*>(definition);
-        FontRuntime* fontRuntime = new FontRuntime(fontDef, mProjectRuntime);
-        if (!fontRuntime->useDefinition())
-        {
-            LOG_ERROR("FontCache: Error loading Font, useDefinition failed");
-            delete fontRuntime;
-            return nullptr;
-        }
-        else
-        {
-            mRuntimes.push_back(fontRuntime);
-        }
-        return fontRuntime;
+            // Create Runtime
+            FontDefinition* fontDef = static_cast<FontDefinition*>(definition);
+            FontRuntime* fontRuntime = new FontRuntime(fontDef, mProjectRuntime);
+            if (!fontRuntime->useDefinition())
+            {
+                LOG_ERROR("FontCache: Error loading Font, useDefinition failed");
+                delete fontRuntime;
+                return nullptr;
+            }
+            else
+            {
+                mRuntimes.push_back(fontRuntime);
+            }
+            return fontRuntime;
+        } dreamElseLockFailed
     }
 
     FT_Library FontCache::getFreeTypeLibrary()

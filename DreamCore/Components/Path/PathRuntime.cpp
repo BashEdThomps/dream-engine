@@ -31,7 +31,7 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -47,16 +47,12 @@ namespace octronic::dream
           mDistanceToTravel(0.0f),
           mUpdateTask(this)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("PathRuntime: Constructing Object");
     }
 
     PathRuntime::~PathRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         LOG_TRACE("PathRuntime: Destroying Object");
     }
 
@@ -64,157 +60,160 @@ namespace octronic::dream
     PathRuntime::update
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto transform = stepPath();
-        mEntityRuntime->getTransform().setMatrix(transform);
+        if(dreamTryLock()) {
+            dreamLock();
+            auto transform = stepPath();
+            mEntityRuntime->getTransform().setMatrix(transform);
+        } dreamElseLockFailed
     }
 
     bool
     PathRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto animDef = static_cast<PathDefinition*>(mDefinition);
-        LOG_DEBUG(
-            "PathRuntime: Loading {} spline with {} control points for {} ",
-            animDef->getSplineType(),
-            animDef->getControlPoints().size(),
-            getNameAndUuidString()
-        );
+        if(dreamTryLock()) {
+            dreamLock();
+            auto animDef = static_cast<PathDefinition*>(mDefinition);
+            LOG_DEBUG(
+                        "PathRuntime: Loading {} spline with {} control points for {} ",
+                        animDef->getSplineType(),
+                        animDef->getControlPoints().size(),
+                        getNameAndUuidString()
+                        );
 
-        mWrapPath = animDef->getWrap();
-        mVelocity = animDef->getVelocity();
+            mWrapPath = animDef->getWrap();
+            mVelocity = animDef->getVelocity();
 
-        int nControlPoints = animDef->getControlPoints().size();
+            int nControlPoints = animDef->getControlPoints().size();
 
-        if (nControlPoints < 2)
-        {
-            LOG_WARN("PathRuntime: Skipping curve, not enough control points");
+            if (nControlPoints < 2)
+            {
+                LOG_WARN("PathRuntime: Skipping curve, not enough control points");
+                mLoaded = true;
+                return true;
+            }
+
+            mUStep = 1.0/(nControlPoints*animDef->getStepScalar());
+
+            if (nControlPoints >= SPLINE_DIMENSIONS)
+            {
+                generate();
+            }
+            else
+            {
+                LOG_ERROR("PathRuntime: Not enough control points to generate spline");
+            }
             mLoaded = true;
-            return true;
-        }
-
-        mUStep = 1.0/(nControlPoints*animDef->getStepScalar());
-
-        if (nControlPoints >= SPLINE_DIMENSIONS)
-        {
-            generate();
-        }
-        else
-        {
-            LOG_ERROR("PathRuntime: Not enough control points to generate spline");
-        }
-        mLoaded = true;
-        return mLoaded;
+            return mLoaded;
+        } dreamElseLockFailed
     }
 
     void
     PathRuntime::generate
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        auto animDef = static_cast<PathDefinition*>(mDefinition);
-        auto splineType = animDef->getSplineTypeEnum();
+        if(dreamTryLock()) {
+            dreamLock();
+            auto animDef = static_cast<PathDefinition*>(mDefinition);
+            auto splineType = animDef->getSplineTypeEnum();
 
-        tsBSpline spline, derivative;
-        tsReal *ctrlp;
-        size_t i=0;
+            tsBSpline spline, derivative;
+            tsReal *ctrlp;
+            size_t i=0;
 
-        mSplinePoints.clear();
-        mSplineTangents.clear();
-        mSplineDerivatives.clear();
+            mSplinePoints.clear();
+            mSplineTangents.clear();
+            mSplineDerivatives.clear();
 
-        int nControlPoints =  animDef->getControlPoints().size();
+            int nControlPoints =  animDef->getControlPoints().size();
 
-        if (nControlPoints <= SPLINE_DIMENSIONS) return;
+            if (nControlPoints <= SPLINE_DIMENSIONS) return;
 
-        ts_bspline_new(nControlPoints, SPLINE_DIMENSIONS, SPLINE_DEGREES, splineType, &spline);
+            ts_bspline_new(nControlPoints, SPLINE_DIMENSIONS, SPLINE_DEGREES, splineType, &spline);
 
-        /* Setup control points. */
-        ts_bspline_control_points(&spline, &ctrlp);
-
-        for (auto cp : animDef->getControlPoints())
-        {
-            auto x = cp.position.x();
-            auto y = cp.position.y();
-            auto z = cp.position.z();
-            // Setup control points.
-            ctrlp[i++] = x;
-            ctrlp[i++] = y;
-            ctrlp[i++] = z;
-        }
-
-        ts_bspline_set_control_points(&spline, ctrlp);
-        free(ctrlp);
-
-        ts_bspline_derive(&spline, 1, &derivative);
-
-        // Stores our evaluation results.
-        if (splineType == TS_CLAMPED)
-        {
-            tsDeBoorNet net1, net2, net3;
-            tsReal *result1 = nullptr, *result2 = nullptr, *result3 = nullptr;
-            tsReal *knots;
-
-            /* draw spline */
+            /* Setup control points. */
             ts_bspline_control_points(&spline, &ctrlp);
-            ts_bspline_knots(&spline, &knots);
 
-            for (tsReal u = 0.0; u <= 1.0; u += mUStep)
+            for (auto cp : animDef->getControlPoints())
             {
-                ts_bspline_eval(&spline, u, &net1);
-                ts_deboornet_result(&net1, &result1);
-                ts_bspline_eval(&derivative, u, &net2);
-                ts_deboornet_result(&net2, &result2);
-                ts_bspline_eval(&derivative, u, &net3);
-                ts_deboornet_result(&net3, &result3);
-
-                LOG_TRACE("PathRuntime: Generating with u={}",u);
-                LOG_TRACE("PathRuntime: Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
-
-                for (i = 0; i < ts_deboornet_dimension(&net2); i++)
-                {
-                    result2[i] = result1[i] + result2[i] / 6.0;
-                    result3[i] = result1[i] - result3[i] / 6.0;
-                }
-
-                // tangent line
-                vec3 point(result1[0],result1[1],result1[2]);
-                vec3 tan1(result2[0],result2[1],result2[2]);
-                vec3 tan2(result3[0],result3[1],result3[2]);
-
-                mSplinePoints.push_back(point);
-                mSplineTangents.push_back(getHeading(point, tan1,tan2));
-                mSplineDerivatives.push_back(pair<vec3,vec3>(tan1,tan2));
-
-                ts_deboornet_free(&net1);
-                ts_deboornet_free(&net2);
-                ts_deboornet_free(&net3);
-
-                free(result1);
-                free(result2);
-                free(result3);
+                auto x = cp.position.x();
+                auto y = cp.position.y();
+                auto z = cp.position.z();
+                // Setup control points.
+                ctrlp[i++] = x;
+                ctrlp[i++] = y;
+                ctrlp[i++] = z;
             }
 
+            ts_bspline_set_control_points(&spline, ctrlp);
             free(ctrlp);
-            free(knots);
-        }
-        else if (splineType == TS_OPENED)
-        {
 
-        }
-        else if (splineType == TS_BEZIERS)
-        {
+            ts_bspline_derive(&spline, 1, &derivative);
 
-        }
+            // Stores our evaluation results.
+            if (splineType == TS_CLAMPED)
+            {
+                tsDeBoorNet net1, net2, net3;
+                tsReal *result1 = nullptr, *result2 = nullptr, *result3 = nullptr;
+                tsReal *knots;
 
-        ts_bspline_free(&spline);
-        ts_bspline_free(&derivative);
+                /* draw spline */
+                ts_bspline_control_points(&spline, &ctrlp);
+                ts_bspline_knots(&spline, &knots);
 
-        LOG_DEBUG("PathRuntime: Finished Loading spline for {}",getNameAndUuidString());
+                for (tsReal u = 0.0; u <= 1.0; u += mUStep)
+                {
+                    ts_bspline_eval(&spline, u, &net1);
+                    ts_deboornet_result(&net1, &result1);
+                    ts_bspline_eval(&derivative, u, &net2);
+                    ts_deboornet_result(&net2, &result2);
+                    ts_bspline_eval(&derivative, u, &net3);
+                    ts_deboornet_result(&net3, &result3);
+
+                    LOG_TRACE("PathRuntime: Generating with u={}",u);
+                    LOG_TRACE("PathRuntime: Got spline point ({},{},{})",result1[0], result1[1], result1[2]);
+
+                    for (i = 0; i < ts_deboornet_dimension(&net2); i++)
+                    {
+                        result2[i] = result1[i] + result2[i] / 6.0;
+                        result3[i] = result1[i] - result3[i] / 6.0;
+                    }
+
+                    // tangent line
+                    vec3 point(result1[0],result1[1],result1[2]);
+                    vec3 tan1(result2[0],result2[1],result2[2]);
+                    vec3 tan2(result3[0],result3[1],result3[2]);
+
+                    mSplinePoints.push_back(point);
+                    mSplineTangents.push_back(getHeading(point, tan1,tan2));
+                    mSplineDerivatives.push_back(pair<vec3,vec3>(tan1,tan2));
+
+                    ts_deboornet_free(&net1);
+                    ts_deboornet_free(&net2);
+                    ts_deboornet_free(&net3);
+
+                    free(result1);
+                    free(result2);
+                    free(result3);
+                }
+
+                free(ctrlp);
+                free(knots);
+            }
+            else if (splineType == TS_OPENED)
+            {
+
+            }
+            else if (splineType == TS_BEZIERS)
+            {
+
+            }
+
+            ts_bspline_free(&spline);
+            ts_bspline_free(&derivative);
+
+            LOG_DEBUG("PathRuntime: Finished Loading spline for {}",getNameAndUuidString());
+        } dreamElseLockFailed
     }
 
     vector<pair<vec3,vec3> >
@@ -235,9 +234,10 @@ namespace octronic::dream
     PathRuntime::setWrapPath
     (bool wrapPath)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mWrapPath = wrapPath;
+        if(dreamTryLock()) {
+            dreamLock();
+            mWrapPath = wrapPath;
+        } dreamElseLockFailed
     }
 
     size_t
@@ -251,89 +251,93 @@ namespace octronic::dream
     PathRuntime::setCurrentIndex
     (size_t currentIndex)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mCurrentIndex = currentIndex;
+        if(dreamTryLock()) {
+            dreamLock();
+            mCurrentIndex = currentIndex;
+        } dreamElseLockFailed
     }
 
     mat4
     PathRuntime::stepPath
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        if (mSplinePoints.empty())
-        {
-            return mat4(1.0f);
-        }
-
-        if (mCurrentIndex == 0)
-        {
-            setToCurrentPoint();
-            nextPoint();
-        }
-        else
-        {
-            float distanceToNext = 0.0f;
-            if (mCurrentIndex != mSplinePoints.size()-1)
+        if(dreamTryLock()) {
+            dreamLock();
+            if (mSplinePoints.empty())
             {
-                mDistanceToTravel += mEntityRuntime
-                    ->getSceneRuntime()
-                    ->getProjectRuntime()
-                    ->getTime()
-                    ->perSecond(mVelocity);
+                return mat4(1.0f);
+            }
 
-                vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
-                distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
-                LOG_TRACE("PathRuntime: To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
+            if (mCurrentIndex == 0)
+            {
+                setToCurrentPoint();
+                nextPoint();
             }
             else
             {
-                mDistanceToTravel = 0.0f;
-            }
+                float distanceToNext = 0.0f;
+                if (mCurrentIndex != mSplinePoints.size()-1)
+                {
+                    mDistanceToTravel += mEntityRuntime
+                            ->getSceneRuntime()
+                            ->getProjectRuntime()
+                            ->getTime()
+                            ->perSecond(mVelocity);
 
-            if (mDistanceToTravel >= distanceToNext)
-            {
-                mDistanceToTravel = 0.0f;
-                nextPoint();
-                setToCurrentPoint();
+                    vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
+                    distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
+                    LOG_TRACE("PathRuntime: To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
+                }
+                else
+                {
+                    mDistanceToTravel = 0.0f;
+                }
+
+                if (mDistanceToTravel >= distanceToNext)
+                {
+                    mDistanceToTravel = 0.0f;
+                    nextPoint();
+                    setToCurrentPoint();
+                }
             }
-        }
-        return mCurrentTransform;
+            return mCurrentTransform;
+        } dreamElseLockFailed
     }
 
     void PathRuntime::nextPoint()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mCurrentIndex++;
-        if (mCurrentIndex >= mSplinePoints.size())
-        {
-            if (mWrapPath)
-                mCurrentIndex = 0;
-            else
-                mCurrentIndex = mSplinePoints.size()-1;
-        }
+        if(dreamTryLock()) {
+            dreamLock();
+            mCurrentIndex++;
+            if (mCurrentIndex >= mSplinePoints.size())
+            {
+                if (mWrapPath)
+                    mCurrentIndex = 0;
+                else
+                    mCurrentIndex = mSplinePoints.size()-1;
+            }
+        } dreamElseLockFailed
     }
 
     void
     PathRuntime::setToCurrentPoint
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
-        quat thisOrient = mSplineTangents.at(mCurrentIndex);
-        mat4 mat(1.0f);
-        mat  = glm::translate(mat,thisPoint);
-        auto rot = mat4_cast(thisOrient);
-        mCurrentTransform = mat*rot;
-        vec3 ang = eulerAngles(thisOrient);
-        LOG_TRACE("PathRuntime: Got spline point {}/{} T({},{},{}) R({},{},{})",
-            mCurrentIndex,mSplinePoints.size(),
-            thisPoint.x, thisPoint.y, thisPoint.z,
-            ang.x, ang.y, ang.z
-        );
+        if(dreamTryLock()) {
+            dreamLock();
+            vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
+            quat thisOrient = mSplineTangents.at(mCurrentIndex);
+            mat4 mat(1.0f);
+            mat  = glm::translate(mat,thisPoint);
+            auto rot = mat4_cast(thisOrient);
+            mCurrentTransform = mat*rot;
+            vec3 ang = eulerAngles(thisOrient);
+            LOG_TRACE("PathRuntime: Got spline point {}/{} T({},{},{}) R({},{},{})",
+                      mCurrentIndex,mSplinePoints.size(),
+                      thisPoint.x, thisPoint.y, thisPoint.z,
+                      ang.x, ang.y, ang.z
+                      );
+        } dreamElseLockFailed
     }
 
     vector<vec3>
@@ -347,7 +351,7 @@ namespace octronic::dream
     PathRuntime::getSplineTangents
     () const
     {
-       return mSplineTangents;
+        return mSplineTangents;
     }
 
     vec3
@@ -372,31 +376,34 @@ namespace octronic::dream
     PathRuntime::setUStep
     (double uStep)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mUStep = uStep;
+        if(dreamTryLock()) {
+            dreamLock();
+            mUStep = uStep;
+        } dreamElseLockFailed
     }
 
     quat
     PathRuntime::getHeading
     (vec3 point, vec3 t1, vec3 t2)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mat4 mtx = lookAt(t1,t2,vec3(0,1,0));
-        quat q = quat(mtx);
-        q.x = -q.x;
-        q.y = -q.y;
-        q.z = -q.z;
+        if(dreamTryLock()) {
+            dreamLock();
+            mat4 mtx = lookAt(t1,t2,vec3(0,1,0));
+            quat q = quat(mtx);
+            q.x = -q.x;
+            q.y = -q.y;
+            q.z = -q.z;
 
-        return q;
+            return q;
+        } dreamElseLockFailed
     }
 
     PathUpdateTask* PathRuntime::getUpdateTask()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        return &mUpdateTask;
+        if(dreamTryLock()) {
+            dreamLock();
+            return &mUpdateTask;
+        } dreamElseLockFailed
     }
 
     const int PathRuntime::SPLINE_DIMENSIONS = 3;

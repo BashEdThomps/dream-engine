@@ -20,7 +20,7 @@
 using std::regex;
 using std::stringstream;
 using std::cmatch;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -30,112 +30,110 @@ namespace octronic::dream
           mStorageManager(fileManager),
           mPath(dir)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-		LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
+        LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
     }
 
     Directory::~Directory()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-		LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
+        LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
     }
 
     vector<string> Directory::list(const string& regexStr)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-		LOG_TRACE("Directory: {}", __FUNCTION__);
-        auto usingRegex = !regexStr.empty();
-        vector<string> directoryContents;
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(mPath.c_str())) != nullptr)
-        {
-            regex fileRegex(regexStr);
-            cmatch match;
-
-            while ((ent = readdir (dir)) != nullptr)
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("Directory: {}", __FUNCTION__);
+            auto usingRegex = !regexStr.empty();
+            vector<string> directoryContents;
+            DIR *dir;
+            struct dirent *ent;
+            if ((dir = opendir(mPath.c_str())) != nullptr)
             {
-                string fileName(ent->d_name);
+                regex fileRegex(regexStr);
+                cmatch match;
 
-                if (fileName[0] == '.') continue;
-
-                if (usingRegex)
+                while ((ent = readdir (dir)) != nullptr)
                 {
-                    if (regex_search(fileName.c_str(),match,fileRegex))
+                    string fileName(ent->d_name);
+
+                    if (fileName[0] == '.') continue;
+
+                    if (usingRegex)
+                    {
+                        if (regex_search(fileName.c_str(),match,fileRegex))
+                        {
+                            directoryContents.push_back(fileName);
+                        }
+                    }
+                    else
                     {
                         directoryContents.push_back(fileName);
                     }
                 }
-                else
-                {
-                    directoryContents.push_back(fileName);
-                }
+                closedir (dir);
             }
-            closedir (dir);
-        }
-        else
-        {
-            LOG_ERROR( "Directory: Unable to open directory {}", mPath );
+            else
+            {
+                LOG_ERROR( "Directory: Unable to open directory {}", mPath );
+                return directoryContents;
+            }
             return directoryContents;
-        }
-        return directoryContents;
+        } dreamElseLockFailed
     }
 
     vector<string> Directory::listSubdirectories(const string& regexStr)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-		LOG_TRACE("Directory: {}", __FUNCTION__);
-        auto usingRegex = !regexStr.empty();
-        vector<string> directoryContents;
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(mPath.c_str())) != nullptr)
-        {
-            regex fileRegex(regexStr);
-            cmatch match;
-
-            while ((ent = readdir (dir)) != nullptr)
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("Directory: {}", __FUNCTION__);
+            auto usingRegex = !regexStr.empty();
+            vector<string> directoryContents;
+            DIR *dir;
+            struct dirent *ent;
+            if ((dir = opendir(mPath.c_str())) != nullptr)
             {
-                string fileName(ent->d_name);
-                if (fileName[0] == '.') continue;
-                stringstream abs;
-                abs << mPath << Constants::DIR_PATH_SEP << fileName;
-                string absPath = abs.str();
+                regex fileRegex(regexStr);
+                cmatch match;
 
-                Directory* subDir = mStorageManager->openDirectory(absPath);
-                if (!subDir->isDirectory())
+                while ((ent = readdir (dir)) != nullptr)
                 {
-                    mStorageManager->closeDirectory(subDir);
-                    subDir = nullptr;
-                    continue;
-                }
+                    string fileName(ent->d_name);
+                    if (fileName[0] == '.') continue;
+                    stringstream abs;
+                    abs << mPath << Constants::DIR_PATH_SEP << fileName;
+                    string absPath = abs.str();
 
-                if (usingRegex)
-                {
-                    if (regex_search(fileName.c_str(),match,fileRegex))
+                    Directory* subDir = mStorageManager->openDirectory(absPath);
+                    if (!subDir->isDirectory())
+                    {
+                        mStorageManager->closeDirectory(subDir);
+                        subDir = nullptr;
+                        continue;
+                    }
+
+                    if (usingRegex)
+                    {
+                        if (regex_search(fileName.c_str(),match,fileRegex))
+                        {
+                            directoryContents.push_back(absPath);
+                        }
+                    }
+                    else
                     {
                         directoryContents.push_back(absPath);
                     }
+                    mStorageManager->closeDirectory(subDir);
+                    subDir = nullptr;
                 }
-                else
-                {
-                    directoryContents.push_back(absPath);
-                }
-                mStorageManager->closeDirectory(subDir);
-            	subDir = nullptr;
+                closedir (dir);
             }
-            closedir (dir);
-        }
-        else
-        {
-            LOG_ERROR( "Directory: Unable to open directory {}", mPath );
+            else
+            {
+                LOG_ERROR( "Directory: Unable to open directory {}", mPath );
+                return directoryContents;
+            }
             return directoryContents;
-        }
-        return directoryContents;
+        } dreamElseLockFailed
 
     }
 
@@ -146,9 +144,10 @@ namespace octronic::dream
 
     void Directory::setPath(const string& path)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mPath = path;
+        if(dreamTryLock()) {
+            dreamLock();
+            mPath = path;
+        } dreamElseLockFailed
     }
 
     string Directory::getName()
@@ -165,86 +164,91 @@ namespace octronic::dream
 
     bool Directory::exists()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        DIR* dir = opendir(mPath.c_str());
-        if (dir)
-        {
-            closedir(dir);
-            return true;
-        }
-        return false;
+        if(dreamTryLock()) {
+            dreamLock();
+            DIR* dir = opendir(mPath.c_str());
+            if (dir)
+            {
+                closedir(dir);
+                return true;
+            }
+            return false;
+        } dreamElseLockFailed
     }
 
     bool Directory::create()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
+        if(dreamTryLock()) {
+            dreamLock();
 #ifdef WIN32
-        return mkdir(mPath.c_str()) == 0;
+            return mkdir(mPath.c_str()) == 0;
 #else
-        return mkdir(mPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+            return mkdir(mPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
 #endif
+        } dreamElseLockFailed
     }
 
     bool Directory::deleteDirectory()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_DEBUG("Directory: Deleting directory {}",mPath);
-        auto files = list();
-        for (auto file : files)
-        {
-            if (file.compare(".") == 0) continue;
-            if (file.compare("..") == 0) continue;
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_DEBUG("Directory: Deleting directory {}",mPath);
+            auto files = list();
+            for (auto file : files)
+            {
+                if (file.compare(".") == 0) continue;
+                if (file.compare("..") == 0) continue;
 
-            string absPath = mPath+Constants::DIR_PATH_SEP+file;
-            Directory* d = mStorageManager->openDirectory(absPath);
-            if (d->isDirectory())
-            {
-                d->deleteDirectory();
-                mStorageManager->closeDirectory(d);
-                d = nullptr;
-            }
-            else
-            {
-                File* f = mStorageManager->openFile(absPath);
-                if (f->exists())
+                string absPath = mPath+Constants::DIR_PATH_SEP+file;
+                Directory* d = mStorageManager->openDirectory(absPath);
+                if (d->isDirectory())
                 {
-                    f->deleteFile();
+                    d->deleteDirectory();
+                    mStorageManager->closeDirectory(d);
+                    d = nullptr;
                 }
-                mStorageManager->closeFile(f);
-                f = nullptr;
+                else
+                {
+                    File* f = mStorageManager->openFile(absPath);
+                    if (f->exists())
+                    {
+                        f->deleteFile();
+                    }
+                    mStorageManager->closeFile(f);
+                    f = nullptr;
+                }
             }
-        }
-        if (rmdir(mPath.c_str()) != 0)
-        {
-            LOG_ERROR("Directory: Unable to delete directory {}",mPath);
-            return false;
-        }
-        return true;
+            if (rmdir(mPath.c_str()) != 0)
+            {
+                LOG_ERROR("Directory: Unable to delete directory {}",mPath);
+                return false;
+            }
+            return true;
+        } dreamElseLockFailed
     }
 
     File* Directory::file(const string& fileName)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        stringstream ss;
-        ss << mPath << Constants::DIR_PATH_SEP << fileName;
-        return mStorageManager->openFile(ss.str());
+        if(dreamTryLock()) {
+            dreamLock();
+            stringstream ss;
+            ss << mPath << Constants::DIR_PATH_SEP << fileName;
+            return mStorageManager->openFile(ss.str());
+        } dreamElseLockFailed
     }
 
     bool Directory::isDirectory()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        bool result = false;
-        struct stat sb;
-        if (stat(mPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
-        {
-            result = true;
-        }
-        LOG_ERROR("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
-        return result;
+        if(dreamTryLock()) {
+            dreamLock();
+            bool result = false;
+            struct stat sb;
+            if (stat(mPath.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
+            {
+                result = true;
+            }
+            LOG_ERROR("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
+            return result;
+        } dreamElseLockFailed
     }
 }

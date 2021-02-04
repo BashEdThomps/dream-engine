@@ -33,8 +33,5 @@ namespace octronic::dream
         void setRelative(bool relative);
 
         int nextKeyframeID();
-
-        int getEasingType();
-        void setEasingType(int easingType);
     };
 }

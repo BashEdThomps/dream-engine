@@ -12,7 +12,7 @@
 #include <stb_image.h>
 
 using std::make_shared;
-using std::unique_lock;
+
 
 namespace octronic::dream
 {
@@ -31,8 +31,6 @@ namespace octronic::dream
     TextureRuntime::~TextureRuntime
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
         mTextureDestructionTask = make_shared<TextureDestructionTask>();
         mTextureDestructionTask->setGLID(mGLID);
         mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
@@ -49,9 +47,10 @@ namespace octronic::dream
     TextureRuntime::setWidth
     (int width)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mWidth = width;
+        if(dreamTryLock()) {
+            dreamLock();
+            mWidth = width;
+        } dreamElseLockFailed
     }
 
     int
@@ -65,9 +64,10 @@ namespace octronic::dream
     TextureRuntime::setHeight
     (int height)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mHeight = height;
+        if(dreamTryLock()) {
+            dreamLock();
+            mHeight = height;
+        } dreamElseLockFailed
     }
 
     int
@@ -81,9 +81,10 @@ namespace octronic::dream
     TextureRuntime::setChannels
     (int channels)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mChannels = channels;
+        if(dreamTryLock()) {
+            dreamLock();
+            mChannels = channels;
+        } dreamElseLockFailed
     }
 
     unsigned char*
@@ -97,16 +98,18 @@ namespace octronic::dream
     TextureRuntime::setImage
     (unsigned char* image)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mImage = image;
+        if(dreamTryLock()) {
+            dreamLock();
+            mImage = image;
+        } dreamElseLockFailed
     }
 
     void TextureRuntime::pushConstructionTask()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureConstructionTask);
+        if(dreamTryLock()) {
+            dreamLock();
+            mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureConstructionTask);
+        } dreamElseLockFailed
     }
 
     GLuint
@@ -120,9 +123,10 @@ namespace octronic::dream
     TextureRuntime::setGLID
     (const GLuint& gLID)
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        mGLID = gLID;
+        if(dreamTryLock()) {
+            dreamLock();
+            mGLID = gLID;
+        } dreamElseLockFailed
     }
 
     bool
@@ -137,108 +141,110 @@ namespace octronic::dream
     TextureRuntime::useDefinition
     ()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
 
-        // All aboard
-        string filename = mProjectRuntime
-                ->getProject()
-                ->getDirectory()
-                ->getAssetAbsolutePath(mDefinition->getUuid());
+            // All aboard
+            string filename = mProjectRuntime
+                    ->getProject()
+                    ->getDirectory()
+                    ->getAssetAbsolutePath(mDefinition->getUuid());
 
-        StorageManager* fm = mProjectRuntime->getStorageManager();
-        File* txFile = fm->openFile(filename);
-        if (!txFile->exists())
-        {
-            LOG_ERROR("TextureCache: Texture file does not exist: {}",filename);
+            StorageManager* fm = mProjectRuntime->getStorageManager();
+            File* txFile = fm->openFile(filename);
+            if (!txFile->exists())
+            {
+                LOG_ERROR("TextureCache: Texture file does not exist: {}",filename);
+                fm->closeFile(txFile);
+                txFile = nullptr;
+                return false;
+            }
+
+            LOG_DEBUG("TextureCache: Loading texture: {}",filename);
+
+            if (!txFile->readBinary())
+            {
+                LOG_ERROR("TextureCache: Unable to read file data");
+                fm->closeFile(txFile);
+                txFile = nullptr;
+                return false;
+            }
+            uint8_t* buffer = txFile->getBinaryData();
+            size_t buffer_sz = txFile->getBinaryDataSize();
+
+            int width = 0;
+            int height = 0;
+            int channels = 0;
+
+            stbi_set_flip_vertically_on_load(true);
+            uint8_t* image = stbi_load_from_memory(
+                        static_cast<const stbi_uc*>(buffer),
+                        buffer_sz,
+                        &width, &height,
+                        &channels, 0
+                        );
+
             fm->closeFile(txFile);
             txFile = nullptr;
-            return false;
-        }
 
-        LOG_DEBUG("TextureCache: Loading texture: {}",filename);
+            LOG_DEBUG(
+                        "TextureCache: Loaded texture {} with width {}, height {}, channels {}",
+                        filename, width,height,channels);
 
-        if (!txFile->readBinary())
-        {
-            LOG_ERROR("TextureCache: Unable to read file data");
-            fm->closeFile(txFile);
-            txFile = nullptr;
-            return false;
-        }
-        uint8_t* buffer = txFile->getBinaryData();
-        size_t buffer_sz = txFile->getBinaryDataSize();
-
-        int width = 0;
-        int height = 0;
-        int channels = 0;
-
-        stbi_set_flip_vertically_on_load(true);
-        uint8_t* image = stbi_load_from_memory(
-                    static_cast<const stbi_uc*>(buffer),
-                    buffer_sz,
-                    &width, &height,
-                    &channels, 0
-                    );
-
-        fm->closeFile(txFile);
-        txFile = nullptr;
-
-        LOG_DEBUG(
-                    "TextureCache: Loaded texture {} with width {}, height {}, channels {}",
-                    filename, width,height,channels);
-
-        //setPath(filename);
-        setWidth(width);
-        setHeight(height);
-        setChannels(channels);
-        setImage(image);
-        pushConstructionTask();
-        return true;
+            //setPath(filename);
+            setWidth(width);
+            setHeight(height);
+            setChannels(channels);
+            setImage(image);
+            pushConstructionTask();
+            return true;
+        } dreamElseLockFailed
     }
 
     bool TextureRuntime::loadIntoGL()
     {
-        const unique_lock<mutex> lg(getMutex(), std::adopt_lock);
-        if (!lg.owns_lock()) getMutex().lock();
-        LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
-        // Assign texture to ID
-        GLuint textureID;
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
+            // Assign texture to ID
+            GLuint textureID;
 
-        GLCheckError();
+            GLCheckError();
 
-        glGenTextures(1, &textureID);
-        GLCheckError();
+            glGenTextures(1, &textureID);
+            GLCheckError();
 
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        GLCheckError();
-        LOG_DEBUG("TextureRuntime: Bound to texture id {}",textureID);
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            GLCheckError();
+            LOG_DEBUG("TextureRuntime: Bound to texture id {}",textureID);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
-        GLCheckError();
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
+            GLCheckError();
 
-        glGenerateMipmap(GL_TEXTURE_2D);
-        GLCheckError();
+            glGenerateMipmap(GL_TEXTURE_2D);
+            GLCheckError();
 
-        // Set Parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        GLCheckError();
+            // Set Parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            GLCheckError();
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        GLCheckError();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            GLCheckError();
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+            GLCheckError();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        setGLID(textureID);
+            setGLID(textureID);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
 
-        GLCheckError();
-        delete getImage();
-        setImage(nullptr);
+            GLCheckError();
+            delete getImage();
+            setImage(nullptr);
 
-        return true;
+            return true;
+        } dreamElseLockFailed
     }
 }

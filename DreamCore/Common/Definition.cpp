@@ -2,6 +2,7 @@
 
 namespace octronic::dream
 {
+    // public
     Definition::Definition(const string& className, const json& data) : LockableObject(className), mJson(data)
     {
         if (mJson[Constants::UUID].is_string())
@@ -10,77 +11,68 @@ namespace octronic::dream
         }
     }
 
-    Definition::~Definition() {}
+    // public
+    Definition::~Definition()
+    {}
 
+    // public
     json Definition::getJson
     ()
     {
         return mJson;
     }
 
-    bool Definition::hasName(const string& name)
+    bool // public
+    Definition::hasName(const string& name)
     {
         string s = mJson[Constants::NAME];
         return s.compare(name) == 0;
     }
 
-    string Definition::getName()
+    string  // public
+    Definition::getName()
     {
-        if (mJson[Constants::NAME].is_null())
+        if (mJson.find(Constants::NAME) == mJson.end())
         {
             mJson[Constants::NAME] = "";
         }
         return mJson[Constants::NAME];
     }
 
-    void Definition::setName(const string& name)
+    void // public
+    Definition::setName(const string& name)
     {
         mJson[Constants::NAME] = name;
     }
 
-    bool Definition::hasUuid(UuidType uuid)
+    bool // public
+    Definition::hasUuid(UuidType uuid)
     {
         UuidType s = mJson[Constants::UUID];
         return s == uuid;
     }
 
-    UuidType Definition::getUuid()
+    UuidType // public
+    Definition::getUuid()
     {
-        if (mJson[Constants::UUID].is_null())
+        if (mJson.find(Constants::UUID) == mJson.end())
         {
             mJson[Constants::UUID] = Uuid::generateUuid();
         }
         return mJson[Constants::UUID];
     }
 
-    void Definition::setUuid(UuidType uuid)
+    void  // public
+    Definition::setUuid(UuidType uuid)
     {
         mJson[Constants::UUID] = uuid;
     }
 
-    string Definition::getNameAndUuidString()
+    string  // public
+    Definition::getNameAndUuidString()
     {
         stringstream ss;
         ss << "[" << getName() << " : " << getUuid() << "]";
         return ss.str();
-    }
-
-    json Definition::wrapVector3(const Vector3& v)
-    {
-        json retval = json::object();
-        retval[Constants::X] = v.x();
-        retval[Constants::Y] = v.y();
-        retval[Constants::Z] = v.z();
-        return retval;
-    }
-
-    Vector3 Definition::unwrapVector3(const json& j)
-    {
-        return Vector3
-        (
-            j[Constants::X],
-            j[Constants::Y],
-            j[Constants::Z]
-        );
     }
 }
