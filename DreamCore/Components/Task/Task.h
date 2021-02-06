@@ -61,7 +61,7 @@ namespace octronic::dream
 
         void clearDependency(Task* t);
         void notifyTasksWaitingForMe();
-        bool isWaitingForDependencies();
+        bool isWaitingForDependencies() const;
         void dependsOn(Task* t);
         bool hasState(const TaskState& s) const;
         bool readyToPush() const;

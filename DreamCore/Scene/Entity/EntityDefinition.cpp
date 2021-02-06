@@ -81,7 +81,7 @@ namespace octronic::dream
 
     void
     EntityDefinition::setTransform
-    (Transform& tform)
+    (Transform tform)
     {
         if(dreamTryLock()) {
             dreamLock();

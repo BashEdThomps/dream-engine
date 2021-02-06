@@ -14,8 +14,6 @@ namespace octronic::dream::tool
           mScriptDebugWindow(this),
           mSceneStateWindow(this),
           mToolPropertiesWindow(this),
-          mScriptEditorWindow(this),
-          mShaderEditorWindow(this),
           mMenuBar(this),
           mRenderPipelineWindow(this),
           mGamepadStateWindow(this),
@@ -66,6 +64,7 @@ namespace octronic::dream::tool
         }
 
         ScriptComponent::AddPrintListener(&mScriptDebugWindow);
+        mPreferencesModel.load();
 
 
         // ImGui Widgets
@@ -75,8 +74,6 @@ namespace octronic::dream::tool
         mWindow.addImGuiWidget(&mSceneStateWindow);
         mWindow.addImGuiWidget(&mMenuBar);
         mWindow.addImGuiWidget(&mToolPropertiesWindow);
-        mWindow.addImGuiWidget(&mScriptEditorWindow);
-        mWindow.addImGuiWidget(&mShaderEditorWindow);
         mWindow.addImGuiWidget(&mRenderPipelineWindow);
         mWindow.addImGuiWidget(&mGamepadStateWindow);
         mWindow.addImGuiWidget(&mCacheContentWindow);
@@ -435,18 +432,6 @@ namespace octronic::dream::tool
         return &mToolPropertiesWindow;
     }
 
-    ScriptEditorWindow*
-    DreamToolContext::getScriptEditorWindow()
-    {
-        return &mScriptEditorWindow;
-    }
-
-    ShaderEditorWindow*
-    DreamToolContext::getShaderEditorWindow()
-    {
-        return &mShaderEditorWindow;
-    }
-
     MenuBar*
     DreamToolContext::getMenuBar()
     {
@@ -598,4 +583,24 @@ namespace octronic::dream::tool
     {
         mLastDirectory = lastDir;
     }
+
+
+    bool DreamToolContext::openInExternalEditor(AssetDefinition* definition, const string& format)
+	{
+		if (mPreferencesModel.getExternalEditorPath().empty())
+        {
+           LOG_ERROR("DTContext: External editor has not been set");
+           return false;
+        }
+        char temp[512];
+#if defined (__APPLE__)
+        sprintf(temp, "open \"%s\" --args \"%s\"",
+                mPreferencesModel.getExternalEditorPath().c_str(),
+                getProjectDirectory()->getAssetAbsolutePath(definition,format).c_str());
+#else
+#endif
+        LOG_DEBUG("DTContext: Opening file with command {}",temp);
+        int result = system((char *)temp);
+        return result == 0;
+	}
 }

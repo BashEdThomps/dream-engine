@@ -47,6 +47,9 @@
 #include "Components/Graphics/Font/FontCache.h"
 #include "Components/Graphics/Font/FontRuntime.h"
 
+#include "Components/Graphics/Sprite/SpriteDefinition.h"
+#include "Components/Graphics/Sprite/SpriteRuntime.h"
+
 // Storage
 #include "Components/Storage/ProjectDirectory.h"
 #include "Components/Storage/Directory.h"

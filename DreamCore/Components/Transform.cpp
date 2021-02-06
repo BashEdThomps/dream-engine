@@ -25,22 +25,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-
-
 namespace octronic::dream
 {
 
     Transform::Transform
     ()
-        : LockableObject("Transform"),
-          mMatrix(1.0f)
+        : mMatrix(1.0f)
     {
         LOG_TRACE("Transform: Constructing");
     }
 
     Transform::Transform
     (const Transform& other)
-        :LockableObject ("Transform")
     {
         LOG_TRACE("Transform: Constructing Copy");
         mMatrix = other.mMatrix;
@@ -48,7 +44,6 @@ namespace octronic::dream
 
     Transform::Transform
     (const mat4& mtx)
-        : LockableObject("Transform")
     {
         LOG_TRACE("Transform: Constructing from matrix");
         setMatrix(mtx);
@@ -56,7 +51,6 @@ namespace octronic::dream
 
     Transform::Transform
     (const json& jsonTransform)
-        : LockableObject("Transform")
     {
         LOG_TRACE("Transform: Constructing from json");
         fromJson(jsonTransform);
@@ -68,14 +62,9 @@ namespace octronic::dream
     Transform::getBtTransform
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            btTransform transform;
-            transform.setFromOpenGLMatrix(value_ptr(mMatrix));
-            return transform;
-
-        } dreamElseLockFailed
+        btTransform transform;
+        transform.setFromOpenGLMatrix(value_ptr(mMatrix));
+        return transform;
     }
 
     // JSON =====================================================================
@@ -84,54 +73,37 @@ namespace octronic::dream
     Transform::getJson
     ()
     {
-        if(dreamTryLock())
+        json j = json::array();
+        for (int i=0; i<16; i++)
         {
-            dreamLock();
-            json j = json::object();
-            // Translation
-            j[Constants::TRANSFORM_MATRIX] = json::array();
-            for (int i=0; i<16; i++)
-            {
-                j[Constants::TRANSFORM_MATRIX].push_back(glm::value_ptr(mMatrix)[i]);
-            }
+            j[Constants::TRANSFORM_MATRIX].push_back(glm::value_ptr(mMatrix)[i]);
+        }
 
-            return j;
-
-        } dreamElseLockFailed
+        return j;
     }
 
     void Transform::fromJson(const json& jsonTransform)
     {
-        if(dreamTryLock())
+        if (jsonTransform.is_array())
         {
-            dreamLock();
-            if (jsonTransform.find(Constants::TRANSFORM_MATRIX) != jsonTransform.end())
+            float mtxFloat[16] = {0.0f};
+            for (int i=0; i<16; i++)
             {
-                float mtxFloat[16] = {0.0f};
-                for (int i=0; i<16; i++)
-                {
-                    mtxFloat[i] = (float)jsonTransform[Constants::TRANSFORM_MATRIX][i];
-                    mMatrix = glm::make_mat4(mtxFloat);
-                }
+                mtxFloat[i] = (float)jsonTransform[i];
             }
-            else
-            {
-                mMatrix = mat4(1.0f);
-            }
-
-        } dreamElseLockFailed
+            mMatrix = glm::make_mat4(mtxFloat);
+        }
+        else
+        {
+            mMatrix = mat4(1.0f);
+        }
     }
 
     float
     Transform::distanceFrom
     (const Transform& other)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return glm::distance(mMatrix[3], other.mMatrix[3]);
-
-        } dreamElseLockFailed
+        return glm::distance(mMatrix[3], other.mMatrix[3]);
     }
 
     // Matrix ===================================================================
@@ -140,98 +112,63 @@ namespace octronic::dream
     Transform::setMatrix
     (const mat4& mtx)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mMatrix = mtx;
-
-        } dreamElseLockFailed
+        mMatrix = mtx;
     }
 
     float*
     Transform::getMatrixFloatPointer
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return (float*)(&mMatrix[0]);
-
-        } dreamElseLockFailed
+        return (float*)(&mMatrix[0]);
     }
 
     mat4 Transform::getMatrix()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mMatrix;
-
-        } dreamElseLockFailed
+        return mMatrix;
     }
 
     MatrixDecomposition
     Transform::decomposeMatrix
     (bool conjugate)
     {
-        if(dreamTryLock())
+        MatrixDecomposition decomp;
+        glm::decompose(mMatrix, decomp.scale, decomp.rotation, decomp.translation, decomp.skew, decomp.perspective);
+        if (conjugate)
         {
-            dreamLock();
-            MatrixDecomposition decomp;
-            glm::decompose(mMatrix, decomp.scale, decomp.rotation, decomp.translation, decomp.skew, decomp.perspective);
-            if (conjugate)
-            {
-                decomp.rotation = glm::conjugate(decomp.rotation);
-            }
-            return decomp;
-
-        } dreamElseLockFailed
+            decomp.rotation = glm::conjugate(decomp.rotation);
+        }
+        return decomp;
     }
 
     void
     Transform::recomposeMatrix
-    (MatrixDecomposition decomp,bool conjugate)
+    (const MatrixDecomposition& decomp,bool conjugate)
     {
-        if(dreamTryLock())
+        mMatrix = mat4(1.0f);
+        if (conjugate)
         {
-            dreamLock();
-            mMatrix = mat4(1.0f);
-            if (conjugate)
-            {
-                mMatrix = mat4_cast(glm::conjugate(decomp.rotation))*mMatrix;
-            }
-            else
-            {
-                mMatrix = mat4_cast(decomp.rotation)*mMatrix;
-            }
-            mMatrix = glm::translate(mMatrix,decomp.translation);
-            mMatrix = glm::scale(mMatrix,decomp.scale);
-
-        } dreamElseLockFailed
+            mMatrix = mat4_cast(glm::conjugate(decomp.rotation))*mMatrix;
+        }
+        else
+        {
+            mMatrix = mat4_cast(decomp.rotation)*mMatrix;
+        }
+        mMatrix = glm::translate(mMatrix,decomp.translation);
+        mMatrix = glm::scale(mMatrix,decomp.scale);
     }
 
     void
     Transform::translate
     (const Vector3& tx)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mMatrix = glm::translate(mMatrix,tx.toGLM());
-
-        } dreamElseLockFailed
+        mMatrix = glm::translate(mMatrix,tx.toGLM());
     }
 
     void
     Transform::translate3f
     (float x, float y, float z)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mMatrix = glm::translate(mMatrix,vec3(x,y,z));
-
-        } dreamElseLockFailed
+        mMatrix = glm::translate(mMatrix,vec3(x,y,z));
     }
 
 
@@ -239,30 +176,14 @@ namespace octronic::dream
     Transform::preTranslate
     (const Vector3& translation)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mat4 mat = glm::translate(mat4(1.0f), translation.toGLM());
-            mMatrix = mat*mMatrix;
-
-        } dreamElseLockFailed
+        mat4 mat = glm::translate(mat4(1.0f), translation.toGLM());
+        mMatrix = mat*mMatrix;
     }
 
-    Vector3&
+    Vector3
     Transform::getTranslation
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            static Vector3 tx;
-            tx = Vector3(
-                        mMatrix[3].x,
-                    mMatrix[3].y,
-                    mMatrix[3].z
-                    );
-            return tx;
-
-        } dreamElseLockFailed
+        return Vector3(mMatrix[3].x,mMatrix[3].y,mMatrix[3].z);
     }
 }

@@ -12,24 +12,24 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
-#include "Components/Transform.h"
 
 class btTransform;
 
 namespace octronic::dream
 {
+    class EntityRuntime;
+
     class PhysicsMotionState : public btMotionState
     {
-    protected:
-        Transform* mDreamTransform;
-
     public:
-        PhysicsMotionState(Transform*);
+        PhysicsMotionState(EntityRuntime* entity);
         ~PhysicsMotionState();
 
         void getWorldTransform(btTransform&) const;
         void setWorldTransform(const btTransform&);
 
         void setKinematicPos(btTransform&);
+    protected:
+        EntityRuntime* mEntityRuntime;
     };
 }

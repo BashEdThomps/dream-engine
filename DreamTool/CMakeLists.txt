@@ -34,9 +34,7 @@ add_executable (
 	Widgets/ImGui/GamepadStateWindow.cpp
 	Widgets/ImGui/GLPreviewWindowComponent.cpp
 	Widgets/ImGui/PropertiesWindow.cpp
-	Widgets/ImGui/ScriptEditorWindow.cpp
 	Widgets/ImGui/ToolPropertiesWindow.cpp
-	Widgets/ImGui/ShaderEditorWindow.cpp
 	Widgets/ImGui/RenderingDebugWindow.cpp
 	Widgets/ImGui/CacheContentWindow.cpp
 	Widgets/ImGui/TaskManagerWindow.cpp

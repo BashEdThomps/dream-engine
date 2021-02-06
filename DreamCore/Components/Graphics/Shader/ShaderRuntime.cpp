@@ -980,6 +980,27 @@ namespace octronic::dream
     }
 
     void
+    ShaderRuntime::setSpritePositionUniform(const vec2& pos)
+    {
+        if(dreamTryLock())
+        {
+            dreamLock();
+            GLuint location = getUniformLocation("uModel");
+            mat4 model(1.f);
+            model = glm::translate(model,vec3(pos.x,pos.y,0.f));
+
+            if (location == UNIFORM_NOT_FOUND)
+            {
+                LOG_ERROR( "ShaderRuntime: Unable to find Sprite model matrix uinform \"uModel\" in shader {}" ,getNameAndUuidString()  );
+                assert(false);
+                return;
+            }
+
+            glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(model));
+        } dreamElseLockFailed
+    }
+
+    void
     ShaderRuntime::setFontColorUniform(const Vector3& color)
     {
         if(dreamTryLock()) {
@@ -997,7 +1018,7 @@ namespace octronic::dream
     }
 
 
-    void ShaderRuntime::setFontProjection(const mat4& proj)
+    void ShaderRuntime::setFontProjectionUniform(const mat4& proj)
     {
         if(dreamTryLock()) {
             dreamLock();
@@ -1006,6 +1027,24 @@ namespace octronic::dream
             if (location == UNIFORM_NOT_FOUND)
             {
                 LOG_ERROR( "ShaderRuntime: Unable to find Font projection matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
+                assert(false);
+                return;
+            }
+
+            glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(proj));
+        } dreamElseLockFailed
+
+    }
+
+    void ShaderRuntime::setSpriteProjectionUniform(const mat4& proj)
+    {
+        if(dreamTryLock()) {
+            dreamLock();
+            GLuint location = getUniformLocation("uProjection");
+
+            if (location == UNIFORM_NOT_FOUND)
+            {
+                LOG_ERROR( "ShaderRuntime: Unable to find Sprite projection matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
                 assert(false);
                 return;
             }

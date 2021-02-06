@@ -4,6 +4,7 @@
 #include "Components/Storage/File.h"
 #include "Components/Storage/StorageManager.h"
 #include "Components/Storage/ProjectDirectory.h"
+#include "Components/Graphics/Sprite/SpriteRuntime.h"
 #include "Scene/Entity/EntityRuntime.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
@@ -208,18 +209,22 @@ namespace octronic::dream
             dreamLock();
             LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
             // Assign texture to ID
-            GLuint textureID;
 
+            glGenTextures(1, &mGLID);
             GLCheckError();
 
-            glGenTextures(1, &textureID);
+            glBindTexture(GL_TEXTURE_2D, mGLID);
             GLCheckError();
+            LOG_DEBUG("TextureRuntime: Bound to texture id {}",mGLID);
 
-            glBindTexture(GL_TEXTURE_2D, textureID);
-            GLCheckError();
-            LOG_DEBUG("TextureRuntime: Bound to texture id {}",textureID);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
+            if (mChannels == 3)
+            {
+            	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE,getImage());
+            }
+            else
+            {
+            	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
+            }
             GLCheckError();
 
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -236,15 +241,46 @@ namespace octronic::dream
             GLCheckError();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            setGLID(textureID);
-
             glBindTexture(GL_TEXTURE_2D, 0);
-
             GLCheckError();
+
             delete getImage();
             setImage(nullptr);
 
             return true;
         } dreamElseLockFailed
+    }
+
+    void TextureRuntime::pushSpriteInstance(SpriteRuntime* er)
+    {
+       auto itr = std::find(mSpriteInstances.begin(), mSpriteInstances.end(), er);
+       if (itr == mSpriteInstances.end())
+       {
+           mSpriteInstances.push_back(er);
+       }
+    }
+
+    void TextureRuntime::popSpriteInstance(SpriteRuntime* er)
+    {
+       auto itr = std::find(mSpriteInstances.begin(), mSpriteInstances.end(), er);
+       if (itr != mSpriteInstances.end())
+       {
+           mSpriteInstances.erase(itr);
+       }
+    }
+
+    void TextureRuntime::popSpriteInstanceByUuid(UuidType spriteUuid)
+    {
+        auto itr = std::find_if(mSpriteInstances.begin(), mSpriteInstances.end(),
+             [&](SpriteRuntime* spriteRuntime){ return spriteRuntime->getUuid() == spriteUuid; });
+       if (itr != mSpriteInstances.end())
+       {
+           mSpriteInstances.erase(itr);
+       }
+    }
+
+    vector<SpriteRuntime*> TextureRuntime::getSpriteInstancesVector()
+    {
+       return mSpriteInstances;
     }
 }

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 #include "Common/GLHeader.h"
 #include <glm/glm.hpp>
 

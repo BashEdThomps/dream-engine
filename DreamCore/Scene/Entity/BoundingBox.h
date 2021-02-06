@@ -18,7 +18,7 @@
 #define GLM_FORCE_RADIANS
 
 #include "Common/Vector.h"
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 
 namespace octronic::dream
 {

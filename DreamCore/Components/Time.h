@@ -17,7 +17,7 @@
 #pragma once
 
 #include <chrono>
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 
 using std::chrono::time_point;
 using std::chrono::steady_clock;

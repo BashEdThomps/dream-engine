@@ -15,6 +15,7 @@ using glm::radians;
 using octronic::dream::FontRuntime;
 using octronic::dream::FontCache;
 using octronic::dream::FontRuntime;
+using octronic::dream::SpriteDefinition;
 
 namespace octronic::dream::tool
 {
@@ -25,9 +26,7 @@ namespace octronic::dream::tool
           mDefinition(nullptr),
           mRuntime(nullptr),
           mImageSize(256,256),
-          mBigEditorSize(-1,-1),
-          mGizmoUseSnap(true),
-          mGizmoSnap(1.0f,1.0f,1.0f)
+          mBigEditorSize(-1,-1)
     {
     }
 
@@ -74,8 +73,8 @@ namespace octronic::dream::tool
     PropertiesWindow::drawDeleteEntityButton
     ()
     {
-        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
-        EntityRuntime* entityRuntimeime = dynamic_cast<EntityRuntime*>(mRuntime);
+        EntityDefinition* entityDefinition = static_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntimeime = static_cast<EntityRuntime*>(mRuntime);
 
         if (ImGui::Button("Delete"))
         {
@@ -112,7 +111,7 @@ namespace octronic::dream::tool
         }
 
         Project* project = mContext->getProject();
-        SceneDefinition* sDef = dynamic_cast<SceneDefinition*>(mDefinition);
+        SceneDefinition* sDef = static_cast<SceneDefinition*>(mDefinition);
         ProjectDefinition* pDef = project->getDefinition();
 
         if(ImGui::BeginPopupModal("Confirm Delete Scene"))
@@ -261,7 +260,7 @@ namespace octronic::dream::tool
     ()
     {
         Project* project = mContext->getProject();
-        ProjectDefinition* projectDefinition = dynamic_cast<ProjectDefinition*>(mDefinition);
+        ProjectDefinition* projectDefinition = static_cast<ProjectDefinition*>(mDefinition);
 
         if (projectDefinition == nullptr)
         {
@@ -314,8 +313,8 @@ namespace octronic::dream::tool
     PropertiesWindow::drawSceneProperties
     ()
     {
-        SceneDefinition* sceneDef = dynamic_cast<SceneDefinition*>(mDefinition);
-        SceneRuntime* sceneRuntime = dynamic_cast<SceneRuntime*>(mRuntime);
+        SceneDefinition* sceneDef = static_cast<SceneDefinition*>(mDefinition);
+        SceneRuntime* sceneRuntime = static_cast<SceneRuntime*>(mRuntime);
 
         if (sceneDef == nullptr)
         {
@@ -606,6 +605,22 @@ namespace octronic::dream::tool
                     LOG_DEBUG("PropertiesWindow: Switched Font shader to {} {}", name, uuid);
                 }
             }
+
+            // Setup Sprite hader
+            {
+                UuidType spriteShaderUuid = sceneDef->getSpriteShader();
+                ShaderDefinition* spriteShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(spriteShaderUuid));
+                int spriteShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,spriteShaderDef);
+
+                if (StringCombo("Sprite Shader", &spriteShaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, spriteShaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    sceneDef->setSpriteShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched Sprite shader to {} {}", name, uuid);
+                }
+            }
         }
 
         if (ImGui::CollapsingHeader("Scripting"))
@@ -663,8 +678,8 @@ namespace octronic::dream::tool
     ()
     {
         ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
-        EntityDefinition* entityDef = dynamic_cast<EntityDefinition*>(mDefinition);
-        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+        EntityDefinition* entityDef = static_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntime = static_cast<EntityRuntime*>(mRuntime);
 
         // Valid Definition
         if (entityDef == nullptr)
@@ -871,7 +886,7 @@ namespace octronic::dream::tool
             }
         }
 
-        drawNonImGizmo();
+        drawTransformProperties();
 
         if(ImGui::CollapsingHeader("Assets"))
         {
@@ -1167,17 +1182,51 @@ namespace octronic::dream::tool
                 }
             }
 
+            // Font ============================================================
+
+            int selectedSpriteAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SPRITE);
+            vector<string> spriteAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SPRITE);
+            if(ImGui::Button("-##Sprite"))
+            {
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_SPRITE,0);
+                if (entityRuntime)
+                {
+                    entityRuntime->removeFontRuntime();
+                }
+            }
             ImGui::SameLine();
+            if(ImGui::Button(">##Sprite"))
+            {
+                if (selectedSpriteAsset < 0) return;
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SPRITE,selectedSpriteAsset);
+                pushPropertyTarget(PropertyType_Asset,asset, nullptr);
+                return;
+            }
+
+            ImGui::SameLine();
+
+            if(StringCombo("Sprite",&selectedSpriteAsset,spriteAssets,spriteAssets.size()))
+            {
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SPRITE, selectedSpriteAsset);
+                if (entityRuntime)
+                {
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SPRITE, selectedSpriteAsset);
+                    if (selectedDef)
+                    {
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_SPRITE, selectedDef->getUuid());
+                    }
+                }
+            }
 
         }
     }
 
     void
-    PropertiesWindow::drawNonImGizmo
+    PropertiesWindow::drawTransformProperties
     ()
     {
-        EntityDefinition* entityDefinition = dynamic_cast<EntityDefinition*>(mDefinition);
-        EntityRuntime* entityRuntime = dynamic_cast<EntityRuntime*>(mRuntime);
+        EntityDefinition* entityDefinition = static_cast<EntityDefinition*>(mDefinition);
+        EntityRuntime* entityRuntime = static_cast<EntityRuntime*>(mRuntime);
 
         static bool withChildren = false;
 
@@ -1187,7 +1236,7 @@ namespace octronic::dream::tool
 
             if (entityRuntime)
             {
-				tx.setMatrix(entityRuntime->getTransform().getMatrix());
+                tx.setMatrix(entityRuntime->getTransform().getMatrix());
             }
             else
             {
@@ -1195,7 +1244,7 @@ namespace octronic::dream::tool
             }
 
             MatrixDecomposition dx = tx.decomposeMatrix();
-			vec3 eulerRotation = eulerAngles(dx.rotation);
+            vec3 eulerRotation = eulerAngles(dx.rotation);
 
             ImGui::Columns(1);
 
@@ -1211,17 +1260,17 @@ namespace octronic::dream::tool
 
             if (tx_changed)
             {
-				dx.translation = vec3(float_translation[0],float_translation[1],float_translation[2]);
+                dx.translation = vec3(float_translation[0],float_translation[1],float_translation[2]);
                 dx.rotation = quat(vec3(float_rotation[0],float_rotation[1],float_rotation[2]));
-				dx.scale = vec3(float_scale[0],float_scale[1],float_scale[2]);
-				if (entityRuntime)
-				{
-					entityRuntime->getTransform().recomposeMatrix(dx);
-				}
-				else
-				{
-					entityDefinition->getTransform().recomposeMatrix(dx);
-				}
+                dx.scale = vec3(float_scale[0],float_scale[1],float_scale[2]);
+                if (entityRuntime)
+                {
+                    entityRuntime->getTransform().recomposeMatrix(dx);
+                }
+                else
+                {
+                    entityDefinition->getTransform().recomposeMatrix(dx);
+                }
             }
 
             ImGui::Separator();
@@ -1241,16 +1290,16 @@ namespace octronic::dream::tool
                     if (withChildren)
                     {
                         entityRuntime->applyToAll(
-                        	function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
-                        	{
-								if (rt != entityRuntime)
-								{
-									EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
-									d->setTransform(rt->getTransform());
-								}
-								return static_cast<EntityRuntime*>(nullptr);
-                            }
-                        ));
+                                    function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
+                                    {
+                                        if (rt != entityRuntime)
+                                        {
+                                            EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinition());
+                                            d->setTransform(rt->getTransform());
+                                        }
+                                        return static_cast<EntityRuntime*>(nullptr);
+                                    }
+                                    ));
                     }
                 }
             }
@@ -1261,7 +1310,7 @@ namespace octronic::dream::tool
                 if (entityDefinition && entityRuntime)
                 {
                     Transform tmp = entityDefinition->getTransform();
-                    entityRuntime->setTransform(&tmp);
+                    entityRuntime->setTransform(tmp);
                     if (withChildren)
                     {
                         entityRuntime->applyToAll(
@@ -1269,9 +1318,9 @@ namespace octronic::dream::tool
                                         [&](EntityRuntime* rt){
                                         if (rt != entityRuntime)
                                         {
-                                            EntityDefinition* d = dynamic_cast<EntityDefinition*>(rt->getDefinition());
+                                            EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinition());
                                             Transform tmp = d->getTransform();
-                                            rt->setTransform(&tmp);
+                                            rt->setTransform(tmp);
                                         }
                                         return static_cast<EntityRuntime*>(nullptr);
                                     }
@@ -1292,7 +1341,7 @@ namespace octronic::dream::tool
     {
         mContext->getPathViewer()->setVisible(false);
         mContext->getAnimationViewer()->setVisible(false);
-        AssetDefinition* assetDef = dynamic_cast<AssetDefinition*>(mDefinition);
+        AssetDefinition* assetDef = static_cast<AssetDefinition*>(mDefinition);
         if (assetDef == nullptr)
         {
             return;
@@ -1396,7 +1445,7 @@ namespace octronic::dream::tool
     PropertiesWindow::drawAnimationAssetProperties
     ()
     {
-        AnimationDefinition* animDef = dynamic_cast<AnimationDefinition*>(mDefinition);
+        AnimationDefinition* animDef = static_cast<AnimationDefinition*>(mDefinition);
         mContext->getAnimationViewer()->setAnimationDefinition(animDef);
         mContext->getAnimationViewer()->setVisible(true);
 
@@ -1537,7 +1586,7 @@ namespace octronic::dream::tool
     PropertiesWindow::drawAudioAssetProperties
     ()
     {
-        AudioDefinition* audioDef = dynamic_cast<AudioDefinition*>(mDefinition);
+        AudioDefinition* audioDef = static_cast<AudioDefinition*>(mDefinition);
 
         if (ImGui::Button("Audio File..."))
         {
@@ -1580,7 +1629,7 @@ namespace octronic::dream::tool
         if (projectRuntime)
         {
             AudioCache* audioCache = projectRuntime->getAudioCache();
-            audioRunt = dynamic_cast<AudioRuntime*>(audioCache->getRuntime(audioDef));
+            audioRunt = static_cast<AudioRuntime*>(audioCache->getRuntime(audioDef));
         }
 
         ImGui::Text("Format: %s", audioDef->getFormat().c_str());
@@ -1644,7 +1693,7 @@ namespace octronic::dream::tool
     ()
     {
         bool selectFile = ImGui::Button("Font File...");
-        FontDefinition* def = dynamic_cast<FontDefinition*>(mDefinition);
+        FontDefinition* def = static_cast<FontDefinition*>(mDefinition);
 
         if (selectFile)
         {
@@ -1697,21 +1746,21 @@ namespace octronic::dream::tool
             ProjectRuntime* projectRuntime = project->getRuntime();
             if (projectRuntime)
             {
-				FontCache* fontCache = projectRuntime->getFontCache();
+                FontCache* fontCache = projectRuntime->getFontCache();
                 if (fontCache)
                 {
-        			FontRuntime* fontRuntime = static_cast<FontRuntime*>(fontCache->getRuntime(def));
+                    FontRuntime* fontRuntime = static_cast<FontRuntime*>(fontCache->getRuntime(def));
                     if (fontRuntime)
                     {
                         GLuint atlasTexture = fontRuntime->getAtlasTexture();
                         unsigned int atlasWidth = fontRuntime->getAtlasWidth();
                         unsigned int atlasHeight = fontRuntime->getAtlasHeight();
                         if (ImGui::BeginChild("Font Atlas Texture",
-                        	ImVec2(atlasWidth,atlasHeight),
-                        	false, ImGuiWindowFlags_HorizontalScrollbar))
+                                              ImVec2(atlasWidth,atlasHeight),
+                                              false, ImGuiWindowFlags_HorizontalScrollbar))
                         {
-                        	ImGui::Image((void*)(intptr_t)atlasTexture,ImVec2(atlasWidth,atlasHeight));
-                        	ImGui::EndChild();
+                            ImGui::Image((void*)(intptr_t)atlasTexture,ImVec2(atlasWidth,atlasHeight));
+                            ImGui::EndChild();
                         }
                     }
                 }
@@ -1723,7 +1772,7 @@ namespace octronic::dream::tool
     void PropertiesWindow::drawLightAssetProperties
     ()
     {
-        LightDefinition* lightDef = dynamic_cast<LightDefinition*>(mDefinition);
+        LightDefinition* lightDef = static_cast<LightDefinition*>(mDefinition);
 
         vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_LIGHT];
         int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
@@ -1821,7 +1870,7 @@ namespace octronic::dream::tool
     {
         ProjectDefinition* projectDefinition = mContext->getProject()->getDefinition();
         ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
-        MaterialDefinition* materialDef = dynamic_cast<MaterialDefinition*>(mDefinition);
+        MaterialDefinition* materialDef = static_cast<MaterialDefinition*>(mDefinition);
 
         int shaderIndex = 0;
         vector<string> shaderList;
@@ -1854,11 +1903,7 @@ namespace octronic::dream::tool
         };
         if (ImGui::ColorEdit3("Diffuse", diffuseColor))
         {
-            materialDef->setDiffuseColour(Vector3{
-                                              diffuseColor[0],
-                                              diffuseColor[1],
-                                              diffuseColor[2]
-                                          });
+            materialDef->setDiffuseColour(Vector3{diffuseColor[0],diffuseColor[1],diffuseColor[2]});
         }
 
         float specularColor[3] = {
@@ -1868,14 +1913,7 @@ namespace octronic::dream::tool
         };
         if (ImGui::ColorEdit3("Specular", specularColor))
         {
-            materialDef->setSpecularColour(
-                        Vector3
-                        {
-                            specularColor[0],
-                            specularColor[1],
-                            specularColor[2]
-                        }
-                        );
+            materialDef->setSpecularColour(Vector3{specularColor[0],specularColor[1],specularColor[2] });
         }
 
         float ambientColor[3] = {
@@ -1885,13 +1923,7 @@ namespace octronic::dream::tool
         };
         if (ImGui::ColorEdit3("Ambient", ambientColor))
         {
-            materialDef->setAmbientColour(
-                        Vector3{
-                            ambientColor[0],
-                            ambientColor[1],
-                            ambientColor[2]
-                        }
-                        );
+            materialDef->setAmbientColour(Vector3{ambientColor[0], ambientColor[1], ambientColor[2]});
         }
 
         float reflectiveColor[3] = {
@@ -1901,14 +1933,7 @@ namespace octronic::dream::tool
         };
         if (ImGui::ColorEdit3("Reflective", reflectiveColor))
         {
-            materialDef->setReflectiveColour(
-                        Vector3
-                        {
-                            reflectiveColor[0],
-                            reflectiveColor[1],
-                            reflectiveColor[2]
-                        }
-                        );
+            materialDef->setReflectiveColour(Vector3{reflectiveColor[0],reflectiveColor[1],reflectiveColor[2] });
         }
 
         float emissiveColor[3] = {
@@ -1918,14 +1943,7 @@ namespace octronic::dream::tool
         };
         if(ImGui::ColorEdit3("Emissive", emissiveColor))
         {
-            materialDef->setEmissiveColour(
-                        Vector3
-                        {
-                            emissiveColor[0],
-                            emissiveColor[1],
-                            emissiveColor[2]
-                        }
-                        );
+            materialDef->setEmissiveColour(Vector3{emissiveColor[0],emissiveColor[1],emissiveColor[2]});
         }
 
         // Parameters
@@ -1991,9 +2009,9 @@ namespace octronic::dream::tool
             AssetDefinition* diffuseDef = projectDefinition->getAssetDefinitionByUuid(diffuseUuid);
             if (diffuseDef)
             {
-                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(diffuseDef);
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(diffuseDef);
                 TextureCache* txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     diffuseTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2004,9 +2022,9 @@ namespace octronic::dream::tool
             AssetDefinition* specularDef = projectDefinition->getAssetDefinitionByUuid(specularUuid);
             if (specularDef)
             {
-                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(specularDef);
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(specularDef);
                 TextureCache* txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     specularTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2017,9 +2035,9 @@ namespace octronic::dream::tool
             AssetDefinition* normalDef = projectDefinition->getAssetDefinitionByUuid(normalUuid);
             if (normalDef)
             {
-                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(normalDef);
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(normalDef);
                 TextureCache* txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     normalTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2030,9 +2048,9 @@ namespace octronic::dream::tool
             auto displacementDef = projectDefinition->getAssetDefinitionByUuid(displacementUuid);
             if (displacementDef)
             {
-                TextureDefinition* txDef = dynamic_cast<TextureDefinition*>(displacementDef);
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(displacementDef);
                 TextureCache* txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(txDef));
+                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(txDef));
                 if (txRuntime)
                 {
                     displacementTxId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2137,7 +2155,7 @@ namespace octronic::dream::tool
     PropertiesWindow::drawModelAssetProperties
     ()
     {
-        ModelDefinition* def = dynamic_cast<ModelDefinition*>(mDefinition);
+        ModelDefinition* def = static_cast<ModelDefinition*>(mDefinition);
 
         bool selectFile = ImGui::Button("Model File...");
 
@@ -2222,7 +2240,7 @@ namespace octronic::dream::tool
             ModelCache* modelCache = projectRuntime->getModelCache();
             if (modelCache)
             {
-                ModelRuntime* modelRuntime = dynamic_cast<ModelRuntime*>(modelCache->getRuntime(def));
+                ModelRuntime* modelRuntime = static_cast<ModelRuntime*>(modelCache->getRuntime(def));
                 if (modelRuntime)
                 {
                     modelMaterialNames = modelRuntime->getMaterialNames();
@@ -2285,7 +2303,7 @@ namespace octronic::dream::tool
     ()
     {
         bool modified = false;
-        PhysicsObjectDefinition* pod = dynamic_cast<PhysicsObjectDefinition*>(mDefinition);
+        PhysicsObjectDefinition* pod = static_cast<PhysicsObjectDefinition*>(mDefinition);
         vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT];
         string poFormatString = pod->getFormat();
         int poFormatIndex = getStringIndexInVector(poFormatString, poFormats);
@@ -2530,39 +2548,154 @@ namespace octronic::dream::tool
     PropertiesWindow::drawScriptProperties
     ()
     {
-        auto scriptDef = dynamic_cast<ScriptDefinition*>(mDefinition);
+        auto scriptDef = static_cast<ScriptDefinition*>(mDefinition);
+        auto projRunt = mContext->getProject()->getRuntime();
+        auto scriptCache = projRunt->getScriptCache();
 
-        ImGui::PushItemWidth(-1);
+        ScriptRuntime* scriptInst;
+
+        if (scriptCache)
+        {
+            scriptInst = dynamic_cast<ScriptRuntime*>(scriptCache->getRuntime(scriptDef));
+        }
+
+        vector<string> templates = mContext->getTemplatesModel()->getTemplateNames(AssetType::ASSET_TYPE_ENUM_SCRIPT);
+
+        static int currentTemplateIndex = -1;
+
+        if (StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
+        {
+            ImGui::OpenPopup("Load Script From Template?");
+        }
+
+        if(ImGui::BeginPopupModal("Load Script From Template?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Load Script from template?\n\nThis will replace the existing Script.\n\n");
+            if (ImGui::Button("Cancel"))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Load from Template"))
+            {
+                if (currentTemplateIndex < 0)
+                {
+                    LOG_ERROR("ScriptEditorWindow: Cannot load Script template at index {}",currentTemplateIndex);
+                }
+                else
+                {
+                    auto templateName = templates.at(currentTemplateIndex);
+                    auto templateStr = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SCRIPT, templateName, Constants::ASSET_FORMAT_SCRIPT_LUA);
+                    if (scriptInst)
+                    {
+                        scriptInst->setSource(templateStr);
+                    }
+                    else
+                    {
+                        LOG_ERROR("ScriptEditorWindow: Cannot set from template, script Runtime is null");
+                    }
+                }
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
         if(ImGui::Button("Open Script Editor..."))
         {
-            mContext->getScriptEditorWindow()->setScriptDefinition(scriptDef);
-            mContext->getScriptEditorWindow()->setVisible(true);
+            mContext->openInExternalEditor(scriptDef);
         }
-        ImGui::PopItemWidth();
     }
 
     void
     PropertiesWindow::drawShaderAssetProperties
     ()
     {
-        auto shaderDef = dynamic_cast<ShaderDefinition*>(mDefinition);
+        auto shaderDef = static_cast<ShaderDefinition*>(mDefinition);
         auto projectRuntime = mContext->getProject()->getRuntime();
         ShaderRuntime* shaderInst = nullptr;
+        auto shaderCache = projectRuntime->getShaderCache();
+
         if (projectRuntime)
         {
-            auto shaderCache = projectRuntime->getShaderCache();
             if (shaderCache)
             {
-                shaderInst = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderDef));
+                shaderInst = static_cast<ShaderRuntime*>(shaderCache->getRuntime(shaderDef));
             }
         }
-        ImGui::PushItemWidth(-1);
-        if(ImGui::Button("Open Shader Editor..."))
+
+        // Templates
+
+        vector<string> templates = mContext->getTemplatesModel()->getTemplateNames(AssetType::ASSET_TYPE_ENUM_SHADER);
+        static int currentTemplateIndex = -1;
+        if(StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
         {
-            mContext->getShaderEditorWindow()->setShaderDefinition(shaderDef);
-            mContext->getShaderEditorWindow()->setVisible(true);
+            ImGui::OpenPopup("Load Shader From Template?");
         }
-        ImGui::PopItemWidth();
+
+        if(ImGui::BeginPopupModal("Load Shader From Template?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Load Shader from template?\n\nThis will OVERWRITE the existing Shader files.\n\n");
+            if (ImGui::Button("Cancel"))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Load Template"))
+            {
+                if (currentTemplateIndex < 0)
+                {
+                    LOG_ERROR("ShaderEditorWindow: Cannot load template {}",currentTemplateIndex);
+                }
+                else
+                {
+                    auto  templateName = templates.at(currentTemplateIndex);
+                    string vertTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+                    string fragTemplate = mContext->getTemplatesModel()->getTemplate(AssetType::ASSET_TYPE_ENUM_SHADER,templateName,Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+
+                    bool vertSuccess = false;
+                    vertSuccess = mContext->getProjectDirectory()->writeAssetData(
+                                shaderDef,
+                                (uint8_t*)vertTemplate.c_str(),
+                                vertTemplate.size(),
+                                Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+
+                    bool fragSuccess = false;
+                    fragSuccess = mContext->getProjectDirectory()->writeAssetData(
+                                shaderDef,
+                                (uint8_t*)fragTemplate.c_str(),
+                                fragTemplate.size(),
+                                Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+
+                    if (vertSuccess && fragSuccess)
+                    {
+                        mContext->getMenuBar()->setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
+                    }
+                    else
+                    {
+                        mContext->getMenuBar()->setMessageString("Error saving Shader"+shaderInst->getNameAndUuidString());
+                    }
+
+                    currentTemplateIndex = -1;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
+        if(ImGui::Button("Open Vertex Shader in Editor..."))
+        {
+            mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+        }
+
+        if(ImGui::Button("Open Fragment Shader in Editor..."))
+        {
+            mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+        }
     }
 
     void
@@ -2693,12 +2826,12 @@ namespace octronic::dream::tool
     {
         void* textureId = nullptr;
 
-        auto textureDef = dynamic_cast<TextureDefinition*>(mDefinition);
+        auto textureDef = static_cast<TextureDefinition*>(mDefinition);
         auto projectRuntime = mContext->getProject()->getRuntime();
         if (projectRuntime)
         {
             TextureCache* txCache = projectRuntime->getTextureCache();
-            TextureRuntime* txRuntime = dynamic_cast<TextureRuntime*>(txCache->getRuntime(textureDef));
+            TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(textureDef));
             if (txRuntime)
             {
                 textureId = (void*)(intptr_t)txRuntime->getGLID();
@@ -2785,6 +2918,44 @@ namespace octronic::dream::tool
 
     void PropertiesWindow::drawSpriteAssetProperties()
     {
+        Project* project = mContext->getProject();
+        SpriteDefinition* spriteDefinition = static_cast<SpriteDefinition*>(mDefinition);
+        UuidType textureUuid = spriteDefinition->getTexture();
 
+        if (project)
+        {
+            ProjectDefinition* projectDefinition = project->getDefinition();
+            ProjectRuntime* projectRuntime = project->getRuntime();
+
+            if (projectDefinition && projectRuntime)
+            {
+                vector<string> textures = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);;
+                int textureIndex;
+                textureIndex = projectDefinition->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, projectDefinition->getAssetDefinitionByUuid(textureUuid));
+
+                if(StringCombo("Texture",&textureIndex,textures,textures.size()))
+                {
+                    AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, textureIndex);
+                    if (txDef)
+                    {
+                        UuidType uuid = txDef->getUuid();
+                        spriteDefinition->setTexture(uuid);
+                    }
+                }
+
+                TextureDefinition* textureDefinition = static_cast<TextureDefinition*>(projectDefinition->getAssetDefinitionByUuid(textureUuid));
+
+                if (textureDefinition)
+                {
+                    TextureCache* txCache = projectRuntime->getTextureCache();
+                    TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntime(textureDefinition));
+                    if (txRuntime)
+                    {
+                        void* textureID = (void*)(intptr_t)txRuntime->getGLID();
+                        ImGui::Image(textureID, mImageSize);
+                    }
+                }
+            }
+        }
     }
 }

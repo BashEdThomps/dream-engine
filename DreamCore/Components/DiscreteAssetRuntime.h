@@ -33,7 +33,7 @@ namespace octronic::dream
         DiscreteAssetRuntime(const string& className, AssetDefinition* def, EntityRuntime* runtime);
         ~DiscreteAssetRuntime() override;
 
-        EntityRuntime* getEntityRuntime();
+        EntityRuntime* getEntityRuntime() const;
         string getAssetFilePath(const string& fmt = "") override;
         string getAssetDirectoryPath() override;
 

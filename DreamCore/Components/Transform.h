@@ -13,7 +13,6 @@
 #pragma once
 
 #include "Common/Vector.h"
-#include "Common/LockableObject.h"
 
 #include <string>
 #include <json.hpp>
@@ -46,7 +45,7 @@ namespace octronic::dream
      * @brief Based around a glm::mat4 instance with convenience methods added
      * to make matrix manipulation easier.
      */
-    class Transform : public LockableObject
+    class Transform
     {
     private:
         /**
@@ -82,7 +81,7 @@ namespace octronic::dream
         /**
           * @brief Default Destructor
           */
-        ~Transform() override;
+        ~Transform();
 
         /**
          * @brief Get the matrix as a bullet transform object
@@ -117,7 +116,7 @@ namespace octronic::dream
          * @param conjugate Conjugate the rotation matrix during decomposition.
          * @see MatrixDecomposition
          */
-        void recomposeMatrix(MatrixDecomposition decomp, bool conjugate = false);
+        void recomposeMatrix(const MatrixDecomposition& decomp, bool conjugate = false);
 
         /**
          * @brief Translate the underlying matrix by the given amount.
@@ -136,7 +135,7 @@ namespace octronic::dream
         /**
 		* @brief get the translation vector described by the underlying matrix
 		*/
-        Vector3& getTranslation();
+        Vector3 getTranslation();
 
         /**
          * @brief Get the JSON serialised representation of this object's

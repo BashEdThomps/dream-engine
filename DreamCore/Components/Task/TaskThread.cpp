@@ -2,7 +2,7 @@
 
 #include "Task.h"
 #include "Common/Logger.h"
-#include "Common/ThreadLockFailedException.h"
+#include "Base/ThreadLockFailedException.h"
 
 #include <algorithm>
 
@@ -33,7 +33,6 @@ namespace octronic::dream
         {
             if (mWaitingToRunFence)
             {
-                std::this_thread::yield();
                 continue;
             }
 
@@ -175,7 +174,6 @@ namespace octronic::dream
 
             LOG_TRACE("TaskThread[{}]: Thread has finished it's task queue, Setting Fence",getThreadID());
             mWaitingToRunFence = true;
-            std::this_thread::yield();
         }
     }
 

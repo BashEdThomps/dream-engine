@@ -30,6 +30,7 @@ namespace octronic::dream
     class EntityRuntime;
     class TextureDestructionTask;
     class TextureConstructionTask;
+    class SpriteRuntime;
 
     class TextureRuntime : public SharedAssetRuntime
     {
@@ -59,6 +60,12 @@ namespace octronic::dream
         unsigned char* getImage() const;
         void setImage(unsigned char* image);
 
+        void pushSpriteInstance(SpriteRuntime* er);
+        void popSpriteInstance(SpriteRuntime* er);
+        void popSpriteInstanceByUuid(UuidType spriteUuid);
+        vector<SpriteRuntime*> getSpriteInstancesVector();
+
+
         void pushConstructionTask();
 
         bool loadIntoGL();
@@ -69,10 +76,8 @@ namespace octronic::dream
         int mHeight;
         int mChannels;
         unsigned char* mImage;
+        vector<SpriteRuntime*> mSpriteInstances;
         TextureConstructionTask mTextureConstructionTask;
         shared_ptr<TextureDestructionTask> mTextureDestructionTask;
-
-
-
     };
 }

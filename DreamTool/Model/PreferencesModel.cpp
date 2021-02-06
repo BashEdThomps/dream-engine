@@ -9,6 +9,9 @@ using octronic::dream::Constants;
 
 namespace octronic::dream::tool
 {
+    const string PreferencesModel::PREFS_FILE_NAME = "DTPrefs.json";
+    const string PreferencesModel::PREFS_EXTERNAL_EDITOR_PATH = "external_editor_path";
+
     PreferencesModel::PreferencesModel
     (DreamToolContext* context)
         : Model(context)
@@ -24,11 +27,10 @@ namespace octronic::dream::tool
 
     bool
     PreferencesModel::load
-    (string projectPath)
+    ()
     {
-        mProjectPath = projectPath;
         StorageManager* fm = mContext->getStorageManager();
-        File* f = fm->openFile (getAbsolutePath());
+        File* f = fm->openFile (PREFS_FILE_NAME);
         if (f->exists())
         {
             mJson = json::parse(f->readString());
@@ -44,22 +46,23 @@ namespace octronic::dream::tool
     ()
     {
         StorageManager* fm = mContext->getStorageManager();
-        File* f = fm->openFile(getAbsolutePath());
+        File* f = fm->openFile(PREFS_FILE_NAME);
         bool retval = f->writeString(mJson.dump(1));
         fm->closeFile(f);
         return retval;
     }
 
-    string
-    PreferencesModel::getAbsolutePath
-    ()
+    string PreferencesModel::getExternalEditorPath()
     {
-        stringstream str;
-        str << mProjectPath;
-        str << Constants::DIR_PATH_SEP;
-        str << PREFS_FILE_NAME;
-        return str.str();
+       if (mJson.find(PREFS_EXTERNAL_EDITOR_PATH) == mJson.end())
+       {
+           mJson[PREFS_EXTERNAL_EDITOR_PATH] = "";
+       }
+       return mJson[PREFS_EXTERNAL_EDITOR_PATH];
     }
 
-    const string PreferencesModel::PREFS_FILE_NAME = "DTPrefs.json";
+    void PreferencesModel::setExternalEditorPath(const string& editor)
+    {
+           mJson[PREFS_EXTERNAL_EDITOR_PATH] = editor;
+    }
 }

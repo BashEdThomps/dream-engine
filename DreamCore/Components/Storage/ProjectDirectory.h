@@ -20,7 +20,7 @@
 
 #include "Common/Uuid.h"
 #include "Common/Constants.h" // AssetType
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 
 using std::string;
 using std::vector;

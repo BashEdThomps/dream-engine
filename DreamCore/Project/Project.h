@@ -16,7 +16,7 @@
 #pragma once
 
 #include "Common/Uuid.h"
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 
 #include <string>
 #include <vector>

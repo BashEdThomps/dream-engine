@@ -92,7 +92,6 @@ namespace octronic::dream
             mNextThread = mNextThread % mThreadVector.size();
             assert(mNextThread >= 0 && mNextThread <= mThreadVector.size());
             if (result) break;
-            std::this_thread::yield();
         }
     }
 
@@ -113,7 +112,6 @@ namespace octronic::dream
             mNextThread++;
             mNextThread = mNextThread % mThreadVector.size();
             if (result) break;
-            std::this_thread::yield();
         }
     }
 
@@ -151,7 +149,6 @@ namespace octronic::dream
                 LOG_TRACE("TaskManager: All Threads have Finished");
                 return;
             }
-            std::this_thread::yield();
         }
     }
 

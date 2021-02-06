@@ -23,7 +23,7 @@
 #endif
 
 #include "Common/Math.h"
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 #include "Components/Transform.h"
 #include "Scene/Entity/BoundingBox.h"
 #include "Frustum.h"

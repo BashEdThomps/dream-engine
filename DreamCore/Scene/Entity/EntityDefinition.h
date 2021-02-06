@@ -16,7 +16,7 @@
 #include <vector>
 #include <memory>
 
-#include "Common/Definition.h"
+#include "Base/Definition.h"
 #include "Components/Transform.h"
 
 
@@ -43,7 +43,7 @@ namespace octronic::dream
         bool getHasCameraFocus();
 
         Transform getTransform();
-        void setTransform(Transform& tform);
+        void setTransform(Transform tform);
 
         vector<EntityDefinition*>& getChildDefinitionsList();
         void adoptChildDefinition(EntityDefinition* child);

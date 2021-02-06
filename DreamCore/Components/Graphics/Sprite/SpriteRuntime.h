@@ -27,12 +27,14 @@ namespace octronic::dream
 		int getHeight() const;
 		void setHeight(int height);
 
-
 		void pushConstructionTask();
 
 		TextureRuntime* getTextureRuntime() const;
 
 		void draw();
+
+        void pushInstance();
+        void popInstance();
 
 
     private:

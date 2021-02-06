@@ -31,9 +31,12 @@ namespace octronic::dream
     SpriteRuntime::~SpriteRuntime()
     {
         LOG_TRACE("SpriteRuntime: {}", __FUNCTION__);
-        mSpriteDestructionTask = make_shared<SpriteDestructionTask>();
-        ProjectRuntime* projectRuntime = mEntityRuntime->getSceneRuntime()->getProjectRuntime();
-        projectRuntime->getGraphicsComponent()->pushDestructionTask(mSpriteDestructionTask);
+        if (mTexture)
+        {
+			mSpriteDestructionTask = make_shared<SpriteDestructionTask>(mTexture, mEntityRuntime->getUuid());
+			ProjectRuntime* projectRuntime = mEntityRuntime->getSceneRuntime()->getProjectRuntime();
+			projectRuntime->getGraphicsComponent()->pushDestructionTask(mSpriteDestructionTask);
+        }
     }
 
     void SpriteRuntime::pushConstructionTask()
@@ -48,7 +51,8 @@ namespace octronic::dream
 
     bool SpriteRuntime::useDefinition()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             LOG_TRACE("SpriteRuntime: {}", __FUNCTION__);
@@ -98,8 +102,6 @@ namespace octronic::dream
 
     void SpriteRuntime::draw()
     {
-        if(dreamTryLock()) {
-            dreamLock();
             LOG_TRACE("SpriteRuntime: {}", __FUNCTION__);
 
             if (mSpriteConstructionTask.getState() != TaskState::TASK_STATE_COMPLETED)
@@ -109,11 +111,26 @@ namespace octronic::dream
             }
 
             // Do drawing here
-        } dreamElseLockFailed
     }
 
     TextureRuntime* SpriteRuntime::getTextureRuntime() const
     {
         return mTexture;
+    }
+
+    void SpriteRuntime::pushInstance()
+    {
+        if (mTexture)
+        {
+            mTexture->pushSpriteInstance(this);
+        }
+    }
+
+    void SpriteRuntime::popInstance()
+    {
+        if (mTexture)
+        {
+            mTexture->popSpriteInstance(this);
+        }
     }
 }

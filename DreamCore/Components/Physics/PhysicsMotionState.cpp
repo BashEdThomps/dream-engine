@@ -13,6 +13,7 @@
 #include "PhysicsMotionState.h"
 
 #include "Common/Logger.h"
+#include "Scene/Entity/EntityRuntime.h"
 
 #include <iostream>
 #include <LinearMath/btMatrix3x3.h>
@@ -24,9 +25,9 @@
 namespace octronic::dream
 {
     PhysicsMotionState::PhysicsMotionState
-    (Transform* dreamTransform)
+    (EntityRuntime* entity)
         : btMotionState(),
-          mDreamTransform(dreamTransform)
+          mEntityRuntime(entity)
     {
         LOG_TRACE( "PhysicsMotionState: Constructor called" );
     }
@@ -41,8 +42,7 @@ namespace octronic::dream
     PhysicsMotionState::getWorldTransform
     (btTransform &worldTrans) const
     {
-        float* mtx = mDreamTransform->getMatrixFloatPointer();
-        worldTrans.setFromOpenGLMatrix(mtx);
+        worldTrans.setFromOpenGLMatrix(mEntityRuntime->getTransform().getMatrixFloatPointer());
     }
 
     void
@@ -53,7 +53,7 @@ namespace octronic::dream
         LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);
-        mDreamTransform->setMatrix(glm::make_mat4(mtx));
+        mEntityRuntime->setTransform(Transform(glm::make_mat4(mtx)));
     }
 
     void

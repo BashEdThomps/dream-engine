@@ -76,12 +76,8 @@ namespace octronic::dream
     EntityRuntime*
     DiscreteAssetRuntime::getEntityRuntime
     ()
+    const
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            return mEntityRuntime;
-
-        } dreamElseLockFailed
+        return mEntityRuntime;
     }
 }

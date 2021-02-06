@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/ThreadLockFailedException.h"
+#include "Base/ThreadLockFailedException.h"
 
 #include <mutex>
 #include <string>
@@ -48,4 +48,4 @@ namespace octronic::dream
 #define dreamLock() const dream_lock_type lg(getMutex(), std::adopt_lock)
 #define dreamTryLock() getMutex().try_lock()
 #define dreamElseLockFailed else { throw ThreadLockFailedException(); }
-#define dreamWaitForLock() dream_lock_type lg(getMutex())
+//#define dreamWaitForLock() dream_lock_type lg(getMutex())

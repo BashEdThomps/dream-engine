@@ -121,11 +121,12 @@ namespace octronic::dream
         mWaitingForMe.clear();
     }
 
-    bool Task::isWaitingForDependencies()
+    bool Task::isWaitingForDependencies() const
     {
 
         bool is_waiting = !mWaitingFor.empty();
 
+        /*
         if (is_waiting)
         {
             stringstream ss;
@@ -135,6 +136,7 @@ namespace octronic::dream
             }
             LOG_TRACE("Task: {} is waiting for {} dependencies to finish {}", getTaskName(), mWaitingFor.size(), ss.str());
         }
+        */
         return is_waiting;
     }
 

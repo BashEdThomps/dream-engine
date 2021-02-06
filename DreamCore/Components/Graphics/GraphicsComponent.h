@@ -74,9 +74,14 @@ namespace octronic::dream
      *        The result of the Lighting Shader is rendered to a full-screen
      *        quad.
      *
-     * 4. Font Rendering
+     * 4. Sprite Rendering
      * 		- After the 3D scene has been rendered and lit, 2D elements are drawn
-     *        on top. The FontRuntime cache is iterated and all instances of
+     *        on top. The TextureCache's Runtimes are iterated and all instances of
+     *        sprites are drawn to the screen in screen-space.
+     *
+     * 5. Font Rendering
+     * 		- After the 3D scene & sprites have been rendered, Font instances are
+     *        drawn on top. The FontRuntime cache is iterated and all instances of
      *        text are drawn to the screen in screen-space.
      */
     class GraphicsComponent : public Component
@@ -99,20 +104,16 @@ namespace octronic::dream
         bool setupShadowBuffers();
         void freeShadowBuffers();
         void renderShadowPass(SceneRuntime*);
-        ShaderRuntime* getShadowPassShader() const;
-        void setShadowPassShader(ShaderRuntime* shadowPassShader);
-        GLuint getShadowPassDepthBuffer() const;
+	    GLuint getShadowPassDepthBuffer() const;
         // Light ===============================================================
         void addToLightQueue(EntityRuntime*);
         void clearLightQueue();
         bool setupScreenQuad();
         void renderLightingPass(SceneRuntime* sr);
-        ShaderRuntime* getLightingShader() const;
-        void setLightingShader(ShaderRuntime* lightingShader);
+        // Sprite ===============================================================
+        void renderSprites(SceneRuntime* sceneRuntime);
         // Font ================================================================
         void renderFonts(SceneRuntime* sceneRuntime);
-        ShaderRuntime* getFontShader() const;
-        void setFontShader(ShaderRuntime* fontShader);
         // Task ================================================================
         void pushTask(GraphicsComponentTask* t);
         void pushDestructionTask(const shared_ptr<GraphicsComponentDestructionTask>& t);
@@ -138,18 +139,13 @@ namespace octronic::dream
         GLuint mGeometryPassIgnoreBuffer;
         // Shadow ==============================================================
         EntityRuntime* mShadowLight;
-        ShaderRuntime* mShadowPassShader;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
         mat4 mShadowMatrix;
         const int SHADOW_SIZE = 1024;
-        // Lighting ============================================================
-        ShaderRuntime* mLightingPassShader;
         GLuint mScreenQuadVAO;
         GLuint mScreenQuadVBO;
         vector<LightRuntime*> mLightQueue;
-        // Font ================================================================
-        ShaderRuntime* mFontShader;
         // Task ================================================================
         vector<GraphicsComponentTask*> mTaskQueue;
         vector<GraphicsComponentTask*> mDebugTaskQueue;

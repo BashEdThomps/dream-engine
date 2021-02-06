@@ -126,6 +126,7 @@ namespace octronic::dream
     const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_FONT_SHADER = "font_shader";
+    const string Constants::SCENE_SPRITE_SHADER = "sprite_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
 
     // Entity ==============================================================

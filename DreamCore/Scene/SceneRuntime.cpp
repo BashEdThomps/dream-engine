@@ -49,8 +49,6 @@
 
 using std::make_shared;
 
-using std::mutex;
-
 namespace octronic::dream
 {
     SceneRuntime::SceneRuntime
@@ -63,6 +61,7 @@ namespace octronic::dream
           mLightingPassShader(nullptr),
           mShadowPassShader(nullptr),
           mFontShader(nullptr),
+          mSpriteShader(nullptr),
           mInputScript(nullptr),
           mCamera(Camera(this)),
           mSceneStartTime(0),
@@ -91,9 +90,9 @@ namespace octronic::dream
     SceneRuntime::destroyRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
 
             if (mRootEntityRuntime != nullptr)
@@ -115,9 +114,9 @@ namespace octronic::dream
     SceneRuntime::getState
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mState;
         } dreamElseLockFailed
     }
@@ -126,9 +125,9 @@ namespace octronic::dream
     SceneRuntime::setState
     (SceneState state)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (state >= mState || (mState == SCENE_STATE_ACTIVE && state == SCENE_STATE_LOADED))
             {
                 mState = state;
@@ -144,9 +143,9 @@ namespace octronic::dream
     SceneRuntime::getGravity
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mProjectRuntime)
             {
                 return mProjectRuntime->getPhysicsComponent()->getGravity();
@@ -159,9 +158,9 @@ namespace octronic::dream
     SceneRuntime::setGravity
     (const Vector3& gravity)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mProjectRuntime)
             {
                 mProjectRuntime->getPhysicsComponent()->setGravity(gravity);
@@ -173,9 +172,9 @@ namespace octronic::dream
     SceneRuntime::getClearColour
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mClearColour;
         } dreamElseLockFailed
     }
@@ -184,9 +183,9 @@ namespace octronic::dream
     SceneRuntime::setClearColour
     (const Vector3& clearColour)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mClearColour = clearColour;
         } dreamElseLockFailed
     }
@@ -195,20 +194,17 @@ namespace octronic::dream
     SceneRuntime::getEntityRuntimeByUuid
     (UuidType uuid)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (!mRootEntityRuntime)
             {
                 return nullptr;
             }
 
-            return mRootEntityRuntime->applyToAll
-                    (
+            return mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime* currentRuntime)
-                        {
+                        ([&](EntityRuntime* currentRuntime){
                             if (!currentRuntime)
                             {
                                 return static_cast<EntityRuntime*>(nullptr);
@@ -218,9 +214,7 @@ namespace octronic::dream
                                 return currentRuntime;
                             }
                             return static_cast<EntityRuntime*>(nullptr);
-                        }
-                        )
-                    );
+                        }));
         } dreamElseLockFailed
     }
 
@@ -228,19 +222,18 @@ namespace octronic::dream
     SceneRuntime::getEntityRuntimeByName
     (const string& name)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             if (!mRootEntityRuntime)
             {
                 return nullptr;
             }
-            return mRootEntityRuntime->applyToAll
-                    (
+
+            return mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime* currentRuntime)
-                        {
+                        ([&](EntityRuntime* currentRuntime){
                             if (!currentRuntime)
                             {
                                 return static_cast<EntityRuntime*>(nullptr);
@@ -251,9 +244,7 @@ namespace octronic::dream
                                 return currentRuntime;
                             }
                             return static_cast<EntityRuntime*>(nullptr);
-                        }
-                        )
-                    );
+                        }));
         } dreamElseLockFailed
     }
 
@@ -261,7 +252,8 @@ namespace octronic::dream
     SceneRuntime::countEntityRuntimes
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             if (!mRootEntityRuntime)
@@ -269,17 +261,12 @@ namespace octronic::dream
                 return 0;
             }
             int count = 0;
-            mRootEntityRuntime->applyToAll
-                    (
+            mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime*)
-                        {
+                        ([&](EntityRuntime*){
                             count++;
                             return static_cast<EntityRuntime*>(nullptr);
-                        }
-                        )
-                    );
+                        }));
             return count;
         } dreamElseLockFailed
     }
@@ -288,7 +275,8 @@ namespace octronic::dream
     SceneRuntime::showScenegraph
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             if (!mRootEntityRuntime)
@@ -297,18 +285,13 @@ namespace octronic::dream
                 return;
             }
 
-            mRootEntityRuntime->applyToAll
-                    (
+            mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime*)
-                        {
+                        ([&](EntityRuntime*){
                             LOG_DEBUG("SceneRuntime: showScenegraph not implemented");
                             //obj->showStatus();
                             return nullptr;
-                        }
-                        )
-                    );
+                        }));
         } dreamElseLockFailed
     }
 
@@ -316,9 +299,9 @@ namespace octronic::dream
     SceneRuntime::setRootEntityRuntime
     (EntityRuntime* root)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mRootEntityRuntime = root;
         } dreamElseLockFailed
     }
@@ -327,9 +310,9 @@ namespace octronic::dream
     SceneRuntime::getRootEntityRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mRootEntityRuntime;
         } dreamElseLockFailed
     }
@@ -338,21 +321,16 @@ namespace octronic::dream
     SceneRuntime::collectGarbage
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
-            mRootEntityRuntime->applyToAll
-                    (
+            mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime* runt)
-                        {
+                        ([&](EntityRuntime* runt){
                             runt->collectGarbage();
                             return static_cast<EntityRuntime*>(nullptr);
-                        }
-                        )
-                    );
+                        }));
         } dreamElseLockFailed
     }
 
@@ -360,9 +338,9 @@ namespace octronic::dream
     SceneRuntime::getProjectRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mProjectRuntime;
         } dreamElseLockFailed
     }
@@ -371,9 +349,9 @@ namespace octronic::dream
     SceneRuntime::hasRootEntityRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mRootEntityRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -382,9 +360,9 @@ namespace octronic::dream
     SceneRuntime::useDefinition
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             SceneDefinition* sceneDefinition = dynamic_cast<SceneDefinition*>(mDefinition);
 
             if (sceneDefinition == nullptr)
@@ -411,7 +389,7 @@ namespace octronic::dream
             setMinDrawDistance(sceneDefinition->getMinDrawDistance());
             setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
 
-            // Load Light and Shadow pass Shaders
+            // Load Scene-level Shaders
             ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
 
             UuidType lightPassShaderUuid = sceneDefinition->getLightingPassShader();
@@ -436,6 +414,14 @@ namespace octronic::dream
             if (mFontShader == nullptr)
             {
                 LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
+            }
+
+            UuidType spriteShaderUuid = sceneDefinition->getSpriteShader();
+            mSpriteShader = dynamic_cast<ShaderRuntime*>(shaderCache->getRuntime(spriteShaderUuid));
+
+            if (mSpriteShader == nullptr)
+            {
+                LOG_ERROR("SceneRuntime: Unable to load sprite shader {} for Scene {}",spriteShaderUuid,getNameAndUuidString());
             }
 
             mProjectRuntime->getShaderCache()->logShaders();
@@ -470,7 +456,6 @@ namespace octronic::dream
                 return false;
             }
 
-
             setRootEntityRuntime(er);
             setState(SceneState::SCENE_STATE_LOADED);
 
@@ -488,9 +473,9 @@ namespace octronic::dream
     SceneRuntime::getPhysicsDebug
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mProjectRuntime)
             {
                 return mProjectRuntime->getPhysicsComponent()->getDebug();
@@ -503,9 +488,9 @@ namespace octronic::dream
     SceneRuntime::setPhysicsDebug
     (bool physicsDebug)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mProjectRuntime)
             {
                 mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
@@ -517,9 +502,9 @@ namespace octronic::dream
     SceneRuntime::getLightingPassShader
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mLightingPassShader;
         } dreamElseLockFailed
     }
@@ -528,9 +513,9 @@ namespace octronic::dream
     SceneRuntime::setLightingPassShader
     (ShaderRuntime* lightingShader)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mLightingPassShader = lightingShader;
         } dreamElseLockFailed
     }
@@ -539,9 +524,9 @@ namespace octronic::dream
     SceneRuntime::setMeshCullDistance
     (float mcd)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mMeshCullDistance = mcd;
         } dreamElseLockFailed
     }
@@ -550,9 +535,9 @@ namespace octronic::dream
     SceneRuntime::getMeshCullDistance
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mMeshCullDistance;
         } dreamElseLockFailed
     }
@@ -561,9 +546,9 @@ namespace octronic::dream
     SceneRuntime::setMinDrawDistance
     (float f)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mMinDrawDistance = f;
         } dreamElseLockFailed
     }
@@ -572,9 +557,9 @@ namespace octronic::dream
     SceneRuntime::getMinDrawDistance
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mMinDrawDistance;
         } dreamElseLockFailed
     }
@@ -583,9 +568,9 @@ namespace octronic::dream
     SceneRuntime::getMaxDrawDistance
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mMaxDrawDistance;
         } dreamElseLockFailed
     }
@@ -594,27 +579,22 @@ namespace octronic::dream
     SceneRuntime::getAssetRuntimes
     (AssetType t)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             vector<AssetRuntime*> runtimes;
             if (mRootEntityRuntime)
             {
-                mRootEntityRuntime->applyToAll
-                        (
+                mRootEntityRuntime->applyToAll(
                             function<EntityRuntime*(EntityRuntime*)>
-                            (
-                                [&](EntityRuntime* currentRuntime)
-                            {
+                            ([&](EntityRuntime* currentRuntime){
                                 AssetRuntime* inst = currentRuntime->getAssetRuntime(t);
                                 if (inst)
                                 {
                                     runtimes.push_back(inst);
                                 }
                                 return static_cast<EntityRuntime*>(nullptr);
-                            }
-                            )
-                        );
+                            }));
             }
             return runtimes;
         } dreamElseLockFailed
@@ -624,27 +604,23 @@ namespace octronic::dream
     SceneRuntime::getEntitysWithRuntimeOf
     (AssetDefinition* def)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             vector<EntityRuntime*> runtimes;
             if (mRootEntityRuntime)
             {
-                mRootEntityRuntime->applyToAll
-                        (
+                mRootEntityRuntime->applyToAll(
                             function<EntityRuntime*(EntityRuntime*)>
-                            (
-                                [&](EntityRuntime* currentRuntime)
-                            {
+                            ([&](EntityRuntime* currentRuntime){
                                 AssetRuntime* inst = currentRuntime->getAssetRuntime(def->getAssetType());
                                 if (inst && inst->getUuid() == def->getUuid())
                                 {
                                     runtimes.push_back(currentRuntime);
                                 }
                                 return static_cast<EntityRuntime*>(nullptr);
-                            }
-                            )
-                        );
+                            }));
             }
             return runtimes;
         } dreamElseLockFailed
@@ -655,9 +631,9 @@ namespace octronic::dream
     SceneRuntime::setMaxDrawDistance
     (float f)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mMaxDrawDistance = f;
         } dreamElseLockFailed
     }
@@ -666,9 +642,9 @@ namespace octronic::dream
     SceneRuntime::getCamera
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return &mCamera;
         } dreamElseLockFailed
     }
@@ -677,9 +653,9 @@ namespace octronic::dream
     SceneRuntime::getShadowPassShader
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mShadowPassShader;
         } dreamElseLockFailed
     }
@@ -688,28 +664,46 @@ namespace octronic::dream
     SceneRuntime::setShadowPassShader
     (ShaderRuntime* shadowPassShader)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mShadowPassShader = shadowPassShader;
         } dreamElseLockFailed
     }
 
     ShaderRuntime* SceneRuntime::getFontShader()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mFontShader;
         } dreamElseLockFailed
     }
 
     void SceneRuntime::setFontShader(ShaderRuntime* fontShader)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mFontShader = fontShader;
+        } dreamElseLockFailed
+    }
+
+    ShaderRuntime* SceneRuntime::getSpriteShader()
+    {
+        if(dreamTryLock())
+        {
+            dreamLock();
+            return mSpriteShader;
+        } dreamElseLockFailed
+    }
+
+    void SceneRuntime::setSpriteShader(ShaderRuntime* shader)
+    {
+        if(dreamTryLock())
+        {
+            dreamLock();
+            mSpriteShader = shader;
         } dreamElseLockFailed
     }
 
@@ -717,9 +711,9 @@ namespace octronic::dream
     SceneRuntime::getInputScript
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mInputScript;
         } dreamElseLockFailed
     }
@@ -728,9 +722,9 @@ namespace octronic::dream
     SceneRuntime::getNearestToCamera
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (!mRootEntityRuntime)
             {
                 return nullptr;
@@ -741,16 +735,14 @@ namespace octronic::dream
             EntityRuntime* nearest = mRootEntityRuntime;
             EntityRuntime* focused = mCamera.getFocusedEntity();
 
-            mRootEntityRuntime->applyToAll
-                    (
+            mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
-                        (
-                            [&](EntityRuntime* next)
-                        {
+                        ([&](EntityRuntime* next){
                             if (next == focused)
                             {
                                 return nullptr;
                             }
+
                             float nextDistance = next->distanceFrom(camTrans);
                             if (nextDistance < distance)
                             {
@@ -758,9 +750,7 @@ namespace octronic::dream
                                 nearest = next;
                             }
                             return nullptr;
-                        }
-                        )
-                    );
+                        }));
             return nearest;
         } dreamElseLockFailed
     }
@@ -769,18 +759,18 @@ namespace octronic::dream
     SceneRuntime::getSceneCurrentTime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mSceneCurrentTime;
         } dreamElseLockFailed
     }
 
     void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mSceneCurrentTime = sceneCurrentTime;
         } dreamElseLockFailed
     }
@@ -789,9 +779,9 @@ namespace octronic::dream
     SceneRuntime::getSceneStartTime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mSceneStartTime;
         } dreamElseLockFailed
     }
@@ -800,9 +790,9 @@ namespace octronic::dream
     SceneRuntime::setSceneStartTime
     (unsigned long sceneStartTime)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mSceneStartTime = sceneStartTime;
         } dreamElseLockFailed
     }
@@ -819,7 +809,8 @@ namespace octronic::dream
     SceneRuntime::createSceneTasks
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
@@ -836,7 +827,8 @@ namespace octronic::dream
             // Input component needs to be constructed
             if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_CONSTRUCTED)
             {
-                taskManager->pushTask(&mInputScriptConstructionTask);
+                //taskManager->pushTask(&mInputScriptConstructionTask);
+                mInputScriptConstructionTask.execute();
             }
             // Input component in-flight
             else if (mInputScript && mInputScriptConstructionTask.getState() == TaskState::TASK_STATE_COMPLETED)
@@ -844,16 +836,18 @@ namespace octronic::dream
                 InputPollDataTask* inputPollDataTask  = inputComponent->getPollDataTask();
                 if (inputPollDataTask->readyToPush())
                 {
-					inputComponent->setCurrentSceneRuntime(this);
-					taskManager->pushTask(inputPollDataTask);
-            	}
+                    inputComponent->setCurrentSceneRuntime(this);
+                    //taskManager->pushTask(inputPollDataTask);
+                    inputPollDataTask->execute();
+                }
 
                 // Process Input
                 InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
                 if (inputExecuteTask->readyToPush())
                 {
-					inputExecuteTask->dependsOn(inputPollDataTask);
-					taskManager->pushTask(inputExecuteTask);
+                    inputExecuteTask->dependsOn(inputPollDataTask);
+                    //taskManager->pushTask(inputExecuteTask);
+                    inputExecuteTask->execute();
                 }
             }
 
@@ -864,16 +858,14 @@ namespace octronic::dream
                 physicsWorldUpdateTask = physicsComponent->getUpdateWorldTask();
                 if (physicsWorldUpdateTask->readyToPush())
                 {
-                	taskManager->pushTask(physicsWorldUpdateTask);
+                    taskManager->pushTask(physicsWorldUpdateTask);
                 }
             }
 
             // Process Entities
-            mRootEntityRuntime->applyToAll
-                    (
-                        function<EntityRuntime*(EntityRuntime*)>(
-                            [&](EntityRuntime* rt)
-                        {
+            mRootEntityRuntime->applyToAll(
+                        function<EntityRuntime*(EntityRuntime*)>
+                        ([&](EntityRuntime* rt){
                             LOG_TRACE("SceneRuntime: Pushing tasks of {}", rt->getNameAndUuidString());
                             rt->updateLifetime();
                             // Animation
@@ -883,7 +875,7 @@ namespace octronic::dream
                                 AnimationUpdateTask* ut = anim->getUpdateTask();
                                 if (ut->readyToPush())
                                 {
-                                	taskManager->pushTask(ut);
+                                    taskManager->pushTask(ut);
                                 }
                             }
                             // Audio
@@ -893,7 +885,7 @@ namespace octronic::dream
                                 AudioMarkersUpdateTask* ut = audio->getMarkersUpdateTask();
                                 if (ut->readyToPush())
                                 {
-                                	taskManager->pushTask(ut);
+                                    taskManager->pushTask(ut);
                                 }
                             }
 
@@ -904,13 +896,13 @@ namespace octronic::dream
                                 if (!pObj->isInPhysicsWorld())
                                 {
                                     PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
-                                	if (ut->readyToPush())
+                                    if (ut->readyToPush())
                                     {
-										if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
-										{
-											ut->dependsOn(physicsWorldUpdateTask);
-										}
-										taskManager->pushTask(ut);
+                                        if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
+                                        {
+                                            ut->dependsOn(physicsWorldUpdateTask);
+                                        }
+                                        taskManager->pushTask(ut);
                                     }
                                 }
                             }
@@ -922,7 +914,7 @@ namespace octronic::dream
 
                                 if (ut->readyToPush())
                                 {
-                                	taskManager->pushTask(ut);
+                                    taskManager->pushTask(ut);
                                 }
                             }
 
@@ -931,17 +923,20 @@ namespace octronic::dream
                             {
                                 ScriptRuntime* script = rt->getScriptRuntime();
                                 EntityScriptConstructionTask* load = rt->getScriptConstructionTask();
+
                                 if (load->getState() == TaskState::TASK_STATE_CONSTRUCTED)
                                 {
                                     // Don't clear state of load
-                                    taskManager->pushTask(load);
+                                    //taskManager->pushTask(load);
+                                    load->execute();
                                 }
                                 else if (load->getState() == TaskState::TASK_STATE_COMPLETED)
                                 {
                                     if (!rt->getScriptInitialised())
                                     {
                                         EntityScriptOnInitTask* init = rt->getScriptOnInitTask();
-                                        taskManager->pushTask(init);
+                                        //taskManager->pushTask(init);
+                                        init->execute();
                                     }
                                     else
                                     {
@@ -950,13 +945,15 @@ namespace octronic::dream
                                             EntityScriptOnEventTask* event = rt->getScriptOnEventTask();
                                             if (event->readyToPush())
                                             {
-												event->dependsOn(physicsWorldUpdateTask);
-												taskManager->pushTask(event);
+                                                //event->dependsOn(physicsWorldUpdateTask);
+                                                //taskManager->pushTask(event);
+                                                event->execute();
                                             }
                                         }
 
                                         EntityScriptOnUpdateTask* update = rt->getScriptOnUpdateTask();
-                                        taskManager->pushTask(update);
+                                        //taskManager->pushTask(update);
+                                        update->execute();
                                     }
                                 }
                             }
@@ -968,8 +965,7 @@ namespace octronic::dream
                             }
 
                             return static_cast<EntityRuntime*>(nullptr);
-                        }
-                        ));
+                        }));
 
             if (physicsComponent->getDebug())
             {

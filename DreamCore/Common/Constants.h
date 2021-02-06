@@ -155,6 +155,7 @@ namespace octronic::dream
         const static string SCENE_LIGHTING_PASS_SHADER;
         const static string SCENE_SHADOW_PASS_SHADER;
         const static string SCENE_FONT_SHADER;
+        const static string SCENE_SPRITE_SHADER;
         const static string SCENE_INPUT_SCRIPT;
         // Entity ==========================================================
         const static string ENTITY;

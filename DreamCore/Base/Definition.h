@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 
 #include "Common/Constants.h"
 #include "Components/Transform.h"

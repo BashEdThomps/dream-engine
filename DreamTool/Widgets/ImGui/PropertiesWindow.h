@@ -40,7 +40,7 @@ namespace octronic::dream::tool
 
     protected:
         void drawImGizmo();
-        void drawNonImGizmo();
+        void drawTransformProperties();
         int getStringIndexInVector(string str, vector<string> vec);
         bool drawDeleteEntityButton();
         bool drawDeleteSceneButton();
@@ -74,7 +74,5 @@ namespace octronic::dream::tool
         Runtime* mRuntime;
         ImVec2 mImageSize;
         ImVec2 mBigEditorSize;
-        bool mGizmoUseSnap;
-        vec3 mGizmoSnap;
     };
 }

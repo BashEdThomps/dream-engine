@@ -68,7 +68,8 @@ namespace octronic::dream
           mModelCache(nullptr),
           mShaderCache(nullptr),
           mScriptCache(nullptr),
-          mFontCache(nullptr)
+          mFontCache(nullptr),
+          mGraphicsComponentInitDeferred(false)
     {
         LOG_DEBUG( "ProjectRuntime: Constructing" );
         mFrameDurationHistory.resize(MaxFrameCount);
@@ -133,11 +134,7 @@ namespace octronic::dream
                 return false;
             }
 
-            if(!initGraphicsComponent())
-            {
-                LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
-                return false;
-            }
+            mGraphicsComponentInitDeferred = !initGraphicsComponent();
 
             if (!initInputComponent())
             {
@@ -508,7 +505,6 @@ namespace octronic::dream
 
             sr->createSceneTasks();
             mTaskManager->allowThreadsToRun();
-            std::this_thread::yield();
             mTaskManager->waitForThreadsToFinish();
             mGraphicsComponent->handleResize();
             sr->getCamera()->update();
@@ -527,13 +523,17 @@ namespace octronic::dream
         "=======================================================================\n"
         "Update Graphics called @ {}\n"
         "=======================================================================\n",
-                      mTime->getAbsoluteTime());
+            mTime->getAbsoluteTime());
+
+
+
             // Draw 3D/PhysicsDebug/2D
             ModelMesh::ClearCounters();
             mGraphicsComponent->executeTaskQueue();
             mGraphicsComponent->renderGeometryPass(sr);
             mGraphicsComponent->renderShadowPass(sr);
             mGraphicsComponent->renderLightingPass(sr);
+            mGraphicsComponent->renderSprites(sr);
             mGraphicsComponent->renderFonts(sr);
             mGraphicsComponent->executeDestructionTaskQueue();
             ShaderRuntime::InvalidateState();
@@ -639,10 +639,14 @@ namespace octronic::dream
 
             LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
 
+            if (mGraphicsComponentInitDeferred)
+            {
+                mGraphicsComponentInitDeferred = !mGraphicsComponent->init();
+            }
+
             if (mSceneRuntimeVector.empty())
             {
                 mTaskManager->allowThreadsToRun();
-                std::this_thread::yield();
                 mTaskManager->waitForThreadsToFinish();
                 mGraphicsComponent->executeTaskQueue();
                 mGraphicsComponent->executeDestructionTaskQueue();
@@ -905,7 +909,6 @@ namespace octronic::dream
 
             LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
             mTaskManager->allowThreadsToRun();
-            std::this_thread::yield();
             mTaskManager->waitForThreadsToFinish();
             if (mAudioCache != nullptr)
             {

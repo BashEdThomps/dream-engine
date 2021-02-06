@@ -263,7 +263,7 @@ namespace octronic::dream
             auto playerObject = rt->getPlayerEntity();
             if (playerObject)
             {
-                auto& playerTransform = playerObject->getTransform();
+                Transform playerTransform = playerObject->getTransform();
                 auto time = rt->getProjectRuntime()->getTime();
                 auto camera = rt->getCamera();
                 static mat4 ident(1.0f);
@@ -272,7 +272,7 @@ namespace octronic::dream
                 auto totalYaw = 0.0f;
                 setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
                 mtx = glm::translate(mtx,vec3(time->perSecond(-leftY)*10.0f,0,time->perSecond(leftX)*10.0f));
-                playerTransform.setMatrix(mtx);
+                playerObject->setTransform(playerTransform);
             }
             else
             {
@@ -352,9 +352,9 @@ namespace octronic::dream
             auto playerObject = rt->getPlayerEntity();
             if (playerObject)
             {
-                auto& playerTransform = playerObject->getTransform();
-                auto time = rt->getProjectRuntime()->getTime();
-                auto camera = rt->getCamera();
+                Transform playerTransform = playerObject->getTransform();
+                Time* time = rt->getProjectRuntime()->getTime();
+                Camera* camera = rt->getCamera();
                 static mat4 ident(1.0f);
                 static vec3 yAxis(0.0f,1.0f,0.0f);
                 Vector3 translation = playerTransform.getTranslation();
@@ -364,7 +364,7 @@ namespace octronic::dream
                 setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
                 mtx = glm::rotate(mtx,totalYaw,yAxis);
                 mtx = glm::translate(mtx,vec3(time->perSecond(getLeftVelocity()*10.0f),0,0));
-                playerTransform.setMatrix(mtx);
+                playerObject->setTransform(Transform(mtx));
             }
             else
             {

@@ -110,7 +110,7 @@ namespace octronic::dream
             }
             float mass = mDefinition->getJson()[Constants::ASSET_ATTR_MASS];
             // Transform and CentreOfMass
-            mMotionState = new PhysicsMotionState(&mEntityRuntime->getTransform());
+            mMotionState = new PhysicsMotionState(mEntityRuntime);
             // Mass, MotionState, Shape and LocalInertia
             btVector3 inertia(0, 0, 0);
             mCollisionShape->calculateLocalInertia(mass, inertia);

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 #include <string>
 
 using std::string;

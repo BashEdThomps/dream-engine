@@ -68,7 +68,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
         } dreamElseLockFailed
     }
@@ -79,7 +78,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             if (mJson.find(Constants::SCENE_CAMERA_MOVEMENT_SPEED) == mJson.end())
             {
                 mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
@@ -94,7 +92,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
         } dreamElseLockFailed
     }
@@ -105,7 +102,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             if (mJson.find(Constants::SCENE_PHYSICS_DEBUG) == mJson.end())
             {
                 mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
@@ -118,7 +114,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
         } dreamElseLockFailed
     }
@@ -127,7 +122,6 @@ namespace octronic::dream
     {
         if(dreamTryLock()) {
             dreamLock();
-
             if (mJson.find(Constants::SCENE_MESH_CULL_DISTANCE) == mJson.end())
             {
                 mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
@@ -140,21 +134,20 @@ namespace octronic::dream
     SceneDefinition::addTemplate
     (EntityDefinition* _template)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mTemplates.push_back(_template);
         } dreamElseLockFailed
     }
-
 
     EntityDefinition*
     SceneDefinition::getTemplateByUuid
     (UuidType uuid)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             for (EntityDefinition* next : mTemplates)
             {
                 if (next->getUuid() == uuid)
@@ -170,9 +163,9 @@ namespace octronic::dream
     SceneDefinition::getCameraTranslation
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
             {
                 setCameraTranslation(Vector3(0.0f));
@@ -185,9 +178,9 @@ namespace octronic::dream
     SceneDefinition::setCameraTranslation
     (const Vector3& transform)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             // Translation
             mJson[Constants::SCENE_CAMERA_TRANSLATION] = transform.toJson();
         } dreamElseLockFailed
@@ -195,9 +188,9 @@ namespace octronic::dream
 
     Vector3 SceneDefinition::getCameraLookAt()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mJson.find(Constants::SCENE_CAMERA_LOOK_AT) == mJson.end())
             {
                 setCameraLookAt(Vector3(0.0f));
@@ -210,9 +203,9 @@ namespace octronic::dream
     SceneDefinition::setCameraLookAt
     (const Vector3& lookAt)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mJson[Constants::SCENE_CAMERA_LOOK_AT] = lookAt.toJson();
         } dreamElseLockFailed
     }
@@ -221,7 +214,8 @@ namespace octronic::dream
     SceneDefinition::getGravity
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
 
             Vector3 gravity;
@@ -573,7 +567,7 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::SCENE_CAMERA_FOCUSED_ON].is_number())
+            if (mJson.find(Constants::SCENE_CAMERA_FOCUSED_ON) == mJson.end())
             {
                 mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
             }
@@ -600,7 +594,7 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::SCENE_LIGHTING_PASS_SHADER].is_number())
+            if (mJson.find(Constants::SCENE_LIGHTING_PASS_SHADER) == mJson.end())
             {
                 mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
             }
@@ -627,7 +621,7 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::SCENE_SHADOW_PASS_SHADER].is_number())
+            if (mJson.find(Constants::SCENE_SHADOW_PASS_SHADER) == mJson.end())
             {
                 mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
             }
@@ -654,7 +648,7 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::SCENE_FONT_SHADER].is_number())
+            if (mJson.find(Constants::SCENE_FONT_SHADER) == mJson.end())
             {
                 mJson[Constants::SCENE_FONT_SHADER] = 0;
             }
@@ -675,13 +669,39 @@ namespace octronic::dream
     }
 
     UuidType
+    SceneDefinition::getSpriteShader
+    ()
+    {
+        if(dreamTryLock()) {
+            dreamLock();
+
+            if (mJson.find(Constants::SCENE_SPRITE_SHADER) == mJson.end())
+            {
+                mJson[Constants::SCENE_SPRITE_SHADER] = 0;
+            }
+            return  mJson[Constants::SCENE_SPRITE_SHADER];
+        } dreamElseLockFailed
+
+    }
+
+    void
+    SceneDefinition::setSpriteShader
+    (UuidType shader)
+    {
+        if(dreamTryLock()) {
+            dreamLock();
+            mJson[Constants::SCENE_SPRITE_SHADER] = shader;
+        } dreamElseLockFailed
+    }
+
+    UuidType
     SceneDefinition::getInputScript
     ()
     {
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::SCENE_INPUT_SCRIPT].is_number())
+            if (mJson.find(Constants::SCENE_INPUT_SCRIPT) == mJson.end())
             {
                 mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
             }
@@ -705,9 +725,9 @@ namespace octronic::dream
     SceneDefinition::setPlayerObject
     (UuidType po)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
         } dreamElseLockFailed
     }
@@ -717,7 +737,7 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
 
-            if (!mJson[Constants::ENTITY_PLAYER_OBJECT].is_number())
+            if (mJson.find(Constants::ENTITY_PLAYER_OBJECT) == mJson.end())
             {
                 mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
             }

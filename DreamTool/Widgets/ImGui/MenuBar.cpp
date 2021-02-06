@@ -16,7 +16,12 @@
 namespace octronic::dream::tool
 {
     MenuBar::MenuBar(DreamToolContext* def)
-        : ImGuiWidget(def)
+        : ImGuiWidget(def),
+          mOpenProjectFailed(false),
+          mNewProjectFailed(false),
+          mFileQuitClicked(false),
+          mFilePreferencesClicked(false),
+          mMessagePadding(15.0f)
     {
     }
 
@@ -45,6 +50,37 @@ namespace octronic::dream::tool
 
             drawDebugMenu();
             drawStatusText();
+
+            ImGui::EndMainMenuBar();
+        }
+
+        checkFilePreferencesClicked();
+        checkNewProjectFailed();
+        checkFileQuitClicked();
+
+        checkOpenProjectFailed();
+
+    }
+
+    void MenuBar::checkOpenProjectFailed()
+    {
+        if (mOpenProjectFailed)
+        {
+            ImGui::OpenPopup("Failed to open Project");
+        }
+
+        if (ImGui::BeginPopupModal("Failed to open Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("This directory does not contain a valid Dream Project\n\n");
+            ImGui::Separator();
+
+            if (ImGui::Button("OK",ImVec2(-1,0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
         }
     }
 
@@ -71,20 +107,15 @@ namespace octronic::dream::tool
     void MenuBar::drawStatusText()
     {
         static char msgBuf[128] = {0};
-        snprintf(
-        	msgBuf,
-        	128,
-        	"%s | Input to %s",
-			mMessageString.c_str(),
-			mContext->getInputTarget() == InputTarget::INPUT_TARGET_EDITOR ? "Editor":"Scene")
-        ;
+        snprintf(msgBuf,128, "%s | Input to %s",
+                 mMessageString.c_str(),
+                 mContext->getInputTarget() == InputTarget::INPUT_TARGET_EDITOR ? "Editor":"Scene");
 
         auto maxX = ImGui::GetWindowContentRegionMax().x;
         ImVec2 msgSize = ImGui::CalcTextSize(msgBuf);
 
         ImGui::SameLine(maxX-msgSize.x-mMessagePadding);
         ImGui::Text("%s", msgBuf);
-        ImGui::EndMainMenuBar();
     }
 
     void MenuBar::drawFileMenu()
@@ -93,31 +124,29 @@ namespace octronic::dream::tool
 
         if (ImGui::BeginMenu("File"))
         {
+            if (ImGui::MenuItem("Preferences")) mFilePreferencesClicked = true;
+            ImGui::Separator();
             if (ImGui::MenuItem("New"))	onFileNewClicked();
-
             if (ImGui::MenuItem("Open")) onFileOpenClicked();
 
             if (project)
             {
                 if (ImGui::MenuItem("Save")) onFileSaveClicked();
-
                 ImGui::Separator();
-
                 if (ImGui::MenuItem("Close")) onFileCloseClicked();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Quit")) onFileQuitClicked();
+            mFileQuitClicked = ImGui::MenuItem("Quit");
             ImGui::EndMenu();
         }
     }
 
     void MenuBar::onFileNewClicked()
     {
-        bool newProjectFailed = false;
-        nfdchar_t *selected_file_path = NULL;
+        nfdchar_t *selected_file_path = nullptr;
         nfdresult_t result = NFD_PickFolder(&selected_file_path, mContext->getLastDirectory().c_str());
 
-        if ( result == NFD_OKAY )
+        if (result == NFD_OKAY)
         {
             LOG_INFO("MenuBar: Success! {}",selected_file_path);
             if (!mContext->newProject(selected_file_path))
@@ -126,91 +155,144 @@ namespace octronic::dream::tool
             }
             NFD_FreePath(selected_file_path);
         }
-        else if ( result == NFD_CANCEL )
+        else if (result == NFD_CANCEL)
         {
             LOG_DEBUG("MenuBar: User pressed cancel.");
-            newProjectFailed = true;
+            mNewProjectFailed = true;
         }
         else
         {
             LOG_ERROR("MenuBar: Error: %s\n", NFD_GetError() );
-            newProjectFailed = true;
+            mNewProjectFailed = true;
         }
     }
 
     void MenuBar::onFileOpenClicked()
     {
         // Open Project
-        bool openProjectFailed = false;
-
-        nfdchar_t *selected_file_path = NULL;
+        nfdchar_t *selected_file_path = nullptr;
         nfdresult_t result = NFD_PickFolder(&selected_file_path, mContext->getLastDirectory().c_str());
 
-        if ( result == NFD_OKAY )
+        if (result == NFD_OKAY)
         {
             LOG_INFO("MenuBar: Success! {}",selected_file_path);
-            openProjectFailed = !mContext->openProject(selected_file_path);
+            mOpenProjectFailed = !mContext->openProject(selected_file_path);
             NFD_FreePath(selected_file_path);
         }
-        else if ( result == NFD_CANCEL )
+        else if (result == NFD_CANCEL)
         {
             LOG_DEBUG("MenuBar: User pressed cancel.");
-            openProjectFailed = true;
+            mOpenProjectFailed = true;
         }
         else
         {
             LOG_ERROR("MenuBar: Error: %s\n", NFD_GetError() );
-            openProjectFailed = true;
-        }
-
-        if (openProjectFailed)
-        {
-            ImGui::OpenPopup("Failed to open Project");
-        }
-
-        if (ImGui::BeginPopupModal("Failed to open Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("This directory does not contain a valid Dream Project\n\n");
-            ImGui::Separator();
-
-            if (ImGui::Button("OK",ImVec2(-1,0)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
+            mOpenProjectFailed = true;
         }
     }
 
-    void MenuBar::onFileQuitClicked()
+    void MenuBar::checkFilePreferencesClicked()
     {
-        /*
-        ImGui::OpenPopup("Quit?");
-
-        if (ImGui::BeginPopupModal("Quit?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		PreferencesModel* pm = mContext->getPreferencesModel();
+        if (mFilePreferencesClicked)
         {
-            ImGui::Text("Are you sure you want to quit?\n\nAny unsaved changes will be lost.\n\n");
-            ImGui::Separator();
+            ImGui::OpenPopup("Preferences");
 
-            if (ImGui::Button("Cancel##cancelQuit", ImVec2(120, 0)))
+            if (ImGui::BeginPopupModal("Preferences", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::CloseCurrentPopup();
+                ImGui::Text("External Editor: ");
+                ImGui::SameLine();
+                ImGui::Text("%s",pm->getExternalEditorPath().c_str());
+                if (ImGui::Button("Choose External Editor..."))
+                {
+                    nfdchar_t *selected_path = nullptr;
+                    nfdresult_t result = NFD_OpenDialogN(&selected_path, nullptr,0, mContext->getLastDirectory().c_str());
+
+                    if (result == NFD_OKAY)
+                    {
+                        pm->setExternalEditorPath(selected_path);
+                        NFD_FreePath(selected_path);
+                    }
+                    else if (result == NFD_CANCEL)
+                    {
+                        LOG_ERROR("MenuBar: Select External Editor Cancelled", NFD_GetError() );
+                    }
+                    else
+                    {
+                        LOG_ERROR("MenuBar: Select External Editor Error: %s", NFD_GetError() );
+                    }
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::Button("Save##preferencesSave", ImVec2(120, 0)))
+                {
+                    mFilePreferencesClicked = false;
+                    pm->save();
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
             }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
-            {
-                ImGui::CloseCurrentPopup();
-                mContext->setMainLoopDone(true);
-            }
-
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
         }
-        */
-        mContext->setMainLoopDone(true);
+    }
+
+    void MenuBar::checkNewProjectFailed()
+    {
+        if (mNewProjectFailed)
+        {
+            ImGui::OpenPopup("New Project Failed");
+
+            if (ImGui::BeginPopupModal("New Project Failed", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Error, Creating new project failed");
+
+                ImGui::Separator();
+
+                if (ImGui::Button("OK##confirmNewFailed", ImVec2(120, 0)))
+                {
+                    mNewProjectFailed = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
+
+    }
+
+    void MenuBar::checkFileQuitClicked()
+    {
+        if (mFileQuitClicked)
+        {
+            ImGui::OpenPopup("Quit?");
+
+            if (ImGui::BeginPopupModal("Quit?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Are you sure you want to quit?\n\nAny unsaved changes will be lost.\n\n");
+                ImGui::Separator();
+
+                if (ImGui::Button("Cancel##cancelQuit", ImVec2(120, 0)))
+                {
+                    mFileQuitClicked = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Quit##confirmQuit", ImVec2(120, 0)))
+                {
+                    mFileQuitClicked = false;
+                    ImGui::CloseCurrentPopup();
+                    mContext->setMainLoopDone(true);
+                }
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
     }
 
     void MenuBar::onFileCloseClicked()
@@ -432,7 +514,7 @@ namespace octronic::dream::tool
 
         if (modelBatchImportClicked)
         {
-            nfdchar_t *selected_file_path = NULL;
+            nfdchar_t *selected_file_path = nullptr;
             nfdresult_t result = NFD_OpenDialog(&selected_file_path, nullptr, 0, mContext->getLastDirectory().c_str());
 
             if ( result == NFD_OKAY )

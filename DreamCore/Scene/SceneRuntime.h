@@ -14,7 +14,7 @@
 
 #include "SceneState.h"
 
-#include "Common/Runtime.h"
+#include "Base/Runtime.h"
 #include "Components/Transform.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Script/ScriptTasks.h"
@@ -97,7 +97,10 @@ namespace octronic::dream
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
         ShaderRuntime* getFontShader() ;
-        void setFontShader(ShaderRuntime* fontShader);
+        void setFontShader(ShaderRuntime* shader);
+
+		ShaderRuntime* getSpriteShader() ;
+        void setSpriteShader(ShaderRuntime* shader);
 
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) ;
@@ -141,6 +144,7 @@ namespace octronic::dream
         ShaderRuntime* mLightingPassShader;
         ShaderRuntime* mShadowPassShader;
         ShaderRuntime* mFontShader;
+        ShaderRuntime* mSpriteShader;
         ScriptRuntime* mInputScript;
         InputScriptConstructionTask mInputScriptConstructionTask;
         shared_ptr<InputScriptDestructionTask> mInputScriptDestructionTask;

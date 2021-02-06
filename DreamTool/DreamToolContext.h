@@ -13,8 +13,6 @@
 #include "Widgets/ImGui/ScriptDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
 #include "Widgets/ImGui/ToolPropertiesWindow.h"
-#include "Widgets/ImGui/ScriptEditorWindow.h"
-#include "Widgets/ImGui/ShaderEditorWindow.h"
 #include "Widgets/ImGui/RenderingDebugWindow.h"
 #include "Widgets/ImGui/GamepadStateWindow.h"
 #include "Widgets/ImGui/CacheContentWindow.h"
@@ -54,6 +52,7 @@ namespace octronic::dream::tool
         void closeProject();
         bool openProject(const string &);
         bool newProject(const string &dir);
+        bool openInExternalEditor(AssetDefinition* definition, const string& format = "");
 
         // ImGui Widgets
         DreamToolWindow*          getWindow();
@@ -63,8 +62,6 @@ namespace octronic::dream::tool
         ScriptDebugWindow*        getScriptDebugWindow();
         SceneStateWindow*         getSceneStateWindow();
         ToolPropertiesWindow*     getToolPropertiesWindow();
-        ScriptEditorWindow*       getScriptEditorWindow();
-        ShaderEditorWindow*       getShaderEditorWindow();
         MenuBar*                  getMenuBar();
         RenderingDebugWindow*     getRenderPipelineWindow();
         GamepadStateWindow*       getGamepadStateWindow();
@@ -84,7 +81,7 @@ namespace octronic::dream::tool
         PreferencesModel*             getPreferencesModel();
         ModelDefinitionBatchImporter* getModelDefinitionBatchImporter();
         ProjectDirectory*             getProjectDirectory();
-        StorageManager*                  getStorageManager();
+        StorageManager*               getStorageManager();
 
         int         getCommandArgumentsCount();
         char**      getCommandArgumentsVector();
@@ -104,8 +101,6 @@ namespace octronic::dream::tool
         ScriptDebugWindow mScriptDebugWindow;
         SceneStateWindow mSceneStateWindow;
         ToolPropertiesWindow mToolPropertiesWindow;
-        ScriptEditorWindow mScriptEditorWindow;
-        ShaderEditorWindow mShaderEditorWindow;
         MenuBar mMenuBar;
         RenderingDebugWindow mRenderPipelineWindow;
         GamepadStateWindow mGamepadStateWindow;

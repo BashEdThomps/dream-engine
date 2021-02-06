@@ -134,7 +134,11 @@ namespace octronic::dream
 
         void setFontColorUniform(const Vector3& color);
         void setFontPositionUniform(const vec2& pos);
-        void setFontProjection(const mat4& proj);
+        void setFontProjectionUniform(const mat4& proj);
+
+        void setSpritePositionUniform(const vec2& pos);
+        void setSpriteProjectionUniform(const mat4& proj);
+
 
 
 		bool performFragmentCompilation();

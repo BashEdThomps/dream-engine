@@ -14,14 +14,20 @@ namespace octronic::dream::tool
     class PreferencesModel : public Model
     {
     public:
-        const static string PREFS_FILE_NAME;
+
         PreferencesModel(DreamToolContext* context);
         ~PreferencesModel();
-        bool load(string projectPath);
+
+        string getExternalEditorPath();
+        void setExternalEditorPath(const string& path);
+
+        bool load();
         bool save();
-    private:
-        string getAbsolutePath();
+
+    private: // Variables
         json mJson;
-        string mProjectPath;
+    private: // statics
+        const static string PREFS_FILE_NAME;
+        const static string PREFS_EXTERNAL_EDITOR_PATH;
     };
 }

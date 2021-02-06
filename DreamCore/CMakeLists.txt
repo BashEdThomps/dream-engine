@@ -117,11 +117,12 @@ add_library(
 
 	Common/Constants.cpp
 	Common/Uuid.cpp
-	Common/LockableObject.cpp
-	Common/Definition.cpp
-	Common/Runtime.cpp
 	Common/Vector.cpp
-	Common/ThreadLockFailedException.cpp
+
+	Base/LockableObject.cpp
+	Base/Definition.cpp
+	Base/Runtime.cpp
+	Base/ThreadLockFailedException.cpp
 
 	Scene/SceneRuntime.cpp
 	Scene/SceneDefinition.cpp

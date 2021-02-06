@@ -13,7 +13,7 @@
 #pragma once
 
 #include "BoundingBox.h"
-#include "Common/Runtime.h"
+#include "Base/Runtime.h"
 #include "Components/Script/ScriptTasks.h"
 #include "Components/Graphics/Frustum.h"
 #include "Components/Transform.h"
@@ -108,9 +108,9 @@ namespace octronic::dream
         bool hasFontRuntime();
         bool hasSpriteRuntime();
 
-        Transform& getTransform();
+        Transform getTransform() const;
         Transform getInitialTransform();
-        void setTransform(Transform* transform);
+        void setTransform(const Transform& transform);
         void translateWithChildren(const Vector3& translation);
         void preTranslateWithChildren(const Vector3& translation);
         void transformOffsetInitial(const mat4& matrix);

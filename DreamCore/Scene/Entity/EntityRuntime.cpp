@@ -227,10 +227,13 @@ namespace octronic::dream
 
             if (mScriptRuntime)
             {
+                /*
                 mSceneRuntime
                         ->getProjectRuntime()
                         ->getTaskManager()
                         ->pushDestructionTask(mScriptDestructionTask);
+                */
+                mScriptDestructionTask->execute();
             }
             mScriptRuntime = nullptr;
         } dreamElseLockFailed
@@ -266,9 +269,9 @@ namespace octronic::dream
     EntityRuntime::removeSpriteRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             if (mSpriteRuntime != nullptr)
             {
                 delete mSpriteRuntime;
@@ -401,9 +404,9 @@ namespace octronic::dream
     bool
     EntityRuntime::hasSpriteRuntime()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mSpriteRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -411,9 +414,9 @@ namespace octronic::dream
     bool
     EntityRuntime::hasFontRuntime()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mFontRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -422,9 +425,9 @@ namespace octronic::dream
     EntityRuntime::hasAnimationRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mAnimationRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -433,9 +436,9 @@ namespace octronic::dream
     EntityRuntime::hasLightRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mLightRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -444,9 +447,9 @@ namespace octronic::dream
     EntityRuntime::hasModelRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             return mModelRuntime != nullptr;
         } dreamElseLockFailed
     }
@@ -455,7 +458,8 @@ namespace octronic::dream
     EntityRuntime::hasScriptRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mScriptRuntime != nullptr;
         } dreamElseLockFailed
@@ -465,7 +469,8 @@ namespace octronic::dream
     EntityRuntime::setAssetDefinitionsMap
     (const map<AssetType,UuidType>& assetMap)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             mAssetDefinitions = assetMap;
         } dreamElseLockFailed
@@ -475,7 +480,8 @@ namespace octronic::dream
     EntityRuntime::getAssetDefinitionsMap
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mAssetDefinitions;
         } dreamElseLockFailed
@@ -492,7 +498,8 @@ namespace octronic::dream
     EntityRuntime::setAlwaysDraw
     (bool alwaysDraw)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             mAlwaysDraw = alwaysDraw;
         } dreamElseLockFailed
@@ -502,27 +509,27 @@ namespace octronic::dream
     EntityRuntime::getPhysicsObjectRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mPhysicsObjectRuntime;
         } dreamElseLockFailed
     }
 
-    Transform&
+    Transform
     EntityRuntime::getTransform
     ()
+    const
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mTransform;
-        } dreamElseLockFailed
+        return mTransform;
     }
 
     void
     EntityRuntime::initTransform
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             if (mDefinition)
             {
@@ -537,7 +544,8 @@ namespace octronic::dream
     EntityRuntime::hasEvents
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             bool retval = false;
             mEventQueueMutex.lock();
@@ -551,7 +559,8 @@ namespace octronic::dream
     EntityRuntime::addEvent
     (const Event& event)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             if (!mDeleted)
             {
@@ -566,7 +575,8 @@ namespace octronic::dream
 
     bool EntityRuntime::tryLockEventQueue()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mEventQueueMutex.try_lock();
         } dreamElseLockFailed
@@ -574,7 +584,8 @@ namespace octronic::dream
 
     void EntityRuntime::unlockEventQueue()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             mEventQueueMutex.unlock();
         } dreamElseLockFailed
@@ -584,7 +595,8 @@ namespace octronic::dream
     EntityRuntime::getEventQueue
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return &mEventQueue;
         } dreamElseLockFailed
@@ -594,7 +606,8 @@ namespace octronic::dream
     EntityRuntime::clearEventQueue
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE("EntityRuntime: Clearing event queue");
 
@@ -620,7 +633,8 @@ namespace octronic::dream
     EntityRuntime::collectGarbage
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE("EntityRuntime: Collecting Garbage {}" ,getNameAndUuidString());
 
@@ -651,7 +665,8 @@ namespace octronic::dream
     EntityRuntime::hasPhysicsObjectRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mPhysicsObjectRuntime != nullptr;
         } dreamElseLockFailed
@@ -661,7 +676,8 @@ namespace octronic::dream
     EntityRuntime::hasPathRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mPathRuntime != nullptr;
         } dreamElseLockFailed
@@ -671,7 +687,8 @@ namespace octronic::dream
     EntityRuntime::hasAudioRuntime
     ()
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             return mAudioRuntime != nullptr;
         } dreamElseLockFailed
@@ -820,7 +837,8 @@ namespace octronic::dream
     EntityRuntime::createAnimationRuntime
     (AnimationDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
             removeAnimationRuntime();
@@ -833,9 +851,9 @@ namespace octronic::dream
     EntityRuntime::createSpriteRuntime
     (SpriteDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
-
             LOG_TRACE( "EntityRuntime: Creating Sprite asset Runtime." );
             removeSpriteRuntime();
             mSpriteRuntime = new SpriteRuntime(definition,this);
@@ -847,7 +865,8 @@ namespace octronic::dream
     EntityRuntime::createPathRuntime
     (PathDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
             removePathRuntime();
@@ -860,7 +879,8 @@ namespace octronic::dream
     EntityRuntime::createAudioRuntime
     (AudioDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             auto cache = mSceneRuntime->getProjectRuntime()->getAudioCache();
             if (cache != nullptr)
@@ -880,7 +900,8 @@ namespace octronic::dream
     EntityRuntime::createModelRuntime
     (ModelDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             removeModelRuntime();
             LOG_INFO("EntityRuntime: Creating Model asset Runtime.");
@@ -906,7 +927,8 @@ namespace octronic::dream
     EntityRuntime::createScriptRuntime
     (ScriptDefinition* definition)
     {
-        if(dreamTryLock()) {
+        if(dreamTryLock())
+        {
             dreamLock();
             removeScriptRuntime();
             LOG_TRACE("EntityRuntime: Creating Script asset Runtime.");
@@ -1083,11 +1105,11 @@ namespace octronic::dream
 
     void
     EntityRuntime::setTransform
-    (Transform* transform)
+    (const Transform& transform)
     {
         if(dreamTryLock()) {
             dreamLock();
-            mTransform.setMatrix(transform->getMatrix());
+            mTransform = transform;
         } dreamElseLockFailed
     }
 

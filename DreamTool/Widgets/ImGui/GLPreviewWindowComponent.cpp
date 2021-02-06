@@ -151,7 +151,7 @@ namespace octronic::dream::tool
         mLastHeight = mHeight;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(0.0f,0.0f));
-        ImGui::Begin("GL Preview", &mVisible);
+        ImGui::Begin("Preview", &mVisible);
         ImVec2 contentAreaSize = ImGui::GetContentRegionAvail();
         mWidth = contentAreaSize.x;
         mHeight = contentAreaSize.y;

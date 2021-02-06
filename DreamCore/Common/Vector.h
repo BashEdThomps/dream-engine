@@ -13,7 +13,7 @@ using nlohmann::json;
 
 namespace octronic::dream
 {
-	class Vector2
+	class Vector2 final
     {
         float mData[2];
 
@@ -44,7 +44,7 @@ namespace octronic::dream
 
     };
 
-    class Vector3
+    class Vector3 final
     {
         float mData[3];
 
@@ -95,7 +95,7 @@ namespace octronic::dream
         static float dot(const Vector3& a, const Vector3& b);
     };
 
-    class Vector4
+    class Vector4 final
     {
         float mData[4];
 

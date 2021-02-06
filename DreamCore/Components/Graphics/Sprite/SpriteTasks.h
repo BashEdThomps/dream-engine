@@ -4,10 +4,12 @@
 
 // Defer GL Operations using Task objects
 #include "Components/Graphics/GraphicsComponentTask.h"
+#include "Common/Uuid.h"
 
 namespace octronic::dream
 {
     class SpriteRuntime;
+    class TextureRuntime;
 
     class SpriteConstructionTask : public GraphicsComponentTask
     {
@@ -19,8 +21,11 @@ namespace octronic::dream
 
     class SpriteDestructionTask : public GraphicsComponentDestructionTask
     {
+        UuidType mEntityUuid;
+        TextureRuntime* mTextureRuntime;
+
     public:
-        SpriteDestructionTask();
+        SpriteDestructionTask(TextureRuntime* texture, UuidType entityUuid);
         void execute() override;
     };
 }

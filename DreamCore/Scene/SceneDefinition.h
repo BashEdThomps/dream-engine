@@ -13,7 +13,7 @@
 #pragma once
 
 #include <vector>
-#include "Common/Definition.h"
+#include "Base/Definition.h"
 #include "Components/Transform.h"
 
 
@@ -104,6 +104,9 @@ namespace octronic::dream
 
         UuidType getFontShader();
         void setFontShader(UuidType shader);
+
+        UuidType getSpriteShader();
+        void setSpriteShader(UuidType shader);
 
         UuidType getInputScript();
         void setInputScript(UuidType shader);

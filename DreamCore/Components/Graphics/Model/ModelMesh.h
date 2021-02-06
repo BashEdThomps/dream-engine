@@ -20,7 +20,7 @@
 #include "ModelTasks.h"
 
 #include "Common/GLHeader.h"
-#include "Common/LockableObject.h"
+#include "Base/LockableObject.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Light/LightRuntime.h"

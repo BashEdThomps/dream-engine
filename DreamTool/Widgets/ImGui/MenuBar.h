@@ -29,10 +29,14 @@ namespace octronic::dream::tool
         string getMessageString() const;
         void setMessageString(const string& messageString);
     private:
+        // File menu
+        void checkNewProjectFailed();
+        void checkOpenProjectFailed();
+        void checkFileQuitClicked();
+        void checkFilePreferencesClicked();
         void drawFileMenu();
         void onFileNewClicked();
         void onFileOpenClicked();
-        void onFileQuitClicked();
         void onFileSaveClicked();
         void onFileCloseClicked();
 
@@ -44,8 +48,13 @@ namespace octronic::dream::tool
 
         void drawStatusText();
 
-    protected:
+
+    private:
+        bool mOpenProjectFailed;
+        bool mNewProjectFailed;
+        bool mFileQuitClicked;
+        bool mFilePreferencesClicked;
         string mMessageString;
-        float mMessagePadding = 15.0f;
+        float mMessagePadding;
     };
 }

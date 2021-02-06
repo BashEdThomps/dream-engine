@@ -25,6 +25,8 @@
 #include "Components/Transform.h"
 #include "Components/Time.h"
 #include "Components/Window/WindowComponent.h"
+#include "Sprite/SpriteRuntime.h"
+#include "Texture/TextureCache.h"
 #include "Light/LightRuntime.h"
 #include "Model/ModelRuntime.h"
 #include "Model/ModelMesh.h"
@@ -69,16 +71,12 @@ namespace octronic::dream
           mGeometryPassDepthBuffer(0),
           mGeometryPassIgnoreBuffer(0),
           // Shadow Pass Vars
-          mShadowPassShader(nullptr),
           mShadowPassFB(0),
           mShadowPassDepthBuffer(0),
           mShadowMatrix(mat4(1.0f)),
           // Light Pass Vars
-          mLightingPassShader(nullptr),
           mScreenQuadVAO(0),
-          mScreenQuadVBO(0),
-          // Font
-          mFontShader(nullptr)
+          mScreenQuadVBO(0)
     {
         LOG_TRACE("GraphicsComponent: Constructing");
         GLCheckError();
@@ -514,18 +512,10 @@ namespace octronic::dream
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             GLCheckError();
 
-            // Get lighting pass shader
-            mLightingPassShader = sr->getLightingPassShader();
-
-            // Check shader exists
-            if (mLightingPassShader == nullptr)
-            {
-                LOG_ERROR("GraphicsComponent: Lighting Shader is nullptr");
-                return;
-            }
+            ShaderRuntime* lightPassShader = sr->getLightingPassShader();
 
             // Activate light pass shader
-            if (mLightingPassShader->use())
+            if (lightPassShader->use())
             {   // Setup source textures
 
                 // Position Texture
@@ -569,28 +559,28 @@ namespace octronic::dream
                 GLuint alb    = 2;
                 GLuint shadow = 3;
                 GLuint ignore = 4;
-                mLightingPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
-                mLightingPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
-                mLightingPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
-                mLightingPassShader->addUniform(INT1,"gShadow"    ,1, &shadow);
-                mLightingPassShader->addUniform(INT1,"gIgnore"    ,1, &ignore);
+                lightPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
+                lightPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
+                lightPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
+                lightPassShader->addUniform(INT1,"gShadow"    ,1, &shadow);
+                lightPassShader->addUniform(INT1,"gIgnore"    ,1, &ignore);
 
                 // Shadow Space Matrix
-                auto shadowMtx = mLightingPassShader->getUniformLocation("shadowSpaceMatrix");
+                auto shadowMtx = lightPassShader->getUniformLocation("shadowSpaceMatrix");
                 glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
                 GLCheckError();
 
                 // Viewer Position
-                mLightingPassShader->setViewerPosition(sr->getCamera()->getTranslation());
+                lightPassShader->setViewerPosition(sr->getCamera()->getTranslation());
 
                 // Light Queue
-                mLightingPassShader->bindLightQueue(mLightQueue);
+                lightPassShader->bindLightQueue(mLightQueue);
 
                 // Synchronize Uniforms
-                mLightingPassShader->syncUniforms();
+                lightPassShader->syncUniforms();
 
                 // Bind & draw fullscreen quad
-                mLightingPassShader->bindVertexArray(mScreenQuadVAO);
+                lightPassShader->bindVertexArray(mScreenQuadVAO);
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                 GLCheckError();
 
@@ -755,15 +745,14 @@ namespace octronic::dream
                 return;
             }
 
-            mShadowPassShader = sr->getShadowPassShader();
+            ShaderRuntime* shadowPassShader = sr->getShadowPassShader();
 
-            if (mShadowLight == nullptr || mShadowPassShader == nullptr)
+            shadowPassShader = sr->getShadowPassShader();
+
+            if (mShadowLight == nullptr || shadowPassShader == nullptr)
             {
-                LOG_ERROR(
-                            "GraphicsComponent: Cannot render shadow pass Light: {}, Shader: {]",
-                            mShadowLight != nullptr,
-                            mShadowPassShader != nullptr
-                        );
+                LOG_ERROR("GraphicsComponent: Cannot render shadow pass Light: {}, Shader: {]",
+                            mShadowLight != nullptr,shadowPassShader != nullptr);
                 return;
             }
 
@@ -786,7 +775,7 @@ namespace octronic::dream
 
             mat4 lightMat = mShadowLight->getTransform().getMatrix();
             mat4 lightView = glm::lookAt(
-                        vec3(lightMat[3]), // Light Pos
+                    vec3(lightMat[3]), // Light Pos
                     vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
                     vec3(0.0f,1.0f,0.0f) // Up
                     );
@@ -800,7 +789,7 @@ namespace octronic::dream
             GLCheckError();
             if (mShaderCache != nullptr)
             {
-                mShaderCache->drawShadowPass(mShadowMatrix, mShadowPassShader);
+                mShaderCache->drawShadowPass(mShadowMatrix, shadowPassShader);
             }
             glEnable(GL_CULL_FACE);
             GLCheckError();
@@ -872,7 +861,7 @@ namespace octronic::dream
                         0.f, (float)mWindowComponent->getWidth(),
                         0.f, (float)mWindowComponent->getHeight(),
                         -1.f, 1.f);
-            fontShader->setFontProjection(fontProjection);
+            fontShader->setFontProjectionUniform(fontProjection);
 
             // Iterate through FontRuntimes
             for (SharedAssetRuntime* saRuntime : fontCache->getRuntimeVector())
@@ -886,6 +875,67 @@ namespace octronic::dream
                     fontShader->setFontColorUniform(entity->getFontColor());
                     GLCheckError();
                     fontRuntime->draw(entity);
+                }
+            }
+        } dreamElseLockFailed
+    }
+
+        // Font ====================================================================
+
+    void GraphicsComponent::renderSprites(SceneRuntime* sceneRuntime)
+    {
+        if(dreamTryLock()) {
+            dreamLock();
+            LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
+
+
+            LOG_DEBUG("\n\n==> Running Sprite Pass\n");
+
+            mWindowComponent->bindFrameBuffer();
+
+            glViewport(0,0,mWindowComponent->getWidth(), mWindowComponent->getHeight());
+
+            glEnable(GL_BLEND);
+            GLCheckError();
+
+            glEnable(GL_DEPTH_TEST);
+            GLCheckError();
+            glDepthFunc(GL_LESS);
+            GLCheckError();
+            glDisable(GL_CULL_FACE);
+            GLCheckError();
+
+            TextureCache* textureCache = sceneRuntime->getProjectRuntime()->getTextureCache();
+
+            if (textureCache->runtimeCount() == 0) return;
+
+            ShaderRuntime* shader = sceneRuntime->getSpriteShader();
+
+            if (shader == nullptr)
+            {
+                LOG_ERROR("GraphicsComponent: Sprite shader not found");
+                assert(false);
+            }
+
+            // Activate the Font Shader
+            shader->use();
+            mat4 projection = ortho(
+                        0.f, (float)mWindowComponent->getWidth(),
+                        0.f, (float)mWindowComponent->getHeight(),
+                        -1.f, 1.f);
+            shader->setSpriteProjectionUniform(projection);
+
+            // Iterate through FontRuntimes
+            for (SharedAssetRuntime* saRuntime : textureCache->getRuntimeVector())
+            {
+                TextureRuntime* textureRuntime  = static_cast<TextureRuntime*>(saRuntime);
+                // Iterate through FontTextInstances
+                for (SpriteRuntime* spriteRuntime : textureRuntime->getSpriteInstancesVector())
+                {
+                    EntityRuntime* er = spriteRuntime->getEntityRuntime();
+                    shader->setSpritePositionUniform(er->getTransform().getTranslation().toGLM());
+                    GLCheckError();
+                    spriteRuntime->draw();
                 }
             }
         } dreamElseLockFailed
@@ -924,45 +974,6 @@ namespace octronic::dream
         if(dreamTryLock()) {
             dreamLock();
             mShaderCache = cache;
-        } dreamElseLockFailed
-    }
-
-    ShaderRuntime* GraphicsComponent::getLightingShader()
-    const
-    {
-        return mLightingPassShader;
-    }
-
-    void GraphicsComponent::setLightingShader(ShaderRuntime* lightingShader)
-    {
-        if(dreamTryLock()) {
-            dreamLock();
-            mLightingPassShader = lightingShader;
-        } dreamElseLockFailed
-    }
-
-    ShaderRuntime* GraphicsComponent::getShadowPassShader()
-    const
-    {
-        return mShadowPassShader;
-    }
-
-    void GraphicsComponent::setShadowPassShader(ShaderRuntime* shadowPassShader)
-    {
-        mShadowPassShader = shadowPassShader;
-    }
-
-    ShaderRuntime* GraphicsComponent::getFontShader()
-    const
-    {
-        return mFontShader;
-    }
-
-    void GraphicsComponent::setFontShader(ShaderRuntime* fontShader)
-    {
-        if(dreamTryLock()) {
-            dreamLock();
-            mFontShader = fontShader;
         } dreamElseLockFailed
     }
 
@@ -1023,7 +1034,9 @@ namespace octronic::dream
 
     void GraphicsComponent::executeTaskQueue()
     {
-        if(dreamTryLock()) {
+        // Graphics Component tasks do not fail
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
             vector<GraphicsComponentTask*> completed;
@@ -1074,7 +1087,9 @@ namespace octronic::dream
 
     void GraphicsComponent::executeDestructionTaskQueue()
     {
-        if(dreamTryLock()) {
+        // GraphicsComponentDestructionTasks do not fail
+        if(dreamTryLock())
+        {
             dreamLock();
             LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
             for (auto itr = mDestructionTaskQueue.begin(); itr != mDestructionTaskQueue.end(); itr++)
@@ -1099,10 +1114,7 @@ namespace octronic::dream
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         int width = mWindowComponent->getWidth();
         int height = mWindowComponent->getHeight();
-
         assert(mMaxFrameBufferSize > 0);
-
-        assert(width > 0 && width < mMaxFrameBufferSize &&
-               height > 0 && height < mMaxFrameBufferSize);
+        assert(width > 0 && width < mMaxFrameBufferSize && height > 0 && height < mMaxFrameBufferSize);
     }
 }

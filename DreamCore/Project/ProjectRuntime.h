@@ -16,7 +16,7 @@
 #include <vector>
 #include <deque>
 
-#include "Common/Runtime.h"
+#include "Base/Runtime.h"
 
 using std::string;
 using std::vector;
@@ -154,6 +154,7 @@ namespace octronic::dream
         WindowComponent* mWindowComponent;
         TaskManager* mTaskManager;
         StorageManager* mStorageManager;
+        bool mGraphicsComponentInitDeferred;
 
         // Caches
         AudioCache* mAudioCache;
