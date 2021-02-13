@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/Task/Task.h"
+#include "Task/Task.h"
 
 namespace octronic::dream
 {
@@ -11,7 +11,7 @@ namespace octronic::dream
     {
         InputComponent* mComponent;
     public:
-        InputPollDataTask(InputComponent* cp);
+        InputPollDataTask(ProjectRuntime* pr, InputComponent* cp);
         void execute();
     };
 
@@ -19,7 +19,7 @@ namespace octronic::dream
     {
         InputComponent* mComponent;
     public:
-        InputExecuteScriptTask(InputComponent* cp);
+        InputExecuteScriptTask(ProjectRuntime* pr, InputComponent* cp);
         void execute();
     };
 }

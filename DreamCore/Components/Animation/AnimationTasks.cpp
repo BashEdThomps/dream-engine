@@ -1,20 +1,20 @@
 #include "AnimationRuntime.h"
 
-#include "Components/Task/Task.h"
+#include "Task/Task.h"
 #include "Common/Logger.h"
 
 namespace octronic::dream
 {
     AnimationUpdateTask::AnimationUpdateTask
-    (AnimationRuntime* rt)
-        : Task("AnimationUpdateTask"),
+    (ProjectRuntime* pr, AnimationRuntime* rt)
+        : Task(pr, "AnimationUpdateTask"),
           mAnimationRuntime(rt)
     {
     }
 
     void AnimationUpdateTask::execute()
     {
-        LOG_CRITICAL("AnimationUpdateTask: Executing on thread {}",getThreadID());
+        LOG_CRITICAL("AnimationUpdateTask: Executing task {}",getID());
 		mAnimationRuntime->update();
 		setState(TaskState::TASK_STATE_COMPLETED);
     }

@@ -13,19 +13,20 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "OpenALAudioComponent.h"
-#include "OpenALAudioRuntime.h"
+#include "OpenALImplementation.h"
 
 #include <iostream>
 
 using octronic::dream::OggLoader;
 using octronic::dream::WavLoader;
+using std::make_shared;
 
 namespace octronic::dream::open_al
 {
 
     OpenALAudioComponent::OpenALAudioComponent
     ()
-        : AudioComponent("OpenALAudioComponent"),
+        : AudioComponent(),
           mDevice(nullptr),
           mContext(nullptr)
     {
@@ -59,16 +60,16 @@ namespace octronic::dream::open_al
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
-        vec3 position(0.0f);
+        Vector3 position(0.0f);
         setListenerPosition(position);
         return true;
     }
 
     void
     OpenALAudioComponent::setListenerPosition
-    (const vec3& pos)
+    (const Vector3& pos)
     {
-        alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
+        alListener3f(AL_POSITION, pos.x(), pos.y(), pos.z());
     }
 
     void
@@ -87,22 +88,27 @@ namespace octronic::dream::open_al
         return vol;
     }
 
-    AudioRuntime* OpenALAudioComponent::newAudioRuntime(AudioDefinition* def)
+    AudioRuntime* OpenALAudioComponent::getAudioRuntime(AudioDefinition* def)
     {
-        AudioRuntime* aRunt = nullptr;
-        AudioLoader* loader = nullptr;
+        auto audioCache = mProjectRuntime->getAudioCache();
+        auto aRunt = audioCache->getRuntimeHandle(def);
 
-        if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
+        if (!aRunt->getLoaded())
         {
-            loader = new OggLoader();
-        }
-        else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
-        {
-            loader = new WavLoader();
-        }
+			shared_ptr<AudioLoader> loader;
 
-        aRunt = new OpenALAudioRuntime(loader,def,mProjectRuntime);
+			if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
+			{
+				loader = make_shared<OggLoader>();
+			}
+			else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
+			{
+				loader = make_shared<WavLoader>();
+			}
 
+			auto aImpl = make_shared<OpenALImplementation>(loader);
+			aRunt->setImplementation(aImpl);
+        }
         return aRunt;
     }
 }

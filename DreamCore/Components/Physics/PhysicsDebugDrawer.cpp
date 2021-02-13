@@ -16,13 +16,12 @@
 
 #include "Components/Graphics/Camera.h"
 #include "Components/Graphics/GraphicsComponent.h"
-#include "Scene/Entity/BoundingBox.h"
+#include "Entity/BoundingBox.h"
 
 #include <algorithm>
 
 namespace octronic::dream
 {
-
     void PhysicsDebugDrawer::setCamera(Camera* camera)
     {
         mCamera = camera;
@@ -31,10 +30,8 @@ namespace octronic::dream
     PhysicsDebugDrawer::PhysicsDebugDrawer
     () : mCamera(nullptr),
         mVAO(0),mVBO(0)
-
     {
         LOG_DEBUG( "PhysicaDebugDrawer: Constructing Object" );
-
         mDebugMode = DBG_DrawAabb;
         mShaderProgram = 0;
     }

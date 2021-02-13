@@ -1,23 +1,33 @@
 #pragma once
-#include "AssetRuntime.h"
 
-// TODO - Add Used-by vector for common user management?
+#include "AssetRuntime.h"
+#include <vector>
+using std::vector;
 
 namespace octronic::dream
 {
     class ProjectRuntime;
+    class EntityRuntime;
+
+    /**
+     * @brief A SharedAssetRuntime is shared by several EntityRuntimes. Entities
+     * using this Runtime are stored in the mInstances vector.
+     */
     class SharedAssetRuntime : public AssetRuntime
     {
     public:
-        SharedAssetRuntime(const string& className, AssetDefinition* def, ProjectRuntime* runtime);
+        SharedAssetRuntime(ProjectRuntime* prt, AssetDefinition* def);
         ~SharedAssetRuntime() override;
 
         string getAssetFilePath(const string& fmt = "") override;
         string getAssetDirectoryPath() override;
 
-        ProjectRuntime* getProjectRuntime();
+        void addInstance(EntityRuntime* er);
+        void removeInstance(EntityRuntime* er);
+        void removeInstanceByUuid(UuidType spriteUuid);
+        vector<EntityRuntime*>* getInstanceVector();
 
     protected:
-        ProjectRuntime* mProjectRuntime;
+        vector<EntityRuntime*> mInstances;
     };
 }

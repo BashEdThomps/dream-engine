@@ -22,27 +22,28 @@
 #include <vector>
 #include <memory>
 
-#include <glm/vec3.hpp>
 
+using octronic::dream::Vector3;
 using octronic::dream::AudioComponent;
 using octronic::dream::AudioDefinition;
 using octronic::dream::AudioRuntime;
-using glm::vec3;
 
 namespace octronic::dream::open_al
 {
     class OpenALAudioComponent : public AudioComponent
     {
-    private:
-        ALCdevice*  mDevice;
-        ALCcontext* mContext;
+
     public:
         OpenALAudioComponent();
         ~OpenALAudioComponent() override;
         bool init() override;
-        void setListenerPosition(const vec3&) override;
+        void setListenerPosition(const Vector3&) override;
         void setVolume(float) override;
         float getVolume() override;
-        AudioRuntime* newAudioRuntime(AudioDefinition* def) override;
+        AudioRuntime* getAudioRuntime(AudioDefinition* def) override;
+
+        private:
+        ALCdevice*  mDevice;
+        ALCcontext* mContext;
     };
 }

@@ -50,7 +50,6 @@ namespace octronic::dream
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
     const string Constants::ASSET_TYPE_SCRIPT = "script";
     const string Constants::ASSET_TYPE_SHADER = "shader";
-    const string Constants::ASSET_TYPE_SPRITE = "sprite";
     const string Constants::ASSET_TYPE_TEXTURE = "texture";
     const string Constants::ASSET_TYPE_MATERIAL = "material";
 
@@ -88,7 +87,6 @@ namespace octronic::dream
     const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
     const string Constants::ASSET_TYPE_TEXTURE_READABLE = "Texture";
     const string Constants::ASSET_TYPE_MATERIAL_READABLE = "Material";
-    const string Constants::ASSET_TYPE_SPRITE_READABLE = "Sprite";
     const string Constants::ASSET_ATTR_GROUP = "group";
     const string Constants::ASSET_ATTR_GROUP_DEFAULT = "None";
 
@@ -359,7 +357,6 @@ namespace octronic::dream
         {ASSET_TYPE_ENUM_PHYSICS_OBJECT,   ASSET_TYPE_PHYSICS_OBJECT},
         {ASSET_TYPE_ENUM_SCRIPT,           ASSET_TYPE_SCRIPT},
         {ASSET_TYPE_ENUM_SHADER,           ASSET_TYPE_SHADER},
-        {ASSET_TYPE_ENUM_SPRITE,           ASSET_TYPE_SPRITE},
         {ASSET_TYPE_ENUM_TEXTURE,          ASSET_TYPE_TEXTURE}
     };
 
@@ -375,7 +372,6 @@ namespace octronic::dream
         ASSET_TYPE_PHYSICS_OBJECT_READABLE,
         ASSET_TYPE_SCRIPT_READABLE,
         ASSET_TYPE_SHADER_READABLE,
-        ASSET_TYPE_SPRITE_READABLE,
         ASSET_TYPE_TEXTURE_READABLE
     };
 
@@ -399,8 +395,7 @@ namespace octronic::dream
 		}},
         {ASSET_TYPE_ENUM_SCRIPT,{ASSET_FORMAT_SCRIPT_LUA}},
         {ASSET_TYPE_ENUM_SHADER,{ASSET_FORMAT_SHADER_GLSL}},
-        {ASSET_TYPE_ENUM_TEXTURE,{ASSET_FORMAT_DREAM}},
-        {ASSET_TYPE_ENUM_SPRITE,{ASSET_FORMAT_DREAM}}
+        {ASSET_TYPE_ENUM_TEXTURE,{ASSET_FORMAT_DREAM}}
     };
 
     string
@@ -420,7 +415,6 @@ namespace octronic::dream
             case ASSET_TYPE_ENUM_SCRIPT:         return ASSET_TYPE_SCRIPT;
             case ASSET_TYPE_ENUM_SHADER:         return ASSET_TYPE_SHADER;
             case ASSET_TYPE_ENUM_TEXTURE:        return ASSET_TYPE_TEXTURE;
-            case ASSET_TYPE_ENUM_SPRITE:	     return ASSET_TYPE_SPRITE;
             case ASSET_TYPE_ENUM_NONE:
                 return "";
         }
@@ -443,7 +437,6 @@ namespace octronic::dream
         else if (type == ASSET_TYPE_SCRIPT || type == ASSET_TYPE_SCRIPT_READABLE) retval = ASSET_TYPE_ENUM_SCRIPT;
         else if (type == ASSET_TYPE_SHADER || type == ASSET_TYPE_SHADER_READABLE) retval = ASSET_TYPE_ENUM_SHADER;
         else if (type == ASSET_TYPE_TEXTURE || type == ASSET_TYPE_TEXTURE_READABLE) retval =  ASSET_TYPE_ENUM_TEXTURE;
-        else if (type == ASSET_TYPE_SPRITE || type == ASSET_TYPE_SPRITE_READABLE) retval =  ASSET_TYPE_ENUM_SPRITE;
         return retval;
     }
 
@@ -461,7 +454,6 @@ namespace octronic::dream
         else if (type == ASSET_TYPE_PHYSICS_OBJECT) return ASSET_TYPE_PHYSICS_OBJECT_READABLE;
         else if (type == ASSET_TYPE_SCRIPT) return ASSET_TYPE_SCRIPT_READABLE;
         else if (type == ASSET_TYPE_SHADER) return ASSET_TYPE_SHADER_READABLE;
-        else if (type == ASSET_TYPE_SPRITE) return ASSET_TYPE_SPRITE_READABLE;
         else if (type == ASSET_TYPE_TEXTURE) return ASSET_TYPE_TEXTURE_READABLE;
         return "";
     }

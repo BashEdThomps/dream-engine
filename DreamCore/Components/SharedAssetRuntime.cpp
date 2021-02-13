@@ -1,19 +1,18 @@
 #include "SharedAssetRuntime.h"
 
+#include "Cache.h"
 #include "AssetDefinition.h"
 #include "Common/Logger.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
-#include "Components/Storage/ProjectDirectory.h"
-
-
+#include "Storage/ProjectDirectory.h"
+#include "Entity/EntityRuntime.h"
 
 namespace octronic::dream
 {
     SharedAssetRuntime::SharedAssetRuntime
-    (const string& className, AssetDefinition* def, ProjectRuntime* runtime)
-        : AssetRuntime(className, def),
-          mProjectRuntime(runtime)
+    (ProjectRuntime* prt, AssetDefinition* def)
+        : AssetRuntime(prt, def)
     {
     }
 
@@ -25,34 +24,48 @@ namespace octronic::dream
     string SharedAssetRuntime::getAssetFilePath
     (const string& fmt)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            auto pDir = mProjectRuntime->getProject()->getDirectory();
-            return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
-        } dreamElseLockFailed
-
+        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
+        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinitionHandle),fmt);
     }
 
     string SharedAssetRuntime::getAssetDirectoryPath
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            auto pDir = mProjectRuntime->getProject()->getDirectory();
-            return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
-        } dreamElseLockFailed
+        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
+        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinitionHandle));
     }
 
-    ProjectRuntime*
-    SharedAssetRuntime::getProjectRuntime
-    ()
+    void SharedAssetRuntime::addInstance(EntityRuntime* er)
     {
-        if(dreamTryLock())
+        auto itr = std::find(mInstances.begin(), mInstances.end(), er);
+        if (itr == mInstances.end())
         {
-            dreamLock();
-            return mProjectRuntime;
-        } dreamElseLockFailed
+            mInstances.push_back(er);
+        }
+    }
+
+    void SharedAssetRuntime::removeInstance(EntityRuntime* er)
+    {
+        auto itr = std::find(mInstances.begin(), mInstances.end(), er);
+        if (itr != mInstances.end())
+        {
+            mInstances.erase(itr);
+        }
+    }
+
+    void SharedAssetRuntime::removeInstanceByUuid(UuidType spriteUuid)
+    {
+        auto itr = std::find_if(mInstances.begin(), mInstances.end(),
+                    [&](EntityRuntime* runtime) { return runtime->getUuid() == spriteUuid; });
+
+        if (itr != mInstances.end())
+        {
+            mInstances.erase(itr);
+        }
+    }
+
+    vector<EntityRuntime*>* SharedAssetRuntime::getInstanceVector()
+    {
+        return &mInstances;
     }
 }

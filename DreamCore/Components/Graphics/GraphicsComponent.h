@@ -17,12 +17,14 @@
 
 #include "Common/GLHeader.h"
 #include "Components/Component.h"
-#include "GraphicsComponentTask.h"
+#include "GraphicsComponentTasks.h"
+#include "Task/TaskQueue.h"
 
 #include <glm/matrix.hpp>
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 
 using glm::mat4;
 using std::vector;
@@ -30,18 +32,19 @@ using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class ShaderCache;
     class WindowComponent;
     class ModelRuntime;
     class ShaderRuntime;
     class LightRuntime;
     class SceneRuntime;
     class EntityRuntime;
-    class Texture;
     class ModelMesh;
     class MaterialRuntime;
-    class ShaderCache;
     class ShaderRuntime;
+
+    typedef TaskQueue<shared_ptr<GraphicsTask>> GraphicsTaskQueue;
+    typedef TaskQueue<shared_ptr<GraphicsDestructionTask>> GraphicsDestructionTaskQueue;
+
 
     /**
      * @brief GraphicsComponent is responsible for managing Dream's graphics pipeline.
@@ -87,9 +90,8 @@ namespace octronic::dream
     class GraphicsComponent : public Component
     {
     public:
-        GraphicsComponent(ProjectRuntime* pr, WindowComponent*);
+        GraphicsComponent(ProjectRuntime* pr);
         ~GraphicsComponent() override;
-
 
         // Geometry ============================================================
         bool setupGeometryBuffers();
@@ -108,23 +110,22 @@ namespace octronic::dream
         // Light ===============================================================
         void addToLightQueue(EntityRuntime*);
         void clearLightQueue();
-        bool setupScreenQuad();
+        bool setupLightPassQuad();
+        void freeLightPassQuad();
         void renderLightingPass(SceneRuntime* sr);
         // Sprite ===============================================================
         void renderSprites(SceneRuntime* sceneRuntime);
         // Font ================================================================
         void renderFonts(SceneRuntime* sceneRuntime);
         // Task ================================================================
-        void pushTask(GraphicsComponentTask* t);
-        void pushDestructionTask(const shared_ptr<GraphicsComponentDestructionTask>& t);
-        void executeTaskQueue();
-        void executeDestructionTaskQueue();
-        const vector<GraphicsComponentTask*>& getDebugTaskQueue();
+        GraphicsTaskQueue* getTaskQueue();
+        GraphicsDestructionTaskQueue* getDestructionTaskQueue();
         // Misc ================================================================
         bool init() override;
-        void onWindowDimensionsChanged();
-        void handleResize();
-        void setShaderCache(ShaderCache* cache);
+        bool setupBuffers();
+        bool handleResize();
+        void pushTasks() override;
+    	void logShaders();
 
     protected:
         void checkFrameBufferDimensions() const;
@@ -143,16 +144,18 @@ namespace octronic::dream
         GLuint mShadowPassDepthBuffer;
         mat4 mShadowMatrix;
         const int SHADOW_SIZE = 1024;
-        GLuint mScreenQuadVAO;
-        GLuint mScreenQuadVBO;
+        // Lighting ============================================================
+        GLuint mLightPassQuadVAO;
+        GLuint mLightPassQuadVBO;
         vector<LightRuntime*> mLightQueue;
         // Task ================================================================
-        vector<GraphicsComponentTask*> mTaskQueue;
-        vector<GraphicsComponentTask*> mDebugTaskQueue;
-        vector<shared_ptr<GraphicsComponentDestructionTask> > mDestructionTaskQueue;
+        GraphicsTaskQueue mTaskQueue;
+        GraphicsDestructionTaskQueue mDestructionTaskQueue;
+        // Tasks
+        shared_ptr<SetupBuffersTask> mSetupBuffersTask;
+        shared_ptr<HandleResizeTask> mHandleResizeTask;
+        shared_ptr<RenderTask> mRenderTask;
         // Misc ================================================================
-        WindowComponent* mWindowComponent;
-        ShaderCache* mShaderCache;
         GLint mMaxFrameBufferSize;
     };
 }

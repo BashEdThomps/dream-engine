@@ -1,13 +1,6 @@
 #pragma once
 
-#include "Common/Logger.h"
-#include "Components/Time.h"
-#include "Components/Transform.h"
-#include "Components/Graphics/Camera.h"
-#include "Scene/SceneRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
-#include "Project/ProjectRuntime.h"
-
+#include "Common/Vector.h"
 
 #include <string>
 #include <glm/fwd.hpp>
@@ -21,6 +14,7 @@ using glm::vec3;
 
 namespace octronic::dream
 {
+    class SceneRuntime;
     class JoystickMapping
     {
     public:
@@ -128,163 +122,67 @@ namespace octronic::dream
 
     class JoystickState
     {
+
+    public:
+
+        float getAxisData(int idx);
+        void setAxisData(unsigned int index, float data);
+        bool getButtonData(int idx);
+        void setButtonData(unsigned int index, bool data);
+        float getDeadZone() const;
+        const float* getAxisDataPointer() const;
+        const unsigned char* getButtonDataPointer() const;
+        void setName(const string& name);
+        string getName() const;
+        int getAxisCount() const;
+        void setAxisCount(int count);
+        int getButtonCount() const;
+        void setButtonCount(int count);
+        bool clearsDeadzone(float val) const;
+    private:
         string mName = "";
         int mButtonCount = 0;
         unsigned char mButtonData[32] = {0};
         int mAxisCount = 0;
         float mAxisData[32] = {0.0f};
         float mDeadZone = 0.15f;
-    public:
-
-        float getAxisData(int idx)
-        {
-           return mAxisData[idx];
-        }
-
-        void setAxisData(unsigned int index, float data)
-        {
-            mAxisData[index] = data;
-        }
-
-        bool getButtonData(int idx)
-        {
-            return mButtonData[idx] != 0;
-        }
-
-        void setButtonData(unsigned int index, bool data)
-        {
-            mButtonData[index] = data ? 1 : 0;
-        }
-
-        float getDeadZone() const
-        {
-           return mDeadZone;
-        }
-
-        const float* getAxisDataPointer() const
-        {
-            return &mAxisData[0];
-        }
-
-        const unsigned char* getButtonDataPointer() const
-        {
-            return &mButtonData[0];
-        }
-
-        void setName(const string& name)
-        {
-            mName = name;
-        }
-
-        string getName() const
-        {
-            return mName;
-        }
-
-        int getAxisCount() const
-        {
-            return mAxisCount;
-        }
-
-        void setAxisCount(int count)
-        {
-            mAxisCount = count;
-        }
-
-        int getButtonCount() const
-        {
-            return mButtonCount;
-        }
-
-        void setButtonCount(int count)
-        {
-            mButtonCount = count;
-        }
-
-        bool clearsDeadzone(float val) const
-        {
-            if(val > mDeadZone)
-            {
-                return true;
-            }
-            else if (val < -mDeadZone)
-            {
-                return true;
-            }
-            return false;
-        }
     };
 
     class JoystickNavigation
     {
+    public:
+        JoystickNavigation(JoystickState* state, JoystickMapping* mapping);
+        virtual ~JoystickNavigation();
+        virtual void update(SceneRuntime* rt) = 0;
+        void setHeading(const Vector2& h);
+        Vector2& getHeading();
     protected:
         JoystickState* mJoystickState;
         JoystickMapping* mJoystickMapping;
         Vector2 mHeading;
-    public:
-        JoystickNavigation(JoystickState* state, JoystickMapping* mapping)
-            : mJoystickState(state), mJoystickMapping(mapping)
-        {
-
-        }
-
-        virtual ~JoystickNavigation() {}
-
-        virtual void update(SceneRuntime* rt) = 0;
-
-        void setHeading(const Vector2& h)
-        {
-            mHeading = h;
-        }
-
-        Vector2& getHeading()
-        {
-            return mHeading;
-        }
     };
 
     class JoystickFaceForwardNavigation : public JoystickNavigation
     {
     public:
-        JoystickFaceForwardNavigation(JoystickState* state, JoystickMapping* mapping)
-            : JoystickNavigation(state,mapping) {}
-
-        ~JoystickFaceForwardNavigation() {}
-
-        void update(SceneRuntime* rt) override
-        {
-            if (!rt) return;
-
-            float leftX = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftXAxis);
-            float leftY = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftYAxis);
-            float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
-            float rightY = mJoystickState->getAxisData(mJoystickMapping->AnalogRightYAxis);
-
-            auto playerObject = rt->getPlayerEntity();
-            if (playerObject)
-            {
-                Transform playerTransform = playerObject->getTransform();
-                auto time = rt->getProjectRuntime()->getTime();
-                auto camera = rt->getCamera();
-                static mat4 ident(1.0f);
-                Vector3 translation = playerTransform.getTranslation();
-                mat4 mtx = glm::translate(ident,translation.toGLM());
-                auto totalYaw = 0.0f;
-                setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
-                mtx = glm::translate(mtx,vec3(time->perSecond(-leftY)*10.0f,0,time->perSecond(leftX)*10.0f));
-                playerObject->setTransform(playerTransform);
-            }
-            else
-            {
-                LOG_ERROR("Joystick: No player object");
-            }
-
-
-        }
+        JoystickFaceForwardNavigation(JoystickState* state, JoystickMapping* mapping);
+        ~JoystickFaceForwardNavigation();
+        void update(SceneRuntime* rt) override;
     };
 
     class Joystick2DPlaneNavigation : public JoystickNavigation
     {
+    public:
+        Joystick2DPlaneNavigation(JoystickState* state, JoystickMapping* mapping);
+        ~Joystick2DPlaneNavigation();
+
+        void update(SceneRuntime* rt) override;
+        void show();
+        float getRightVelocity() const;
+        float getLeftTheta() const;
+        float getRightTheta() const;
+        float getLeftVelocity() const;
+    private:
         float mLeftVelocity;
         float mRightVelocity;
         float mLeftTheta;
@@ -294,112 +192,5 @@ namespace octronic::dream
         float mLastRightVelocity;
         float mLastLeftTheta;
         float mLastRightTheta;
-
-
-    public:
-        Joystick2DPlaneNavigation
-        (JoystickState* state, JoystickMapping* mapping)
-            : JoystickNavigation(state,mapping),
-              mLeftVelocity(0.0f),
-              mRightVelocity(0.0f),
-              mLeftTheta(0.0f),
-              mRightTheta(0.0f)
-        {}
-
-        ~Joystick2DPlaneNavigation() {}
-
-        void update(SceneRuntime* rt) override
-        {
-            if (!rt) return;
-
-            float leftX = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftXAxis);
-            float leftY = mJoystickState->getAxisData(mJoystickMapping->AnalogLeftYAxis);
-            float rightX = mJoystickState->getAxisData(mJoystickMapping->AnalogRightXAxis);
-            float rightY = mJoystickState->getAxisData(mJoystickMapping->AnalogRightYAxis);
-
-            if (mJoystickState->clearsDeadzone(leftX) || mJoystickState->clearsDeadzone(leftY))
-            {
-                mLeftVelocity = fabs(sqrt((leftX*leftX)+(-leftY * -leftY)));
-
-                mLeftTheta = atan2(-leftY,leftX);
-
-                if (mLeftTheta != 0.0f)
-                {
-                   mLeftTheta -= (M_PI/2);
-                }
-            }
-            else
-            {
-                mLeftVelocity = 0.0f;
-            }
-
-            if (mJoystickState->clearsDeadzone(rightX) || mJoystickState->clearsDeadzone(rightY))
-            {
-                mRightVelocity = fabs(sqrt((rightX * rightX) + (-rightY * -rightY)));
-
-                mRightTheta = atan2(-rightY,rightX);
-
-                if (mRightTheta != 0.0f)
-                {
-                     mRightTheta -= (M_PI/2);
-                }
-            }
-            else
-            {
-                mRightVelocity = 0.0f;
-            }
-
-            auto playerObject = rt->getPlayerEntity();
-            if (playerObject)
-            {
-                Transform playerTransform = playerObject->getTransform();
-                Time* time = rt->getProjectRuntime()->getTime();
-                Camera* camera = rt->getCamera();
-                static mat4 ident(1.0f);
-                static vec3 yAxis(0.0f,1.0f,0.0f);
-                Vector3 translation = playerTransform.getTranslation();
-                mat4 mtx = glm::translate(ident,translation.toGLM());
-                auto camYaw = camera->getYaw();
-                auto totalYaw = getLeftTheta()-camYaw;
-                setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
-                mtx = glm::rotate(mtx,totalYaw,yAxis);
-                mtx = glm::translate(mtx,vec3(time->perSecond(getLeftVelocity()*10.0f),0,0));
-                playerObject->setTransform(Transform(mtx));
-            }
-            else
-            {
-                LOG_ERROR("Joystick: No player object");
-            }
-        }
-
-        void show()
-        {
-            LOG_ERROR(
-            	"JoystickSNav3D = Lv: {}  Lt: {} Rv: {} Rt: {}",
-				mLeftVelocity,
-				mLeftTheta,
-				mRightVelocity,
-				mRightTheta);
-        }
-
-        float getRightVelocity() const
-        {
-            return mRightVelocity;
-        }
-
-        float getLeftTheta() const
-        {
-            return mLeftTheta;
-        }
-
-        float getRightTheta() const
-        {
-            return mRightTheta;
-        }
-
-        float getLeftVelocity() const
-        {
-            return mLeftVelocity;
-        }
     };
 }

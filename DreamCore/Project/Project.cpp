@@ -22,7 +22,7 @@
 
 #include "Common/Logger.h"
 #include "Common/Uuid.h"
-#include "Components/Storage/Directory.h"
+#include "Storage/Directory.h"
 
 #include "Components/AssetDefinition.h"
 #include "Components/Time.h"
@@ -42,15 +42,14 @@ namespace octronic::dream
 {
     Project::Project
     (ProjectDirectory* dir, StorageManager* fm)
-        : LockableObject("Project"),
-          mDirectory(dir),
+        : mDirectory(dir),
           mDefinition(nullptr),
           mRuntime(nullptr),
           mWindowComponent(nullptr),
           mAudioComponent(nullptr),
           mStorageManager(fm)
     {
-      	LOG_TRACE("Project: Constructing");
+        LOG_TRACE("Project: Constructing");
     }
 
     Project::~Project
@@ -75,20 +74,15 @@ namespace octronic::dream
     Project::createProjectRuntime
     ()
     {
-        if (dreamTryLock())
+        LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
+        mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
+        if (!mRuntime->loadFromDefinition())
         {
-            dreamLock();
-			LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
-			mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
-			if (!mRuntime->useDefinition())
-			{
-				LOG_CRITICAL("Project: Failed to create project runtime");
-				delete mRuntime;
-				mRuntime = nullptr;
-			}
-			return mRuntime;
+            LOG_CRITICAL("Project: Failed to create project runtime");
+            delete mRuntime;
+            mRuntime = nullptr;
         }
-        dreamElseLockFailed
+        return mRuntime;
     }
 
     bool
@@ -101,14 +95,9 @@ namespace octronic::dream
 
     void Project::resetProjectRuntime()
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-            LOG_DEBUG("Project: Resetting project runtime");
-			delete mRuntime;
-			mRuntime = nullptr;
-        }
-        dreamElseLockFailed
+        LOG_DEBUG("Project: Resetting project runtime");
+        delete mRuntime;
+        mRuntime = nullptr;
     }
 
     bool // public
@@ -150,35 +139,20 @@ namespace octronic::dream
     Project::setDefinition
     (ProjectDefinition* definition)
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-        	mDefinition = definition;
-        }
-        dreamElseLockFailed
+        mDefinition = definition;
     }
 
     void // public
     Project::setWindowComponent
     (WindowComponent* windowComponent)
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-        	mWindowComponent = windowComponent;
-        }
-        dreamElseLockFailed
+        mWindowComponent = windowComponent;
     }
 
     void  // public
     Project::setAudioComponent(AudioComponent* audioComponent)
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-        	mAudioComponent = audioComponent;
-        }
-        dreamElseLockFailed
+        mAudioComponent = audioComponent;
     }
 
     ProjectDirectory* // public

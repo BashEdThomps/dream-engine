@@ -397,30 +397,6 @@ namespace octronic::dream::tool
 
             ProjectRuntime* pRuntime = project->getRuntime();
 
-            if (pRuntime)
-            {
-                scripting = pRuntime->getScriptComponent()->getEnabled();
-            }
-            if(ImGui::Checkbox("Scripting",&scripting))
-            {
-                if(pRuntime)
-                {
-                    pRuntime->getScriptComponent()->setEnabled(scripting);
-                }
-            }
-
-            bool physics = false;
-            if (pRuntime)
-            {
-                physics = pRuntime->getPhysicsComponent()->getEnabled();
-            }
-            if(ImGui::Checkbox("Physics",&physics))
-            {
-                if(pRuntime)
-                {
-                    pRuntime->getPhysicsComponent()->setEnabled(physics);
-                }
-            }
 
             if (ImGui::MenuItem("Clear Caches"))
             {
@@ -657,13 +633,13 @@ namespace octronic::dream::tool
             }
 
             int sceneToLoadIndex = -1;
-            if (StringCombo("Set Scene \"To Load\"", &sceneToLoadIndex, sceneNames, sceneNames.size()))
+            if (StringCombo("Load Scene", &sceneToLoadIndex, sceneNames, sceneNames.size()))
             {
                 SceneDefinition* selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
 
                 if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
                 {
-                    auto newSceneRT = new SceneRuntime(selectedSceneDef,pRuntime);
+                    auto newSceneRT = new SceneRuntime(pRuntime, selectedSceneDef);
                     newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
                     pRuntime->addSceneRuntime(newSceneRT);
                     setMessageString("Added Scene Runtime: "+newSceneRT->getName());
@@ -681,14 +657,15 @@ namespace octronic::dream::tool
             }
 
             int sceneActiveIndex = -1;
-            if (StringCombo("Set Scene \"Active\"", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
+            if (StringCombo("Set Active Scene", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
             {
                 if (pRuntime)
                 {
                     auto rt = pRuntime->getSceneRuntimeVector().at(sceneActiveIndex);
-                    if (rt)
+                    if (rt && rt->hasState(SCENE_STATE_LOADED))
                     {
-                        pRuntime->setSceneRuntimeAsActive(rt->getUuid());
+                        rt->setState(SCENE_STATE_ACTIVE);
+                        pRuntime->setActiveSceneRuntime(rt->getUuid());
                         setMessageString("Activated Scene: "+rt->getName());
                     }
                 }
@@ -763,7 +740,7 @@ namespace octronic::dream::tool
                         if (active)
                         {
                             active->setPhysicsDebug(physicsDebug);
-                            dynamic_cast<SceneDefinition*>(active->getDefinition())->setPhysicsDebug(physicsDebug);
+                            dynamic_cast<SceneDefinition*>(active->getDefinitionHandle())->setPhysicsDebug(physicsDebug);
                         }
                     }
                 }

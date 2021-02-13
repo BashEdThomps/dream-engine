@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Base/LockableObject.h"
+
 
 #include "Common/Constants.h"
 #include "Components/Transform.h"
@@ -31,7 +31,7 @@ namespace octronic::dream
      * @brief Definition is an abstract class that provides Name, ID and
      * JSON serialization functions.
      */
-    class Definition : public LockableObject
+    class Definition
     {
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Components/Task/Task.h"
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Task/Task.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
@@ -14,7 +14,7 @@ namespace octronic::dream
         PhysicsComponent* mComponent;
         PhysicsObjectRuntime* mRuntime;
     public:
-        PhysicsAddObjectTask(PhysicsComponent* cp, PhysicsObjectRuntime* rt);
+        PhysicsAddObjectTask(ProjectRuntime* pr, PhysicsComponent* cp, PhysicsObjectRuntime* rt);
         void execute();
     };
 
@@ -22,15 +22,15 @@ namespace octronic::dream
     {
         PhysicsComponent* mComponent;
     public:
-        PhysicsUpdateWorldTask(PhysicsComponent* cp);
+        PhysicsUpdateWorldTask(ProjectRuntime* pr, PhysicsComponent* cp);
         void execute();
     };
 
-    class PhysicsDrawDebugTask : public GraphicsComponentTask
+    class PhysicsDrawDebugTask : public GraphicsTask
     {
         PhysicsComponent* mComponent;
     public:
-        PhysicsDrawDebugTask(PhysicsComponent* cp);
+        PhysicsDrawDebugTask(ProjectRuntime* pr, PhysicsComponent* cp);
         void execute();
     };
 }

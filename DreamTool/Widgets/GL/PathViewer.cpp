@@ -155,13 +155,14 @@ namespace octronic::dream::tool
         }
         else
         {
-            if (mPathRuntime == nullptr)
-            {
-               mPathRuntime = new PathRuntime(mPathDefinition,nullptr);
-            }
+            // TODO - no
+            //if (mPathRuntime == nullptr)
+            //{
+            //   mPathRuntime = new PathRuntime(mPathDefinition,nullptr);
+            //}
         }
 
-        mPathRuntime->useDefinition();
+        mPathRuntime->loadFromDefinition();
 
         auto controls = mPathDefinition->getControlPoints();
 

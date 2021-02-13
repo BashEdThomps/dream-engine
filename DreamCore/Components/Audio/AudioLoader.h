@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/LockableObject.h"
+
 
 #include <cstdint>
 #include <cstddef>
@@ -9,7 +9,7 @@ namespace octronic::dream
 {
 	class AudioDefinition;
 	class ProjectRuntime;
-	class AudioLoader : public LockableObject
+	class AudioLoader
 	{
 	public:
 		AudioLoader();

@@ -13,7 +13,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #pragma once
 
 #include "ShaderUniform.h"
@@ -40,7 +39,6 @@ using glm::vec2;
 
 namespace octronic::dream
 {
-    class ShaderCache;
     class ShaderDefinition;
     class MaterialRuntime;
     class LightRuntime;
@@ -56,7 +54,7 @@ namespace octronic::dream
         const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
         const static size_t MAX_RUNTIMES;
 
-        ShaderRuntime(ShaderDefinition*, ProjectRuntime*);
+        ShaderRuntime(ProjectRuntime*, ShaderDefinition*);
         ~ShaderRuntime() override;
 
         static GLuint CurrentTexture0;
@@ -70,7 +68,7 @@ namespace octronic::dream
         static GLuint CurrentVBO;
         static void InvalidateState();
 
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
         void deleteUniforms();
 
         bool use();
@@ -139,21 +137,21 @@ namespace octronic::dream
         void setSpritePositionUniform(const vec2& pos);
         void setSpriteProjectionUniform(const mat4& proj);
 
-
+        void pushNextTask() override;
 
 		bool performFragmentCompilation();
 		bool performVertexCompilation();
 		bool performLinking();
 
     protected:
-        bool compileVertex();
-        bool compileFragment();
-        bool linkProgram();
+        bool readVertexSource();
+        bool readFragmentSource();
 
-        ShaderCompileFragmentTask mCompileFragmentTask;
-        ShaderCompileVertexTask mCompileVertexTask;
-        ShaderLinkTask mLinkTask;
+        shared_ptr<ShaderCompileFragmentTask> mCompileFragmentTask;
+        shared_ptr<ShaderCompileVertexTask> mCompileVertexTask;
+        shared_ptr<ShaderLinkTask> mLinkTask;
         shared_ptr<ShaderFreeTask> mFreeTask;
+
     private:
         unsigned int mPointLightCount;
         GLint mPointLightCountLocation;
@@ -178,7 +176,5 @@ namespace octronic::dream
         bool mRecompile;
         string mVertexSource;
         string mFragmentSource;
-
-
     };
 }

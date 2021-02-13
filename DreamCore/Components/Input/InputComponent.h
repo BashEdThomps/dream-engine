@@ -30,22 +30,6 @@ namespace octronic::dream
 {
     class InputComponent : public Component
     {
-        SceneRuntime* mCurrentSceneRuntime;
-
-        KeyboardState mKeyboardState;
-        KeyboardState mLastKeyboardState;
-
-        MouseState mMouseState;
-        MouseState mLastMouseState;
-
-        int mJoystickCount;
-        JoystickState mJoystickState;
-        JoystickState mLastJoystickState;
-        JoystickMapping mJoystickMapping;
-        InputPollDataTask mPollDataTask;
-        InputExecuteScriptTask mExecuteScriptTask;
-        shared_ptr<JoystickNavigation> mJoystickNavigation;
-
     public:
         InputComponent(ProjectRuntime* rt);
         ~InputComponent() override;
@@ -74,12 +58,31 @@ namespace octronic::dream
         float mouseDeltaX();
         float mouseDeltaY();
 
-        InputPollDataTask* getPollDataTask();
-        InputExecuteScriptTask* getExecuteScriptTask();
+        shared_ptr<InputPollDataTask> getPollDataTask();
+        shared_ptr<InputExecuteScriptTask> getExecuteScriptTask();
 
         SceneRuntime *getCurrentSceneRuntime() const;
         void setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime);
         int getJoystickCount() const;
         void setJoystickCount(int joystickCount);
+
+        void pushTasks() override;
+
+    private:
+        SceneRuntime* mCurrentSceneRuntime;
+
+        KeyboardState mKeyboardState;
+        KeyboardState mLastKeyboardState;
+
+        MouseState mMouseState;
+        MouseState mLastMouseState;
+
+        int mJoystickCount;
+        JoystickState mJoystickState;
+        JoystickState mLastJoystickState;
+        JoystickMapping mJoystickMapping;
+        shared_ptr<InputPollDataTask> mPollDataTask;
+        shared_ptr<InputExecuteScriptTask> mExecuteScriptTask;
+        shared_ptr<JoystickNavigation> mJoystickNavigation;
     };
 }

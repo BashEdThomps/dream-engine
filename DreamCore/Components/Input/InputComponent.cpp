@@ -22,7 +22,7 @@
 #include "Components/Script/ScriptRuntime.h"
 #include "Components/Graphics/Camera.h"
 #include "Scene/SceneRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
@@ -32,12 +32,12 @@ namespace octronic::dream
 {
     InputComponent::InputComponent
     (ProjectRuntime* rt)
-        : Component ("InputComponent",rt),
+        : Component (rt),
           mCurrentSceneRuntime(nullptr),
           mJoystickMapping(JsPsxMapping),
           mJoystickNavigation(nullptr),
-          mPollDataTask(this),
-          mExecuteScriptTask(this),
+          mPollDataTask(nullptr),
+          mExecuteScriptTask(nullptr),
           mJoystickCount(0)
     {
         LOG_TRACE("InputComponent: Constructing");
@@ -55,162 +55,117 @@ namespace octronic::dream
     InputComponent::init
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            LOG_DEBUG("InputComponent: Initialising...");
-            return true;
-        } dreamElseLockFailed
+        LOG_DEBUG("InputComponent: Initialising...");
+        return true;
     }
 
     bool
     InputComponent::executeInputScript
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mCurrentSceneRuntime)
+        if (mCurrentSceneRuntime)
+        {
+            mJoystickNavigation->update(mCurrentSceneRuntime);
+            auto inputScript = mCurrentSceneRuntime->getInputScript();
+            if (inputScript)
             {
-                mJoystickNavigation->update(mCurrentSceneRuntime);
-                auto inputScript = mCurrentSceneRuntime->getInputScript();
-                if (inputScript)
-                {
-                    return inputScript->executeOnInput(this, mCurrentSceneRuntime);
-                }
+                return inputScript->executeOnInput(this, mCurrentSceneRuntime);
             }
-            return true;
-        } dreamElseLockFailed
+        }
+        return true;
     }
 
     void
     InputComponent::pollData
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mLastKeyboardState = mKeyboardState;
-            mLastMouseState = mMouseState;
-            mLastJoystickState = mJoystickState;
-        } dreamElseLockFailed
+        mLastKeyboardState = mKeyboardState;
+        mLastMouseState = mMouseState;
+        mLastJoystickState = mJoystickState;
     }
 
     bool
     InputComponent::isKeyDown
     (int key)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mKeyboardState.KeysDown[key];
-        } dreamElseLockFailed
+        return mKeyboardState.KeysDown[key];
     }
 
     KeyboardState&
     InputComponent::getKeyboardState
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mKeyboardState;
-        } dreamElseLockFailed
+        return mKeyboardState;
     }
 
     void
     InputComponent::setKeyboardState
     (const KeyboardState& keyboardState)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mKeyboardState = keyboardState;
-        } dreamElseLockFailed
+        mKeyboardState = keyboardState;
     }
 
     MouseState&
     InputComponent::getMouseState
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mMouseState;
-        } dreamElseLockFailed
+        return mMouseState;
     }
 
     void
     InputComponent::setMouseState
     (const MouseState& mouseState)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mMouseState = mouseState;
-        } dreamElseLockFailed
+        mMouseState = mouseState;
     }
 
     JoystickState&
     InputComponent::getJoystickState
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mJoystickState;
-        } dreamElseLockFailed
+        return mJoystickState;
     }
 
     void
     InputComponent::setJoystickState
     (const JoystickState& joystickState)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJoystickState = joystickState;
-        } dreamElseLockFailed
+        mJoystickState = joystickState;
     }
 
     float
     InputComponent::mouseDeltaX
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mMouseState.PosX - mLastMouseState.PosX;
-        } dreamElseLockFailed
+        return mMouseState.PosX - mLastMouseState.PosX;
     }
 
     float
     InputComponent::mouseDeltaY
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mMouseState.PosY - mLastMouseState.PosY;
-        } dreamElseLockFailed
+        return mMouseState.PosY - mLastMouseState.PosY;
     }
 
     JoystickMapping&
     InputComponent::getJoystickMapping
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mJoystickMapping;
-        } dreamElseLockFailed
+        return mJoystickMapping;
     }
 
-    InputPollDataTask*
+    shared_ptr<InputPollDataTask>
     InputComponent::getPollDataTask
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return &mPollDataTask;
-        } dreamElseLockFailed
+        return mPollDataTask;
     }
 
-    InputExecuteScriptTask*
+    shared_ptr<InputExecuteScriptTask>
     InputComponent::getExecuteScriptTask
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return &mExecuteScriptTask;
-        } dreamElseLockFailed
+        return mExecuteScriptTask;
     }
 
     SceneRuntime*
@@ -224,20 +179,14 @@ namespace octronic::dream
     InputComponent::setCurrentSceneRuntime
     (SceneRuntime *currentSceneRuntime)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mCurrentSceneRuntime = currentSceneRuntime;
-        } dreamElseLockFailed
+        mCurrentSceneRuntime = currentSceneRuntime;
     }
 
     JoystickNavigation*
     InputComponent::getJoystickNavigation
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mJoystickNavigation.get();
-        } dreamElseLockFailed
+        return mJoystickNavigation.get();
     }
 
     int
@@ -252,9 +201,25 @@ namespace octronic::dream
     InputComponent::setJoystickCount
     (int joystickCount)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJoystickCount = joystickCount;
-        } dreamElseLockFailed
+        mJoystickCount = joystickCount;
+    }
+
+    void
+    InputComponent::pushTasks()
+    {
+        /*
+        // Input component needs to be constructed
+        if (mInputScript)
+        {
+            mInputScript->pushNextTask();
+
+			inputComponent->setCurrentSceneRuntime(this);
+
+            // Process Input
+            InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
+			inputExecuteTask->dependsOn(inputPollDataTask);
+			taskManager->pushNextTask();
+        }
+        */
     }
 }

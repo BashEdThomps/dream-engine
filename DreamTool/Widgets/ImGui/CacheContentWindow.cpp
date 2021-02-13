@@ -29,7 +29,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Audio Cache"))
                 {
                     auto cache = projRunt->getAudioCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -38,7 +38,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Font Cache"))
                 {
                     auto cache = projRunt->getFontCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -47,7 +47,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Material Cache"))
                 {
                     auto cache = projRunt->getMaterialCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -56,7 +56,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Model Cache"))
                 {
                     auto cache = projRunt->getModelCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -65,7 +65,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Script Cache"))
                 {
                     auto cache = projRunt->getScriptCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -74,7 +74,7 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Shader Cache"))
                 {
                     auto cache = projRunt->getShaderCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -83,14 +83,12 @@ namespace octronic::dream::tool
                 if (ImGui::CollapsingHeader("Texture Cache"))
                 {
                     auto cache = projRunt->getTextureCache();
-                    for (auto instance : cache->getRuntimeVector())
+                    for (auto& instance : *cache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
-
             }
-
         }
         ImGui::End();
     }

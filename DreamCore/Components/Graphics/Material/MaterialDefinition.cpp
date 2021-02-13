@@ -42,26 +42,18 @@ namespace octronic::dream
     MaterialDefinition::getShader
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
-        } dreamElseLockFailed
-
-
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
     }
 
     void
     MaterialDefinition::setShader
     (UuidType val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
     }
 
     // Textures
@@ -69,97 +61,72 @@ namespace octronic::dream
     MaterialDefinition::getDiffuseTexture
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
-        } dreamElseLockFailed
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
     }
 
     void
     MaterialDefinition::setDiffuseTexture
     (UuidType val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
     }
 
     UuidType
     MaterialDefinition::getSpecularTexture
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
-        } dreamElseLockFailed
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
     }
 
     void
     MaterialDefinition::setSpecularTexture
     (UuidType val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
     }
 
     UuidType
     MaterialDefinition::getNormalTexture
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
-        } dreamElseLockFailed
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
     }
 
     void
     MaterialDefinition::setNormalTexture
     (UuidType val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
     }
 
     UuidType
     MaterialDefinition::getDisplacementTexture
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
-        } dreamElseLockFailed
-
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
     }
 
     void
     MaterialDefinition::setDisplacementTexture
     (UuidType val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
     }
 
     // Colour
@@ -167,304 +134,221 @@ namespace octronic::dream
     MaterialDefinition::getDiffuseColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
-            }
-
-            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR]);
-        } dreamElseLockFailed
-
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR]);
     }
 
     void
     MaterialDefinition::setDiffuseColour
     (Vector3 val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = val.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = val.toJson();
     }
 
     Vector3
     MaterialDefinition::getSpecularColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
-            }
-
-            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR]);
-        } dreamElseLockFailed
-
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR]);
     }
 
     void
     MaterialDefinition::setSpecularColour
     (Vector3 val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = val.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = val.toJson();
     }
 
     Vector3
     MaterialDefinition::getAmbientColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
-            }
-
-            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR]);
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR]);
     }
 
     void
     MaterialDefinition::setAmbientColour
     (Vector3 val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = val.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = val.toJson();
     }
 
     Vector3
     MaterialDefinition::getReflectiveColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
-            }
-
-            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR]);
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR]);
     }
 
     void
     MaterialDefinition::setReflectiveColour
     (Vector3 val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = val.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = val.toJson();
     }
 
     Vector3
     MaterialDefinition::getEmissiveColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
-            }
-
-            return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR]);
-        } dreamElseLockFailed
-
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR]);
     }
 
     void
     MaterialDefinition::setEmissiveColour
     (Vector3 val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = val.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = val.toJson();
     }
 
     json
     MaterialDefinition::black
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return Vector3(0.f).toJson();
-        } dreamElseLockFailed
+        return Vector3(0.f).toJson();
     }
 
     float
     MaterialDefinition::getOpacity
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_OPACITY) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_OPACITY) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY];
     }
 
     void
     MaterialDefinition::setOpacity
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
-        } dreamElseLockFailed
+
+        mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
+
     }
 
     float
     MaterialDefinition::getBumpScaling
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING];
-        } dreamElseLockFailed
-
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING];
     }
 
     void
     MaterialDefinition::setBumpScaling
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
     }
 
     float
     MaterialDefinition::getHardness
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_HARDNESS) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_HARDNESS) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS];
     }
 
     void
     MaterialDefinition::setHardness
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
     }
 
     float
     MaterialDefinition::getReflectivity
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY];
     }
 
     void
     MaterialDefinition::setReflectivity
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
     }
 
     float
     MaterialDefinition::getShininessStrength
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH];
     }
 
     void
     MaterialDefinition::setShininessStrength
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
     }
 
     float
     MaterialDefinition::getRefractionIndex
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX];
     }
 
     void
     MaterialDefinition::setRefractionIndex
     (float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
     }
 
     bool MaterialDefinition::getIgnore()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_MATERIAL_IGNORE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
-            }
-            return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_MATERIAL_IGNORE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
     }
 
     void MaterialDefinition::setIgnore(bool ignore)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
     }
 }
 

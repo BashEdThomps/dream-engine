@@ -29,8 +29,7 @@ using glm::uvec4;
 namespace octronic::dream
 {
     ShaderUniform::ShaderUniform(UniformType type, string name, int count, void* data)
-        : LockableObject("ShaderUniform"),
-          mType(type),
+        : mType(type),
           mName(name),
           mCount(count),
           mLocation(0),
@@ -153,11 +152,8 @@ namespace octronic::dream
 
     void ShaderUniform::setCount(int count)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mCount = count;
-            setNeedsUpdate(true);
-        } dreamElseLockFailed
+        mCount = count;
+        setNeedsUpdate(true);
     }
 
     GLint ShaderUniform::getLocation() const
@@ -167,11 +163,8 @@ namespace octronic::dream
 
     void ShaderUniform::setLocation(GLint location)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mLocation = location;
-            setNeedsUpdate(true);
-        } dreamElseLockFailed
+        mLocation = location;
+        setNeedsUpdate(true);
     }
 
     bool ShaderUniform::getNeedsUpdate() const
@@ -181,10 +174,7 @@ namespace octronic::dream
 
     void ShaderUniform::setNeedsUpdate(bool needsUpdate)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mNeedsUpdate = needsUpdate;
-        } dreamElseLockFailed
+        mNeedsUpdate = needsUpdate;
     }
 
     void* ShaderUniform::getData() const
@@ -194,58 +184,56 @@ namespace octronic::dream
 
     void ShaderUniform::setData(void* data)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            size_t size = 0;
-            switch (mType)
-            {
-                case INT1:
-                    size = sizeof(GLint)*static_cast<unsigned long>(mCount);
-                    break;
-                case INT2:
-                    size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
-                    break;
-                case INT3:
-                    size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
-                    break;
-                case INT4:
-                    size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
-                    break;
+        size_t size = 0;
+        switch (mType)
+        {
+            case INT1:
+                size = sizeof(GLint)*static_cast<unsigned long>(mCount);
+                break;
+            case INT2:
+                size = sizeof(ivec2)*static_cast<unsigned long>(mCount);
+                break;
+            case INT3:
+                size = sizeof(ivec3)*static_cast<unsigned long>(mCount);
+                break;
+            case INT4:
+                size = sizeof(ivec4)*static_cast<unsigned long>(mCount);
+                break;
 
-                case UINT1:
-                    size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
-                    break;
-                case UINT2:
-                    size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
-                    break;
-                case UINT3:
-                    size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
-                    break;
-                case UINT4:
-                    size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
-                    break;
+            case UINT1:
+                size = sizeof(GLuint)*static_cast<unsigned long>(mCount);
+                break;
+            case UINT2:
+                size = sizeof(uvec2)*static_cast<unsigned long>(mCount);
+                break;
+            case UINT3:
+                size = sizeof(uvec3)*static_cast<unsigned long>(mCount);
+                break;
+            case UINT4:
+                size = sizeof(uvec4)*static_cast<unsigned long>(mCount);
+                break;
 
-                case FLOAT1:
-                    size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
-                    break;
-                case FLOAT2:
-                    size = sizeof(vec2)*static_cast<unsigned long>(mCount);
-                    break;
-                case FLOAT3:
-                    size = sizeof(vec3)*static_cast<unsigned long>(mCount);
-                    break;
-                case FLOAT4:
-                    size = sizeof(vec4)*static_cast<unsigned long>(mCount);
-                    break;
-            }
+            case FLOAT1:
+                size = sizeof(GLfloat)*static_cast<unsigned long>(mCount);
+                break;
+            case FLOAT2:
+                size = sizeof(vec2)*static_cast<unsigned long>(mCount);
+                break;
+            case FLOAT3:
+                size = sizeof(vec3)*static_cast<unsigned long>(mCount);
+                break;
+            case FLOAT4:
+                size = sizeof(vec4)*static_cast<unsigned long>(mCount);
+                break;
+        }
 
-            if (size > 0)
-            {
-                if (memcmp(mData,data,size) == 0) return;
-                memcpy(mData,data,size);
-                setNeedsUpdate(true);
-            }
-        } dreamElseLockFailed
+        if (size > 0)
+        {
+            if (memcmp(mData,data,size) == 0) return;
+            memcpy(mData,data,size);
+            setNeedsUpdate(true);
+        }
+
     }
 
     string
@@ -259,11 +247,9 @@ namespace octronic::dream
     ShaderUniform::setName
     (const string& name)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mName = name;
-            setNeedsUpdate(true);
-        } dreamElseLockFailed
+        mName = name;
+        setNeedsUpdate(true);
+
     }
 
     UniformType
@@ -277,11 +263,7 @@ namespace octronic::dream
     ShaderUniform::setType
     (const UniformType& type)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mType = type;
-            setNeedsUpdate(true);
-        } dreamElseLockFailed
+        mType = type;
+        setNeedsUpdate(true);
     }
-
 }

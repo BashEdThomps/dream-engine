@@ -20,7 +20,7 @@
 #include "Components/Window/WindowComponent.h"
 #include "Project/ProjectRuntime.h"
 #include "Scene/SceneRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Entity/EntityRuntime.h"
 
 #include <glm/common.hpp>
 
@@ -30,8 +30,7 @@ namespace octronic::dream
 {
     Camera::Camera
     (SceneRuntime* parent)
-        : LockableObject("Camera"),
-          mTranslation(0.0f),
+        : mTranslation(0.0f),
           mFront(0.0f, 0.0f, -1.0f),
           mUp(0.0f),
           mRight(0.0),

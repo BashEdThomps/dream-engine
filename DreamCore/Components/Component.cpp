@@ -16,16 +16,12 @@
 #include "Component.h"
 #include "Time.h"
 
-
-
 namespace octronic::dream
 {
 
     Component::Component
-    (const string& className, ProjectRuntime* pr)
-        : LockableObject(className),
-          mEnabled(true),
-          mProjectRuntime(pr)
+    (ProjectRuntime* pr)
+        : mProjectRuntime(pr)
     {
 
     }
@@ -36,34 +32,8 @@ namespace octronic::dream
 
     }
 
-    void
-    Component::setTime
-    (Time* time)
-    {
-        if(dreamTryLock()) {
-            dreamLock();
-            mTime = time;
-        } dreamElseLockFailed
-    }
-
-    bool Component::getEnabled() const
-    {
-        return mEnabled;
-    }
-
-    void Component::setEnabled(bool enabled)
-    {
-        if(dreamTryLock()) {
-            dreamLock();
-            mEnabled = enabled;
-        } dreamElseLockFailed
-    }
-
     void Component::setProjectRuntime(ProjectRuntime *pr)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mProjectRuntime = pr;
-        } dreamElseLockFailed
+        mProjectRuntime = pr;
     }
 }

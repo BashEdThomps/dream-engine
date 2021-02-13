@@ -21,7 +21,8 @@ namespace octronic::dream
     class EntityRuntime;
 
     /**
-     * @brief A DiscreteAssetRuntime is unique to a single EntityRuntime
+     * @brief A DiscreteAssetRuntime is a Runtime that is unique to a single
+     * EntityRuntime.
      */
     class DiscreteAssetRuntime : public AssetRuntime
     {
@@ -30,14 +31,14 @@ namespace octronic::dream
          * @param def Definition from which to create Runtime.
          * @param runtime Owner of this AssetRuntime.
          */
-        DiscreteAssetRuntime(const string& className, AssetDefinition* def, EntityRuntime* runtime);
+        DiscreteAssetRuntime(ProjectRuntime* prt, AssetDefinition* def, EntityRuntime* runtime);
         ~DiscreteAssetRuntime() override;
 
-        EntityRuntime* getEntityRuntime() const;
+        EntityRuntime* getEntityRuntimeHandle() const;
         string getAssetFilePath(const string& fmt = "") override;
         string getAssetDirectoryPath() override;
 
     protected:
-        EntityRuntime* mEntityRuntime;
+        EntityRuntime* mEntityRuntimeHandle;
     };
 }

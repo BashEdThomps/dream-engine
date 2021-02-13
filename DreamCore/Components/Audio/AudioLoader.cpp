@@ -8,8 +8,7 @@ namespace octronic::dream
 {
 
     AudioLoader::AudioLoader()
-        : LockableObject("AudioLoader"),
-          mAudioBuffer(nullptr),
+        : mAudioBuffer(nullptr),
           mAudioBufferSize(0),
           mChannels(0),
           mSampleRate(0)

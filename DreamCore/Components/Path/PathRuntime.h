@@ -31,9 +31,9 @@ namespace octronic::dream
     {
 
     public:
-        PathRuntime(PathDefinition*,EntityRuntime*);
+        PathRuntime(ProjectRuntime*, PathDefinition*,EntityRuntime*);
         ~PathRuntime() override;
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         double getUStep() const;
         void setUStep(double uStep);
@@ -61,6 +61,8 @@ namespace octronic::dream
 
         PathUpdateTask* getUpdateTask();
 
+        void pushNextTask() override;
+
     private:
         bool mWrapPath;
         size_t mCurrentIndex;
@@ -71,6 +73,6 @@ namespace octronic::dream
         mat4 mCurrentTransform;
         float mVelocity;
         float mDistanceToTravel;
-        PathUpdateTask mUpdateTask;
+        PathUpdateTask* mUpdateTask;
     };
 }

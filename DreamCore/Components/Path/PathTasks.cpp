@@ -5,14 +5,15 @@
 
 namespace octronic::dream
 {
-    PathUpdateTask::PathUpdateTask(PathRuntime* rt)
-        : Task("PathUpdateTask"), mPathRuntime(rt)
+    PathUpdateTask::PathUpdateTask(ProjectRuntime* pr, PathRuntime* rt)
+        : Task(pr, "PathUpdateTask"),
+          mPathRuntime(rt)
     {
     }
 
     void PathUpdateTask::execute()
     {
-        LOG_CRITICAL("PathUpdateTask: Executing on thread {}",getThreadID());
+        LOG_CRITICAL("PathUpdateTask: Executing {}",getID());
 		mPathRuntime->update();
 		setState(TaskState::TASK_STATE_COMPLETED);
     }

@@ -17,23 +17,21 @@
 
 #include "AssetDefinition.h"
 
+#include "Cache.h"
 #include "Common/Logger.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
-#include "Components/Storage/ProjectDirectory.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Storage/ProjectDirectory.h"
+#include "Entity/EntityRuntime.h"
 #include "Scene/SceneRuntime.h"
-#include "Components/Task/Task.h"
-
-
+#include "Task/Task.h"
 
 namespace octronic::dream
 {
-
     DiscreteAssetRuntime::DiscreteAssetRuntime
-    (const string& className, AssetDefinition* def, EntityRuntime* runtime)
-        : AssetRuntime (className, def),
-          mEntityRuntime(runtime)
+    (ProjectRuntime* prt, AssetDefinition* def, EntityRuntime* runtime)
+        : AssetRuntime (prt, def),
+          mEntityRuntimeHandle(runtime)
     {
     }
 
@@ -45,39 +43,23 @@ namespace octronic::dream
     DiscreteAssetRuntime::getAssetFilePath
     (const string& fmt)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            auto pDir = mEntityRuntime
-                    ->getSceneRuntime()
-                    ->getProjectRuntime()
-                    ->getProject()
-                    ->getDirectory();
-            return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinition),fmt);
-        } dreamElseLockFailed
+        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
+        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinitionHandle),fmt);
     }
 
     string
     DiscreteAssetRuntime::getAssetDirectoryPath
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            auto pDir = mEntityRuntime
-                    ->getSceneRuntime()
-                    ->getProjectRuntime()
-                    ->getProject()
-                    ->getDirectory();
-            return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinition));
-        } dreamElseLockFailed
+        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
+        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinitionHandle));
     }
 
     EntityRuntime*
-    DiscreteAssetRuntime::getEntityRuntime
+    DiscreteAssetRuntime::getEntityRuntimeHandle
     ()
     const
     {
-        return mEntityRuntime;
+        return mEntityRuntimeHandle;
     }
 }

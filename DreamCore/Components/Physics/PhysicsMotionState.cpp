@@ -13,7 +13,7 @@
 #include "PhysicsMotionState.h"
 
 #include "Common/Logger.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Entity/EntityRuntime.h"
 
 #include <iostream>
 #include <LinearMath/btMatrix3x3.h>
@@ -49,7 +49,6 @@ namespace octronic::dream
     PhysicsMotionState::setWorldTransform
     (const btTransform &worldTrans)
     {
-
         LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
         float mtx[16];
         worldTrans.getOpenGLMatrix(mtx);

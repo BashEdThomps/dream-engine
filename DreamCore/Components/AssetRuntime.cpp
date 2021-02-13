@@ -21,9 +21,11 @@
 namespace octronic::dream
 {
     AssetRuntime::AssetRuntime
-    (const string& className, AssetDefinition* definition)
-        : Runtime(className, definition),
-          mLoaded(false)
+    (ProjectRuntime* pr, AssetDefinition* definition)
+        : Runtime(definition),
+          mProjectRuntimeHandle(pr),
+          mLoaded(false),
+          mLoadError(false)
     {
     }
 
@@ -35,29 +37,37 @@ namespace octronic::dream
     bool
     AssetRuntime::getLoaded
     ()
+    const
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mLoaded;
-        }
-        dreamElseLockFailed
+        return mLoaded;
     }
 
     void
     AssetRuntime::setLoaded
     (bool loaded)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mLoaded = loaded;
-        }
-        dreamElseLockFailed
+        mLoaded = loaded;
     }
 
-    void AssetRuntime::collectGarbage()
+    bool
+    AssetRuntime::getLoadError
+    ()
+    const
     {
+        return mLoadError;
+    }
+
+    void
+    AssetRuntime::setLoadError
+    (bool loadError)
+    {
+        mLoadError = loadError;
+    }
+
+    ProjectRuntime* AssetRuntime::getProjectRuntimeHandle()
+    const
+    {
+        return mProjectRuntimeHandle;
     }
 }
 

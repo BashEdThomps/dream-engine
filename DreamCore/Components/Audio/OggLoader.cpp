@@ -16,9 +16,9 @@
 #include "OggLoader.h"
 
 #include <Common/Logger.h>
-#include "Components/Storage/StorageManager.h"
-#include "Components/Storage/File.h"
-#include "Components/Storage/ProjectDirectory.h"
+#include "Storage/StorageManager.h"
+#include "Storage/File.h"
+#include "Storage/ProjectDirectory.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 #include "Components/Audio/AudioDefinition.h"

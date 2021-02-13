@@ -38,7 +38,6 @@ namespace octronic::dream
         ASSET_TYPE_ENUM_PHYSICS_OBJECT,
         ASSET_TYPE_ENUM_SCRIPT,
         ASSET_TYPE_ENUM_SHADER,
-        ASSET_TYPE_ENUM_SPRITE,
         ASSET_TYPE_ENUM_TEXTURE,
         ASSET_TYPE_ENUM_NONE
     };
@@ -87,7 +86,6 @@ namespace octronic::dream
         const static string ASSET_TYPE_PHYSICS_OBJECT;
         const static string ASSET_TYPE_SCRIPT;
         const static string ASSET_TYPE_SHADER;
-        const static string ASSET_TYPE_SPRITE;
         const static string ASSET_TYPE_TEXTURE;
         const static string ASSET_TYPE_MATERIAL;
         // Formats
@@ -117,7 +115,6 @@ namespace octronic::dream
         const static string ASSET_TYPE_SHADER_READABLE;
         const static string ASSET_TYPE_TEXTURE_READABLE;
         const static string ASSET_TYPE_MATERIAL_READABLE;
-        const static string ASSET_TYPE_SPRITE_READABLE;
 
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;

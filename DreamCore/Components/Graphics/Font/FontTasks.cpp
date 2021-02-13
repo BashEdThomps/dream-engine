@@ -4,15 +4,15 @@
 
 namespace octronic::dream
 {
-    FontConstructionTask::FontConstructionTask(FontRuntime* rt)
-        : GraphicsComponentTask("FontConstructionTask"),
+    FontLoadIntoGLTask::FontLoadIntoGLTask(ProjectRuntime* pr, FontRuntime* rt)
+        : GraphicsTask(pr, "FontLoadIntoGLTask"),
         mFontRuntime(rt)
     {
     }
 
-    void FontConstructionTask::execute()
+    void FontLoadIntoGLTask::execute()
     {
-        LOG_TRACE("FontConstructionTask: {} Executing on Graphics thread",mFontRuntime->getNameAndUuidString());
+        LOG_TRACE("FontLoadIntoGLTask: {} Executing on Graphics thread",mFontRuntime->getNameAndUuidString());
 
 		if (!mFontRuntime->loadIntoGL())
 		{
@@ -24,15 +24,15 @@ namespace octronic::dream
         }
     }
 
-    FontDestructionTask::FontDestructionTask
-    ()
-        : GraphicsComponentDestructionTask("FontDestructionTask")
+    FontRemoveFromGLTask::FontRemoveFromGLTask
+    (ProjectRuntime* pr)
+        : GraphicsDestructionTask(pr, "FontRemoveFromGLTask")
     {
     }
 
-    void FontDestructionTask::execute()
+    void FontRemoveFromGLTask::execute()
     {
-        LOG_TRACE("FontDestructionTask: with texture:{} vao:{} vbo:{}, Executing on Graphics thread",
+        LOG_TRACE("FontRemoveFromGLTask: with texture:{} vao:{} vbo:{}, Executing on Graphics thread",
                   mFontAtlasTexture, mFontVao, mFontVbo);
 
         glDeleteBuffers(1,&mFontVao);
@@ -42,17 +42,17 @@ namespace octronic::dream
         setState(TaskState::TASK_STATE_COMPLETED);
     }
 
-    void FontDestructionTask::setFontAtlasTexture(GLuint id)
+    void FontRemoveFromGLTask::setFontAtlasTexture(GLuint id)
     {
         mFontAtlasTexture = id;
     }
 
-    void FontDestructionTask::setFontVao(GLuint id)
+    void FontRemoveFromGLTask::setFontVao(GLuint id)
     {
         mFontVao = id;
     }
 
-    void FontDestructionTask::setFontVbo(GLuint id)
+    void FontRemoveFromGLTask::setFontVbo(GLuint id)
     {
         mFontVbo = id;
     }

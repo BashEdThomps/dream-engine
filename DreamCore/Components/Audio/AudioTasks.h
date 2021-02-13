@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/Task/Task.h"
+#include "Task/Task.h"
 
 namespace octronic::dream
 {
@@ -8,7 +8,7 @@ namespace octronic::dream
     class AudioMarkersUpdateTask : public Task
     {
     public:
-        AudioMarkersUpdateTask(AudioRuntime* rt);
+        AudioMarkersUpdateTask(ProjectRuntime* pr, AudioRuntime* rt);
         void execute();
     protected:
         AudioRuntime* mAudioRuntime;

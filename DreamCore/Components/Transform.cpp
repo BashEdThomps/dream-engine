@@ -76,7 +76,8 @@ namespace octronic::dream
         json j = json::array();
         for (int i=0; i<16; i++)
         {
-            j[Constants::TRANSFORM_MATRIX].push_back(glm::value_ptr(mMatrix)[i]);
+            j.push_back(glm::value_ptr(mMatrix)[i]);
+
         }
 
         return j;

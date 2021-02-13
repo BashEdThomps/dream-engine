@@ -9,8 +9,8 @@
 namespace octronic::dream
 {
     PhysicsAddObjectTask::PhysicsAddObjectTask
-    (PhysicsComponent* cp, PhysicsObjectRuntime* rt)
-        : Task("PhysicsAddObjectTask"),
+    (ProjectRuntime* pr, PhysicsComponent* cp, PhysicsObjectRuntime* rt)
+        : Task(pr, "PhysicsAddObjectTask"),
           mComponent(cp),
           mRuntime(rt)
     {
@@ -21,15 +21,15 @@ namespace octronic::dream
     PhysicsAddObjectTask::execute
     ()
     {
-        LOG_TRACE("PhysicsAddObjectTask: Executing on thread {}",getThreadID());
+        LOG_TRACE("PhysicsAddObjectTask: Executing {}",getID());
         mComponent->addPhysicsObjectRuntime(mRuntime);
         mRuntime->setInPhysicsWorld(true);
         setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     PhysicsUpdateWorldTask::PhysicsUpdateWorldTask
-    (PhysicsComponent* cp)
-        : Task("PhysicsUpdateWorldTask"), mComponent(cp)
+    (ProjectRuntime* pr, PhysicsComponent* cp)
+        : Task(pr, "PhysicsUpdateWorldTask"), mComponent(cp)
     {
     }
 
@@ -37,14 +37,14 @@ namespace octronic::dream
     PhysicsUpdateWorldTask::execute
     ()
     {
-        LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getTaskName());
+        LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getName());
         mComponent->stepSimulation();
-        setState(TaskState::TASK_STATE_COMPLETED);
+        setState(TASK_STATE_COMPLETED);
     }
 
     PhysicsDrawDebugTask::PhysicsDrawDebugTask
-    (PhysicsComponent* cp)
-        : GraphicsComponentTask("PhysicsDrawDebugTask"), mComponent(cp)
+    (ProjectRuntime* pr, PhysicsComponent* cp)
+        : GraphicsTask(pr,"PhysicsDrawDebugTask"), mComponent(cp)
     {
     }
 

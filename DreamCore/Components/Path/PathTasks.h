@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/Task/Task.h"
+#include "Task/Task.h"
 
 namespace octronic::dream
 {
@@ -10,7 +10,7 @@ namespace octronic::dream
     protected:
         PathRuntime* mPathRuntime;
     public:
-         PathUpdateTask(PathRuntime* rt);
+         PathUpdateTask(ProjectRuntime* pr, PathRuntime* rt);
          void execute();
     };
 }

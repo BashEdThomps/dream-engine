@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Base/LockableObject.h"
+
 
 namespace octronic::dream
 {
@@ -31,23 +31,19 @@ namespace octronic::dream
      * Component publically inherits from octronic::dream::LockableObject, which
      * provide the means to build thread safety into the Component.
      */
-    class Component : public LockableObject
+    class Component
     {
 
     public:
-        Component(const string& className, ProjectRuntime* pr);
+        Component(ProjectRuntime* pr);
         virtual ~Component();
         virtual bool init() = 0;
 
-        void setTime(Time*);
         void setProjectRuntime(ProjectRuntime* pr);
 
-        bool getEnabled() const;
-        void setEnabled(bool enabled);
+        virtual void pushTasks() = 0;
 
     protected:
-        Time* mTime;
-        bool  mEnabled;
-        ProjectRuntime *mProjectRuntime;
+        ProjectRuntime* mProjectRuntime;
     };
 }

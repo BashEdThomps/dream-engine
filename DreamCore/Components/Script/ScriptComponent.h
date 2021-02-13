@@ -20,7 +20,6 @@ extern "C"
 }
 
 #include "ScriptRuntime.h"
-#include "ScriptCache.h"
 #include "Components/Component.h"
 
 
@@ -29,7 +28,6 @@ namespace octronic::dream
     class SceneRuntime;
     class EntityRuntime;
     class Event;
-    class ScriptCache;
 
     class ScriptPrintListener
     {
@@ -41,12 +39,11 @@ namespace octronic::dream
     class ScriptComponent : public Component
     {
     public:
-
         static vector<ScriptPrintListener*> PrintListeners;
         static void AddPrintListener(ScriptPrintListener* listener);
         static lua_State* State;
 
-        ScriptComponent(ProjectRuntime* runtime, ScriptCache* cache);
+        ScriptComponent(ProjectRuntime* runtime);
         ~ScriptComponent() override;
 
         bool init() override;
@@ -60,6 +57,8 @@ namespace octronic::dream
         bool createEntityState(ScriptRuntime* script, EntityRuntime* entity);
     	bool removeEntityState(UuidType uuid);
 
+        void pushTasks() override;
+
 
     private:
         const static string LUA_COMPONENTS_TBL;
@@ -67,7 +66,6 @@ namespace octronic::dream
         const static string LUA_ON_UPDATE_FUNCTION;
         const static string LUA_ON_INPUT_FUNCTION;
         const static string LUA_ON_EVENT_FUNCTION;
-        ScriptCache* mScriptCache;
 
         // API Exposure Methods ================================================
 
@@ -75,10 +73,8 @@ namespace octronic::dream
         void exposeAPI();
 
         // Base Classes
-        void exposeLockableObject();
         void exposeRuntime();
         void exposeComponent();
-        void exposeCache();
         void exposeDefinition();
         void exposeAssetRuntime();
         void exposeSharedAssetRuntime();

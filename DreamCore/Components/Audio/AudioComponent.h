@@ -17,10 +17,8 @@
 
 #include "AudioStatus.h"
 #include "Components/Component.h"
+#include "Common/Vector.h"
 
-#include <glm/vec3.hpp>
-
-using glm::vec3;
 
 namespace octronic::dream
 {
@@ -29,11 +27,12 @@ namespace octronic::dream
     class AudioComponent : public Component
     {
     public:
-        AudioComponent(const string& className);
+        AudioComponent();
         virtual ~AudioComponent();
-        virtual void setListenerPosition(const vec3&) = 0;
+        virtual void setListenerPosition(const Vector3&) = 0;
         virtual void setVolume(float) = 0;
         virtual float getVolume() = 0;
-    	virtual AudioRuntime* newAudioRuntime(AudioDefinition* def) = 0;
+    	virtual AudioRuntime* getAudioRuntime(AudioDefinition* def) = 0;
+        void pushTasks() override;
     };
 }

@@ -39,7 +39,7 @@ namespace octronic::dream::glfw
         ~GLFWWindowComponent() override;
 
         GLFWwindow* getGlfwWindow();
-        void updateWindow(SceneRuntime* sr) override;
+        void updateWindow() override;
         void getCurrentDimensions() override;
         void swapBuffers() override;
         bool init() override;
@@ -48,6 +48,7 @@ namespace octronic::dream::glfw
         GLuint getDepthBuffer() const override;
         void drawImGui();
         void drawGLWidgets();
+        void pushTasks() override;
 
     	// These members are static so they can be accessed by GLFW Callbacks;
         static bool WindowSizeChanged;

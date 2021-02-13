@@ -144,14 +144,6 @@ namespace octronic::dream::tool
             {
                flagsStr << "T";
             }
-            if (def->getDeferred() > 0.0)
-            {
-                flagsStr << "D";
-            }
-            if (def->getDieAfter() > 0.0)
-            {
-                flagsStr << "X";
-            }
 
             if (flagsStr.str().size() > 0)
             {

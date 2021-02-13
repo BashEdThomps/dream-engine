@@ -13,7 +13,7 @@
 #include "Event.h"
 
 #include "Common/Logger.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Entity/EntityRuntime.h"
 
 namespace octronic::dream
 {

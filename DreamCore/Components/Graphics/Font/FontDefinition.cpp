@@ -23,25 +23,18 @@ namespace octronic::dream
 
     void FontDefinition::setSize(unsigned int size)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
-
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
     }
 
     unsigned int FontDefinition::getSize()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            unsigned int size = 1;
-            if (mJson.find(Constants::ASSET_ATTR_FONT_SIZE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
-            }
-            size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
-            return size;
-        } dreamElseLockFailed
+        unsigned int size = 1;
+        if (mJson.find(Constants::ASSET_ATTR_FONT_SIZE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+        }
+        size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
+        return size;
     }
 }
 

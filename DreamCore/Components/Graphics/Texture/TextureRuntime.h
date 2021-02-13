@@ -17,7 +17,7 @@
 #include <iostream>
 #include <memory>
 #include "Components/SharedAssetRuntime.h"
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 #include "TextureTasks.h"
 
 using std::vector;
@@ -28,19 +28,18 @@ namespace octronic::dream
 {
     class TextureDefinition;
     class EntityRuntime;
-    class TextureDestructionTask;
-    class TextureConstructionTask;
-    class SpriteRuntime;
+    class TextureRemoveFromGLTask;
+    class TextureLoadIntoGLTask;
 
     class TextureRuntime : public SharedAssetRuntime
     {
     public:
-        TextureRuntime(TextureDefinition* def, ProjectRuntime*);
+        TextureRuntime(ProjectRuntime* pr, TextureDefinition* def);
         ~TextureRuntime() override;
 
         bool operator==(const TextureRuntime& other);
 
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         GLuint getGLID() const;
         void setGLID(const GLuint& gLID);
@@ -60,13 +59,7 @@ namespace octronic::dream
         unsigned char* getImage() const;
         void setImage(unsigned char* image);
 
-        void pushSpriteInstance(SpriteRuntime* er);
-        void popSpriteInstance(SpriteRuntime* er);
-        void popSpriteInstanceByUuid(UuidType spriteUuid);
-        vector<SpriteRuntime*> getSpriteInstancesVector();
-
-
-        void pushConstructionTask();
+        void pushNextTask() override;
 
         bool loadIntoGL();
 
@@ -76,8 +69,7 @@ namespace octronic::dream
         int mHeight;
         int mChannels;
         unsigned char* mImage;
-        vector<SpriteRuntime*> mSpriteInstances;
-        TextureConstructionTask mTextureConstructionTask;
-        shared_ptr<TextureDestructionTask> mTextureDestructionTask;
+        shared_ptr<TextureLoadIntoGLTask> mTextureLoadIntoGLTask;
+        shared_ptr<TextureRemoveFromGLTask> mTextureRemoveFromGLTask;
     };
 }

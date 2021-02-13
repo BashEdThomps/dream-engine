@@ -26,10 +26,11 @@ namespace octronic::dream::tool
 
 		void getCurrentDimensions() override;
 		void swapBuffers() override;
-		void updateWindow(SceneRuntime* sr) override;
+		void updateWindow() override;
 		void bindFrameBuffer() override;
 		GLuint getFrameBuffer() const override;
         GLuint getDepthBuffer() const override;
+        void pushTasks() override;
 
 	private:
 		GLuint mFBO;

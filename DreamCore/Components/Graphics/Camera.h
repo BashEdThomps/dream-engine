@@ -23,9 +23,9 @@
 #endif
 
 #include "Common/Math.h"
-#include "Base/LockableObject.h"
+
 #include "Components/Transform.h"
-#include "Scene/Entity/BoundingBox.h"
+#include "Entity/BoundingBox.h"
 #include "Frustum.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,7 +45,7 @@ namespace octronic::dream
     /**
      * @brief Implements a Camera in 3D Space.
      */
-    class Camera : public LockableObject
+    class Camera
     {
     private:
         // Camera Attributes

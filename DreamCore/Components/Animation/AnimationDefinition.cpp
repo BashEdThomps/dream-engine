@@ -25,10 +25,10 @@ namespace octronic::dream
     (ProjectDefinition* pd, const json& js)
         : AssetDefinition("AnimationDefinition",pd,js)
     {
-		if (mJson.find(Constants::ASSET_ATTR_KEYFRAMES) == mJson.end())
-		{
-			mJson[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
-		}
+        if (mJson.find(Constants::ASSET_ATTR_KEYFRAMES) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_KEYFRAMES] = json::array();
+        }
     }
 
     // public
@@ -41,9 +41,6 @@ namespace octronic::dream
     AnimationDefinition::getKeyframes
     ()
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
             vector<AnimationKeyframe> keyframes;
             for (auto js : mJson[Constants::ASSET_ATTR_KEYFRAMES])
             {
@@ -52,121 +49,88 @@ namespace octronic::dream
                 keyframes.push_back(newKeyframe);
             }
             return keyframes;
-        }
-        dreamElseLockFailed
     }
 
     void // public
     AnimationDefinition::addKeyframe
     (const AnimationKeyframe& kf)
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
-        }
-        dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_KEYFRAMES].push_back(kf.toJson());
     }
 
     void // public
     AnimationDefinition::updateKeyframe
     (const AnimationKeyframe& kf)
     {
-
-        if (dreamTryLock())
+        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+        for (;itr != end; itr++)
         {
-            dreamLock();
-            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-            for (;itr != end; itr++)
+            if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
             {
-                if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
-                {
-                    // Time
-                    (*itr)[Constants::KEYFRAME_TIME] = kf.getTime();
-                    (*itr)[Constants::KEYFRAME_EASING_TYPE] = kf.getEasingType();
-                    // Translation
-                    (*itr)[Constants::KEYFRAME_TRANSLATION] = kf.getTranslation().toJson();
-                    // Rotation
-                    (*itr)[Constants::KEYFRAME_ROTATION] = kf.getRotation().toJson();
-                    // Translation
-                    (*itr)[Constants::KEYFRAME_SCALE] = kf.getScale().toJson();
-                    return;
-                }
+                // Time
+                (*itr)[Constants::KEYFRAME_TIME] = kf.getTime();
+                (*itr)[Constants::KEYFRAME_EASING_TYPE] = kf.getEasingType();
+                // Translation
+                (*itr)[Constants::KEYFRAME_TRANSLATION] = kf.getTranslation().toJson();
+                // Rotation
+                (*itr)[Constants::KEYFRAME_ROTATION] = kf.getRotation().toJson();
+                // Translation
+                (*itr)[Constants::KEYFRAME_SCALE] = kf.getScale().toJson();
+                return;
             }
         }
-        dreamElseLockFailed
     }
 
     void // public
     AnimationDefinition::removeKeyframe
     (const AnimationKeyframe& kf)
     {
-        if (dreamTryLock())
+        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+        for (;itr != end; itr++)
         {
-            dreamLock();
-            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-            for (;itr != end; itr++)
+            if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
             {
-                if ((*itr)[Constants::KEYFRAME_ID] == kf.getID())
-                {
-                    mJson[Constants::ASSET_ATTR_KEYFRAMES].erase(itr);
-                    return;
-                }
+                mJson[Constants::ASSET_ATTR_KEYFRAMES].erase(itr);
+                return;
             }
         }
-        dreamElseLockFailed
     }
 
     bool // public
     AnimationDefinition::getRelative
     ()
     {
-        if (dreamTryLock())
+        if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
         {
-            dreamLock();
-            if (!mJson[Constants::ANIMATION_RELATIVE].is_boolean())
-            {
-                mJson[Constants::ANIMATION_RELATIVE] = false;
-            }
-            return mJson[Constants::ANIMATION_RELATIVE];
+            mJson[Constants::ANIMATION_RELATIVE] = false;
         }
-        dreamElseLockFailed
+        return mJson[Constants::ANIMATION_RELATIVE];
     }
 
     void // public
     AnimationDefinition::setRelative
     (bool relative)
     {
-        if (dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ANIMATION_RELATIVE] = relative;
-        }
-        dreamElseLockFailed
+        mJson[Constants::ANIMATION_RELATIVE] = relative;
     }
 
     int // public
     AnimationDefinition::nextKeyframeID
     ()
     {
-        if (dreamTryLock())
+        int maxID = 0;
+        auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
+        auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
+        for (;itr != end; itr++)
         {
-            dreamLock();
-            int maxID = 0;
-            auto itr = mJson[Constants::ASSET_ATTR_KEYFRAMES].begin();
-            auto end = mJson[Constants::ASSET_ATTR_KEYFRAMES].end();
-            for (;itr != end; itr++)
+            int nextID = (*itr)[Constants::KEYFRAME_ID];
+            if (nextID > maxID)
             {
-                int nextID = (*itr)[Constants::KEYFRAME_ID];
-                if (nextID > maxID)
-                {
-                    maxID = nextID;
-                }
+                maxID = nextID;
             }
-            return maxID+1;
         }
-        dreamElseLockFailed
+        return maxID+1;
     }
 }

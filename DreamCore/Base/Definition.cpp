@@ -3,7 +3,8 @@
 namespace octronic::dream
 {
     // public
-    Definition::Definition(const string& className, const json& data) : LockableObject(className), mJson(data)
+    Definition::Definition(const string& className, const json& data)
+        : mJson(data)
     {
         if (mJson[Constants::UUID].is_string())
         {

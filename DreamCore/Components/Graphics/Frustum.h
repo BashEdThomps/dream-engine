@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/Math.h"
-#include "Scene/Entity/BoundingBox.h"
+#include "Entity/BoundingBox.h"
 
 #include <glm/matrix.hpp>
 

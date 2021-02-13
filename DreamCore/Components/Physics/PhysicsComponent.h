@@ -22,8 +22,10 @@
 #include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
 
+#include <memory>
 
 using glm::mat4;
+using std::shared_ptr;
 
 class btDynamicsWorld;
 class btDefaultCollisionConfiguration;
@@ -44,19 +46,6 @@ namespace octronic::dream
 
     class PhysicsComponent : public Component
     {
-    protected:
-        PhysicsDebugDrawer* mDebugDrawer;
-        btDynamicsWorld *mDynamicsWorld;
-        btBroadphaseInterface *mBroadphase;
-        btDefaultCollisionConfiguration *mCollisionConfiguration;
-        btCollisionDispatcher *mDispatcher;
-        btSequentialImpulseConstraintSolver *mSolver;
-        mat4 mProjectionMatrix;
-        PhysicsUpdateWorldTask mUpdateWorldTask;
-        PhysicsDrawDebugTask mDrawDebugTask;
-
-        bool mDebug;
-        bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
 
     public:
         PhysicsComponent(ProjectRuntime* pr);
@@ -78,5 +67,19 @@ namespace octronic::dream
         PhysicsDebugDrawer* getDebugDrawer();
         PhysicsUpdateWorldTask* getUpdateWorldTask();
         PhysicsDrawDebugTask* getDrawDebugTask();
+        void pushTasks() override;
+    private:
+        bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
+    private:
+        PhysicsDebugDrawer* mDebugDrawer;
+        btDynamicsWorld *mDynamicsWorld;
+        btBroadphaseInterface *mBroadphase;
+        btDefaultCollisionConfiguration *mCollisionConfiguration;
+        btCollisionDispatcher *mDispatcher;
+        btSequentialImpulseConstraintSolver *mSolver;
+        mat4 mProjectionMatrix;
+        shared_ptr<PhysicsUpdateWorldTask> mUpdateWorldTask;
+        shared_ptr<PhysicsDrawDebugTask> mDrawDebugTask;
+        bool mDebug;
     };
 }

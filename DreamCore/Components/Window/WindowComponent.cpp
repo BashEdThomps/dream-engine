@@ -13,11 +13,10 @@
 
 #include "Common/Constants.h"
 
-
 namespace octronic::dream
 {
-    WindowComponent::WindowComponent(const string& className)
-        : Component(className,nullptr),
+    WindowComponent::WindowComponent()
+        : Component(nullptr),
           mWidth(0),
           mHeight(0),
           mShouldClose(false),
@@ -30,31 +29,20 @@ namespace octronic::dream
     WindowComponent::~WindowComponent
     ()
     {
-
     }
 
     void
     WindowComponent::setWidth
     (int width)
     {
-
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mWidth = width;
-        } dreamElseLockFailed
+        mWidth = width;
     }
 
     void
     WindowComponent::setHeight
     (int height)
     {
-
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mHeight = height;
-        } dreamElseLockFailed
+        mHeight = height;
     }
 
     int
@@ -77,11 +65,7 @@ namespace octronic::dream
     WindowComponent::setName
     (string name)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mName = name;
-        } dreamElseLockFailed
+        mName = name;
     }
 
     string
@@ -96,11 +80,7 @@ namespace octronic::dream
     WindowComponent::close
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mShouldClose = true;
-        } dreamElseLockFailed
+        mShouldClose = true;
     }
 
     bool
@@ -115,11 +95,7 @@ namespace octronic::dream
     WindowComponent::setShouldClose
     (bool close)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mShouldClose = close;
-        } dreamElseLockFailed
+        mShouldClose = close;
     }
 
     double WindowComponent::getMouseX()
@@ -136,11 +112,7 @@ namespace octronic::dream
 
     void WindowComponent::setWindowSizeChangedFlag(bool f)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mWindowSizeChangedFlag =  f;
-        } dreamElseLockFailed
+        mWindowSizeChangedFlag =  f;
     }
 
     bool WindowComponent::getWindowSizeChangedFlag() const

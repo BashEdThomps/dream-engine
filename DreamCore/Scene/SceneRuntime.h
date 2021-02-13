@@ -40,15 +40,15 @@ namespace octronic::dream
 
     class SceneRuntime : public Runtime
     {
-
-
     public:
-        SceneRuntime(SceneDefinition* sd, ProjectRuntime* parent);
+        SceneRuntime(ProjectRuntime* parent, SceneDefinition* sd);
         ~SceneRuntime() override;
 
         Camera* getCamera();
-        SceneState getState();
+
+        SceneState getState() const;
         void setState(SceneState state);
+        bool hasState(SceneState state) const;
 
         Vector3 getGravity();
         void setGravity(const Vector3& gravity);
@@ -56,79 +56,79 @@ namespace octronic::dream
         Vector3 getClearColour();
         void setClearColour(const Vector3& clearColour);
 
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
         void destroyRuntime();
 
-        bool getPhysicsDebug();
+        bool getPhysicsDebug() const;
         void setPhysicsDebug(bool physicsDebug);
 
         void setMeshCullDistance(float);
-        float getMeshCullDistance();
+        float getMeshCullDistance() const;
 
-        float getMinDrawDistance();
+        float getMinDrawDistance() const;
         void setMinDrawDistance(float);
 
-        float getMaxDrawDistance();
+        float getMaxDrawDistance() const;
         void setMaxDrawDistance(float);
 
         void createSceneTasks();
 
-        bool hasRootEntityRuntime();
+        bool hasRootEntityRuntime() const;
         void setRootEntityRuntime(EntityRuntime* e);
         EntityRuntime* getRootEntityRuntime() ;
 
-        EntityRuntime* getEntityRuntimeByName(const string& name) ;
-        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) ;
+        EntityRuntime* getEntityRuntimeByName(const string& name) const;
+        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) const;
 
-        int countEntityRuntimes() ;
-        int countChildrenOfEntityRuntime(EntityRuntime*) ;
+        int countEntityRuntimes() const;
+        int countChildrenOfEntityRuntime(EntityRuntime*) const;
 
         void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
-        ProjectRuntime* getProjectRuntime() ;
+        ProjectRuntime* getProjectRuntime() const;
 
-        void showScenegraph() ;
-        void collectGarbage() override;
+        void showScenegraph() const;
+        void collectGarbage();
 
-        ShaderRuntime* getLightingPassShader() ;
+        ShaderRuntime* getLightingPassShader() const;
         void setLightingPassShader(ShaderRuntime* lightingShader);
 
-        ShaderRuntime* getShadowPassShader() ;
+        ShaderRuntime* getShadowPassShader() const;
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
-        ShaderRuntime* getFontShader() ;
+        ShaderRuntime* getFontShader() const;
         void setFontShader(ShaderRuntime* shader);
 
-		ShaderRuntime* getSpriteShader() ;
+		ShaderRuntime* getSpriteShader() const;
         void setSpriteShader(ShaderRuntime* shader);
 
 
-        vector<AssetRuntime*> getAssetRuntimes(AssetType) ;
-        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) ;
+        vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
+        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
 
         /**
          * @return Gets the ScriptRuntime that handles Input
          */
-        ScriptRuntime* getInputScript() ;
+        ScriptRuntime* getInputScript() const;
 
         /**
          * @return Gets the nearest Entity to the Camera's position excluding
          * the Entity the Camera is focused on.
          */
-        EntityRuntime* getNearestToCamera() ;
+        EntityRuntime* getNearestToCamera() const;
 
-        unsigned long getSceneCurrentTime() ;
+        unsigned long getSceneCurrentTime() const;
         void setSceneCurrentTime(unsigned long sceneCurrentTime);
 
-        unsigned long getSceneStartTime() ;
+        unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
         void setPlayerEntity(EntityRuntime* po);
-        EntityRuntime* getPlayerEntity() ;
+        EntityRuntime* getPlayerEntity() const;
 
     protected:
         void updateLifetime();
-        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() ;
+        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
         void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
         void clearEntityRuntimeCleanUpQueue();
         void processEntityRuntimeCleanUpQueue();
@@ -146,8 +146,8 @@ namespace octronic::dream
         ShaderRuntime* mFontShader;
         ShaderRuntime* mSpriteShader;
         ScriptRuntime* mInputScript;
-        InputScriptConstructionTask mInputScriptConstructionTask;
-        shared_ptr<InputScriptDestructionTask> mInputScriptDestructionTask;
+        shared_ptr<InputScriptCreateStateTask> mInputScriptCreateStateTask;
+        shared_ptr<InputScriptRemoveStateTask> mInputScriptRemoveStateTask;
         Camera mCamera;
         unsigned long mSceneStartTime;
         unsigned long mSceneCurrentTime;

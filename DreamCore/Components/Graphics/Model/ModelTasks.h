@@ -1,27 +1,27 @@
 #pragma once
 
 #include "Common/GLHeader.h"
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
     class ModelMesh;
 
-    class ModelInitMeshTask : public GraphicsComponentTask
+    class ModelInitMeshTask : public GraphicsTask
     {
         ModelMesh* mMesh;
     public:
-        ModelInitMeshTask(ModelMesh* mesh);
+        ModelInitMeshTask(ProjectRuntime* pr, ModelMesh* mesh);
         void execute() override;
     };
 
-    class ModelFreeMeshTask : public GraphicsComponentDestructionTask
+    class ModelFreeMeshTask : public GraphicsDestructionTask
     {
         GLuint mVAO;
         GLuint mVBO;
         GLuint mIBO;
     public:
-       ModelFreeMeshTask();
+       ModelFreeMeshTask(ProjectRuntime* pr);
        void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
        void execute() override;
     };

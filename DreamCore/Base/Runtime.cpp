@@ -1,12 +1,15 @@
 #include "Runtime.h"
 
+using std::make_shared;
+
 namespace octronic::dream
 {
-    Runtime::Runtime(const string& className, Definition* def)
-        : LockableObject(className),
-          mDefinition(def),
+    Runtime::Runtime(Definition* def)
+        : mDefinitionHandle(def),
           mUuid(def == nullptr ? 0 : def->getUuid()),
-          mName(def == nullptr ? "" : def->getName()) {}
+          mName(def == nullptr ? "" : def->getName()),
+          mLoadFromDefinitionTask(make_shared<RuntimeLoadFromDefinitionTask>(nullptr,this))
+{}
 
     Runtime::~Runtime()
     {
@@ -55,8 +58,13 @@ namespace octronic::dream
         return ss.str();
     }
 
-    Definition* Runtime::getDefinition()
+    Definition* Runtime::getDefinitionHandle()
     {
-        return mDefinition;
+        return mDefinitionHandle;
+    }
+
+    shared_ptr<RuntimeLoadFromDefinitionTask> Runtime::getLoadFromDefinitionTask()
+    {
+        return mLoadFromDefinitionTask;
     }
 }

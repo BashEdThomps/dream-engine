@@ -11,8 +11,6 @@
  */
 #include "PhysicsObjectDefinition.h"
 
-
-
 namespace octronic::dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
@@ -26,421 +24,312 @@ namespace octronic::dream
     PhysicsObjectDefinition::setMass
     (float mass)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MASS] = mass;
-
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MASS] = mass;
     }
 
     float
     PhysicsObjectDefinition::getMass
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MASS] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MASS];
-        } dreamElseLockFailed
+        if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MASS] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MASS];
     }
 
     void
     PhysicsObjectDefinition::setMargin
     (float margin)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MARGIN] = margin;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MARGIN] = margin;
     }
 
     float
     PhysicsObjectDefinition::getMargin
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_MARGIN] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_MARGIN];
-        } dreamElseLockFailed
+        if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_MARGIN] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_MARGIN];
     }
 
     void
     PhysicsObjectDefinition::setKinematic
     (bool kinematic)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
     }
 
     bool
     PhysicsObjectDefinition::getKinematic
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_KINEMATIC) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
-            }
-            return mJson[Constants::ASSET_ATTR_KINEMATIC];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_KINEMATIC) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_KINEMATIC];
     }
 
     void
     PhysicsObjectDefinition::makeHalfExtentsObject
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_SIZE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_SIZE] = json::object();
-            }
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_SIZE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE] = json::object();
+        }
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsX
     (float halfExtentX)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
-        } dreamElseLockFailed
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
     }
 
     float
     PhysicsObjectDefinition::getHalfExtentsX
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::X) == mJson[Constants::ASSET_ATTR_SIZE].end())
-            {
-                mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
-        } dreamElseLockFailed
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::X) == mJson[Constants::ASSET_ATTR_SIZE].end())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsY
     (float halfExtentY)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
-        } dreamElseLockFailed
-
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
     }
 
     float
     PhysicsObjectDefinition::getHalfExtentsY
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Y) == mJson[Constants::ASSET_ATTR_SIZE].end())
-            {
-                mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
-        } dreamElseLockFailed
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Y) == mJson[Constants::ASSET_ATTR_SIZE].end())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
     }
 
     void
     PhysicsObjectDefinition::setHalfExtentsZ
     (float halfExtentZ)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
-        } dreamElseLockFailed
+        makeHalfExtentsObject();
+        mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
     }
 
     float
     PhysicsObjectDefinition::getHalfExtentsZ
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeHalfExtentsObject();
-            if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Z) == mJson[Constants::ASSET_ATTR_SIZE].end())
-            {
-                mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
-        } dreamElseLockFailed
+        makeHalfExtentsObject();
+        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Z) == mJson[Constants::ASSET_ATTR_SIZE].end())
+        {
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
     }
 
     void
     PhysicsObjectDefinition::makeNormalObject
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_NORMAL) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
-            }
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_NORMAL) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
+        }
     }
 
     void
     PhysicsObjectDefinition::setNormalX
     (float halfExtentX)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
-        } dreamElseLockFailed
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
     }
 
     float
     PhysicsObjectDefinition::getNormalX
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::X) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-            {
-                mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
-        } dreamElseLockFailed
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::X) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
     }
 
     void
     PhysicsObjectDefinition::setNormalY
     (float halfExtentY)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
-        } dreamElseLockFailed
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
     }
 
     float
     PhysicsObjectDefinition::getNormalY
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Y) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-            {
-                mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
-        } dreamElseLockFailed
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Y) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
     }
 
     void
     PhysicsObjectDefinition::setNormalZ
     (float halfExtentZ)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
-        } dreamElseLockFailed
+        makeNormalObject();
+        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
     }
 
     float
     PhysicsObjectDefinition::getNormalZ
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeNormalObject();
-            if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Z) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-            {
-                mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
-        } dreamElseLockFailed
+        makeNormalObject();
+        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Z) == mJson[Constants::ASSET_ATTR_NORMAL].end())
+        {
+            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
     }
 
     float
     PhysicsObjectDefinition::getRadius
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_RADIUS) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_RADIUS] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_RADIUS];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_RADIUS) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_RADIUS] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_RADIUS];
     }
 
     void
     PhysicsObjectDefinition::setRadius
     (float rad)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_RADIUS] = rad;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_RADIUS] = rad;
     }
 
     float PhysicsObjectDefinition::getHeight()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_HEIGHT) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_HEIGHT];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::ASSET_ATTR_HEIGHT) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_HEIGHT];
     }
 
     void PhysicsObjectDefinition::setHeight(float height)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_HEIGHT] = height;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_HEIGHT] = height;
     }
 
     float
     PhysicsObjectDefinition::getConstant
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_CONSTANT) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
-            }
-            return mJson[Constants::ASSET_ATTR_CONSTANT];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_CONSTANT) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_CONSTANT];
     }
 
     void
     PhysicsObjectDefinition::setConstant
     (float constant)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
     }
 
     bool
     PhysicsObjectDefinition::getControllableCharacter
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_CONTROLLABLE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
-            }
-            return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::ASSET_ATTR_CONTROLLABLE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
     }
 
     void
     PhysicsObjectDefinition::setControllableCharacter
     (bool controllable)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
     }
 
     void PhysicsObjectDefinition::setCcdSweptSphereRadius(float rad)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
     }
 
     float PhysicsObjectDefinition::getCcdSweptSphereRadius()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::ASSET_ATTR_CCD_SPR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_CCD_SPR];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_CCD_SPR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_CCD_SPR];
     }
 
     float
     PhysicsObjectDefinition::getRestitution
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_RESTITUTION) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_RESTITUTION];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::ASSET_ATTR_RESTITUTION) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_RESTITUTION];
     }
 
     void
     PhysicsObjectDefinition::setRestitution
     (float r)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
     }
 
     float
     PhysicsObjectDefinition::getFriction
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_FRICTION) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_FRICTION];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::ASSET_ATTR_FRICTION) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_FRICTION];
     }
 
     void
     PhysicsObjectDefinition::setFriction
     (float r)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_FRICTION] = r;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_FRICTION] = r;
     }
 
 
@@ -448,215 +337,157 @@ namespace octronic::dream
     PhysicsObjectDefinition::addCompoundChild
     (CompoundChildDefinition def)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeCompoundChildren();
-            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
-        } dreamElseLockFailed
+        makeCompoundChildren();
+        mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
     }
 
     vector<CompoundChildDefinition>
     PhysicsObjectDefinition::getCompoundChildren
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeCompoundChildren();
-            vector<CompoundChildDefinition> retval;
-            for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
-            {
-                CompoundChildDefinition def;
-                def.parent = this;
-                def.uuid = childJson[Constants::UUID];
-                def.transform.fromJson(childJson[Constants::TRANSFORM]);
-                retval.push_back(def);
+        makeCompoundChildren();
+        vector<CompoundChildDefinition> retval;
+        for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
+        {
+            CompoundChildDefinition def;
+            def.parent = this;
+            def.uuid = childJson[Constants::UUID];
+            def.transform.fromJson(childJson[Constants::TRANSFORM]);
+            retval.push_back(def);
 
-            }
-            return retval;
-        } dreamElseLockFailed
+        }
+        return retval;
     }
 
     void
     PhysicsObjectDefinition::updateCompoundChildTransform
     (CompoundChildDefinition def)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeCompoundChildren();
-            for
-                    (
-                     auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-                     iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-                     iter++
-                     )
+        makeCompoundChildren();
+        for(auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                 iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++) {
+            UuidType jsUuid = (*iter)[Constants::UUID];
+            if (def.uuid == jsUuid)
             {
-                UuidType jsUuid = (*iter)[Constants::UUID];
-                if (def.uuid == jsUuid)
-                {
-                    (*iter)[Constants::TRANSFORM] = def.transform.getJson();
-                    return;
-                }
+                (*iter)[Constants::TRANSFORM] = def.transform.getJson();
+                return;
             }
-        } dreamElseLockFailed
-
+        }
     }
 
     void
     PhysicsObjectDefinition::removeCompoundChild
     (CompoundChildDefinition def)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            makeCompoundChildren();
-            for
-                    (
-                     auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-                     iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-                     iter++
-                     )
+        makeCompoundChildren();
+        for(auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
+                 iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++ )
+        {
+            if (*iter == def.getJson())
             {
-                if (*iter == def.getJson())
-                {
-                    mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].erase(iter);
-                    return;
-                }
+                mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].erase(iter);
+                return;
             }
-        } dreamElseLockFailed
+        }
     }
 
     void
     PhysicsObjectDefinition::makeCompoundChildren
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
-            }
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
+        }
     }
 
     UuidType
     PhysicsObjectDefinition::getCollisionModel
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
-            {
-                mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
-            }
-
-            return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
-        } dreamElseLockFailed
+        if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
+        {
+            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
+        }
+        return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
     }
 
     void
     PhysicsObjectDefinition::setCollisionModel
     (UuidType modelUuid)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }
 
     Vector3
     PhysicsObjectDefinition::getLinearFactor
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
-            {
-                mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3(0.0f).toJson();
-            }
-            return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
-        } dreamElseLockFailed
+        if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3(0.0f).toJson();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
     }
 
     void
     PhysicsObjectDefinition::setLinearFactor
     (const Vector3& lf)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = lf.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = lf.toJson();
     }
 
     Vector3
     PhysicsObjectDefinition::getAngularFactor
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
-            {
-                mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3(0.0f).toJson();
-            }
-            return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
-        } dreamElseLockFailed
-
+        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3(0.0f).toJson();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
     }
 
     void
     PhysicsObjectDefinition::setAngularFactor
     (const Vector3& af)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = af.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = af.toJson();
     }
 
     Vector3
     PhysicsObjectDefinition::getLinearVelocity
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
-            {
-                mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3(0.0f).toJson();
-            }
-            return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
-        } dreamElseLockFailed
+        if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3(0.0f).toJson();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
     }
 
     void
     PhysicsObjectDefinition::setLinearVelocity
     (const Vector3& lf)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = lf.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = lf.toJson();
     }
 
     Vector3
     PhysicsObjectDefinition::getAngularVelocity
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
-            {
-                mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3(0.0f).toJson();
-            }
-            return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
-        } dreamElseLockFailed
-
+        if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
+        {
+            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3(0.0f).toJson();
+        }
+        return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
     }
 
     void
     PhysicsObjectDefinition::setAngularVelocity
     (const Vector3& af)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = af.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = af.toJson();
     }
 }

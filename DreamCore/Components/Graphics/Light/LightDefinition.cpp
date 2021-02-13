@@ -35,276 +35,211 @@ namespace octronic::dream
     LightDefinition::setDiffuse
     (const Vector3& diffuse)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
-            }
-
-            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]  = diffuse.toJson();
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE] = json::object();
+        }
+        mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]  = diffuse.toJson();
     }
 
     Vector3
     LightDefinition::getDiffuse
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            Vector3 diffuse(0.f);
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]=diffuse.toJson();
-            }
-            diffuse = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]);
-            return diffuse;
-        } dreamElseLockFailed
+        Vector3 diffuse(0.f);
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_DIFFUSE) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]=diffuse.toJson();
+        }
+        diffuse = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_DIFFUSE]);
+        return diffuse;
     }
 
     void
     LightDefinition::setAmbient
     (const Vector3& ambient)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
-            }
-            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = ambient.toJson();
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = json::object();
+        }
+        mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT] = ambient.toJson();
     }
 
     Vector3
     LightDefinition::getAmbient
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            Vector3 ambient(0.f);
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]=ambient.toJson();
-            }
-            ambient = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]);
-            return ambient;
-        } dreamElseLockFailed
+        Vector3 ambient(0.f);
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_AMBIENT) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]=ambient.toJson();
+        }
+        ambient = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_AMBIENT]);
+        return ambient;
     }
 
     void
     LightDefinition::setSpecular
     (const Vector3& specular)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
-            }
-            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = specular.toJson();
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = json::object();
+        }
+        mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] = specular.toJson();
+
     }
 
     Vector3
     LightDefinition::getSpecular()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            Vector3 specular(0.f);
-            if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR]=specular.toJson();
-            }
-            specular = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] );
-            return specular;
-        } dreamElseLockFailed
+        Vector3 specular(0.f);
+        if (mJson.find(Constants::ASSET_ATTR_LIGHT_SPECULAR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR]=specular.toJson();
+        }
+        specular = Vector3(mJson[Constants::ASSET_ATTR_LIGHT_SPECULAR] );
+        return specular;
+
     }
 
     void LightDefinition::setType(LightType type)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            string typeStr;
-            switch (type)
-            {
-                case LT_DIRECTIONAL:
-                    typeStr = Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL;
-                    break;
-                case LT_POINT:
-                    typeStr = Constants::ASSET_FORMAT_LIGHT_POINT;
-                    break;
-                case LT_SPOTLIGHT:
-                    typeStr = Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT;
-                    break;
-                case LT_NONE:
-                    typeStr = "";
-            }
-            setFormat(typeStr);
-        } dreamElseLockFailed
+        string typeStr;
+        switch (type)
+        {
+            case LT_DIRECTIONAL:
+                typeStr = Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL;
+                break;
+            case LT_POINT:
+                typeStr = Constants::ASSET_FORMAT_LIGHT_POINT;
+                break;
+            case LT_SPOTLIGHT:
+                typeStr = Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT;
+                break;
+            case LT_NONE:
+                typeStr = "";
+        }
+        setFormat(typeStr);
     }
 
     LightType
     LightDefinition::getType
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            LightType type;
-            if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
-            {
-                type = LT_POINT;
-            }
-            else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
-            {
-                type = LT_DIRECTIONAL;
-            }
-            else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
-            {
-                type = LT_SPOTLIGHT;
-            }
-            else
-            {
-                type = LT_NONE;
-            }
-            return type;
-        } dreamElseLockFailed
+        LightType type;
+        if (getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
+        {
+            type = LT_POINT;
+        }
+        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
+        {
+            type = LT_DIRECTIONAL;
+        }
+        else if (getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
+        {
+            type = LT_SPOTLIGHT;
+        }
+        else
+        {
+            type = LT_NONE;
+        }
+        return type;
     }
 
     void LightDefinition::setCutOff(float cutOff)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = cutOff;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = cutOff;
     }
 
     float LightDefinition::getCutOff()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_LIGHT_CUTOFF) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_LIGHT_CUTOFF) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_LIGHT_CUTOFF];
     }
 
     void LightDefinition::setOuterCutOff(float outerCutOff)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = outerCutOff;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = outerCutOff;
     }
 
     float LightDefinition::getOuterCutOff()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF];
     }
 
     void LightDefinition::setConstant(float ant)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = ant;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = ant;
     }
 
     float LightDefinition::getConstant()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_LIGHT_CONSTANT) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_LIGHT_CONSTANT) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_LIGHT_CONSTANT];
     }
 
     void LightDefinition::setLinear(float linear)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = linear;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = linear;
     }
 
     float LightDefinition::getLinear()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_LIGHT_LINEAR) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_LIGHT_LINEAR];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_LIGHT_LINEAR) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_LINEAR] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_LIGHT_LINEAR];
     }
 
     void LightDefinition::setQuadratic(float quadratic)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = quadratic;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = quadratic;
     }
 
     float LightDefinition::getQuadratic()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_LIGHT_QUADRATIC) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = 0.0f;
-            }
-            return mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_LIGHT_QUADRATIC) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC] = 0.0f;
+        }
+        return mJson[Constants::ASSET_ATTR_LIGHT_QUADRATIC];
     }
 
     float LightDefinition::getDiffuseBlue()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return getDiffuse().z();
-        } dreamElseLockFailed
+        return getDiffuse().z();
     }
 
     void LightDefinition::setDiffuseBlue(float diffuseBlue)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getDiffuse();
-            current.setZ(diffuseBlue);
-            setDiffuse(current);
-        } dreamElseLockFailed
+        auto current = getDiffuse();
+        current.setZ(diffuseBlue);
+        setDiffuse(current);
     }
 
     float LightDefinition::getDiffuseGreen()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return getDiffuse().y();
-        } dreamElseLockFailed
+        return getDiffuse().y();
     }
 
     void LightDefinition::setDiffuseGreen(float diffuseGreen)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getDiffuse();
-            current.setY(diffuseGreen);
-            setDiffuse(current);
-        } dreamElseLockFailed
+        auto current = getDiffuse();
+        current.setY(diffuseGreen);
+        setDiffuse(current);
     }
 
     float LightDefinition::getDiffuseRed()
@@ -314,12 +249,9 @@ namespace octronic::dream
 
     void LightDefinition::setDiffuseRed(float diffuseRed)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getDiffuse();
-            current.setX(diffuseRed);
-            setDiffuse(current);
-        } dreamElseLockFailed
+        auto current = getDiffuse();
+        current.setX(diffuseRed);
+        setDiffuse(current);
     }
 
     float LightDefinition::getAmbientBlue()
@@ -329,12 +261,9 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientBlue(float blue)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getAmbient();
-            current.setZ(blue);
-            setAmbient(current);
-        } dreamElseLockFailed
+        auto current = getAmbient();
+        current.setZ(blue);
+        setAmbient(current);
     }
 
     float LightDefinition::getAmbientGreen()
@@ -344,12 +273,9 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientGreen(float ambientGreen)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getAmbient();
-            current.setY(ambientGreen);
-            setAmbient(current);
-        } dreamElseLockFailed
+        auto current = getAmbient();
+        current.setY(ambientGreen);
+        setAmbient(current);
     }
 
     float LightDefinition::getAmbientRed()
@@ -359,12 +285,9 @@ namespace octronic::dream
 
     void LightDefinition::setAmbientRed(float ambientRed)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getAmbient();
-            current.setX(ambientRed);
-            setAmbient(current);
-        } dreamElseLockFailed
+        auto current = getAmbient();
+        current.setX(ambientRed);
+        setAmbient(current);
     }
 
     float LightDefinition::getSpecularBlue()
@@ -374,12 +297,9 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularBlue(float specularBlue)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getSpecular();
-            current.setZ(specularBlue);
-            setSpecular(current);
-        } dreamElseLockFailed
+        auto current = getSpecular();
+        current.setZ(specularBlue);
+        setSpecular(current);
     }
 
     float LightDefinition::getSpecularGreen()
@@ -389,12 +309,9 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularGreen(float specularGreen)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getSpecular();
-            current.setY(specularGreen);
-            setSpecular(current);
-        } dreamElseLockFailed
+        auto current = getSpecular();
+        current.setY(specularGreen);
+        setSpecular(current);
     }
 
     float LightDefinition::getSpecularRed()
@@ -404,11 +321,8 @@ namespace octronic::dream
 
     void LightDefinition::setSpecularRed(float specularRed)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto current = getSpecular();
-            current.setX(specularRed);
-            setSpecular(current);
-        } dreamElseLockFailed
+        auto current = getSpecular();
+        current.setX(specularRed);
+        setSpecular(current);
     }
 }

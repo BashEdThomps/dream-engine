@@ -26,7 +26,7 @@
 #include "glm/matrix.hpp"
 
 #include "Components/SharedAssetRuntime.h"
-#include "Scene/Entity/BoundingBox.h"
+#include "Entity/BoundingBox.h"
 #include "ModelBone.h"
 #include "ModelAnimation.h"
 
@@ -39,31 +39,24 @@ using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class Texture;
-    class MaterialCache;
-    class ShaderCache;
     class ShaderRuntime;
     class ModelMesh;
     struct Vertex;
-    class Texture;
     class MaterialRuntime;
     class EntityRuntime;
 
     class ModelRuntime : public SharedAssetRuntime
     {
     public:
-        ModelRuntime(ShaderCache*,MaterialCache*,AssetDefinition*,ProjectRuntime*);
+        ModelRuntime(ProjectRuntime*, AssetDefinition*);
 
         ~ModelRuntime() override;
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         BoundingBox& getBoundingBox();
 
-        void addRuntime(EntityRuntime*);
-        void removeRuntime(EntityRuntime*);
-
         vector<string> getMaterialNames();
-        vector<ModelMesh*> getMeshes() const;
+        vector<shared_ptr<ModelMesh>>* getMeshes();
 
         map<string, Bone>& getBones();
         map<string, ModelAnimation>& getAnimations();
@@ -71,11 +64,22 @@ namespace octronic::dream
         mat4 getGlobalInverseTransform() const;
         void setGlobalInverseTransform(const mat4& globalInverseTransform);
 
+        void pushNextTask() override;
+
+    private: // Methods
+        void updateBoundingBox(aiMesh* mesh, BoundingBox& bb);
+        void loadModel(string);
+        shared_ptr<Importer> loadImporter(string path);
+        void processNode(aiNode*, const aiScene*);
+        shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
+        vector<Vertex> processVertexData(aiMesh* mesh);
+        vector<GLuint> processIndexData(aiMesh* mesh);
+        void processBoneData(aiMesh* mesh);
+        void processAnimationData(aiNode* mesh);
+        mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
+
     private:
-        // Variables
-        MaterialCache* mMaterialCache;
-        ShaderCache* mShaderCache;
-        vector<ModelMesh*> mMeshes;
+        vector<shared_ptr<ModelMesh>> mMeshes;
         string mDirectory;
         BoundingBox mBoundingBox;
         mat4 mModelMatrix;
@@ -83,18 +87,5 @@ namespace octronic::dream
         map<string,Bone> mBones;
         map<string,ModelAnimation> mAnimations;
         mat4 mGlobalInverseTransform;
-
-        // Methods
-        void updateBoundingBox(aiMesh* mesh, BoundingBox& bb);
-        void loadModel(string);
-        shared_ptr<Importer> loadImporter(string path);
-        void processNode(aiNode*, const aiScene*);
-        ModelMesh* processMesh(aiMesh*, const aiScene*);
-        vector<Vertex> processVertexData(aiMesh* mesh);
-        vector<GLuint> processIndexData(aiMesh* mesh);
-        void processBoneData(aiMesh* mesh);
-        void processAnimationData(aiNode* mesh);
-
-        mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
     };
 }

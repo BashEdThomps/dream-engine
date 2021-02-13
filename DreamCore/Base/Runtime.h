@@ -13,13 +13,13 @@
 #pragma once
 
 #include <string>
-#include <atomic>
+#include <memory>
 
-#include "LockableObject.h"
 #include "Definition.h"
+#include "RuntimeLoadFromDefinitionTask.h"
 
 using std::string;
-using std::atomic;
+using std::shared_ptr;
 
 namespace octronic::dream
 {
@@ -29,14 +29,14 @@ namespace octronic::dream
      * @brief Abstract class that contains Runtime data for DreamObjects that
      * are used to implement a Project.
      */
-    class Runtime : public LockableObject
+    class Runtime
     {
     public:
         /**
          * @brief Default Constructor
          * @param def Definition from which the Runtime was instanciated.
          */
-        Runtime(const string& className, Definition* def);
+        Runtime(Definition* def);
 
         /**
          * @brief Default destructor.
@@ -74,24 +74,20 @@ namespace octronic::dream
          * object's initial state.
          * @return Success/Failure.
          */
-        virtual bool useDefinition() = 0;
-
-        /**
-         * @brief Delete anything managed by this runtime that was instanciated
-         * but no longer needed .
-         */
-        virtual void collectGarbage() = 0;
+        virtual bool loadFromDefinition() = 0;
 
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        Definition* getDefinition();
+        Definition* getDefinitionHandle();
+
+        shared_ptr<RuntimeLoadFromDefinitionTask> getLoadFromDefinitionTask();
 
     protected:
         /**
          * @brief Definition from which this runtime was instanciated.
          */
-        Definition* mDefinition;
+        Definition* mDefinitionHandle;
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
@@ -100,5 +96,10 @@ namespace octronic::dream
          * @brief Name of this Runtime, given by it's Definition.
          */
         string mName;
+
+        /**
+          * @brief Task to inflate the Runtime from it's definition
+          */
+        shared_ptr<RuntimeLoadFromDefinitionTask> mLoadFromDefinitionTask;
     };
 }

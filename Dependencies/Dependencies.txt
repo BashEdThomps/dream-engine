@@ -57,15 +57,6 @@ if (NOT ANDROID)
 	include_directories(${imgui_src_dir}/examples)
 endif(NOT ANDROID)
 
-# ImTextEditor
-if (NOT ANDROID)
-	set (imtexteditor_src_dir Dependencies/ImTextEditor/)
-	set (imtexteditor_output_dir ${CMAKE_BINARY_DIR}/build_imtexteditor)
-	file(MAKE_DIRECTORY ${imtexteditor_output_dir})
-	add_subdirectory(${imtexteditor_src_dir} ${imtexteditor_output_dir} EXCLUDE_FROM_ALL)
-	include_directories(${imtexteditor_src_dir})
-endif(NOT ANDROID)
-
 # JSON
 set(json_src_dir Dependencies/json/)
 include_directories(${json_src_dir})

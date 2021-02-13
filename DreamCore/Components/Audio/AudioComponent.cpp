@@ -15,14 +15,17 @@
 #include "AudioComponent.h"
 
 #include "Common/Logger.h"
+#include "Components/Cache.h"
+#include "AudioDefinition.h"
+#include "AudioRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 #include <iostream>
 
 namespace octronic::dream
 {
     AudioComponent::AudioComponent
-    (const string& className)
-    : Component(className,nullptr)
+    () : Component(nullptr)
     {
         LOG_TRACE("AudioComponent: Constructing");
     }
@@ -33,4 +36,13 @@ namespace octronic::dream
         LOG_TRACE("AudioComponent: Destructing");
     }
 
+    void AudioComponent::pushTasks()
+    {
+		auto audioCache = mProjectRuntime->getAudioCache();
+
+        for (auto& audioRuntime : *audioCache->getRuntimeVectorHandle())
+        {
+            audioRuntime->pushNextTask();
+        }
+    }
 }

@@ -47,532 +47,387 @@ namespace octronic::dream
     SceneDefinition::loadRootEntityDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_ROOT_ENTITY) == mJson.end())
+        {
+            LOG_ERROR( "SceneDefinition: No root Entity found!!" );
+            return;
+        }
+        json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
 
-            if (mJson.find(Constants::SCENE_ROOT_ENTITY) == mJson.end())
-            {
-                LOG_ERROR( "SceneDefinition: No root Entity found!!" );
-                return;
-            }
-            json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
-
-            mRootEntityDefinition = new EntityDefinition(nullptr, this, rsoJson );
-            mRootEntityDefinition->loadChildEntityDefinitions();
-        } dreamElseLockFailed
+        mRootEntityDefinition = new EntityDefinition(nullptr, this, rsoJson );
+        mRootEntityDefinition->loadChildEntityDefinitions();
     }
 
     void
     SceneDefinition::setCameraMovementSpeed
     (float speed)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
     }
 
     float
     SceneDefinition::getCameraMovementSpeed
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::SCENE_CAMERA_MOVEMENT_SPEED) == mJson.end())
-            {
-                mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
-            }
-            return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_CAMERA_MOVEMENT_SPEED) == mJson.end())
+        {
+            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
+        }
+        return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
     }
 
     void
     SceneDefinition::setPhysicsDebug
     (bool debug)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_PHYSICS_DEBUG] = debug;
     }
 
     bool
     SceneDefinition::getPhysicsDebug
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::SCENE_PHYSICS_DEBUG) == mJson.end())
-            {
-                mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
-            }
-            return mJson[Constants::SCENE_PHYSICS_DEBUG];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_PHYSICS_DEBUG) == mJson.end())
+        {
+            mJson[Constants::SCENE_PHYSICS_DEBUG] = false;
+        }
+        return mJson[Constants::SCENE_PHYSICS_DEBUG];
     }
 
     void SceneDefinition::setMeshCullDistance(float mcd)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_MESH_CULL_DISTANCE] = mcd;
     }
 
     float SceneDefinition::getMeshCullDistance()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::SCENE_MESH_CULL_DISTANCE) == mJson.end())
-            {
-                mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
-            }
-            return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_MESH_CULL_DISTANCE) == mJson.end())
+        {
+            mJson[Constants::SCENE_MESH_CULL_DISTANCE] = 1000.0f;
+        }
+        return mJson[Constants::SCENE_MESH_CULL_DISTANCE];
     }
 
     void
     SceneDefinition::addTemplate
     (EntityDefinition* _template)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mTemplates.push_back(_template);
-        } dreamElseLockFailed
+        mTemplates.push_back(_template);
     }
 
     EntityDefinition*
     SceneDefinition::getTemplateByUuid
     (UuidType uuid)
     {
-        if(dreamTryLock())
+        for (EntityDefinition* next : mTemplates)
         {
-            dreamLock();
-            for (EntityDefinition* next : mTemplates)
+            if (next->getUuid() == uuid)
             {
-                if (next->getUuid() == uuid)
-                {
-                    return next;
-                }
+                return next;
             }
-            return nullptr;
-        } dreamElseLockFailed
+        }
+        return nullptr;
     }
 
     Vector3
     SceneDefinition::getCameraTranslation
     ()
     {
-        if(dreamTryLock())
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
         {
-            dreamLock();
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            return Vector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
-        } dreamElseLockFailed
+            setCameraTranslation(Vector3(0.0f));
+        }
+        return Vector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
+
     }
 
     void
     SceneDefinition::setCameraTranslation
     (const Vector3& transform)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            // Translation
-            mJson[Constants::SCENE_CAMERA_TRANSLATION] = transform.toJson();
-        } dreamElseLockFailed
+        // Translation
+        mJson[Constants::SCENE_CAMERA_TRANSLATION] = transform.toJson();
     }
 
     Vector3 SceneDefinition::getCameraLookAt()
     {
-        if(dreamTryLock())
+        if (mJson.find(Constants::SCENE_CAMERA_LOOK_AT) == mJson.end())
         {
-            dreamLock();
-            if (mJson.find(Constants::SCENE_CAMERA_LOOK_AT) == mJson.end())
-            {
-                setCameraLookAt(Vector3(0.0f));
-            }
-            return Vector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
-        } dreamElseLockFailed
+            setCameraLookAt(Vector3(0.0f));
+        }
+        return Vector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
     }
 
     void
     SceneDefinition::setCameraLookAt
     (const Vector3& lookAt)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::SCENE_CAMERA_LOOK_AT] = lookAt.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CAMERA_LOOK_AT] = lookAt.toJson();
     }
 
     Vector3
     SceneDefinition::getGravity
     ()
     {
-        if(dreamTryLock())
+        Vector3 gravity;
+
+        if (mJson.find(Constants::SCENE_GRAVITY) == mJson.end())
         {
-            dreamLock();
+            mJson[Constants::SCENE_GRAVITY] = Vector3(0.0f).toJson();
+        }
 
-            Vector3 gravity;
+        gravity = Vector3(mJson[Constants::SCENE_GRAVITY]);
 
-            if (mJson.find(Constants::SCENE_GRAVITY) == mJson.end())
-            {
-                mJson[Constants::SCENE_GRAVITY] = Vector3(0.0f).toJson();
-            }
-
-            gravity = Vector3(mJson[Constants::SCENE_GRAVITY]);
-
-            return gravity;
-        } dreamElseLockFailed
+        return gravity;
     }
 
     void
     SceneDefinition::setGravity
     (const Vector3& gravity)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_GRAVITY] = gravity.toJson();
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_GRAVITY] = gravity.toJson();
     }
 
     void
     SceneDefinition::setGravityX
     (float x)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
     }
 
     void
     SceneDefinition::setGravityY
     (float y)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
     }
 
     void
     SceneDefinition::setGravityZ
     (float z)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
     }
 
     Vector3
     SceneDefinition::getClearColour
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        Vector3 colour;
 
-            Vector3 colour;
+        if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
+        {
+            mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
+        }
 
-            if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
-            {
-                mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
-            }
+        colour = Vector3(mJson[Constants::SCENE_CLEAR_COLOUR]);
+        return colour;
 
-            colour = Vector3(mJson[Constants::SCENE_CLEAR_COLOUR]);
-            return colour;
-        } dreamElseLockFailed
     }
 
     void
     SceneDefinition::setClearColour
     (const Vector3& colour)
     {
-        if(dreamTryLock()) {
-            dreamLock();
 
-            if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
-            {
-                mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
-            }
 
-            mJson[Constants::SCENE_CLEAR_COLOUR] = colour.toJson();
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
+        {
+            mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
+        }
+
+        mJson[Constants::SCENE_CLEAR_COLOUR] = colour.toJson();
+
     }
 
     void
     SceneDefinition::setClearColourR
     (float r)
     {
-        if(dreamTryLock()) {
-            dreamLock();
 
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
-        } dreamElseLockFailed
+
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
+
     }
 
     void
     SceneDefinition::setClearColourG
     (float g)
     {
-        if(dreamTryLock()) {
-            dreamLock();
 
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
-        } dreamElseLockFailed
+
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
+
     }
 
     void
     SceneDefinition::setClearColourB
     (float b)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
     }
 
     EntityDefinition*
     SceneDefinition::getRootEntityDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            return mRootEntityDefinition;
-        } dreamElseLockFailed
+        return mRootEntityDefinition;
     }
 
     ProjectDefinition*
     SceneDefinition::getProjectDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            return mProjectDefinition;
-        } dreamElseLockFailed
+        return mProjectDefinition;
     }
 
     EntityDefinition*
     SceneDefinition::createNewRootEntityDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            json rootDefJson;
-            rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
-            rootDefJson[Constants::UUID] = Uuid::generateUuid();
-            Transform transform;
-            rootDefJson[Constants::TRANSFORM] = transform.getJson();
-            mRootEntityDefinition = new EntityDefinition(nullptr,this,rootDefJson);
-            return mRootEntityDefinition;
-        } dreamElseLockFailed
+        json rootDefJson;
+        rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
+        rootDefJson[Constants::UUID] = Uuid::generateUuid();
+        Transform transform;
+        rootDefJson[Constants::TRANSFORM] = transform.getJson();
+        mRootEntityDefinition = new EntityDefinition(nullptr,this,rootDefJson);
+        return mRootEntityDefinition;
     }
 
     json
     SceneDefinition::getJson
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
-            return mJson;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->getJson();
+        return mJson;
     }
 
     void SceneDefinition::setMinDrawDistance(float mdd)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = mdd;
     }
 
     float SceneDefinition::getMinDrawDistance()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_MIN_DRAW_DISTANCE) == mJson.end())
-            {
-                mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
-            }
-            return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_MIN_DRAW_DISTANCE) == mJson.end())
+        {
+            mJson[Constants::SCENE_MIN_DRAW_DISTANCE] = 0.1f;
+        }
+        return mJson[Constants::SCENE_MIN_DRAW_DISTANCE];
     }
 
     void SceneDefinition::setMaxDrawDistance(float mdd)
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
 
-            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = mdd;
-        } dreamElseLockFailed
     }
 
     float SceneDefinition::getMaxDrawDistance()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_MAX_DRAW_DISTANCE) == mJson.end())
-            {
-                mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
-            }
-            return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_MAX_DRAW_DISTANCE) == mJson.end())
+        {
+            mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
+        }
+        return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
     }
 
     float SceneDefinition::getCameraTranslationX()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
     }
 
     float SceneDefinition::getCameraTranslationY()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
     }
 
     float SceneDefinition::getCameraTranslationZ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
 
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
-        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationX(float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
 
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
-        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationY(float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
 
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
-        } dreamElseLockFailed
     }
 
     void SceneDefinition::setCameraTranslationZ(float val)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-            {
-                setCameraTranslation(Vector3(0.0f));
-            }
-            mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
-        } dreamElseLockFailed
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        {
+            setCameraTranslation(Vector3(0.0f));
+        }
+        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
     }
 
     void SceneDefinition::setCameraPitch(float pitch)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
     }
 
     void SceneDefinition::setCameraYaw(float yaw)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_CAMERA_YAW] = yaw;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CAMERA_YAW] = yaw;
     }
 
     float SceneDefinition::getCameraPitch()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_PITCH) == mJson.end())
+        {
+            mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
+        }
+        return  mJson[Constants::SCENE_CAMERA_PITCH];
 
-            if (mJson.find(Constants::SCENE_CAMERA_PITCH) == mJson.end())
-            {
-                mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
-            }
-            return  mJson[Constants::SCENE_CAMERA_PITCH];
-        } dreamElseLockFailed
     }
 
     float SceneDefinition::getCameraYaw()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_YAW) == mJson.end())
+        {
+            mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
+        }
+        return  mJson[Constants::SCENE_CAMERA_YAW];
 
-            if (mJson.find(Constants::SCENE_CAMERA_YAW) == mJson.end())
-            {
-                mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
-            }
-            return  mJson[Constants::SCENE_CAMERA_YAW];
-        } dreamElseLockFailed
     }
 
     UuidType
     SceneDefinition::getCameraFocusedOn
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_CAMERA_FOCUSED_ON) == mJson.end())
+        {
+            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
+        }
+        return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
 
-            if (mJson.find(Constants::SCENE_CAMERA_FOCUSED_ON) == mJson.end())
-            {
-                mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
-            }
-            return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
-        } dreamElseLockFailed
 
     }
 
@@ -580,26 +435,19 @@ namespace octronic::dream
     SceneDefinition::setCameraFocusedOn
     (UuidType focusedOn)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
     }
 
     UuidType
     SceneDefinition::getLightingPassShader
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
+        if (mJson.find(Constants::SCENE_LIGHTING_PASS_SHADER) == mJson.end())
+        {
+            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
 
-            if (mJson.find(Constants::SCENE_LIGHTING_PASS_SHADER) == mJson.end())
-            {
-                mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
-            }
-            return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
-        } dreamElseLockFailed
 
     }
 
@@ -607,141 +455,94 @@ namespace octronic::dream
     SceneDefinition::setLightingPassShader
     (UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getShadowPassShader
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_SHADOW_PASS_SHADER) == mJson.end())
-            {
-                mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
-            }
-            return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::SCENE_SHADOW_PASS_SHADER) == mJson.end())
+        {
+            mJson[Constants::SCENE_SHADOW_PASS_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_SHADOW_PASS_SHADER];
     }
 
     void
     SceneDefinition::setShadowPassShader
     (UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_SHADOW_PASS_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getFontShader
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_FONT_SHADER) == mJson.end())
-            {
-                mJson[Constants::SCENE_FONT_SHADER] = 0;
-            }
-            return  mJson[Constants::SCENE_FONT_SHADER];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::SCENE_FONT_SHADER) == mJson.end())
+        {
+            mJson[Constants::SCENE_FONT_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_FONT_SHADER];
     }
 
     void
     SceneDefinition::setFontShader
     (UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_FONT_SHADER] = shader;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_FONT_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getSpriteShader
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_SPRITE_SHADER) == mJson.end())
-            {
-                mJson[Constants::SCENE_SPRITE_SHADER] = 0;
-            }
-            return  mJson[Constants::SCENE_SPRITE_SHADER];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::SCENE_SPRITE_SHADER) == mJson.end())
+        {
+            mJson[Constants::SCENE_SPRITE_SHADER] = 0;
+        }
+        return  mJson[Constants::SCENE_SPRITE_SHADER];
     }
 
     void
     SceneDefinition::setSpriteShader
     (UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::SCENE_SPRITE_SHADER] = shader;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_SPRITE_SHADER] = shader;
     }
 
     UuidType
     SceneDefinition::getInputScript
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::SCENE_INPUT_SCRIPT) == mJson.end())
-            {
-                mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
-            }
-            return  mJson[Constants::SCENE_INPUT_SCRIPT];
-        } dreamElseLockFailed
-
+        if (mJson.find(Constants::SCENE_INPUT_SCRIPT) == mJson.end())
+        {
+            mJson[Constants::SCENE_INPUT_SCRIPT] = 0;
+        }
+        return  mJson[Constants::SCENE_INPUT_SCRIPT];
     }
 
     void
     SceneDefinition::setInputScript
     (UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
-        } dreamElseLockFailed
+        mJson[Constants::SCENE_INPUT_SCRIPT] = shader;
     }
 
     void
     SceneDefinition::setPlayerObject
     (UuidType po)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
-        } dreamElseLockFailed
+        mJson[Constants::ENTITY_PLAYER_OBJECT] = po;
     }
 
     UuidType SceneDefinition::getPlayerObject()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-
-            if (mJson.find(Constants::ENTITY_PLAYER_OBJECT) == mJson.end())
-            {
-                mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
-            }
-            return mJson[Constants::ENTITY_PLAYER_OBJECT];
-        } dreamElseLockFailed
+        if (mJson.find(Constants::ENTITY_PLAYER_OBJECT) == mJson.end())
+        {
+            mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
+        }
+        return mJson[Constants::ENTITY_PLAYER_OBJECT];
     }
 }

@@ -36,7 +36,7 @@ namespace octronic::dream
     class MaterialRuntime : public SharedAssetRuntime
     {
     public:
-        MaterialRuntime(MaterialDefinition* def, ProjectRuntime* rt);
+        MaterialRuntime(ProjectRuntime* rt, MaterialDefinition* def);
         ~MaterialRuntime() override;
 
         void addMesh(ModelMesh* mesh);
@@ -51,22 +51,22 @@ namespace octronic::dream
         void drawGeometryPass(Camera*);
         void drawShadowPass(ShaderRuntime* shader);
 
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
-        TextureRuntime* getDiffuseTexture() const;
-        void setDiffuseTexture(TextureRuntime* diffuseTexture);
+        TextureRuntime* getDiffuseTextureHandle() const;
+        void setDiffuseTextureHandle(TextureRuntime* diffuseTexture);
 
-        TextureRuntime* getSpecularTexture() const;
-        void setSpecularTexture(TextureRuntime* specularTexture);
+        TextureRuntime* getSpecularTextureHandle() const;
+        void setSpecularTextureHandle(TextureRuntime* specularTexture);
 
-        TextureRuntime* getNormalTexture() const;
-        void setNormalTexture(TextureRuntime* normalTexture);
+        TextureRuntime* getNormalTextureHandle() const;
+        void setNormalTextureHandle(TextureRuntime* normalTexture);
 
-        TextureRuntime* getDisplacementTexture() const;
-        void setDisplacementTexture(TextureRuntime* displacementTexture);
+        TextureRuntime* getDisplacementTextureHandle() const;
+        void setDisplacementTextureHandle(TextureRuntime* displacementTexture);
 
-        ShaderRuntime* getShader() const;
-        void setShader(ShaderRuntime* shader);
+        ShaderRuntime* getShaderHandle() const;
+        void setShaderHandle(ShaderRuntime* shader);
 
         vec3 getColorDiffuse() const;
         void setColorDiffuse(vec3 colorDiffuse);
@@ -89,6 +89,8 @@ namespace octronic::dream
         bool getIgnore() const;
         void setIgnore(bool ignore);
 
+        void pushNextTask() override;
+
     protected:
         float mOpacity = 0.0f;
         float mBumpScaling = 0.0f;
@@ -104,11 +106,11 @@ namespace octronic::dream
         vec3 mColorEmissive;
         vec3 mColorReflective;
 
-        TextureRuntime* mDiffuseTexture;
-        TextureRuntime* mSpecularTexture;
-        TextureRuntime* mNormalTexture;
-        TextureRuntime* mDisplacementTexture;
-        ShaderRuntime*  mShader;
+        TextureRuntime* mDiffuseTextureHandle;
+        TextureRuntime* mSpecularTextureHandle;
+        TextureRuntime* mNormalTextureHandle;
+        TextureRuntime* mDisplacementTextureHandle;
+        ShaderRuntime*  mShaderHandle;
 
         vector<ModelMesh*> mUsedBy;
     };

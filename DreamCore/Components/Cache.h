@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/LockableObject.h"
 #include "Common/Uuid.h"
 
 #include <string>
@@ -9,6 +8,7 @@
 
 using std::vector;
 using std::string;
+using std::unique_ptr;
 
 namespace octronic::dream
 {
@@ -24,19 +24,20 @@ namespace octronic::dream
      * or other AssetRuntime objects. These AssetRuntime objects are cached to
      * reduce the SceneRuntime memory footprint.
      */
-    class Cache : public LockableObject
+    template <typename DefinitionType, typename RuntimeType>
+    class Cache final
     {
     public:
         /**
          * @brief Default Constructor.
          * @param parent ProjectRuntime that created this Cache.
          */
-        Cache(const string& className, ProjectRuntime* parent);
+        Cache(ProjectRuntime* prHandle);
 
         /**
          * @brief Default Destructor
          */
-        virtual ~Cache();
+        ~Cache();
 
         /**
          * @return SharedAssetRuntime object specified by the given
@@ -46,7 +47,7 @@ namespace octronic::dream
          * @param definition The AssetDefinition for the AssetRuntime you wish
          * to instanciate.
          */
-        SharedAssetRuntime* getRuntime(AssetDefinition* definition);
+        RuntimeType* getRuntimeHandle(DefinitionType* definition);
 
         /**
          * @return SharedAssetRuntime object specified by the given
@@ -56,13 +57,13 @@ namespace octronic::dream
          * @param uuid definition The AssetDefinition for the AssetRuntime you wish
          * to instanciate.
          */
-        SharedAssetRuntime* getRuntime(UuidType uuid);
+        RuntimeType* getRuntimeHandle(UuidType uuid);
 
         /**
          * @return Reference to the vector of SharedAssetRuntimes managed by
          * this Cache.
          */
-        const vector<SharedAssetRuntime*>& getRuntimeVector();
+        vector<unique_ptr<RuntimeType>>* getRuntimeVectorHandle();
 
         /**
          * @return std::string of the absolute path to the AssetDefinition's
@@ -70,13 +71,13 @@ namespace octronic::dream
          * @param definition The AssetDefinition of which you want to get the
          * absolute path;
          */
-        string getAbsolutePath(AssetDefinition* definition);
+        string getAbsolutePath(DefinitionType* definition);
 
         /**
          * @brief removeRuntime remove a runtime from the cache based on definition
          * @param definition
          */
-        void removeRuntime(AssetDefinition* definition);
+        void removeRuntime(DefinitionType* definition);
 
         /**
          * @brief removeRuntime remove a runtime from the cache based on uuid
@@ -87,7 +88,7 @@ namespace octronic::dream
         /**
          * @brief Delete all AssetRuntimes managed by this Cache.
          */
-        virtual void clear();
+        void clear();
 
         /**
          * @brief runtimeCount
@@ -105,23 +106,25 @@ namespace octronic::dream
          * LoadRuntime should not implement any logic, only call logic used
          * to load an Asset's data into RAM.
          */
-        virtual SharedAssetRuntime* loadRuntime(AssetDefinition* definition) = 0;
+        RuntimeType* loadRuntime(DefinitionType* definition);
 
         /**
          * @param uuid of the AssetDefinition to be retreived.
          * @return AssetDefinition specified by uuid, or nullptr if none is
          * found.
          */
-        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
+        DefinitionType* getAssetDefinitionByUuid(UuidType uuid);
 
         /**
          * @brief Vector of SharedAssetRuntimes managed by this Cache.
          */
-        vector<SharedAssetRuntime*> mRuntimes;
+        vector<unique_ptr<RuntimeType>> mRuntimes;
 
         /**
          * @brief Pointer to the ProjectRuntime that instanciated this Cache.
          */
-        ProjectRuntime* mProjectRuntime;
+        ProjectRuntime* mProjectRuntimeHandle;
     };
 }
+
+#include "Cache.tpp"

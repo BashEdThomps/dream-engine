@@ -3,27 +3,27 @@
 #include "Common/GLHeader.h"
 
 // Defer GL Operations using Task objects
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
     class FontRuntime;
 
-    class FontConstructionTask : public GraphicsComponentTask
+    class FontLoadIntoGLTask : public GraphicsTask
     {
         FontRuntime* mFontRuntime;
     public:
-        FontConstructionTask(FontRuntime* rt);
+        FontLoadIntoGLTask(ProjectRuntime* pr, FontRuntime* rt);
         void execute();
     };
 
-    class FontDestructionTask : public GraphicsComponentDestructionTask
+    class FontRemoveFromGLTask : public GraphicsDestructionTask
     {
         GLuint mFontAtlasTexture;
         GLuint mFontVao;
         GLuint mFontVbo;
     public:
-        FontDestructionTask();
+        FontRemoveFromGLTask(ProjectRuntime* pr);
         void setFontAtlasTexture(GLuint id);
         void setFontVao(GLuint id);
         void setFontVbo(GLuint id);

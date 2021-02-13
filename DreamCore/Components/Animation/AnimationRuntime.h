@@ -36,9 +36,9 @@ namespace octronic::dream
     class AnimationRuntime : public DiscreteAssetRuntime
     {
     public:
-        AnimationRuntime(AnimationDefinition*, EntityRuntime*);
+        AnimationRuntime(ProjectRuntime* pr, AnimationDefinition*, EntityRuntime*);
         ~AnimationRuntime() override;
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         void createTweens();
         void run();
@@ -57,14 +57,17 @@ namespace octronic::dream
         bool getRunning();
         void setRunning(bool running);
 
-        AnimationUpdateTask* getUpdateTask();
+        shared_ptr<AnimationUpdateTask> getUpdateTask();
+
+        void pushNextTask() override;
 
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
 
     private:
-        bool mRunning;
+        shared_ptr<AnimationUpdateTask> mUpdateTask;
         vector<AnimationKeyframe> mKeyframes;
+        bool mRunning;
         long mCurrentTime;
         long mDuration;
 
@@ -82,6 +85,5 @@ namespace octronic::dream
         tween<float> mTweenScaleX;
         tween<float> mTweenScaleY;
         tween<float> mTweenScaleZ;
-        AnimationUpdateTask mUpdateTask;
     };
 }

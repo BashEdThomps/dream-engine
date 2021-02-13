@@ -18,7 +18,7 @@ add_library(
     DreamOpenAL
     SHARED
 	OpenALAudioComponent.cpp
-	OpenALAudioRuntime.cpp
+	OpenALImplementation.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})

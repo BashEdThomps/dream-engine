@@ -62,7 +62,7 @@ namespace octronic::dream::glfw
     }
 
     GLFWWindowComponent::GLFWWindowComponent
-    () : WindowComponent("GLFWWindowComponent"),
+    () : WindowComponent(),
          mDPIScaleX(1.0f),
          mDPIScaleY(1.0f),
          mLastWidth(0.f),
@@ -145,10 +145,11 @@ namespace octronic::dream::glfw
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         #else
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+        //glfwWindowHint( GLFW_DOUBLEBUFFER,GL_FALSE );
         #endif
         mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), nullptr,nullptr);
 
@@ -167,7 +168,7 @@ namespace octronic::dream::glfw
         glfwSetCursorPosCallback(mWindow,CursorPositionCallback);
         glfwSetScrollCallback(mWindow,MouseWheelCallback);
 
-        glfwSwapInterval(0);
+        glfwSwapInterval(1);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
         LOG_DEBUG("GLFWWindowComponent: Queried Framebuffer size as {}x{}",mWidth,mHeight);
@@ -198,16 +199,12 @@ namespace octronic::dream::glfw
 
     void
     GLFWWindowComponent::updateWindow
-    (SceneRuntime* sr)
+    ()
     {
         glfwPollEvents();
 
         if(glfwWindowShouldClose(mWindow))
         {
-            if (sr != nullptr)
-            {
-                sr->setState(octronic::dream::SCENE_STATE_TO_DESTROY);
-            }
             setShouldClose(true);
             LOG_ERROR("GLFWWindowComponent: Window should close");
         }
@@ -219,6 +216,11 @@ namespace octronic::dream::glfw
         }
     }
 
+    void GLFWWindowComponent::pushTasks()
+    {
+
+    }
+
     void
     GLFWWindowComponent::getCurrentDimensions
     ()
@@ -226,7 +228,7 @@ namespace octronic::dream::glfw
         mLastWidth = mWidth;
         mLastHeight = mHeight;
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
-        LOG_ERROR("GLFWWindowComponent: Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
+        LOG_TRACE("GLFWWindowComponent: Framebuffer Size Changed: {}x{}", mWidth ,mHeight);
         if (mLastWidth != mWidth || mLastHeight != mHeight) setWindowSizeChangedFlag(true);
     }
 
@@ -234,10 +236,7 @@ namespace octronic::dream::glfw
     GLFWWindowComponent::swapBuffers
     ()
     {
-        if (mWindow != nullptr)
-        {
-            glfwSwapBuffers(mWindow);
-        }
+        if (mWindow != nullptr) glfwSwapBuffers(mWindow);
     }
 
     int
@@ -261,6 +260,5 @@ namespace octronic::dream::glfw
     float GLFWWindowComponent::LastTime = 0;
     float GLFWWindowComponent::CurrentTime = 0;
     int   GLFWWindowComponent::Frames = 0;
-
 }
 

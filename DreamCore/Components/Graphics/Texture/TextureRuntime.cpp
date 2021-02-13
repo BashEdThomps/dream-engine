@@ -1,11 +1,11 @@
 #include "TextureRuntime.h"
 #include "TextureDefinition.h"
 #include "Components/Graphics/GraphicsComponent.h"
-#include "Components/Storage/File.h"
-#include "Components/Storage/StorageManager.h"
-#include "Components/Storage/ProjectDirectory.h"
-#include "Components/Graphics/Sprite/SpriteRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Storage/File.h"
+#include "Storage/StorageManager.h"
+#include "Storage/ProjectDirectory.h"
+#include "Scene/SceneRuntime.h"
+#include "Entity/EntityRuntime.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 
@@ -18,23 +18,23 @@ using std::make_shared;
 namespace octronic::dream
 {
     TextureRuntime::TextureRuntime
-    (TextureDefinition* def, ProjectRuntime* rt)
-        : SharedAssetRuntime ("TextureRuntime",def,rt),
+    (ProjectRuntime* rt, TextureDefinition* def)
+        : SharedAssetRuntime(rt, def),
           mGLID(0),
           mWidth(0),
           mHeight(0),
           mChannels(0),
           mImage(nullptr),
-          mTextureConstructionTask(this),
-          mTextureDestructionTask(nullptr)
+          mTextureLoadIntoGLTask(make_shared<TextureLoadIntoGLTask>(rt, this)),
+          mTextureRemoveFromGLTask(make_shared<TextureRemoveFromGLTask>(rt))
     {}
 
     TextureRuntime::~TextureRuntime
     ()
     {
-        mTextureDestructionTask = make_shared<TextureDestructionTask>();
-        mTextureDestructionTask->setGLID(mGLID);
-        mProjectRuntime->getGraphicsComponent()->pushDestructionTask(mTextureDestructionTask);
+        mTextureRemoveFromGLTask->setGLID(mGLID);
+        auto gfxDestructionQueue = mProjectRuntimeHandle->getGraphicsComponent()->getDestructionTaskQueue();
+        gfxDestructionQueue->pushTask(mTextureRemoveFromGLTask);
     }
 
     int
@@ -48,10 +48,7 @@ namespace octronic::dream
     TextureRuntime::setWidth
     (int width)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mWidth = width;
-        } dreamElseLockFailed
+        mWidth = width;
     }
 
     int
@@ -65,10 +62,7 @@ namespace octronic::dream
     TextureRuntime::setHeight
     (int height)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mHeight = height;
-        } dreamElseLockFailed
+        mHeight = height;
     }
 
     int
@@ -82,10 +76,7 @@ namespace octronic::dream
     TextureRuntime::setChannels
     (int channels)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mChannels = channels;
-        } dreamElseLockFailed
+        mChannels = channels;
     }
 
     unsigned char*
@@ -99,18 +90,7 @@ namespace octronic::dream
     TextureRuntime::setImage
     (unsigned char* image)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mImage = image;
-        } dreamElseLockFailed
-    }
-
-    void TextureRuntime::pushConstructionTask()
-    {
-        if(dreamTryLock()) {
-            dreamLock();
-            mProjectRuntime->getGraphicsComponent()->pushTask(&mTextureConstructionTask);
-        } dreamElseLockFailed
+        mImage = image;
     }
 
     GLuint
@@ -124,163 +104,147 @@ namespace octronic::dream
     TextureRuntime::setGLID
     (const GLuint& gLID)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mGLID = gLID;
-        } dreamElseLockFailed
+        mGLID = gLID;
     }
 
     bool
     TextureRuntime::operator==
     (const TextureRuntime& other)
     {
-        return this->mGLID == other.mGLID &&
-                this->mUuid == other.mUuid;
+        return this->mGLID == other.mGLID && this->mUuid == other.mUuid;
     }
 
     bool
-    TextureRuntime::useDefinition
+    TextureRuntime::loadFromDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
+        LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
 
-            // All aboard
-            string filename = mProjectRuntime
-                    ->getProject()
-                    ->getDirectory()
-                    ->getAssetAbsolutePath(mDefinition->getUuid());
+        // All aboard
+        string filename = mProjectRuntimeHandle
+                ->getProject()
+                ->getDirectory()
+                ->getAssetAbsolutePath(mDefinitionHandle->getUuid());
 
-            StorageManager* fm = mProjectRuntime->getStorageManager();
-            File* txFile = fm->openFile(filename);
-            if (!txFile->exists())
-            {
-                LOG_ERROR("TextureCache: Texture file does not exist: {}",filename);
-                fm->closeFile(txFile);
-                txFile = nullptr;
-                return false;
-            }
+        StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
+        File* txFile = fm->openFile(filename);
 
-            LOG_DEBUG("TextureCache: Loading texture: {}",filename);
-
-            if (!txFile->readBinary())
-            {
-                LOG_ERROR("TextureCache: Unable to read file data");
-                fm->closeFile(txFile);
-                txFile = nullptr;
-                return false;
-            }
-            uint8_t* buffer = txFile->getBinaryData();
-            size_t buffer_sz = txFile->getBinaryDataSize();
-
-            int width = 0;
-            int height = 0;
-            int channels = 0;
-
-            stbi_set_flip_vertically_on_load(true);
-            uint8_t* image = stbi_load_from_memory(
-                        static_cast<const stbi_uc*>(buffer),
-                        buffer_sz,
-                        &width, &height,
-                        &channels, 0
-                        );
-
+        if (!txFile->exists())
+        {
+            LOG_ERROR("TextureRuntime: Texture file does not exist: {}",filename);
             fm->closeFile(txFile);
             txFile = nullptr;
+            mLoadError = true;
+            return false;
+        }
 
-            LOG_DEBUG(
-                        "TextureCache: Loaded texture {} with width {}, height {}, channels {}",
-                        filename, width,height,channels);
+        LOG_DEBUG("TextureRuntime: Loading texture: {}",filename);
 
-            //setPath(filename);
-            setWidth(width);
-            setHeight(height);
-            setChannels(channels);
-            setImage(image);
-            pushConstructionTask();
-            return true;
-        } dreamElseLockFailed
+        if (!txFile->readBinary())
+        {
+            LOG_ERROR("TextureRuntime: Unable to read file data");
+            fm->closeFile(txFile);
+            txFile = nullptr;
+            mLoadError = true;
+            return false;
+        }
+
+        uint8_t* buffer = txFile->getBinaryData();
+        size_t buffer_sz = txFile->getBinaryDataSize();
+
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+
+        stbi_set_flip_vertically_on_load(true);
+        uint8_t* image = stbi_load_from_memory(static_cast<const stbi_uc*>(buffer),
+                                               buffer_sz, &width, &height, &channels, 0);
+
+        fm->closeFile(txFile);
+        txFile = nullptr;
+
+        LOG_DEBUG(
+                    "TextureRuntime: Loaded texture {} with width {}, height {}, channels {}",
+                    filename, width,height,channels);
+
+        //setPath(filename);
+        setWidth(width);
+        setHeight(height);
+        setChannels(channels);
+        setImage(image);
+        return true;
     }
 
     bool TextureRuntime::loadIntoGL()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
-            // Assign texture to ID
+        LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
+        // Assign texture to ID
 
-            glGenTextures(1, &mGLID);
-            GLCheckError();
+        glGenTextures(1, &mGLID);
+        GLCheckError();
 
-            glBindTexture(GL_TEXTURE_2D, mGLID);
-            GLCheckError();
-            LOG_DEBUG("TextureRuntime: Bound to texture id {}",mGLID);
+        glBindTexture(GL_TEXTURE_2D, mGLID);
+        GLCheckError();
+        LOG_DEBUG("TextureRuntime: Bound to texture id {}",mGLID);
 
-            if (mChannels == 3)
+        if (mChannels == 3)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE,getImage());
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
+        }
+        GLCheckError();
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+        GLCheckError();
+
+        // Set Parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GLCheckError();
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GLCheckError();
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+        GLCheckError();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        GLCheckError();
+
+        delete getImage();
+        setImage(nullptr);
+        mLoaded = true;
+        return true;
+    }
+
+    void TextureRuntime::pushNextTask()
+    {
+        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+        auto gfxTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
+
+        if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+        {
+            taskQueue->pushTask(mLoadFromDefinitionTask);
+        }
+        else if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED) &&
+                 mTextureLoadIntoGLTask->hasState(TASK_STATE_QUEUED))
+        {
+            gfxTaskQueue->pushTask(mTextureLoadIntoGLTask);
+        }
+        // For sprite instances
+        else
+        {
+            for(auto entity : mInstances)
             {
-            	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE,getImage());
+				if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+				{
+
+					// Do entity specific tasks
+				}
             }
-            else
-            {
-            	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
-            }
-            GLCheckError();
-
-            glGenerateMipmap(GL_TEXTURE_2D);
-            GLCheckError();
-
-            // Set Parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            GLCheckError();
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            GLCheckError();
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-            GLCheckError();
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-            GLCheckError();
-
-            delete getImage();
-            setImage(nullptr);
-
-            return true;
-        } dreamElseLockFailed
-    }
-
-    void TextureRuntime::pushSpriteInstance(SpriteRuntime* er)
-    {
-       auto itr = std::find(mSpriteInstances.begin(), mSpriteInstances.end(), er);
-       if (itr == mSpriteInstances.end())
-       {
-           mSpriteInstances.push_back(er);
-       }
-    }
-
-    void TextureRuntime::popSpriteInstance(SpriteRuntime* er)
-    {
-       auto itr = std::find(mSpriteInstances.begin(), mSpriteInstances.end(), er);
-       if (itr != mSpriteInstances.end())
-       {
-           mSpriteInstances.erase(itr);
-       }
-    }
-
-    void TextureRuntime::popSpriteInstanceByUuid(UuidType spriteUuid)
-    {
-        auto itr = std::find_if(mSpriteInstances.begin(), mSpriteInstances.end(),
-             [&](SpriteRuntime* spriteRuntime){ return spriteRuntime->getUuid() == spriteUuid; });
-       if (itr != mSpriteInstances.end())
-       {
-           mSpriteInstances.erase(itr);
-       }
-    }
-
-    vector<SpriteRuntime*> TextureRuntime::getSpriteInstancesVector()
-    {
-       return mSpriteInstances;
+        }
     }
 }

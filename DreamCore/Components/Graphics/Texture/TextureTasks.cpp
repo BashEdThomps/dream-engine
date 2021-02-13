@@ -3,14 +3,15 @@
 
 namespace octronic::dream
 {
-    TextureConstructionTask::TextureConstructionTask(TextureRuntime* rt)
-        : GraphicsComponentTask("TextureConstructionTask"), mTextureRuntime(rt)
+    TextureLoadIntoGLTask::TextureLoadIntoGLTask(ProjectRuntime* pr, TextureRuntime* rt)
+        : GraphicsTask(pr, "TextureLoadIntoGLTask"),
+          mTextureRuntime(rt)
     {
     }
 
-    void TextureConstructionTask::execute()
+    void TextureLoadIntoGLTask::execute()
     {
-        LOG_TRACE("TextureConstructionTask: {} Executing on Graphics thread",mTextureRuntime->getNameAndUuidString());
+        LOG_TRACE("TextureLoadIntoGLTask: {} Executing on Graphics thread",mTextureRuntime->getNameAndUuidString());
         if (!mTextureRuntime->loadIntoGL())
         {
             setState(TaskState::TASK_STATE_FAILED);
@@ -21,20 +22,20 @@ namespace octronic::dream
         }
     }
 
-    TextureDestructionTask::TextureDestructionTask
-    ()
-        : GraphicsComponentDestructionTask("TextureDestructionTask")
+    TextureRemoveFromGLTask::TextureRemoveFromGLTask
+    (ProjectRuntime* pr)
+        : GraphicsDestructionTask(pr, "TextureRemoveFromGLTask")
     {
     }
 
-    void TextureDestructionTask::execute()
+    void TextureRemoveFromGLTask::execute()
     {
-        LOG_TRACE("TextureDestructionTask: for texture {}, Executing on Graphics thread",mTextureID);
+        LOG_TRACE("TextureRemoveFromGLTask: for texture {}, Executing on Graphics thread",mTextureID);
         glDeleteTextures(1,&mTextureID);
         setState(TaskState::TASK_STATE_COMPLETED);
     }
 
-    void TextureDestructionTask::setGLID(GLuint id)
+    void TextureRemoveFromGLTask::setGLID(GLuint id)
     {
         mTextureID = id;
     }

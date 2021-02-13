@@ -20,13 +20,13 @@
 #include "ModelTasks.h"
 
 #include "Common/GLHeader.h"
-#include "Base/LockableObject.h"
+
 #include "Components/Graphics/Material/MaterialRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Vertex.h"
-#include "Scene/Entity/BoundingBox.h"
+#include "Entity/BoundingBox.h"
 
 #include <iostream>
 #include <sstream>
@@ -47,9 +47,9 @@ namespace octronic::dream
     class EntityRuntime;
     class Camera;
 
-    class ModelMesh :public LockableObject
+    class ModelMesh
     {
-    public:
+    public: // static
         static long DrawCalls;
         static long MeshesDrawn;
         static long TrianglesDrawn;
@@ -67,12 +67,12 @@ namespace octronic::dream
             ShadowTrianglesDrawn = 0;
         }
 
+    public:
         ModelMesh(ModelRuntime* parent, const string &name, const vector<Vertex> &vertexArray,
             const vector<GLuint> &indexArray, MaterialRuntime* material, const BoundingBox &bb);
 
         ~ModelMesh();
 
-        void init();
         void logRuntimes();
         void addRuntime(EntityRuntime* runt);
         void removeRuntime(EntityRuntime* runt);
@@ -84,22 +84,26 @@ namespace octronic::dream
 
         const vector<Vertex>& getVertices() const;
         const vector<GLuint>& getIndices() const;
-        GLuint getVAO() const;
 
         void drawGeometryPassRuntimes(Camera* camera, ShaderRuntime* shader);
         void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
 
+        GLuint getVAO() const;
         void setVAO(const GLuint& vAO);
+
         GLuint getVBO() const;
         void setVBO(const GLuint& vBO);
+
         GLuint getIBO() const;
         void setIBO(const GLuint& iBO);
+
         BoundingBox getBoundingBox() const;
         void clearVertices();
         void clearIndices();
         size_t getIndicesCount();
         size_t getVerticesCount();
         bool loadIntoGL();
+        void pushNextTask();
 
     private:
         ModelRuntime* mParent;
@@ -110,12 +114,13 @@ namespace octronic::dream
         GLuint mIBO;
         vector<Vertex> mVertices;
         vector<GLuint> mIndices;
-        vector<EntityRuntime*> mRuntimes;
         vector<EntityRuntime*> mRuntimesInFrustum;
         size_t mVerticesCount;
         size_t mIndicesCount;
         BoundingBox mBoundingBox;
-        ModelInitMeshTask mInitMeshTask;
+        // Mesh Tasks
+        // TODO, should be owned by mesh
+        shared_ptr<ModelInitMeshTask> mInitMeshTask;
         shared_ptr<ModelFreeMeshTask> mFreeMeshTask;
     };
 }

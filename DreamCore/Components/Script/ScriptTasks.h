@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Common/Uuid.h"
-#include "Components/Task/Task.h"
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Task/Task.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
@@ -11,23 +11,23 @@ namespace octronic::dream
 
     // =========================================================================
 
-    class EntityScriptConstructionTask : public Task
+    class EntityScriptCreateStateTask : public Task
     {
         EntityRuntime* mEntity;
         ScriptRuntime* mScript;
     public:
-        EntityScriptConstructionTask(EntityRuntime* rt);
+        EntityScriptCreateStateTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
 
-    class InputScriptConstructionTask : public Task
+    class InputScriptCreateStateTask : public Task
     {
         ScriptRuntime* mScript;
     public:
-        InputScriptConstructionTask();
+        InputScriptCreateStateTask(ProjectRuntime* pr);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
@@ -40,7 +40,7 @@ namespace octronic::dream
         ScriptRuntime* mScript;
 
     public:
-        EntityScriptOnInitTask(EntityRuntime* rt);
+        EntityScriptOnInitTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
@@ -53,7 +53,7 @@ namespace octronic::dream
         ScriptRuntime* mScript;
 
     public:
-        EntityScriptOnUpdateTask(EntityRuntime* rt);
+        EntityScriptOnUpdateTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
@@ -66,30 +66,30 @@ namespace octronic::dream
         ScriptRuntime* mScript;
 
     public:
-        EntityScriptOnEventTask(EntityRuntime* rt);
+        EntityScriptOnEventTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
 
-    class EntityScriptDestructionTask : public DestructionTask
+    class EntityScriptRemoveStateTask : public DestructionTask
     {
         UuidType mUuid;
         ScriptRuntime* mScript;
     public:
-        EntityScriptDestructionTask(UuidType uuid);
+        EntityScriptRemoveStateTask(ProjectRuntime* pr, UuidType uuid);
         void execute();
         void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
 
-    class InputScriptDestructionTask : public DestructionTask
+    class InputScriptRemoveStateTask : public DestructionTask
     {
         ScriptRuntime* mScript;
     public:
-        InputScriptDestructionTask();
+        InputScriptRemoveStateTask(ProjectRuntime* pr);
         void execute();
         void setScript(ScriptRuntime* rt);
     };

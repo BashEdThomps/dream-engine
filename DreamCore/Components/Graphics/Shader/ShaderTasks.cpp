@@ -4,9 +4,10 @@
 
 namespace octronic::dream
 {
-
-    ShaderCompileFragmentTask::ShaderCompileFragmentTask(ShaderRuntime* rt)
-        : GraphicsComponentTask("ShaderCompileFragmentTask"), mShaderRuntime(rt)
+    ShaderCompileFragmentTask::ShaderCompileFragmentTask
+    (ProjectRuntime* prt, ShaderRuntime* rt)
+        : GraphicsTask(prt,"ShaderCompileFragmentTask"),
+          mShaderRuntime(rt)
     {
     }
 
@@ -23,8 +24,9 @@ namespace octronic::dream
         }
     }
 
-    ShaderCompileVertexTask::ShaderCompileVertexTask(ShaderRuntime* rt)
-        : GraphicsComponentTask("ShaderCompileVertexTask"), mShaderRuntime(rt)
+    ShaderCompileVertexTask::ShaderCompileVertexTask
+    (ProjectRuntime* pr, ShaderRuntime* rt)
+        : GraphicsTask(pr, "ShaderCompileVertexTask"), mShaderRuntime(rt)
     {
     }
 
@@ -41,8 +43,9 @@ namespace octronic::dream
         }
     }
 
-    ShaderLinkTask::ShaderLinkTask(ShaderRuntime* rt)
-        : GraphicsComponentTask("ShaderLinkTask"), mShaderRuntime(rt)
+    ShaderLinkTask::ShaderLinkTask
+    (ProjectRuntime* pr, ShaderRuntime* rt)
+        : GraphicsTask(pr, "ShaderLinkTask"), mShaderRuntime(rt)
     {
     }
 
@@ -60,8 +63,8 @@ namespace octronic::dream
         }
     }
 
-    ShaderFreeTask::ShaderFreeTask()
-        : GraphicsComponentDestructionTask("ShaderFreeTask"),
+    ShaderFreeTask::ShaderFreeTask(ProjectRuntime* pr)
+        : GraphicsDestructionTask(pr, "ShaderFreeTask"),
           mShaderProgram(0)
     {
     }

@@ -3,24 +3,24 @@
 #include "Common/GLHeader.h"
 
 // Defer GL Operations using Task objects
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
     class TextureRuntime;
-    class TextureConstructionTask : public GraphicsComponentTask
+    class TextureLoadIntoGLTask : public GraphicsTask
     {
         TextureRuntime* mTextureRuntime;
     public:
-        TextureConstructionTask(TextureRuntime* rt);
+        TextureLoadIntoGLTask(ProjectRuntime* pr, TextureRuntime* rt);
         void execute();
     };
 
-    class TextureDestructionTask : public GraphicsComponentDestructionTask
+    class TextureRemoveFromGLTask : public GraphicsDestructionTask
     {
         GLuint mTextureID;
     public:
-        TextureDestructionTask();
+        TextureRemoveFromGLTask(ProjectRuntime* pr);
         void setGLID(GLuint id);
         void execute() override;
     };

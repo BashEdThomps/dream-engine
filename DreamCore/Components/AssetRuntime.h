@@ -16,38 +16,44 @@
 #pragma once
 
 #include "Base/Runtime.h"
-#include <string>
-
 
 namespace octronic::dream
 {
     class AssetDefinition;
+    class ProjectRuntime;
 
     /**
      * @brief Holds runtime data for an Asset.
      */
     class AssetRuntime : public Runtime
     {
-    protected:
-        /**
-         * @brief Flag set when the runtime data has been loaded
-         */
-        bool mLoaded;
-
     public:
         /**
          * @brief Default Constructor
          * @param asset AssetDefinition to construct runtime from
          */
-        AssetRuntime(const string& className, AssetDefinition* asset);
+        AssetRuntime(ProjectRuntime* pr, AssetDefinition* assetDef);
         virtual ~AssetRuntime();
 
         virtual string getAssetFilePath(const string& fmt = "") = 0;
         virtual string getAssetDirectoryPath() = 0;
 
-        bool getLoaded();
+        bool getLoaded() const;
         void setLoaded(bool);
+        bool getLoadError() const;
+        void setLoadError(bool);
 
-        void collectGarbage() override;
+
+        ProjectRuntime* getProjectRuntimeHandle() const;
+
+        virtual void pushNextTask() = 0;
+
+    protected:
+        /**
+         * @brief Flag set when the runtime data has been loaded
+         */
+        bool mLoaded;
+        bool mLoadError;
+        ProjectRuntime* mProjectRuntimeHandle;
     };
 }

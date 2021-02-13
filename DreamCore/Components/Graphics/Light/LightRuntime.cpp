@@ -17,26 +17,32 @@
 #include "LightRuntime.h"
 
 #include "LightDefinition.h"
+
 #include "Common/Constants.h"
 #include "Common/Logger.h"
-#include "Scene/Entity/EntityRuntime.h"
 
+#include "Components/Graphics/GraphicsComponent.h"
 
+#include "Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+using std::make_shared;
 
 namespace octronic::dream
 {
     LightRuntime::LightRuntime
-    (LightDefinition* definition,EntityRuntime* transform
-            ) : DiscreteAssetRuntime("LightRuntime",definition,transform),
-        mAmbient(0.0f),
-        mDiffuse(0.0f),
-        mSpecular(0.0f),
-        mConstant(0.0f),
-        mLinear(0.0f),
-        mQuadratic(0.0f),
-        mCutOff(0.0f),
-        mOuterCutOff(0.0f),
-        mType(LightType::LT_NONE)
+    (ProjectRuntime* pr, LightDefinition* definition, EntityRuntime* transform)
+        : DiscreteAssetRuntime(pr, definition,transform),
+          mLightAddToQueueTask(make_shared<LightAddToQueueTask>(pr,this)),
+          mAmbient(0.0f),
+          mDiffuse(0.0f),
+          mSpecular(0.0f),
+          mConstant(0.0f),
+          mLinear(0.0f),
+          mQuadratic(0.0f),
+          mCutOff(0.0f),
+          mOuterCutOff(0.0f),
+          mType(LightType::LT_NONE)
 
     {
     }
@@ -56,10 +62,7 @@ namespace octronic::dream
 
     void LightRuntime::setAmbient(const Vector3& ambient)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mAmbient = ambient;
-        } dreamElseLockFailed
+        mAmbient = ambient;
     }
 
     Vector3 LightRuntime::getDiffuse() const
@@ -69,10 +72,7 @@ namespace octronic::dream
 
     void LightRuntime::setDiffuse(const Vector3& diffuse)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mDiffuse = diffuse;
-        } dreamElseLockFailed
+        mDiffuse = diffuse;
     }
 
     Vector3 LightRuntime::getSpecular() const
@@ -82,10 +82,8 @@ namespace octronic::dream
 
     void LightRuntime::setSpecular(const Vector3& specular)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mSpecular = specular;
-        } dreamElseLockFailed
+        mSpecular = specular;
+
     }
 
     float LightRuntime::getConstant() const
@@ -95,10 +93,7 @@ namespace octronic::dream
 
     void LightRuntime::setConstant(float constant)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mConstant = constant;
-        } dreamElseLockFailed
+        mConstant = constant;
     }
 
     float LightRuntime::getLinear() const
@@ -108,10 +103,7 @@ namespace octronic::dream
 
     void LightRuntime::setLinear(float linear)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mLinear = linear;
-        } dreamElseLockFailed
+        mLinear = linear;
     }
 
     float LightRuntime::getQuadratic() const
@@ -121,10 +113,7 @@ namespace octronic::dream
 
     void LightRuntime::setQuadratic(float quadratic)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mQuadratic = quadratic;
-        } dreamElseLockFailed
+        mQuadratic = quadratic;
     }
 
     float LightRuntime::getCutOff() const
@@ -134,10 +123,7 @@ namespace octronic::dream
 
     void LightRuntime::setCutOff(float cutOff)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mCutOff = cutOff;
-        } dreamElseLockFailed
+        mCutOff = cutOff;
     }
 
     float LightRuntime::getOuterCutOff() const
@@ -149,10 +135,7 @@ namespace octronic::dream
     LightRuntime::setOuterCutOff
     (float outerCutOff)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mOuterCutOff = outerCutOff;
-        } dreamElseLockFailed
+        mOuterCutOff = outerCutOff;
     }
 
     LightType
@@ -166,30 +149,24 @@ namespace octronic::dream
     LightRuntime::setType
     (const LightType& type)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mType = type;
-        } dreamElseLockFailed
+        mType = type;
     }
 
     void LightRuntime::loadType()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto assetDef = static_cast<AssetDefinition*>(mDefinition);
-            if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
-            {
-                mType = LightType::LT_DIRECTIONAL;
-            }
-            else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
-            {
-                mType = LightType::LT_POINT;
-            }
-            else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
-            {
-                mType = LightType::LT_SPOTLIGHT;
-            }
-        } dreamElseLockFailed
+        auto assetDef = static_cast<AssetDefinition*>(mDefinitionHandle);
+        if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL)
+        {
+            mType = LightType::LT_DIRECTIONAL;
+        }
+        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_POINT)
+        {
+            mType = LightType::LT_POINT;
+        }
+        else if (assetDef->getFormat() == Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT)
+        {
+            mType = LightType::LT_SPOTLIGHT;
+        }
     }
 
     PointLight
@@ -198,19 +175,11 @@ namespace octronic::dream
     const
     {
         Vector3 tx(
-                    mEntityRuntime->getTransform().getMatrix()[3][0],
-                mEntityRuntime->getTransform().getMatrix()[3][1],
-                mEntityRuntime->getTransform().getMatrix()[3][2]);
+                    mEntityRuntimeHandle->getTransform().getMatrix()[3][0],
+                mEntityRuntimeHandle->getTransform().getMatrix()[3][1],
+                mEntityRuntimeHandle->getTransform().getMatrix()[3][2]);
         return PointLight
-        {
-            tx,
-                    mConstant,
-                    mLinear,
-                    mQuadratic,
-                    mAmbient,
-                    mDiffuse,
-                    mSpecular
-        };
+        {tx, mConstant, mLinear, mQuadratic, mAmbient, mDiffuse, mSpecular};
     }
 
     SpotLight
@@ -218,28 +187,14 @@ namespace octronic::dream
     ()
     const
     {
-        MatrixDecomposition decomp = mEntityRuntime->getTransform().decomposeMatrix();
-        Vector3 tx(
-                    decomp.translation.x,
-                    decomp.translation.y,
-                    decomp.translation.z
-                    );
+        MatrixDecomposition decomp = mEntityRuntimeHandle->getTransform().decomposeMatrix();
+        Vector3 tx(decomp.translation.x, decomp.translation.y, decomp.translation.z);
         auto e = eulerAngles(decomp.rotation);
         Vector3 euler(e.x,e.y,e.z);
 
         return SpotLight
-        {
-            tx,
-                    euler,
-                    mAmbient,
-                    mDiffuse,
-                    mSpecular,
-                    mCutOff,
-                    mOuterCutOff,
-                    mConstant,
-                    mLinear,
-                    mQuadratic,
-        };
+        {tx, euler, mAmbient, mDiffuse, mSpecular, mCutOff,
+                    mOuterCutOff,mConstant,mLinear,mQuadratic};
     }
 
     DirLight
@@ -247,54 +202,62 @@ namespace octronic::dream
     ()
     const
     {
-        MatrixDecomposition decomp = mEntityRuntime->getTransform().decomposeMatrix();
+        MatrixDecomposition decomp = mEntityRuntimeHandle->getTransform().decomposeMatrix();
         auto e = eulerAngles(decomp.rotation);
         Vector3 euler(e.x,e.y,e.z);
-        return DirLight
-        {
-            euler,
-                    mAmbient,
-                    mDiffuse,
-                    mSpecular
-        };
+        return DirLight {euler, mAmbient, mDiffuse, mSpecular};
     }
 
     bool
-    LightRuntime::useDefinition
+    LightRuntime::loadFromDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto lightDef = static_cast<LightDefinition*>(mDefinition);
+        auto lightDef = static_cast<LightDefinition*>(mDefinitionHandle);
 
-            mAmbient = lightDef->getAmbient();
-            mDiffuse = lightDef->getDiffuse();
-            mSpecular = lightDef->getSpecular();
+        mAmbient = lightDef->getAmbient();
+        mDiffuse = lightDef->getDiffuse();
+        mSpecular = lightDef->getSpecular();
 
-            loadType();
+        loadType();
 
-            switch(mType)
-            {
-                case LT_NONE:
-                    break;
-                case LT_POINT:
-                    mConstant    = lightDef->getConstant();
-                    mLinear      = lightDef->getLinear();
-                    mQuadratic   = lightDef->getQuadratic();
-                    break;
-                case LT_SPOTLIGHT:
-                    mCutOff      = lightDef->getCutOff();
-                    mOuterCutOff = lightDef->getOuterCutOff();
-                    mConstant    = lightDef->getConstant();
-                    mLinear      = lightDef->getLinear();
-                    mQuadratic   = lightDef->getQuadratic();
-                    break;
-                case LT_DIRECTIONAL:
-                    break;
-            }
+        switch(mType)
+        {
+            case LT_NONE:
+                break;
+            case LT_POINT:
+                mConstant    = lightDef->getConstant();
+                mLinear      = lightDef->getLinear();
+                mQuadratic   = lightDef->getQuadratic();
+                break;
+            case LT_SPOTLIGHT:
+                mCutOff      = lightDef->getCutOff();
+                mOuterCutOff = lightDef->getOuterCutOff();
+                mConstant    = lightDef->getConstant();
+                mLinear      = lightDef->getLinear();
+                mQuadratic   = lightDef->getQuadratic();
+                break;
+            case LT_DIRECTIONAL:
+                break;
+        }
 
-            mLoaded = true;
-            return mLoaded;
-        } dreamElseLockFailed
+        mLoaded = true;
+        return mLoaded;
+
     }
+    void LightRuntime::pushNextTask()
+    {
+
+        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+        auto gfxQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
+
+        if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+        {
+        	taskQueue->pushTask(mLoadFromDefinitionTask);
+        }
+        else if (mLoaded)
+        {
+          	 gfxQueue->pushTask(mLightAddToQueueTask);
+        }
+    }
+
 } // End of Dream

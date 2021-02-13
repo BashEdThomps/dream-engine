@@ -17,7 +17,6 @@
 #pragma once
 
 #include <chrono>
-#include "Base/LockableObject.h"
 
 using std::chrono::time_point;
 using std::chrono::steady_clock;
@@ -31,19 +30,8 @@ namespace octronic::dream
      * std::steady_clock and are reported in fractions of a second.
      * e.g. 0.34s, 2.38s etc...
      */
-    class Time : public LockableObject
+    class Time
     {
-
-    private:
-        /**
-         * @brief Current time
-         */
-        long mCurrentFrameTime;
-
-        /**
-         * @brief Time of last frame
-         */
-        long mLastFrameTime;
     public:
         /**
          * @brief Default Constructor
@@ -93,6 +81,16 @@ namespace octronic::dream
         long getAbsoluteTime();
 
         const static int DELTA_MAX;
-    };
 
+    private:
+        /**
+         * @brief Current time
+         */
+        long mCurrentFrameTime;
+
+        /**
+         * @brief Time of last frame
+         */
+        long mLastFrameTime;
+    };
 } // End of Dream

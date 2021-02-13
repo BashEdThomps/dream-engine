@@ -17,9 +17,9 @@
 
 #include "Common/Logger.h"
 #include "Components/Audio/AudioDefinition.h"
-#include "Components/Storage/StorageManager.h"
-#include "Components/Storage/ProjectDirectory.h"
-#include "Components/Storage/File.h"
+#include "Storage/StorageManager.h"
+#include "Storage/ProjectDirectory.h"
+#include "Storage/File.h"
 #include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
 

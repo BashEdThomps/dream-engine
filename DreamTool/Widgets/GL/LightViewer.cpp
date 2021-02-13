@@ -95,7 +95,7 @@ namespace octronic::dream::tool
             for (auto inst : lightRuntimes)
             {
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getEntityRuntime()->getTransform().getMatrix();
+                mModelMatrix = light->getEntityRuntimeHandle()->getTransform().getMatrix();
                 Vector3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)

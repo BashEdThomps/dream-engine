@@ -7,8 +7,8 @@
 namespace octronic::dream
 {
     InputPollDataTask::InputPollDataTask
-    (InputComponent* cp)
-        : Task("InputPollDataTask"), mComponent(cp)
+    (ProjectRuntime* pr, InputComponent* cp)
+        : Task(pr, "InputPollDataTask"), mComponent(cp)
     {
     }
 
@@ -16,20 +16,20 @@ namespace octronic::dream
     InputPollDataTask::execute
     ()
     {
-		LOG_TRACE("InputPollDataTask: Executing on worker {}",getThreadID());
+		LOG_TRACE("InputPollDataTask: Executing {}",getID());
 		mComponent->pollData();
 		setState(TaskState::TASK_STATE_COMPLETED);
     }
 
     InputExecuteScriptTask::InputExecuteScriptTask
-    (InputComponent* cp)
-        : Task("InputExecuteScriptTask"), mComponent(cp)
+    (ProjectRuntime* pr, InputComponent* cp)
+        : Task(pr, "InputExecuteScriptTask"), mComponent(cp)
     {
     }
 
     void InputExecuteScriptTask::execute()
     {
-        LOG_TRACE("InputExecuteScriptTask: Executing on thread {}",getThreadID());
+        LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
 
 		if (mComponent->executeInputScript())
 		{
@@ -37,7 +37,7 @@ namespace octronic::dream
 		}
 		else
 		{
-			incrementDeferralCount();
+			setState(TaskState::TASK_STATE_FAILED);
 		}
     }
 }

@@ -28,9 +28,9 @@ namespace octronic::dream
     class ScriptRuntime : public SharedAssetRuntime
     {
     public:
-        ScriptRuntime(ScriptDefinition*,ProjectRuntime*);
+        ScriptRuntime(ProjectRuntime*, ScriptDefinition*);
         ~ScriptRuntime() override;
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         bool createEntityState(EntityRuntime* rt);
         bool removeEntityState(UuidType uuid);
@@ -46,6 +46,9 @@ namespace octronic::dream
 
         bool registerInputScript();
         bool removeInputScript();
+
+        void pushNextTask() override;
+
     private:
         string mSource;
 

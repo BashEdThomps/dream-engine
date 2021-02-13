@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Components/Task/Task.h"
+#include "Task/Task.h"
 
 namespace octronic::dream
 {
@@ -11,7 +11,7 @@ namespace octronic::dream
    protected:
         AnimationRuntime* mAnimationRuntime;
    public:
-        AnimationUpdateTask(AnimationRuntime* rt);
+        AnimationUpdateTask(ProjectRuntime* pr, AnimationRuntime* rt);
         void execute();
    };
 }

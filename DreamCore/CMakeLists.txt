@@ -15,120 +15,108 @@ include(GNUInstallDirs)
 add_library(
     DreamCore
     SHARED
-
-	Project/Project.cpp
-	Project/ProjectDefinition.cpp
-	Project/ProjectRuntime.cpp
-
+	# Common
+	Common/Constants.cpp
+	Common/Uuid.cpp
+	Common/Vector.cpp
+	# Base
+	Base/Definition.cpp
+	Base/Runtime.cpp
+	Base/RuntimeLoadFromDefinitionTask.cpp
+	# Components
 	Components/AssetRuntime.cpp
 	Components/AssetDefinition.cpp
-	Components/Cache.cpp
 	Components/Component.cpp
 	Components/DiscreteAssetRuntime.cpp
 	Components/Event.cpp
 	Components/SharedAssetRuntime.cpp
 	Components/Time.cpp
 	Components/Transform.cpp
-
-	Components/Storage/File.cpp
-	Components/Storage/StorageManager.cpp
-	Components/Storage/Directory.cpp
-	Components/Storage/ProjectDirectory.cpp
-
-	Components/Input/InputComponent.cpp
-	Components/Input/InputTasks.cpp
-
-	Components/Path/PathTasks.cpp
-	Components/Path/PathRuntime.cpp
-	Components/Path/PathDefinition.cpp
-
-	Components/Task/TaskManager.cpp
-	Components/Task/TaskThread.cpp
-	Components/Task/Task.cpp
-
+	# Components/Animation
 	Components/Animation/AnimationTasks.cpp
 	Components/Animation/AnimationKeyframe.cpp
 	Components/Animation/AnimationRuntime.cpp
 	Components/Animation/AnimationEasing.cpp
 	Components/Animation/AnimationDefinition.cpp
-
-	Components/Script/ScriptTasks.cpp
-	Components/Script/ScriptCache.cpp
-	Components/Script/ScriptRuntime.cpp
-	Components/Script/ScriptComponent.cpp
-	Components/Script/ScriptDefinition.cpp
-
+	# Components/Audio
 	Components/Audio/AudioComponent.cpp
-	Components/Audio/AudioCache.cpp
 	Components/Audio/AudioDefinition.cpp
 	Components/Audio/AudioTasks.cpp
 	Components/Audio/AudioRuntime.cpp
 	Components/Audio/AudioLoader.cpp
 	Components/Audio/OggLoader.cpp
 	Components/Audio/WavLoader.cpp
-
-	Components/Window/WindowComponent.cpp
-
+	# Components/Graphics
+	Components/Graphics/Camera.cpp
+	Components/Graphics/Frustum.cpp
+	Components/Graphics/GraphicsComponent.cpp
+	Components/Graphics/GraphicsComponentTasks.cpp
+	# Components/Graphics/Font
+	Components/Graphics/Font/FontDefinition.cpp
+	Components/Graphics/Font/FontRuntime.cpp
+	Components/Graphics/Font/FontTasks.cpp
+	# Components/Graphics/Light
+	Components/Graphics/Light/LightRuntime.cpp
+	Components/Graphics/Light/LightDefinition.cpp
+	Components/Graphics/Light/LightTasks.cpp
+	# Components/Graphics/Material
+	Components/Graphics/Material/MaterialRuntime.cpp
+	Components/Graphics/Material/MaterialDefinition.cpp
+	# Components/Graphics/Model
+	Components/Graphics/Model/ModelAnimation.cpp
+	Components/Graphics/Model/ModelRuntime.cpp
+	Components/Graphics/Model/ModelTasks.cpp
+	Components/Graphics/Model/ModelDefinition.cpp
+	Components/Graphics/Model/ModelMesh.cpp
+	# Components/Graphics/Shader
+	Components/Graphics/Shader/ShaderTasks.cpp
+	Components/Graphics/Shader/ShaderDefinition.cpp
+	Components/Graphics/Shader/ShaderRuntime.cpp
+	Components/Graphics/Shader/ShaderUniform.cpp
+	# Components/Graphics/Texture
+	Components/Graphics/Texture/TextureRuntime.cpp
+	Components/Graphics/Texture/TextureTasks.cpp
+	Components/Graphics/Texture/TextureDefinition.cpp
+	# Components/Input
+	Components/Input/InputComponent.cpp
+	Components/Input/InputTasks.cpp
+	Components/Input/Joystick.cpp
+	# Components/Path
+	Components/Path/PathTasks.cpp
+	Components/Path/PathRuntime.cpp
+	Components/Path/PathDefinition.cpp
+	# Components/Physics
 	Components/Physics/PhysicsComponent.cpp
 	Components/Physics/PhysicsTasks.cpp
 	Components/Physics/PhysicsObjectDefinition.cpp
 	Components/Physics/PhysicsObjectRuntime.cpp
 	Components/Physics/PhysicsMotionState.cpp
 	Components/Physics/PhysicsDebugDrawer.cpp
-
-	Components/Graphics/Camera.cpp
-	Components/Graphics/Frustum.cpp
-	Components/Graphics/GraphicsComponent.cpp
-	Components/Graphics/GraphicsComponentTasks.cpp
-
-	Components/Graphics/Model/ModelAnimation.cpp
-	Components/Graphics/Model/ModelRuntime.cpp
-	Components/Graphics/Model/ModelCache.cpp
-	Components/Graphics/Model/ModelTasks.cpp
-	Components/Graphics/Model/ModelDefinition.cpp
-	Components/Graphics/Model/ModelMesh.cpp
-
-	Components/Graphics/Texture/TextureRuntime.cpp
-	Components/Graphics/Texture/TextureTasks.cpp
-	Components/Graphics/Texture/TextureCache.cpp
-	Components/Graphics/Texture/TextureDefinition.cpp
-
-	Components/Graphics/Shader/ShaderTasks.cpp
-	Components/Graphics/Shader/ShaderCache.cpp
-	Components/Graphics/Shader/ShaderDefinition.cpp
-	Components/Graphics/Shader/ShaderRuntime.cpp
-	Components/Graphics/Shader/ShaderUniform.cpp
-
-	Components/Graphics/Light/LightRuntime.cpp
-	Components/Graphics/Light/LightDefinition.cpp
-
-	Components/Graphics/Font/FontDefinition.cpp
-	Components/Graphics/Font/FontRuntime.cpp
-	Components/Graphics/Font/FontCache.cpp
-	Components/Graphics/Font/FontTasks.cpp
-
-	Components/Graphics/Sprite/SpriteDefinition.cpp
-	Components/Graphics/Sprite/SpriteRuntime.cpp
-	Components/Graphics/Sprite/SpriteTasks.cpp
-
-	Components/Graphics/Material/MaterialCache.cpp
-	Components/Graphics/Material/MaterialRuntime.cpp
-	Components/Graphics/Material/MaterialDefinition.cpp
-
-	Common/Constants.cpp
-	Common/Uuid.cpp
-	Common/Vector.cpp
-
-	Base/LockableObject.cpp
-	Base/Definition.cpp
-	Base/Runtime.cpp
-	Base/ThreadLockFailedException.cpp
-
+	# Components/Script
+	Components/Script/ScriptTasks.cpp
+	Components/Script/ScriptRuntime.cpp
+	Components/Script/ScriptComponent.cpp
+	Components/Script/ScriptDefinition.cpp
+	# Components/Window
+	Components/Window/WindowComponent.cpp
+	# Project
+	Project/Project.cpp
+	Project/ProjectDefinition.cpp
+	Project/ProjectRuntime.cpp
+	# Scene
 	Scene/SceneRuntime.cpp
 	Scene/SceneDefinition.cpp
-	Scene/Entity/EntityRuntime.cpp
-	Scene/Entity/EntityDefinition.cpp
-	Scene/Entity/BoundingBox.cpp
+	# Entity
+	Entity/EntityRuntime.cpp
+	Entity/EntityDefinition.cpp
+	Entity/BoundingBox.cpp
+	# Storage
+	Storage/File.cpp
+	Storage/StorageManager.cpp
+	Storage/Directory.cpp
+	Storage/ProjectDirectory.cpp
+	# Task
+	Task/Task.cpp
 )
 
 IF (WIN32)

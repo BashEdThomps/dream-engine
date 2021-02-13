@@ -64,8 +64,8 @@ namespace octronic::dream::tool
         }
 
         ScriptComponent::AddPrintListener(&mScriptDebugWindow);
+        FontRuntime::InitFreetypeLibrary();
         mPreferencesModel.load();
-
 
         // ImGui Widgets
         mWindow.addImGuiWidget(&mPropertiesWindow);
@@ -115,21 +115,18 @@ namespace octronic::dream::tool
 
             if (mProject)
             {
-				ProjectRuntime* projectRuntime = mProject->getRuntime();
-				if (projectRuntime)
-				{
-					projectRuntime->updateAll();
-					if(projectRuntime->hasActiveScene())
-					{
-            			ShaderRuntime::InvalidateState();
-						mGlPreviewWindowComponent.updateWindow(projectRuntime->getActiveSceneRuntime());
-					}
-				}
+                ProjectRuntime* projectRuntime = mProject->getRuntime();
+                if (projectRuntime)
+                {
+                    projectRuntime->step();
+					mGlPreviewWindowComponent.updateWindow();
+                }
             }
 
+            // Draw ImGui
             mWindow.bindDefaultFrameBuffer();
-        	glClearColor(0.0f,0.0f,0.0f,0.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClearColor(0.0f,0.0f,0.0f,0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             mWindow.update();
             mWindow.drawGLWidgets();
             mWindow.drawImGui();
@@ -165,6 +162,8 @@ namespace octronic::dream::tool
             }
             mWindow.swapBuffers();
         }
+
+        FontRuntime::CleanupFreetypeLibrary();
     }
 
     void
@@ -586,11 +585,11 @@ namespace octronic::dream::tool
 
 
     bool DreamToolContext::openInExternalEditor(AssetDefinition* definition, const string& format)
-	{
-		if (mPreferencesModel.getExternalEditorPath().empty())
+    {
+        if (mPreferencesModel.getExternalEditorPath().empty())
         {
-           LOG_ERROR("DTContext: External editor has not been set");
-           return false;
+            LOG_ERROR("DTContext: External editor has not been set");
+            return false;
         }
         char temp[512];
 #if defined (__APPLE__)
@@ -602,5 +601,5 @@ namespace octronic::dream::tool
         LOG_DEBUG("DTContext: Opening file with command {}",temp);
         int result = system((char *)temp);
         return result == 0;
-	}
+    }
 }

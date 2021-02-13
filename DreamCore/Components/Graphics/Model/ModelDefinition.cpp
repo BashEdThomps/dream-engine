@@ -41,112 +41,94 @@ namespace octronic::dream
     ModelDefinition::isFormatAssimp
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
-        } dreamElseLockFailed
+        return getFormat() == Constants::ASSET_FORMAT_MODEL_ASSIMP;
     }
 
     bool // Indicates whether a new insertion was made
     ModelDefinition::addModelMaterial
     (const string &material, UuidType shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
-            }
+        if (mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
+        }
 
-            for (json& matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
+        for (json& matShad : mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST])
+        {
+            if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
             {
-                if (matShad.is_object() && matShad[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] == material)
-                {
-                    matShad[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
-                    return false;
-                }
+                matShad[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
+                return false;
             }
+        }
 
-            auto shaderJson = json::object();
-            shaderJson[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = material;
-            shaderJson[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].push_back(shaderJson);
-            return true;
-        } dreamElseLockFailed
+        auto shaderJson = json::object();
+        shaderJson[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL] = material;
+        shaderJson[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = shader;
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].push_back(shaderJson);
+        return true;
     }
 
     json*
     ModelDefinition::getModelMaterials
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            if(mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
-            }
-            return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
-        } dreamElseLockFailed
+        if(mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
+        }
+        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
     }
 
     void
     ModelDefinition::removeModelMaterial
     (const string &material)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
-            for (auto nextShader : shaderMap)
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+        for (auto nextShader : shaderMap)
+        {
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
+            if (materialName.is_string())
             {
-                auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
-                if (materialName.is_string())
+                string materialNameStr = materialName;
+                if (material == materialNameStr)
                 {
-                    string materialNameStr = materialName;
-                    if (material == materialNameStr)
-                    {
-                        LOG_DEBUG("ModelDefinition: Removing material form {} shader map {}",getName(),material);
-                        shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
-                    }
+                    LOG_DEBUG("ModelDefinition: Removing material form {} shader map {}",getName(),material);
+                    shaderMap.erase(find(begin(shaderMap),end(shaderMap),nextShader));
                 }
             }
-            LOG_ERROR("ModelDefinition: Could not remove {} from {} shader map, object not found",getName(), material);
-        } dreamElseLockFailed
+        }
+        LOG_ERROR("ModelDefinition: Could not remove {} from {} shader map, object not found",getName(), material);
     }
 
     void
     ModelDefinition::clearModelMaterialList
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST].clear();
     }
 
     UuidType
     ModelDefinition::getDreamMaterialForModelMaterial
     (const string &mat)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
-            for (auto nextShader : shaderMap)
+        auto shaderMap = mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+        for (auto nextShader : shaderMap)
+        {
+            auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
+            if (materialName.is_string())
             {
-                auto materialName = nextShader[Constants::ASSET_ATTR_MODEL_MODEL_MATERIAL];
-                if (materialName.is_string())
+                string materialNameStr = materialName;
+                if (mat == materialNameStr)
                 {
-                    string materialNameStr = materialName;
-                    if (mat == materialNameStr)
+                    if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
                     {
-                        if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
-                        {
-                            nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
-                        }
-                        return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
+                        nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
                     }
+                    return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 }
             }
-            return 0;
-        } dreamElseLockFailed
+        }
+        return 0;
     }
 }

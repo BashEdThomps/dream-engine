@@ -42,210 +42,144 @@ namespace octronic::dream
     AudioDefinition::isFormatWav
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV;
-        } dreamElseLockFailed
+        return getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV;
     }
 
     bool
     AudioDefinition::isFormatOgg
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG;
-        } dreamElseLockFailed
+        return getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG;
     }
 
     void
     AudioDefinition::setLoop
     (bool loop)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_LOOP] = loop;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_LOOP] = loop;
     }
 
     bool
     AudioDefinition::getLoop
     ()
     {
-        if(dreamTryLock())
+        if (mJson.find(Constants::ASSET_ATTR_LOOP) == mJson.end())
         {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_LOOP) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_LOOP] = false;
-            }
-            return mJson[Constants::ASSET_ATTR_LOOP];
-        } dreamElseLockFailed
+            mJson[Constants::ASSET_ATTR_LOOP] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_LOOP];
     }
 
     bool
     AudioDefinition::getSpectrumAnalyser
     ()
     {
-        if(dreamTryLock())
+        if (mJson.find(Constants::ASSET_ATTR_SPECTRUM_ANALYSER) == mJson.end())
         {
-            dreamLock();
-            if (mJson.find(Constants::ASSET_ATTR_SPECTRUM_ANALYSER) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = false;
-            }
-            return mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER];
-        } dreamElseLockFailed
+            mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = false;
+        }
+        return mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER];
     }
 
     void
     AudioDefinition::setSpectrumAnalyser
     (bool sa)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = sa;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = sa;
     }
 
     string
     AudioDefinition::getMarkerName
     (unsigned int index)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME];
-        } dreamElseLockFailed
+        return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME];
     }
 
     void
     AudioDefinition::setMarkerName
     (unsigned int index, string name)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME] = name;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME] = name;
     }
 
     int
     AudioDefinition::getMarkerSampleIndex
     (unsigned int index)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX];
-        } dreamElseLockFailed
+        return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX];
     }
 
     void
     AudioDefinition::setMarkerSampleIndex
     (unsigned int index, int smpl)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = smpl;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = smpl;
     }
 
     int AudioDefinition::getMarkerRepeat(unsigned int index)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            json& obj = mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index];
-            if (obj.find(Constants::ASSET_ATTR_AUDIO_EM_REPEAT) == obj.end())
-                obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = 0;
-            return obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT];
-        } dreamElseLockFailed
+        json& obj = mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index];
+        if (obj.find(Constants::ASSET_ATTR_AUDIO_EM_REPEAT) == obj.end())
+            obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = 0;
+        return obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT];
     }
 
     void AudioDefinition::setMarkerRepeat(unsigned int index, int repeat)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = repeat;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT] = repeat;
     }
 
     int AudioDefinition::getMarkerRepeatPeriod(unsigned int index)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            json& obj = mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index];
-            if (obj.find(Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD) == obj.end())
-                obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = 0;
-            return obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD];
-        } dreamElseLockFailed
+        json& obj = mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index];
+        if (obj.find(Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD) == obj.end())
+            obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = 0;
+        return obj[Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD];
     }
 
     void AudioDefinition::setMarkerRepeatPeriod(unsigned int index, int rp)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = rp;
-        } dreamElseLockFailed
+        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD] = rp;
     }
 
     int
     AudioDefinition::createMarker
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            json marker = json::object();
-            marker[Constants::ASSET_ATTR_AUDIO_EM_INDEX] = countMarkers();
-            marker[Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = "-1";
-            marker[Constants::ASSET_ATTR_AUDIO_EM_NAME] = "New Marker";
-            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].push_back(marker);
-            return marker[Constants::ASSET_ATTR_AUDIO_EM_INDEX];
-        } dreamElseLockFailed
+        json marker = json::object();
+        marker[Constants::ASSET_ATTR_AUDIO_EM_INDEX] = countMarkers();
+        marker[Constants::ASSET_ATTR_AUDIO_EM_S_INDEX] = "-1";
+        marker[Constants::ASSET_ATTR_AUDIO_EM_NAME] = "New Marker";
+        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].push_back(marker);
+        return marker[Constants::ASSET_ATTR_AUDIO_EM_INDEX];
+
     }
 
     void
     AudioDefinition::removeMarker
     (const int index)
     {
-        if(dreamTryLock())
+        auto itr = std::find_if(
+                    mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].begin(),
+                mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].end(),
+                [&index](json next)
         {
-            dreamLock();
-            auto itr = std::find_if(
-                        mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].begin(),
-                    mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].end(),
-                    [&index](json next)
-            {
-                int idx = next[Constants::ASSET_ATTR_AUDIO_EM_INDEX];
-                return idx == index;
-            }
-            );
+            int idx = next[Constants::ASSET_ATTR_AUDIO_EM_INDEX];
+            return idx == index;
+        }
+        );
 
-            if (itr !=  mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].end())
-            {
-                mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].erase(itr);
-            }
-        } dreamElseLockFailed
+        if (itr !=  mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].end())
+        {
+            mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].erase(itr);
+        }
+
     }
 
     int
     AudioDefinition::countMarkers
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return static_cast<int>(mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size());
-        } dreamElseLockFailed
+        return static_cast<int>(mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size());
     }
 }

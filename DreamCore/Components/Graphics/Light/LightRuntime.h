@@ -18,8 +18,8 @@
 
 #include <glm/glm.hpp>
 #include "LightDefinition.h"
+#include "LightTasks.h"
 #include "Components/DiscreteAssetRuntime.h"
-
 
 namespace octronic::dream
 {
@@ -58,24 +58,15 @@ namespace octronic::dream
 
     class LightDefinition;
 
-    class LightRuntime
-        : public DiscreteAssetRuntime
+    class LightRuntime : public DiscreteAssetRuntime
     {
-        Vector3 mAmbient;
-        Vector3 mDiffuse;
-        Vector3 mSpecular;
-        float mConstant;
-        float mLinear;
-        float mQuadratic;
-        float mCutOff;
-        float mOuterCutOff;
-        LightType mType;
+
 
     public:
-        LightRuntime(LightDefinition*,EntityRuntime*);
+        LightRuntime(ProjectRuntime*, LightDefinition*,EntityRuntime*);
         ~LightRuntime() override;
 
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
 
         Vector3 getAmbient() const;
         void setAmbient(const Vector3& ambient);
@@ -108,5 +99,19 @@ namespace octronic::dream
         PointLight getPointLightData() const;
         SpotLight getSpotLightData() const;
         DirLight getDirectionalLightData() const;
+
+        void pushNextTask() override;
+
+    private:
+       	shared_ptr<LightAddToQueueTask> mLightAddToQueueTask;
+        Vector3 mAmbient;
+        Vector3 mDiffuse;
+        Vector3 mSpecular;
+        float mConstant;
+        float mLinear;
+        float mQuadratic;
+        float mCutOff;
+        float mOuterCutOff;
+        LightType mType;
     };
 }

@@ -31,13 +31,13 @@ namespace octronic::dream
     class WindowComponent : public Component
     {
     public:
-      WindowComponent(const string& className);
+      WindowComponent();
       virtual ~WindowComponent();
 
       bool init() = 0;
       virtual void getCurrentDimensions() = 0;
       virtual void swapBuffers() = 0;
-      virtual void updateWindow(SceneRuntime* sr) = 0;
+      virtual void updateWindow() = 0;
       virtual void bindFrameBuffer() = 0;
       virtual GLuint getFrameBuffer() const = 0;
       virtual GLuint getDepthBuffer() const = 0;

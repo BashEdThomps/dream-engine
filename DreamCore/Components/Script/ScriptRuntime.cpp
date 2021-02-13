@@ -18,8 +18,10 @@
 #include "ScriptComponent.h"
 
 #include "Components/Input/InputComponent.h"
+#include "Storage/StorageManager.h"
+#include "Storage/File.h"
 #include "Scene/SceneRuntime.h"
-#include "Scene/Entity/EntityRuntime.h"
+#include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
 #define SOL_CHECK_ARGUMENTS 1
@@ -27,14 +29,11 @@
 #include <sol.h>
 
 
-
 namespace octronic::dream
 {
-
-
     ScriptRuntime::ScriptRuntime
-    (ScriptDefinition* definition, ProjectRuntime* rt)
-        : SharedAssetRuntime("ScriptRuntime",definition,rt),
+    (ProjectRuntime* rt, ScriptDefinition* definition)
+        : SharedAssetRuntime(rt, definition),
           mSource("")
     {
         LOG_TRACE( "ScriptRuntime: {} {}",__FUNCTION__, getNameAndUuidString());
@@ -44,61 +43,65 @@ namespace octronic::dream
     ScriptRuntime::~ScriptRuntime
     ()
     {
-        LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, mDefinition->getNameAndUuidString());
+        LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, mDefinitionHandle->getNameAndUuidString());
     }
 
     bool
-    ScriptRuntime::useDefinition
+    ScriptRuntime::loadFromDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto path = getAssetFilePath();
-            LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
-            return true;
-        } dreamElseLockFailed
+        auto path = getAssetFilePath();
+        LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
+
+        StorageManager* sm = mProjectRuntimeHandle->getStorageManager();
+        File* scriptFile = sm->openFile(path);
+
+        if (!scriptFile->exists())
+        {
+            LOG_ERROR("ScriptCache: Script file does not exist");
+            setSource("");
+            sm->closeFile(scriptFile);
+            mLoadError = true;
+            return false;
+        }
+        else
+        {
+            setSource(scriptFile->readString());
+            mLoaded = true;
+        }
+
+        sm->closeFile(scriptFile);
+        return true;
     }
 
     bool
     ScriptRuntime::createEntityState
     (EntityRuntime* entity)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->createEntityState(this, entity);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->createEntityState(this, entity);
     }
 
     bool
     ScriptRuntime::removeEntityState
     (UuidType uuid)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->removeEntityState(uuid);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->removeEntityState(uuid);
     }
 
     string
     ScriptRuntime::getSource
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mSource;
-        } dreamElseLockFailed
+        return mSource;
     }
 
     void
     ScriptRuntime::setSource
     (const string& source)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mSource = source;
-        } dreamElseLockFailed
+        mSource = source;
     }
 
     // Function Execution =======================================================
@@ -107,62 +110,97 @@ namespace octronic::dream
     ScriptRuntime::executeOnUpdate
     (EntityRuntime* entity)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->executeScriptOnUpdate(this, entity);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->executeScriptOnUpdate(this, entity);
     }
 
     bool
     ScriptRuntime::executeOnInit
     (EntityRuntime* entity)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->executeScriptOnInit(this, entity);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->executeScriptOnInit(this, entity);
     }
 
     bool
     ScriptRuntime::executeOnEvent
     (EntityRuntime* entity)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->executeScriptOnEvent(this, entity);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->executeScriptOnEvent(this, entity);
+
     }
 
     bool
     ScriptRuntime::executeOnInput
     (InputComponent* inputComp, SceneRuntime* sr)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->executeScriptOnInput(this, inputComp, sr);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->executeScriptOnInput(this, inputComp, sr);
     }
 
 
     bool ScriptRuntime::registerInputScript()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->registerInputScript(this);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->registerInputScript(this);
     }
 
     bool ScriptRuntime::removeInputScript()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            ScriptComponent* scriptComponent = mProjectRuntime->getScriptComponent();
-            return scriptComponent->removeInputScript(this);
-        } dreamElseLockFailed
+        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+        return scriptComponent->removeInputScript(this);
+    }
+
+
+    void ScriptRuntime::pushNextTask()
+    {
+        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+
+        if (!mLoaded && !mLoadError)
+        {
+            if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+            {
+                taskQueue->pushTask(mLoadFromDefinitionTask);
+            }
+        }
+        else
+        {
+            if (mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
+            {
+                for(EntityRuntime* entity : mInstances)
+                {
+                    // Do entity specific tasks
+                    if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+                    {
+
+                        // Not yet Initialised
+                        if (!entity->getScriptInitialised())
+                        {
+                            taskQueue->pushTask(entity->getScriptCreateStateTask());
+                        }
+                        // Has been initialised
+                        else if (entity->allRuntimesLoaded())
+                        {
+                            if (entity->getScriptOnInitTask()->hasState(TASK_STATE_QUEUED))
+                            {
+                                taskQueue->pushTask(entity->getScriptOnInitTask());
+                            }
+                            else
+                            {
+                                // Always push update task
+                                taskQueue->pushTask(entity->getScriptOnUpdateTask());
+
+                                // If there are events to process, push on event task
+                                if (entity->hasEvents())
+                                {
+                                    taskQueue->pushTask(entity->getScriptOnEventTask());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

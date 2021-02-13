@@ -38,6 +38,8 @@ using octronic::dream::StorageManager;
 using octronic::dream::Directory;
 using octronic::dream::open_al::OpenALAudioComponent;
 using octronic::dream::ScriptPrintListener;
+using octronic::dream::FontRuntime;
+using octronic::dream::SceneState;
 using std::stoi;
 
 class DefaultPrintListener : public ScriptPrintListener
@@ -153,6 +155,7 @@ int main(int argc,char** argv)
     Project* project = nullptr;
     ProjectDirectory projectDirectory(&fileManager);
     ScriptComponent::AddPrintListener(&lua_pl);
+    FontRuntime::InitFreetypeLibrary();
     Directory* d = fileManager.openDirectory(dir);
 
     LOG_DEBUG("DreamGLFW: Opening project {}",dir);
@@ -177,58 +180,44 @@ int main(int argc,char** argv)
     }
 
     SceneDefinition* startupSceneDefinition = nullptr;
-    SceneRuntime* activeSceneRuntime = nullptr;
+    SceneRuntime* startupSceneRuntime = nullptr;
     startupSceneDefinition = projectDefinition->getStartupSceneDefinition();
 
     if (projectRuntime && startupSceneDefinition)
     {
-        activeSceneRuntime = new SceneRuntime(startupSceneDefinition,projectRuntime);
-        if(activeSceneRuntime->useDefinition())
-        {
-            projectRuntime->addSceneRuntime(activeSceneRuntime);
-            projectRuntime->setSceneRuntimeAsActive(activeSceneRuntime->getUuid());
-        }
-        else
-        {
-            LOG_ERROR("DreamGLFW: Unable to use startup scene runtime");
-            delete activeSceneRuntime;
-            activeSceneRuntime = nullptr;
-        }
+        startupSceneRuntime = new SceneRuntime(projectRuntime, startupSceneDefinition);
+		projectRuntime->addSceneRuntime(startupSceneRuntime);
     }
 
     // Run the project
     while (!MainLoopDone)
     {
+        windowComponent.updateWindow();
+
         if (windowComponent.shouldClose())
         {
             MainLoopDone = true;
         }
 
-        if(activeSceneRuntime)
+        handleSceneInput(project);
+		projectRuntime->step();
+
+        if (startupSceneRuntime->hasState(SceneState::SCENE_STATE_LOADED))
         {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            handleSceneInput(project);
-            projectRuntime->updateAll();
-            windowComponent.swapBuffers();
-        }
-        else
-        {
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            windowComponent.updateWindow(nullptr);
+            projectRuntime->setActiveSceneRuntime(startupSceneRuntime->getUuid());
+            startupSceneRuntime->setState(SceneState::SCENE_STATE_ACTIVE);
         }
 
         //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
-        spdlog::default_logger()->flush();
     }
 
     LOG_INFO("DreamGLFW: Run is done. Cleaning up");
 
-    if (activeSceneRuntime)
+    if (startupSceneRuntime)
     {
-        projectRuntime->destructSceneRuntime(activeSceneRuntime);
+        projectRuntime->destructSceneRuntime(startupSceneRuntime);
     }
+    FontRuntime::CleanupFreetypeLibrary();
 }
 
 void handleSceneInput(Project* project)

@@ -4,11 +4,15 @@
 #include "FontCharacterInfo.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Common/GLHeader.h"
+
 #include <memory>
 
 using std::shared_ptr;
 
 #define CHAR_INFO_SZ 128
+
+typedef struct FT_LibraryRec_  *FT_Library;
+typedef int FT_Error;
 
 namespace octronic::dream
 {
@@ -20,10 +24,10 @@ namespace octronic::dream
 	class FontRuntime : public SharedAssetRuntime
 	{
 	public:
-		FontRuntime(FontDefinition* def, ProjectRuntime* e );
+		FontRuntime(ProjectRuntime* e, FontDefinition* def);
         ~FontRuntime();
 
-		bool useDefinition() override;
+		bool loadFromDefinition() override;
 
         float getWidthOf(string s);
         void draw(EntityRuntime* fti);
@@ -31,16 +35,10 @@ namespace octronic::dream
 		int getSize() const;
 		void setSize(int size);
 
-		void pushConstructionTask();
-
         void setFontFile(File* file);
         File* getFontFile() const;
 
         FontCharacterInfo* getCharacterInfo();
-
-        void pushInstance(EntityRuntime*);
-        void popInstance(EntityRuntime*);
-        vector<EntityRuntime*>& getInstanceVector();
 
         void setVao(GLuint vao);
         void setVbo(GLuint vbo);
@@ -48,12 +46,22 @@ namespace octronic::dream
         void setAtlasWidth(unsigned int atlasWidth);
         void setAtlasHeight(unsigned int atlasHeight);
 
-
         GLuint getAtlasTexture() const;
         unsigned int getAtlasWidth() const;
         unsigned int getAtlasHeight() const;
 
         bool loadIntoGL();
+
+        void pushNextTask() override;
+
+     	static bool InitFreetypeLibrary();
+    	static void CleanupFreetypeLibrary();
+    	static FT_Library GetFreeTypeLibrary();
+    	static const char* GetFreetypeErrorMessage(FT_Error err);
+
+    private:
+
+        static FT_Library sFreeTypeLibrary;
 
     private:
         int mSize;
@@ -64,8 +72,7 @@ namespace octronic::dream
 		GLuint mVao;
 		GLuint mVbo;
         File* mFontFile;
-		FontConstructionTask mFontConstructionTask;
-		shared_ptr<FontDestructionTask> mFontDestructionTask;
-        vector<EntityRuntime*> mInstances;
+		shared_ptr<FontLoadIntoGLTask> mFontLoadIntoGLTask;
+		shared_ptr<FontRemoveFromGLTask> mFontRemoveFromGLTask;
 	};
 }

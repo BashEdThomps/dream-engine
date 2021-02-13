@@ -5,8 +5,8 @@
 
 namespace octronic::dream
 {
-    ModelInitMeshTask::ModelInitMeshTask(ModelMesh* mesh)
-        : GraphicsComponentTask("ModelMeshInitTask"),
+    ModelInitMeshTask::ModelInitMeshTask(ProjectRuntime* pr, ModelMesh* mesh)
+        : GraphicsTask(pr,"ModelMeshInitTask"),
           mMesh(mesh)
     {
     }
@@ -24,8 +24,8 @@ namespace octronic::dream
         }
     }
 
-    ModelFreeMeshTask::ModelFreeMeshTask() :
-        GraphicsComponentDestructionTask ("ModelMeshFreeTask")
+    ModelFreeMeshTask::ModelFreeMeshTask(ProjectRuntime* pr) :
+        GraphicsDestructionTask (pr, "ModelMeshFreeTask")
     {
     }
 
@@ -38,7 +38,7 @@ namespace octronic::dream
 
     void ModelFreeMeshTask::execute()
     {
-        LOG_TRACE("ModelTasks: Executing on thread {}",getThreadID());
+        LOG_TRACE("ModelTasks: Executing {}",getID());
 
         if (mVAO > 0)
         {

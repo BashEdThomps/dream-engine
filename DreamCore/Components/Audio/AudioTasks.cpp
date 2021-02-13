@@ -6,8 +6,8 @@
 namespace octronic::dream
 {
     AudioMarkersUpdateTask::AudioMarkersUpdateTask
-    (AudioRuntime* rt)
-        : Task("AudioMarkersUpdateTask"),
+    (ProjectRuntime* pr, AudioRuntime* rt)
+        : Task(pr,"AudioMarkersUpdateTask"),
           mAudioRuntime(rt)
     {
     }
@@ -16,8 +16,7 @@ namespace octronic::dream
     AudioMarkersUpdateTask::execute
     ()
     {
-        assert(getThreadID() > INVALID_THREAD_ID);
-        LOG_TRACE("AudioMarkersUpdateTask: Executing on thread {}",getThreadID());
+        LOG_TRACE("AudioMarkersUpdateTask: Executing {}",getID());
 		mAudioRuntime->updateMarkers();
 		setState(TaskState::TASK_STATE_COMPLETED);
     }

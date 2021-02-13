@@ -46,191 +46,191 @@ namespace octronic::dream
     AssetDefinition::getAssetType
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
-        } dreamElseLockFailed
+        
     }
 
     void
     AssetDefinition::setType
     (string type)
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             mJson[Constants::ASSET_TYPE] = type;
-        } dreamElseLockFailed
+        
     }
 
     string
     AssetDefinition::getType
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             if (mJson.find(Constants::ASSET_TYPE) == mJson.end())
             {
                 mJson[Constants::ASSET_TYPE] = "";
             }
             return mJson[Constants::ASSET_TYPE];
-        } dreamElseLockFailed
+        
     }
 
     void
     AssetDefinition::setFormat
     (string format)
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             mJson[Constants::ASSET_FORMAT] = format;
-        } dreamElseLockFailed
+        
     }
 
     string
     AssetDefinition::getFormat
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             if (mJson.find(Constants::ASSET_FORMAT) == mJson.end())
             {
                 mJson[Constants::ASSET_FORMAT] = "";
             }
 
             return mJson[Constants::ASSET_FORMAT];
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeAnimation
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_ANIMATION;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeLight
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_LIGHT;
-        } dreamElseLockFailed
+        
     }
 
     bool AssetDefinition::isTypeMaterial()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_MATERIAL;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeFont
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_FONT;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypePhysicsObject
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeTexture
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_TEXTURE;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypePath
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_PATH;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeAudio
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_AUDIO;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeModel
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_MODEL;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeScript
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_SCRIPT;
-        } dreamElseLockFailed
+        
     }
 
     bool
     AssetDefinition::isTypeShader
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return getType() == Constants::ASSET_TYPE_SHADER;
-        } dreamElseLockFailed
+        
     }
 
     string
     AssetDefinition::getGroup
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             if (mJson.find(Constants::ASSET_ATTR_GROUP) == mJson.end())
             {
                 mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
             }
             return mJson[Constants::ASSET_ATTR_GROUP];
-        } dreamElseLockFailed
+        
     }
 
     void
     AssetDefinition::setGroup
     (string group)
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             mJson[Constants::ASSET_ATTR_GROUP] = group;
-        } dreamElseLockFailed
+        
     }
 
 
@@ -238,18 +238,18 @@ namespace octronic::dream
     AssetDefinition::getProject
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             return mProjectDefinition;
-        } dreamElseLockFailed
+        
     }
 
     AssetDefinition*
     AssetDefinition::duplicate
     ()
     {
-        if(dreamTryLock()){
-            dreamLock();
+        
+            
             auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
             newAD->mJson = mJson;
             newAD->setUuid(Uuid::generateUuid());
@@ -278,6 +278,6 @@ namespace octronic::dream
             }
 
             return newAD;
-        } dreamElseLockFailed
+        
     }
 }

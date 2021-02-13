@@ -17,27 +17,26 @@
 #include "MaterialDefinition.h"
 #include "Common/Logger.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
-#include "Components/Graphics/Shader/ShaderCache.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
-#include "Components/Graphics/Texture/TextureCache.h"
 #include "Components/Graphics/Model/ModelMesh.h"
 #include "Components/Graphics/Camera.h"
 #include "Project/ProjectRuntime.h"
+#include "Components/Cache.h"
 
 namespace octronic::dream
 {
-    MaterialRuntime::MaterialRuntime(MaterialDefinition* def, ProjectRuntime* rt)
-        : SharedAssetRuntime("MaterialRuntime",def, rt),
+    MaterialRuntime::MaterialRuntime(ProjectRuntime* rt, MaterialDefinition* def)
+        : SharedAssetRuntime(rt, def),
           mColorDiffuse(vec3(0.0f)),
           mColorAmbient(vec3(0.0f)),
           mColorSpecular(vec3(0.0f)),
           mColorEmissive(vec3(0.0f)),
           mColorReflective(vec3(0.0f)),
-          mDiffuseTexture(nullptr),
-          mSpecularTexture(nullptr),
-          mNormalTexture(nullptr),
-          mDisplacementTexture(nullptr),
-          mShader(nullptr)
+          mDiffuseTextureHandle(nullptr),
+          mSpecularTextureHandle(nullptr),
+          mNormalTextureHandle(nullptr),
+          mDisplacementTextureHandle(nullptr),
+          mShaderHandle(nullptr)
     {
         LOG_TRACE("MaterialRuntime: Constructing");
     }
@@ -51,56 +50,42 @@ namespace octronic::dream
     MaterialRuntime::addMesh
     (ModelMesh* mesh)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mUsedBy.push_back(mesh);
-        } dreamElseLockFailed
+        mUsedBy.push_back(mesh);
     }
 
     void
     MaterialRuntime::clearMeshes
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mUsedBy.clear();
-        } dreamElseLockFailed
+        mUsedBy.clear();
     }
 
     size_t
     MaterialRuntime::countMeshes
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return mUsedBy.size();
-        } dreamElseLockFailed
+        return mUsedBy.size();
     }
 
     bool
     MaterialRuntime::operator==
     (MaterialRuntime& other)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            return getName() == other.getName();
-        } dreamElseLockFailed
+        return getName() == other.getName();
     }
 
     void
     MaterialRuntime::debug
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            GLuint diff, spec, norm, disp;
-            diff = (mDiffuseTexture  == nullptr ? 0 : mDiffuseTexture->getGLID());
-            spec = (mSpecularTexture == nullptr ? 0 : mSpecularTexture->getGLID());
-            norm = (mNormalTexture   == nullptr ? 0 : mNormalTexture->getGLID());
-            disp = (mDisplacementTexture == nullptr ? 0 : mDisplacementTexture->getGLID());
+        GLuint diff, spec, norm, disp;
+        diff = (mDiffuseTextureHandle  == nullptr ? 0 : mDiffuseTextureHandle->getGLID());
+        spec = (mSpecularTextureHandle == nullptr ? 0 : mSpecularTextureHandle->getGLID());
+        norm = (mNormalTextureHandle   == nullptr ? 0 : mNormalTextureHandle->getGLID());
+        disp = (mDisplacementTextureHandle == nullptr ? 0 : mDisplacementTextureHandle->getGLID());
 
-            LOG_TRACE(
-                        "Maerial Parameters\n"
+        LOG_TRACE(
+                    "Maerial Parameters\n"
             "Name....................{}\n"
             "Opacity.................{}\n"
             "BumpScaling.............{}\n"
@@ -121,138 +106,124 @@ namespace octronic::dream
             "NormalTexture...........{}\n"
             "DisplacementTexture.....{}\n"
             "Meshes..................{}",
-                        getName(),
-                        mOpacity,
-                        mBumpScaling,
-                        mHardness,
-                        mReflectivity,
-                        mShininessStrength,
-                        mRefracti,
-                        mIgnore,
+                    getName(),
+                    mOpacity,
+                    mBumpScaling,
+                    mHardness,
+                    mReflectivity,
+                    mShininessStrength,
+                    mRefracti,
+                    mIgnore,
 
-                        mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
-                        mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
-                        mColorSpecular.r, mColorSpecular.g, mColorSpecular.b,
-                        mColorEmissive.r, mColorEmissive.g, mColorEmissive.b,
-                        mColorReflective.r, mColorReflective.g, mColorReflective.b,
+                    mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
+                    mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
+                    mColorSpecular.r, mColorSpecular.g, mColorSpecular.b,
+                    mColorEmissive.r, mColorEmissive.g, mColorEmissive.b,
+                    mColorReflective.r, mColorReflective.g, mColorReflective.b,
 
-                        diff,
-                        spec,
-                        norm,
-                        disp,
+                    diff,
+                    spec,
+                    norm,
+                    disp,
 
-                        mUsedBy.size()
-                        );
-        } dreamElseLockFailed
+                    mUsedBy.size()
+                    );
+
     }
 
     void
     MaterialRuntime::logMeshes
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
-            for (auto mesh : mUsedBy)
-            {
-                LOG_DEBUG("\t\t{}", mesh->getName());
-                mesh->logRuntimes();
-            }
-        } dreamElseLockFailed
+        LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
+        for (auto mesh : mUsedBy)
+        {
+            LOG_DEBUG("\t\t{}", mesh->getName());
+            mesh->logRuntimes();
+        }
     }
 
     void
     MaterialRuntime::drawGeometryPass
     (Camera* camera)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            for (auto mesh : mUsedBy)
-            {
-                mesh->drawGeometryPassRuntimes(camera, mShader);
-            }
-        } dreamElseLockFailed
+        for (auto mesh : mUsedBy)
+        {
+            mesh->drawGeometryPassRuntimes(camera, mShaderHandle);
+        }
     }
 
     void
     MaterialRuntime::drawShadowPass
     (ShaderRuntime* shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            for (auto mesh : mUsedBy)
-            {
-                mesh->drawShadowPassRuntimes(shader);
-            }
-        } dreamElseLockFailed
+        for (auto mesh : mUsedBy)
+        {
+            mesh->drawShadowPassRuntimes(shader);
+        }
     }
 
     bool
-    MaterialRuntime::useDefinition
+    MaterialRuntime::loadFromDefinition
     ()
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            auto matDef = static_cast<MaterialDefinition*>(mDefinition);
+        auto matDef = static_cast<MaterialDefinition*>(mDefinitionHandle);
 
-            // Parameters
-            mOpacity = matDef->getOpacity();
-            mBumpScaling = matDef->getBumpScaling();
-            mHardness = matDef->getHardness();
-            mReflectivity = matDef->getReflectivity();
-            mShininessStrength = matDef->getShininessStrength();
-            mRefracti = matDef->getRefractionIndex();
-            mIgnore = matDef->getIgnore();
+        // Parameters
+        mOpacity = matDef->getOpacity();
+        mBumpScaling = matDef->getBumpScaling();
+        mHardness = matDef->getHardness();
+        mReflectivity = matDef->getReflectivity();
+        mShininessStrength = matDef->getShininessStrength();
+        mRefracti = matDef->getRefractionIndex();
+        mIgnore = matDef->getIgnore();
 
-            // Colours
-            mColorDiffuse = matDef->getDiffuseColour().toGLM();
-            mColorSpecular = matDef->getSpecularColour().toGLM();
-            mColorAmbient = matDef->getAmbientColour().toGLM();
-            mColorEmissive = matDef->getEmissiveColour().toGLM();
-            mColorReflective = matDef->getReflectiveColour().toGLM();
+        // Colours
+        mColorDiffuse = matDef->getDiffuseColour().toGLM();
+        mColorSpecular = matDef->getSpecularColour().toGLM();
+        mColorAmbient = matDef->getAmbientColour().toGLM();
+        mColorEmissive = matDef->getEmissiveColour().toGLM();
+        mColorReflective = matDef->getReflectiveColour().toGLM();
 
-            // Shaders & Textures
-            ShaderCache* shaderCache = mProjectRuntime->getShaderCache();
-            TextureCache* textureCache = mProjectRuntime->getTextureCache();
-            ShaderRuntime* shader = static_cast<ShaderRuntime*>(shaderCache->getRuntime(matDef->getShader()));
+        // Shaders & Textures
+        auto shaderCache = mProjectRuntimeHandle->getShaderCache();
+        auto textureCache = mProjectRuntimeHandle->getTextureCache();
+        ShaderRuntime* shader = shaderCache->getRuntimeHandle(matDef->getShader());
 
-            if (shader == nullptr)
-            {
-                LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
-                return false;
-            }
+        if (shader == nullptr)
+        {
+            LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
+            return false;
+        }
 
-            TextureRuntime* diffuse = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getDiffuseTexture()));
-            TextureRuntime* specular = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getSpecularTexture()));
-            TextureRuntime* normal = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getNormalTexture()));
-            TextureRuntime* displacement = static_cast<TextureRuntime*>(textureCache->getRuntime(matDef->getDisplacementTexture()));
+        auto diffuse = textureCache->getRuntimeHandle(matDef->getDiffuseTexture());
+        auto specular = textureCache->getRuntimeHandle(matDef->getSpecularTexture());
+        auto normal = textureCache->getRuntimeHandle(matDef->getNormalTexture());
+        auto displacement = textureCache->getRuntimeHandle(matDef->getDisplacementTexture());
 
-            setDiffuseTexture(diffuse);
-            setSpecularTexture(specular);
-            setNormalTexture(normal);
-            setDisplacementTexture(displacement);
-            setShader(shader);
-            shader->addMaterial(this);
+        setDiffuseTextureHandle(diffuse);
+        setSpecularTextureHandle(specular);
+        setNormalTextureHandle(normal);
+        setDisplacementTextureHandle(displacement);
+        setShaderHandle(shader);
+        shader->addMaterial(this);
 
-            return true;
-        } dreamElseLockFailed
+        return true;
+
     }
 
     ShaderRuntime*
-    MaterialRuntime::getShader
+    MaterialRuntime::getShaderHandle
     () const
     {
-        return mShader;
+        return mShaderHandle;
     }
 
     void
-    MaterialRuntime::setShader
+    MaterialRuntime::setShaderHandle
     (ShaderRuntime* shader)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mShader = shader;
-        } dreamElseLockFailed
+        mShaderHandle = shader;
     }
 
     vec3 MaterialRuntime::getColorDiffuse() const
@@ -262,10 +233,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setColorDiffuse(vec3 colorDiffuse)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mColorDiffuse = colorDiffuse;
-        } dreamElseLockFailed
+        mColorDiffuse = colorDiffuse;
     }
 
     vec3 MaterialRuntime::getColorAmbient() const
@@ -275,10 +243,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setColorAmbient(vec3 colorAmbient)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mColorAmbient = colorAmbient;
-        } dreamElseLockFailed
+        mColorAmbient = colorAmbient;
     }
 
     vec3 MaterialRuntime::getColorSpecular() const
@@ -288,10 +253,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setColorSpecular(vec3 colorSpecular)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mColorSpecular = colorSpecular;
-        } dreamElseLockFailed
+        mColorSpecular = colorSpecular;
     }
 
     vec3 MaterialRuntime::getColorEmissive() const
@@ -301,10 +263,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setColorEmissive(vec3 colorEmissive)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mColorEmissive = colorEmissive;
-        } dreamElseLockFailed
+        mColorEmissive = colorEmissive;
     }
 
     vec3 MaterialRuntime::getColorReflective() const
@@ -314,10 +273,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setColorReflective(vec3 colorReflective)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mColorReflective = colorReflective;
-        } dreamElseLockFailed
+        mColorReflective = colorReflective;
     }
 
     float MaterialRuntime::getShininessStrength() const
@@ -327,10 +283,7 @@ namespace octronic::dream
 
     void MaterialRuntime::setShininessStrength(float shininessStrength)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mShininessStrength = shininessStrength;
-        } dreamElseLockFailed
+        mShininessStrength = shininessStrength;
     }
 
     bool MaterialRuntime::getIgnore() const
@@ -340,77 +293,73 @@ namespace octronic::dream
 
     void MaterialRuntime::setIgnore(bool ignore)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mIgnore = ignore;
-        } dreamElseLockFailed
+        mIgnore = ignore;
     }
 
     TextureRuntime*
-    MaterialRuntime::getDisplacementTexture
+    MaterialRuntime::getDisplacementTextureHandle
     () const
     {
-        return mDisplacementTexture;
+        return mDisplacementTextureHandle;
     }
 
     void
-    MaterialRuntime::setDisplacementTexture
+    MaterialRuntime::setDisplacementTextureHandle
     (TextureRuntime* displacementTexture)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mDisplacementTexture = displacementTexture;
-        } dreamElseLockFailed
+        mDisplacementTextureHandle = displacementTexture;
     }
 
     TextureRuntime*
-    MaterialRuntime::getNormalTexture
+    MaterialRuntime::getNormalTextureHandle
     () const
     {
-        return mNormalTexture;
+        return mNormalTextureHandle;
     }
 
     void
-    MaterialRuntime::setNormalTexture
+    MaterialRuntime::setNormalTextureHandle
     (TextureRuntime* normalTexture)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mNormalTexture = normalTexture;
-        } dreamElseLockFailed
+        mNormalTextureHandle = normalTexture;
     }
 
     TextureRuntime*
-    MaterialRuntime::getSpecularTexture
+    MaterialRuntime::getSpecularTextureHandle
     () const
     {
-        return mSpecularTexture;
+        return mSpecularTextureHandle;
     }
 
     void
-    MaterialRuntime::setSpecularTexture
+    MaterialRuntime::setSpecularTextureHandle
     (TextureRuntime* specularTexture)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mSpecularTexture = specularTexture;
-        } dreamElseLockFailed
+        mSpecularTextureHandle = specularTexture;
     }
 
     TextureRuntime*
-    MaterialRuntime::getDiffuseTexture
+    MaterialRuntime::getDiffuseTextureHandle
     () const
     {
-        return mDiffuseTexture;
+        return mDiffuseTextureHandle;
     }
 
     void
-    MaterialRuntime::setDiffuseTexture
+    MaterialRuntime::setDiffuseTextureHandle
     (TextureRuntime* diffuseTexture)
     {
-        if(dreamTryLock()) {
-            dreamLock();
-            mDiffuseTexture = diffuseTexture;
-        } dreamElseLockFailed
+        mDiffuseTextureHandle = diffuseTexture;
+    }
+
+
+    void MaterialRuntime::pushNextTask()
+    {
+        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+
+        if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+        {
+            taskQueue->pushTask(mLoadFromDefinitionTask);
+        }
     }
 }

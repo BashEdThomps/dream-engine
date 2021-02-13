@@ -25,24 +25,20 @@
 #include "Components/Transform.h"
 #include "PhysicsTasks.h"
 
-using std::atomic;
-
 namespace octronic::dream
 {
     class PhysicsMotionState;
     class PhysicsObjectDefinition;
     class PhysicsComponent;
-    class ModelCache;
     class ModelRuntime;
     class EntityRuntime;
 
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
     public:
-        PhysicsObjectRuntime(PhysicsObjectDefinition*, PhysicsComponent*,
-            ModelCache*, EntityRuntime*);
+        PhysicsObjectRuntime(ProjectRuntime*, PhysicsObjectDefinition*,EntityRuntime*);
         ~PhysicsObjectRuntime() override;
-        bool useDefinition() override;
+        bool loadFromDefinition() override;
         btCollisionShape* createCollisionShape(PhysicsObjectDefinition*);
         btCollisionShape* getCollisionShape();
         btRigidBody* getRigidBody();
@@ -88,7 +84,8 @@ namespace octronic::dream
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
 
-        PhysicsAddObjectTask* getAddObjectTask();
+        shared_ptr<PhysicsAddObjectTask> getAddObjectTask();
+        void pushNextTask() override;
 
     private:
         PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);
@@ -98,10 +95,7 @@ namespace octronic::dream
         btMotionState* mMotionState;
         btRigidBody* mRigidBody;
         btRigidBody::btRigidBodyConstructionInfo* mRigidBodyConstructionInfo;
-        atomic<bool> mInPhysicsWorld;
-        PhysicsComponent* mPhysicsComponent;
-        ModelCache* mModelCache;
-        PhysicsAddObjectTask mAddObjectTask;
-
+        bool mInPhysicsWorld;
+        shared_ptr<PhysicsAddObjectTask> mAddObjectTask;
     };
 }

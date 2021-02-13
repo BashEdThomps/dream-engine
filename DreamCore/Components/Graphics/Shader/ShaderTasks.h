@@ -1,41 +1,41 @@
 #pragma once
 
 #include "Common/GLHeader.h"
-#include "Components/Graphics/GraphicsComponentTask.h"
+#include "Components/Graphics/GraphicsComponentTasks.h"
 
 namespace octronic::dream
 {
     class ShaderRuntime;
 
-    class ShaderCompileFragmentTask : public GraphicsComponentTask
+    class ShaderCompileFragmentTask : public GraphicsTask
     {
         ShaderRuntime* mShaderRuntime;
     public:
-        ShaderCompileFragmentTask(ShaderRuntime* rt);
+        ShaderCompileFragmentTask(ProjectRuntime* prt, ShaderRuntime* rt);
         void execute();
     };
 
-    class ShaderCompileVertexTask : public GraphicsComponentTask
+    class ShaderCompileVertexTask : public GraphicsTask
     {
         ShaderRuntime* mShaderRuntime;
     public:
-        ShaderCompileVertexTask(ShaderRuntime* rt);
+        ShaderCompileVertexTask(ProjectRuntime* prt, ShaderRuntime* rt);
         void execute();
     };
 
-    class ShaderLinkTask : public GraphicsComponentTask
+    class ShaderLinkTask : public GraphicsTask
     {
         ShaderRuntime* mShaderRuntime;
     public:
-        ShaderLinkTask(ShaderRuntime* rt);
+        ShaderLinkTask(ProjectRuntime* prt, ShaderRuntime* rt);
         void execute();
     };
 
-    class ShaderFreeTask : public GraphicsComponentDestructionTask
+    class ShaderFreeTask : public GraphicsDestructionTask
     {
         GLuint mShaderProgram;
     public:
-        ShaderFreeTask();
+        ShaderFreeTask(ProjectRuntime* prt);
         void setShaderProgram(GLuint rt);
         void execute() override;
     };

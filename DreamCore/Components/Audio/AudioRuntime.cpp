@@ -16,19 +16,27 @@
 #include "AudioRuntime.h"
 
 #include "Common/Logger.h"
+
+#include "Components/Cache.h"
+#include "AudioTasks.h"
 #include "AudioDefinition.h"
 #include "AudioComponent.h"
+#include "Scene/SceneRuntime.h"
+#include "Entity/EntityRuntime.h"
+#include "Project/ProjectRuntime.h"
+
+using std::make_shared;
 
 namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
-    (AudioLoader* loader, AudioDefinition* def, ProjectRuntime* project)
-        : SharedAssetRuntime("AudioRuntime",def,project),
-          mLoader(loader),
+    (ProjectRuntime* project, AudioDefinition* def)
+        : SharedAssetRuntime(project, def),
           mLooping(false),
           mStartTime(0),
           mLastSampleOffset(0),
-          mMarkersUpdateTask(this)
+          mMarkersUpdateTask(make_shared<AudioMarkersUpdateTask>(project,this)),
+          mImpl(nullptr)
     {
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         generateEventList();
@@ -43,12 +51,8 @@ namespace octronic::dream
     AudioRuntime::setLooping
     (bool looping)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-            mLooping = looping;
-        } dreamElseLockFailed
+        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
+        mLooping = looping;
     }
 
     bool
@@ -65,6 +69,7 @@ namespace octronic::dream
     {
         // TODO = Rethink, SharedAssetRuntime has no EntityRuntime to send
         // Events to :thinking:
+        // --- Iterate through the instances vector...
 
         /*
         auto ad = static_cast<AudioDefinition*>(mDefinition);
@@ -166,21 +171,95 @@ namespace octronic::dream
     AudioRuntime::setStartTime
     (long long startTime)
     {
-        if(dreamTryLock())
+        mStartTime = startTime;
+    }
+
+    shared_ptr<AudioMarkersUpdateTask> AudioRuntime::getMarkersUpdateTask()
+    {
+        return mMarkersUpdateTask;
+    }
+
+    void AudioRuntime::play()
+    {
+        mImpl->play();
+    }
+
+    void AudioRuntime::pause()
+    {
+        mImpl->pause();
+    }
+
+    void AudioRuntime::stop()
+    {
+        mImpl->stop();
+    }
+
+    void AudioRuntime::setSourcePosision(Vector3 pos)
+    {
+       mImpl->setSourcePosision(pos);
+    }
+
+    void AudioRuntime::setVolume(float volume)
+    {
+       mImpl->setVolume(volume);
+    }
+
+    AudioStatus AudioRuntime::getState()
+    {
+       return mImpl->getState();
+    }
+
+    unsigned int AudioRuntime::getSampleOffset() const
+    {
+   		return mImpl->getSampleOffset();
+    }
+
+    void AudioRuntime::setSampleOffset(unsigned int offset)
+    {
+    	mImpl->setSampleOffset(offset);
+    }
+
+    int AudioRuntime::getDurationInSamples()
+    {
+    	return mImpl->getDurationInSamples();
+    }
+
+
+    void AudioRuntime::setImplementation
+    (const shared_ptr<AudioRuntimeImplementation>& impl)
+    {
+		mImpl = impl;
+        mImpl->setParent(this);
+    }
+
+	bool AudioRuntime::loadFromDefinition()
+    {
+        return mImpl->loadFromDefinition(mProjectRuntimeHandle,static_cast<AudioDefinition*>(mDefinitionHandle));
+    }
+
+	void AudioRuntime::pushNextTask()
+    {
+        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+
+        if (!mLoaded)
         {
-            dreamLock();
-            mStartTime = startTime;
-        } dreamElseLockFailed
-    }
-
-    AudioMarkersUpdateTask* AudioRuntime::getMarkersUpdateTask()
-    {
-        return &mMarkersUpdateTask;
-    }
-
-
-    AudioLoader* AudioRuntime::getAudioLoader() const
-    {
-        return mLoader;
+            if (!mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+            {
+                taskQueue->pushTask(mLoadFromDefinitionTask);
+            }
+        }
+        else
+        {
+            if (!mLoadError)
+            {
+				for(EntityRuntime* entity : mInstances)
+				{
+                    if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+                    {
+                    	// Do entity specific tasks
+                    }
+				}
+            }
+        }
     }
 }

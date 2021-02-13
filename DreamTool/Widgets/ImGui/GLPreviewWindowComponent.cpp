@@ -9,7 +9,7 @@ namespace octronic::dream::tool
 {
     GLPreviewWindowComponent::GLPreviewWindowComponent
     (DreamToolContext* project, bool visible)
-        : ImGuiWidget(project,visible), WindowComponent("GLPreviewWindowComponent"),
+        : ImGuiWidget(project,visible), WindowComponent(),
           mTexture(0),
           mDepthBuffer(0),
           mLastWidth(0.f),
@@ -139,7 +139,7 @@ namespace octronic::dream::tool
     }
 
 
-    void GLPreviewWindowComponent::updateWindow(SceneRuntime *pr)
+    void GLPreviewWindowComponent::updateWindow()
     {
         LOG_TRACE("GLPreviewWindowComponent: {}", __FUNCTION__);
     }
@@ -235,6 +235,11 @@ namespace octronic::dream::tool
     GLuint GLPreviewWindowComponent::getDepthBuffer() const
     {
         return mDepthBuffer;
+    }
+
+    void GLPreviewWindowComponent::pushTasks()
+    {
+
     }
 
     ImVec2 GLPreviewWindowComponent::UV1 = ImVec2(0,1);

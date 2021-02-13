@@ -15,20 +15,16 @@
 
 
 #include "Time.h"
-
 #include "Common/Logger.h"
-
 #include <iostream>
-
-
 
 namespace octronic::dream
 {
     Time::Time
-    () : LockableObject("Time")
+    ()
+        : mCurrentFrameTime(0),
+          mLastFrameTime(0)
     {
-        mCurrentFrameTime = 0;
-        mLastFrameTime = 0;
     }
 
     Time::~Time
@@ -41,103 +37,68 @@ namespace octronic::dream
     Time::updateFrameTime
     ()
     {
-        if(dreamTryLock())
+        LOG_DEBUG( "Time: Update Called" );
+        mLastFrameTime = mCurrentFrameTime;
+        mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
+                (steady_clock::now().time_since_epoch()).count();
+
+        // Ignore the huge delta on first start
+        if (mLastFrameTime == 0)
         {
-            dreamLock();
-            LOG_DEBUG( "Time: Update Called" );
             mLastFrameTime = mCurrentFrameTime;
-            mCurrentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>
-                    (steady_clock::now().time_since_epoch()).count();
-
-            // Ignore the huge delta on first start
-            if (mLastFrameTime == 0)
-            {
-                mLastFrameTime = mCurrentFrameTime;
-            }
-            show();
-
-        } dreamElseLockFailed
+        }
+        show();
     }
 
     void
     Time::show
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            LOG_TRACE(
-                        "Time: CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
-                        getCurrentFrameTime(),
-                        getLastFrameTime(),
-                        getFrameTimeDelta()
-                        );
-
-        } dreamElseLockFailed
+        LOG_TRACE(
+                    "Time: CurrentTime: {}, LastTime: {}, DeltaTime: {}" ,
+                    getCurrentFrameTime(),
+                    getLastFrameTime(),
+                    getFrameTimeDelta()
+                    );
     }
 
     long
     Time::getCurrentFrameTime
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mCurrentFrameTime;
-
-        } dreamElseLockFailed
+        return mCurrentFrameTime;
     }
 
     long
     Time::getLastFrameTime
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mLastFrameTime;
-
-        } dreamElseLockFailed
+        return mLastFrameTime;
     }
 
     long
     Time::getFrameTimeDelta
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return mCurrentFrameTime - mLastFrameTime;
-
-        } dreamElseLockFailed
+        return mCurrentFrameTime - mLastFrameTime;
     }
 
     double
     Time::perSecond
     (double value)
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            double scalar = getFrameTimeDelta()/1000.0;
-            double ret = value*scalar;
-            LOG_TRACE("Time: Scaled by time {} to {} with {}",value,ret,scalar);
-            return ret;
-
-        } dreamElseLockFailed
+        double scalar = getFrameTimeDelta()/1000.0;
+        double ret = value*scalar;
+        LOG_TRACE("Time: Scaled by time {} to {} with {}",value,ret,scalar);
+        return ret;
     }
 
     long
     Time::getAbsoluteTime
     ()
     {
-        if(dreamTryLock())
-        {
-            dreamLock();
-            return std::chrono::duration_cast<std::chrono::milliseconds>
-                    (steady_clock::now().time_since_epoch()).count();
-
-        } dreamElseLockFailed
+        return std::chrono::duration_cast<std::chrono::milliseconds>
+                (steady_clock::now().time_since_epoch()).count();
     }
 
     const int Time::DELTA_MAX = 100;
