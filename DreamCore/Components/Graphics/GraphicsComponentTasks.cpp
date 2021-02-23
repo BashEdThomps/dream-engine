@@ -34,7 +34,7 @@ namespace octronic::dream
 
     void SetupBuffersTask::execute()
     {
-        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
+        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
         if (graphicsComponent->setupBuffers())
         {
            setState(TASK_STATE_COMPLETED);
@@ -54,7 +54,7 @@ namespace octronic::dream
 
     void HandleResizeTask::execute()
     {
-        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
+        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
         if (graphicsComponent->handleResize())
         {
            setState(TASK_STATE_COMPLETED);
@@ -74,16 +74,17 @@ namespace octronic::dream
 
     void RenderTask::execute()
     {
-        auto graphicsComponent = mProjectRuntime->getGraphicsComponent();
-        auto sr = mProjectRuntime->getActiveSceneRuntime();
+        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
+        auto sr = mProjectRuntimeHandle->getActiveSceneRuntime();
         if (sr!=nullptr)
         {
-			graphicsComponent->renderGeometryPass(sr);
-			graphicsComponent->renderShadowPass(sr);
-			graphicsComponent->renderLightingPass(sr);
-			graphicsComponent->renderSprites(sr);
-			graphicsComponent->renderFonts(sr);
-			graphicsComponent->clearLightQueue();
+            graphicsComponent->clearBuffers(sr);
+			graphicsComponent->renderModels(sr);
+            graphicsComponent->renderEnvironment(sr);
+			//graphicsComponent->renderShadowPass(sr);
+			//graphicsComponent->renderSprites(sr);
+			//graphicsComponent->renderFonts(sr);
+
         }
         setState(TASK_STATE_COMPLETED);
     }

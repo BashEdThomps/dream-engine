@@ -23,7 +23,6 @@ namespace octronic::dream::tool
         const static vector<GLuint> ModelIndices;
 
         bool mStepMajor;
-        mat4 mOrientation;
     public:
         Cursor(DreamToolContext* st);
         ~Cursor() override;

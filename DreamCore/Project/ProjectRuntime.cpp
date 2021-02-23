@@ -24,7 +24,7 @@
 
 #include "Components/AssetDefinition.h"
 #include "Components/Time.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Cache.h"
 
 #include "Components/Audio/AudioComponent.h"
@@ -230,14 +230,10 @@ namespace octronic::dream
 
     void
     ProjectRuntime::destructSceneRuntime
-    (SceneRuntime* rt, bool clearCaches)
+    (SceneRuntime* rt)
     {
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         rt->destroyRuntime();
-        if (clearCaches)
-        {
-            clearAllCaches();
-        }
     }
 
     // Running =================================================================
@@ -258,13 +254,17 @@ namespace octronic::dream
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         for (auto rt : mSceneRuntimesToRemove)
         {
+        	rt->collectGarbage();
+
             auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
             if (itr != mSceneRuntimeVector.end())
             {
-                rt->collectGarbage();
                 mSceneRuntimeVector.erase(itr);
             }
+
+            delete rt;
         }
+        mSceneRuntimesToRemove.clear();
     }
 
     void ProjectRuntime::pushComponentTasks()
@@ -296,7 +296,6 @@ namespace octronic::dream
                 case SceneState::SCENE_STATE_LOADED:
                     break;
                 case SceneState::SCENE_STATE_ACTIVE:
-                    // stepLogic(rt);
                     mTime.updateFrameTime();
                     mFrameDurationHistory.push_back(1000.0f/mTime.getFrameTimeDelta());
                     if (mFrameDurationHistory.size() > MaxFrameCount) mFrameDurationHistory.pop_front();
@@ -325,13 +324,14 @@ namespace octronic::dream
             }
         }
 
+		ModelMesh::ClearCounters();
+		ShaderRuntime::InvalidateState();
         mTaskQueue.executeQueue();
         mGraphicsComponent.getTaskQueue()->executeQueue();
         mWindowComponentHandle->swapBuffers();
-		ModelMesh::ClearCounters();
-		ShaderRuntime::InvalidateState();
 
         collectGarbage();
+
         LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
     }
 

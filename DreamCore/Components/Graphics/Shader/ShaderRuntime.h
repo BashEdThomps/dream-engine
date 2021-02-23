@@ -20,7 +20,6 @@
 
 #include "Common/GLHeader.h"
 #include "Components/SharedAssetRuntime.h"
-#include "Components/Graphics/Light/LightRuntime.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -36,78 +35,105 @@ using std::shared_ptr;
 using std::string;
 using glm::mat4;
 using glm::vec2;
+using glm::vec4;
 
 namespace octronic::dream
 {
     class ShaderDefinition;
     class MaterialRuntime;
-    class LightRuntime;
     class Camera;
 
     class ShaderRuntime : public SharedAssetRuntime
     {
-        public:
-        const static unsigned int MAX_LIGHTS;
+    public: // Statics =========================================================
+        const static size_t       MAX_RUNTIMES;
+
         const static GLint UNIFORM_NOT_FOUND;
-        const static char* UNIFORM_POINT_LIGHT_COUNT;
-        const static char* UNIFORM_SPOT_LIGHT_COUNT;
-        const static char* UNIFORM_DIRECTIONAL_LIGHT_COUNT;
-        const static size_t MAX_RUNTIMES;
+        const static char* UNIFORM_VIEW_MATRIX;
+        const static char* UNIFORM_MODEL_MATRIX;
+        const static char* UNIFORM_PROJECTION_MATRIX;
+        const static char* UNIFORM_CAMERA_POSITION;
+        const static char* UNIFORM_COLOR;
+        const static char* UNIFORM_SHADOW_TEXTURE;
+        const static char* UNIFORM_SHADOW_SPACE_MATRIX;
+        const static char* UNIFORM_MODEL_MATRIX_ARRAY;
 
-        ShaderRuntime(ProjectRuntime*, ShaderDefinition*);
-        ~ShaderRuntime() override;
+        // PBR Textures
+        const static char* UNIFORM_MATERIAL_ALBEDO;
+        const static char* UNIFORM_MATERIAL_NORMAL;
+        const static char* UNIFORM_MATERIAL_METALLIC;
+        const static char* UNIFORM_MATERIAL_ROUGHNESS;
+        const static char* UNIFORM_MATERIAL_AO;
 
-        static GLuint CurrentTexture0;
-        static GLuint CurrentTexture1;
-        static GLuint CurrentTexture2;
-        static GLuint CurrentTexture3;
-        static GLuint CurrentTexture4;
-        static GLuint CurrentTexture5;
+        // PBR Environment
+        const static char* UNIFORM_EQUIRECTANGULAR_MAP;
+        const static char* UNIFORM_ENVIRONMENT_MAP;
+        const static char* UNIFORM_ROUGHNESS_VALUE;
+        const static char* UNIFORM_IRRADIANCE_TEXTURE;
+        const static char* UNIFORM_PREFILTER_TEXTURE;
+        const static char* UNIFORM_BRDF_LUT_TEXTURE;
+
+        const static char* UNIFORM_LIGHT_POSITIONS;
+        const static char* UNIFORM_LIGHT_COLORS;
+
+        static map<GLenum,GLuint> CurrentTextures;
         static GLuint CurrentShaderProgram;
         static GLuint CurrentVAO;
         static GLuint CurrentVBO;
         static void InvalidateState();
+
+    public: // Class ===========================================================
+        ShaderRuntime(ProjectRuntime*, ShaderDefinition*);
+        ~ShaderRuntime() override;
 
         bool loadFromDefinition() override;
         void deleteUniforms();
 
         bool use();
         void unbind();
+
         GLuint getShaderProgram() const;
         void setShaderProgram(GLuint sp);
+
+        // Uniform Setters =====================================================
+        void setModelMatrixUniform(mat4);
+        void setViewMatrixUniform(mat4);
+        void setProjectionMatrixUniform(mat4);
+        void setPositionUniform(vec2 pos);
+        void setCameraPositionUniform(vec3);
+        void setColorUniform(vec4 color);
+        void setShadowTextureUniform(GLint shadow);
+        void setShadowSpaceMatrixUniform(mat4 ssm);
+        void setEquirectangularMapUniform(GLint map);
+        void setEnvironmentMapUniform(GLint map);
+        void setRoughnessUniform(float roughness);
+        void setIrradianceTextureUniform(GLuint t);
+        void setPreFilterTextureUniform(GLuint t);
+        void setBrdfLutTextureUniform(GLuint t);
+        void setLightPositionsUniform(vec3*, GLuint count);
+        void setLightColorsUniform(vec3*, GLuint count);
+        void setTexture(GLenum pos, GLenum target, GLuint texture);
+
+        void syncUniforms();
+        vector<shared_ptr<ShaderUniform>>* getUniformsVector();
+
+        // Material ============================================================
+        void bindMaterial(MaterialRuntime* material);
+        void addMaterial(MaterialRuntime* material);
+        void logMaterials();
         int countMaterials();
+        vector<MaterialRuntime*>& getMaterialsVector();
 
-        // MVP
-        bool setModelMatrix(const mat4&,const string& name = "model");
-        bool setViewMatrix(const mat4&,const string& name = "view");
-        bool setProjectionMatrix(const mat4&,const string& name = "projection");
+        void bindRuntimes(const vector<EntityRuntime*>& runtimes);
 
-        // Viewer
-        bool setViewerPosition(const Vector3&, const string& name = "viewPos");
-
+        // VAO =================================================================
         void bindVertexArray(GLuint);
         void unbindVertexArray();
 
-        GLint getUniformLocation(const string& name);
-
-        void addUniform(UniformType type, const string& name, int count, void* data);
-        void bindLight(LightRuntime* light);
-
-        void syncUniforms();
-
-        void bindMaterial(MaterialRuntime* material);
-        void bindLightQueue(const vector<LightRuntime*>& lightQueue);
-        void bindRuntimes(const vector<EntityRuntime*>& runtimes);
-
-        void addMaterial(MaterialRuntime* material);
-
-        void logMaterials();
-
-        void drawGeometryPass(Camera*);
+        // Draw ================================================================
         void drawShadowPass(ShaderRuntime* shadowPassShader);
 
-        bool getRecompile() const;
-        void setRecompile(bool recompile);
+        // Sources =============================================================
 
         string getVertexSource() const;
         void setVertexSource(const string& vertexSource);
@@ -115,66 +141,54 @@ namespace octronic::dream
         string getFragmentSource() const;
         void setFragmentSource(const string& fragmentSource);
 
+        void pushTasks() override;
+
+        bool performFragmentCompilation();
+        bool performVertexCompilation();
+        bool performLinking();
+
+        bool hasVertexSource() const;
+        bool hasFragmentSource() const;
+        bool hasVertexCompilationFailed() const;
+        bool hasFragmentCompilationFailed() const;
+        bool hasLinkingFailed() const;
+        bool hasValidGLID() const;
+
+    protected:
+        GLint getUniformLocation(const string& name);
+
+        bool readVertexSource();
+        bool readFragmentSource();
+
+        void addUniform(UniformType type, const string& name, int count, void* data);
+
         GLuint getVertexShader() const;
         void setVertexShader(const GLuint& vertexShader);
 
         GLuint getFragmentShader() const;
         void setFragmentShader(const GLuint& fragmentShader);
 
-        GLint getPointLightCountLocation() const;
-        void setPointLightCountLocation(const GLint& pointLightCountLocation);
-
-        GLint getSpotLightCountLocation() const;
-        void setSpotLightCountLocation(const GLint& spotLightCountLocation);
-
-        GLint getDirectionalLightCountLocation() const;
-        void setDirectionalLightCountLocation(const GLint& directionalLightCountLocation);
-
-        void setFontColorUniform(const Vector3& color);
-        void setFontPositionUniform(const vec2& pos);
-        void setFontProjectionUniform(const mat4& proj);
-
-        void setSpritePositionUniform(const vec2& pos);
-        void setSpriteProjectionUniform(const mat4& proj);
-
-        void pushNextTask() override;
-
-		bool performFragmentCompilation();
-		bool performVertexCompilation();
-		bool performLinking();
-
-    protected:
-        bool readVertexSource();
-        bool readFragmentSource();
-
-        shared_ptr<ShaderCompileFragmentTask> mCompileFragmentTask;
-        shared_ptr<ShaderCompileVertexTask> mCompileVertexTask;
-        shared_ptr<ShaderLinkTask> mLinkTask;
-        shared_ptr<ShaderFreeTask> mFreeTask;
-
     private:
-        unsigned int mPointLightCount;
-        GLint mPointLightCountLocation;
-
-        unsigned int mSpotLightCount;
-        GLint mSpotLightCountLocation;
-
-        unsigned int mDirectionalLightCount;
-        GLint mDirectionalLightCountLocation;
-
         GLuint mShaderProgram;
 
         bool mNeedsRebind;
         GLint mMaterialLocation;
 
-        vector<ShaderUniform*> mUniformVector;
+        bool mVertexCompilationFailed;
+        bool mFragmentCompilationFailed;
+        bool mLinkingFailed;
+
+        vector<shared_ptr<ShaderUniform>> mUniformVector;
         vector<MaterialRuntime*> mMaterials;
         vector<mat4> mRuntimeMatricies;
-        map<string,GLint> mUinformCache;
-        GLuint mVertexShader;
-        GLuint mFragmentShader;
-        bool mRecompile;
+        map<string,GLint> mUniformLocationCache;
+        shared_ptr<ShaderCompileFragmentTask> mCompileFragmentTask;
+        shared_ptr<ShaderCompileVertexTask> mCompileVertexTask;
+        shared_ptr<ShaderLinkTask> mLinkTask;
+        shared_ptr<ShaderFreeTask> mFreeTask;
         string mVertexSource;
+        GLuint mVertexShader;
         string mFragmentSource;
+        GLuint mFragmentShader;
     };
 }

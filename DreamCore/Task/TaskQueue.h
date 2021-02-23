@@ -12,30 +12,30 @@ namespace octronic::dream
      * @brief The TaskQueue class is responsible for scheduling and executing
      * Tasks that are used to implement a Project's runtime logic.
      *
-     * AssetRuntime Objects will provide tasks in the following way:
+     * Tasks will be pushed by the pushTasks method of the following classes.
+     * @see AssetRuntime::pushTasks
+     * @see Component::pushTasks
      *
-     *	When Loading: Pushes a LoadFromDefinitionTask
-     *  In-Flight: Pushes a 'Persistent' UpdateTask
-     *	When Done: Pushes a DestructionTask
+     * Tasks are owned by their parent Object and stored as shared_ptr<...>
+     * TaskQueue will NOT delete tasks;
      *
-     * Tasks are held by the Owning Object and deleted by the Owning Object.
-     * TaskQueue will NOT delete tasks marked as Persisteent as they are to be
-     * performed repeatedly.
-     *
-     * ProjectRuntime will submit all Tasks for SharedAssetInstances held by
-     * their respective Components.
+     * ProjectRuntime owns the TaskQueue and DestructionTaskQueue. The
+     * ProjectRuntime::step function will submit all Tasks for
+     * SharedAssetInstances held by their respective Components.
      *
      * for each component:
      *     for each runtime:
-     *          // will push the correct task for the runtime's state
-     *			runtime->pushNextTask()
+     *			runtime->pushTasks()
      *
      * SceneRuntime will submit all Tasks for DiscreteAssetInstances owned by
      * Entities the Entities tree.
      *
-     * Graphics-related tasks MUST BE executed on the main thread by the
+     * Graphics-related tasks extend the GraphicsTask or GraphicsDestructionTask class.
+     * These MUST BE executed on the main thread. Their execution is handled by the
      * GraphicsComponent (OpenGL threading limitation, yes I know about Vulcan).
+     *
      */
+
 	template <typename TaskType>
 	class TaskQueue
 	{

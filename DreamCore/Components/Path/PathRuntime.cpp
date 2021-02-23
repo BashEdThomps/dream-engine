@@ -20,18 +20,13 @@
 #include "Common/Logger.h"
 
 #include "PathTasks.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Time.h"
 #include "Scene/SceneRuntime.h"
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
 #include <tinyspline.h>
-#include <glm/glm.hpp>
-#include <glm/matrix.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-
 
 namespace octronic::dream
 {
@@ -42,7 +37,6 @@ namespace octronic::dream
           mWrapPath(false),
           mCurrentIndex(0),
           mUStep(0.05),
-          mCurrentTransform(mat4(1.0f)),
           mVelocity(1.0),
           mDistanceToTravel(0.0f),
           mUpdateTask(nullptr)
@@ -60,24 +54,19 @@ namespace octronic::dream
     PathRuntime::update
     ()
     {
-
         auto transform = stepPath();
-        mEntityRuntimeHandle->getTransform().setMatrix(transform);
-
+        mEntityRuntimeHandle->setTransform(transform);
     }
 
     bool
     PathRuntime::loadFromDefinition
     ()
     {
-
         auto animDef = static_cast<PathDefinition*>(mDefinitionHandle);
-        LOG_DEBUG(
-                    "PathRuntime: Loading {} spline with {} control points for {} ",
+        LOG_DEBUG("PathRuntime: Loading {} spline with {} control points for {} ",
                     animDef->getSplineType(),
                     animDef->getControlPoints().size(),
-                    getNameAndUuidString()
-                    );
+                    getNameAndUuidString());
 
         mWrapPath = animDef->getWrap();
         mVelocity = animDef->getVelocity();
@@ -131,9 +120,9 @@ namespace octronic::dream
 
         for (auto cp : animDef->getControlPoints())
         {
-            auto x = cp.position.x();
-            auto y = cp.position.y();
-            auto z = cp.position.z();
+            auto x = cp.position.x;
+            auto y = cp.position.y;
+            auto z = cp.position.z;
             // Setup control points.
             ctrlp[i++] = x;
             ctrlp[i++] = y;
@@ -246,13 +235,14 @@ namespace octronic::dream
         mCurrentIndex = currentIndex;
     }
 
-    mat4
+    Transform
     PathRuntime::stepPath
     ()
     {
+        Transform tx;
         if (mSplinePoints.empty())
         {
-            return mat4(1.0f);
+            return tx;
         }
 
         if (mCurrentIndex == 0)
@@ -267,7 +257,7 @@ namespace octronic::dream
             {
                 mDistanceToTravel += mProjectRuntimeHandle->getTime()->perSecond(mVelocity);
                 vec3 next = mSplinePoints.at((mCurrentIndex+1) % mSplinePoints.size());
-                distanceToNext = glm::distance(vec3(mCurrentTransform[3]),next);
+                distanceToNext = glm::distance(vec3(mCurrentTransform.getTranslation()),next);
                 LOG_TRACE("PathRuntime: To Travel: {} Distance to next: {}",mDistanceToTravel, distanceToNext);
             }
             else
@@ -303,17 +293,14 @@ namespace octronic::dream
     ()
     {
         vec3 thisPoint = mSplinePoints.at(mCurrentIndex);
-        quat thisOrient = mSplineTangents.at(mCurrentIndex);
-        mat4 mat(1.0f);
-        mat  = glm::translate(mat,thisPoint);
-        auto rot = mat4_cast(thisOrient);
-        mCurrentTransform = mat*rot;
-        vec3 ang = eulerAngles(thisOrient);
-        LOG_TRACE("PathRuntime: Got spline point {}/{} T({},{},{}) R({},{},{})",
+        mat4 thisOrient = mSplineTangents.at(mCurrentIndex);
+
+        mCurrentTransform.setTranslation(mCurrentTransform.getTranslation()+thisPoint);
+        //mCurrentTransform.setOrientation(mCurrentTransform.getOrientation()+thisOrient);
+
+        LOG_TRACE("PathRuntime: Got spline point {}/{} T({},{},{})",
                   mCurrentIndex,mSplinePoints.size(),
-                  thisPoint.x, thisPoint.y, thisPoint.z,
-                  ang.x, ang.y, ang.z
-                  );
+                  thisPoint.x, thisPoint.y, thisPoint.z);
 
     }
 
@@ -324,7 +311,7 @@ namespace octronic::dream
         return mSplinePoints;
     }
 
-    vector<quat>
+    vector<mat4>
     PathRuntime::getSplineTangents
     () const
     {
@@ -339,7 +326,7 @@ namespace octronic::dream
         {
             return mSplinePoints.at(index);
         }
-        return vec3(0);
+        return vec3(0.f);
     }
 
     double
@@ -356,16 +343,13 @@ namespace octronic::dream
         mUStep = uStep;
     }
 
-    quat
+    mat4
     PathRuntime::getHeading
     (vec3 point, vec3 t1, vec3 t2)
     {
         mat4 mtx = lookAt(t1,t2,vec3(0,1,0));
-        quat q = quat(mtx);
-        q.x = -q.x;
-        q.y = -q.y;
-        q.z = -q.z;
-        return q;
+        mtx = -mtx;
+        return mtx;
     }
 
     PathUpdateTask* PathRuntime::getUpdateTask()
@@ -374,7 +358,7 @@ namespace octronic::dream
     }
 
 
-    void PathRuntime::pushNextTask()
+    void PathRuntime::pushTasks()
     {
 
     }

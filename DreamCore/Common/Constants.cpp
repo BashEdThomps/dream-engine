@@ -18,19 +18,15 @@ namespace octronic::dream
     const string Constants::DIR_PATH_SEP = "/";
     const string Constants::DIR_PATH_SEP_WINDOWS = "\\";
     const string Constants::PATH_DELIMETER = "::";
-    const string Constants::HTTP_ARG = "--http";
 
     // Project ==================================================================
     const string Constants::PROJECT_DEFAULT_NAME = "Untitled Project";
     const string Constants::PROJECT_DIRECTORY_ARG = "--project-dir";
     const string Constants::PROJECT_UUID_ARG = "--uuid";
-    const int    Constants::PROJECT_UUID_LENGTH = 19;
     const string Constants::PROJECT_EXTENSION = ".json";
     const string Constants::PROJECT_PATH_SEP = "/";
     const string Constants::PROJECT_UUID = "uuid";
     const string Constants::PROJECT_NAME = "name";
-    const string Constants::PROJECT_AUTHOR = "author";
-    const string Constants::PROJECT_DESCRIPTION = "description";
     const string Constants::PROJECT_SCENE_ARRAY = "scenes";
     const string Constants::PROJECT_ASSET_ARRAY = "assets";
     const string Constants::PROJECT_STARTUP_SCENE = "startupScene";
@@ -44,7 +40,6 @@ namespace octronic::dream
     const string Constants::ASSET_TYPE_ANIMATION = "animation";
     const string Constants::ASSET_TYPE_PATH = "path";
     const string Constants::ASSET_TYPE_AUDIO = "audio";
-    const string Constants::ASSET_TYPE_LIGHT = "light";
     const string Constants::ASSET_TYPE_FONT = "font";
     const string Constants::ASSET_TYPE_MODEL = "model";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physicsObject";
@@ -57,28 +52,16 @@ namespace octronic::dream
     const string Constants::ASSET_FORMAT = "format";
     const string Constants::ASSET_FORMAT_SCRIPT_LUA = "lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP = "assimp";
-    const string Constants::ASSET_FORMAT_MODEL_OBJ = "assimp.obj";
     const string Constants::ASSET_FORMAT_AUDIO_WAV = "wav";
     const string Constants::ASSET_FORMAT_AUDIO_OGG = "ogg";
     const string Constants::ASSET_FORMAT_DREAM = "dream";
     const string Constants::ASSET_FORMAT_FONT_TTF = "ttf";
     const string Constants::ASSET_FORMAT_SHADER_GLSL = "glsl";
     const string Constants::ASSET_FORMAT_SHADER_GLES = "gles";
-    const string Constants::ASSET_FORMAT_LIGHT_POINT = "point";
-    const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL = "directional";
-    const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT = "spotlight";
-
-    const string Constants::ASSET_ATTR_LIGHT_DIRECTION = "direction";
-    const string Constants::ASSET_ATTR_LIGHT_CONSTANT = "constant";
-    const string Constants::ASSET_ATTR_LIGHT_LINEAR = "linear";
-    const string Constants::ASSET_ATTR_LIGHT_QUADRATIC = "quadratic";
-    const string Constants::ASSET_ATTR_LIGHT_CUTOFF = "cutoff";
-    const string Constants::ASSET_ATTR_LIGHT_OUTER_CUTOFF = "outer_cutoff";
 
     const string Constants::ASSET_TYPE_ANIMATION_READABLE = "Animation";
     const string Constants::ASSET_TYPE_PATH_READABLE = "Path";
     const string Constants::ASSET_TYPE_AUDIO_READABLE = "Audio";
-    const string Constants::ASSET_TYPE_LIGHT_READABLE = "Light";
     const string Constants::ASSET_TYPE_FONT_READABLE = "Font";
     const string Constants::ASSET_TYPE_MODEL_READABLE = "Model";
     const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
@@ -92,81 +75,58 @@ namespace octronic::dream
 
     const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
     const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
-    const string Constants::ASSET_FORMAT_MODEL_OBJ_READABLE = "Wavefront OBJ";
     const string Constants::ASSET_FORMAT_AUDIO_OGG_READABLE = "Ogg";
     const string Constants::ASSET_FORMAT_AUDIO_WAV_READABLE = "Wav";
     const string Constants::ASSET_FORMAT_DREAM_READABLE = "Dream";
     const string Constants::ASSET_FORMAT_FONT_TTF_READABLE = "TTF Font";
     const string Constants::ASSET_FORMAT_SHADER_GLSL_READABLE = "GLSL";
-    const string Constants::ASSET_FORMAT_LIGHT_POINT_READABLE = "Point Light";
-    const string Constants::ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE = "Directional Light";
-    const string Constants::ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE = "Spotlight";
 
     // Scene ====================================================================
-    const string Constants::SCENE_NOTES = "notes";
     const string Constants::SCENE_ROOT_ENTITY = "root";
-    const float  Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED = 10.0f;
-    const string Constants::SCENE_CAMERA_MOVEMENT_SPEED = "cameraMovementSpeed";
-    const string Constants::SCENE_CAMERA_TRANSFORM = "cameraTransform";
-    const string Constants::SCENE_CLEAR_COLOUR = "clearColour";
-    const string Constants::SCENE_AMBIENT_LIGHT_COLOUR = "ambientLight";
+    const string Constants::SCENE_CLEAR_COLOR = "clearColor";
     const string Constants::SCENE_GRAVITY = "gravity";
     const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
     const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
     const string Constants::SCENE_MESH_CULL_DISTANCE = "mesh_cull_distance";
     const string Constants::SCENE_MIN_DRAW_DISTANCE = "min_draw";
     const string Constants::SCENE_MAX_DRAW_DISTANCE = "max_draw";
-    const string Constants::SCENE_CAMERA_TRANSLATION= "camera_translation";
-    const string Constants::SCENE_CAMERA_LOOK_AT = "camera_look_at";
-    const string Constants::SCENE_CAMERA_PITCH = "camera_pitch";
-    const string Constants::SCENE_CAMERA_YAW = "camera_yaw";
-    const string Constants::SCENE_CAMERA_FOCUSED_ON = "camera_focused_on";
-    const string Constants::SCENE_LIGHTING_PASS_SHADER = "lighting_shader";
+    const string Constants::SCENE_CAMERA_TRANSFORM = "camera_transform";
+    const string Constants::SCENE_CAMERA_FOV = "camera_fov";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_FONT_SHADER = "font_shader";
     const string Constants::SCENE_SPRITE_SHADER = "sprite_shader";
     const string Constants::SCENE_INPUT_SCRIPT = "input_script";
+    const string Constants::SCENE_ENVIRONMENT_TEXTURE = "environment_texture";
+    const string Constants::SCENE_ENVIRONMENT_SHADER = "environment_shader";
 
     // Entity ==============================================================
-    const string Constants::ENTITY = "actor";
+    const string Constants::ENTITY = "entity";
     const string Constants::ENTITY_ROOT_NAME = "Root Entity";
     const string Constants::ENTITY_DEFAULT_NAME = "New Entity";
     const string Constants::ENTITY_CHILDREN = "children";
-    const string Constants::ENTITY_HAS_CAMERA_FOCUS = "camera_focus";
     const string Constants::ENTITY_ASSET_INSTANCES = "assetInstances";
     const string Constants::ENTITY_ALWAYS_DRAW = "always_draw";
     const string Constants::ENTITY_TEMPLATE = "template";
     const string Constants::ENTITY_HIDDEN = "hidden";
-    const string Constants::ENTITY_DEFERRED = "deferred";
-    const string Constants::ENTITY_DIE_AFTER = "die_after";
     const string Constants::ENTITY_PLAYER_OBJECT = "player_object";
     const string Constants::ENTITY_FONT_COLOR = "font_color";
     const string Constants::ENTITY_FONT_SCALE = "font_scale";
     const string Constants::ENTITY_FONT_TEXT = "font_text";
+    const string Constants::ENTITY_TRANSFORM_SPACE = "transform_space";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";
-    const string Constants::TRANSFORM_MATRIX = "matrix";
+    const string Constants::TRANSLATION = "translation";
+    const string Constants::YAW = "yaw";
+    const string Constants::PITCH = "pitch";
+    const string Constants::ROLL = "roll";
+    const string Constants::SCALE = "scale";
+
     // Generic ==================================================================
     const string Constants::W = "w";
     const string Constants::X = "x";
     const string Constants::Y = "y";
     const string Constants::Z = "z";
-    const unsigned int Constants::X_INDEX = 0;
-    const unsigned int Constants::Y_INDEX = 1;
-    const unsigned int Constants::Z_INDEX = 2;
-    const unsigned int Constants::W_INDEX = 3;
-    const string Constants::RED   = "r";
-    const string Constants::GREEN = "g";
-    const string Constants::BLUE  = "b";
-    const string Constants::ALPHA = "a";
-    const unsigned int Constants::RED_INDEX   = 0;
-    const unsigned int Constants::GREEN_INDEX = 1;
-    const unsigned int Constants::BLUE_INDEX  = 2;
-    const unsigned int Constants::ALPHA_INDEX = 3;
-    const unsigned int Constants::XYZ_VECTOR_SIZE = 3;
-    const unsigned int Constants::RGB_VECTOR_SIZE = 3;
-    const unsigned int Constants::RGBA_VECTOR_SIZE = 4;
 
     // Font ================================================================
 	const string Constants::ASSET_ATTR_FONT_SHADER_ID = "shader_id";
@@ -250,29 +210,13 @@ namespace octronic::dream
     const string Constants::EVENT_TYPE = "type";
     const string Constants::EVENT_TYPE_COLLISION = "collision";
 
-    // Light ====================================================================
-    const string Constants::ASSET_ATTR_LIGHT_COLOR   = "colour";
-    const string Constants::ASSET_ATTR_LIGHT_DIFFUSE = "diffuse";
-    const string  Constants::ASSET_ATTR_LIGHT_AMBIENT = "ambient";
-    const string Constants::ASSET_ATTR_LIGHT_SPECULAR = "specular";
     // Material
     const string Constants::ASSET_ATTR_MATERIAL_SHADER = "shader";
-    const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE = "diffuse_texture";
-    const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE = "specular_texture";
-    const string Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE = "normal_texture";
-    const string Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE = "displacement_texture";
-    const string Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR = "diffuse_colour";
-    const string Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR = "specular_colour";
-    const string Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR = "ambient_colour";
-    const string Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR = "reflective_colour";
-    const string Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR = "emissive_colour";
-    const string Constants::ASSET_ATTR_MATERIAL_OPACITY = "opacity";
-    const string Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING = "bump_scaling";
-    const string Constants::ASSET_ATTR_MATERIAL_HARDNESS = "hardness";
-    const string Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY = "reflectivity";
-    const string Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH = "shininess_strength";
-    const string Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX = "refraction_index";
-    const string Constants::ASSET_ATTR_MATERIAL_IGNORE = "ignore";
+    const string Constants::ASSET_ATTR_MATERIAL_ALBEDO = "albedo";
+    const string Constants::ASSET_ATTR_MATERIAL_NORMAL = "normal";
+    const string Constants::ASSET_ATTR_MATERIAL_METALLIC = "metallic";
+    const string Constants::ASSET_ATTR_MATERIAL_ROUGHNESS = "roughness";
+    const string Constants::ASSET_ATTR_MATERIAL_AO = "ao";
 
     // Model ===================================================================
     const string Constants::ASSET_ATTR_MODEL_MATERIAL_LIST = "material_list";
@@ -303,6 +247,13 @@ namespace octronic::dream
     const string Constants::SHADER_GLES_VERTEX_FILE_NAME
         = Constants::ASSET_FORMAT_SHADER_GLES +Constants::SHADER_VERTEX;
 
+    // Texture =================================================================
+    const string Constants::ASSET_ATTR_TEXTURE_IS_ENVIRONMENT = "is_environment";
+    const string Constants::ASSET_ATTR_TEXTURE_EQUI_TO_CUBEMAP_SHADER = "equi_to_cubemap_shader";
+    const string Constants::ASSET_ATTR_TEXTURE_IRRADIANCE_MAP_SHADER = "irradiance_map_shader";
+    const string Constants::ASSET_ATTR_TEXTURE_PREFILTER_SHADER = "prefilter_shader";
+    const string Constants::ASSET_ATTR_TEXTURE_BRDF_LUT_SHADER = "brdf_lut_shader";
+    const string Constants::ASSET_ATTR_TEXTURE_FLIP_VERTICAL = "flip_vertical";
 
 
     // Audio ===================================================================
@@ -316,32 +267,12 @@ namespace octronic::dream
 
     // Animation / Keyframe ====================================================
     const string Constants::KEYFRAME_ID = "kf_id";
-    const string Constants::KEYFRAME_TRANSLATION = "translation";
-    const string Constants::KEYFRAME_ROTATION = "rotation";
-    const string Constants::KEYFRAME_SCALE = "scale";
+    const string Constants::KEYFRAME_TRANSFORM = "transform";
     const string Constants::KEYFRAME_TIME = "time";
     const string Constants::KEYFRAME_DURATION = "duration";
     const string Constants::KEYFRAME_LOOPING = "looping";
     const string Constants::KEYFRAME_EASING_TYPE = "easing_type";
     const string Constants::ANIMATION_RELATIVE = "relative";
-
-    // Camera ==================================================================
-    const unsigned int Constants::CAMERA_MOVEMENT_FORWARD  = 0;
-    const unsigned int Constants::CAMERA_MOVEMENT_BACKWARD = 1;
-    const unsigned int Constants::CAMERA_MOVEMENT_LEFT     = 2;
-    const unsigned int Constants::CAMERA_MOVEMENT_RIGHT    = 3;
-    const unsigned int Constants::CAMERA_MOVEMENT_UP       = 4;
-    const unsigned int Constants::CAMERA_MOVEMENT_DOWN     = 5;
-
-    const float Constants::CAMERA_PITCH_MAX = 1.565f;
-    const float Constants::CAMERA_ZOOM_MIN = 1.0f;
-    const float Constants::CAMERA_ZOOM_MAX = 45.0f;
-    const float Constants::CAMERA_YAW = 00.0f;
-    const float Constants::CAMERA_YAW_OFFSET = 180.0f;
-    const float Constants::CAMERA_PITCH = 0.0f;
-    const float Constants::CAMERA_SPEED = 10.0f;
-    const float Constants::CAMERA_SENSITIVTY = 0.001f;
-    const float Constants::CAMERA_ZOOM = 45.0f;
 
     // Data ====================================================================
 
@@ -350,7 +281,6 @@ namespace octronic::dream
         {ASSET_TYPE_ENUM_ANIMATION,        ASSET_TYPE_ANIMATION},
         {ASSET_TYPE_ENUM_AUDIO,            ASSET_TYPE_AUDIO},
         {ASSET_TYPE_ENUM_FONT,             ASSET_TYPE_FONT},
-        {ASSET_TYPE_ENUM_LIGHT,            ASSET_TYPE_LIGHT},
         {ASSET_TYPE_ENUM_MATERIAL,         ASSET_TYPE_MATERIAL},
         {ASSET_TYPE_ENUM_MODEL,            ASSET_TYPE_MODEL},
         {ASSET_TYPE_ENUM_PATH,             ASSET_TYPE_PATH},
@@ -365,7 +295,6 @@ namespace octronic::dream
         ASSET_TYPE_ANIMATION_READABLE,
         ASSET_TYPE_AUDIO_READABLE,
         ASSET_TYPE_FONT_READABLE,
-        ASSET_TYPE_LIGHT_READABLE,
         ASSET_TYPE_MATERIAL_READABLE,
         ASSET_TYPE_MODEL_READABLE,
         ASSET_TYPE_PATH_READABLE,
@@ -380,11 +309,8 @@ namespace octronic::dream
         {ASSET_TYPE_ENUM_ANIMATION,{ASSET_FORMAT_DREAM}},
         {ASSET_TYPE_ENUM_AUDIO,{ASSET_FORMAT_AUDIO_WAV,ASSET_FORMAT_AUDIO_OGG}},
         {ASSET_TYPE_ENUM_FONT,{ASSET_FORMAT_FONT_TTF}},
-        {ASSET_TYPE_ENUM_LIGHT,{
-             ASSET_FORMAT_LIGHT_POINT,ASSET_FORMAT_LIGHT_DIRECTIONAL,
-             ASSET_FORMAT_LIGHT_SPOTLIGHT}},
         {ASSET_TYPE_ENUM_MATERIAL,{ASSET_FORMAT_DREAM}},
-        {ASSET_TYPE_ENUM_MODEL,{ASSET_FORMAT_MODEL_OBJ}},
+        {ASSET_TYPE_ENUM_MODEL,{ASSET_FORMAT_MODEL_ASSIMP}},
         {ASSET_TYPE_ENUM_PATH,{ASSET_FORMAT_DREAM}},
         {ASSET_TYPE_ENUM_PHYSICS_OBJECT,{
 			COLLISION_SHAPE_SPHERE, COLLISION_SHAPE_BOX, COLLISION_SHAPE_CYLINDER,
@@ -408,7 +334,6 @@ namespace octronic::dream
             case ASSET_TYPE_ENUM_PATH:           return ASSET_TYPE_PATH;
             case ASSET_TYPE_ENUM_AUDIO:          return ASSET_TYPE_AUDIO;
             case ASSET_TYPE_ENUM_FONT:           return ASSET_TYPE_FONT;
-            case ASSET_TYPE_ENUM_LIGHT:          return ASSET_TYPE_LIGHT;
             case ASSET_TYPE_ENUM_MATERIAL:       return ASSET_TYPE_MATERIAL;
             case ASSET_TYPE_ENUM_MODEL:          return ASSET_TYPE_MODEL;
             case ASSET_TYPE_ENUM_PHYSICS_OBJECT: return ASSET_TYPE_PHYSICS_OBJECT;
@@ -429,7 +354,6 @@ namespace octronic::dream
         if (type == ASSET_TYPE_ANIMATION || type == ASSET_TYPE_ANIMATION_READABLE) retval =  ASSET_TYPE_ENUM_ANIMATION;
         else if (type == ASSET_TYPE_AUDIO || type == ASSET_TYPE_AUDIO_READABLE) retval = ASSET_TYPE_ENUM_AUDIO;
         else if (type == ASSET_TYPE_FONT || type == ASSET_TYPE_FONT_READABLE) retval = ASSET_TYPE_ENUM_FONT;
-        else if (type == ASSET_TYPE_LIGHT || type == ASSET_TYPE_LIGHT_READABLE) retval = ASSET_TYPE_ENUM_LIGHT;
         else if (type == ASSET_TYPE_MATERIAL || type == ASSET_TYPE_MATERIAL_READABLE) retval = ASSET_TYPE_ENUM_MATERIAL;
         else if (type == ASSET_TYPE_MODEL || type == ASSET_TYPE_MODEL_READABLE) retval = ASSET_TYPE_ENUM_MODEL;
         else if (type == ASSET_TYPE_PATH || type == ASSET_TYPE_PATH_READABLE) retval = ASSET_TYPE_ENUM_PATH;
@@ -447,7 +371,6 @@ namespace octronic::dream
         if (type == ASSET_TYPE_ANIMATION) return ASSET_TYPE_ANIMATION_READABLE;
         else if (type == ASSET_TYPE_AUDIO) return ASSET_TYPE_AUDIO_READABLE;
         else if (type == ASSET_TYPE_FONT) return ASSET_TYPE_FONT_READABLE;
-        else if (type == ASSET_TYPE_LIGHT) return ASSET_TYPE_LIGHT_READABLE;
         else if (type == ASSET_TYPE_MATERIAL) return ASSET_TYPE_MATERIAL_READABLE;
         else if (type == ASSET_TYPE_MODEL) return ASSET_TYPE_MODEL_READABLE;
         else if (type == ASSET_TYPE_PATH) return ASSET_TYPE_PATH_READABLE;
@@ -466,7 +389,6 @@ namespace octronic::dream
         if (format == ASSET_FORMAT_SCRIPT_LUA) return ASSET_FORMAT_SCRIPT_LUA_READABLE;
         // Model
         else if (format == ASSET_FORMAT_MODEL_ASSIMP) return ASSET_FORMAT_MODEL_ASSIMP_READABLE;
-        else if (format == ASSET_FORMAT_MODEL_OBJ) return ASSET_FORMAT_MODEL_OBJ_READABLE;
         // Audio
         else if (format == ASSET_FORMAT_AUDIO_OGG) return ASSET_FORMAT_AUDIO_OGG_READABLE;
         else if (format == ASSET_FORMAT_AUDIO_WAV) return ASSET_FORMAT_AUDIO_WAV_READABLE;
@@ -474,10 +396,6 @@ namespace octronic::dream
         else if (format == ASSET_FORMAT_FONT_TTF) return ASSET_FORMAT_FONT_TTF_READABLE;
         // Shader
         else if (format == ASSET_FORMAT_SHADER_GLSL) return ASSET_FORMAT_SHADER_GLSL_READABLE;
-        // Light
-        else if (format == ASSET_FORMAT_LIGHT_POINT)       return ASSET_FORMAT_LIGHT_POINT_READABLE;
-        else if (format == ASSET_FORMAT_LIGHT_DIRECTIONAL) return ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
-        else if (format == ASSET_FORMAT_LIGHT_SPOTLIGHT)   return ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
         // Dream
         else if (format == ASSET_FORMAT_DREAM) return ASSET_FORMAT_DREAM_READABLE;
         // Physics
@@ -503,14 +421,10 @@ namespace octronic::dream
     {
         if      (format == ASSET_FORMAT_SCRIPT_LUA_READABLE) return ASSET_FORMAT_SCRIPT_LUA;
         else if (format == ASSET_FORMAT_MODEL_ASSIMP_READABLE) return ASSET_FORMAT_MODEL_ASSIMP;
-        else if (format == ASSET_FORMAT_MODEL_OBJ_READABLE) return ASSET_FORMAT_MODEL_OBJ;
         else if (format == ASSET_FORMAT_AUDIO_OGG_READABLE) return ASSET_FORMAT_AUDIO_OGG;
         else if (format == ASSET_FORMAT_AUDIO_WAV_READABLE) return ASSET_FORMAT_AUDIO_WAV;
         else if (format == ASSET_FORMAT_FONT_TTF_READABLE) return ASSET_FORMAT_FONT_TTF;
         else if (format == ASSET_FORMAT_SHADER_GLSL_READABLE) return ASSET_FORMAT_SHADER_GLSL;
-        else if (format == ASSET_FORMAT_LIGHT_POINT_READABLE) return ASSET_FORMAT_LIGHT_POINT;
-        else if (format == ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE) return ASSET_FORMAT_LIGHT_DIRECTIONAL;
-        else if (format == ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE) return ASSET_FORMAT_LIGHT_SPOTLIGHT;
         else if (format == ASSET_FORMAT_DREAM_READABLE) return ASSET_FORMAT_DREAM;
         else if (format == COLLISION_SHAPE_SPHERE_READABLE) return COLLISION_SHAPE_SPHERE;
         else if (format == COLLISION_SHAPE_BOX_READABLE) return COLLISION_SHAPE_BOX;

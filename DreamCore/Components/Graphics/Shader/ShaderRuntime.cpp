@@ -21,17 +21,18 @@
 #include "Storage/StorageManager.h"
 #include "Storage/File.h"
 #include "Components/Graphics/GraphicsComponent.h"
-#include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
+#include "UniformType.h"
 
 #define ERROR_BUF_SZ 4096
 
 using std::make_shared;
 using std::pair;
 using glm::value_ptr;
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -41,27 +42,31 @@ using glm::ivec4;
 using glm::uvec2;
 using glm::uvec3;
 using glm::uvec4;
-
+using glm::mat2;
+using glm::mat3;
+using glm::mat4;
+using glm::mat2x3;
+using glm::mat2x4;
+using glm::mat3x2;
+using glm::mat3x4;
+using glm::mat4x2;
+using glm::mat4x3;
 
 namespace octronic::dream
 {
     ShaderRuntime::ShaderRuntime
     (ProjectRuntime* rt, ShaderDefinition* definition)
         : SharedAssetRuntime(rt, definition),
-          mPointLightCount(0),
-          mPointLightCountLocation(UNIFORM_NOT_FOUND),
-          mSpotLightCount(0),
-          mSpotLightCountLocation(UNIFORM_NOT_FOUND),
-          mDirectionalLightCount(0),
-          mDirectionalLightCountLocation(UNIFORM_NOT_FOUND),
           mShaderProgram(0),
           mNeedsRebind(true),
           mMaterialLocation(UNIFORM_NOT_FOUND),
           mVertexShader(0),
           mFragmentShader(0),
-          mRecompile(false),
           mVertexSource(""),
           mFragmentSource(""),
+          mVertexCompilationFailed(false),
+          mFragmentCompilationFailed(false),
+          mLinkingFailed(false),
           mCompileFragmentTask(make_shared<ShaderCompileFragmentTask>(rt, this)),
           mCompileVertexTask(make_shared<ShaderCompileVertexTask>(rt, this)),
           mLinkTask(make_shared<ShaderLinkTask>(rt, this)),
@@ -81,95 +86,7 @@ namespace octronic::dream
         gfxDestructionQueue->pushTask(mFreeTask);
     }
 
-    GLuint
-    ShaderRuntime::getShaderProgram
-    ()
-    const
-    {
-        return mShaderProgram;
-    }
-
-    void
-    ShaderRuntime::setShaderProgram
-    (GLuint sp)
-    {
-        mShaderProgram = sp;
-    }
-
-    int
-    ShaderRuntime::countMaterials
-    ()
-    {
-        return static_cast<int>(mMaterials.size());
-    }
-
-    bool
-    ShaderRuntime::setModelMatrix
-    (const mat4& value, const string& name)
-    {
-        GLint location = getUniformLocation(name);
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_INFO( "ShaderRuntime: Unable to find model matrix uinform {} in {}" , name, getNameAndUuidString()  );
-            return false;
-        }
-
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
-
-        return true;
-
-    }
-
-    bool
-    ShaderRuntime::setViewMatrix
-    (const mat4& value, const string& name)
-    {
-        GLint location = getUniformLocation(name);
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_INFO( "ShaderRuntime: Unable to find view matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-            return false;
-        }
-        glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
-        return true;
-
-    }
-
-    bool
-    ShaderRuntime::setProjectionMatrix
-    (const mat4& value, const string& name)
-    {
-        GLint location = getUniformLocation(name);
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_INFO( "ShaderRuntime: Unable to find projection matrix uinform {} in {}" ,  name, getNameAndUuidString()  );
-            return false;
-        }
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(value));
-        GLCheckError();
-        return true;
-
-    }
-
-    bool
-    ShaderRuntime::setViewerPosition
-    (const Vector3& value, const string& name)
-    {
-        GLint uCamPos = getUniformLocation(name);
-
-        if (uCamPos == UNIFORM_NOT_FOUND)
-        {
-            LOG_INFO( "ShaderRuntime: Unable to find viewer position uinform {} in {}" ,  name, getNameAndUuidString()  );
-            return false;
-        }
-        glUniform3fv(uCamPos,1,value_ptr(value.toGLM()));
-        GLCheckError();
-        return true;
-
-    }
+    // Loading =================================================================
 
     bool
     ShaderRuntime::loadFromDefinition
@@ -177,7 +94,6 @@ namespace octronic::dream
     {
         if (!readVertexSource() || !readFragmentSource())
         {
-            mLoadError = true;
             return false;
         }
         return true;
@@ -187,14 +103,13 @@ namespace octronic::dream
     ShaderRuntime::readVertexSource
     ()
     {
-
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
-		#if defined (GL_ES_VERSION_3_0)
+#if defined (GL_ES_VERSION_3_0)
         string absVertexPath = getAssetFilePath(Constants::SHADER_GLES_VERTEX_FILE_NAME);
-		#else
+#else
         string absVertexPath = getAssetFilePath(Constants::SHADER_GLSL_VERTEX_FILE_NAME);
-		#endif
+#endif
         File* vertexReader = fm->openFile(absVertexPath);
         if (vertexReader->exists())
         {
@@ -216,11 +131,11 @@ namespace octronic::dream
     {
         // 1. Open Shader Files into Memory
         StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
-		#if defined (GL_ES_VERSION_3_0)
+#if defined (GL_ES_VERSION_3_0)
         string absFragmentPath = getAssetFilePath(Constants::SHADER_GLES_FRAGMENT_FILE_NAME);
-		#else
+#else
         string absFragmentPath = getAssetFilePath(Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
-		#endif
+#endif
         File* fragmentReader = fm->openFile(absFragmentPath);
         if (fragmentReader->exists())
         {
@@ -240,8 +155,441 @@ namespace octronic::dream
         fm->closeFile(fragmentReader);
         fragmentReader = nullptr;
         return false;
-
     }
+
+    bool
+    ShaderRuntime::performFragmentCompilation
+    ()
+    {
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
+        GLint success;
+        GLchar infoLog[ERROR_BUF_SZ];
+        // Fragment Shader
+        setFragmentShader(glCreateShader(GL_FRAGMENT_SHADER));
+        string fs = getFragmentSource().c_str();
+
+        const char *fSource = fs.c_str();
+        glShaderSource(getFragmentShader(), 1, &fSource, nullptr);
+        glCompileShader(getFragmentShader());
+
+        // Print compile errors if any
+        glGetShaderiv(getFragmentShader(), GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(getFragmentShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderRuntime:\n"
+                       "\tFRAGMENT SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                          getNameAndUuidString(),
+                          infoLog );
+            glDeleteShader(getFragmentShader());
+            setFragmentShader(0);
+            mFragmentCompilationFailed = true;
+            return false;
+        }
+        LOG_TRACE("ShaderRuntime: Fragment compile successful");
+        return true;
+    }
+
+    bool
+    ShaderRuntime::performVertexCompilation
+    ()
+    {
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
+        GLint success;
+        GLchar infoLog[ERROR_BUF_SZ];
+        // Vertex Shader
+        setVertexShader(glCreateShader(GL_VERTEX_SHADER));
+        string vs = getVertexSource().c_str();
+
+        const char *vSource = vs.c_str();
+        glShaderSource(getVertexShader(), 1, &vSource, nullptr);
+        glCompileShader(getVertexShader());
+
+        // Print compile errors if any
+        glGetShaderiv(getVertexShader(), GL_COMPILE_STATUS, &success);
+
+        if (!success)
+        {
+            glGetShaderInfoLog(getVertexShader(), ERROR_BUF_SZ, nullptr, infoLog);
+            LOG_CRITICAL( "ShaderCompileVertexTask:\n"
+                       "\tVERTEX SHADER COMPILATION FAILED\n"
+                       "\tShaderRuntime: {}\n"
+                       "\t{}",
+                          getNameAndUuidString(),
+                          infoLog );
+            glDeleteShader(getVertexShader());
+            setVertexShader(0);
+            mVertexCompilationFailed = true;
+            return false;
+        }
+        LOG_TRACE("ShaderRuntime: Vertex compile successful");
+        return true;
+    }
+
+    bool
+    ShaderRuntime::performLinking
+    ()
+    {
+        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
+        if (getVertexShader() != 0 && getFragmentShader() != 0)
+        {
+            GLint success;
+
+            // Create Shader Program
+            setShaderProgram(glCreateProgram());
+            if (getShaderProgram() == 0)
+            {
+                LOG_CRITICAL("ShaderRuntime: Linking:\n"
+                             "\tSHADER LINKING FAILED\n"
+                             "\tShaderRuntime: {}\n",
+                             getNameAndUuidString());
+                mLinkingFailed = true;
+                return false;
+            }
+
+            glAttachShader(getShaderProgram(), getVertexShader());
+            glAttachShader(getShaderProgram(), getFragmentShader());
+            glLinkProgram(getShaderProgram());
+
+            // Print linking errors if any
+            glGetProgramiv(getShaderProgram(), GL_LINK_STATUS, &success);
+            GLchar infoLog[ERROR_BUF_SZ];
+            if (!success)
+            {
+                glGetProgramInfoLog(getShaderProgram(), ERROR_BUF_SZ, nullptr, infoLog);
+                LOG_CRITICAL("ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+                glDeleteProgram(getShaderProgram());
+                setShaderProgram(0);
+                mLinkingFailed = true;
+                return false;
+            }
+
+            // Delete the shaders as they're linked into our program now and no longer necessery
+            glDeleteShader(getVertexShader());
+            mVertexShader = 0;
+            glDeleteShader(getFragmentShader());
+            mFragmentShader = 0;
+
+            setLoaded(getShaderProgram() != 0);
+
+            if (getLoaded())
+            {
+                LOG_TRACE("ShaderRuntime: Linking successful");
+            }
+        }
+        return mLoaded;
+    }
+
+    int
+    ShaderRuntime::countMaterials
+    ()
+    {
+        return static_cast<int>(mMaterials.size());
+    }
+
+    // Uniforms ================================================================
+
+    void
+    ShaderRuntime::setModelMatrixUniform
+    (mat4 value)
+    {
+        addUniform(UNIFORM_TYPE_MATRIX4, UNIFORM_MODEL_MATRIX,1, &value);
+    }
+
+    void
+    ShaderRuntime::setViewMatrixUniform
+    (mat4 value)
+    {
+        addUniform(UNIFORM_TYPE_MATRIX4, UNIFORM_VIEW_MATRIX,1, &value);
+    }
+
+    void
+    ShaderRuntime::setProjectionMatrixUniform
+    (mat4 value)
+    {
+        addUniform(UNIFORM_TYPE_MATRIX4, UNIFORM_PROJECTION_MATRIX,1, &value);
+    }
+
+    void
+    ShaderRuntime::setCameraPositionUniform
+    (vec3 value)
+    {
+        addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_CAMERA_POSITION,1, &value);
+    }
+
+    void
+    ShaderRuntime::setColorUniform
+    (vec4 color)
+    {
+        addUniform(UNIFORM_TYPE_FLOAT4, UNIFORM_COLOR, 1, &color);
+    }
+
+
+    void
+    ShaderRuntime::setEquirectangularMapUniform
+    (GLint map)
+    {
+        addUniform(UNIFORM_TYPE_INT1, UNIFORM_EQUIRECTANGULAR_MAP, 1, &map);
+    }
+
+    void
+    ShaderRuntime::setEnvironmentMapUniform
+    (GLint map)
+    {
+        addUniform(UNIFORM_TYPE_INT1, UNIFORM_ENVIRONMENT_MAP, 1, &map);
+    }
+
+    void
+    ShaderRuntime::setRoughnessUniform
+    (float r)
+    {
+        addUniform(UNIFORM_TYPE_FLOAT1, UNIFORM_ROUGHNESS_VALUE, 1, &r);
+    }
+
+    void ShaderRuntime::setIrradianceTextureUniform(GLuint t)
+    {
+        GLuint tex_id = 5;
+        addUniform(UNIFORM_TYPE_INT1, UNIFORM_IRRADIANCE_TEXTURE, 1, &tex_id);
+        setTexture(GL_TEXTURE5, GL_TEXTURE_CUBE_MAP, t);
+    }
+
+    void ShaderRuntime::setPreFilterTextureUniform(GLuint t)
+    {
+        GLuint tex_id = 6;
+        addUniform(UNIFORM_TYPE_INT1, UNIFORM_PREFILTER_TEXTURE, 1, &tex_id);
+        setTexture(GL_TEXTURE6, GL_TEXTURE_CUBE_MAP, t);
+    }
+
+    void ShaderRuntime::setBrdfLutTextureUniform(GLuint t)
+    {
+        GLuint tex_id = 7;
+        addUniform(UNIFORM_TYPE_INT1, UNIFORM_BRDF_LUT_TEXTURE, 1, &tex_id);
+        setTexture(GL_TEXTURE7, GL_TEXTURE_2D, t);
+    }
+
+    GLint
+    ShaderRuntime::getUniformLocation
+    (const string& name)
+    {
+        assert(!name.empty());
+        auto iter = mUniformLocationCache.find(name);
+        if (iter == mUniformLocationCache.end())
+        {
+            GLint loc = glGetUniformLocation(mShaderProgram,name.c_str());
+            mUniformLocationCache.insert(pair<string,GLint>(name,loc));
+            return loc;
+        }
+        return (*iter).second;
+    }
+
+    void
+    ShaderRuntime::addUniform
+    (UniformType type, const string& name, int count, void* data)
+    {
+        for (auto& uniform : mUniformVector)
+        {
+            if (uniform->getName() == name)
+            {
+                LOG_INFO("ShaderRuntime: Updating uniform {}", uniform->getName());
+                uniform->setData(data);
+                return;
+            }
+        }
+
+        LOG_INFO("ShaderRuntime: Creating uniform {}", name);
+        GLint location = getUniformLocation(name);
+        if (location == UNIFORM_NOT_FOUND)
+        {
+            LOG_ERROR("ShaderRuntime: Uniform {} not found in shader {}", name, getNameAndUuidString());
+            //assert(false);
+        }
+        shared_ptr<ShaderUniform> newUniform = make_shared<ShaderUniform>(type,name,count,data);
+        newUniform->setLocation(location);
+        mUniformVector.push_back(newUniform);
+    }
+
+    void
+    ShaderRuntime::syncUniforms
+    ()
+    {
+        LOG_DEBUG("ShaderRuntime: Synchronising uniforms for {}",getNameAndUuidString());
+        GLuint prog = getShaderProgram();
+
+        // Sync user uniforms
+        for (auto& uniform : mUniformVector)
+        {
+            if (!uniform->getNeedsUpdate())
+            {
+                continue;
+            }
+
+            LOG_TRACE("ShaderRuntime: Uniform {} needs update",uniform->getName());
+
+            if (uniform->getCount() == 0)
+            {
+                continue;
+            }
+
+            LOG_TRACE("ShaderRuntime: Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
+                      getUuid(),prog, uniform->getName(),
+                      uniform->getLocation(), uniform->getCount());
+
+            auto location = uniform->getLocation();
+            if (location == UNIFORM_NOT_FOUND)
+            {
+                LOG_INFO("ShaderRuntime: Unable to find uniform location '{}' in {}",
+                         uniform->getName(), getNameAndUuidString());
+                continue;
+            }
+            else
+            {
+                assert(uniform->getData() != nullptr);
+
+                switch (uniform->getType())
+                {
+                    // int =====================================================
+                    case UNIFORM_TYPE_INT1:
+                        glUniform1i(location,*static_cast<GLint*>(uniform->getData()));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_INT2:
+                        glUniform2iv(location,uniform->getCount(),value_ptr(*static_cast<ivec2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_INT3:
+                        glUniform3iv(location,uniform->getCount(),value_ptr(*static_cast<ivec3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_INT4:
+                        glUniform4iv(location,uniform->getCount(),value_ptr(*static_cast<ivec4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                        // uint ====================================================
+                    case UNIFORM_TYPE_UINT1:
+                        glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_UINT2:
+                        glUniform2uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_UINT3:
+                        glUniform3uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_UINT4:
+                        glUniform4uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                        // float ===================================================
+                    case UNIFORM_TYPE_FLOAT1:
+                        glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_FLOAT2:
+                        glUniform2fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_FLOAT3:
+                        glUniform3fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_FLOAT4:
+                        glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                        // Matrix ==================================================
+                    case UNIFORM_TYPE_MATRIX2:
+                        glUniformMatrix2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX3:
+                        glUniformMatrix3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX4:
+                        glUniformMatrix4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX2X3:
+                        glUniformMatrix2x3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2x3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX3X2:
+                        glUniformMatrix3x2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3x2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX2X4:
+                        glUniformMatrix2x4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2x4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX4X2:
+                        glUniformMatrix4x2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4x2*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX3X4:
+                        glUniformMatrix3x4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3x4*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+                    case UNIFORM_TYPE_MATRIX4X3:
+                        glUniformMatrix4x3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4x3*>(uniform->getData())));
+                        GLCheckError();
+                        break;
+
+                }
+            }
+            uniform->setNeedsUpdate(false);
+        }
+    }
+
+    void
+    ShaderRuntime::deleteUniforms
+    ()
+    {
+        mUniformVector.clear();
+        mUniformLocationCache.clear();
+    }
+
+    void
+    ShaderRuntime::setShadowTextureUniform
+    (GLint shadow)
+    {
+        addUniform(UNIFORM_TYPE_INT1,UNIFORM_SHADOW_TEXTURE ,1, &shadow);
+    }
+
+    void
+    ShaderRuntime::setShadowSpaceMatrixUniform
+    (mat4 ssm)
+    {
+        addUniform(UNIFORM_TYPE_MATRIX4, UNIFORM_SHADOW_SPACE_MATRIX, 1, & ssm);
+    }
+
+    void ShaderRuntime::setLightPositionsUniform(vec3* v, GLuint count)
+    {
+       addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_POSITIONS, count, v);
+    }
+
+    void ShaderRuntime::setLightColorsUniform(vec3* v, GLuint count)
+    {
+       addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_COLORS, count, v);
+    }
+
+
+    void ShaderRuntime::setTexture(GLenum pos, GLenum target, GLuint texture)
+    {
+        if (CurrentTextures[pos] != texture)
+        {
+            glActiveTexture(pos);
+            GLCheckError();
+            glBindTexture(target, texture);
+            GLCheckError();
+            ShaderRuntime::CurrentTextures[pos] = texture;
+        }
+    }
+
+    // Binding/Unbinding =======================================================
 
     bool
     ShaderRuntime::use
@@ -249,24 +597,21 @@ namespace octronic::dream
     {
         if (mShaderProgram != 0)
         {
-            mPointLightCount = 0;
-            mSpotLightCount = 0;
-            mDirectionalLightCount = 0;
             if (CurrentShaderProgram != mShaderProgram)
             {
                 LOG_INFO("ShaderRuntime: Switching Shader Program from {} to {} for {}",
-                         CurrentShaderProgram,mShaderProgram,getNameAndUuidString()
-                         );
+                         CurrentShaderProgram,mShaderProgram,getNameAndUuidString());
                 glUseProgram(mShaderProgram);
                 CurrentShaderProgram = mShaderProgram;
             }
             return true;
         }
+        else
+        {
+            LOG_ERROR("ShaderRuntime: Unable to use shader {}, glProgram == 0");
+        }
         return false;
-
     }
-
-    // API Setters =============================================================
 
     void
     ShaderRuntime::bindVertexArray
@@ -286,41 +631,6 @@ namespace octronic::dream
         bindVertexArray(0);
     }
 
-    GLint
-    ShaderRuntime::getUniformLocation
-    (const string& name)
-    {
-        auto iter = mUinformCache.find(name);
-        if (iter == mUinformCache.end())
-        {
-            GLint loc = glGetUniformLocation(mShaderProgram,name.c_str());
-            mUinformCache.insert(pair<string,GLint>(name,loc));
-            return loc;
-        }
-        return (*iter).second;
-
-    }
-
-    void
-    ShaderRuntime::addUniform
-    (UniformType type, const string& name, int count, void* data)
-    {
-        for (auto uniform : mUniformVector)
-        {
-            if (uniform->getName() == name)
-            {
-                LOG_INFO("ShaderRuntime: Updating uniform {}", uniform->getName());
-                uniform->setData(data);
-                return;
-            }
-        }
-        LOG_INFO("ShaderRuntime: Creating uniform {}", name);
-        auto newUniform = new ShaderUniform(type,name,count,data);
-        newUniform->setLocation(glGetUniformLocation(mShaderProgram, name.c_str()));
-        mUniformVector.push_back(newUniform);
-
-    }
-
     void
     ShaderRuntime::bindMaterial
     (MaterialRuntime* material)
@@ -333,162 +643,70 @@ namespace octronic::dream
             return;
         }
 
-        auto diffuse = material->getDiffuseTextureHandle();
-        if (diffuse != nullptr)
+        auto albedo = material->getAlbedoTextureHandle();
+        if (albedo != nullptr && albedo->getLoaded())
         {
-            id = diffuse->getGLID();
-            if (CurrentTexture0 != id)
+            id = albedo->getTextureID();
+            if (CurrentTextures[GL_TEXTURE0] != id)
             {
-                LOG_INFO("ShaderRuntime: Found Diffuse Texture, binding {}",id);
-                glActiveTexture(GL_TEXTURE0);
-                GLCheckError();
-                glBindTexture(GL_TEXTURE_2D, id);
-                GLCheckError();
-                GLuint diffuseIndex = 0;
-                addUniform(INT1, "material.diffuse", 1, &diffuseIndex);
-                CurrentTexture0 = id;
+                LOG_INFO("ShaderRuntime: Found Albedo Texture, binding {}",id);
+                GLuint albedoIndex = 0;
+                addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ALBEDO, 1, &albedoIndex);
+                setTexture(GL_TEXTURE0, GL_TEXTURE_2D, id);
             }
         }
-
-        auto diffuseColour = material->getColorDiffuse();
-        Vector3 glmDiffuse(diffuseColour.r,diffuseColour.g,diffuseColour.b);
-        addUniform(FLOAT3, "material.diffuseColor", 1, &glmDiffuse);
-
-        auto specular = material->getSpecularTextureHandle();
-        if (specular != nullptr)
-        {
-            id =  specular->getGLID();
-            if (CurrentTexture1 != id)
-            {
-                LOG_INFO("ShaderRuntime: Found Specular Texture, binding {}",id);
-                glActiveTexture(GL_TEXTURE1);
-                GLCheckError();
-                glBindTexture(GL_TEXTURE_2D, id);
-                GLCheckError();
-                GLuint specularIndex = 1;
-                addUniform(INT1, "material.specular", 1, &specularIndex);
-                CurrentTexture1 = id;
-            }
-        }
-
-        auto spec = material->getColorSpecular();
-        Vector3 glmSpec(spec.r,spec.g,spec.b);
-        addUniform(FLOAT3, "material.specularColor", 1, &glmSpec);
-        float ss = material->getShininessStrength();
-        addUniform(FLOAT1, "material.shininess", 1, &ss);
 
         auto normal = material->getNormalTextureHandle();
-        if (normal != nullptr)
+        if (normal != nullptr && normal->getLoaded())
         {
-            id =  normal->getGLID();
-            if (CurrentTexture2 != id)
+            id =  normal->getTextureID();
+            if (CurrentTextures[GL_TEXTURE1] != id)
             {
                 LOG_INFO("ShaderRuntime: Found Normal Texture, binding {}",id);
-                glActiveTexture(GL_TEXTURE2);
-                GLCheckError();
-                glBindTexture(GL_TEXTURE_2D, id);
-
-                GLCheckError();
-                GLuint normalIndex = 2;
-                addUniform(INT1, "material.normal", 1, &normalIndex);
-                CurrentTexture2 = id;
+                GLuint normalIndex = 1;
+                addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_NORMAL, 1, &normalIndex);
+                setTexture(GL_TEXTURE1, GL_TEXTURE_2D, id);
             }
         }
 
-        auto displacement = material->getDisplacementTextureHandle();
-        if (displacement != nullptr)
+        auto metallic = material->getMetallicTextureHandle();
+        if (metallic != nullptr && metallic->getLoaded())
         {
-            id = displacement->getGLID();
-            if (CurrentTexture3 != id)
+            id =  metallic->getTextureID();
+            if (CurrentTextures[GL_TEXTURE2] != id)
             {
-                LOG_INFO("ShaderRuntime: Found Normal Texture, binding {}",id);
-                glActiveTexture(GL_TEXTURE3);
-                GLCheckError();
-                glBindTexture(GL_TEXTURE_2D, id);
-
-                GLCheckError();
-                GLuint normalIndex = 3;
-                addUniform(INT1, "material.displacement", 1, &normalIndex);
-                CurrentTexture3 = id;
+                LOG_INFO("ShaderRuntime: Found Metallic Texture, binding {}",id);
+                GLuint metallicIndex = 2;
+                addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_METALLIC, 1, &metallicIndex);
+                setTexture(GL_TEXTURE2, GL_TEXTURE_2D, id);
             }
         }
 
-        float ignore = material->getIgnore() ? 1.0f : 0.0f;
-        addUniform(FLOAT1, "material.ignore", 1, &ignore);
-        GLCheckError();
-
-    }
-
-    void
-    ShaderRuntime::bindLight
-    (LightRuntime* light)
-    {
-        LOG_DEBUG("ShaderRuntime: Binding light {} ({})",light->getNameAndUuidString(),light->getType());
-        DirLight dirData;
-        SpotLight spotData;
-        PointLight pointData;
-
-        switch (light->getType())
+        auto roughness = material->getRoughnessTextureHandle();
+        if (roughness != nullptr && roughness->getLoaded())
         {
-            case LT_DIRECTIONAL:
-                if (mDirectionalLightCount == MAX_LIGHTS)
-                {
-                    LOG_ERROR("ShaderRuntime: Max dir lights bound");
-                    return;
-                }
-                LOG_DEBUG("ShaderRuntime: Binding dir light {}", mDirectionalLightCount);
-                dirData = light->getDirectionalLightData();
-                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].direction",1, &dirData.direction);
-                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].ambient",1,   &dirData.ambient);
-                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].diffuse",1,   &dirData.diffuse);
-                addUniform(FLOAT3,"dirLights["+ std::to_string(mDirectionalLightCount)+"].specular",1,  &dirData.specular);
-                mDirectionalLightCount++;
-                break;
-
-            case LT_POINT:
-                if (mPointLightCount == MAX_LIGHTS)
-                {
-                    LOG_ERROR("ShaderRuntime: Max point lights bound");
-                    return;
-                }
-
-                LOG_DEBUG("ShaderRuntime: Binding point light {}", mPointLightCount);
-                pointData = light->getPointLightData();
-                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].ambient",1,   &pointData.ambient);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].diffuse",1,   &pointData.diffuse);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].specular",1,  &pointData.specular);
-                addUniform(FLOAT3,"pointLights["+std::to_string(mPointLightCount)+"].position",1,  &pointData.position);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].constant",1,  &pointData.constant);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].linear",1,    &pointData.linear);
-                addUniform(FLOAT1,"pointLights["+std::to_string(mPointLightCount)+"].quadratic",1, &pointData.quadratic);
-                mPointLightCount++;
-                break;
-
-            case LT_SPOTLIGHT:
-                if (mSpotLightCount == MAX_LIGHTS)
-                {
-                    LOG_ERROR("ShaderRuntime: Max spot lights bound");
-                    return;
-                }
-                LOG_DEBUG("ShaderRuntime: Binding spot light {}", mSpotLightCount);
-                spotData = light->getSpotLightData();
-                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].ambient",1,     &spotData.ambient);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].diffuse",1,     &spotData.diffuse);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].specular",1,    &spotData.specular);
-                addUniform(FLOAT3,"spotLights["+std::to_string(mSpotLightCount)+"].position",1,    &spotData.position);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].constant",1,    &spotData.constant);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].linear",1,      &spotData.linear);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].quadratic",1,   &spotData.quadratic);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].cutOff",1,      &spotData.cutOff);
-                addUniform(FLOAT1,"spotLights["+std::to_string(mSpotLightCount)+"].outerCutOff",1, &spotData.outerCutOff);
-                mSpotLightCount++;
-                break;
-
-            case LT_NONE:
-                LOG_INFO("ShaderRuntime: Cannot bind light with type NONE");
-                break;
+            id = roughness->getTextureID();
+            if (CurrentTextures[GL_TEXTURE3] != id)
+            {
+                LOG_INFO("ShaderRuntime: Found Roughness Texture, binding {}",id);
+                GLuint roughnessIndex = 3;
+                addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ROUGHNESS, 1, &roughnessIndex);
+                setTexture(GL_TEXTURE3, GL_TEXTURE_2D, id);
+            }
         }
 
+        auto ao = material->getAoTextureHandle();
+        if (ao != nullptr && ao->getLoaded())
+        {
+            id = ao->getTextureID();
+            if (CurrentTextures[GL_TEXTURE4] != id)
+            {
+                LOG_INFO("ShaderRuntime: Found AO Texture, binding {}",id);
+                GLuint aoIndex = 4;
+                addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_AO, 1, &aoIndex);
+                setTexture(GL_TEXTURE4, GL_TEXTURE_2D, id);
+            }
+        }
     }
 
     void
@@ -497,173 +715,6 @@ namespace octronic::dream
     {
         glUseProgram(0);
         CurrentShaderProgram = 0;
-    }
-
-    // GL Syncros ==============================================================
-    void
-    ShaderRuntime::syncUniforms
-    ()
-    {
-
-        LOG_DEBUG("ShaderRuntime: Synchronising uniforms for {}",getNameAndUuidString());
-        GLCheckError();
-        GLuint prog = getShaderProgram();
-
-        // Sync lighting uniforms
-
-        if (mPointLightCountLocation != UNIFORM_NOT_FOUND)
-        {
-            glUniform1i(mPointLightCountLocation,mPointLightCount);
-            GLCheckError();
-        }
-
-        else if (mPointLightCount > 0)
-        {
-            LOG_INFO("ShaderRuntime: Could not find Point Light Count Location Uniform in {}",getNameAndUuidString());
-        }
-
-        if (mSpotLightCountLocation != UNIFORM_NOT_FOUND)
-        {
-            glUniform1i(mSpotLightCountLocation,mSpotLightCount);
-            GLCheckError();
-        }
-        else if (mSpotLightCount > 0)
-        {
-            LOG_INFO("ShaderRuntime: Could not find Spot Light Count Location Uniform in {}",getNameAndUuidString());
-        }
-
-        if (mDirectionalLightCountLocation != UNIFORM_NOT_FOUND)
-        {
-            glUniform1i(mDirectionalLightCountLocation,mDirectionalLightCount);
-
-            GLCheckError();
-        }
-        else if (mDirectionalLightCount > 0)
-        {
-            LOG_INFO("ShaderRuntime: Could not find Directional Light Count Location Uniform in {}",getNameAndUuidString());
-        }
-
-        // Sync user uniforms
-
-        for (ShaderUniform* uniform : mUniformVector)
-        {
-            if (!uniform->getNeedsUpdate())
-            {
-                continue;
-            }
-
-            LOG_TRACE("ShaderRuntime: Uniform {} needs update",uniform->getName());
-
-            if (uniform->getCount() == 0)
-            {
-                continue;
-            }
-
-            LOG_TRACE
-                    (
-                        "ShaderRuntime: Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
-                        getUuid(),
-                        prog,
-                        uniform->getName(),
-                        uniform->getLocation(),
-                        uniform->getCount()
-                        );
-
-            auto location = uniform->getLocation();
-            if (location == UNIFORM_NOT_FOUND)
-            {
-                LOG_INFO( "ShaderRuntime: Unable to find uniform location '{}' in {}" , uniform->getName() ,getNameAndUuidString());
-                continue;
-            }
-            else
-            {
-                switch (uniform->getType())
-                {
-                    // Int
-                    case INT1:
-                        glUniform1i(location,*static_cast<GLint*>(uniform->getData()));
-                        break;
-                    case INT2:
-                        glUniform2iv(location,uniform->getCount(),value_ptr(*static_cast<ivec2*>(uniform->getData())));
-                        break;
-                    case INT3:
-                        glUniform3iv(location,uniform->getCount(),value_ptr(*static_cast<ivec3*>(uniform->getData())));
-                        break;
-                    case INT4:
-                        glUniform4iv(location,uniform->getCount(),value_ptr(*static_cast<ivec4*>(uniform->getData())));
-                        break;
-
-                        // Uint
-                    case UINT1:
-                        glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
-                        break;
-                    case UINT2:
-                        glUniform2uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec2*>(uniform->getData())));
-                        break;
-                    case UINT3:
-                        glUniform3uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec3*>(uniform->getData())));
-                        break;
-                    case UINT4:
-                        glUniform4uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec4*>(uniform->getData())));
-                        break;
-
-                        // float
-                    case FLOAT1:
-                        glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
-                        break;
-                    case FLOAT2:
-                        glUniform2fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec2*>(uniform->getData())));
-                        break;
-                    case FLOAT3:
-                        glUniform3fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec3*>(uniform->getData())));
-                        break;
-                    case FLOAT4:
-                        glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
-                        break;
-                }
-                GLCheckError();
-            }
-            uniform->setNeedsUpdate(false);
-        }
-
-    }
-
-    void
-    ShaderRuntime::InvalidateState
-    ()
-    {
-        CurrentTexture0 = 0;
-        CurrentTexture1 = 0;
-        CurrentTexture2 = 0;
-        CurrentTexture3 = 0;
-        CurrentTexture4 = 0;
-        CurrentTexture5 = 0;
-        CurrentShaderProgram = 0;
-        CurrentVAO = 0;
-        CurrentVBO = 0;
-    }
-
-    void
-    ShaderRuntime::deleteUniforms
-    ()
-    {
-        for (ShaderUniform* uniform : mUniformVector)
-        {
-            delete uniform;
-        }
-        mUniformVector.clear();
-
-    }
-
-    void
-    ShaderRuntime::bindLightQueue
-    (const vector<LightRuntime*>& lightQueue)
-    {
-        for (auto light : lightQueue)
-        {
-            bindLight(light);
-        }
-
     }
 
     void
@@ -678,15 +729,7 @@ namespace octronic::dream
             data[i] = runtimes[i]->getTransform().getMatrix();
         }
 
-        GLint location =  getUniformLocation("model[0]");
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_WARN( "ShaderRuntime: Unable to find model matrix uinform model[0] in {}", getNameAndUuidString());
-            return;
-        }
-        glUniformMatrix4fv(location,runtimes.size(),GL_FALSE,(float*)&data[0]);
-
+        addUniform(UNIFORM_TYPE_MATRIX4, UNIFORM_MODEL_MATRIX_ARRAY, nRuntimes, data);
     }
 
     void
@@ -703,7 +746,7 @@ namespace octronic::dream
         else
         {
             LOG_DEBUG("ShaderRuntime: Material {} already registered to shader {}",
-                        material->getName(), getNameAndUuidString());
+                      material->getName(), getNameAndUuidString());
         }
     }
 
@@ -719,20 +762,12 @@ namespace octronic::dream
         }
     }
 
-    void
-    ShaderRuntime::drawGeometryPass
-    (Camera* camera)
+    vector<MaterialRuntime*>& ShaderRuntime::getMaterialsVector()
     {
-        LOG_TRACE("ShaderRuntime: Rendering GeometryPass {}",getNameAndUuidString());
-        for (auto material : mMaterials)
-        {
-            if (material->countMeshes() == 0) continue;
-            bindMaterial(material);
-            syncUniforms();
-            material->drawGeometryPass(camera);
-        }
-
+        return mMaterials;
     }
+
+    // Drawing =================================================================
 
     void
     ShaderRuntime::drawShadowPass
@@ -744,24 +779,9 @@ namespace octronic::dream
             if (material->countMeshes() == 0) continue;
             material->drawShadowPass(shadowPassShader);
         }
-
     }
 
-    bool
-    ShaderRuntime::getRecompile
-    ()
-    const
-    {
-        return mRecompile;
-    }
-
-    void
-    ShaderRuntime::setRecompile
-    (bool recompile)
-    {
-        mRecompile = recompile;
-
-    }
+    // Misc ====================================================================
 
     string
     ShaderRuntime::getVertexSource
@@ -775,7 +795,6 @@ namespace octronic::dream
     (const string& vertexSource)
     {
         mVertexSource = vertexSource;
-
     }
 
     string
@@ -791,7 +810,6 @@ namespace octronic::dream
     (const string& fragmentSource)
     {
         mFragmentSource = fragmentSource;
-
     }
 
     GLuint
@@ -806,7 +824,6 @@ namespace octronic::dream
     (const GLuint& vertexShader)
     {
         mVertexShader = vertexShader;
-
     }
 
     GLuint
@@ -821,299 +838,176 @@ namespace octronic::dream
     (const GLuint& fragmentShader)
     {
         mFragmentShader = fragmentShader;
-
     }
 
-    GLint
-    ShaderRuntime::getPointLightCountLocation
+    GLuint
+    ShaderRuntime::getShaderProgram
+    ()
+    const
+    {
+        return mShaderProgram;
+    }
+
+    void
+    ShaderRuntime::setShaderProgram
+    (GLuint sp)
+    {
+        mShaderProgram = sp;
+    }
+
+
+    vector<shared_ptr<ShaderUniform>>*
+    ShaderRuntime::getUniformsVector
+    ()
+    {
+        return &mUniformVector;
+    }
+
+    bool
+    ShaderRuntime::hasVertexSource
     () const
     {
-        return mPointLightCountLocation;
+        return !mVertexSource.empty();
     }
 
-    void
-    ShaderRuntime::setPointLightCountLocation
-    (const GLint& pointLightCountLocation)
-    {
-        mPointLightCountLocation = pointLightCountLocation;
-    }
-
-    GLint
-    ShaderRuntime::getSpotLightCountLocation
+    bool
+    ShaderRuntime::hasFragmentSource
     () const
     {
-        return mSpotLightCountLocation;
+        return !mFragmentSource.empty();
     }
 
-    void
-    ShaderRuntime::setSpotLightCountLocation
-    (const GLint& spotLightCountLocation)
-    {
-        mSpotLightCountLocation = spotLightCountLocation;
-
-    }
-
-    GLint
-    ShaderRuntime::getDirectionalLightCountLocation
+    bool
+    ShaderRuntime::hasVertexCompilationFailed
     () const
     {
-        return mDirectionalLightCountLocation;
+        return mVertexCompilationFailed;
     }
+
+    bool
+    ShaderRuntime::hasFragmentCompilationFailed
+    () const
+    {
+        return mFragmentCompilationFailed;
+    }
+
+    bool
+    ShaderRuntime::hasLinkingFailed
+    () const
+    {
+        return mLinkingFailed;
+    }
+
+    bool
+    ShaderRuntime::hasValidGLID
+    () const
+    {
+        return mShaderProgram > 0;
+    }
+
+    // Tasks ===================================================================
 
     void
-    ShaderRuntime::setDirectionalLightCountLocation
-    (const GLint& directionalLightCountLocation)
-    {
-        mDirectionalLightCountLocation = directionalLightCountLocation;
-
-    }
-
-    void
-    ShaderRuntime::setFontPositionUniform(const vec2& pos)
-    {
-        GLuint location = getUniformLocation("uModel");
-        mat4 model(1.f);
-        model = glm::translate(model,vec3(pos.x,pos.y,0.f));
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_ERROR( "ShaderRuntime: Unable to find Font model matrix uinform \"uModel\" in shader {}" ,getNameAndUuidString()  );
-            assert(false);
-            return;
-        }
-
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(model));
-
-    }
-
-    void
-    ShaderRuntime::setSpritePositionUniform(const vec2& pos)
-    {
-        GLuint location = getUniformLocation("uModel");
-        mat4 model(1.f);
-        model = glm::translate(model,vec3(pos.x,pos.y,0.f));
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_ERROR( "ShaderRuntime: Unable to find Sprite model matrix uinform \"uModel\" in shader {}" ,getNameAndUuidString()  );
-            assert(false);
-            return;
-        }
-
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(model));
-
-    }
-
-    void
-    ShaderRuntime::setFontColorUniform(const Vector3& color)
-    {
-        GLuint location = getUniformLocation("uColor");
-        vec3 glm_val = color.toGLM();
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_ERROR( "ShaderRuntime: Unable to find Font model matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
-            assert(false);
-            return;
-        }
-        glUniform3fv(location,1,value_ptr(glm_val));
-
-    }
-
-
-    void ShaderRuntime::setFontProjectionUniform(const mat4& proj)
-    {
-        GLuint location = getUniformLocation("uProjection");
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_ERROR( "ShaderRuntime: Unable to find Font projection matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
-            assert(false);
-            return;
-        }
-
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(proj));
-
-
-    }
-
-    void ShaderRuntime::setSpriteProjectionUniform(const mat4& proj)
-    {
-        GLuint location = getUniformLocation("uProjection");
-
-        if (location == UNIFORM_NOT_FOUND)
-        {
-            LOG_ERROR( "ShaderRuntime: Unable to find Sprite projection matrix uinform \"uColor\" in shader {}" ,getNameAndUuidString());
-            assert(false);
-            return;
-        }
-
-        glUniformMatrix4fv(location,1,GL_FALSE,value_ptr(proj));
-    }
-
-    bool ShaderRuntime::performFragmentCompilation()
-    {
-        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
-        GLint success;
-        GLchar infoLog[ERROR_BUF_SZ];
-        // Fragment Shader
-        setFragmentShader(glCreateShader(GL_FRAGMENT_SHADER));
-        string fs = getFragmentSource().c_str();
-
-        const char *fSource = fs.c_str();
-        glShaderSource(getFragmentShader(), 1, &fSource, nullptr);
-        glCompileShader(getFragmentShader());
-        // Print compile errors if any
-        glGetShaderiv(getFragmentShader(), GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(getFragmentShader(), ERROR_BUF_SZ, nullptr, infoLog);
-            LOG_CRITICAL( "ShaderRuntime:\n"
-                       "\tFRAGMENT SHADER COMPILATION FAILED\n"
-                       "\tShaderRuntime: {}\n"
-                       "\t{}",
-                          getNameAndUuidString(),
-                          infoLog );
-            glDeleteShader(getFragmentShader());
-            setFragmentShader(0);
-            return false;
-        }
-        LOG_TRACE("ShaderRuntime: Fragment compile successful");
-        return true;
-
-    }
-
-    bool ShaderRuntime::performVertexCompilation()
-    {
-        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
-        GLint success;
-        GLchar infoLog[ERROR_BUF_SZ];
-        // Vertex Shader
-        setVertexShader(glCreateShader(GL_VERTEX_SHADER));
-        string vs = getVertexSource().c_str();
-
-        const char *vSource = vs.c_str();
-        glShaderSource(getVertexShader(), 1, &vSource, nullptr);
-        glCompileShader(getVertexShader());
-        // Print compile errors if any
-        glGetShaderiv(getVertexShader(), GL_COMPILE_STATUS, &success);
-
-        if (!success)
-        {
-            glGetShaderInfoLog(getVertexShader(), ERROR_BUF_SZ, nullptr, infoLog);
-            LOG_CRITICAL( "ShaderCompileVertexTask:\n"
-                       "\tVERTEX SHADER COMPILATION FAILED\n"
-                       "\tShaderRuntime: {}\n"
-                       "\t{}",
-                          getNameAndUuidString(),
-                          infoLog );
-            glDeleteShader(getVertexShader());
-            setVertexShader(0);
-            return false;
-        }
-        LOG_TRACE("ShaderRuntime: Vertex compile successful");
-        return true;
-
-    }
-
-    bool ShaderRuntime::performLinking()
-    {
-        LOG_TRACE("ShaderRuntime: {}",__FUNCTION__);
-        if (getVertexShader() != 0 && getFragmentShader() != 0)
-        {
-            GLint success;
-
-            // Create Shader Program
-            setShaderProgram(glCreateProgram());
-            if (getShaderProgram() == 0)
-            {
-                LOG_CRITICAL("ShaderRuntime: Linking:\n"
-                             "\tSHADER LINKING FAILED\n"
-                             "\tShaderRuntime: {}\n",
-                             getNameAndUuidString());
-
-                return false;
-            }
-
-            glAttachShader(getShaderProgram(), getVertexShader());
-            glAttachShader(getShaderProgram(), getFragmentShader());
-            glLinkProgram(getShaderProgram());
-
-            // Print linking errors if any
-            glGetProgramiv(getShaderProgram(), GL_LINK_STATUS, &success);
-            GLchar infoLog[ERROR_BUF_SZ];
-            if (!success)
-            {
-                glGetProgramInfoLog(getShaderProgram(), ERROR_BUF_SZ, nullptr, infoLog);
-                LOG_CRITICAL("ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
-                glDeleteProgram(getShaderProgram());
-                setShaderProgram(0);
-                return false;
-            }
-
-            // Delete the shaders as they're linked into our program now and no longer necessery
-            glDeleteShader(getVertexShader());
-            mVertexShader = 0;
-            glDeleteShader(getFragmentShader());
-            mFragmentShader = 0;
-
-            setLoaded(getShaderProgram() != 0);
-
-            if (getLoaded())
-            {
-                setPointLightCountLocation(glGetUniformLocation(getShaderProgram(), ShaderRuntime::UNIFORM_POINT_LIGHT_COUNT));
-                setSpotLightCountLocation(glGetUniformLocation(getShaderProgram(), ShaderRuntime::UNIFORM_SPOT_LIGHT_COUNT));
-                setDirectionalLightCountLocation(glGetUniformLocation(getShaderProgram(), ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT));
-        		LOG_TRACE("ShaderRuntime: Linking successful");
-            }
-        }
-        return mLoaded;
-    }
-
-    void ShaderRuntime::pushNextTask()
+    ShaderRuntime::pushTasks
+    ()
     {
         auto projectTaskQueue = mProjectRuntimeHandle->getTaskQueue();
-    	auto gfxQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
-        if (!mLoaded && !mLoadError)
+        auto gfxQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
+        auto gfxDestructionQueue = mProjectRuntimeHandle->getGraphicsComponent()->getDestructionTaskQueue();
+
+        if (mReloadFlag)
         {
-			if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-			{
-            	projectTaskQueue->pushTask(mLoadFromDefinitionTask);
+            deleteUniforms();
+            mFreeTask->setShaderProgram(mShaderProgram);
+
+            mVertexSource = "";
+            mFragmentSource = "";
+            mReloadFlag = false;
+            mLoaded = false;
+            mLoadError = false;
+            mFragmentCompilationFailed = false;
+            mVertexCompilationFailed = false;
+            mLinkingFailed = false;
+            mShaderProgram = 0;
+            gfxDestructionQueue->pushTask(mFreeTask);
+            mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+            mCompileVertexTask->setState(TASK_STATE_QUEUED);
+            mCompileFragmentTask->setState(TASK_STATE_QUEUED);
+            mLinkTask->setState(TASK_STATE_QUEUED);
+        }
+        else if (!mLoaded && !mLoadError)
+        {
+            if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+            {
+                projectTaskQueue->pushTask(mLoadFromDefinitionTask);
             }
             else
             {
-				if (mCompileFragmentTask->hasState(TASK_STATE_QUEUED))
-				{
-					gfxQueue->pushTask(mCompileFragmentTask);
-				}
+                if (mCompileFragmentTask->hasState(TASK_STATE_QUEUED))
+                {
+                    gfxQueue->pushTask(mCompileFragmentTask);
+                }
 
-				if (mCompileVertexTask->hasState(TASK_STATE_QUEUED))
-				{
-					gfxQueue->pushTask(mCompileVertexTask);
-				}
+                if (mCompileVertexTask->hasState(TASK_STATE_QUEUED))
+                {
+                    gfxQueue->pushTask(mCompileVertexTask);
+                }
 
-				else if (mCompileFragmentTask->hasState(TASK_STATE_COMPLETED) &&
-						 mCompileVertexTask->hasState(TASK_STATE_COMPLETED) &&
-						 mLinkTask->hasState(TASK_STATE_QUEUED))
-				{
-					gfxQueue->pushTask(mLinkTask);
-				}
-			}
-		}
+                else if (mCompileFragmentTask->hasState(TASK_STATE_COMPLETED) &&
+                         mCompileVertexTask->hasState(TASK_STATE_COMPLETED) &&
+                         mLinkTask->hasState(TASK_STATE_QUEUED))
+                {
+                    gfxQueue->pushTask(mLinkTask);
+                }
+            }
+        }
     }
 
-    const GLint ShaderRuntime::UNIFORM_NOT_FOUND = -1;
-    const char* ShaderRuntime::UNIFORM_POINT_LIGHT_COUNT = "pointLightCount";
-    const char* ShaderRuntime::UNIFORM_SPOT_LIGHT_COUNT = "spotLightCount";
-    const char* ShaderRuntime::UNIFORM_DIRECTIONAL_LIGHT_COUNT = "directionalLightCount";
-    const unsigned int ShaderRuntime::MAX_LIGHTS = 10;
+
+
+    // Statics =================================================================
+
+    void
+    ShaderRuntime::InvalidateState
+    ()
+    {
+        CurrentTextures.clear();
+        CurrentShaderProgram = 0;
+        CurrentVAO = 0;
+        CurrentVBO = 0;
+    }
+
+    const GLint ShaderRuntime::UNIFORM_NOT_FOUND               = -1;
+    const char* ShaderRuntime::UNIFORM_MODEL_MATRIX            = "uModelMatrix";
+    const char* ShaderRuntime::UNIFORM_VIEW_MATRIX             = "uViewMatrix";
+    const char* ShaderRuntime::UNIFORM_PROJECTION_MATRIX       = "uProjectionMatrix";
+    const char* ShaderRuntime::UNIFORM_CAMERA_POSITION         = "uCameraPosition";
+    const char* ShaderRuntime::UNIFORM_COLOR                   = "uColor";
+    const char* ShaderRuntime::UNIFORM_SHADOW_TEXTURE          = "uShadowTexture";
+    const char* ShaderRuntime::UNIFORM_SHADOW_SPACE_MATRIX     = "uShadowSpaceMatrix";
+    const char* ShaderRuntime::UNIFORM_MODEL_MATRIX_ARRAY      = "uModelMatrixArray[0]";
+
+    // PBR Textures
+    const char* ShaderRuntime::UNIFORM_MATERIAL_ALBEDO         = "uAlbedoTexture";
+    const char* ShaderRuntime::UNIFORM_MATERIAL_NORMAL         = "uNormalTexture";
+    const char* ShaderRuntime::UNIFORM_MATERIAL_METALLIC       = "uMetallicTexture";
+    const char* ShaderRuntime::UNIFORM_MATERIAL_ROUGHNESS      = "uRoughnessTexture";
+    const char* ShaderRuntime::UNIFORM_MATERIAL_AO             = "uAOTexture";
+
+    // PBR Environment
+    const char* ShaderRuntime::UNIFORM_EQUIRECTANGULAR_MAP     = "uEquirectangularMap";
+    const char* ShaderRuntime::UNIFORM_ENVIRONMENT_MAP         = "uEnvironmentMap";
+    const char* ShaderRuntime::UNIFORM_ROUGHNESS_VALUE         = "uRoughness";
+    const char* ShaderRuntime::UNIFORM_IRRADIANCE_TEXTURE      = "uIrradianceTexture";
+    const char* ShaderRuntime::UNIFORM_PREFILTER_TEXTURE       = "uPreFilterTexture";
+    const char* ShaderRuntime::UNIFORM_BRDF_LUT_TEXTURE        = "uBrdfLutTexture";
+    const char* ShaderRuntime::UNIFORM_LIGHT_POSITIONS         = "uLightPositions";
+    const char* ShaderRuntime::UNIFORM_LIGHT_COLORS            = "uLightColors";
+
+
     const size_t ShaderRuntime::MAX_RUNTIMES = 100;
 
-    GLuint ShaderRuntime::CurrentTexture0 = 0;
-    GLuint ShaderRuntime::CurrentTexture1 = 0;
-    GLuint ShaderRuntime::CurrentTexture2 = 0;
-    GLuint ShaderRuntime::CurrentTexture3 = 0;
-    GLuint ShaderRuntime::CurrentTexture4 = 0;
-    GLuint ShaderRuntime::CurrentTexture5 = 0;
+    map<GLenum,GLuint> ShaderRuntime::CurrentTextures;
     GLuint ShaderRuntime::CurrentShaderProgram = 0;
     GLuint ShaderRuntime::CurrentVAO = 0;
     GLuint ShaderRuntime::CurrentVBO = 0;

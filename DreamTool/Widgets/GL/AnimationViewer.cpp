@@ -105,13 +105,16 @@ namespace octronic::dream::tool
 
        for (size_t i=1; i < keyframes.size(); i++)
        {
-           vec3 current = keyframes.at(i-1).getTranslation().toGLM();
-           vec3 next = keyframes.at(i).getTranslation().toGLM();
+           Transform current  = keyframes.at(i-1).getTransform();
+           vec3 currentTx = current.getTranslation();
+
+           Transform next = keyframes.at(i).getTransform();
+           vec3 nextTx = next.getTranslation();
 
            GLWidgetVertex v1,v2;
-           v1.Position  = current;
+           v1.Position  = currentTx;
            v1.Color = mLineColour;
-           v2.Position = next;
+           v2.Position = nextTx;
            v2.Color = mLineColour;
            mVertexBuffer.push_back(v1);
            mVertexBuffer.push_back(v2);
@@ -122,7 +125,7 @@ namespace octronic::dream::tool
     AnimationViewer::generateNode
     (const  AnimationKeyframe& kf)
     {
-        vec3 pos = kf.getTranslation().toGLM();
+        vec3 pos = kf.getTransform().getTranslation();
         int index = kf.getID();
 
         LOG_TRACE("AnimationViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);

@@ -19,7 +19,6 @@
 #include "Components/Animation/AnimationDefinition.h"
 #include "Components/Path/PathDefinition.h"
 #include "Components/Graphics/Font/FontDefinition.h"
-#include "Components/Graphics/Light/LightDefinition.h"
 #include "Components/Graphics/Material/MaterialDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
 #include "Components/Graphics/Shader/ShaderDefinition.h"
@@ -69,34 +68,6 @@ namespace octronic::dream
     }
 
     void
-    ProjectDefinition::setDescription
-    (const string &description)
-    {
-        mJson[Constants::PROJECT_DESCRIPTION] = description;
-    }
-
-    string
-    ProjectDefinition::getDescription
-    (void)
-    {
-        return mJson[Constants::PROJECT_DESCRIPTION];
-    }
-
-    void
-    ProjectDefinition::setAuthor
-    (const string &author)
-    {
-        mJson[Constants::PROJECT_AUTHOR] = author;
-    }
-
-    string
-    ProjectDefinition::getAuthor
-    ()
-    {
-        return mJson[Constants::PROJECT_AUTHOR];
-    }
-
-    void
     ProjectDefinition::loadChildDefinitions
     ()
     {
@@ -110,8 +81,6 @@ namespace octronic::dream
     {
         return mAssetDefinitionGroups;
     }
-
-
 
     void
     ProjectDefinition::removeAssetDefinition
@@ -176,8 +145,6 @@ namespace octronic::dream
         mAssetDefinitions.push_back(def);
         regroupAssetDefinitions();
     }
-
-
 
     size_t
     ProjectDefinition::countScenesDefinitions
@@ -285,8 +252,7 @@ namespace octronic::dream
         json scene;
         scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
-        Transform camTransform;
-        scene[Constants::SCENE_CAMERA_TRANSFORM] = camTransform.getJson();
+        scene[Constants::SCENE_CAMERA_TRANSFORM] = Transform().toJson();
         auto sd = new SceneDefinition(this, scene);
         sd->createNewRootEntityDefinition();
         mSceneDefinitions.push_back(sd);
@@ -550,8 +516,6 @@ namespace octronic::dream
                 return new AudioDefinition(this, assetDefinitionJs);
             case ASSET_TYPE_ENUM_FONT:
                 return new FontDefinition(this, assetDefinitionJs);
-            case ASSET_TYPE_ENUM_LIGHT:
-                return new LightDefinition(this, assetDefinitionJs);
             case ASSET_TYPE_ENUM_MATERIAL:
                 return new MaterialDefinition(this, assetDefinitionJs);
             case ASSET_TYPE_ENUM_MODEL:
@@ -582,9 +546,7 @@ namespace octronic::dream
         json j = json::object();
         j[Constants::NAME] = name;
         j[Constants::UUID] = Uuid::generateUuid();
-        j[Constants::PROJECT_AUTHOR] = "";
-        j[Constants::PROJECT_DESCRIPTION] = "";
-        j[Constants::PROJECT_STARTUP_SCENE] = "";
+        j[Constants::PROJECT_STARTUP_SCENE] = Uuid::INVALID;
         j[Constants::PROJECT_ASSET_ARRAY] = json::array();
         j[Constants::PROJECT_SCENE_ARRAY] = json::array();
         return new ProjectDefinition(j);

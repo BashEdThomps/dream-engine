@@ -18,10 +18,9 @@ namespace octronic::dream
     // Task ====================================================================
 
     Task::Task(ProjectRuntime* pr, const string& taskName, bool persistent)
-        : mProjectRuntime(pr),
+        : mProjectRuntimeHandle(pr),
           mID(TaskIDGenerator++),
-          mName(taskName),
-          mPersistent(persistent)
+          mName(taskName)
     {
         mID = taskIDGenerator();
         clearState();
@@ -64,11 +63,6 @@ namespace octronic::dream
     bool Task::hasState(const TaskState& s) const
     {
         return mState == s;
-    }
-
-    bool Task::isPersistent() const
-	{
-        return mPersistent;
     }
 
     void Task::clearState()

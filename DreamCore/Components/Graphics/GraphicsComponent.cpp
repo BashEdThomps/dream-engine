@@ -20,17 +20,15 @@
 
 #include "Camera.h"
 #include "Font/FontRuntime.h"
-#include "Light/LightRuntime.h"
 #include "Model/ModelRuntime.h"
 #include "Model/ModelMesh.h"
 #include "Shader/ShaderRuntime.h"
 
 #include "Common/GLHeader.h"
 #include "Common/Logger.h"
-#include "Common/Math.h"
 
 #include "Components/Cache.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Time.h"
 #include "Components/Window/WindowComponent.h"
 
@@ -60,21 +58,14 @@ namespace octronic::dream
     GraphicsComponent::GraphicsComponent(ProjectRuntime* pr)
         : Component(pr),
           mMaxFrameBufferSize(0),
-          // Geometry Pass Vars
-          mGeometryPassFB(0),
-          mGeometryPassPositionBuffer(0),
-          mGeometryPassAlbedoBuffer(0),
-          mGeometryPassNormalBuffer(0),
-          mGeometryPassDepthBuffer(0),
-          mGeometryPassIgnoreBuffer(0),
           // Shadow Pass Vars
           mShadowPassFB(0),
           mShadowPassDepthBuffer(0),
           mShadowMatrix(mat4(1.0f)),
           mShadowLight(nullptr),
-          // Light Pass Vars
-          mLightPassQuadVAO(0),
-          mLightPassQuadVBO(0),
+          // Sprite
+          mSpriteQuadVAO(0),
+          mSpriteQuadVBO(0),
           // Tasks
           mTaskQueue("GraphicsTaskQueue"),
           mDestructionTaskQueue("GraphicsDestructionTaskQueue"),
@@ -89,8 +80,8 @@ namespace octronic::dream
     GraphicsComponent::~GraphicsComponent()
     {
         LOG_TRACE("GraphicsComponent: Destroying Object");
-        freeGeometryBuffers();
         freeShadowBuffers();
+        freeSpriteQuad();
     }
 
     // Init/Setup ===============================================================
@@ -126,13 +117,6 @@ namespace octronic::dream
             return false;
         }
 
-        freeGeometryBuffers();
-        if (!setupGeometryBuffers())
-        {
-            LOG_ERROR("GraphicsComponent: Unable to create geometry buffers");
-            return false;
-        }
-
         freeShadowBuffers();
         if (!setupShadowBuffers())
         {
@@ -140,8 +124,8 @@ namespace octronic::dream
             return false;
         }
 
-        freeLightPassQuad();
-        if (!setupLightPassQuad())
+        freeSpriteQuad();
+        if (!setupSpriteQuad())
         {
             LOG_ERROR("GraphicsComponent: Unable to create screen quad");
             return false;
@@ -168,10 +152,14 @@ namespace octronic::dream
                 return false;
             }
 
+            // Setup Screen Space
             glViewport(0, 0, windowWidth, windowHeight);
+            mScreenSpaceProjectionMatrix = ortho(
+                        0.f, (float)mProjectRuntime->getWindowComponent()->getWidth(),
+                        0.f, (float)mProjectRuntime->getWindowComponent()->getHeight(),
+                        -1.f, 1.f);
+
             GLCheckError();
-            freeGeometryBuffers();
-            setupGeometryBuffers();
 
             LOG_DEBUG("GraphicsComponent: Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
             mProjectRuntime->getWindowComponent()->setWindowSizeChangedFlag(false);
@@ -179,9 +167,55 @@ namespace octronic::dream
         return true;
     }
 
+    void
+    GraphicsComponent::clearBuffers
+    (SceneRuntime* sr)
+    {
+        auto wc = mProjectRuntime->getWindowComponent();
+        auto clear = sr->getClearColor();
+
+        glBindFramebuffer(GL_FRAMEBUFFER,wc->getFrameBuffer());
+        GLCheckError();
+
+        glClearColor(clear.r,clear.g,clear.b,clear.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    // Environment =============================================================
+
+    void
+    GraphicsComponent::renderEnvironment
+    (SceneRuntime* sr)
+    {
+        ShaderRuntime* envShader = sr->getEnvironmentShader();
+        TextureRuntime* envTexture = sr->getEnvironmentTexture();
+
+        auto wc = mProjectRuntime->getWindowComponent();
+        wc->bindFrameBuffer();
+        GLCheckError();
+
+        assert(envShader != nullptr);
+        assert(envShader->getLoaded());
+        assert(envTexture != nullptr);
+        assert(envTexture->getLoaded());
+
+        auto camera = sr->getCamera();
+        envShader->use();
+        envShader->setViewMatrixUniform(camera->getViewMatrix());
+        envShader->setProjectionMatrixUniform(camera->getProjectionMatrix());
+        envShader->setTexture(GL_TEXTURE0, GL_TEXTURE_CUBE_MAP, envTexture->getCubeMapTextureID());
+        envShader->syncUniforms();
+        envTexture->renderCube();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GLCheckError();
+    }
+
     // Geometry Pass ============================================================
 
-    void GraphicsComponent::renderGeometryPass(SceneRuntime* sr)
+    void GraphicsComponent::renderModels(SceneRuntime* sr)
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
@@ -192,488 +226,74 @@ namespace octronic::dream
         }
 
         auto shaderCache = mProjectRuntime->getShaderCache();
+        auto windowComp = mProjectRuntime->getWindowComponent();
 
-        int width = mProjectRuntime->getWindowComponent()->getWidth();
-        int height = mProjectRuntime->getWindowComponent()->getHeight();
+        static glm::vec3 lightPositions[] =
+        {
+            glm::vec3(-20.0f,  20.0f, 20.0f),
+            glm::vec3( 20.0f,  20.0f, 20.0f),
+            glm::vec3(-20.0f, -20.0f, 20.0f),
+            glm::vec3( 20.0f, -20.0f, 20.0f),
+        };
+
+        static glm::vec3 lightColors[] =
+        {
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f)
+        };
+
+        int width = windowComp->getWidth();
+        int height = windowComp->getHeight();
 
         checkFrameBufferDimensions();
 
-        LOG_DEBUG("GraphicsComponent: ==> Running Geometry Render Pass");
-        // Setup
-        glViewport(0, 0,width ,height);
-        GLCheckError();
-        // Bind
-        glBindFramebuffer(GL_FRAMEBUFFER,mGeometryPassFB);
-        GLCheckError();
-        // Clear
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        GLCheckError();
-        glDisable(GL_BLEND);
-        GLCheckError();
-        glEnable(GL_DEPTH_TEST);
-        GLCheckError();
-        glDepthFunc(GL_LESS);
-        GLCheckError();
-        glEnable(GL_CULL_FACE);
-        GLCheckError();
-        glCullFace(GL_BACK);
-        GLCheckError();
+        LOG_DEBUG("GraphicsComponent: ==> Running Model Render Pass");
 
-        LOG_DEBUG("GraphicsComponent: Geometry Pass post setup");
-
-        // Clear the colorbuffer
-        if (sr != nullptr)
-        {
-            LOG_DEBUG("GraphicsComponent: SR is valid, clear color specific");
-            auto clearColour = sr->getClearColour();
-            glClearColor(clearColour.x(), clearColour.y(), clearColour.z(), 0.0f);
-            GLCheckError();
-        }
-        else
-        {
-            LOG_DEBUG("GraphicsComponent: SR is NULL, clear color black");
-            glClearColor(0.0f,0.0f,0.0f,0.0f);
-            GLCheckError();
-            return;
-        }
+        glBindFramebuffer(GL_FRAMEBUFFER,windowComp->getFrameBuffer());
+        GLCheckError();
 
         auto camera = sr->getCamera();
-
-        LOG_DEBUG("GraphicsComponent: Got camera, iterating shaders...");
+        auto envTexture = sr->getEnvironmentTexture();
 
         for (auto& runtime : *shaderCache->getRuntimeVectorHandle())
         {
             auto shader = static_cast<ShaderRuntime*>(runtime.get());
 
-            LOG_DEBUG("GraphicsComponent: rending with shader {}",shader->getNameAndUuidString());
+            LOG_DEBUG("GraphicsComponent: Rending shader {}",shader->getNameAndUuidString());
 
             if (shader->countMaterials() == 0)
             {
-                LOG_DEBUG("GraphicsComponent: shader {} has no materials",shader->getNameAndUuidString());
+                LOG_DEBUG("GraphicsComponent: Shader {} has no materials",shader->getNameAndUuidString());
                 continue;
             }
 
             if(shader->use())
             {
-                LOG_ERROR("GraphicsComponent: shader {} all good, rendering geometry pass",shader->getNameAndUuidString());
-                shader->setViewMatrix(camera->getViewMatrix());
-                shader->setProjectionMatrix(camera->getProjectionMatrix());
-                shader->setViewerPosition(camera->getTranslation());
-                shader->drawGeometryPass(camera);
+                LOG_INFO("GraphicsComponent: Shader {} all good, rendering geometry pass",shader->getNameAndUuidString());
+                shader->setViewMatrixUniform(camera->getViewMatrix());
+                shader->setProjectionMatrixUniform(camera->getProjectionMatrix());
+                shader->setCameraPositionUniform(camera->getTransform().getTranslation());
+                shader->setIrradianceTextureUniform(envTexture->getIrradianceTextureID());
+                shader->setPreFilterTextureUniform(envTexture->getPreFilterTextureID());
+                shader->setBrdfLutTextureUniform(envTexture->getBrdfLutTextureID());
+                shader->setLightPositionsUniform(lightPositions, 4);
+                shader->setLightColorsUniform(lightColors, 4);
+                //shader->drawModels(camera);
+                for (auto material : shader->getMaterialsVector())
+                {
+                    if (material->getUsedByVector().size() == 0) continue;
+
+                   	shader->bindMaterial(material);
+                    for (auto model : material->getUsedByVector())
+                    {
+                        model->drawModelRuntimes(camera,shader);
+                    }
+                }
             }
-            else
-            {
-                LOG_ERROR("GraphicsComponent: shader {} use() call failed",shader->getNameAndUuidString());
-            }
-        }
-    }
-
-    void
-    GraphicsComponent::freeGeometryBuffers
-    ()
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-        if (mGeometryPassFB > 0)
-        {
-            glDeleteFramebuffers(1, &mGeometryPassFB);
-            GLCheckError();
         }
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,0);
-        ShaderRuntime::CurrentTexture0 = 0;
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderRuntime::CurrentTexture1 = 0;
-
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderRuntime::CurrentTexture2 =0;
-
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderRuntime::CurrentTexture3 = 0;
-
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderRuntime::CurrentTexture4 = 0;
-
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        ShaderRuntime::CurrentTexture5 = 0;
-
-        // - position color buffer
-        if (mGeometryPassPositionBuffer > 0)
-        {
-            glDeleteTextures(1, &mGeometryPassPositionBuffer);
-            GLCheckError();
-        }
-
-        // - normal color buffer
-        if (mGeometryPassNormalBuffer > 0)
-        {
-            glDeleteTextures(1, &mGeometryPassNormalBuffer);
-            GLCheckError();
-        }
-
-        // - color + specular color buffer
-        if (mGeometryPassAlbedoBuffer > 0)
-        {
-            glDeleteTextures(1, &mGeometryPassAlbedoBuffer);
-            GLCheckError();
-        }
-
-        // Depth Buffer
-        if (mGeometryPassDepthBuffer > 0)
-        {
-            glDeleteRenderbuffers(1,&mGeometryPassDepthBuffer);
-            GLCheckError();
-        }
-
-        // Ignore Buffer
-        if (mGeometryPassIgnoreBuffer > 0)
-        {
-            glDeleteTextures(1,&mGeometryPassIgnoreBuffer);
-            GLCheckError();
-        }
-    }
-
-    bool
-    GraphicsComponent::setupGeometryBuffers
-    ()
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-
-        auto width = mProjectRuntime->getWindowComponent()->getWidth();
-        auto height = mProjectRuntime->getWindowComponent()->getHeight();
-
-        checkFrameBufferDimensions();
-
-        LOG_DEBUG("GraphicsComponent: Setting up Geometry Buffers with dimensions {}x{}",width,height);
-
-        glGenFramebuffers(1,&mGeometryPassFB);
-        GLCheckError();
-
-        if (mGeometryPassFB == 0)
-        {
-            LOG_ERROR("GraphicsComponent: Unable to create Geometry Framebuffer");
-            return false;
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, mGeometryPassFB);
-        GLCheckError();
-
-        // 0 - position buffer
-        glGenTextures(1, &mGeometryPassPositionBuffer);
-        GLCheckError();
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
-        GLCheckError();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, 0);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLCheckError();
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGeometryPassPositionBuffer, 0);
-        GLCheckError();
-
-        // 1 - normal buffer
-        glGenTextures(1, &mGeometryPassNormalBuffer);
-        GLCheckError();
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
-        GLCheckError();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, 0);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLCheckError();
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mGeometryPassNormalBuffer, 0);
-        GLCheckError();
-
-        // 2 - Albedo+specular buffer
-        glGenTextures(1, &mGeometryPassAlbedoBuffer);
-        GLCheckError();
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
-        GLCheckError();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLCheckError();
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, mGeometryPassAlbedoBuffer, 0);
-        GLCheckError();
-
-        // 4 - Ignore Lighting Buffer
-        glGenTextures(1, &mGeometryPassIgnoreBuffer);
-        GLCheckError();
-        glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
-        GLCheckError();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width,height, 0, GL_RGB, GL_FLOAT, 0);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLCheckError();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLCheckError();
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, mGeometryPassIgnoreBuffer, 0);
-        GLCheckError();
-
-        // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-        unsigned int attachments[4] = {
-            GL_COLOR_ATTACHMENT0,
-            GL_COLOR_ATTACHMENT1,
-            GL_COLOR_ATTACHMENT2,
-            GL_COLOR_ATTACHMENT3
-        };
-        glDrawBuffers(4, attachments);
-        GLCheckError();
-
-        // then also add render buffer object as depth buffer and check for completeness.
-        glGenRenderbuffers(1, &mGeometryPassDepthBuffer);
-        GLCheckError();
-        glBindRenderbuffer(GL_RENDERBUFFER, mGeometryPassDepthBuffer);
-        GLCheckError();
-#if defined (GL_ES_VERSION_3_0)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
-        GLCheckError();
-#else
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-        GLCheckError();
-#endif
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mGeometryPassDepthBuffer);
-        GLCheckError();
-
-        // finally check if framebuffer is complete
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            LOG_ERROR("GraphicsComponent: Deferred Rendering Framebuffer not complete!");
-            return false;
-        }
-        else
-        {
-            LOG_DEBUG("GraphicsComponent: Deferred Rending Buffer is complete!");
-        }
-        return true;
-    }
-
-    // Lighting Pass ============================================================
-
-    void GraphicsComponent::freeLightPassQuad()
-    {
-        if (mLightPassQuadVBO > 0) glDeleteBuffers(1,&mLightPassQuadVBO);
-        if (mLightPassQuadVAO > 0) glDeleteBuffers(1,&mLightPassQuadVAO);
-    }
-
-    bool
-    GraphicsComponent::setupLightPassQuad
-    ()
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-        float quadVertices[] = {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-
-        // setup plane VAO
-        glGenVertexArrays(1, &mLightPassQuadVAO);
-        GLCheckError();
-        glGenBuffers(1, &mLightPassQuadVBO);
-        GLCheckError();
-        glBindVertexArray(mLightPassQuadVAO);
-        GLCheckError();
-        glBindBuffer(GL_ARRAY_BUFFER, mLightPassQuadVBO);
-        GLCheckError();
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        GLCheckError();
-        glEnableVertexAttribArray(0);
-        GLCheckError();
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        GLCheckError();
-        glEnableVertexAttribArray(1);
-        GLCheckError();
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        GLCheckError();
-        glBindVertexArray(0);
-        GLCheckError();
-        return true;
-    }
-
-    void
-    GraphicsComponent::renderLightingPass
-    (SceneRuntime* sr)
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-
-        if (sr == nullptr) {
-            LOG_TRACE("GraphicsComponent: SceneRuntime == nullptr");
-            return;
-        }
-
-        ShaderRuntime* lightPassShader = sr->getLightingPassShader();
-        if (lightPassShader == nullptr || !lightPassShader->getLoaded()) return;
-
-        // Get window dimensions
-        auto width = mProjectRuntime->getWindowComponent()->getWidth();
-        auto height = mProjectRuntime->getWindowComponent()->getHeight();
-
-        LOG_DEBUG("==> Running Lighting Render Pass");
-
-        // Bind default framebuffer
-        mProjectRuntime->getWindowComponent()->bindFrameBuffer();
-
-        // Setup viewport
-        glViewport(0, 0, width, height);
-        GLCheckError();
-
-        // Clear Buffer
-        glClearColor(0.0f,0.0f,0.0f,0.0f);
-        GLCheckError();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        GLCheckError();
-
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-
-        // Activate light pass shader
-        if (lightPassShader->use())
-        {   // Setup source textures
-
-            // Position Texture
-            glActiveTexture(GL_TEXTURE0);
-            GLCheckError();
-            glBindTexture(GL_TEXTURE_2D, mGeometryPassPositionBuffer);
-            GLCheckError();
-            ShaderRuntime::CurrentTexture0 = mGeometryPassPositionBuffer;
-
-            // Normal Texture
-            glActiveTexture(GL_TEXTURE1);
-            GLCheckError();
-            glBindTexture(GL_TEXTURE_2D, mGeometryPassNormalBuffer);
-            GLCheckError();
-            ShaderRuntime::CurrentTexture1 = mGeometryPassNormalBuffer;
-
-            // Albedo Texture
-            glActiveTexture(GL_TEXTURE2);
-            GLCheckError();
-            glBindTexture(GL_TEXTURE_2D, mGeometryPassAlbedoBuffer);
-            GLCheckError();
-            ShaderRuntime::CurrentTexture2 = mGeometryPassAlbedoBuffer;
-
-            // Depth Texture
-            glActiveTexture(GL_TEXTURE3);
-            GLCheckError();
-            glBindTexture(GL_TEXTURE_2D, mShadowPassDepthBuffer);
-            GLCheckError();
-            ShaderRuntime::CurrentTexture3 = mShadowPassDepthBuffer;
-
-            // Ignore Texture
-            glActiveTexture(GL_TEXTURE4);
-            GLCheckError();
-            glBindTexture(GL_TEXTURE_2D, mGeometryPassIgnoreBuffer);
-            GLCheckError();
-            ShaderRuntime::CurrentTexture4 = mGeometryPassIgnoreBuffer;
-
-            // Setup Uniforms
-            GLuint pos    = 0;
-            GLuint norm   = 1;
-            GLuint alb    = 2;
-            GLuint shadow = 3;
-            GLuint ignore = 4;
-            lightPassShader->addUniform(INT1,"gPosition"  ,1, &pos);
-            lightPassShader->addUniform(INT1,"gNormal"    ,1, &norm);
-            lightPassShader->addUniform(INT1,"gAlbedoSpec",1, &alb);
-            lightPassShader->addUniform(INT1,"gShadow"    ,1, &shadow);
-            lightPassShader->addUniform(INT1,"gIgnore"    ,1, &ignore);
-
-            // Shadow Space Matrix
-            auto shadowMtx = lightPassShader->getUniformLocation("shadowSpaceMatrix");
-            glUniformMatrix4fv(shadowMtx,1,GL_FALSE,glm::value_ptr(mShadowMatrix));
-            GLCheckError();
-
-            // Viewer Position
-            lightPassShader->setViewerPosition(sr->getCamera()->getTranslation());
-
-            // Light Queue
-            lightPassShader->bindLightQueue(mLightQueue);
-
-            // Synchronize Uniforms
-            lightPassShader->syncUniforms();
-
-            // Copy content of geometry's depth buffer to the target
-            // framebuffer's depth buffer
-#if defined (GL_ES_VERSION_3_0)
-            GLuint read_fb = mGeometryPassFB;
-            GLuint draw_fb = mProjectRuntime->getWindowComponent()->getDepthBuffer();
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, read_fb);
-            GLenum fb_status = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER);
-            if(fb_status != GL_FRAMEBUFFER_COMPLETE)
-            {
-                LOG_ERROR("GraphicsComponent: READ_FRAMEBUFFER incomplete");
-                assert(false);
-            }
-            GLCheckError();
-
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_fb);
-            fb_status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-            if(fb_status != GL_FRAMEBUFFER_COMPLETE)
-            {
-                LOG_ERROR("GraphicsComponent: DRAW_FRAMEBUFFER incomplete");
-                assert(false);
-            }
-            GLCheckError();
-
-            LOG_TRACE("GraphicsComponent: Blit from SourceFB:{} to DestinationFB:{} size {}x{}",
-                      read_fb, draw_fb, width,height);
-
-            glBlitFramebuffer(
-                        /* Source */ 0, 0, width, height,
-                        /* Dest   */ 0, 0, width, height,
-                        GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-            GLCheckError();
-#else
-            // Setup the Read & Draw Framebuffers
-            GLuint read_fb = mGeometryPassFB;
-            GLuint draw_fb = mProjectRuntime->getWindowComponent()->getDepthBuffer();
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, read_fb);
-            GLCheckError();
-
-            GLenum fb_status = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER);
-            if(fb_status != GL_FRAMEBUFFER_COMPLETE)
-            {
-                LOG_ERROR("GraphicsComponent: READ_FRAMEBUFFER incomplete");
-                assert(false);
-            }
-            GLCheckError();
-
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_fb);
-            fb_status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-            if(fb_status != GL_FRAMEBUFFER_COMPLETE)
-            {
-                LOG_ERROR("GraphicsComponent: DRAW_FRAMEBUFFER incomplete");
-                assert(false);
-            }
-            GLCheckError();
-
-            LOG_TRACE("GraphicsComponent: Blit from SourceFB:{} to DestinationFB:{} size {}x{}",
-                      read_fb, draw_fb, width,height);
-
-            glBlitFramebuffer(
-                        /* Source */ 0, 0, width, height,
-                        /* Dest   */ 0, 0, width, height,
-                        GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-            GLCheckError();
-#endif
-            mProjectRuntime->getWindowComponent()->bindFrameBuffer();
-            // Bind & draw fullscreen quad
-            lightPassShader->bindVertexArray(mLightPassQuadVAO);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-            GLCheckError();
-        }
     }
 
     // Shadow Pass ==============================================================
@@ -790,9 +410,10 @@ namespace octronic::dream
         static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
 
         mat4 lightMat = mShadowLight->getTransform().getMatrix();
+        // TODO - could this just be the light transform matrix?
         mat4 lightView = glm::lookAt(
-                    vec3(lightMat[3]), // Light Pos
-                vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
+                    mShadowLight->getTransform().getTranslation(), // Light Pos
+                    vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
                 vec3(0.0f,1.0f,0.0f) // Up
                 );
 
@@ -806,8 +427,8 @@ namespace octronic::dream
 
         if(shadowPassShader->use())
         {
-            auto lsUniform = shadowPassShader->getUniformLocation("lightSpaceMatrix");
-            glUniformMatrix4fv(lsUniform,1,GL_FALSE,glm::value_ptr(lightMat));
+            //shadowPassShader->setLightSpaceMatrixUniform(lightMat);
+
             for (auto& runtime : *shaderCache->getRuntimeVectorHandle())
             {
                 auto s = static_cast<ShaderRuntime*>(runtime.get());
@@ -839,8 +460,9 @@ namespace octronic::dream
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         LOG_DEBUG("==> Running Font Pass");
 
-        if (sceneRuntime == nullptr) {
-            LOG_TRACE("GraphicsComponent: SceneRuntime == nullptr");
+        if (sceneRuntime == nullptr)
+        {
+            LOG_ERROR("GraphicsComponent: SceneRuntime == nullptr");
             return;
         }
 
@@ -849,20 +471,10 @@ namespace octronic::dream
 
         mProjectRuntime->getWindowComponent()->bindFrameBuffer();
 
-        glViewport(0,0,
-                   mProjectRuntime->getWindowComponent()->getWidth(),
-                   mProjectRuntime->getWindowComponent()->getHeight());
-
         glEnable(GL_BLEND);
         GLCheckError();
         glDisable(GL_DEPTH_TEST);
         GLCheckError();
-        /*
-        glDepthFunc(GL_LESS);
-        GLCheckError();
-        glDisable(GL_CULL_FACE);
-        GLCheckError();
-        */
 
         auto fontCache = sceneRuntime->getProjectRuntime()->getFontCache();
 
@@ -877,11 +489,8 @@ namespace octronic::dream
 
         // Activate the Font Shader
         fontShader->use();
-        mat4 fontProjection = ortho(
-                    0.f, (float)mProjectRuntime->getWindowComponent()->getWidth(),
-                    0.f, (float)mProjectRuntime->getWindowComponent()->getHeight(),
-                    -1.f, 1.f);
-        fontShader->setFontProjectionUniform(fontProjection);
+
+        fontShader->setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
 
         // Iterate through FontRuntimes
         for (auto& saRuntime : *fontCache->getRuntimeVectorHandle())
@@ -890,9 +499,10 @@ namespace octronic::dream
             // Iterate through FontTextInstances
             for (EntityRuntime* entity : *fontRuntime->getInstanceVector())
             {
-                fontShader->setFontPositionUniform(entity->getTransform().getTranslation().toGLM());
+                fontShader->setModelMatrixUniform(entity->getTransform().getMatrix());
                 GLCheckError();
-                fontShader->setFontColorUniform(entity->getFontColor());
+                fontShader->setColorUniform(entity->getFontColor());
+                fontShader->syncUniforms();
                 GLCheckError();
                 fontRuntime->draw(entity);
             }
@@ -901,12 +511,56 @@ namespace octronic::dream
 
     // Sprite ==================================================================
 
+    void GraphicsComponent::freeSpriteQuad()
+    {
+        if (mSpriteQuadVBO > 0) glDeleteBuffers(1,&mSpriteQuadVBO);
+        if (mSpriteQuadVAO > 0) glDeleteBuffers(1,&mSpriteQuadVAO);
+    }
+
+    bool
+    GraphicsComponent::setupSpriteQuad()
+    {
+        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
+
+        static float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+
+        // setup plane VAO
+        glGenVertexArrays(1, &mSpriteQuadVAO);
+        GLCheckError();
+        glGenBuffers(1, &mSpriteQuadVBO);
+        GLCheckError();
+        glBindVertexArray(mSpriteQuadVAO);
+        GLCheckError();
+        glBindBuffer(GL_ARRAY_BUFFER, mSpriteQuadVBO);
+        GLCheckError();
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        GLCheckError();
+        glEnableVertexAttribArray(0);
+        GLCheckError();
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        GLCheckError();
+        glEnableVertexAttribArray(1);
+        GLCheckError();
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        GLCheckError();
+        glBindVertexArray(0);
+        GLCheckError();
+        return true;
+    }
+
     void GraphicsComponent::renderSprites(SceneRuntime* sceneRuntime)
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         LOG_DEBUG("==> Running Sprite Pass");
 
-        if (sceneRuntime == nullptr) {
+        if (sceneRuntime == nullptr)
+        {
             LOG_TRACE("GraphicsComponent: SceneRuntime == nullptr");
             return;
         }
@@ -916,111 +570,49 @@ namespace octronic::dream
 
         mProjectRuntime->getWindowComponent()->bindFrameBuffer();
 
-        glViewport(0,0,
-                   mProjectRuntime->getWindowComponent()->getWidth(),
-                   mProjectRuntime->getWindowComponent()->getHeight());
-
         glEnable(GL_BLEND);
         GLCheckError();
 
         glDisable(GL_DEPTH_TEST);
         GLCheckError();
-        /*
-        glDepthFunc(GL_LESS);
-        GLCheckError();
-        glDisable(GL_CULL_FACE);
-        GLCheckError();
-        */
 
         auto textureCache = sceneRuntime->getProjectRuntime()->getTextureCache();
 
         if (textureCache->runtimeCount() == 0) return;
 
-
         if (shader == nullptr)
         {
             LOG_ERROR("GraphicsComponent: Sprite shader not found");
             return;
-            //assert(false);
         }
 
         if (!shader->getLoaded()) return;
 
-
-        // Activate the Font Shader
+        // Activate the Shader
         shader->use();
-        mat4 projection = ortho(
-                    0.f, (float)mProjectRuntime->getWindowComponent()->getWidth(),
-                    0.f, (float)mProjectRuntime->getWindowComponent()->getHeight(),
-                    -1.f, 1.f);
-        shader->setSpriteProjectionUniform(projection);
+        shader->setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
+        shader->bindVertexArray(mSpriteQuadVAO);
 
         // Iterate through Textureuntimes
         for (auto& textureRuntime : *textureCache->getRuntimeVectorHandle())
         {
             // None
-            if (textureRuntime->getInstanceVector()->empty())
-            {
-                continue;
-            }
+            if (textureRuntime->getInstanceVector()->empty()) continue;
+
+            glBindTexture(GL_TEXTURE_2D, textureRuntime->getTextureID());
+            GLCheckError();
 
             // Iterate through SpriteRuntimes
             for (EntityRuntime* entityRuntime : *textureRuntime->getInstanceVector())
             {
-                //shader->setSpritePositionUniform(entityRuntime->getTransform().getTranslation().toGLM());
-                //GLCheckError();
-                //spriteRuntime->draw();
+                shader->setModelMatrixUniform(entityRuntime->getTransform().getMatrix());
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                GLCheckError();
             }
         }
     }
 
     // Accessors ================================================================
-
-    void GraphicsComponent::addToLightQueue(EntityRuntime* runt)
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-
-        auto light = runt->getLightRuntime();
-
-        if (std::find(mLightQueue.begin(), mLightQueue.end(), light) == mLightQueue.end())
-        {
-            if (light->getType() == LightType::LT_DIRECTIONAL)
-            {
-                mShadowLight = runt;
-            }
-            mLightQueue.push_back(light);
-        }
-    }
-
-    void GraphicsComponent::clearLightQueue()
-    {
-        LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-        mLightQueue.clear();
-    }
-
-    GLuint GraphicsComponent::getGeometryPassPositionBuffer()
-    const
-    {
-        return mGeometryPassPositionBuffer;
-    }
-
-    GLuint GraphicsComponent::getGeometryPassAlbedoBuffer()
-    const
-    {
-        return mGeometryPassAlbedoBuffer;
-    }
-
-    GLuint GraphicsComponent::getGeometryPassNormalBuffer()
-    const
-    {
-        return mGeometryPassNormalBuffer;
-    }
-
-    GLuint GraphicsComponent::getGeometryPassDepthBuffer()
-    const
-    {
-        return mGeometryPassDepthBuffer;
-    }
 
     GLuint GraphicsComponent::getShadowPassDepthBuffer()
     const
@@ -1028,16 +620,10 @@ namespace octronic::dream
         return mShadowPassDepthBuffer;
     }
 
-    GLuint GraphicsComponent::getGeometryPassIgnoreBuffer()
-    const
-    {
-        return mGeometryPassIgnoreBuffer;
-    }
-
     void GraphicsComponent::checkFrameBufferDimensions()
-    const
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
+        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&mMaxFrameBufferSize);
         int width = mProjectRuntime->getWindowComponent()->getWidth();
         int height = mProjectRuntime->getWindowComponent()->getHeight();
         assert(mMaxFrameBufferSize > 0);
@@ -1064,35 +650,35 @@ namespace octronic::dream
         auto materialCache = mProjectRuntime->getMaterialCache();
         for (auto& material : *materialCache->getRuntimeVectorHandle())
         {
-            material->pushNextTask();
+            material->pushTasks();
         }
 
         // Models
         auto modelCache = mProjectRuntime->getModelCache();
         for (auto& model : *modelCache->getRuntimeVectorHandle())
         {
-            model->pushNextTask();
+            model->pushTasks();
         }
 
         // Shaders
         auto shaderCache = mProjectRuntime->getShaderCache();
         for (auto& shader : *shaderCache->getRuntimeVectorHandle())
         {
-            shader->pushNextTask();
+            shader->pushTasks();
         }
 
         // Textures
         auto textureCache = mProjectRuntime->getTextureCache();
         for (auto& texture : *textureCache->getRuntimeVectorHandle())
         {
-            texture->pushNextTask();
+            texture->pushTasks();
         }
 
         // Fonts
         auto fontCache = mProjectRuntime->getFontCache();
         for (auto& font : *fontCache->getRuntimeVectorHandle())
         {
-            font->pushNextTask();
+            font->pushTasks();
         }
 
         // This

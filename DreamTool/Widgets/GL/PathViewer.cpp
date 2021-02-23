@@ -153,16 +153,6 @@ namespace octronic::dream::tool
             LOG_DEBUG("PathViewer: No object selected");
             return;
         }
-        else
-        {
-            // TODO - no
-            //if (mPathRuntime == nullptr)
-            //{
-            //   mPathRuntime = new PathRuntime(mPathDefinition,nullptr);
-            //}
-        }
-
-        mPathRuntime->loadFromDefinition();
 
         auto controls = mPathDefinition->getControlPoints();
 
@@ -207,6 +197,7 @@ namespace octronic::dream::tool
         {
             return;
         }
+
        vector<vec3> splines = mPathRuntime->getSplinePoints();
 
        for (size_t i=1; i < splines.size(); i++)
@@ -242,7 +233,7 @@ namespace octronic::dream::tool
     PathViewer::generateNode
     (const PathControlPoint& cp)
     {
-        vec3 pos = cp.position.toGLM();
+        vec3 pos = cp.position;
         int index = cp.index;
 
         LOG_TRACE("PathViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);

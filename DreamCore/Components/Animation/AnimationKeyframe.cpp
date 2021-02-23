@@ -9,9 +9,6 @@ namespace octronic::dream
     (int id)
         : mID(id),
           mTime(0),
-          mTranslation(Vector3(0.0f)),
-          mRotation(Vector3(0.0f)),
-          mScale(Vector3(1.0f)),
           mEasingType(AnimationEasing::EasingType::EasingBounceInOut)
     {
 
@@ -57,19 +54,9 @@ namespace octronic::dream
             mEasingType = static_cast<AnimationEasing::EasingType>(js[Constants::KEYFRAME_EASING_TYPE]);
         }
 
-        if (js.find(Constants::KEYFRAME_TRANSLATION) != js.end())
+        if (js.find(Constants::KEYFRAME_TRANSFORM) != js.end())
         {
-            mTranslation = Vector3(js[Constants::KEYFRAME_TRANSLATION]);
-        }
-
-        if (js.find(Constants::KEYFRAME_ROTATION) != js.end())
-        {
-            mRotation = Vector3(js[Constants::KEYFRAME_ROTATION]);
-        }
-
-        if (js.find(Constants::KEYFRAME_SCALE) != js.end())
-        {
-            mScale = Vector3(js[Constants::KEYFRAME_SCALE]);
+            mTransform = Transform(js[Constants::KEYFRAME_TRANSFORM]);
         }
     }
 
@@ -82,10 +69,7 @@ namespace octronic::dream
         js[Constants::KEYFRAME_ID] = mID;
         js[Constants::KEYFRAME_TIME] = mTime;
         js[Constants::KEYFRAME_EASING_TYPE] = static_cast<unsigned int>(mEasingType);
-        js[Constants::KEYFRAME_TRANSLATION] = mTranslation.toJson();
-        js[Constants::KEYFRAME_ROTATION] = mRotation.toJson();
-        js[Constants::KEYFRAME_SCALE] = mScale.toJson();
-
+        js[Constants::KEYFRAME_TRANSFORM] = mTransform.toJson();
         return js;
     }
 
@@ -144,49 +128,19 @@ namespace octronic::dream
         mID = iD;
     }
 
-    Vector3
-    AnimationKeyframe::getTranslation
+    Transform
+    AnimationKeyframe::getTransform
     ()
     const
     {
-        return mTranslation;
+        return mTransform;
     }
 
     void
-    AnimationKeyframe::setTranslation
-    (const Vector3& translation)
+    AnimationKeyframe::setTransform
+    (const Transform& transform)
     {
-        mTranslation = translation;
-    }
-
-    Vector3
-    AnimationKeyframe::getRotation
-    ()
-    const
-    {
-        return mRotation;
-    }
-
-    void
-    AnimationKeyframe::setRotation
-    (const Vector3& rotation)
-    {
-        mRotation = rotation;
-    }
-
-    Vector3
-    AnimationKeyframe::getScale
-    ()
-    const
-    {
-        return mScale;
-    }
-
-    void
-    AnimationKeyframe::setScale
-    (const Vector3& scale)
-    {
-        mScale = scale;
+        mTransform = transform;
     }
 
     AnimationEasing::EasingType

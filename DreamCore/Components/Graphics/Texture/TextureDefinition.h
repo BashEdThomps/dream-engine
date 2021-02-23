@@ -26,6 +26,24 @@ namespace octronic::dream
     public:
         TextureDefinition(ProjectDefinition* pd, const json& js);
         ~TextureDefinition() override;
+
+        bool getIsEnvironmentTexture();
+        void setIsEnvironmentTexture(bool b);
+
+        bool getFlipVertical();
+        void setFlipVertical(bool b);
+
+        UuidType getEquiToCubeMapShader();
+        void setEquiToCubeMapShader(UuidType u);
+
+        UuidType getIrradianceMapShader();
+        void setIrradianceMapShader(UuidType u);
+
+        UuidType getPreFilterShader();
+        void setPreFilterShader(UuidType u);
+
+        UuidType getBrdfLutShader();
+        void setBrdfLutShader(UuidType u);
     };
 }
 

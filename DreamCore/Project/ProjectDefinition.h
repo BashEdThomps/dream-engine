@@ -22,9 +22,6 @@ namespace octronic::dream
     class Project;
     class SceneDefinition;
     class AssetDefinition;
-    class ShaderDefinition;
-    class TextureDefinition;
-    class MaterialDefinition;
 
     class ProjectDefinition : public Definition
     {
@@ -32,12 +29,6 @@ namespace octronic::dream
     public:
         ProjectDefinition(const json& data);
         ~ProjectDefinition() override;
-
-        string getAuthor();
-        void setAuthor(const string& author);
-
-        string getDescription();
-        void setDescription(const string& description);
 
         UuidType getStartupSceneUuid();
         void setStartupSceneUuid(UuidType sceneUuid);

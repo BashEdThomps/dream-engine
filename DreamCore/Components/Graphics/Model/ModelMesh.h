@@ -23,7 +23,6 @@
 
 #include "Components/Graphics/Material/MaterialRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
-#include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Vertex.h"
 #include "Entity/BoundingBox.h"
@@ -85,7 +84,7 @@ namespace octronic::dream
         const vector<Vertex>& getVertices() const;
         const vector<GLuint>& getIndices() const;
 
-        void drawGeometryPassRuntimes(Camera* camera, ShaderRuntime* shader);
+        void drawModelRuntimes(Camera* camera, ShaderRuntime* shader);
         void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
 
         GLuint getVAO() const;
@@ -103,8 +102,10 @@ namespace octronic::dream
         size_t getIndicesCount();
         size_t getVerticesCount();
         bool loadIntoGL();
-        void pushNextTask();
+        void pushTasks();
 
+    private:
+        void renderDebugSphere();
     private:
         ModelRuntime* mParent;
         MaterialRuntime* mMaterial;

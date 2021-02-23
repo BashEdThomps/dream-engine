@@ -84,7 +84,6 @@ namespace octronic::dream
         void exposeAnimationRuntime();
         void exposeAudioRuntime();
         void exposeEntityRuntime();
-        void exposeLightRuntime();
         void exposeModelRuntime();
         void exposePathRuntime();
         void exposePhysicsObjectRuntime();

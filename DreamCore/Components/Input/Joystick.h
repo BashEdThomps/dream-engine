@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/Vector.h"
+#include "Math/Vector.h"
 
 #include <string>
 #include <glm/fwd.hpp>
@@ -154,12 +154,12 @@ namespace octronic::dream
         JoystickNavigation(JoystickState* state, JoystickMapping* mapping);
         virtual ~JoystickNavigation();
         virtual void update(SceneRuntime* rt) = 0;
-        void setHeading(const Vector2& h);
-        Vector2& getHeading();
+        void setHeading(const vec2& h);
+        vec2& getHeading();
     protected:
         JoystickState* mJoystickState;
         JoystickMapping* mJoystickMapping;
-        Vector2 mHeading;
+        vec2 mHeading;
     };
 
     class JoystickFaceForwardNavigation : public JoystickNavigation

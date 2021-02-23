@@ -36,9 +36,24 @@ namespace octronic::dream
         mIBO = ibo;
     }
 
+    void ModelFreeMeshTask::setMaterialRuntime(MaterialRuntime* m)
+    {
+       mMaterial = m;
+    }
+
+    void ModelFreeMeshTask::setMeshRemovedPointer(ModelMesh* mesh)
+    {
+        mMeshRemoved = mesh;
+    }
+
     void ModelFreeMeshTask::execute()
     {
         LOG_TRACE("ModelTasks: Executing {}",getID());
+
+        if (mMaterial != nullptr)
+        {
+            mMaterial->removeMesh(mMeshRemoved);
+        }
 
         if (mVAO > 0)
         {

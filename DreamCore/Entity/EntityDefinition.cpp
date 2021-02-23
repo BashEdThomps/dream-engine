@@ -20,7 +20,8 @@
 #include "Project/ProjectDefinition.h"
 
 #include "Components/AssetDefinition.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
+#include "Math/Vector.h"
 
 #include <regex>
 
@@ -38,12 +39,12 @@ namespace octronic::dream
           mParentEntity(parent),
           mSceneDefinition(sceneDefinition)
     {
-        LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         if (randomUuid)
         {
             mJson[Constants::UUID] = Uuid::generateUuid();
             LOG_TRACE( "EntityDefinition: With new UUID",getNameAndUuidString());
         }
+        LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
         mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
     }
 
@@ -72,25 +73,7 @@ namespace octronic::dream
     EntityDefinition::setTransform
     (Transform tform)
     {
-        mJson[Constants::TRANSFORM] = tform.getJson();
-    }
-
-    void
-    EntityDefinition::setHasCameraFocus
-    (bool fc)
-    {
-        mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = fc;
-    }
-
-    bool
-    EntityDefinition::getHasCameraFocus
-    ()
-    {
-        if (mJson.find(Constants::ENTITY_HAS_CAMERA_FOCUS) == mJson.end())
-        {
-            mJson[Constants::ENTITY_HAS_CAMERA_FOCUS] = false;
-        }
-        return mJson[Constants::ENTITY_HAS_CAMERA_FOCUS];
+        mJson[Constants::TRANSFORM] = tform.toJson();
     }
 
     void
@@ -183,7 +166,7 @@ namespace octronic::dream
             defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
 
             Transform transform;
-            defJson[Constants::TRANSFORM] = transform.getJson();
+            defJson[Constants::TRANSFORM] = transform.toJson();
         }
         else
         {
@@ -401,20 +384,20 @@ namespace octronic::dream
         mParentEntity = parentEntity;
     }
 
-    void EntityDefinition::setFontColor(const Vector3& color)
+    void EntityDefinition::setFontColor(const vec4& color)
     {
-        mJson[Constants::ENTITY_FONT_COLOR] =  color.toJson();
+        mJson[Constants::ENTITY_FONT_COLOR] =  Vector4::toJson(color);
 
     }
 
-    Vector3 EntityDefinition::getFontColor()
+    vec4 EntityDefinition::getFontColor()
     {
-        Vector3 retval(1.f);
+        vec4 retval(1.f);
         if (mJson.find(Constants::ENTITY_FONT_COLOR) == mJson.end())
         {
-            mJson[Constants::ENTITY_FONT_COLOR] = retval.toJson();
+            mJson[Constants::ENTITY_FONT_COLOR] = Vector4::toJson(retval);
         }
-        retval = Vector3(mJson[Constants::ENTITY_FONT_COLOR]);
+        retval = Vector4::fromJson(mJson[Constants::ENTITY_FONT_COLOR]);
         return retval;
     }
 
@@ -448,5 +431,21 @@ namespace octronic::dream
         }
         retval = mJson[Constants::ENTITY_FONT_SCALE];
         return retval;
+    }
+
+    TransformSpace EntityDefinition::getTransformSpace()
+    {
+       TransformSpace t = TRANSFORM_SPACE_WORLD;
+       if (mJson.find(Constants::ENTITY_TRANSFORM_SPACE) == mJson.end())
+       {
+           mJson[Constants::ENTITY_TRANSFORM_SPACE] = t;
+       }
+       t = mJson[Constants::ENTITY_TRANSFORM_SPACE];
+       return t;
+    }
+
+    void EntityDefinition::setTransformSpace(TransformSpace t)
+    {
+       mJson[Constants::ENTITY_TRANSFORM_SPACE] = t;
     }
 }

@@ -14,6 +14,7 @@
 
 #include "Common/Logger.h"
 #include "Entity/EntityRuntime.h"
+#include "Math/Quaternion.h"
 
 #include <iostream>
 #include <LinearMath/btMatrix3x3.h>
@@ -40,19 +41,23 @@ namespace octronic::dream
 
     void
     PhysicsMotionState::getWorldTransform
-    (btTransform &worldTrans) const
+    (btTransform& worldTrans) const
     {
-        worldTrans.setFromOpenGLMatrix(mEntityRuntime->getTransform().getMatrixFloatPointer());
+        auto tx = mEntityRuntime->getTransform();
+        worldTrans.setFromOpenGLMatrix(glm::value_ptr(tx.getMatrix()));
     }
 
     void
     PhysicsMotionState::setWorldTransform
-    (const btTransform &worldTrans)
+    (const btTransform& worldTrans)
     {
         LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
-        float mtx[16];
-        worldTrans.getOpenGLMatrix(mtx);
-        mEntityRuntime->setTransform(Transform(glm::make_mat4(mtx)));
+        auto origin = worldTrans.getOrigin();
+        auto orientation = worldTrans.getRotation();
+        Transform tx;
+        tx.setTranslation(Vector3::fromBullet(origin));
+        //tx.setOrientation(mat4_cast(Quaternion::fromBullet(orientation)));
+        mEntityRuntime->setTransform(tx);
     }
 
     void

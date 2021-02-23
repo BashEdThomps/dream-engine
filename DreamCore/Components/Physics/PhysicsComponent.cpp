@@ -19,7 +19,7 @@
 #include "PhysicsTasks.h"
 #include "Common/Logger.h"
 #include "Components/Component.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Event.h"
 #include "Components/Time.h"
 #include "Scene/SceneRuntime.h"
@@ -147,25 +147,25 @@ namespace octronic::dream
 
     void
     PhysicsComponent::setGravity
-    (const Vector3& gravity)
+    (const vec3& gravity)
     {
-        LOG_DEBUG("PhysicsComponent: Setting Gravity {},{},{}" , gravity.x(), gravity.y(), gravity.z());
+        LOG_DEBUG("PhysicsComponent: Setting Gravity {},{},{}" , gravity.x, gravity.y, gravity.z);
         if (mDynamicsWorld != nullptr)
         {
-            mDynamicsWorld->setGravity(btVector3(gravity.x(), gravity.y(), gravity.z()));
+            mDynamicsWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
         }
     }
 
-    Vector3
+    vec3
     PhysicsComponent::getGravity
     ()
     {
         if (mDynamicsWorld != nullptr)
         {
             auto gv = mDynamicsWorld->getGravity();
-            return Vector3(gv.x(),gv.y(),gv.z());
+            return Vector3::fromBullet(gv);
         }
-        return Vector3(0.0f);
+        return vec3(0.0f);
     }
 
     bool
@@ -178,8 +178,7 @@ namespace octronic::dream
         mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
         mSolver = new btSequentialImpulseConstraintSolver();
         mDynamicsWorld = new btDiscreteDynamicsWorld(
-                    mDispatcher, mBroadphase, mSolver, mCollisionConfiguration
-                    );
+                    mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
         //mDynamicsWorld->setGravity(mGravity);
         mDebugDrawer = new PhysicsDebugDrawer();
         mDebugDrawer->init();

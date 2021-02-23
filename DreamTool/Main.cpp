@@ -4,7 +4,7 @@ using octronic::dream::tool::DreamToolContext;
 
 int main(int argc,char** argv)
 {
-    LOG_LEVEL(LOG_LEVEL_TRACE);
+    LOG_LEVEL(LOG_LEVEL_ERROR);
     LOG_TRACE("Main: Starting...");
 
     DreamToolContext context(argc,argv);

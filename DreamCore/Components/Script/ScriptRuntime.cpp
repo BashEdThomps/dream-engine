@@ -153,7 +153,7 @@ namespace octronic::dream
     }
 
 
-    void ScriptRuntime::pushNextTask()
+    void ScriptRuntime::pushTasks()
     {
         auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
 

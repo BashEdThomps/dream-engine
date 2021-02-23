@@ -14,8 +14,9 @@
 
 #include <vector>
 #include "Base/Definition.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 
+using glm::vec4;
 
 namespace octronic::dream
 {
@@ -37,9 +38,6 @@ namespace octronic::dream
 
         void loadRootEntityDefinition();
 
-        void setCameraMovementSpeed(float speed);
-        float getCameraMovementSpeed();
-
         void setPhysicsDebug(bool debug);
         bool getPhysicsDebug();
 
@@ -55,49 +53,20 @@ namespace octronic::dream
         void setMaxDrawDistance(float mdd);
         float getMaxDrawDistance();
 
-        Vector3 getCameraTranslation();
-        void setCameraTranslation(const Vector3& trans);
+        Transform getCameraTransform();
+        void setCameraTransform(const Transform& trans);
 
-        Vector3 getCameraLookAt();
-        void setCameraLookAt(const Vector3& lookAt);
+        vec3 getGravity();
+        void setGravity(const vec3& gravity);
 
-        Vector3 getGravity();
-        void setGravity(const Vector3& gravity);
-        void setGravityX(float);
-        void setGravityY(float);
-        void setGravityZ(float);
-
-        Vector3 getClearColour();
-        void setClearColour(const Vector3& clearColour);
-        void setClearColourR(float);
-        void setClearColourG(float);
-        void setClearColourB(float);
+        vec4 getClearColor();
+        void setClearColor(const vec4& clear);
 
         EntityDefinition* getRootEntityDefinition();
         ProjectDefinition* getProjectDefinition();
         EntityDefinition* createNewRootEntityDefinition();
 
         json getJson() override;
-
-        float getCameraTranslationX();
-        float getCameraTranslationY();
-        float getCameraTranslationZ();
-
-        void setCameraTranslationX(float val);
-        void setCameraTranslationY(float val);
-        void setCameraTranslationZ(float val);
-
-        void setCameraPitch(float pitch);
-        float getCameraPitch();
-
-        void setCameraYaw(float yaw);
-        float getCameraYaw();
-
-        UuidType getCameraFocusedOn();
-        void setCameraFocusedOn(UuidType focus);
-
-        UuidType getLightingPassShader();
-        void setLightingPassShader(UuidType shader);
 
         UuidType getShadowPassShader();
         void setShadowPassShader(UuidType shader);
@@ -113,5 +82,15 @@ namespace octronic::dream
 
         void setPlayerObject(UuidType po);
         UuidType getPlayerObject();
+
+        void setCameraFOV(float);
+        float getCameraFOV();
+
+        UuidType getEnvironmentTexture();
+        void setEnvironmentTexture(UuidType u);
+
+        UuidType getEnvironmentShader();
+        void setEnvironmentShader(UuidType u);
+
     };
 }

@@ -15,7 +15,7 @@
 #include "SceneState.h"
 
 #include "Base/Runtime.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Script/ScriptTasks.h"
 
@@ -37,6 +37,7 @@ namespace octronic::dream
     class EntityRuntime;
     class ShaderRuntime;
     class ScriptRuntime;
+    class TextureRuntime;
 
     class SceneRuntime : public Runtime
     {
@@ -50,11 +51,11 @@ namespace octronic::dream
         void setState(SceneState state);
         bool hasState(SceneState state) const;
 
-        Vector3 getGravity();
-        void setGravity(const Vector3& gravity);
+        vec3 getGravity();
+        void setGravity(const vec3& gravity);
 
-        Vector3 getClearColour();
-        void setClearColour(const Vector3& clearColour);
+        vec4 getClearColor();
+        void setClearColor(const vec4& clear);
 
         bool loadFromDefinition() override;
         void destroyRuntime();
@@ -90,9 +91,6 @@ namespace octronic::dream
         void showScenegraph() const;
         void collectGarbage();
 
-        ShaderRuntime* getLightingPassShader() const;
-        void setLightingPassShader(ShaderRuntime* lightingShader);
-
         ShaderRuntime* getShadowPassShader() const;
         void setShadowPassShader(ShaderRuntime* shadowPassShader);
 
@@ -102,6 +100,8 @@ namespace octronic::dream
 		ShaderRuntime* getSpriteShader() const;
         void setSpriteShader(ShaderRuntime* shader);
 
+        TextureRuntime* getEnvironmentTexture() const;
+        ShaderRuntime* getEnvironmentShader() const;
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
         vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
@@ -128,24 +128,21 @@ namespace octronic::dream
 
     protected:
         void updateLifetime();
-        vector<EntityRuntime*> getEntityRuntimeCleanUpQueue() const;
-        void addEntityRuntimeToCleanUpQueue(EntityRuntime*);
-        void clearEntityRuntimeCleanUpQueue();
-        void processEntityRuntimeCleanUpQueue();
         void createAllAssetRuntimes();
         void setDeleteFlagOnAllEntityRuntimes();
 
     private:
         SceneState mState;
-        Vector3 mClearColour;
+        vec4 mClearColor;
         ProjectRuntime* mProjectRuntime;
         vector<EntityRuntime*> mEntityRuntimeCleanUpQueue;
         EntityRuntime* mRootEntityRuntime;
-        ShaderRuntime* mLightingPassShader;
         ShaderRuntime* mShadowPassShader;
         ShaderRuntime* mFontShader;
         ShaderRuntime* mSpriteShader;
         ScriptRuntime* mInputScript;
+        TextureRuntime* mEnvironmentTexture;
+        ShaderRuntime* mEnvironmentShader;
         shared_ptr<InputScriptCreateStateTask> mInputScriptCreateStateTask;
         shared_ptr<InputScriptRemoveStateTask> mInputScriptRemoveStateTask;
         Camera mCamera;

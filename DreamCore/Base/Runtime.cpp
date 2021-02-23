@@ -59,11 +59,13 @@ namespace octronic::dream
     }
 
     Definition* Runtime::getDefinitionHandle()
+    const
     {
         return mDefinitionHandle;
     }
 
     shared_ptr<RuntimeLoadFromDefinitionTask> Runtime::getLoadFromDefinitionTask()
+    const
     {
         return mLoadFromDefinitionTask;
     }

@@ -20,7 +20,7 @@
 
 #include "Common/Logger.h"
 #include "Common/Constants.h"
-
+#include "Math/Vector.h"
 
 
 namespace octronic::dream
@@ -37,7 +37,8 @@ namespace octronic::dream
         LOG_TRACE("MaterialDefinition: Destructing");
     }
 
-    // Shader
+    // Shader ==================================================================
+
     UuidType
     MaterialDefinition::getShader
     ()
@@ -56,299 +57,104 @@ namespace octronic::dream
         mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
     }
 
-    // Textures
+    // Albedo ==================================================================
+
     UuidType
-    MaterialDefinition::getDiffuseTexture
+    MaterialDefinition::getAlbedoTexture
     ()
     {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE].is_number())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE] = 0;
+            mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO] = 0;
         }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE];
+        return mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO];
     }
 
     void
-    MaterialDefinition::setDiffuseTexture
+    MaterialDefinition::setAlbedoTexture
     (UuidType val)
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE]  = val;
+        mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO]  = val;
     }
 
-    UuidType
-    MaterialDefinition::getSpecularTexture
-    ()
-    {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE].is_number())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE];
-    }
-
-    void
-    MaterialDefinition::setSpecularTexture
-    (UuidType val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE]  = val;
-    }
+    // Normal ==================================================================
 
     UuidType
     MaterialDefinition::getNormalTexture
     ()
     {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE].is_number())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE] = 0;
+            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL] = 0;
         }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE];
+        return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL];
     }
 
     void
     MaterialDefinition::setNormalTexture
     (UuidType val)
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL_TEXTURE]  = val;
+        mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL]  = val;
     }
+
+    // Metallic ================================================================
 
     UuidType
-    MaterialDefinition::getDisplacementTexture
+    MaterialDefinition::getMetallicTexture
     ()
     {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE].is_number())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE] = 0;
+            mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC] = 0;
         }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE];
+        return mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC];
     }
 
     void
-    MaterialDefinition::setDisplacementTexture
+    MaterialDefinition::setMetallicTexture
     (UuidType val)
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE]  = val;
+        mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC] = val;
     }
 
-    // Colour
-    Vector3
-    MaterialDefinition::getDiffuseColour
+    // Roughness ===============================================================
+
+    UuidType
+    MaterialDefinition::getRoughnessTexture
     ()
     {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR) == mJson.end())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = black();
+            mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS] = 0;
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR]);
+        return mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS];
     }
 
     void
-    MaterialDefinition::setDiffuseColour
-    (Vector3 val)
+    MaterialDefinition::setRoughnessTexture
+    (UuidType val)
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR] = val.toJson();
+        mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS] = val;
     }
 
-    Vector3
-    MaterialDefinition::getSpecularColour
+    // Ao ======================================================================
+
+    UuidType
+    MaterialDefinition::getAoTexture
     ()
     {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR) == mJson.end())
+        if(!mJson[Constants::ASSET_ATTR_MATERIAL_AO].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = black();
+            mJson[Constants::ASSET_ATTR_MATERIAL_AO] = 0;
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR]);
+        return mJson[Constants::ASSET_ATTR_MATERIAL_AO];
     }
 
     void
-    MaterialDefinition::setSpecularColour
-    (Vector3 val)
+    MaterialDefinition::setAoTexture
+    (UuidType val)
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_SPECULAR_COLOUR] = val.toJson();
-    }
-
-    Vector3
-    MaterialDefinition::getAmbientColour
-    ()
-    {
-        if (mJson.find(Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = black();
-        }
-        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR]);
-    }
-
-    void
-    MaterialDefinition::setAmbientColour
-    (Vector3 val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_AMBIENT_COLOUR] = val.toJson();
-    }
-
-    Vector3
-    MaterialDefinition::getReflectiveColour
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = black();
-        }
-        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR]);
-    }
-
-    void
-    MaterialDefinition::setReflectiveColour
-    (Vector3 val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR] = val.toJson();
-    }
-
-    Vector3
-    MaterialDefinition::getEmissiveColour
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = black();
-        }
-        return Vector3(mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR]);
-    }
-
-    void
-    MaterialDefinition::setEmissiveColour
-    (Vector3 val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR] = val.toJson();
-    }
-
-    json
-    MaterialDefinition::black
-    ()
-    {
-        return Vector3(0.f).toJson();
-    }
-
-    float
-    MaterialDefinition::getOpacity
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_OPACITY) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY];
-    }
-
-    void
-    MaterialDefinition::setOpacity
-    (float val)
-    {
-
-        mJson[Constants::ASSET_ATTR_MATERIAL_OPACITY] = val;
-
-    }
-
-    float
-    MaterialDefinition::getBumpScaling
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING];
-    }
-
-    void
-    MaterialDefinition::setBumpScaling
-    (float val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_BUMP_SCALING] = val;
-    }
-
-    float
-    MaterialDefinition::getHardness
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_HARDNESS) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS];
-    }
-
-    void
-    MaterialDefinition::setHardness
-    (float val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_HARDNESS] = val;
-    }
-
-    float
-    MaterialDefinition::getReflectivity
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY];
-    }
-
-    void
-    MaterialDefinition::setReflectivity
-    (float val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFLECTIVITY] = val;
-    }
-
-    float
-    MaterialDefinition::getShininessStrength
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH];
-    }
-
-    void
-    MaterialDefinition::setShininessStrength
-    (float val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_SHININESS_STRENGTH] = val;
-    }
-
-    float
-    MaterialDefinition::getRefractionIndex
-    ()
-    {
-        if(mJson.find(Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = 0.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX];
-    }
-
-    void
-    MaterialDefinition::setRefractionIndex
-    (float val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_REFRACTION_INDEX] = val;
-    }
-
-    bool MaterialDefinition::getIgnore()
-    {
-        if (mJson.find(Constants::ASSET_ATTR_MATERIAL_IGNORE) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = false;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE];
-    }
-
-    void MaterialDefinition::setIgnore(bool ignore)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_IGNORE] = ignore;
+        mJson[Constants::ASSET_ATTR_MATERIAL_AO]  = val;
     }
 }
 

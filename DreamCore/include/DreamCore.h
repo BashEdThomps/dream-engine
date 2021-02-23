@@ -29,9 +29,6 @@
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Graphics/Model/ModelMesh.h"
 
-#include "Components/Graphics/Light/LightDefinition.h"
-#include "Components/Graphics/Light/LightRuntime.h"
-
 #include "Components/Graphics/Material/MaterialDefinition.h"
 #include "Components/Graphics/Material/MaterialRuntime.h"
 

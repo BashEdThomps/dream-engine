@@ -22,14 +22,12 @@
 #include "Components/Audio/AudioRuntime.h"
 #include "Components/Audio/AudioComponent.h"
 #include "Components/Graphics/Model/ModelRuntime.h"
-#include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Font/FontRuntime.h"
 #include "Components/Physics/PhysicsObjectRuntime.h"
 #include "Components/Physics/PhysicsComponent.h"
 #include "Components/AssetDefinition.h"
 #include "Components/Audio/AudioDefinition.h"
 #include "Components/Graphics/Font/FontDefinition.h"
-#include "Components/Graphics/Light/LightDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
 #include "Components/Physics/PhysicsObjectDefinition.h"
 #include "Components/Script/ScriptDefinition.h"
@@ -44,8 +42,6 @@
 #include "Components/Cache.h"
 
 #include <iostream>
-#include <glm/glm.hpp>
-#include <glm/matrix.hpp>
 
 using std::vector;
 using std::make_shared;
@@ -62,17 +58,16 @@ namespace octronic::dream
           mAnimationRuntime(nullptr),
           mAudioRuntime(nullptr),
           mFontRuntime(nullptr),
-          mLightRuntime(nullptr),
           mModelRuntime(nullptr),
           mPathRuntime(nullptr),
           mPhysicsObjectRuntime(nullptr),
+          mTextureRuntime(nullptr),
 
           mScriptRuntime(nullptr),
           mScriptInitialised(false),
           mScriptError(false),
 
           mBoundingBox(),
-          mHasCameraFocus(false),
           mDeleted(false),
           mHidden(false),
           mAlwaysDraw(false),
@@ -121,11 +116,11 @@ namespace octronic::dream
         removeAnimationRuntime();
         removeAudioRuntime();
         removeFontRuntime();
-        removeLightRuntime();
         removeModelRuntime();
         removePathRuntime();
         removePhysicsObjectRuntime();
         removeScriptRuntime();
+        removeTextureRuntime();
     }
 
     void
@@ -143,7 +138,11 @@ namespace octronic::dream
     EntityRuntime::removeAudioRuntime
     ()
     {
-        mAudioRuntime = nullptr;
+        if (mAudioRuntime!=nullptr)
+        {
+			mAudioRuntime->removeInstance(this);
+			mAudioRuntime = nullptr;
+        }
     }
 
     void
@@ -164,17 +163,7 @@ namespace octronic::dream
         if (mModelRuntime != nullptr)
         {
             mModelRuntime->removeInstance(this);
-        }
-    }
-
-    void
-    EntityRuntime::removeLightRuntime
-    ()
-    {
-        if (mLightRuntime != nullptr)
-        {
-            delete mLightRuntime;
-            mLightRuntime = nullptr;
+            mModelRuntime = nullptr;
         }
     }
 
@@ -190,14 +179,25 @@ namespace octronic::dream
     }
 
     void
+    EntityRuntime::removeTextureRuntime
+    ()
+    {
+        if (mTextureRuntime != nullptr)
+        {
+            mTextureRuntime->removeInstance(this);
+            mTextureRuntime = nullptr;
+        }
+    }
+
+    void
     EntityRuntime::removeScriptRuntime
     ()
     {
         if (mScriptRuntime)
         {
             mSceneRuntime->getProjectRuntime()->getDestructionTaskQueue()->pushTask(mScriptRemoveStateTask);
+        	mScriptRuntime = nullptr;
         }
-        mScriptRuntime = nullptr;
     }
 
     void
@@ -222,20 +222,21 @@ namespace octronic::dream
 
     FontRuntime*
     EntityRuntime::getFontRuntime()
+    const
     {
         return mFontRuntime;
     }
 
     AnimationRuntime*
-    EntityRuntime::getAnimationRuntime
-    ()
+    EntityRuntime::getAnimationRuntime()
+    const
     {
         return mAnimationRuntime;
     }
 
     PathRuntime*
-    EntityRuntime::getPathRuntime
-    ()
+    EntityRuntime::getPathRuntime()
+    const
     {
         return mPathRuntime;
     }
@@ -243,6 +244,7 @@ namespace octronic::dream
     AudioRuntime*
     EntityRuntime::getAudioRuntime
     ()
+    const
     {
         return mAudioRuntime;
     }
@@ -250,6 +252,7 @@ namespace octronic::dream
     ModelRuntime*
     EntityRuntime::getModelRuntime
     ()
+    const
     {
         return mModelRuntime;
     }
@@ -257,20 +260,23 @@ namespace octronic::dream
     ScriptRuntime*
     EntityRuntime::getScriptRuntime
     ()
+    const
     {
         return mScriptRuntime;
     }
 
-    LightRuntime*
-    EntityRuntime::getLightRuntime
+    TextureRuntime*
+    EntityRuntime::getTextureRuntime
     ()
+    const
     {
-        return mLightRuntime;
+        return mTextureRuntime;
     }
 
     AssetRuntime*
     EntityRuntime::getAssetRuntime
     (AssetType type)
+    const
     {
         switch (type)
         {
@@ -282,14 +288,14 @@ namespace octronic::dream
                 return getAudioRuntime();
             case ASSET_TYPE_ENUM_FONT:
                 return getFontRuntime();
-            case ASSET_TYPE_ENUM_LIGHT:
-                return getLightRuntime();
             case ASSET_TYPE_ENUM_MODEL:
                 return getModelRuntime();
             case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
                 return getPhysicsObjectRuntime();
             case ASSET_TYPE_ENUM_SCRIPT:
                 return getScriptRuntime();
+            case ASSET_TYPE_ENUM_TEXTURE:
+                return getTextureRuntime();
             default:
                 break;
         }
@@ -298,6 +304,7 @@ namespace octronic::dream
 
     bool
     EntityRuntime::hasFontRuntime()
+    const
     {
         return mFontRuntime != nullptr;
     }
@@ -305,20 +312,15 @@ namespace octronic::dream
     bool
     EntityRuntime::hasAnimationRuntime
     ()
+    const
     {
         return mAnimationRuntime != nullptr;
     }
 
     bool
-    EntityRuntime::hasLightRuntime
-    ()
-    {
-        return mLightRuntime != nullptr;
-    }
-
-    bool
     EntityRuntime::hasModelRuntime
     ()
+    const
     {
         return mModelRuntime != nullptr;
     }
@@ -326,8 +328,16 @@ namespace octronic::dream
     bool
     EntityRuntime::hasScriptRuntime
     ()
+    const
     {
         return mScriptRuntime != nullptr;
+    }
+
+    bool
+    EntityRuntime::hasTextureRuntime()
+    const
+    {
+        return mTextureRuntime != nullptr;
     }
 
     void
@@ -340,6 +350,7 @@ namespace octronic::dream
     map<AssetType,UuidType>
     EntityRuntime::getAssetDefinitionsMap
     ()
+    const
     {
         return mAssetDefinitions;
     }
@@ -361,6 +372,7 @@ namespace octronic::dream
     PhysicsObjectRuntime*
     EntityRuntime::getPhysicsObjectRuntime
     ()
+    const
     {
         return mPhysicsObjectRuntime;
     }
@@ -379,15 +391,14 @@ namespace octronic::dream
     {
         if (mDefinitionHandle)
         {
-            auto definedTransform = static_cast<EntityDefinition*>(mDefinitionHandle)->getTransform();
-            mInitialTransform.setMatrix(definedTransform.getMatrix());
-            mTransform.setMatrix(definedTransform.getMatrix());
+            mInitialTransform = (static_cast<EntityDefinition*>(mDefinitionHandle))->getTransform();
         }
     }
 
     bool
     EntityRuntime::hasEvents
     ()
+    const
     {
         return !mEventQueue.empty();
     }
@@ -459,6 +470,7 @@ namespace octronic::dream
     bool
     EntityRuntime::hasPhysicsObjectRuntime
     ()
+    const
     {
         return mPhysicsObjectRuntime != nullptr;
     }
@@ -466,6 +478,7 @@ namespace octronic::dream
     bool
     EntityRuntime::hasPathRuntime
     ()
+    const
     {
         return mPathRuntime != nullptr;
     }
@@ -473,6 +486,7 @@ namespace octronic::dream
     bool
     EntityRuntime::hasAudioRuntime
     ()
+    const
     {
         return mAudioRuntime != nullptr;
     }
@@ -502,9 +516,6 @@ namespace octronic::dream
                 case AssetType::ASSET_TYPE_ENUM_FONT:
                     result = createFontRuntime(static_cast<FontDefinition*>(def));
                     break;
-                case AssetType::ASSET_TYPE_ENUM_LIGHT:
-                    result = createLightRuntime(static_cast<LightDefinition*>(def));
-                    break;
                 case AssetType::ASSET_TYPE_ENUM_MODEL:
                     result = createModelRuntime(static_cast<ModelDefinition*>(def));
                     break;
@@ -516,6 +527,9 @@ namespace octronic::dream
                     break;
                 case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                     result = createScriptRuntime(static_cast<ScriptDefinition*>(def));
+                    break;
+                case AssetType::ASSET_TYPE_ENUM_TEXTURE:
+                    result = createTextureRuntime(static_cast<TextureDefinition*>(def));
                     break;
                 default:
                     return false;
@@ -576,8 +590,6 @@ namespace octronic::dream
                 return createAudioRuntime(static_cast<AudioDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_FONT:
                 return createFontRuntime(static_cast<FontDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_LIGHT:
-                return createLightRuntime(static_cast<LightDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_MODEL:
                 return createModelRuntime(static_cast<ModelDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_PATH:
@@ -586,10 +598,14 @@ namespace octronic::dream
                 return createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
             case AssetType::ASSET_TYPE_ENUM_SCRIPT:
                 return createScriptRuntime(static_cast<ScriptDefinition*>(def));
+            case AssetType::ASSET_TYPE_ENUM_TEXTURE:
+               return createTextureRuntime(static_cast<TextureDefinition*>(def));
             default:
                 return false;
         }
     }
+
+    // DiscreteAssetRuntimes ===================================================
 
     bool
     EntityRuntime::createPhysicsObjectRuntime
@@ -598,7 +614,7 @@ namespace octronic::dream
         removePhysicsObjectRuntime();
         LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
         mPhysicsObjectRuntime = new PhysicsObjectRuntime(mProjectRuntimeHandle,definition, this);
-        return true;//mPhysicsObjectRuntime->loadFromDefinition();
+        return true;
     }
 
     bool
@@ -608,7 +624,7 @@ namespace octronic::dream
         LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
         removeAnimationRuntime();
         mAnimationRuntime = new AnimationRuntime(mProjectRuntimeHandle, definition,this);
-        return true;//mAnimationRuntime->loadFromDefinition();
+        return true;
     }
 
     bool
@@ -618,8 +634,10 @@ namespace octronic::dream
         LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
         removePathRuntime();
         mPathRuntime = new PathRuntime(mProjectRuntimeHandle, definition,this);
-        return true;//mPathRuntime->loadFromDefinition();
+        return true;
     }
+
+    // SharedAssetRuntimes =====================================================
 
     bool
     EntityRuntime::createAudioRuntime
@@ -700,16 +718,6 @@ namespace octronic::dream
     }
 
     bool
-    EntityRuntime::createLightRuntime
-    (LightDefinition* definition)
-    {
-        removeLightRuntime();
-        LOG_TRACE( "EntityRuntime: Creating Light Asset Runtime." );
-        mLightRuntime = new LightRuntime(mProjectRuntimeHandle, definition,this);
-        return mLightRuntime->loadFromDefinition();
-    }
-
-    bool
     EntityRuntime::createFontRuntime
     (FontDefinition* definition)
     {
@@ -727,6 +735,37 @@ namespace octronic::dream
         mFontText = entityDef->getFontText();
         mFontRuntime->addInstance(this);
         return mFontRuntime != nullptr;
+    }
+
+    bool
+    EntityRuntime::createTextureRuntime
+    (TextureDefinition* definition)
+    {
+        removeTextureRuntime();
+        LOG_TRACE( "EntityRuntime: Creating Texture Asset Runtime." );
+        auto textureCache = mSceneRuntime->getProjectRuntime()->getTextureCache();
+        mTextureRuntime = static_cast<TextureRuntime*>(textureCache->getRuntimeHandle(definition));
+        if (mTextureRuntime == nullptr)
+        {
+            LOG_ERROR("EntityRuntime: Error creating Texture runtime");
+        }
+        EntityDefinition* entityDef = static_cast<EntityDefinition*>(mDefinitionHandle);
+        mTextureRuntime->addInstance(this);
+        return mTextureRuntime != nullptr;
+    }
+
+
+    // Accessors ===============================================================
+
+    TransformSpace EntityRuntime::getTransformSpace()
+    const
+    {
+        return mTransformSpace;
+    }
+
+    void EntityRuntime::setTransformSpace(TransformSpace t)
+    {
+        mTransformSpace = t;
     }
 
     EntityRuntime*
@@ -756,6 +795,7 @@ namespace octronic::dream
     bool
     EntityRuntime::isParentOf
     (EntityRuntime*  child)
+    const
     {
         for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
         {
@@ -779,6 +819,7 @@ namespace octronic::dream
     EntityRuntime*
     EntityRuntime::getParentRuntime
     ()
+    const
     {
         return mParentRuntime;
     }
@@ -786,12 +827,14 @@ namespace octronic::dream
     SceneRuntime*
     EntityRuntime::getSceneRuntime
     ()
+    const
     {
         return mSceneRuntime;
     }
 
     EntityDefinition*
     EntityRuntime::getEntityDefinition()
+    const
     {
         return static_cast<EntityDefinition*>(getDefinitionHandle());
     }
@@ -825,55 +868,26 @@ namespace octronic::dream
 
     void
     EntityRuntime::translateWithChildren
-    (const Vector3& translation)
+    (const vec3& translation)
     {
         applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
                        rt->getTransform().translate(translation);
                        return static_cast<EntityRuntime*>(nullptr);}));
     }
 
-    void
-    EntityRuntime::preTranslateWithChildren
-    (const Vector3& translation)
-    {
-        applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
-                       rt->getTransform().preTranslate(translation);
-                       return static_cast<EntityRuntime*>(nullptr); }));
-    }
-
     Transform
     EntityRuntime::getInitialTransform
     ()
+    const
     {
         return mInitialTransform;
     }
 
     void
-    EntityRuntime::transformOffsetInitial
-    (const mat4& matrix)
-    {
-        mTransform.setMatrix(matrix * mInitialTransform.getMatrix());
-    }
-
-    void
     EntityRuntime::translateOffsetInitial
-    (const Vector3& tx)
+    (const vec3& tx)
     {
-        mTransform.setMatrix(glm::translate(mat4(1.0),tx.toGLM())* mInitialTransform.getMatrix());
-    }
-
-    bool
-    EntityRuntime::getHasCameraFocus
-    () const
-    {
-        return mHasCameraFocus;
-    }
-
-    void
-    EntityRuntime::setHasCameraFocus
-    (bool cf)
-    {
-        mHasCameraFocus = cf;
+        mTransform.setTranslation(mInitialTransform.getTranslation() + tx);
     }
 
     bool
@@ -983,10 +997,12 @@ namespace octronic::dream
             LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
             setName(def->getName());
             setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
-            setHasCameraFocus(def->getHasCameraFocus());
             setHidden(def->getHidden());
+            setTransformSpace(def->getTransformSpace());
             initTransform();
+
             setAssetDefinitionsMap(def->getAssetDefinitionsMap());
+
             if (!createAssetRuntimes())
             {
                 return false;
@@ -995,14 +1011,16 @@ namespace octronic::dream
             {
                 return false;
             }
+
             return true;
         }
         return false;
     }
 
-    BoundingBox&
+    BoundingBox
     EntityRuntime::getBoundingBox
     ()
+    const
     {
         if (mModelRuntime != nullptr)
         {
@@ -1015,26 +1033,29 @@ namespace octronic::dream
     EntityRuntime::setBoundingBox
     (const BoundingBox& boundingBox)
     {
-        mBoundingBox.from(boundingBox);
+        mBoundingBox = boundingBox;
     }
 
     float
     EntityRuntime::distanceFrom
-    (EntityRuntime* other)
+    (const EntityRuntime* other)
+    const
     {
         return mTransform.distanceFrom(other->getTransform());
     }
 
     float
     EntityRuntime::distanceFrom
-    (const Vector3& other)
+    (const vec3& other)
+    const
     {
-        return glm::distance(vec3(mTransform.getMatrix()[3]),other.toGLM());
+        return glm::distance(vec3(mTransform.getMatrix()[3]),other);
     }
 
     bool
     EntityRuntime::visibleInFrustum
     ()
+    const
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
@@ -1047,6 +1068,7 @@ namespace octronic::dream
     bool
     EntityRuntime::containedInFrustum
     ()
+    const
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
@@ -1059,6 +1081,7 @@ namespace octronic::dream
     bool
     EntityRuntime::containedInFrustumAfterTransform
     (const mat4& tx)
+    const
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
@@ -1070,7 +1093,8 @@ namespace octronic::dream
 
     bool
     EntityRuntime::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, const Vector3& tx)
+    (Frustum::Plane plane, const vec3& tx)
+    const
     {
         auto cam = mSceneRuntime->getCamera();
         if (cam)
@@ -1127,12 +1151,15 @@ namespace octronic::dream
 
     void
     EntityRuntime::translateOffsetInitialWithChildren
-    (const Vector3& translation)
+    (const vec3& translation)
     {
         static mat4 ident(1.0f);
-        applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
-                       auto initial = rt->getInitialTransform().getMatrix();
-                       rt->getTransform().setMatrix(glm::translate(ident,translation.toGLM())* initial);
+        applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
+                   {
+                       auto initial = rt->getInitialTransform();
+                       Transform tx = initial;
+                       tx.setTranslation(tx.getTranslation()+translation);
+                       rt->setTransform(tx);
                        return static_cast<EntityRuntime*>(nullptr);
                    }));
     }
@@ -1155,6 +1182,7 @@ namespace octronic::dream
     shared_ptr<EntityScriptOnInitTask>
     EntityRuntime::getScriptOnInitTask
     ()
+    const
     {
         return mScriptOnInitTask;
     }
@@ -1162,6 +1190,7 @@ namespace octronic::dream
     shared_ptr<EntityScriptOnEventTask>
     EntityRuntime::getScriptOnEventTask
     ()
+    const
     {
         return mScriptOnEventTask;
     }
@@ -1169,12 +1198,14 @@ namespace octronic::dream
     shared_ptr<EntityScriptOnUpdateTask>
     EntityRuntime::getScriptOnUpdateTask
     ()
+    const
     {
         return mScriptOnUpdateTask;
     }
 
     shared_ptr<EntityScriptCreateStateTask>
     EntityRuntime::getScriptCreateStateTask()
+    const
     {
         return mScriptCreateStateTask;
     }
@@ -1224,12 +1255,12 @@ namespace octronic::dream
         mFontText = fontText;
     }
 
-    Vector3 EntityRuntime::getFontColor() const
+    vec4 EntityRuntime::getFontColor() const
     {
         return mFontColor;
     }
 
-    void EntityRuntime::setFontColor(const Vector3& fontColor)
+    void EntityRuntime::setFontColor(const vec4& fontColor)
     {
         mFontColor = fontColor;
     }
@@ -1278,26 +1309,25 @@ namespace octronic::dream
         // For DiscreteAssetRuntimes ONLY, SharedAssetRuntimes handled by project
         LOG_TRACE("EntityRuntime: Pushing tasks of {}", getNameAndUuidString());
 		// Animation
-		if (hasAnimationRuntime()) getAnimationRuntime()->pushNextTask();
-        // Light
-		if (hasLightRuntime()) getLightRuntime()->pushNextTask();
+		if (hasAnimationRuntime()) getAnimationRuntime()->pushTasks();
 		// Physics
-		if (hasPhysicsObjectRuntime()) getPhysicsObjectRuntime()->pushNextTask();
+		if (hasPhysicsObjectRuntime()) getPhysicsObjectRuntime()->pushTasks();
 		// Path
-		if (hasPathRuntime()) getPathRuntime()->pushNextTask();
+		if (hasPathRuntime()) getPathRuntime()->pushTasks();
     }
 
     bool EntityRuntime::allRuntimesLoaded()
+    const
     {
         bool all_loaded = true;
        if (hasAnimationRuntime())     all_loaded &= mAnimationRuntime->getLoaded();
        if (hasAudioRuntime())         all_loaded &= mAudioRuntime->getLoaded();
        if (hasFontRuntime())          all_loaded &= mFontRuntime->getLoaded();
-       if (hasLightRuntime())         all_loaded &= mLightRuntime->getLoaded();
        if (hasModelRuntime())         all_loaded &= mModelRuntime->getLoaded();
        if (hasPathRuntime())          all_loaded &= mPathRuntime->getLoaded();
        if (hasPhysicsObjectRuntime()) all_loaded &= mPhysicsObjectRuntime->getLoaded();
        if (hasScriptRuntime())        all_loaded &= mScriptRuntime->getLoaded();
+       if (hasTextureRuntime())       all_loaded &= mTextureRuntime->getLoaded();
        return  all_loaded;
     }
 }

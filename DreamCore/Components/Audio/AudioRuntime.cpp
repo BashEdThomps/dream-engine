@@ -194,7 +194,7 @@ namespace octronic::dream
         mImpl->stop();
     }
 
-    void AudioRuntime::setSourcePosision(Vector3 pos)
+    void AudioRuntime::setSourcePosision(vec3 pos)
     {
        mImpl->setSourcePosision(pos);
     }
@@ -237,7 +237,7 @@ namespace octronic::dream
         return mImpl->loadFromDefinition(mProjectRuntimeHandle,static_cast<AudioDefinition*>(mDefinitionHandle));
     }
 
-	void AudioRuntime::pushNextTask()
+	void AudioRuntime::pushTasks()
     {
         auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
 

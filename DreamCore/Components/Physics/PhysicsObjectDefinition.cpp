@@ -10,6 +10,7 @@
  * this file belongs to.
  */
 #include "PhysicsObjectDefinition.h"
+#include "Math/Vector.h"
 
 namespace octronic::dream
 {
@@ -75,143 +76,39 @@ namespace octronic::dream
     }
 
     void
-    PhysicsObjectDefinition::makeHalfExtentsObject
+    PhysicsObjectDefinition::setHalfExtents
+    (vec3 halfExtent)
+    {
+        mJson[Constants::ASSET_ATTR_SIZE] = Vector3::toJson(halfExtent);
+    }
+
+    vec3
+    PhysicsObjectDefinition::getHalfExtents
     ()
     {
         if (mJson.find(Constants::ASSET_ATTR_SIZE) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_SIZE] = json::object();
+            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = Vector3::toJson(vec3(0.f));
         }
+        return Vector3::fromJson(mJson[Constants::ASSET_ATTR_SIZE]);
     }
 
     void
-    PhysicsObjectDefinition::setHalfExtentsX
-    (float halfExtentX)
+    PhysicsObjectDefinition::setNormal
+    (vec3 n)
     {
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = halfExtentX;
+        mJson[Constants::ASSET_ATTR_NORMAL] = Vector3::toJson(n);
     }
 
-    float
-    PhysicsObjectDefinition::getHalfExtentsX
-    ()
-    {
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::X) == mJson[Constants::ASSET_ATTR_SIZE].end())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::X];
-    }
-
-    void
-    PhysicsObjectDefinition::setHalfExtentsY
-    (float halfExtentY)
-    {
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = halfExtentY;
-    }
-
-    float
-    PhysicsObjectDefinition::getHalfExtentsY
-    ()
-    {
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Y) == mJson[Constants::ASSET_ATTR_SIZE].end())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Y] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Y];
-    }
-
-    void
-    PhysicsObjectDefinition::setHalfExtentsZ
-    (float halfExtentZ)
-    {
-        makeHalfExtentsObject();
-        mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = halfExtentZ;
-    }
-
-    float
-    PhysicsObjectDefinition::getHalfExtentsZ
-    ()
-    {
-        makeHalfExtentsObject();
-        if (mJson[Constants::ASSET_ATTR_SIZE].find(Constants::Z) == mJson[Constants::ASSET_ATTR_SIZE].end())
-        {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::Z] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_SIZE][Constants::Z];
-    }
-
-    void
-    PhysicsObjectDefinition::makeNormalObject
+    vec3
+    PhysicsObjectDefinition::getNormal
     ()
     {
         if (mJson.find(Constants::ASSET_ATTR_NORMAL) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_NORMAL] = json::object();
+            mJson[Constants::ASSET_ATTR_NORMAL] = Vector3::toJson(vec3(0));
         }
-    }
-
-    void
-    PhysicsObjectDefinition::setNormalX
-    (float halfExtentX)
-    {
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = halfExtentX;
-    }
-
-    float
-    PhysicsObjectDefinition::getNormalX
-    ()
-    {
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::X) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::X] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::X];
-    }
-
-    void
-    PhysicsObjectDefinition::setNormalY
-    (float halfExtentY)
-    {
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = halfExtentY;
-    }
-
-    float
-    PhysicsObjectDefinition::getNormalY
-    ()
-    {
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Y) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Y];
-    }
-
-    void
-    PhysicsObjectDefinition::setNormalZ
-    (float halfExtentZ)
-    {
-        makeNormalObject();
-        mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = halfExtentZ;
-    }
-
-    float
-    PhysicsObjectDefinition::getNormalZ
-    ()
-    {
-        makeNormalObject();
-        if (mJson[Constants::ASSET_ATTR_NORMAL].find(Constants::Z) == mJson[Constants::ASSET_ATTR_NORMAL].end())
-        {
-            mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z] = 0;
-        }
-        return mJson[Constants::ASSET_ATTR_NORMAL][Constants::Z];
+        return Vector3::fromJson(mJson[Constants::ASSET_ATTR_NORMAL]);
     }
 
     float
@@ -365,11 +262,12 @@ namespace octronic::dream
     {
         makeCompoundChildren();
         for(auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
-                 iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++) {
+                 iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++)
+        {
             UuidType jsUuid = (*iter)[Constants::UUID];
             if (def.uuid == jsUuid)
             {
-                (*iter)[Constants::TRANSFORM] = def.transform.getJson();
+                (*iter)[Constants::TRANSFORM] = def.transform.toJson();
                 return;
             }
         }
@@ -419,75 +317,75 @@ namespace octronic::dream
         mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
     }
 
-    Vector3
+    vec3
     PhysicsObjectDefinition::getLinearFactor
     ()
     {
         if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3(0.0f).toJson();
+            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3::toJson(vec3(0.0f));
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
+        return vec3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
     }
 
     void
     PhysicsObjectDefinition::setLinearFactor
-    (const Vector3& lf)
+    (const vec3& lf)
     {
-        mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = lf.toJson();
+        mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3::toJson(lf);
     }
 
-    Vector3
+    vec3
     PhysicsObjectDefinition::getAngularFactor
     ()
     {
         if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3(0.0f).toJson();
+            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3::toJson(vec3(0.0f));
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
+        return vec3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
     }
 
     void
     PhysicsObjectDefinition::setAngularFactor
-    (const Vector3& af)
+    (const vec3& af)
     {
-        mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = af.toJson();
+        mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3::toJson(af);
     }
 
-    Vector3
+    vec3
     PhysicsObjectDefinition::getLinearVelocity
     ()
     {
         if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3(0.0f).toJson();
+            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3::toJson(vec3(0.0f));
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
+        return vec3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
     }
 
     void
     PhysicsObjectDefinition::setLinearVelocity
-    (const Vector3& lf)
+    (const vec3& lf)
     {
-        mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = lf.toJson();
+        mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3::toJson(lf);
     }
 
-    Vector3
+    vec3
     PhysicsObjectDefinition::getAngularVelocity
     ()
     {
         if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
         {
-            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3(0.0f).toJson();
+            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3::toJson(vec3(0.0f));
         }
-        return Vector3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
+        return vec3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
     }
 
     void
     PhysicsObjectDefinition::setAngularVelocity
-    (const Vector3& af)
+    (const vec3& af)
     {
-        mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = af.toJson();
+        mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3::toJson(af);
     }
 }

@@ -16,10 +16,9 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 #include "Common/Uuid.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Project/ProjectDefinition.h"
-
-
+#include "Math/Vector.h"
 
 namespace octronic::dream
 {
@@ -56,24 +55,6 @@ namespace octronic::dream
 
         mRootEntityDefinition = new EntityDefinition(nullptr, this, rsoJson );
         mRootEntityDefinition->loadChildEntityDefinitions();
-    }
-
-    void
-    SceneDefinition::setCameraMovementSpeed
-    (float speed)
-    {
-        mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = speed;
-    }
-
-    float
-    SceneDefinition::getCameraMovementSpeed
-    ()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_MOVEMENT_SPEED) == mJson.end())
-        {
-            mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED] = Constants::SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
-        }
-        return mJson[Constants::SCENE_CAMERA_MOVEMENT_SPEED];
     }
 
     void
@@ -129,142 +110,69 @@ namespace octronic::dream
         return nullptr;
     }
 
-    Vector3
-    SceneDefinition::getCameraTranslation
+    Transform
+    SceneDefinition::getCameraTransform
     ()
     {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
+        if (mJson.find(Constants::SCENE_CAMERA_TRANSFORM) == mJson.end())
         {
-            setCameraTranslation(Vector3(0.0f));
+            mJson[Constants::SCENE_CAMERA_TRANSFORM] = Transform().toJson();
         }
-        return Vector3(mJson[Constants::SCENE_CAMERA_TRANSLATION]);
+        return Transform(mJson[Constants::SCENE_CAMERA_TRANSFORM]);
 
     }
 
     void
-    SceneDefinition::setCameraTranslation
-    (const Vector3& transform)
+    SceneDefinition::setCameraTransform
+    (const Transform& transform)
     {
-        // Translation
-        mJson[Constants::SCENE_CAMERA_TRANSLATION] = transform.toJson();
+        mJson[Constants::SCENE_CAMERA_TRANSFORM] = transform.toJson();
     }
 
-    Vector3 SceneDefinition::getCameraLookAt()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_LOOK_AT) == mJson.end())
-        {
-            setCameraLookAt(Vector3(0.0f));
-        }
-        return Vector3(mJson[Constants::SCENE_CAMERA_LOOK_AT]);
-    }
-
-    void
-    SceneDefinition::setCameraLookAt
-    (const Vector3& lookAt)
-    {
-        mJson[Constants::SCENE_CAMERA_LOOK_AT] = lookAt.toJson();
-    }
-
-    Vector3
+    vec3
     SceneDefinition::getGravity
     ()
     {
-        Vector3 gravity;
+        vec3 gravity;
 
         if (mJson.find(Constants::SCENE_GRAVITY) == mJson.end())
         {
-            mJson[Constants::SCENE_GRAVITY] = Vector3(0.0f).toJson();
+            mJson[Constants::SCENE_GRAVITY] = Vector3::toJson(vec3(0.0f));
         }
 
-        gravity = Vector3(mJson[Constants::SCENE_GRAVITY]);
+        gravity = Vector3::fromJson(mJson[Constants::SCENE_GRAVITY]);
 
         return gravity;
     }
 
     void
     SceneDefinition::setGravity
-    (const Vector3& gravity)
+    (const vec3& gravity)
     {
-        mJson[Constants::SCENE_GRAVITY] = gravity.toJson();
+        mJson[Constants::SCENE_GRAVITY] = Vector3::toJson(gravity);
     }
 
-    void
-    SceneDefinition::setGravityX
-    (float x)
-    {
-        mJson[Constants::SCENE_GRAVITY][Constants::X] = x;
-    }
-
-    void
-    SceneDefinition::setGravityY
-    (float y)
-    {
-        mJson[Constants::SCENE_GRAVITY][Constants::Y] = y;
-    }
-
-    void
-    SceneDefinition::setGravityZ
-    (float z)
-    {
-        mJson[Constants::SCENE_GRAVITY][Constants::Z] = z;
-    }
-
-    Vector3
-    SceneDefinition::getClearColour
+    vec4
+    SceneDefinition::getClearColor
     ()
     {
-        Vector3 colour;
+        vec4 color;
 
-        if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
+        if (mJson.find(Constants::SCENE_CLEAR_COLOR) == mJson.end())
         {
-            mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
+            mJson[Constants::SCENE_CLEAR_COLOR] = Vector4::toJson(vec4(0.f));
         }
 
-        colour = Vector3(mJson[Constants::SCENE_CLEAR_COLOUR]);
-        return colour;
+        color = Vector4::fromJson(mJson[Constants::SCENE_CLEAR_COLOR]);
+        return color;
 
     }
 
     void
-    SceneDefinition::setClearColour
-    (const Vector3& colour)
+    SceneDefinition::setClearColor
+    (const vec4& color)
     {
-
-
-        if (mJson.find(Constants::SCENE_CLEAR_COLOUR) == mJson.end())
-        {
-            mJson[Constants::SCENE_CLEAR_COLOUR] = Vector3(0.f).toJson();
-        }
-
-        mJson[Constants::SCENE_CLEAR_COLOUR] = colour.toJson();
-
-    }
-
-    void
-    SceneDefinition::setClearColourR
-    (float r)
-    {
-
-
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::RED]  = r;
-
-    }
-
-    void
-    SceneDefinition::setClearColourG
-    (float g)
-    {
-
-
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::GREEN]  = g;
-
-    }
-
-    void
-    SceneDefinition::setClearColourB
-    (float b)
-    {
-        mJson[Constants::SCENE_CLEAR_COLOUR][Constants::BLUE]  = b;
+        mJson[Constants::SCENE_CLEAR_COLOR] = Vector3::toJson(color);
     }
 
     EntityDefinition*
@@ -288,8 +196,7 @@ namespace octronic::dream
         json rootDefJson;
         rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
         rootDefJson[Constants::UUID] = Uuid::generateUuid();
-        Transform transform;
-        rootDefJson[Constants::TRANSFORM] = transform.getJson();
+        rootDefJson[Constants::TRANSFORM] = Transform().toJson();
         mRootEntityDefinition = new EntityDefinition(nullptr,this,rootDefJson);
         return mRootEntityDefinition;
     }
@@ -329,133 +236,6 @@ namespace octronic::dream
             mJson[Constants::SCENE_MAX_DRAW_DISTANCE] = 1000.0f;
         }
         return mJson[Constants::SCENE_MAX_DRAW_DISTANCE];
-    }
-
-    float SceneDefinition::getCameraTranslationX()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X];
-    }
-
-    float SceneDefinition::getCameraTranslationY()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y];
-    }
-
-    float SceneDefinition::getCameraTranslationZ()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        return mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z];
-
-    }
-
-    void SceneDefinition::setCameraTranslationX(float val)
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::X] = val;
-
-    }
-
-    void SceneDefinition::setCameraTranslationY(float val)
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Y] = val;
-
-    }
-
-    void SceneDefinition::setCameraTranslationZ(float val)
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_TRANSLATION) == mJson.end())
-        {
-            setCameraTranslation(Vector3(0.0f));
-        }
-        mJson[Constants::SCENE_CAMERA_TRANSLATION][Constants::Z] = val;
-    }
-
-    void SceneDefinition::setCameraPitch(float pitch)
-    {
-        mJson[Constants::SCENE_CAMERA_PITCH] = pitch;
-    }
-
-    void SceneDefinition::setCameraYaw(float yaw)
-    {
-        mJson[Constants::SCENE_CAMERA_YAW] = yaw;
-    }
-
-    float SceneDefinition::getCameraPitch()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_PITCH) == mJson.end())
-        {
-            mJson[Constants::SCENE_CAMERA_PITCH] = 0.0f;
-        }
-        return  mJson[Constants::SCENE_CAMERA_PITCH];
-
-    }
-
-    float SceneDefinition::getCameraYaw()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_YAW) == mJson.end())
-        {
-            mJson[Constants::SCENE_CAMERA_YAW] = 0.0f;
-        }
-        return  mJson[Constants::SCENE_CAMERA_YAW];
-
-    }
-
-    UuidType
-    SceneDefinition::getCameraFocusedOn
-    ()
-    {
-        if (mJson.find(Constants::SCENE_CAMERA_FOCUSED_ON) == mJson.end())
-        {
-            mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = 0;
-        }
-        return  mJson[Constants::SCENE_CAMERA_FOCUSED_ON];
-
-
-    }
-
-    void
-    SceneDefinition::setCameraFocusedOn
-    (UuidType focusedOn)
-    {
-        mJson[Constants::SCENE_CAMERA_FOCUSED_ON] = focusedOn;
-    }
-
-    UuidType
-    SceneDefinition::getLightingPassShader
-    ()
-    {
-        if (mJson.find(Constants::SCENE_LIGHTING_PASS_SHADER) == mJson.end())
-        {
-            mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = 0;
-        }
-        return  mJson[Constants::SCENE_LIGHTING_PASS_SHADER];
-
-
-    }
-
-    void
-    SceneDefinition::setLightingPassShader
-    (UuidType shader)
-    {
-        mJson[Constants::SCENE_LIGHTING_PASS_SHADER] = shader;
     }
 
     UuidType
@@ -544,5 +324,47 @@ namespace octronic::dream
             mJson[Constants::ENTITY_PLAYER_OBJECT] = 0;
         }
         return mJson[Constants::ENTITY_PLAYER_OBJECT];
+    }
+
+	void SceneDefinition::setCameraFOV(float fov)
+	{
+        mJson[Constants::SCENE_CAMERA_FOV] = fov;
+	}
+
+	float SceneDefinition::getCameraFOV()
+	{
+        if (mJson.find(Constants::SCENE_CAMERA_FOV) == mJson.end())
+        {
+           mJson[Constants::SCENE_CAMERA_FOV] = 0.f;
+        }
+        return mJson[Constants::SCENE_CAMERA_FOV];
+	}
+
+	UuidType SceneDefinition::getEnvironmentTexture()
+    {
+       if (mJson.find(Constants::SCENE_ENVIRONMENT_TEXTURE) == mJson.end())
+       {
+           mJson[Constants::SCENE_ENVIRONMENT_TEXTURE] = 0;
+       }
+       return mJson[Constants::SCENE_ENVIRONMENT_TEXTURE];
+    }
+
+	void SceneDefinition::setEnvironmentTexture(UuidType u)
+    {
+       mJson[Constants::SCENE_ENVIRONMENT_TEXTURE] = u;
+    }
+
+    UuidType SceneDefinition::getEnvironmentShader()
+    {
+       if (mJson.find(Constants::SCENE_ENVIRONMENT_SHADER) == mJson.end())
+       {
+           mJson[Constants::SCENE_ENVIRONMENT_SHADER] = 0;
+       }
+       return mJson[Constants::SCENE_ENVIRONMENT_SHADER];
+    }
+
+	void SceneDefinition::setEnvironmentShader(UuidType u)
+    {
+       mJson[Constants::SCENE_ENVIRONMENT_SHADER] = u;
     }
 }

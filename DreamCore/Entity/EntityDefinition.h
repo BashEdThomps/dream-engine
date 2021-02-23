@@ -16,9 +16,11 @@
 #include <vector>
 #include <memory>
 
+#include "TransformSpace.h"
 #include "Base/Definition.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 
+using glm::vec4;
 
 namespace octronic::dream
 {
@@ -38,9 +40,6 @@ namespace octronic::dream
         ~EntityDefinition() override;
 
         int getChildCount();
-
-        void setHasCameraFocus(bool fc);
-        bool getHasCameraFocus();
 
         Transform getTransform();
         void setTransform(Transform tform);
@@ -75,8 +74,8 @@ namespace octronic::dream
         void setAssetDefinition(AssetType type, UuidType uuid);
         map<AssetType, UuidType> getAssetDefinitionsMap();
 
-        void setFontColor(const Vector3& color);
-        Vector3 getFontColor();
+        void setFontColor(const vec4& color);
+        vec4 getFontColor();
 
         void setFontText(const string& text);
         string getFontText();
@@ -84,6 +83,8 @@ namespace octronic::dream
         void setFontScale(float s);
         float getFontScale();
 
+        TransformSpace getTransformSpace();
+        void setTransformSpace(TransformSpace t);
 
     private:
         void deleteChildEntityDefinitions();

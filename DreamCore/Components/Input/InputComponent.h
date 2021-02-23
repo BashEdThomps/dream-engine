@@ -22,7 +22,6 @@
 #include "Keyboard.h"
 #include "Joystick.h"
 #include "InputTasks.h"
-#include "Common/Math.h"
 
 using std::shared_ptr;
 

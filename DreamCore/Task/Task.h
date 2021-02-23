@@ -44,21 +44,18 @@ namespace octronic::dream
         TaskState getState() const;
         bool hasState(const TaskState& s) const;
 
-        bool isPersistent() const;
-
         bool operator==(Task& other);
 
     public: // Statics
         static int taskIDGenerator();
 
     protected:
-		ProjectRuntime* mProjectRuntime;
+		ProjectRuntime* mProjectRuntimeHandle;
 
     private:
         int mID;
         string mName;
         TaskState mState;
-        bool mPersistent;
     };
 
     /**

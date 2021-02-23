@@ -46,7 +46,7 @@ namespace octronic::dream
 
         ProjectRuntime* getProjectRuntimeHandle() const;
 
-        virtual void pushNextTask() = 0;
+        virtual void pushTasks() = 0;
 
     protected:
         /**

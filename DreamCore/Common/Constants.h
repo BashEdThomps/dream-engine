@@ -31,7 +31,6 @@ namespace octronic::dream
         ASSET_TYPE_ENUM_ANIMATION,
         ASSET_TYPE_ENUM_AUDIO,
         ASSET_TYPE_ENUM_FONT,
-        ASSET_TYPE_ENUM_LIGHT,
         ASSET_TYPE_ENUM_MATERIAL,
         ASSET_TYPE_ENUM_MODEL,
         ASSET_TYPE_ENUM_PATH,
@@ -63,8 +62,6 @@ namespace octronic::dream
         const static string PROJECT_PATH_SEP;
         const static string PROJECT_UUID;
         const static string PROJECT_NAME;
-        const static string PROJECT_AUTHOR;
-        const static string PROJECT_DESCRIPTION;
         const static string PROJECT_SCENE_ARRAY;
         const static string PROJECT_ASSET_ARRAY;
         const static string PROJECT_STARTUP_SCENE;
@@ -79,7 +76,6 @@ namespace octronic::dream
         const static string ASSET_TYPE;
         const static string ASSET_TYPE_ANIMATION;
         const static string ASSET_TYPE_AUDIO;
-        const static string ASSET_TYPE_LIGHT;
         const static string ASSET_TYPE_FONT;
         const static string ASSET_TYPE_MODEL;
         const static string ASSET_TYPE_PATH;
@@ -93,21 +89,16 @@ namespace octronic::dream
         const static string ASSET_FORMAT_DREAM;
         const static string ASSET_FORMAT_SCRIPT_LUA;
         const static string ASSET_FORMAT_MODEL_ASSIMP;
-        const static string ASSET_FORMAT_MODEL_OBJ;
         const static string ASSET_FORMAT_AUDIO_OGG;
         const static string ASSET_FORMAT_AUDIO_WAV;
         const static string ASSET_FORMAT_FONT_TTF;
         const static string ASSET_FORMAT_SHADER_GLSL;
         const static string ASSET_FORMAT_SHADER_GLES;
-        const static string ASSET_FORMAT_LIGHT_POINT;
-        const static string ASSET_FORMAT_LIGHT_DIRECTIONAL;
-        const static string ASSET_FORMAT_LIGHT_SPOTLIGHT;
         const static string ASSET_DEFINITION_DEFAULT_NAME;
         // Readable Names
         const static string ASSET_TYPE_ANIMATION_READABLE;
         const static string ASSET_TYPE_PATH_READABLE;
         const static string ASSET_TYPE_AUDIO_READABLE;
-        const static string ASSET_TYPE_LIGHT_READABLE;
         const static string ASSET_TYPE_FONT_READABLE;
         const static string ASSET_TYPE_MODEL_READABLE;
         const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
@@ -119,81 +110,58 @@ namespace octronic::dream
         const static string ASSET_FORMAT_READABLE;
         const static string ASSET_FORMAT_SCRIPT_LUA_READABLE;
         const static string ASSET_FORMAT_MODEL_ASSIMP_READABLE;
-        const static string ASSET_FORMAT_MODEL_OBJ_READABLE;
         const static string ASSET_FORMAT_AUDIO_OGG_READABLE;
         const static string ASSET_FORMAT_AUDIO_WAV_READABLE;
         const static string ASSET_FORMAT_DREAM_READABLE;
         const static string ASSET_FORMAT_FONT_TTF_READABLE;
         const static string ASSET_FORMAT_SHADER_GLSL_READABLE;
-        const static string ASSET_FORMAT_LIGHT_POINT_READABLE;
-        const static string ASSET_FORMAT_LIGHT_DIRECTIONAL_READABLE;
-        const static string ASSET_FORMAT_LIGHT_SPOTLIGHT_READABLE;
 
         // Scene ================================================================
         const static string SCENE_NOTES;
         const static string SCENE_ROOT_ENTITY;
-        const static string SCENE_CAMERA_TRANSFORM;
-        const static string SCENE_CAMERA_MOVEMENT_SPEED;
-        const static float  SCENE_CAMERA_DEFAULT_MOVEMENT_SPEED;
-        const static string SCENE_MOVEMENT_SPEED;
-        const static string SCENE_CLEAR_COLOUR;
-        const static string SCENE_AMBIENT_LIGHT_COLOUR;
+        const static string SCENE_CLEAR_COLOR;
         const static string SCENE_GRAVITY;
         const static string SCENE_PHYSICS_DEBUG;
         const static string SCENE_DEFAULT_NAME;
         const static string SCENE_MESH_CULL_DISTANCE;
         const static string SCENE_MIN_DRAW_DISTANCE;
         const static string SCENE_MAX_DRAW_DISTANCE;
-        const static string SCENE_CAMERA_TRANSLATION;
-        const static string SCENE_CAMERA_LOOK_AT;
-        const static string SCENE_CAMERA_PITCH;
-        const static string SCENE_CAMERA_YAW;
-        const static string SCENE_CAMERA_FOCUSED_ON;
-        const static string SCENE_LIGHTING_PASS_SHADER;
+        const static string SCENE_CAMERA_TRANSFORM;
+        const static string SCENE_CAMERA_FOV;
         const static string SCENE_SHADOW_PASS_SHADER;
         const static string SCENE_FONT_SHADER;
         const static string SCENE_SPRITE_SHADER;
         const static string SCENE_INPUT_SCRIPT;
+        const static string SCENE_ENVIRONMENT_TEXTURE;
+        const static string SCENE_ENVIRONMENT_SHADER;
         // Entity ==========================================================
         const static string ENTITY;
         const static string ENTITY_ROOT_NAME;
         const static string ENTITY_DEFAULT_NAME;
         const static string ENTITY_CHILDREN;
-        const static string ENTITY_HAS_CAMERA_FOCUS;
         const static string ENTITY_ASSET_INSTANCES;
         const static string ENTITY_ALWAYS_DRAW;
         const static string ENTITY_TEMPLATE;
         const static string ENTITY_HIDDEN;
-        const static string ENTITY_DEFERRED;
-        const static string ENTITY_DIE_AFTER;
         const static string ENTITY_PLAYER_OBJECT;
         const static string ENTITY_FONT_COLOR;
         const static string ENTITY_FONT_TEXT;
         const static string ENTITY_FONT_SCALE;
+        const static string ENTITY_TRANSFORM_SPACE;
 
         // Transform ============================================================
         const static string TRANSFORM;
-        const static string TRANSFORM_MATRIX;
+        const static string TRANSLATION;
+        const static string YAW;
+        const static string PITCH;
+        const static string ROLL;
+        const static string SCALE;
+
         // Generic ==============================================================
         const static string X;
         const static string Y;
         const static string Z;
         const static string W;
-        const static unsigned int X_INDEX;
-        const static unsigned int Y_INDEX;
-        const static unsigned int Z_INDEX;
-        const static unsigned int W_INDEX;
-        const static string RED;
-        const static string GREEN;
-        const static string BLUE;
-        const static string ALPHA;
-        const static unsigned int RED_INDEX;
-        const static unsigned int GREEN_INDEX;
-        const static unsigned int BLUE_INDEX;
-        const static unsigned int ALPHA_INDEX;
-        const static unsigned int XYZ_VECTOR_SIZE;
-        const static unsigned int RGB_VECTOR_SIZE;
-        const static unsigned int RGBA_VECTOR_SIZE;
 
         // Font ================================================================
         const static string ASSET_ATTR_FONT_SHADER_ID;
@@ -276,36 +244,13 @@ namespace octronic::dream
         const static string EVENT_TYPE;
         const static string EVENT_TYPE_COLLISION;
 
-        // Light ================================================================
-        const static string ASSET_ATTR_LIGHT_COLOR;
-        const static string ASSET_ATTR_LIGHT_AMBIENT;
-        const static string ASSET_ATTR_LIGHT_DIFFUSE;
-        const static string ASSET_ATTR_LIGHT_SPECULAR;
-        const static string ASSET_ATTR_LIGHT_DIRECTION;
-        const static string ASSET_ATTR_LIGHT_CONSTANT;
-        const static string ASSET_ATTR_LIGHT_LINEAR;
-        const static string ASSET_ATTR_LIGHT_QUADRATIC;
-        const static string ASSET_ATTR_LIGHT_CUTOFF;
-        const static string ASSET_ATTR_LIGHT_OUTER_CUTOFF;
-
         // Material =============================================================
         const static string ASSET_ATTR_MATERIAL_SHADER;
-        const static string ASSET_ATTR_MATERIAL_DIFFUSE_TEXTURE;
-        const static string ASSET_ATTR_MATERIAL_SPECULAR_TEXTURE;
-        const static string ASSET_ATTR_MATERIAL_NORMAL_TEXTURE;
-        const static string ASSET_ATTR_MATERIAL_DISPLACEMENT_TEXTURE;
-        const static string ASSET_ATTR_MATERIAL_DIFFUSE_COLOUR;
-        const static string ASSET_ATTR_MATERIAL_SPECULAR_COLOUR;
-        const static string ASSET_ATTR_MATERIAL_AMBIENT_COLOUR;
-        const static string ASSET_ATTR_MATERIAL_REFLECTIVE_COLOUR;
-        const static string ASSET_ATTR_MATERIAL_EMISSIVE_COLOUR;
-        const static string ASSET_ATTR_MATERIAL_OPACITY;
-        const static string ASSET_ATTR_MATERIAL_BUMP_SCALING;
-        const static string ASSET_ATTR_MATERIAL_HARDNESS;
-        const static string ASSET_ATTR_MATERIAL_REFLECTIVITY;
-        const static string ASSET_ATTR_MATERIAL_SHININESS_STRENGTH;
-        const static string ASSET_ATTR_MATERIAL_REFRACTION_INDEX;
-        const static string ASSET_ATTR_MATERIAL_IGNORE;
+        const static string ASSET_ATTR_MATERIAL_ALBEDO;
+        const static string ASSET_ATTR_MATERIAL_NORMAL;
+        const static string ASSET_ATTR_MATERIAL_METALLIC;
+        const static string ASSET_ATTR_MATERIAL_ROUGHNESS;
+        const static string ASSET_ATTR_MATERIAL_AO;
 
         // Model ===============================================================
         const static string ASSET_ATTR_MODEL_MATERIAL_LIST;
@@ -339,30 +284,20 @@ namespace octronic::dream
         // Animation/Keyframe ==================================================
         const static string KEYFRAME_ID;
         const static string KEYFRAME_TIME;
-        const static string KEYFRAME_TRANSLATION;
-        const static string KEYFRAME_ROTATION;
-        const static string KEYFRAME_SCALE;
+        const static string KEYFRAME_TRANSFORM;
         const static string KEYFRAME_DURATION;
         const static string KEYFRAME_LOOPING;
         const static string KEYFRAME_EASING_TYPE;
         const static string ANIMATION_RELATIVE;
 
-        // Camera ==============================================================
-        const static unsigned int CAMERA_MOVEMENT_FORWARD;
-        const static unsigned int CAMERA_MOVEMENT_BACKWARD;
-        const static unsigned int CAMERA_MOVEMENT_LEFT;
-        const static unsigned int CAMERA_MOVEMENT_RIGHT;
-        const static unsigned int CAMERA_MOVEMENT_UP;
-        const static unsigned int CAMERA_MOVEMENT_DOWN;
-        const static float CAMERA_PITCH_MAX;
-        const static float CAMERA_ZOOM_MIN;
-        const static float CAMERA_ZOOM_MAX;
-        const static float CAMERA_YAW;
-        const static float CAMERA_YAW_OFFSET;
-        const static float CAMERA_PITCH;
-        const static float CAMERA_SPEED;
-        const static float CAMERA_SENSITIVTY;
-        const static float CAMERA_ZOOM;
+        // Texture =============================================================
+        const static string ASSET_ATTR_TEXTURE_EQUI_TO_CUBEMAP_SHADER;
+        const static string ASSET_ATTR_TEXTURE_IRRADIANCE_MAP_SHADER;
+        const static string ASSET_ATTR_TEXTURE_PREFILTER_SHADER;
+        const static string ASSET_ATTR_TEXTURE_BRDF_LUT_SHADER;
+        const static string ASSET_ATTR_TEXTURE_IS_ENVIRONMENT;
+        const static string ASSET_ATTR_TEXTURE_FLIP_VERTICAL;
+
 
         // Data Maps ===========================================================
         static map<AssetType,string> DREAM_ASSET_TYPES_MAP;

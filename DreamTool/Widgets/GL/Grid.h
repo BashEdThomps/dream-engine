@@ -34,7 +34,7 @@ namespace octronic::dream::tool
         Grid(
             DreamToolContext* p,
             AxisPair xp = AxisPair::XZ,
-            vec3 position = vec3(0.0f),
+            Transform tx = Transform(),
             float majorSpacing = 10.0f,
             float minorSpacing = 1.0f,
             float size = 100.0f,
@@ -54,9 +54,6 @@ namespace octronic::dream::tool
         float getSize();
         void setSize(float);
         void recalculateGridLines();
-
-        vec3 getTranslation() const;
-        void setTranslation(vec3 translation);
 
         vec3 getMajorColour() const;
         void setMajorColour(vec3 majorColour);

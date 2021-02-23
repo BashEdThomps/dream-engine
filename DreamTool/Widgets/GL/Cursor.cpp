@@ -8,8 +8,7 @@ namespace octronic::dream::tool
 {
     Cursor::Cursor(DreamToolContext* state)
         : GLWidget(state,false),
-          mStepMajor(false),
-          mOrientation(mat4(1.0f))
+          mStepMajor(false)
     {
         LOG_TRACE("Cursor: Constructing");
         for (auto index : ModelIndices)
@@ -100,7 +99,7 @@ namespace octronic::dream::tool
             }
             else
             {
-                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mTransform.getMatrix()));
                 GLCheckError();
             }
 
@@ -173,12 +172,12 @@ namespace octronic::dream::tool
                 txDelta.y = 0.0f;
                 break;
             case Grid::YZ:
-                txDelta.x = 0.0f;
+                txDelta.x =  0.0f;
                 break;
         }
 
-        vec3 currentTx = vec3(mModelMatrix[3]);
-        mModelMatrix = glm::translate(mat4(1.0f),currentTx+txDelta) * mOrientation;
+        auto currentTx = mTransform.getTranslation();
+        mTransform.setTranslation(currentTx + txDelta);
     }
 
     void
@@ -206,30 +205,33 @@ namespace octronic::dream::tool
                 pos.x = 0.0f;
                 break;
         }
-        mModelMatrix = translate(mat4(1.0f),pos) * mOrientation;
+        mTransform.setTranslation(pos);
     }
 
     void
     Cursor::onAxisPairChanged
     (Grid::AxisPair ap)
     {
-        vec3 current = getPosition();
+        vec3 current = mTransform.getTranslation();
+        static mat4 ident(1.f);
+
         switch (ap)
         {
+            // TODO
             case Grid::XY:
                 current.z = 0.0f;
-                mOrientation = mat4_cast(quat(vec3(radians(90.0f),0.0f,0.0f)));
+                //mTransform.setOrientation(glm::rotate(ident, radians(90.0f), vec3(1.f,0.f,0.f)));
                 break;
             case Grid::XZ:
                 current.y = 0.0f;
-                mOrientation = mat4_cast(quat(vec3(0.0f,0.0f,0.0f)));
+                //mTransform.setOrientation(glm::rotate(ident, radians(90.f), vec3(0.f,1.0f,0.f)));
                 break;
             case Grid::YZ:
                 current.x = 0.0f;
-                mOrientation = mat4_cast(quat(vec3(0.0f,0.0f,radians(-90.0f))));
+                //mTransform.setOrientation(glm::rotate(ident, radians(-90.0f), vec3(0.0f,0.0f,1.f)));
                 break;
         }
-        mModelMatrix = glm::translate(mat4(1.0f),current) * mOrientation;
+        mTransform.setTranslation(current);
     }
 
     void
@@ -237,7 +239,7 @@ namespace octronic::dream::tool
     (float x, float y)
     {
         vec3 pos = mouseToWorldSpace(x,y);
-        setPosition(pos,false);
+        mTransform.setTranslation(pos);
     }
 
     vec3
@@ -266,11 +268,11 @@ namespace octronic::dream::tool
 
     const vector<GLWidgetVertex> Cursor::ModelVertices =
     {
-        GLWidgetVertex{vec3(0.000f, 0.000f, 0.000f), vec3(0.0f,1.0f,0.0f)},
-        GLWidgetVertex{vec3(-1.000f, 4.000f, 1.000f), vec3(0.0f,1.0f,0.0f)},
-        GLWidgetVertex{vec3(-1.000f, 4.000f, -1.000f), vec3(0.0f,1.0f,0.0f)},
-        GLWidgetVertex{vec3(1.000f, 4.000f, 1.000f), vec3(0.0f,1.0f,0.0f)},
-        GLWidgetVertex{vec3(1.000f, 4.000f, -1.000f), vec3(0.0f,1.0f,0.0f)},
+        GLWidgetVertex{vec3( 0.f, 0.f,  0.f), vec3(0.0f, 1.0f, 0.0f)},
+        GLWidgetVertex{vec3(-1.f, 4.f,  1.f), vec3(0.0f, 1.0f, 0.0f)},
+        GLWidgetVertex{vec3(-1.f, 4.f, -1.f), vec3(0.0f, 1.0f, 0.0f)},
+        GLWidgetVertex{vec3( 1.f, 4.f,  1.f), vec3(0.0f, 1.0f, 0.0f)},
+        GLWidgetVertex{vec3( 1.f, 4.f, -1.f), vec3(0.0f, 1.0f, 0.0f)},
     };
 
     const vector<GLuint> Cursor::ModelIndices =

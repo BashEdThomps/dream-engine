@@ -52,7 +52,6 @@ namespace octronic::dream::tool
         void drawAnimationAssetProperties();
         void drawAudioAssetProperties();
         void drawFontAssetProperties();
-        void drawLightAssetProperties();
         void drawMaterialAssetProperties();
         void drawModelAssetProperties();
         void drawPhysicsObjectAssetProperties();

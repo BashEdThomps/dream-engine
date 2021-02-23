@@ -42,7 +42,7 @@ namespace octronic::dream
 
         for (auto& audioRuntime : *audioCache->getRuntimeVectorHandle())
         {
-            audioRuntime->pushNextTask();
+            audioRuntime->pushTasks();
         }
     }
 }

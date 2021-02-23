@@ -17,7 +17,7 @@
 
 #include "AudioStatus.h"
 #include "Components/Component.h"
-#include "Common/Vector.h"
+#include "Math/Vector.h"
 
 
 namespace octronic::dream
@@ -29,7 +29,7 @@ namespace octronic::dream
     public:
         AudioComponent();
         virtual ~AudioComponent();
-        virtual void setListenerPosition(const Vector3&) = 0;
+        virtual void setListenerPosition(const vec3&) = 0;
         virtual void setVolume(float) = 0;
         virtual float getVolume() = 0;
     	virtual AudioRuntime* getAudioRuntime(AudioDefinition* def) = 0;

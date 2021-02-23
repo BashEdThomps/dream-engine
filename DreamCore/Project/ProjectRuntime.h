@@ -120,7 +120,7 @@ namespace octronic::dream
         void setWindowHeight(int);
 
         bool constructSceneRuntime(SceneRuntime* rt);
-        void destructSceneRuntime(SceneRuntime* rt, bool clearCaches = false);
+        void destructSceneRuntime(SceneRuntime* rt);
         void clearAllCaches();
 
         bool loadFromDefinition() override;

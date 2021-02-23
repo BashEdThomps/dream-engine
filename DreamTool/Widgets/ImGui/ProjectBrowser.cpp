@@ -390,7 +390,7 @@ namespace octronic::dream::tool
                                 {
                                     if (ImGui::IsItemClicked())
                                     {
-                                        LOG_ERROR("ProjectBrowser: Asset Definition Clicked {}", asset->getName());
+                                        LOG_DEBUG("ProjectBrowser: Asset Definition Clicked {}", asset->getName());
                                         mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset, asset, nullptr);
                                     }
                                     ImGui::TreePop();

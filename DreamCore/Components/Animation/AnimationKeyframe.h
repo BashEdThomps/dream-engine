@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Common/Vector.h"
 #include "AnimationEasing.h"
+
+#include "Math/Transform.h"
 
 #include <json.hpp>
 
@@ -18,14 +19,8 @@ namespace octronic::dream
         long getTime() const;
         void setTime(long time);
 
-        Vector3 getTranslation() const;
-        void setTranslation(const Vector3& translation);
-
-        Vector3 getRotation() const;
-        void setRotation(const Vector3& rotation);
-
-        Vector3 getScale() const;
-        void setScale(const Vector3& scale);
+        Transform getTransform() const;
+        void setTransform(const Transform& transform);
 
         void fromJson(const json& js);
         json toJson() const ;
@@ -45,9 +40,7 @@ namespace octronic::dream
     private:
         int mID;
         long mTime;
-        Vector3 mTranslation;
-        Vector3 mRotation;
-        Vector3 mScale;
+        Transform mTransform;
         AnimationEasing::EasingType mEasingType;
     };
 }

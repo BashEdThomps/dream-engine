@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include "Common/Math.h"
+
 #include "Components/AssetDefinition.h"
 
 namespace octronic::dream
@@ -28,58 +28,20 @@ namespace octronic::dream
         void setShader(UuidType);
 
         // Textures
-        UuidType getDiffuseTexture();
-        void setDiffuseTexture(UuidType);
-
-        UuidType getSpecularTexture();
-        void setSpecularTexture(UuidType);
+        UuidType getAlbedoTexture();
+        void setAlbedoTexture(UuidType);
 
         UuidType getNormalTexture();
         void setNormalTexture(UuidType);
 
-        UuidType getDisplacementTexture();
-        void setDisplacementTexture(UuidType);
+        UuidType getMetallicTexture();
+        void setMetallicTexture(UuidType);
 
-        // Colour
-        Vector3 getDiffuseColour();
-        void setDiffuseColour(Vector3);
+        UuidType getRoughnessTexture();
+        void setRoughnessTexture(UuidType);
 
-        Vector3 getSpecularColour();
-        void setSpecularColour(Vector3);
-
-        Vector3 getAmbientColour();
-        void setAmbientColour(Vector3);
-
-        Vector3 getReflectiveColour();
-        void setReflectiveColour(Vector3);
-
-        Vector3 getEmissiveColour();
-        void setEmissiveColour(Vector3);
-
-        float getOpacity();
-        void  setOpacity(float);
-
-        float getBumpScaling();
-        void  setBumpScaling(float);
-
-        float getHardness();
-        void  setHardness(float);
-
-        void  setReflectivity(float);
-        float getReflectivity();
-
-        float getShininessStrength();
-        void  setShininessStrength(float);
-
-        float getRefractionIndex();
-        void  setRefractionIndex(float);
-
-        bool getIgnore();
-        void setIgnore(bool);
-
-    private:
-        json black();
-
+        UuidType getAoTexture();
+        void setAoTexture(UuidType);
     };
 }
 

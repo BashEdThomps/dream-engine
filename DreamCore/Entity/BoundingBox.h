@@ -17,7 +17,7 @@
 #pragma once
 #define GLM_FORCE_RADIANS
 
-#include "Common/Vector.h"
+#include "Math/Vector.h"
 
 
 namespace octronic::dream
@@ -26,8 +26,8 @@ namespace octronic::dream
     {
     public:
         BoundingBox(
-                const Vector3& minimum = Vector3(-0.5f,-0.5f,-0.5f),
-                const Vector3& maximum = Vector3(0.5f,0.5f,0.5f)
+                const vec3& minimum = vec3(-0.5f,-0.5f,-0.5f),
+                const vec3& maximum = vec3(0.5f,0.5f,0.5f)
                 );
 
         BoundingBox(const BoundingBox& other);
@@ -37,17 +37,17 @@ namespace octronic::dream
         void from(const BoundingBox& bb);
         void integrate(const BoundingBox& bb);
 
-        Vector3 getNegativeVertex(const Vector3& position, const Vector3& normal) const;
-        Vector3 getPositiveVertex(const Vector3& position, const Vector3& normal) const;
+        vec3 getNegativeVertex(const vec3& position, const vec3& normal) const;
+        vec3 getPositiveVertex(const vec3& position, const vec3& normal) const;
         void setToLimits();
-        Vector3 getCenter() const;
-        Vector3& getMaximum();
-        Vector3& getMinimum();
+        vec3 getCenter() const;
+        vec3& getMaximum();
+        vec3& getMinimum();
         void setMaxDimension(float md);
     private:
         float maxDimension;
-        Vector3 minimum;
-        Vector3 maximum;
+        vec3 minimum;
+        vec3 maximum;
     };
 }
 

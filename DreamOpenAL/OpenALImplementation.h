@@ -42,7 +42,7 @@ namespace octronic::dream::open_al
         bool loadFromDefinition(ProjectRuntime* pr, AudioDefinition* ad) override;
         void setSampleOffset(unsigned int offset) override;
         int getDurationInSamples() override;
-        void setSourcePosision(const Vector3& pos) override;
+        void setSourcePosision(const vec3& pos) override;
         void setVolume(float volume) override;
         void play() override;
         void pause() override;

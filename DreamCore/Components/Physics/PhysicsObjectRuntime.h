@@ -22,7 +22,7 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "Components/DiscreteAssetRuntime.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "PhysicsTasks.h"
 
 namespace octronic::dream
@@ -45,30 +45,30 @@ namespace octronic::dream
         void getWorldTransform(btTransform&);
         btCollisionObject* getCollisionObject();
 
-        Vector3 getCenterOfMassPosition();
-        void applyCentralImpulse(const Vector3&);
-        void applyTorqueImpulse(const Vector3&);
-        void applyForce(const Vector3&);
-        void applyTorque(const Vector3&);
+        vec3 getCenterOfMassPosition();
+        void applyCentralImpulse(const vec3&);
+        void applyTorqueImpulse(const vec3&);
+        void applyForce(const vec3&);
+        void applyTorque(const vec3&);
         void clearForces();
 
         void setCenterOfMassTransformTx(Transform& tx);
-        void setCenterOfMassTransform3fv(const Vector3& tx);
+        void setCenterOfMassTransform3fv(const vec3& tx);
         void setCenterOfMassTransform3f(float x, float y, float z);
         void setCenterOfMassTransformMat4(mat4 tx);
 
         void setWorldTransform(Transform& tx);
 
-        Vector3 getLinearVelocity();
-        void setLinearVelocity(float, float, float);
+        vec3 getLinearVelocity();
+        void setLinearVelocity(vec3);
 
         bool isInPhysicsWorld();
         void setInPhysicsWorld(bool inPhysicsWorld);
 
-        void setLinearFactor(float x, float y, float z);
+        void setLinearFactor(vec3);
 
-        void setAngularFactor(float x, float y, float z);
-        void setAngularVelocity(float x, float y, float z);
+        void setAngularFactor(vec3);
+        void setAngularVelocity(vec3);
 
         float getRestitution() const;
         void setRestitution(float r);
@@ -85,7 +85,7 @@ namespace octronic::dream
         void setKinematic(bool setKenematic);
 
         shared_ptr<PhysicsAddObjectTask> getAddObjectTask();
-        void pushNextTask() override;
+        void pushTasks() override;
 
     private:
         PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);

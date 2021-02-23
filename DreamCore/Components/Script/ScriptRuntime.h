@@ -47,7 +47,7 @@ namespace octronic::dream
         bool registerInputScript();
         bool removeInputScript();
 
-        void pushNextTask() override;
+        void pushTasks() override;
 
     private:
         string mSource;

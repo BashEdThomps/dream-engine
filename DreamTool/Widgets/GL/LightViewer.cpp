@@ -34,6 +34,7 @@ namespace octronic::dream::tool
                 SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
+                    /*
                     lightRuntimes = sRunt->getAssetRuntimes(AssetType::ASSET_TYPE_ENUM_LIGHT);
                     Camera* cam = sRunt->getCamera();
                     if (cam)
@@ -41,6 +42,7 @@ namespace octronic::dream::tool
                         mProjectionMatrix = cam->getProjectionMatrix();
                         mViewMatrix = cam->getViewMatrix();
                     }
+                    */
                 }
             }
         }
@@ -94,9 +96,10 @@ namespace octronic::dream::tool
 
             for (auto inst : lightRuntimes)
             {
+                /*
                 auto light = dynamic_cast<LightRuntime*>(inst);
-                mModelMatrix = light->getEntityRuntimeHandle()->getTransform().getMatrix();
-                Vector3 lightColorVec = light->getDiffuse();
+                mat4 modelMatrix = light->getEntityRuntimeHandle()->getTransform().getMatrix();
+                vec3 lightColorVec = light->getDiffuse();
                 // Set the projection matrix
                 if (mModelUniform == -1)
                 {
@@ -105,7 +108,7 @@ namespace octronic::dream::tool
                 }
                 else
                 {
-                    glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+                    glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(modelMatrix));
                     GLCheckError();
                 }
 
@@ -116,12 +119,13 @@ namespace octronic::dream::tool
                 }
                 else
                 {
-                    glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec.toGLM()));
+                    glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec));
                     GLCheckError();
                 }
                 // Draw
                 glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
                 GLCheckError();
+                */
             }
         }
     }

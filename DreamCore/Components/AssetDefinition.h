@@ -16,7 +16,7 @@
 #pragma once
 
 #include "Base/Definition.h"
-#include "Transform.h"
+#include "Math/Transform.h"
 
 using std::vector;
 
@@ -71,7 +71,6 @@ namespace octronic::dream
         bool isTypeAnimation();
         bool isTypeAudio();
         bool isTypeFont();
-        bool isTypeLight();
         bool isTypeMaterial();
         bool isTypeModel();
         bool isTypeScript();

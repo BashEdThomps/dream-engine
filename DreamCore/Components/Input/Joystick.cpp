@@ -1,7 +1,7 @@
 #include "Joystick.h"
 
 #include "Components/Time.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Scene/SceneRuntime.h"
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
@@ -100,12 +100,12 @@ namespace octronic::dream
     JoystickNavigation::~JoystickNavigation()
     {}
 
-    void JoystickNavigation::setHeading(const Vector2& h)
+    void JoystickNavigation::setHeading(const vec2& h)
     {
         mHeading = h;
     }
 
-    Vector2& JoystickNavigation::getHeading()
+    vec2& JoystickNavigation::getHeading()
     {
         return mHeading;
     }
@@ -138,10 +138,10 @@ namespace octronic::dream
             Time* time = rt->getProjectRuntime()->getTime();
             Camera* camera = rt->getCamera();
             static mat4 ident(1.0f);
-            Vector3 translation = playerTransform.getTranslation();
-            mat4 mtx = glm::translate(ident,translation.toGLM());
+            vec3 translation = playerTransform.getTranslation();
+            mat4 mtx = glm::translate(ident,translation);
             auto totalYaw = 0.0f;
-            setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
+            setHeading(vec2(cos(totalYaw),-sin(totalYaw)));
             mtx = glm::translate(mtx,vec3(time->perSecond(-leftY)*10.0f,0,time->perSecond(leftX)*10.0f));
             playerObject->setTransform(playerTransform);
         }
@@ -208,19 +208,21 @@ namespace octronic::dream
         auto playerObject = rt->getPlayerEntity();
         if (playerObject)
         {
+            /*
             Transform playerTransform = playerObject->getTransform();
             Time* time = rt->getProjectRuntime()->getTime();
             Camera* camera = rt->getCamera();
             static mat4 ident(1.0f);
             static vec3 yAxis(0.0f,1.0f,0.0f);
-            Vector3 translation = playerTransform.getTranslation();
+            vec3 translation = playerTransform.getTranslation();
             mat4 mtx = glm::translate(ident,translation.toGLM());
             auto camYaw = camera->getYaw();
             auto totalYaw = getLeftTheta()-camYaw;
-            setHeading(Vector2(cos(totalYaw),-sin(totalYaw)));
+            setHeading(vec2(cos(totalYaw),-sin(totalYaw)));
             mtx = glm::rotate(mtx,totalYaw,yAxis);
             mtx = glm::translate(mtx,vec3(time->perSecond(getLeftVelocity()*10.0f),0,0));
             playerObject->setTransform(Transform(mtx));
+            */
         }
         else
         {

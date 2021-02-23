@@ -72,11 +72,7 @@ namespace octronic::dream
                 (*itr)[Constants::KEYFRAME_TIME] = kf.getTime();
                 (*itr)[Constants::KEYFRAME_EASING_TYPE] = kf.getEasingType();
                 // Translation
-                (*itr)[Constants::KEYFRAME_TRANSLATION] = kf.getTranslation().toJson();
-                // Rotation
-                (*itr)[Constants::KEYFRAME_ROTATION] = kf.getRotation().toJson();
-                // Translation
-                (*itr)[Constants::KEYFRAME_SCALE] = kf.getScale().toJson();
+                (*itr)[Constants::KEYFRAME_TRANSFORM] = kf.getTransform().toJson();
                 return;
             }
         }

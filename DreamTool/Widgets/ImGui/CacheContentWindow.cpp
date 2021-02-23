@@ -26,64 +26,75 @@ namespace octronic::dream::tool
             auto projRunt = mContext->getProject()->getRuntime();
             if (projRunt)
             {
-                if (ImGui::CollapsingHeader("Audio Cache"))
+                char title[128] = {0};
+                string formatStr = "%s Cache (%d)";
+
+                auto audioCache = projRunt->getAudioCache();
+                snprintf(title, 128, formatStr.c_str(), "Audio", audioCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getAudioCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *audioCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Font Cache"))
+				auto fontCache = projRunt->getFontCache();
+                snprintf(title, 128, formatStr.c_str(), "Font", fontCache->runtimeCount());
+
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getFontCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *fontCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Material Cache"))
+                auto materialCache = projRunt->getMaterialCache();
+                snprintf(title, 128, formatStr.c_str(), "Material", materialCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getMaterialCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *materialCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Model Cache"))
+                auto modelCache = projRunt->getModelCache();
+                snprintf(title, 128, formatStr.c_str(), "Model", modelCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getModelCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *modelCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Script Cache"))
+                auto scriptCache = projRunt->getScriptCache();
+                snprintf(title, 128, formatStr.c_str(), "Script", scriptCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getScriptCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *scriptCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Shader Cache"))
+                auto shaderCache = projRunt->getShaderCache();
+                snprintf(title, 128, formatStr.c_str(), "Shader", shaderCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getShaderCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *shaderCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
                 }
 
-                if (ImGui::CollapsingHeader("Texture Cache"))
+                auto textureCache = projRunt->getTextureCache();
+                snprintf(title, 128, formatStr.c_str(), "Texture", textureCache->runtimeCount());
+                if (ImGui::CollapsingHeader(title))
                 {
-                    auto cache = projRunt->getTextureCache();
-                    for (auto& instance : *cache->getRuntimeVectorHandle())
+                    for (auto& instance : *textureCache->getRuntimeVectorHandle())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }

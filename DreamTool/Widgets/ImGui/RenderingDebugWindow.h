@@ -12,6 +12,6 @@ namespace octronic::dream::tool
         ~RenderingDebugWindow() override;
 
         void draw() override;
-        static ImVec2 PreviewSize, UV1, UV2;
+        static ImVec2 UV1, UV2;
     };
 }

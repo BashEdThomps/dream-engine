@@ -18,47 +18,30 @@
 
 
 #include "Common/GLHeader.h"
+#include "UniformType.h"
 #include <glm/glm.hpp>
-
 
 namespace octronic::dream
 {
-    enum UniformType
-    {
-        // Int
-        INT1,
-        INT2,
-        INT3,
-        INT4,
-        // uInt
-        UINT1,
-        UINT2,
-        UINT3,
-        UINT4,
-        // Float
-        FLOAT1,
-        FLOAT2,
-        FLOAT3,
-        FLOAT4,
-    };
-
     class ShaderUniform
     {
     public:
-        ShaderUniform(UniformType type, string name, int count, void* data);
-        ShaderUniform(const ShaderUniform&) = delete;
+        ShaderUniform(UniformType type, string name, size_t count, void* data);
         ~ShaderUniform();
 
         bool operator==(const ShaderUniform& other) const;
 
         UniformType getType() const;
         void setType(const UniformType& type);
+
         string getName() const;
         void setName(const string& name);
+
         void* getData() const;
         void setData(void* data);
-        int getCount() const;
-        void setCount(int count);
+
+        size_t getCount() const;
+        void setCount(size_t count);
 
         GLint getLocation() const;
         void setLocation(GLint location);
@@ -67,11 +50,14 @@ namespace octronic::dream
         void setNeedsUpdate(bool needsUpdate);
 
     private:
+        void deleteData();
+
+    private:
         UniformType mType;
-        string mName;
-        void* mData;
-        int mCount;
-        GLint mLocation;
-        bool mNeedsUpdate;
+        string      mName;
+        void*       mData;
+        size_t      mCount;
+        GLint       mLocation;
+        bool        mNeedsUpdate;
     };
 }

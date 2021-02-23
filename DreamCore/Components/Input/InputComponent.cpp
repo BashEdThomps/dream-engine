@@ -18,7 +18,7 @@
 
 #include "Common/Logger.h"
 #include "Components/Time.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Script/ScriptRuntime.h"
 #include "Components/Graphics/Camera.h"
 #include "Scene/SceneRuntime.h"
@@ -211,14 +211,14 @@ namespace octronic::dream
         // Input component needs to be constructed
         if (mInputScript)
         {
-            mInputScript->pushNextTask();
+            mInputScript->pushTasks();
 
 			inputComponent->setCurrentSceneRuntime(this);
 
             // Process Input
             InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
 			inputExecuteTask->dependsOn(inputPollDataTask);
-			taskManager->pushNextTask();
+			taskManager->pushTasks();
         }
         */
     }

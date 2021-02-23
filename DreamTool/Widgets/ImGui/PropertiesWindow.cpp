@@ -149,7 +149,7 @@ namespace octronic::dream::tool
         }
 
         mHistory.push_back(PropertiesTarget{mType,mDefinition,mRuntime});
-        LOG_ERROR("PropertiesWindow: Pushed target {}",mHistory.size());
+        LOG_INFO("PropertiesWindow: Pushed target {}",mHistory.size());
         setPropertyType(type);
         setDefinition(def);
         setRuntime(runt);
@@ -266,6 +266,7 @@ namespace octronic::dream::tool
             pushPropertyTarget(PropertyType_Scene, project->getDefinition()->createNewSceneDefinition(), nullptr);
             return;
         }
+
         drawNameAndIdProperties();
 
         ImGui::Separator();
@@ -283,23 +284,6 @@ namespace octronic::dream::tool
             projectDefinition->setStartupSceneUuid(startup->getUuid());
         }
         ImGui::Separator();
-
-        // Author
-        char authorBuffer[512] = {0};
-        strncpy(authorBuffer, projectDefinition->getAuthor().c_str(), projectDefinition->getAuthor().length());
-        if(ImGui::InputText("Author",authorBuffer,512))
-        {
-            projectDefinition->setAuthor(authorBuffer);
-        }
-
-        // Description
-        char descriptionBuffer[512] = {0};
-        strncpy(descriptionBuffer,projectDefinition->getDescription().c_str(),projectDefinition->getDescription().length());
-        if(ImGui::InputTextMultiline("Description",descriptionBuffer,512))
-        {
-            projectDefinition->setDescription(descriptionBuffer);
-        }
-
     }
 
     void
@@ -331,92 +315,114 @@ namespace octronic::dream::tool
         if (sceneRuntime)
         {
             Camera* cam = sceneRuntime->getCamera();
-            Vector3 tx = cam->getTranslation();
-            cameraTranslation[0] = tx.x();
-            cameraTranslation[1] = tx.y();
-            cameraTranslation[2] = tx.z();
+            Transform camTransf = cam->getTransform();
+            vec3 tx = camTransf.getTranslation();
+            cameraTranslation[0] = tx.x;
+            cameraTranslation[1] = tx.y;
+            cameraTranslation[2] = tx.z;
         }
         else
         {
-            cameraTranslation[0] = sceneDef->getCameraTranslationX();
-            cameraTranslation[1] = sceneDef->getCameraTranslationY();
-            cameraTranslation[2] = sceneDef->getCameraTranslationZ();
+            Transform camTransf = sceneDef->getCameraTransform();
+            vec3 tx = camTransf.getTranslation();
+            cameraTranslation[0] = tx.x;
+            cameraTranslation[1] = tx.y;
+            cameraTranslation[2] = tx.z;
         }
 
         if(ImGui::CollapsingHeader("Camera"))
         {
             if(ImGui::DragFloat3("Translation",cameraTranslation,0.1f))
             {
-                if (sceneDef != nullptr)
-                {
-                    sceneDef->setCameraTranslationX(cameraTranslation[0]);
-                    sceneDef->setCameraTranslationY(cameraTranslation[1]);
-                    sceneDef->setCameraTranslationZ(cameraTranslation[2]);
-                }
-
-                if (sceneRuntime != nullptr)
+                if (sceneRuntime)
                 {
                     Camera* cam = sceneRuntime->getCamera();
-                    cam->setTranslation(Vector3(cameraTranslation[0],cameraTranslation[1],cameraTranslation[2]));
+                    Transform cam_tx = cam->getTransform();
+                    cam_tx.setTranslation(vec3(cameraTranslation[0],cameraTranslation[1],cameraTranslation[2]));
+                    cam->setTransform(cam_tx);
+                }
+                else
+                {
+                    Transform cam_tx = sceneDef->getCameraTransform();
+                    cam_tx.setTranslation(vec3(cameraTranslation[0],cameraTranslation[1],cameraTranslation[2]));
+                    sceneDef->setCameraTransform(cam_tx);
                 }
             }
 
-            float cameraRotation[3] = {0.0f};
+            float cam_yaw, cam_pitch, cam_roll;
 
             if (sceneRuntime)
             {
                 Camera* cam = sceneRuntime->getCamera();
-                cameraRotation[0] = degrees(cam->getPitch());
-                cameraRotation[1] = degrees(cam->getYaw());
+                Transform cam_tx = cam->getTransform();
+                cam_yaw   = degrees(cam_tx.getYaw());
+                cam_pitch = degrees(cam_tx.getPitch());
+                cam_roll  = degrees(cam_tx.getRoll());
             }
             else
             {
-                cameraRotation[0] = degrees(sceneDef->getCameraPitch());
-                cameraRotation[1] = degrees(sceneDef->getCameraYaw());
+                Transform cam_tx = sceneDef->getCameraTransform();
+                cam_yaw   = degrees(cam_tx.getYaw());
+                cam_pitch = degrees(cam_tx.getPitch());
+                cam_roll  = degrees(cam_tx.getRoll());
             }
 
-            if(ImGui::DragFloat3("Pitch Yaw Roll",cameraRotation,0.1f))
+            bool rot_changed = false;
+            rot_changed |= ImGui::DragFloat("Yaw",   &cam_yaw,   1.f);
+            rot_changed |= ImGui::DragFloat("Pitch", &cam_pitch, 1.f);
+            rot_changed |= ImGui::DragFloat("Roll",  &cam_roll,  1.f);
+
+            if(rot_changed)
             {
+                Transform tx;
                 if (sceneDef != nullptr)
                 {
-                    sceneDef->setCameraPitch(radians(cameraRotation[0]));
-                    sceneDef->setCameraYaw(radians(cameraRotation[1]));
+                    tx = sceneDef->getCameraTransform();
+                    tx.setYaw(radians(cam_yaw));
+                    tx.setPitch(radians(cam_pitch));
+                    tx.setRoll(radians(cam_roll));
+                    sceneDef->setCameraTransform(tx);
                 }
 
                 if (sceneRuntime != nullptr)
                 {
                     Camera* cam = sceneRuntime->getCamera();
-                    cam->setPitch(radians(cameraRotation[0]));
-                    cam->setYaw(radians(cameraRotation[1]));
+                    tx = cam->getTransform();
+                    tx.setYaw(radians(cam_yaw));
+                    tx.setPitch(radians(cam_pitch));
+                    tx.setRoll(radians(cam_roll));
+                    cam->setTransform(tx);
                 }
             }
 
-            float camSpeed = sceneDef->getCameraMovementSpeed();
-            if(ImGui::DragFloat("Camera Speed",&camSpeed))
+            float fov;
+            if (sceneRuntime)
             {
-                if (sceneDef)
-                {
-                    sceneDef->setCameraMovementSpeed(camSpeed);
-                }
+                Camera* cam = sceneRuntime->getCamera();
+                fov = degrees(cam->getFieldOfView());
+            }
+            else
+            {
+                fov = degrees(sceneDef->getCameraFOV());
+            }
+
+            if (ImGui::DragFloat("FOV", &fov, 0.1f, 1.f,180.f))
+            {
+                sceneDef->setCameraFOV(radians(fov));
                 if (sceneRuntime)
                 {
                     Camera* cam = sceneRuntime->getCamera();
-                    cam->setMovementSpeed(camSpeed);
+                    cam->setFieldOfView(radians(fov));
                 }
             }
 
             if(ImGui::Button("Capture Camera Transform"))
             {
-                if (sceneDef)
+                if (sceneRuntime && sceneDef)
                 {
-                    sceneDef->setCameraTranslationX(cameraTranslation[0]);
-                    sceneDef->setCameraTranslationY(cameraTranslation[1]);
-                    sceneDef->setCameraTranslationZ(cameraTranslation[2]);
-
-                    sceneDef->setCameraPitch(radians(cameraRotation[0]));
-                    sceneDef->setCameraYaw(radians(cameraRotation[1]));
-
-                    sceneDef->setCameraMovementSpeed(camSpeed);
+                    Camera* camera = sceneRuntime->getCamera();
+                    Transform camTx = camera->getTransform();
+                    sceneDef->setCameraTransform(camTx);
                 }
             }
 
@@ -425,38 +431,10 @@ namespace octronic::dream::tool
                 if (sceneRuntime)
                 {
                     Camera* cam = sceneRuntime->getCamera();
-                    cam->setTranslation(sceneDef->getCameraTranslation());
-                    cam->setPitch(sceneDef->getCameraPitch());
-                    cam->setYaw(sceneDef->getCameraYaw());
-                    cam->setMovementSpeed(sceneDef->getCameraMovementSpeed());
+                    cam->setTransform(sceneDef->getCameraTransform());
                 }
             }
 
-
-            UuidType focused = sceneDef->getCameraFocusedOn();
-            string focusedStr = "None";
-            if (sceneRuntime)
-            {
-                EntityRuntime* focusedObj = sceneRuntime->getEntityRuntimeByUuid(focused);
-                if (focusedObj)
-                {
-                    focusedStr = focusedObj->getNameAndUuidString();
-                }
-            }
-            if (ImGui::Button("Clear Focus"))
-            {
-                sceneDef->setCameraFocusedOn(0);
-                if (sceneRuntime)
-                {
-                    Camera* cam = sceneRuntime->getCamera();
-                    if(cam)
-                    {
-                        cam->setFocusedEntity(nullptr);
-                    }
-                }
-            }
-
-            ImGui::Text("Focused on: %s",focusedStr.c_str());
 
             if (sceneRuntime)
             {
@@ -483,14 +461,6 @@ namespace octronic::dream::tool
             }
             ImGui::Text("Nearest Object to Camera: %s",nearestStr.c_str());
 
-            float theta = 0.0f;
-            if (sceneRuntime)
-            {
-                Camera* cam = sceneRuntime->getCamera();
-                theta = glm::degrees(cam->getFocusedObjectTheta());
-            }
-
-            ImGui::Text("Theta: %.3f",theta);
         }
 
         // Rendering
@@ -530,42 +500,27 @@ namespace octronic::dream::tool
                 }
             }
 
-            Vector3 clearVec = sceneDef->getClearColour();
-            float clear[3] = {clearVec.x(), clearVec.y(), clearVec.z()};
-            if(ImGui::ColorEdit3("Clear Color",&clear[0]))
+            vec4 clearVec = sceneDef->getClearColor();
+            float clear[4] = {clearVec.x, clearVec.y, clearVec.z, clearVec.a};
+            if(ImGui::ColorEdit4("Clear Color",clear))
             {
+                clearVec.x = clear[0];
+                clearVec.y = clear[1];
+                clearVec.z = clear[2];
+                clearVec.a = clear[3];
+
                 if (sceneDef != nullptr)
                 {
-                    sceneDef->setClearColourR(clear[0]);
-                    sceneDef->setClearColourG(clear[1]);
-                    sceneDef->setClearColourB(clear[2]);
+                    sceneDef->setClearColor(clearVec);
                 }
                 if (sceneRuntime)
                 {
-                    sceneRuntime->setClearColour(
-                                Vector3(clear[0],clear[1],clear[2]));
+                    sceneRuntime->setClearColor(clearVec);
                 }
             }
 
             ProjectDefinition* pDef = sceneDef->getProjectDefinition();
             vector<string> shaderList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
-
-            // Setup LightPass Shader
-            {
-                UuidType lpShaderUuid = sceneDef->getLightingPassShader();
-                ShaderDefinition* lpShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(lpShaderUuid));
-                int lightingShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,lpShaderDef);
-
-                if (StringCombo("Lighting Pass Shader", &lightingShaderIndex, shaderList, shaderList.size()))
-                {
-                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, lightingShaderIndex);
-                    UuidType uuid = selectedShader->getUuid();
-                    string name = selectedShader->getName();
-                    sceneDef->setLightingPassShader(uuid);
-
-                    LOG_DEBUG("PropertiesWindow: Switched lighting pass shader to {} {}", name, uuid);
-                }
-            }
 
             // Setup ShadowPassShader
             {
@@ -614,6 +569,41 @@ namespace octronic::dream::tool
                     LOG_DEBUG("PropertiesWindow: Switched Sprite shader to {} {}", name, uuid);
                 }
             }
+
+
+            vector<string> textureList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
+            // Setup Environment Texture
+            {
+                UuidType envTexUuid = sceneDef->getEnvironmentTexture();
+                TextureDefinition* envTexDef = static_cast<TextureDefinition*>(pDef->getAssetDefinitionByUuid(envTexUuid));
+                int envMapTexIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, envTexDef);
+
+                if (StringCombo("Environment Texture", &envMapTexIndex, textureList, textureList.size()))
+                {
+                    AssetDefinition* selected = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, envMapTexIndex);
+                    UuidType uuid = selected->getUuid();
+                    string name = selected->getName();
+                    sceneDef->setEnvironmentTexture(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched Environment Texture to {} {}", name, uuid);
+                }
+            }
+
+            // Environment Shader
+            {
+                UuidType envShaderUuid = sceneDef->getEnvironmentShader();
+                ShaderDefinition* envShaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(envShaderUuid));
+                int envShaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,envShaderDef);
+
+                if (StringCombo("Environment Shader", &envShaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, envShaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    sceneDef->setEnvironmentShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched environment shader to {} {}", name, uuid);
+                }
+            }
+
         }
 
         if (ImGui::CollapsingHeader("Scripting"))
@@ -633,7 +623,8 @@ namespace octronic::dream::tool
         }
 
         // Physics
-        if(ImGui::CollapsingHeader("Physics")){
+        if(ImGui::CollapsingHeader("Physics"))
+        {
             bool physicsDebug = sceneDef->getPhysicsDebug();
 
             if (ImGui::Checkbox("Debug", &physicsDebug))
@@ -644,14 +635,16 @@ namespace octronic::dream::tool
                 }
             }
 
-            float gravityVec[3] ={
-                sceneDef->getGravity().x(),
-                sceneDef->getGravity().y(),
-                sceneDef->getGravity().z()
+            float gravityVec[3] =
+            {
+                sceneDef->getGravity().x,
+                sceneDef->getGravity().y,
+                sceneDef->getGravity().z
             };
+
             if (ImGui::DragFloat3("Gravity", &gravityVec[0],0.1f))
             {
-                Vector3 grav(gravityVec[0],gravityVec[1],gravityVec[2]);
+                vec3 grav(gravityVec[0],gravityVec[1],gravityVec[2]);
                 if (sceneDef)
                 {
                     sceneDef->setGravity(grav);
@@ -661,8 +654,6 @@ namespace octronic::dream::tool
                     sceneRuntime->setGravity(grav);
                 }
             }
-
-
         }
     }
 
@@ -696,13 +687,13 @@ namespace octronic::dream::tool
         if (ImGui::Button("Add Child"))
         {
             EntityDefinition* newChildDef = entityDef->createNewChildDefinition();
-            mat4 cursorTx = glm::translate(mat4(1.0f),mContext->getCursor()->getPosition());
-            newChildDef->getTransform().setMatrix(cursorTx);
+            newChildDef->setTransform(mContext->getCursor()->getTransform());
+
             EntityRuntime* newRt = nullptr;
             if (entityRuntime)
             {
                 newRt = entityRuntime->createAndAddChildRuntime(newChildDef);
-                newRt->getTransform().setMatrix(cursorTx);
+                newRt->setTransform(mContext->getCursor()->getTransform());
             }
             pushPropertyTarget(PropertyType_Entity,newChildDef,newRt);
         }
@@ -728,29 +719,6 @@ namespace octronic::dream::tool
         ImGui::Separator();
 
         ImGui::Columns(2);
-
-        if (ImGui::Button("Set Camera Focus"))
-        {
-            if(entityDef)
-            {
-                SceneDefinition* sDef = entityDef->getSceneDefinition();
-                if (sDef)
-                {
-                    sDef->setCameraFocusedOn(entityDef->getUuid());
-                }
-            }
-            if (entityRuntime)
-            {
-                SceneRuntime* sceneRuntime = entityRuntime->getSceneRuntime();
-                if (sceneRuntime)
-                {
-                    Camera* cam = sceneRuntime->getCamera();
-                    cam->setFocusedEntity(entityRuntime);
-                }
-            }
-        }
-
-        ImGui::NextColumn();
 
         if (ImGui::Button("Set as Player Object"))
         {
@@ -800,113 +768,129 @@ namespace octronic::dream::tool
 
         ImGui::Columns(1);
 
-        ImGui::Separator();
 
         if (entityDef->getAssetDefinition(AssetType::ASSET_TYPE_ENUM_FONT) != Uuid::INVALID)
         {
-            if (ImGui::CollapsingHeader("Text Properties"))
+            ImGui::Separator();
+            ImGui::Text("Text Properties");
+            char fontTextBuffer[128] = {0};
+            string fontText = entityDef->getFontText();
+            strncpy(fontTextBuffer, fontText.c_str(), fontText.size());
+            if (ImGui::InputText("Text", fontTextBuffer,128))
             {
-                char fontTextBuffer[128] = {0};
-                string fontText = entityDef->getFontText();
-                strncpy(fontTextBuffer, fontText.c_str(), fontText.size());
-                if (ImGui::InputText("Text", fontTextBuffer,128))
+                string txt(fontTextBuffer);
+                entityDef->setFontText(txt);
+                if (entityRuntime)
                 {
-                    entityDef->setFontText(string(fontTextBuffer));
+                    entityRuntime->setFontText(txt);
                 }
+            }
 
-                Vector3 fontColorV = entityDef->getFontColor();
-                float fontColor[3] = {fontColorV.r(), fontColorV.g(), fontColorV.b()};
+            vec4 fontColorV = entityDef->getFontColor();
+            float fontColor[4] = {fontColorV.r, fontColorV.g, fontColorV.b, fontColorV.a};
 
-                if (ImGui::ColorPicker3("Color", &fontColor[0]))
+            if (ImGui::ColorPicker4("Color", &fontColor[0]))
+            {
+                fontColorV.r = fontColor[0];
+                fontColorV.g = fontColor[1];
+                fontColorV.b = fontColor[2];
+                fontColorV.a = fontColor[3];
+                entityDef->setFontColor(fontColorV);
+                if (entityRuntime)
                 {
-                    entityDef->setFontColor(Vector3(fontColor[0],fontColor[1],fontColor[2]));
+
+                    entityRuntime->setFontColor(fontColorV);
                 }
+            }
 
-                float fontScale = entityDef->getFontScale();
-                if (ImGui::InputFloat("Font Scale",&fontScale))
+            float fontScale = entityDef->getFontScale();
+            if (ImGui::InputFloat("Font Scale",&fontScale))
+            {
+                entityDef->setFontScale(fontScale);
+                if (entityRuntime)
                 {
-                    entityDef->setFontScale(fontScale);
+                    entityRuntime->setFontScale(fontScale);
                 }
             }
         }
 
-        ImGui::Separator();
-
         if (entityRuntime && entityRuntime->hasAnimationRuntime())
         {
+            ImGui::Separator();
+
             AnimationRuntime* animation = entityRuntime->getAnimationRuntime();
-            if (ImGui::CollapsingHeader("Animation"))
+            ImGui::Text("Animation Transport");
+
+            if (ImGui::Button("Run"))
             {
-                if (ImGui::Button("Run"))
-                {
-                    animation->run();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Pause"))
-                {
-                    animation->pause();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Reset"))
-                {
-                    animation->reset();
-                }
-
-                ImGui::PushItemWidth(-1);
-                float animProg = animation->getCurrentTime();
-                float duration = animation->getDuration();
-                if(ImGui::SliderFloat("#AnimationProgress", &animProg,0,duration,"%dms"))
-                {
-                    animation->setCurrentTime(animProg);
-                    animation->seekAll(animProg);
-                }
-                ImGui::PopItemWidth();
-
+                animation->run();
             }
+            ImGui::SameLine();
+            if (ImGui::Button("Pause"))
+            {
+                animation->pause();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Reset"))
+            {
+                animation->reset();
+            }
+
+            ImGui::PushItemWidth(-1);
+            float animProg = animation->getAnimationSeekTime();
+            float duration = animation->getDuration();
+            if(ImGui::SliderFloat("#AnimationProgress", &animProg,0,duration,"%dms"))
+            {
+                animation->setAnimationSeekTime(animProg);
+                animation->seekAll(animProg);
+            }
+            ImGui::PopItemWidth();
         }
 
         drawTransformProperties();
 
-        if(ImGui::CollapsingHeader("Assets"))
+        ImGui::Separator();
+
+        ImGui::Text("Assets");
+
+        // Animation =======================================================
+
+        int selectedAnimationAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION);
+        vector<string> animationAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_ANIMATION);
+        if(ImGui::Button("-##Animation"))
         {
-
-            // Animation =======================================================
-
-            int selectedAnimationAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION);
-            vector<string> animationAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_ANIMATION);
-            if(ImGui::Button("-##Animation"))
+            entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_ANIMATION,0);
+            if (entityRuntime)
             {
-                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_ANIMATION,0);
-                if (entityRuntime)
+                entityRuntime->removeAnimationRuntime();
+            }
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(">##Animation"))
+        {
+            if (selectedAnimationAsset < 0) return;
+            AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset);
+            pushPropertyTarget(PropertyType_Asset,asset,nullptr);
+            return;
+        }
+
+        ImGui::SameLine();
+
+        if(StringCombo("Animation",&selectedAnimationAsset,animationAssets,animationAssets.size()))
+        {
+            entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
+            if (entityRuntime)
+            {
+                AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
+                if (selectedDef)
                 {
-                    entityRuntime->removeAnimationRuntime();
+                    entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedDef->getUuid());
                 }
             }
-            ImGui::SameLine();
-            if(ImGui::Button(">##Animation"))
-            {
-                if (selectedAnimationAsset < 0) return;
-                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset);
-                pushPropertyTarget(PropertyType_Asset,asset,nullptr);
-                return;
-            }
+        }
 
-            ImGui::SameLine();
-
-            if(StringCombo("Animation",&selectedAnimationAsset,animationAssets,animationAssets.size()))
-            {
-                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
-                if (entityRuntime)
-                {
-                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
-                    if (selectedDef)
-                    {
-                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedDef->getUuid());
-                    }
-                }
-            }
-
-            // Audio ===========================================================
+        // Audio ===========================================================
+        {
 
             int selectedAudioAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_AUDIO);
             vector<string> audioAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_AUDIO);
@@ -941,8 +925,10 @@ namespace octronic::dream::tool
                     }
                 }
             }
+        }
 
-            // Font ============================================================
+        // Font ============================================================
+        {
 
             int selectedFontAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_FONT);
             vector<string> fontAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_FONT);
@@ -977,47 +963,11 @@ namespace octronic::dream::tool
                     }
                 }
             }
+        }
 
-            // Light ===========================================================
+        // Model ===========================================================
 
-            int selectedLightAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT);
-            vector<string> lightAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_LIGHT);
-
-            if(ImGui::Button("-##Light"))
-            {
-                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_LIGHT,0);
-                if (entityRuntime)
-                {
-                    entityRuntime->removeLightRuntime();
-                }
-
-            }
-            ImGui::SameLine();
-
-            if(ImGui::Button(">##Light"))
-            {
-                if (selectedLightAsset < 0) return;
-                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT,selectedLightAsset);
-                pushPropertyTarget(PropertyType_Asset, asset, nullptr);
-                return;
-            }
-
-            ImGui::SameLine();
-
-            if(StringCombo("Light",&selectedLightAsset,lightAssets,lightAssets.size()))
-            {
-                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
-                if (entityRuntime)
-                {
-                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedLightAsset);
-                    if (selectedDef)
-                    {
-                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_LIGHT, selectedDef->getUuid());
-                    }
-                }
-            }
-
-            // Model
+        {
             int selectedModelAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_MODEL);
             vector<string> modelAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
@@ -1054,8 +1004,11 @@ namespace octronic::dream::tool
                     }
                 }
             }
+        }
 
-            // Path
+        // Path ============================================================
+
+        {
             int selectedPathAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PATH);
             vector<string> pathAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PATH);
             if(ImGui::Button("-##Path"))
@@ -1088,8 +1041,11 @@ namespace octronic::dream::tool
                     entityRuntime->replaceAssetUuid(ASSET_TYPE_ENUM_PATH, selectedDef->getUuid());
                 }
             }
+        }
 
-            //Physics Object
+        // Physics Object ==================================================
+
+        {
             int selectedPhysicsObjectAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
             vector<string> poAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
             if(ImGui::Button("-##PhysicsObject"))
@@ -1124,8 +1080,11 @@ namespace octronic::dream::tool
                     }
                 }
             }
+        }
 
-            // Script
+        // Script ==========================================================
+        {
+
             int selectedScriptAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT);
             vector<string> scriptAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SCRIPT);
             if(ImGui::Button("-##Script"))
@@ -1161,6 +1120,46 @@ namespace octronic::dream::tool
                 }
             }
         }
+
+        // Texture (Sprite) ================================================
+        {
+            int selectedTextureAsset = entityDef->getSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE);
+            vector<string> textureAssets = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
+
+            if(ImGui::Button("-##Texture"))
+            {
+                entityDef->setAssetDefinition(AssetType::ASSET_TYPE_ENUM_SCRIPT,0);
+                if (entityRuntime)
+                {
+                    entityRuntime->removeScriptRuntime();
+                }
+            }
+
+            ImGui::SameLine();
+
+            if(ImGui::Button(">##Texture"))
+            {
+                if (selectedTextureAsset < 0) return;
+                AssetDefinition* asset = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE,selectedTextureAsset);
+                pushPropertyTarget(PropertyType_Asset,asset,nullptr);
+                return;
+            }
+
+            ImGui::SameLine();
+
+            if(StringCombo("Texture (Sprite)",&selectedTextureAsset,textureAssets,textureAssets.size()))
+            {
+                entityDef->setSelectedAssetIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, selectedTextureAsset);
+                if (entityRuntime)
+                {
+                    AssetDefinition* selectedDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, selectedTextureAsset);
+                    if (selectedDef)
+                    {
+                        entityRuntime->replaceAssetUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, selectedDef->getUuid());
+                    }
+                }
+            }
+        }
     }
 
     void
@@ -1172,112 +1171,151 @@ namespace octronic::dream::tool
 
         static bool withChildren = false;
 
-        if(ImGui::CollapsingHeader("Transform"))
+        ImGui::Separator();
+
+        // TransformSpace ======================================================
+
+        TransformSpace transformSpace;
+
+        if (entityRuntime)
         {
-            Transform tx;
+            transformSpace = entityRuntime->getTransformSpace();
+        }
+        else
+        {
+            transformSpace = entityDefinition->getTransformSpace();
+        }
+
+        ImGui::RadioButton("World Space", (int*)&transformSpace, (int)TRANSFORM_SPACE_WORLD);
+        ImGui::SameLine();
+        ImGui::RadioButton("Screen Space", (int*)&transformSpace, (int)TRANSFORM_SPACE_SCREEN);
+
+        if (entityRuntime)
+        {
+            entityRuntime->setTransformSpace(transformSpace);
+        }
+        else
+        {
+            entityDefinition->setTransformSpace(transformSpace);
+        }
+
+        ImGui::Separator();
+
+        // Tx, Rotation, Scale =================================================
+
+        Transform tx;
+
+        if (entityRuntime)
+        {
+            tx = entityRuntime->getTransform();
+        }
+        else
+        {
+            tx = entityDefinition->getTransform();
+        }
+
+        ImGui::Columns(1);
+
+        float float_translation[3] = {
+            tx.getTranslation().x,
+            tx.getTranslation().y,
+            tx.getTranslation().z
+        };
+
+        float yaw   = degrees(tx.getYaw());
+        float pitch = degrees(tx.getPitch());
+        float roll  = degrees(tx.getRoll());
+
+        float float_scale[3] =
+        {
+            tx.getScale().x,
+            tx.getScale().y,
+            tx.getScale().z
+        };
+
+        bool tx_changed = false;
+        tx_changed |= ImGui::DragFloat3("Translation", float_translation,0.01f);
+        tx_changed |= ImGui::DragFloat3("Scale", float_scale,0.01f);
+        tx_changed |= ImGui::DragFloat("Yaw",   &yaw,   1.f);
+        tx_changed |= ImGui::DragFloat("Pitch", &pitch, 1.f);
+        tx_changed |= ImGui::DragFloat("Roll",  &roll,  1.f);
+
+
+        if (tx_changed)
+        {
+            tx.setTranslation({float_translation[0], float_translation[1], float_translation[2]});
+            tx.setScale(vec3{float_scale[0], float_scale[1], float_scale[2]});
+            tx.setYaw(radians(yaw));
+            tx.setPitch(radians(pitch));
+            tx.setRoll(radians(roll));
 
             if (entityRuntime)
             {
-                tx = entityRuntime->getTransform();
+                entityRuntime->setTransform(tx);
             }
             else
             {
-                tx = entityDefinition->getTransform();
+                entityDefinition->setTransform(tx);
             }
-
-            MatrixDecomposition dx = tx.decomposeMatrix();
-            vec3 eulerRotation = eulerAngles(dx.rotation);
-
-            ImGui::Columns(1);
-
-            float float_translation[3] = {dx.translation.x, dx.translation.y, dx.translation.z};
-            float float_rotation[3] = {degrees(eulerRotation.x), degrees(eulerRotation.y), degrees(eulerRotation.z)};
-            float float_scale[3] = {dx.scale.x, dx.scale.y, dx.scale.z};
-
-            bool tx_changed = false;
-            tx_changed |= ImGui::DragFloat3("Translation", float_translation);
-            tx_changed |= ImGui::DragFloat3("Rotation", float_rotation);
-            tx_changed |= ImGui::DragFloat3("Scale", float_scale);
-
-
-            if (tx_changed)
-            {
-                dx.translation = vec3(float_translation[0],float_translation[1],float_translation[2]);
-                dx.rotation = quat(vec3(radians(float_rotation[0]),radians(float_rotation[1]),radians(float_rotation[2])));
-                dx.scale = vec3(float_scale[0],float_scale[1],float_scale[2]);
-
-                tx.recomposeMatrix(dx,false);
-
-                if (entityRuntime)
-                {
-                    entityRuntime->setTransform(tx);
-                }
-                else
-                {
-                    entityDefinition->setTransform(tx);
-                }
-            }
-
-            ImGui::Separator();
-            ImGui::Checkbox("With Children",&withChildren);
-            ImGui::Separator();
-
-            ImGui::Separator();
-
-            ImGui::Columns(2);
-
-            if(ImGui::Button("Capture as Initial"))
-            {
-                if (entityDefinition && entityRuntime)
-                {
-                    entityDefinition->setTransform(entityRuntime->getTransform());
-
-                    if (withChildren)
-                    {
-                        entityRuntime->applyToAll(
-                                    function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
-                                    {
-                                        if (rt != entityRuntime)
-                                        {
-                                            EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinitionHandle());
-                                            d->setTransform(rt->getTransform());
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }
-                                    ));
-                    }
-                }
-            }
-
-            ImGui::NextColumn();
-            if(ImGui::Button("Restore to Initial"))
-            {
-                if (entityDefinition && entityRuntime)
-                {
-                    Transform tmp = entityDefinition->getTransform();
-                    entityRuntime->setTransform(tmp);
-                    if (withChildren)
-                    {
-                        entityRuntime->applyToAll(
-                                    function<EntityRuntime*(EntityRuntime*)>(
-                                        [&](EntityRuntime* rt){
-                                        if (rt != entityRuntime)
-                                        {
-                                            EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinitionHandle());
-                                            Transform tmp = d->getTransform();
-                                            rt->setTransform(tmp);
-                                        }
-                                        return static_cast<EntityRuntime*>(nullptr);
-                                    }
-                                    ));
-                    }
-
-                }
-
-            }
-
-            ImGui::Columns(1);
         }
+
+        ImGui::Separator();
+        ImGui::Checkbox("With Children",&withChildren);
+        ImGui::Separator();
+
+        ImGui::Separator();
+
+        ImGui::Columns(2);
+
+        if(ImGui::Button("Capture as Initial"))
+        {
+            if (entityDefinition && entityRuntime)
+            {
+                entityDefinition->setTransform(entityRuntime->getTransform());
+
+                if (withChildren)
+                {
+                    entityRuntime->applyToAll(
+                                function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
+                                {
+                                    if (rt != entityRuntime)
+                                    {
+                                        EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinitionHandle());
+                                        d->setTransform(rt->getTransform());
+                                        d->setTransformSpace(rt->getTransformSpace());
+                                    }
+                                    return static_cast<EntityRuntime*>(nullptr);
+                                }
+                                ));
+                }
+            }
+        }
+
+        ImGui::NextColumn();
+        if(ImGui::Button("Restore to Initial"))
+        {
+            if (entityDefinition && entityRuntime)
+            {
+                Transform tmp = entityDefinition->getTransform();
+                entityRuntime->setTransform(tmp);
+                if (withChildren)
+                {
+                    entityRuntime->applyToAll(
+                                function<EntityRuntime*(EntityRuntime*)>(
+                                    [&](EntityRuntime* rt){
+                                    if (rt != entityRuntime)
+                                    {
+                                        EntityDefinition* d = static_cast<EntityDefinition*>(rt->getDefinitionHandle());
+                                        Transform tmp = d->getTransform();
+                                        rt->setTransform(tmp);
+                                    }
+                                    return static_cast<EntityRuntime*>(nullptr);
+                                }));
+                }
+            }
+        }
+
+        ImGui::Columns(1);
     }
 
     void
@@ -1304,7 +1342,9 @@ namespace octronic::dream::tool
             projectDefinition->regroupAssetDefinitions();
             return;
         }
+
         ImGui::SameLine();
+
         if (ImGui::Button("Duplicate"))
         {
             AssetDefinition* dup = assetDef->duplicate();
@@ -1314,15 +1354,20 @@ namespace octronic::dream::tool
 
 
         drawNameAndIdProperties();
+
         ImGui::Separator();
+
         char groupStr[128] = {0};
         strncpy(&groupStr[0], assetDef->getGroup().c_str(), assetDef->getGroup().size());
+
         if (ImGui::InputText("Group", &groupStr[0],128))
         {
             assetDef->setGroup(groupStr);
             assetDef->getProject()->regroupAssetDefinitions();
         }
+
         ImGui::Separator();
+
         AssetType type = Constants::getAssetTypeEnumFromString(assetDef->getType());
 
         switch (type)
@@ -1335,9 +1380,6 @@ namespace octronic::dream::tool
                 break;
             case AssetType::ASSET_TYPE_ENUM_FONT:
                 drawFontAssetProperties();
-                break;
-            case AssetType::ASSET_TYPE_ENUM_LIGHT:
-                drawLightAssetProperties();
                 break;
             case AssetType::ASSET_TYPE_ENUM_MATERIAL:
                 drawMaterialAssetProperties();
@@ -1455,43 +1497,54 @@ namespace octronic::dream::tool
             ImGui::NextColumn();
 
             // Tx
-            vec3 vTx = kf.getTranslation().toGLM();
-            float tx[3] = {vTx.x, vTx.y, vTx.z};
+            Transform kf_transf = kf.getTransform();
+            vec3 kf_tx = kf_transf.getTranslation();
+
+            float tx[3] = {kf_tx.x, kf_tx.y, kf_tx.z};
+
             ImGui::PushItemWidth(-1);
+
             if (ImGui::InputFloat3("##translation",&tx[0]))
             {
-                vTx.x = tx[0];
-                vTx.y = tx[1];
-                vTx.z = tx[2];
-                kf.setTranslation(vTx);
+                kf_transf.setTranslation(vec3(tx[0],tx[1],tx[2]));
+                kf.setTransform(kf_transf);
                 animDef->updateKeyframe(kf);
             }
             ImGui::PopItemWidth();
 
             // Rx
-            vec3 vRx = kf.getRotation().toGLM();
-            float rx[3] = {degrees(vRx.x), degrees(vRx.y), degrees(vRx.z)};
+            float yaw, pitch, roll;
+            yaw   = degrees(kf_transf.getYaw());
+            pitch = degrees(kf_transf.getPitch());
+            roll  = degrees(kf_transf.getRoll());
+
             ImGui::PushItemWidth(-1);
-            if (ImGui::InputFloat3("##rotation",&rx[0]))
+            bool rot_changed = false;
+            rot_changed |= ImGui::DragFloat("Yaw",   &yaw,   1.f);
+            rot_changed |= ImGui::DragFloat("Pitch", &pitch, 1.f);
+            rot_changed |= ImGui::DragFloat("Roll",  &roll,  1.f);
+
+            if (rot_changed)
             {
-                vRx.x = radians(rx[0]);
-                vRx.y = radians(rx[1]);
-                vRx.z = radians(rx[2]);
-                kf.setRotation(vRx);
+                kf_transf.setYaw(radians(yaw));
+                kf_transf.setPitch(radians(pitch));
+                kf_transf.setRoll(radians(roll));
+                kf.setTransform(kf_transf);
                 animDef->updateKeyframe(kf);
             }
             ImGui::PopItemWidth();
 
             // Scale
-            vec3 vScale = kf.getScale().toGLM();
-            float scale[3] = {vScale.x, vScale.y, vScale.z};
+            vec3 kf_scale = kf_transf.getScale();
+            float scale[3] = {kf_scale.x, kf_scale.y, kf_scale.z};
+
             ImGui::PushItemWidth(-1);
+
             if (ImGui::InputFloat3("##scale",&scale[0]))
             {
-                vScale.x = scale[0];
-                vScale.y = scale[1];
-                vScale.z = scale[2];
-                kf.setScale(vScale);
+                kf_scale = vec3(scale[0], scale[1], scale[2]);
+                kf_transf.setScale(kf_scale);
+                kf.setTransform(kf_transf);
                 animDef->updateKeyframe(kf);
             }
             ImGui::PopItemWidth();
@@ -1693,7 +1746,7 @@ namespace octronic::dream::tool
                 auto fontCache = projectRuntime->getFontCache();
                 if (fontCache)
                 {
-                    FontRuntime* fontRuntime = static_cast<FontRuntime*>(fontCache->getRuntimeHandle(def));
+                    FontRuntime* fontRuntime = fontCache->getRuntimeHandle(def);
                     if (fontRuntime)
                     {
                         GLuint atlasTexture = fontRuntime->getAtlasTexture();
@@ -1711,101 +1764,6 @@ namespace octronic::dream::tool
             }
         }
 
-    }
-
-    void PropertiesWindow::drawLightAssetProperties
-    ()
-    {
-        LightDefinition* lightDef = static_cast<LightDefinition*>(mDefinition);
-
-        vector<string> lightTypes = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_LIGHT];
-        int selectedLightType = getStringIndexInVector(lightDef->getFormat(), lightTypes);
-        if(StringCombo("Type",&selectedLightType,lightTypes,lightTypes.size()))
-        {
-            lightDef->setFormat(lightTypes.at(selectedLightType));
-        }
-
-        ImGui::Separator();
-
-        float ambientColor[3] = {
-            lightDef->getAmbientRed(),
-            lightDef->getAmbientGreen(),
-            lightDef->getAmbientBlue()
-        };
-
-        float diffuseColor[3] = {
-            lightDef->getDiffuseRed(),
-            lightDef->getDiffuseGreen(),
-            lightDef->getDiffuseBlue()
-        };
-
-        float specularColor[3] =
-        {
-            lightDef->getSpecularRed(),
-            lightDef->getSpecularGreen(),
-            lightDef->getSpecularBlue()
-        };
-
-        float constant = lightDef->getConstant();
-        float linear = lightDef->getLinear();
-        float quadratic = lightDef->getQuadratic();
-        float innerCutOff, outerCutOff;
-
-        switch (lightDef->getType())
-        {
-            case LightType::LT_SPOTLIGHT:
-                innerCutOff = lightDef->getCutOff();
-                outerCutOff = lightDef->getOuterCutOff();
-                if(ImGui::DragFloat("Inner Cut Off", &innerCutOff))
-                {
-                    lightDef->setCutOff(innerCutOff);
-                }
-                if(ImGui::DragFloat("Outer Cut Off", &outerCutOff))
-                {
-                    lightDef->setOuterCutOff(outerCutOff);
-                }
-                break;
-            case LightType::LT_POINT:
-                if(ImGui::DragFloat("Constant",&constant,1.0f))
-                {
-                    lightDef->setConstant(constant);
-                }
-                if(ImGui::DragFloat("Linear",&linear,0.01f))
-                {
-                    lightDef->setLinear(linear);
-                }
-                if(ImGui::DragFloat("Quadratic",&quadratic,0.001f))
-                {
-                    lightDef->setQuadratic(quadratic);
-                }
-                break;
-            case LightType::LT_DIRECTIONAL:
-            case LightType::LT_NONE:
-                break;
-        }
-
-        ImGui::Separator();
-
-        if(ImGui::ColorEdit3("Ambient", ambientColor))
-        {
-            lightDef->setAmbientRed(ambientColor[0]);
-            lightDef->setAmbientGreen(ambientColor[1]);
-            lightDef->setAmbientBlue(ambientColor[2]);
-        }
-
-        if(ImGui::ColorEdit3("Diffuse", diffuseColor))
-        {
-            lightDef->setDiffuseRed(diffuseColor[0]);
-            lightDef->setDiffuseGreen(diffuseColor[1]);
-            lightDef->setDiffuseBlue(diffuseColor[2]);
-        }
-
-        if(ImGui::ColorEdit3("Specular", specularColor))
-        {
-            lightDef->setSpecularRed(specularColor[0]);
-            lightDef->setSpecularGreen(specularColor[1]);
-            lightDef->setSpecularBlue(specularColor[2]);
-        }
     }
 
     void
@@ -1839,139 +1797,31 @@ namespace octronic::dream::tool
 
         ImGui::Separator();
 
-        float diffuseColor[3] =
-        {
-            materialDef->getDiffuseColour().r(),
-            materialDef->getDiffuseColour().g(),
-            materialDef->getDiffuseColour().b()
-        };
-        if (ImGui::ColorEdit3("Diffuse", diffuseColor))
-        {
-            materialDef->setDiffuseColour(Vector3{diffuseColor[0],diffuseColor[1],diffuseColor[2]});
-        }
+        auto txCache = projectRuntime->getTextureCache();
 
-        float specularColor[3] = {
-            materialDef->getSpecularColour().r(),
-            materialDef->getSpecularColour().g(),
-            materialDef->getSpecularColour().b()
-        };
-        if (ImGui::ColorEdit3("Specular", specularColor))
-        {
-            materialDef->setSpecularColour(Vector3{specularColor[0],specularColor[1],specularColor[2] });
-        }
-
-        float ambientColor[3] = {
-            materialDef->getAmbientColour().r(),
-            materialDef->getAmbientColour().g(),
-            materialDef->getAmbientColour().b()
-        };
-        if (ImGui::ColorEdit3("Ambient", ambientColor))
-        {
-            materialDef->setAmbientColour(Vector3{ambientColor[0], ambientColor[1], ambientColor[2]});
-        }
-
-        float reflectiveColor[3] = {
-            materialDef->getReflectiveColour().r(),
-            materialDef->getReflectiveColour().g(),
-            materialDef->getReflectiveColour().b()
-        };
-        if (ImGui::ColorEdit3("Reflective", reflectiveColor))
-        {
-            materialDef->setReflectiveColour(Vector3{reflectiveColor[0],reflectiveColor[1],reflectiveColor[2] });
-        }
-
-        float emissiveColor[3] = {
-            materialDef->getEmissiveColour().r(),
-            materialDef->getEmissiveColour().g(),
-            materialDef->getEmissiveColour().b(),
-        };
-        if(ImGui::ColorEdit3("Emissive", emissiveColor))
-        {
-            materialDef->setEmissiveColour(Vector3{emissiveColor[0],emissiveColor[1],emissiveColor[2]});
-        }
-
-        // Parameters
-        ImGui::Separator();
-
-        float shininess = materialDef->getShininessStrength();
-        if(ImGui::InputFloat("Shininess",&shininess,0.01f,1.0f))
-        {
-            materialDef->setShininessStrength(shininess);
-        }
-
-        float opacity = materialDef->getOpacity();
-        if(ImGui::InputFloat("Opacity",&opacity,0.01f,1.0f))
-        {
-            materialDef->setOpacity(opacity);
-        }
-
-        float bumpScaling = materialDef->getBumpScaling();
-        if(ImGui::InputFloat("Bump Scaling",&bumpScaling,0.01f,1.0f))
-        {
-            materialDef->setBumpScaling(bumpScaling);
-        }
-
-        float hardness = materialDef->getHardness();
-        if(ImGui::InputFloat("Hardness",&hardness,0.01f,1.0f))
-        {
-            materialDef->setHardness(hardness);
-        }
-
-        float reflectivity = materialDef->getReflectivity();
-        if(ImGui::InputFloat("Reflectivity",&reflectivity,0.01f,1.0f))
-        {
-            materialDef->setReflectivity(reflectivity);
-        }
-
-
-        float refractionIndex = materialDef->getRefractionIndex();
-        if(ImGui::InputFloat("Refraction Index",&refractionIndex,0.01f,1.0f))
-        {
-            materialDef->setRefractionIndex(refractionIndex);
-        }
-
-        bool ignore = materialDef->getIgnore();
-        if (ImGui::Checkbox("Ignore",&ignore))
-        {
-            materialDef->setIgnore(ignore);
-        }
-
-        ImGui::Separator();
-
-        UuidType diffuseUuid = materialDef->getDiffuseTexture();
-        UuidType specularUuid = materialDef->getSpecularTexture();
+        UuidType albedoUuid = materialDef->getAlbedoTexture();
         UuidType normalUuid = materialDef->getNormalTexture();
-        UuidType displacementUuid = materialDef->getDisplacementTexture();
-        void* diffuseTxId = nullptr;
+        UuidType metallicUuid = materialDef->getMetallicTexture();
+        UuidType roughnessUuid = materialDef->getRoughnessTexture();
+        UuidType aoUuid = materialDef->getAoTexture();
+
+        void* albedoTxId = nullptr;
         void* normalTxId = nullptr;
-        void* specularTxId = nullptr;
-        void* displacementTxId = nullptr;
+        void* metallicTxId = nullptr;
+        void* roughnessTxId = nullptr;
+        void* aoTxId = nullptr;
 
         if (projectDefinition && projectRuntime)
         {
-            // Diffuse
-            AssetDefinition* diffuseDef = projectDefinition->getAssetDefinitionByUuid(diffuseUuid);
-            if (diffuseDef)
+            // Albedo
+            AssetDefinition* albedoDef = projectDefinition->getAssetDefinitionByUuid(albedoUuid);
+            if (albedoDef)
             {
-                TextureDefinition* txDef = static_cast<TextureDefinition*>(diffuseDef);
-                auto txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntimeHandle(txDef));
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(albedoDef);
+                TextureRuntime* txRuntime = txCache->getRuntimeHandle(txDef);
                 if (txRuntime)
                 {
-                    diffuseTxId = (void*)(intptr_t)txRuntime->getGLID();
-                }
-            }
-
-            // Specular
-            AssetDefinition* specularDef = projectDefinition->getAssetDefinitionByUuid(specularUuid);
-            if (specularDef)
-            {
-                TextureDefinition* txDef = static_cast<TextureDefinition*>(specularDef);
-                auto txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntimeHandle(txDef));
-                if (txRuntime)
-                {
-                    specularTxId = (void*)(intptr_t)txRuntime->getGLID();
+                    albedoTxId = (void*)(intptr_t)txRuntime->getTextureID();
                 }
             }
 
@@ -1981,87 +1831,106 @@ namespace octronic::dream::tool
             {
                 TextureDefinition* txDef = static_cast<TextureDefinition*>(normalDef);
                 auto txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntimeHandle(txDef));
+                TextureRuntime* txRuntime = txCache->getRuntimeHandle(txDef);
                 if (txRuntime)
                 {
-                    normalTxId = (void*)(intptr_t)txRuntime->getGLID();
+                    normalTxId = (void*)(intptr_t)txRuntime->getTextureID();
                 }
             }
 
-            // Displacement
-            auto displacementDef = projectDefinition->getAssetDefinitionByUuid(displacementUuid);
-            if (displacementDef)
+            // Metallic
+            AssetDefinition* metallicDef = projectDefinition->getAssetDefinitionByUuid(metallicUuid);
+            if (metallicDef)
             {
-                TextureDefinition* txDef = static_cast<TextureDefinition*>(displacementDef);
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(metallicDef);
                 auto txCache = projectRuntime->getTextureCache();
-                TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntimeHandle(txDef));
+                TextureRuntime* txRuntime = txCache->getRuntimeHandle(txDef);
                 if (txRuntime)
                 {
-                    displacementTxId = (void*)(intptr_t)txRuntime->getGLID();
+                    metallicTxId = (void*)(intptr_t)txRuntime->getTextureID();
+                }
+            }
+
+            // Roughness
+            auto roughnessDef = projectDefinition->getAssetDefinitionByUuid(roughnessUuid);
+            if (roughnessDef)
+            {
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(roughnessDef);
+                auto txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = txCache->getRuntimeHandle(txDef);
+                if (txRuntime)
+                {
+                    roughnessTxId = (void*)(intptr_t)txRuntime->getTextureID();
+                }
+            }
+
+            // AO
+            auto aoDef = projectDefinition->getAssetDefinitionByUuid(aoUuid);
+            if (aoDef)
+            {
+                TextureDefinition* txDef = static_cast<TextureDefinition*>(aoDef);
+                auto txCache = projectRuntime->getTextureCache();
+                TextureRuntime* txRuntime = txCache->getRuntimeHandle(txDef);
+                if (txRuntime)
+                {
+                    aoTxId = (void*)(intptr_t)txRuntime->getTextureID();
                 }
             }
         }
 
         vector<string> textures;
-        int diffuseIndex;
-        int specularIndex;
+        int albedoIndex;
         int normalIndex;
-        int displacementIndex;
+        int metallicIndex;
+        int roughnessIndex;
+        int aoIndex;
 
         if(projectDefinition)
         {
             textures = projectDefinition->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
-            diffuseIndex = projectDefinition->getAssetDefinitionIndex(
+
+            albedoIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projectDefinition->getAssetDefinitionByUuid(diffuseUuid)
-                        );
-            specularIndex = projectDefinition->getAssetDefinitionIndex(
-                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projectDefinition->getAssetDefinitionByUuid(specularUuid)
-                        );
+                        projectDefinition->getAssetDefinitionByUuid(albedoUuid));
+
             normalIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projectDefinition->getAssetDefinitionByUuid(normalUuid)
-                        );
-            displacementIndex = projectDefinition->getAssetDefinitionIndex(
+                        projectDefinition->getAssetDefinitionByUuid(normalUuid));
+
+            metallicIndex = projectDefinition->getAssetDefinitionIndex(
                         AssetType::ASSET_TYPE_ENUM_TEXTURE,
-                        projectDefinition->getAssetDefinitionByUuid(displacementUuid)
-                        );
+                        projectDefinition->getAssetDefinitionByUuid(metallicUuid));
+
+            roughnessIndex = projectDefinition->getAssetDefinitionIndex(
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
+                        projectDefinition->getAssetDefinitionByUuid(roughnessUuid));
+
+            aoIndex = projectDefinition->getAssetDefinitionIndex(
+                        AssetType::ASSET_TYPE_ENUM_TEXTURE,
+                        projectDefinition->getAssetDefinitionByUuid(aoUuid));
         }
 
-        // Diffuse
-        if(StringCombo("Diffuse",&diffuseIndex,textures,textures.size()))
+        // Albedo ==============================================================
+
+        if(StringCombo("Albedo",&albedoIndex,textures,textures.size()))
         {
             if (projectDefinition)
             {
-                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, diffuseIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, albedoIndex);
+
                 if (txDef)
                 {
                     UuidType uuid = txDef->getUuid();
-                    materialDef->setDiffuseTexture(uuid);
+                    materialDef->setAlbedoTexture(uuid);
                 }
             }
         }
-        ImGui::Image(diffuseTxId, mImageSize);
+
+        ImGui::Image(albedoTxId, mImageSize);
         ImGui::Separator();
 
-        // Specular
-        if(StringCombo("Specular",&specularIndex,textures,textures.size()))
-        {
-            if (projectDefinition)
-            {
-                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, specularIndex);
-                if (txDef)
-                {
-                    UuidType uuid = txDef->getUuid();
-                    materialDef->setSpecularTexture(uuid);
-                }
-            }
-        }
-        ImGui::Image(specularTxId, mImageSize);
-        ImGui::Separator();
+        // Normal ==============================================================
 
-        // Normal
         if(StringCombo("Normal",&normalIndex,textures,textures.size()))
         {
             if (projectDefinition)
@@ -2077,20 +1946,57 @@ namespace octronic::dream::tool
         ImGui::Image(normalTxId, mImageSize);
         ImGui::Separator();
 
-        // Displacement
-        if(StringCombo("Displacement",&displacementIndex,textures,textures.size()))
+        // Metallic ============================================================
+
+        if(StringCombo("Metallic",&metallicIndex,textures,textures.size()))
         {
             if (projectDefinition)
             {
-                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, displacementIndex);
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, metallicIndex);
                 if (txDef)
                 {
                     UuidType uuid = txDef->getUuid();
-                    materialDef->setDisplacementTexture(uuid);
+                    materialDef->setMetallicTexture(uuid);
                 }
             }
         }
-        ImGui::Image(displacementTxId, mImageSize);
+        ImGui::Image(metallicTxId, mImageSize);
+        ImGui::Separator();
+
+        // Roughness ===========================================================
+
+        if(StringCombo("Roughness",&roughnessIndex,textures,textures.size()))
+        {
+            if (projectDefinition)
+            {
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, roughnessIndex);
+                if (txDef)
+                {
+                    UuidType uuid = txDef->getUuid();
+                    materialDef->setRoughnessTexture(uuid);
+                }
+            }
+        }
+        ImGui::Image(roughnessTxId, mImageSize);
+
+        ImGui::Separator();
+
+        // Ao ==================================================================
+
+        if(StringCombo("AO",&aoIndex,textures,textures.size()))
+        {
+            if (projectDefinition)
+            {
+                AssetDefinition* txDef = projectDefinition->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, aoIndex);
+                if (txDef)
+                {
+                    UuidType uuid = txDef->getUuid();
+                    materialDef->setAoTexture(uuid);
+                }
+            }
+        }
+        ImGui::Image(aoTxId, mImageSize);
+
         ImGui::Columns(1);
 
     }
@@ -2133,8 +2039,6 @@ namespace octronic::dream::tool
             }
         }
 
-        ImGui::SameLine();
-
         bool selectAdditionalFile = ImGui::Button("Additional File...");
 
         if (selectAdditionalFile)
@@ -2166,39 +2070,45 @@ namespace octronic::dream::tool
             }
         }
 
-        ImGui::SameLine();
-
         if(ImGui::Button("Remove File(s)"))
         {
             mContext->getProjectDirectory()->removeAssetDirectory(def);
         }
 
+        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
+        shared_ptr<ModelCache> modelCache = nullptr;
+
+        if (projectRuntime)
+        {
+            modelCache = projectRuntime->getModelCache();
+        }
+
         ImGui::Text("Model Format: %s", def->getFormat().c_str());
 
+        if (ImGui::Button("Reload Asset"))
+        {
+			if (modelCache)
+			{
+				ModelRuntime* modelRuntime = modelCache->getRuntimeHandle(def);
+				if (modelRuntime)
+				{
+                    modelRuntime->setReloadFlag(true);
+				}
+			}
+        }
+
         vector<string> modelMaterialNames;
-        map<string,Bone> bones;
-        ProjectRuntime* projectRuntime = mContext->getProject()->getRuntime();
 
         if (projectRuntime)
         {
             auto modelCache = projectRuntime->getModelCache();
             if (modelCache)
             {
-                ModelRuntime* modelRuntime = static_cast<ModelRuntime*>(modelCache->getRuntimeHandle(def));
+                ModelRuntime* modelRuntime = modelCache->getRuntimeHandle(def);
                 if (modelRuntime)
                 {
                     modelMaterialNames = modelRuntime->getMaterialNames();
-                    bones = modelRuntime->getBones();
                 }
-            }
-        }
-
-        // Bones
-        if (ImGui::CollapsingHeader("Bones"))
-        {
-            for (auto pair : bones)
-            {
-                ImGui::Text("%s",pair.first.c_str());
             }
         }
 
@@ -2310,13 +2220,13 @@ namespace octronic::dream::tool
         }
 
         float linearFactor[3] ={
-            pod->getLinearFactor().x(),
-            pod->getLinearFactor().y(),
-            pod->getLinearFactor().z()
+            pod->getLinearFactor().x,
+            pod->getLinearFactor().y,
+            pod->getLinearFactor().z
         };
         if (ImGui::DragFloat3("Linear Factor", &linearFactor[0],0.1f))
         {
-            Vector3 lf(linearFactor[0],linearFactor[1],linearFactor[2]);
+            vec3 lf(linearFactor[0],linearFactor[1],linearFactor[2]);
             if (pod)
             {
                 pod->setLinearFactor(lf);
@@ -2325,13 +2235,13 @@ namespace octronic::dream::tool
         }
 
         float angularFactor[3] ={
-            pod->getAngularFactor().x(),
-            pod->getAngularFactor().y(),
-            pod->getAngularFactor().z()
+            pod->getAngularFactor().x,
+            pod->getAngularFactor().y,
+            pod->getAngularFactor().z
         };
         if (ImGui::DragFloat3("Angular Factor", &angularFactor[0],0.1f))
         {
-            Vector3 af(angularFactor[0], angularFactor[1],angularFactor[2]);
+            vec3 af(angularFactor[0], angularFactor[1],angularFactor[2]);
             if (pod)
             {
                 pod->setAngularFactor(af);
@@ -2340,13 +2250,13 @@ namespace octronic::dream::tool
         }
 
         float linearVelocity[3] ={
-            pod->getLinearVelocity().x(),
-            pod->getLinearVelocity().y(),
-            pod->getLinearVelocity().z()
+            pod->getLinearVelocity().x,
+            pod->getLinearVelocity().y,
+            pod->getLinearVelocity().z
         };
         if (ImGui::DragFloat3("Linear Velocity", &linearVelocity[0],0.1f))
         {
-            Vector3 lf(linearVelocity[0],linearVelocity[1],linearVelocity[2]);
+            vec3 lf(linearVelocity[0],linearVelocity[1],linearVelocity[2]);
             if (pod)
             {
                 pod->setLinearVelocity(lf);
@@ -2355,13 +2265,13 @@ namespace octronic::dream::tool
         }
 
         float angularVelocity[3] ={
-            pod->getAngularVelocity().x(),
-            pod->getAngularVelocity().y(),
-            pod->getAngularVelocity().z()
+            pod->getAngularVelocity().x,
+            pod->getAngularVelocity().y,
+            pod->getAngularVelocity().z
         };
         if (ImGui::DragFloat3("Angular Velocity", &angularVelocity[0],0.1f))
         {
-            Vector3 af(angularVelocity[0], angularVelocity[1],angularVelocity[2]);
+            vec3 af(angularVelocity[0], angularVelocity[1],angularVelocity[2]);
             if (pod)
             {
                 pod->setAngularVelocity(af);
@@ -2375,15 +2285,14 @@ namespace octronic::dream::tool
         if (pod->getFormat().compare(Constants::COLLISION_SHAPE_BOX) == 0)
         {
             float halfExtents[3] = {
-                pod->getHalfExtentsX(),
-                pod->getHalfExtentsY(),
-                pod->getHalfExtentsZ()
+                pod->getHalfExtents().x,
+                pod->getHalfExtents().y,
+                pod->getHalfExtents().z
             };
+
             if(ImGui::InputFloat3("Half-Extents",&halfExtents[0]))
             {
-                pod->setHalfExtentsX(halfExtents[0]);
-                pod->setHalfExtentsY(halfExtents[1]);
-                pod->setHalfExtentsZ(halfExtents[2]);
+                pod->setHalfExtents(vec3(halfExtents[0], halfExtents[1], halfExtents[2]));
                 modified = true;
             }
         }
@@ -2414,16 +2323,14 @@ namespace octronic::dream::tool
         else if (pod->getFormat().compare(Constants::COLLISION_SHAPE_STATIC_PLANE) == 0)
         {
             float normal[3] = {
-                pod->getNormalX(),
-                pod->getNormalY(),
-                pod->getNormalZ()
+                pod->getNormal().x,
+                pod->getNormal().y,
+                pod->getNormal().z
             };
 
             if (ImGui::InputFloat3("Plane Normal",&normal[0]))
             {
-                pod->setNormalX(normal[0]);
-                pod->setNormalY(normal[1]);
-                pod->setNormalZ(normal[2]);
+                pod->setNormal(vec3(normal[0],normal[1],normal[2]));
                 modified = true;
             }
         }
@@ -2558,14 +2465,14 @@ namespace octronic::dream::tool
     {
         auto shaderDef = static_cast<ShaderDefinition*>(mDefinition);
         auto projectRuntime = mContext->getProject()->getRuntime();
-        ShaderRuntime* shaderInst = nullptr;
+        ShaderRuntime* shaderRuntime = nullptr;
         auto shaderCache = projectRuntime->getShaderCache();
 
         if (projectRuntime)
         {
             if (shaderCache)
             {
-                shaderInst = static_cast<ShaderRuntime*>(shaderCache->getRuntimeHandle(shaderDef));
+                shaderRuntime = shaderCache->getRuntimeHandle(shaderDef);
             }
         }
 
@@ -2616,11 +2523,11 @@ namespace octronic::dream::tool
 
                     if (vertSuccess && fragSuccess)
                     {
-                        mContext->getMenuBar()->setMessageString("Saved Shader "+shaderInst->getNameAndUuidString());
+                        mContext->getMenuBar()->setMessageString("Saved Shader "+shaderRuntime->getNameAndUuidString());
                     }
                     else
                     {
-                        mContext->getMenuBar()->setMessageString("Error saving Shader"+shaderInst->getNameAndUuidString());
+                        mContext->getMenuBar()->setMessageString("Error saving Shader"+shaderRuntime->getNameAndUuidString());
                     }
 
                     currentTemplateIndex = -1;
@@ -2631,14 +2538,206 @@ namespace octronic::dream::tool
             ImGui::EndPopup();
         }
 
-        if(ImGui::Button("Open Vertex Shader in Editor..."))
+        static bool openVertexFailed = false;
+        static bool openFragmentFailed = false;
+
+        ImGui::PushItemWidth(-1.f);
         {
-            mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+            if(ImGui::Button("Open Vertex Shader in Editor..."))
+            {
+                if (!mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_VERTEX_FILE_NAME))
+                {
+                    openVertexFailed = true;
+                }
+            }
+
+            if(ImGui::Button("Open Fragment Shader in Editor..."))
+            {
+                if (!mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_FRAGMENT_FILE_NAME))
+                {
+                    openFragmentFailed = true;
+                }
+            }
+
+            if (shaderRuntime)
+            {
+                if (ImGui::Button("Reload Asset"))
+                {
+                    shaderRuntime->setReloadFlag(true);
+                }
+            }
+        }
+        ImGui::PopItemWidth();
+
+        if (openVertexFailed)
+        {
+            ImGui::OpenPopup("Open Vertex Shader Failed");
         }
 
-        if(ImGui::Button("Open Fragment Shader in Editor..."))
+        if (openFragmentFailed)
         {
-            mContext->openInExternalEditor(shaderDef, Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+            ImGui::OpenPopup("Open Fragment Shader Failed");
+        }
+
+        if (ImGui::BeginPopup("Open Vertex Shader Failed"))
+        {
+            ProjectDirectory* pd = mContext->getProjectDirectory();
+            string filePath = pd->getAssetAbsolutePath(shaderDef,Constants::SHADER_GLSL_VERTEX_FILE_NAME);
+            ImGui::Text("Unable to open Vertex Shader \n%s\n\nFile may not exist",filePath.c_str());
+            if (ImGui::Button("Cancel",ImVec2(0,0)))
+            {
+                openVertexFailed = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        if (ImGui::BeginPopup("Open Fragment Shader Failed"))
+        {
+            ProjectDirectory* pd = mContext->getProjectDirectory();
+            string filePath = pd->getAssetAbsolutePath(shaderDef,Constants::SHADER_GLSL_FRAGMENT_FILE_NAME);
+            ImGui::Text("Unable to open Fragment Shader \n\n%s\n\nFile may not exist",filePath.c_str());
+            if (ImGui::Button("Cancel",ImVec2(0,0)))
+            {
+                openFragmentFailed = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        if (shaderRuntime)
+        {
+            ImGui::Separator();
+
+            ImGui::Text("Shader Status");
+            ImGui::Columns(2);
+
+            ImGui::Text("Loaded");
+            ImGui::NextColumn();
+            if (shaderRuntime->getLoaded())
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f}, "Yes");
+            }
+            else
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f}, "No");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Load Error");
+            ImGui::NextColumn();
+            if (shaderRuntime->getLoadError())
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f}, "Error");
+            }
+            else
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f}, "No Error");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Vertex Source");
+            ImGui::NextColumn();
+            if (shaderRuntime->hasVertexSource())
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f}, "Found");
+            }
+            else
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f}, "Not Found");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Fragment Source");
+            ImGui::NextColumn();
+            if (shaderRuntime->hasFragmentSource())
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f}, "Found");
+            }
+            else
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f}, "Not Found");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Vertex Compilation");
+            ImGui::NextColumn();
+            if(shaderRuntime->hasVertexCompilationFailed())
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f},"Failed");
+            }
+            else
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f},"Success");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Fragment Compilation");
+            ImGui::NextColumn();
+            if(shaderRuntime->hasFragmentCompilationFailed())
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f},"Failed");
+            }
+            else
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f},"Success");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Linking");
+            ImGui::NextColumn();
+            if(shaderRuntime->hasLinkingFailed())
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f},"Failed");
+            }
+            else
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f},"Success");
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("GL ID");
+            ImGui::NextColumn();
+            if(shaderRuntime->hasValidGLID())
+            {
+                ImGui::TextColored({0.f,1.f,0.f,1.f}, "Valid");
+            }
+            else
+            {
+                ImGui::TextColored({1.f,0.f,0.f,1.f}, "Invalid");
+            }
+
+            ImGui::NextColumn();
+
+            ImGui::Columns(1);
+
+            ImGui::Separator();
+            ImGui::Text("Uniforms");
+
+            auto uniforms = shaderRuntime->getUniformsVector();
+
+            ImGui::Columns(3);
+
+            ImGui::Text("Name");
+            ImGui::NextColumn();
+            ImGui::Text("Type");
+            ImGui::NextColumn();
+            ImGui::Text("Location");
+            ImGui::NextColumn();
+
+
+            for (auto& uniform : *uniforms)
+            {
+                ImGui::Separator();
+                ImGui::Text("%s",uniform->getName().c_str());
+                ImGui::NextColumn();
+                ImGui::Text("%s",uniformTypeToString(uniform->getType()).c_str());
+                ImGui::NextColumn();
+                ImGui::Text("%d",uniform->getLocation());
+                ImGui::NextColumn();
+            }
+
+            ImGui::Columns(1);
         }
     }
 
@@ -2728,13 +2827,13 @@ namespace octronic::dream::tool
                 selected = cp.id;
             }
             ImGui::SameLine();
-            Vector3 vTx = cp.position;
-            float tx[3] = {vTx.x(), vTx.y(), vTx.z()};
+            vec3 vTx = cp.position;
+            float tx[3] = {vTx.x, vTx.y, vTx.z};
             if (ImGui::InputFloat3("##position",&tx[0]))
             {
-                vTx.setX(tx[0]);
-                vTx.setY(tx[1]);
-                vTx.setZ(tx[2]);
+                vTx.x = (tx[0]);
+                vTx.y = (tx[1]);
+                vTx.z = (tx[2]);
                 cp.position = vTx;
                 modified = true;
             }
@@ -2772,17 +2871,20 @@ namespace octronic::dream::tool
 
         auto textureDef = static_cast<TextureDefinition*>(mDefinition);
         auto projectRuntime = mContext->getProject()->getRuntime();
+        auto pDef = mContext->getProject()->getDefinition();
+        TextureRuntime* textureRuntime = nullptr;
         if (projectRuntime)
         {
             auto txCache = projectRuntime->getTextureCache();
-            TextureRuntime* txRuntime = static_cast<TextureRuntime*>(txCache->getRuntimeHandle(textureDef));
-            if (txRuntime)
+            textureRuntime = txCache->getRuntimeHandle(textureDef);
+            if (textureRuntime)
             {
-                textureId = (void*)(intptr_t)txRuntime->getGLID();
+                textureId = (void*)(intptr_t)textureRuntime->getTextureID();
             }
         }
 
         bool selectFile = ImGui::Button("Texture File...");
+
         if (selectFile)
         {
             nfdchar_t *filePath = NULL;
@@ -2812,18 +2914,111 @@ namespace octronic::dream::tool
             }
         }
 
-        ImGui::SameLine();
-
         if(ImGui::Button("Remove File"))
         {
             mContext->getProjectDirectory()->removeAssetDirectory(textureDef);
         }
 
-        ImGui::Columns(1);
-        ImGui::Separator();
-        ImGui::Image(textureId, mImageSize);
-    }
+        if (textureRuntime)
+        {
+            if (ImGui::Button("Reload Asset"))
+            {
+                textureRuntime->setReloadFlag(true);
+            }
+        }
 
+        bool isHdr = textureRuntime->isHDR();
+        ImGui::Text("HDR: %s", isHdr ? "Yes" : "No");
+
+        bool isEnvironment = textureDef->getIsEnvironmentTexture();
+        if (ImGui::Checkbox("Environment",&isEnvironment))
+        {
+            textureDef->setIsEnvironmentTexture(isEnvironment);
+        }
+
+        bool flipVertical = textureDef->getFlipVertical();
+        if (ImGui::Checkbox("Flip Vertical",&flipVertical))
+        {
+            textureDef->setFlipVertical(flipVertical);
+        }
+
+        if (isEnvironment)
+        {
+            vector<string> shaderList = pDef->getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
+            // EquiToCube
+            {
+                UuidType shaderUuid = textureDef->getEquiToCubeMapShader();
+                ShaderDefinition* shaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(shaderUuid));
+                int shaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderDef);
+
+                if (StringCombo("Cube Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    textureDef->setEquiToCubeMapShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched cube map shader for texture {} to {} {}",textureDef->getNameAndUuidString(), name, uuid);
+                }
+            }
+            // Irradiance
+            {
+                UuidType shaderUuid = textureDef->getIrradianceMapShader();
+                ShaderDefinition* shaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(shaderUuid));
+                int shaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderDef);
+
+                if (StringCombo("Irradiance Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    textureDef->setIrradianceMapShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched irradiance map shader for texture {} to {} {}",textureDef->getNameAndUuidString(), name, uuid);
+                }
+            }
+            // PreFilter
+            {
+                UuidType shaderUuid = textureDef->getPreFilterShader();
+                ShaderDefinition* shaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(shaderUuid));
+                int shaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderDef);
+
+                if (StringCombo("PreFilter Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    textureDef->setPreFilterShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched PreFilter shader for texture {} to {} {}",textureDef->getNameAndUuidString(), name, uuid);
+                }
+            }
+            // BRDF_LUT
+            {
+                UuidType shaderUuid = textureDef->getBrdfLutShader();
+                ShaderDefinition* shaderDef = static_cast<ShaderDefinition*>(pDef->getAssetDefinitionByUuid(shaderUuid));
+                int shaderIndex = pDef->getAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderDef);
+
+                if (StringCombo("BRDF LUT Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                    AssetDefinition* selectedShader = mContext->getProject()->getDefinition()->getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex);
+                    UuidType uuid = selectedShader->getUuid();
+                    string name = selectedShader->getName();
+                    textureDef->setBrdfLutShader(uuid);
+                    LOG_DEBUG("PropertiesWindow: Switched BRDF LUT shader for texture {} to {} {}",textureDef->getNameAndUuidString(), name, uuid);
+                }
+            }
+            ImGui::Text("CubeMap Texture ID:    %d", textureRuntime->getCubeMapTextureID());
+            ImGui::Text("Irradiance Texture ID: %d", textureRuntime->getIrradianceTextureID());
+            ImGui::Text("PreFilter Texture ID:  %d", textureRuntime->getPreFilterTextureID());
+            ImGui::Text("BRDF LUT Texture ID:   %d", textureRuntime->getBrdfLutTextureID());
+        }
+
+        if (textureRuntime)
+        {
+            ImGui::Separator();
+            ImGui::Text("Size: %dx%d",textureRuntime->getWidth(),textureRuntime->getHeight());
+            ImGui::Text("Channels: %d",textureRuntime->getChannels());
+            ImGui::Image(textureId, mImageSize);
+        }
+    }
 
     int
     PropertiesWindow::getStringIndexInVector
@@ -2858,4 +3053,5 @@ namespace octronic::dream::tool
             }
         }
     }
+
 }

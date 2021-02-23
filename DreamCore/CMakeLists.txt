@@ -18,11 +18,15 @@ add_library(
 	# Common
 	Common/Constants.cpp
 	Common/Uuid.cpp
-	Common/Vector.cpp
+	# Math
+	Math/Matrix.cpp
+	Math/Quaternion.cpp
+	Math/Transform.cpp
+	Math/Vector.cpp
 	# Base
 	Base/Definition.cpp
 	Base/Runtime.cpp
-	Base/RuntimeLoadFromDefinitionTask.cpp
+	Base/RuntimeTasks.cpp
 	# Components
 	Components/AssetRuntime.cpp
 	Components/AssetDefinition.cpp
@@ -31,7 +35,6 @@ add_library(
 	Components/Event.cpp
 	Components/SharedAssetRuntime.cpp
 	Components/Time.cpp
-	Components/Transform.cpp
 	# Components/Animation
 	Components/Animation/AnimationTasks.cpp
 	Components/Animation/AnimationKeyframe.cpp
@@ -55,10 +58,6 @@ add_library(
 	Components/Graphics/Font/FontDefinition.cpp
 	Components/Graphics/Font/FontRuntime.cpp
 	Components/Graphics/Font/FontTasks.cpp
-	# Components/Graphics/Light
-	Components/Graphics/Light/LightRuntime.cpp
-	Components/Graphics/Light/LightDefinition.cpp
-	Components/Graphics/Light/LightTasks.cpp
 	# Components/Graphics/Material
 	Components/Graphics/Material/MaterialRuntime.cpp
 	Components/Graphics/Material/MaterialDefinition.cpp

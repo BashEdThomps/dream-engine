@@ -22,19 +22,12 @@
 namespace octronic::dream::tool
 {
     Grid::Grid
-    (
-            DreamToolContext* p,
-            AxisPair xp,
-            glm::vec3 position,
-            float majorSpacing,
-            float minorSpacing,
-            float size,
-            vec3 majorColour,
-            vec3 minorColour
-            )
+    (DreamToolContext* p, AxisPair xp,
+     Transform tx,
+            float majorSpacing,float minorSpacing, float size,
+            vec3 majorColour,vec3 minorColour)
         : GLWidget(p,false),
           mAxisPair(xp),
-          mTranslation(position),
           mSize(size),
           mMajorSpacing(majorSpacing),
           mMinorSpacing(minorSpacing),
@@ -42,6 +35,7 @@ namespace octronic::dream::tool
           mMinorColour(minorColour)
 
     {
+        mTransform = tx;
         LOG_DEBUG("Grid: Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
     }
 
@@ -317,17 +311,6 @@ namespace octronic::dream::tool
     void Grid::setMajorColour(vec3 majorColour)
     {
         mMajorColour = majorColour;
-    }
-
-    glm::vec3 Grid::getTranslation() const
-    {
-        return mTranslation;
-    }
-
-    void Grid::setTranslation(vec3 translation)
-    {
-        mTranslation = translation;
-        mModelMatrix = glm::translate(mat4(1.0f),mTranslation);
     }
 
     float

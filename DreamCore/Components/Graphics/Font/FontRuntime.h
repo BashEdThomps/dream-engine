@@ -52,7 +52,7 @@ namespace octronic::dream
 
         bool loadIntoGL();
 
-        void pushNextTask() override;
+        void pushTasks() override;
 
      	static bool InitFreetypeLibrary();
     	static void CleanupFreetypeLibrary();

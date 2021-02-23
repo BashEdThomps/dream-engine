@@ -15,8 +15,7 @@
 
 
 #include "Common/Constants.h"
-#include "Components/Transform.h"
-#include "Common/Math.h"
+#include "Math/Transform.h"
 #include "Common/Uuid.h"
 
 #include <sstream>

@@ -35,7 +35,6 @@ namespace octronic::dream
     class WindowComponent;
     class ModelRuntime;
     class ShaderRuntime;
-    class LightRuntime;
     class SceneRuntime;
     class EntityRuntime;
     class ModelMesh;
@@ -53,7 +52,14 @@ namespace octronic::dream
      * associated Textures or FrameBuffers allowing it to pass data onto the next
      * stage. Stages execute as follows:
      *
-     * 1. Geometry Pass:
+     * 1. Shadow Pass:
+     * 		- Once all 3D objects have been rendered, a Shadow depth buffer is
+     *        rendered.
+     *
+     *        The resulting buffers are passed to the lighting shader
+     *
+     *
+     * 2. Geometry Pass:
      * 		- Renders all 3D objects using GL instanced rendering, arranged
      *        hierarchally to minimise shader/material/buffer switching.
      *
@@ -63,20 +69,7 @@ namespace octronic::dream
      *
      *        The resulting buffers are passed to the lighting shader
      *
-     * 2. Shadow Pass:
-     * 		- Once all 3D objects have been rendered, a Shadow depth buffer is
-     *        rendered.
-     *
-     *        The resulting buffers are passed to the lighting shader
-     *
-     * 3. Lighting Pass:
-     * 		- Once Shadow depth buffer is rendered, the generated textures
-     *        Position, Albedo, Normal, Depth, Ignore & Shadow are passed to
-     *        the Lighting shader for Lighting calculations.
-     *
-     *        The result of the Lighting Shader is rendered to a full-screen
-     *        quad.
-     *
+    *
      * 4. Sprite Rendering
      * 		- After the 3D scene has been rendered and lit, 2D elements are drawn
      *        on top. The TextureCache's Runtimes are iterated and all instances of
@@ -93,28 +86,20 @@ namespace octronic::dream
         GraphicsComponent(ProjectRuntime* pr);
         ~GraphicsComponent() override;
 
+        void clearBuffers(SceneRuntime* sr);
         // Geometry ============================================================
-        bool setupGeometryBuffers();
-        void freeGeometryBuffers();
-        void renderGeometryPass(SceneRuntime*);
-        GLuint getGeometryPassPositionBuffer() const;
-        GLuint getGeometryPassAlbedoBuffer() const;
-        GLuint getGeometryPassNormalBuffer() const;
-        GLuint getGeometryPassDepthBuffer() const;
-        GLuint getGeometryPassIgnoreBuffer() const;
+        void renderModels(SceneRuntime*);
+        // Environment =========================================================
+        void renderEnvironment(SceneRuntime*);
         // Shadow ==============================================================
         bool setupShadowBuffers();
         void freeShadowBuffers();
         void renderShadowPass(SceneRuntime*);
 	    GLuint getShadowPassDepthBuffer() const;
-        // Light ===============================================================
-        void addToLightQueue(EntityRuntime*);
-        void clearLightQueue();
-        bool setupLightPassQuad();
-        void freeLightPassQuad();
-        void renderLightingPass(SceneRuntime* sr);
         // Sprite ===============================================================
         void renderSprites(SceneRuntime* sceneRuntime);
+        bool setupSpriteQuad();
+        void freeSpriteQuad();
         // Font ================================================================
         void renderFonts(SceneRuntime* sceneRuntime);
         // Task ================================================================
@@ -128,26 +113,19 @@ namespace octronic::dream
     	void logShaders();
 
     protected:
-        void checkFrameBufferDimensions() const;
+        void checkFrameBufferDimensions();
 
     private:
-        // Geometry ============================================================
-        GLuint mGeometryPassFB;
-        GLuint mGeometryPassPositionBuffer;
-        GLuint mGeometryPassAlbedoBuffer;
-        GLuint mGeometryPassNormalBuffer;
-        GLuint mGeometryPassDepthBuffer;
-        GLuint mGeometryPassIgnoreBuffer;
         // Shadow ==============================================================
         EntityRuntime* mShadowLight;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
         mat4 mShadowMatrix;
         const int SHADOW_SIZE = 1024;
-        // Lighting ============================================================
-        GLuint mLightPassQuadVAO;
-        GLuint mLightPassQuadVBO;
-        vector<LightRuntime*> mLightQueue;
+        // Font & Sprite =======================================================
+        mat4 mScreenSpaceProjectionMatrix;
+        GLuint mSpriteQuadVAO;
+        GLuint mSpriteQuadVBO;
         // Task ================================================================
         GraphicsTaskQueue mTaskQueue;
         GraphicsDestructionTaskQueue mDestructionTaskQueue;

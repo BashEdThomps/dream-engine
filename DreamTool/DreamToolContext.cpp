@@ -3,6 +3,7 @@
 
 using octronic::dream::GraphicsComponent;
 using octronic::dream::Project;
+using octronic::dream::File;
 
 namespace octronic::dream::tool
 {
@@ -179,16 +180,12 @@ namespace octronic::dream::tool
 #ifdef __APPLE__
             if (io.MouseDown[0])
             {
-                camera->deltaYaw(io.MouseDelta.x*mouseScalar);
-                camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
                 sendKeysToCamera = true;
             }
             mCursor.setMousePosition(io.MousePos.x, io.MousePos.y);
 #else
             if (io.MouseDown[2])
             {
-                camera->deltaYaw(io.MouseDelta.x*mouseScalar);
-                camera->deltaPitch(-io.MouseDelta.y*mouseScalar);
                 sendKeysToCamera = true;
             }
 #endif
@@ -198,30 +195,6 @@ namespace octronic::dream::tool
         {
             if (sendKeysToCamera)
             {
-                if (ImGui::IsKeyDown(GLFW_KEY_W))
-                {
-                    camera->flyForward();
-                }
-                if (ImGui::IsKeyDown(GLFW_KEY_S))
-                {
-                    camera->flyBackward();
-                }
-                if (ImGui::IsKeyDown(GLFW_KEY_A))
-                {
-                    camera->flyLeft();
-                }
-                if (ImGui::IsKeyDown(GLFW_KEY_D))
-                {
-                    camera->flyRight();
-                }
-                if (ImGui::IsKeyDown(GLFW_KEY_Q))
-                {
-                    camera->flyDown();
-                }
-                if (ImGui::IsKeyDown(GLFW_KEY_E))
-                {
-                    camera->flyUp();
-                }
             }
             // Send to cursor
             else
@@ -591,15 +564,26 @@ namespace octronic::dream::tool
             LOG_ERROR("DTContext: External editor has not been set");
             return false;
         }
-        char temp[512];
+        string filePath = getProjectDirectory()->getAssetAbsolutePath(definition,format);
+        StorageManager* sm = getStorageManager();
+        File* targetFile = sm->openFile(filePath);
+        if (!targetFile->exists())
+        {
+        	LOG_DEBUG("DTContext: Attempted to open file that does not exist {}", targetFile->getPath());
+           return false;
+        }
+        sm->closeFile(targetFile);
+        targetFile = nullptr;
+
+        char command_buffer[256] = {0};
 #if defined (__APPLE__)
-        sprintf(temp, "open \"%s\" --args \"%s\"",
-                mPreferencesModel.getExternalEditorPath().c_str(),
-                getProjectDirectory()->getAssetAbsolutePath(definition,format).c_str());
+        sprintf(command_buffer, "open \"%s\" -a \"%s\"",
+                filePath.c_str(),
+                mPreferencesModel.getExternalEditorPath().c_str());
 #else
 #endif
-        LOG_DEBUG("DTContext: Opening file with command {}",temp);
-        int result = system((char *)temp);
+        LOG_DEBUG("DTContext: Opening file with command {}",command_buffer);
+        int result = system((char *)command_buffer);
         return result == 0;
     }
 }

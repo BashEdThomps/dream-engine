@@ -1,6 +1,10 @@
-#version 330 core
+/* 
+* Dream
+* Shader Template: Shadow Pass
+* GLSL 330 Core
+*/
 
-// Shadow Pass
+#version 330 core
 
 void main()
 {

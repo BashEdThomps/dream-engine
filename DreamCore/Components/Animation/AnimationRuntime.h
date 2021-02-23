@@ -22,13 +22,6 @@
 
 #include <tweeny.h>
 
-#ifdef max
-#undef max
-#endif
-#ifdef min
-#undef min
-#endif
-
 using tweeny::tween;
 
 namespace octronic::dream
@@ -51,15 +44,15 @@ namespace octronic::dream
 
         long getDuration();
 
-        void setCurrentTime(long currentTime);
-        long getCurrentTime();
+        void setAnimationSeekTime(long currentTime);
+        long getAnimationSeekTime();
 
         bool getRunning();
         void setRunning(bool running);
 
         shared_ptr<AnimationUpdateTask> getUpdateTask();
 
-        void pushNextTask() override;
+        void pushTasks() override;
 
     private:
         void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
@@ -68,19 +61,23 @@ namespace octronic::dream
         shared_ptr<AnimationUpdateTask> mUpdateTask;
         vector<AnimationKeyframe> mKeyframes;
         bool mRunning;
-        long mCurrentTime;
+        long mAnimationSeekTime;
         long mDuration;
 
         bool mRelative;
-        mat4 mOriginalTransform;
+        Transform mOriginalTransform;
 
         tween<float> mTweenTranslationX;
         tween<float> mTweenTranslationY;
         tween<float> mTweenTranslationZ;
 
-        tween<float> mTweenRotationX;
-        tween<float> mTweenRotationY;
-        tween<float> mTweenRotationZ;
+        tween<float> mTweenOrientation;
+        /*
+        tween<float> mTweenOrientationX;
+        tween<float> mTweenOrientationY;
+        tween<float> mTweenOrientationZ;
+        tween<float> mTweenOrientationW;
+        */
 
         tween<float> mTweenScaleX;
         tween<float> mTweenScaleY;

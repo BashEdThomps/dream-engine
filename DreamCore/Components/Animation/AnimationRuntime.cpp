@@ -26,9 +26,7 @@
 #include "Project/ProjectRuntime.h"
 
 #include <algorithm>
-#include <glm/glm.hpp>
-#include <glm/matrix.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_interpolation.hpp>
 
 using std::make_shared;
 
@@ -38,10 +36,10 @@ namespace octronic::dream
     (ProjectRuntime* pr, AnimationDefinition* definition,EntityRuntime* runtime)
         : DiscreteAssetRuntime(pr, definition,runtime),
           mRunning(false),
-          mCurrentTime(0),
+          mAnimationSeekTime(0),
           mDuration(1),
           mRelative(false),
-          mOriginalTransform(runtime->getTransform().getMatrix()),
+          mOriginalTransform(runtime->getTransform()),
           mUpdateTask(make_shared<AnimationUpdateTask>(pr,this))
     {
         LOG_TRACE("AnimationRuntime: Constructing Object");
@@ -69,29 +67,29 @@ namespace octronic::dream
     {
         if (mRunning)
         {
-            LOG_TRACE("AnimationRuntime: Delta Time {} | mCurrentTime {}",deltaTime,mCurrentTime);
-            mCurrentTime += deltaTime;
-            if (mCurrentTime > mDuration)
+            LOG_TRACE("AnimationRuntime: Delta Time {} | mAnimationSeekTime {}",deltaTime,mAnimationSeekTime);
+            mAnimationSeekTime += deltaTime;
+            if (mAnimationSeekTime > mDuration)
             {
-                mCurrentTime = mDuration;
+                mAnimationSeekTime = mDuration;
                 mRunning = false;
             }
-            seekAll(mCurrentTime);
+            seekAll(mAnimationSeekTime);
         }
     }
 
     long
-    AnimationRuntime::getCurrentTime
+    AnimationRuntime::getAnimationSeekTime
     ()
     {
-        return mCurrentTime;
+        return mAnimationSeekTime;
     }
 
     void
-    AnimationRuntime::setCurrentTime
+    AnimationRuntime::setAnimationSeekTime
     (long currentTime)
     {
-        mCurrentTime = currentTime;
+        mAnimationSeekTime = currentTime;
     }
 
     bool
@@ -124,9 +122,11 @@ namespace octronic::dream
 
         for (int i=0; i < numKeyframes; i++)
         {
-            vec3 tx = mKeyframes.at(i).getTranslation().toGLM();
-            vec3 rx = mKeyframes.at(i).getRotation().toGLM();
-            vec3 sx = mKeyframes.at(i).getScale().toGLM();
+            Transform transf = mKeyframes.at(i).getTransform();
+            vec3 tx = transf.getTranslation();
+            mat4 rx = transf.getOrientation();
+            vec3 sx = transf.getScale();
+
             AnimationEasing::EasingType easing = mKeyframes.at(i).getEasingType();
 
             if (i==0)
@@ -135,9 +135,13 @@ namespace octronic::dream
                 mTweenTranslationY = tweeny::from(tx.y);
                 mTweenTranslationZ = tweeny::from(tx.z);
 
-                mTweenRotationX = tweeny::from(rx.x);
-                mTweenRotationY = tweeny::from(rx.y);
-                mTweenRotationZ = tweeny::from(rx.z);
+                mTweenOrientation = tweeny::from(0.f);
+                /*
+                mTweenOrientationX = tweeny::from(rx.x());
+                mTweenOrientationY = tweeny::from(rx.y());
+                mTweenOrientationZ = tweeny::from(rx.z());
+                mTweenOrientationW = tweeny::from(rx.w());
+                */
 
                 mTweenScaleX = tweeny::from(sx.x);
                 mTweenScaleY = tweeny::from(sx.y);
@@ -149,24 +153,44 @@ namespace octronic::dream
                 long thisFrameTime = mKeyframes.at(i).getTime();
                 long duringTime = (thisFrameTime-lastFrameTime);
 
+                // Translation
                 mTweenTranslationX.to(tx.x).during(duringTime);
                 applyEasing(mTweenTranslationX,easing);
+
                 mTweenTranslationY.to(tx.y).during(duringTime);
                 applyEasing(mTweenTranslationY,easing);
+
                 mTweenTranslationZ.to(tx.z).during(duringTime);
                 applyEasing(mTweenTranslationZ,easing);
 
-                mTweenRotationX.to(rx.x).during(duringTime);
-                applyEasing(mTweenRotationX,easing);
-                mTweenRotationY.to(rx.y).during(duringTime);
-                applyEasing(mTweenRotationY,easing);
-                mTweenRotationZ.to(rx.z).during(duringTime);
-                applyEasing(mTweenRotationZ,easing);
+                // Orientation
+
+                mTweenOrientation.to(1.f).during(duringTime);
+                applyEasing(mTweenOrientation,easing);
+
+
+                /*
+                mTweenOrientationX.to(rx.x()).during(duringTime);
+                applyEasing(mTweenOrientationX,easing);
+
+                mTweenOrientationY.to(rx.y()).during(duringTime);
+                applyEasing(mTweenOrientationY,easing);
+
+                mTweenOrientationZ.to(rx.z()).during(duringTime);
+                applyEasing(mTweenOrientationZ,easing);
+
+                mTweenOrientationW.to(rx.w()).during(duringTime);
+                applyEasing(mTweenOrientationW,easing);
+                */
+
+                // Scale
 
                 mTweenScaleX.to(sx.x).during(duringTime);
                 applyEasing(mTweenScaleX,easing);
+
                 mTweenScaleY.to(sx.y).during(duringTime);
                 applyEasing(mTweenScaleY,easing);
+
                 mTweenScaleZ.to(sx.z).during(duringTime);
                 applyEasing(mTweenScaleZ,easing);
             }
@@ -191,7 +215,7 @@ namespace octronic::dream
     AnimationRuntime::reset
     ()
     {
-        mCurrentTime = 0;
+        mAnimationSeekTime = 0;
         seekAll(0);
     }
 
@@ -201,32 +225,38 @@ namespace octronic::dream
     {
 
         LOG_TRACE("AnimationRuntime: Seeing to {}",pos);
-        vec3 newTx, newRx, newSx;
+        vec3 newTx, newSx;
         newTx.x = mTweenTranslationX.seek(pos);
         newTx.y = mTweenTranslationY.seek(pos);
         newTx.z = mTweenTranslationZ.seek(pos);
 
-        newRx.x = mTweenRotationX.seek(pos);
-        newRx.y = mTweenRotationY.seek(pos);
-        newRx.z = mTweenRotationZ.seek(pos);
+        mTweenOrientation.seek(pos);
+        //mat4 orient=glm::interpolate(mOriginalTransform.getMatrix(), mTarge);
+        /*
+        newOrient.x = mTweenOrientationX.seek(pos);
+        newOrient.y = mTweenOrientationY.seek(pos);
+        newOrient.z = mTweenOrientationZ.seek(pos);
+        */
 
         newSx.x = mTweenScaleX.seek(pos);
         newSx.y = mTweenScaleY.seek(pos);
         newSx.z = mTweenScaleZ.seek(pos);
 
-        mat4 matrix(1.0f);
+        Transform tx;
+
         if (mRelative)
         {
-            matrix = glm::translate(mOriginalTransform,newTx);
+            tx.setTranslation(mOriginalTransform.getTranslation() + newTx);
+            //tx.setOrientation(mOriginalTransform.getOrientation() + newOrient);
+            tx.setScale(mOriginalTransform.getScale() + newSx);
         }
         else
         {
-            matrix = glm::translate(matrix,newTx);
+            tx.setTranslation(newTx);
+            //tx.setOrientation(newOrient);
+            tx.setScale(newSx);
         }
-        matrix = matrix*mat4_cast(quat(newRx));
-        matrix = glm::scale(matrix,newSx);
-        mEntityRuntimeHandle->getTransform().setMatrix(matrix);
-
+        mEntityRuntimeHandle->setTransform(tx);
     }
 
     long
@@ -362,7 +392,7 @@ namespace octronic::dream
         }
     }
 
-    void AnimationRuntime::pushNextTask()
+    void AnimationRuntime::pushTasks()
     {
 
     }

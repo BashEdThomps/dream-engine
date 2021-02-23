@@ -37,7 +37,7 @@ namespace octronic::dream::open_al
         OpenALAudioComponent();
         ~OpenALAudioComponent() override;
         bool init() override;
-        void setListenerPosition(const Vector3&) override;
+        void setListenerPosition(const vec3&) override;
         void setVolume(float) override;
         float getVolume() override;
         AudioRuntime* getAudioRuntime(AudioDefinition* def) override;

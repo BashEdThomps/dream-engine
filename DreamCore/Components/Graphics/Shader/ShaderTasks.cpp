@@ -16,7 +16,7 @@ namespace octronic::dream
         LOG_TRACE("ShaderCompileFragmentTask: {} Executing on Graphics thread",mShaderRuntime->getName());
         if (!mShaderRuntime->performFragmentCompilation())
         {
-            setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_DEFERRED);
         }
         else
         {
@@ -35,7 +35,7 @@ namespace octronic::dream
         LOG_TRACE("ShaderCompileVertexTask: {} Executing on Graphics thread",mShaderRuntime->getName());
         if (!mShaderRuntime->performVertexCompilation())
         {
-            setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_DEFERRED);
         }
         else
         {
@@ -55,7 +55,7 @@ namespace octronic::dream
 
         if (!mShaderRuntime->performLinking())
         {
-            setState(TASK_STATE_FAILED);
+            setState(TASK_STATE_DEFERRED);
         }
         else
         {

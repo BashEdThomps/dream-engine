@@ -27,7 +27,11 @@ namespace octronic::dream
         void removeInstanceByUuid(UuidType spriteUuid);
         vector<EntityRuntime*>* getInstanceVector();
 
+        bool getReloadFlag() const;
+        void setReloadFlag(bool reloadFlag);
+
     protected:
         vector<EntityRuntime*> mInstances;
+        bool mReloadFlag;
     };
 }

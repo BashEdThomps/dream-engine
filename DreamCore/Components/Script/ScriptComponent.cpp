@@ -16,7 +16,7 @@
 #include "ScriptDefinition.h"
 
 #include "Components/Event.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
 #include "Components/Time.h"
 #include "Components/Path/PathRuntime.h"
 #include "Components/Animation/AnimationRuntime.h"
@@ -26,7 +26,6 @@
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Graphics/Camera.h"
 #include "Components/Graphics/GraphicsComponent.h"
-#include "Components/Graphics/Light/LightRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Input/InputComponent.h"
 #include "Components/Physics/PhysicsComponent.h"
@@ -398,26 +397,8 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<Camera>(
                     "Camera",
-                    "flyForward",&Camera::flyForward,
-                    "flyBackward",&Camera::flyBackward,
-                    "flyLeft",&Camera::flyLeft,
-                    "flyRight",&Camera::flyRight,
-                    "flyUp",&Camera::flyUp,
-                    "flyDown",&Camera::flyDown,
-                    "setTranslation",static_cast<void(Camera::*)(float,float,float)>(&Camera::setTranslation),
-                    "setTranslation",static_cast<void(Camera::*)(const Vector3&)>(&Camera::setTranslation),
-                    "getTranslation",&Camera::getTranslation,
-                    "getFocusedEntity",&Camera::getFocusedEntity,
-                    "getFocusedObjectTheta",&Camera::getFocusedObjectTheta
-                    );
-
-        stateView.new_enum(
-                    "CameraMovement",
-                    "FORWARD",  Constants::CAMERA_MOVEMENT_FORWARD,
-                    "BACKWARD", Constants::CAMERA_MOVEMENT_BACKWARD,
-                    "LEFT",     Constants::CAMERA_MOVEMENT_LEFT,
-                    "RIGHT",    Constants::CAMERA_MOVEMENT_RIGHT
-                    );
+                    "setTransform",&Camera::setTransform,
+                    "getTransform",&Camera::getTransform);
 
         stateView.new_enum(
                     "FrustumPlane",
@@ -426,15 +407,13 @@ namespace octronic::dream // ===================================================
                     "Right",Frustum::Plane::PLANE_RIGHT,
                     "Left",Frustum::Plane::PLANE_LEFT,
                     "Top",Frustum::Plane::PLANE_TOP,
-                    "Bottom",Frustum::Plane::PLANE_BOTTOM
-                    );
+                    "Bottom",Frustum::Plane::PLANE_BOTTOM);
 
         stateView.new_enum(
                     "FrustumTestResult",
                     "Inside",Frustum::TestResult::TEST_INSIDE,
                     "Outside",Frustum::TestResult::TEST_OUTSIDE,
-                    "Intersect",Frustum::TestResult::TEST_INTERSECT
-                    );
+                    "Intersect",Frustum::TestResult::TEST_INTERSECT);
     }
 
     void
@@ -450,8 +429,7 @@ namespace octronic::dream // ===================================================
                     "getSplinePoint",&PathRuntime::getSplinePoint,
                     "getUStep",&PathRuntime::getUStep,
                     "setUStep",&PathRuntime::setUStep,
-                    "stepPath",&PathRuntime::stepPath
-                    );
+                    "stepPath",&PathRuntime::stepPath);
     }
 
     void
@@ -465,15 +443,6 @@ namespace octronic::dream // ===================================================
     }
 
     void
-    ScriptComponent::exposeLightRuntime
-    ()
-    {
-        debugRegisteringClass("LightRuntime");
-        sol::state_view stateView(State);
-        stateView.new_usertype<LightRuntime>("LightRuntime");
-    }
-
-    void
     ScriptComponent::exposeShaderRuntime
     ()
     {
@@ -481,28 +450,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<ShaderRuntime>(
                     "ShaderRuntime",
-                    "getUuid", &ShaderRuntime::getUuid,
-                    "addUniform",&ShaderRuntime::addUniform
-                    );
-
-        debugRegisteringClass("ShaderUniform");
-
-        stateView.new_usertype<ShaderUniform>("ShaderUniform");
-        stateView.new_enum(
-                    "UniformType",
-                    "INT1",UniformType::INT1,
-                    "INT2",UniformType::INT2,
-                    "INT3",UniformType::INT3,
-                    "INT4",UniformType::INT4,
-                    "UINT1",UniformType::UINT1,
-                    "UINT2",UniformType::UINT2,
-                    "UINT3",UniformType::UINT3,
-                    "UINT4",UniformType::UINT4,
-                    "FLOAT1",UniformType::FLOAT1,
-                    "FLOAT2",UniformType::FLOAT2,
-                    "FLOAT3",UniformType::FLOAT3,
-                    "FLOAT4",UniformType::FLOAT4
-                    );
+                    "getUuid", &ShaderRuntime::getUuid);
     }
 
     void
@@ -513,8 +461,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<PhysicsComponent>(
                     "PhysicsComponent",
-                    "setDebug",&PhysicsComponent::setDebug
-                    );
+                    "setDebug",&PhysicsComponent::setDebug);
 
         stateView[LUA_COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
     }
@@ -546,8 +493,7 @@ namespace octronic::dream // ===================================================
                     "setCenterOfMassTransform3fv",&PhysicsObjectRuntime::setCenterOfMassTransform3fv,
                     "setCenterOfMassTransformMat4",&PhysicsObjectRuntime::setCenterOfMassTransformMat4,
                     "setKinematicObject",&PhysicsObjectRuntime::setKinematic,
-                    "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter
-                    );
+                    "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter);
     }
 
     void
@@ -570,12 +516,10 @@ namespace octronic::dream // ===================================================
                     "getAnimationRuntime",&EntityRuntime::getAnimationRuntime,
                     "getAudioRuntime",&EntityRuntime::getAudioRuntime,
                     "getModelRuntime",&EntityRuntime::getModelRuntime,
-                    "getLightRuntime",&EntityRuntime::getLightRuntime,
                     "getPhysicsObjectRuntime",&EntityRuntime::getPhysicsObjectRuntime,
                     "hasPathRuntime",&EntityRuntime::hasPathRuntime,
                     "hasAudioRuntime",&EntityRuntime::hasAudioRuntime,
                     "hasModelRuntime",&EntityRuntime::hasModelRuntime,
-                    "hasLightRuntime",&EntityRuntime::hasLightRuntime,
                     "hasPhysicsObjectRuntime",&EntityRuntime::hasPhysicsObjectRuntime,
                     "getDeleted",&EntityRuntime::getDeleted,
                     "setDeleted",&EntityRuntime::setDeleted,
@@ -584,16 +528,13 @@ namespace octronic::dream // ===================================================
                     "addEvent",&EntityRuntime::addEvent,
                     "replaceAssetUuid",&EntityRuntime::replaceAssetUuid,
                     "translateWithChildren",&EntityRuntime::translateWithChildren,
-                    "preTranslateWithChildren",&EntityRuntime::preTranslateWithChildren,
-                    "transformOffsetInitial",&EntityRuntime::transformOffsetInitial,
                     "translateOffsetInitial",&EntityRuntime::translateOffsetInitial,
                     "translateOffsetInitialWithChildren",&EntityRuntime::translateOffsetInitialWithChildren,
                     "containedInFrustum",&EntityRuntime::containedInFrustum,
                     "containedInFrustumAfterTransform",&EntityRuntime::containedInFrustum,
                     "exceedsFrustumPlaneAtTranslation",&EntityRuntime::exceedsFrustumPlaneAtTranslation,
                     "addChildFromTemplateUuid",&EntityRuntime::addChildFromTemplateUuid,
-                    "getObjectLifetime",&EntityRuntime::getObjectLifetime
-                    );
+                    "getObjectLifetime",&EntityRuntime::getObjectLifetime);
     }
 
     void
@@ -604,24 +545,11 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<Transform>(
                     "Transform",
-                    "getMatrix",&Transform::getMatrix,
-                    "setMatrix",&Transform::setMatrix,
-                    "decomposeMatrix",&Transform::decomposeMatrix,
-                    "recomposeMatrix",&Transform::recomposeMatrix,
                     "translate",&Transform::translate,
-                    "translate3f",&Transform::translate3f,
-                    "preTranslate",&Transform::preTranslate,
-                    "getTranslation",&Transform::getTranslation
-                    );
-
-        stateView.new_usertype<MatrixDecomposition>(
-                    "MatrixDecomposition",
-                    "translation",&MatrixDecomposition::translation,
-                    "rotation",&MatrixDecomposition::rotation,
-                    "scale",&MatrixDecomposition::scale,
-                    "skew",&MatrixDecomposition::skew,
-                    "perspective",&MatrixDecomposition::perspective
-                    );
+                    "getTranslation",&Transform::getTranslation,
+                    "setTranslation",&Transform::setTranslation,
+                    "getScale",&Transform::getScale,
+                    "setScale",&Transform::setScale);
     }
 
     void
@@ -635,8 +563,7 @@ namespace octronic::dream // ===================================================
                     "getCurrentFrameTime",&Time::getCurrentFrameTime,
                     "getLastFrameTime",&Time::getLastFrameTime,
                     "getFrameTimeDelta",&Time::getFrameTimeDelta,
-                    "perSecond",&Time::perSecond
-                    );
+                    "perSecond",&Time::perSecond);
 
         stateView["Time"] = mProjectRuntime->getTime();
     }
@@ -661,17 +588,7 @@ namespace octronic::dream // ===================================================
                     "getAttribute",&Event::getAttribute,
                     "setAttribute",&Event::setAttribute,
                     "getProcessed",&Event::getProcessed,
-                    "setProcessed",&Event::setProcessed
-                    );
-
-        /*
-        stateView.new_usertype<CollisionData>(
-            "CollisionData",
-            "present",&CollisionData::present,
-            "impulse",&CollisionData::impulse,
-            "position",&CollisionData::position
-        );
-        */
+                    "setProcessed",&Event::setProcessed);
     }
 
     void
@@ -683,8 +600,7 @@ namespace octronic::dream // ===================================================
         stateView.new_usertype<WindowComponent>(
                     "WindowComponent",
                     "getWidth",&WindowComponent::getWidth,
-                    "getHeight",&WindowComponent::getHeight
-                    );
+                    "getHeight",&WindowComponent::getHeight);
         stateView[LUA_COMPONENTS_TBL]["Window"] = mProjectRuntime->getWindowComponent();
     }
 
@@ -703,11 +619,9 @@ namespace octronic::dream // ===================================================
                     "getJoystickState",&InputComponent::getJoystickState,
                     "getJoystickMapping",&InputComponent::getJoystickMapping,
                     "getJoystickNavigation", &InputComponent::getJoystickNavigation,
-                    "getJoystickCount", &InputComponent::getJoystickCount
-                    );
+                    "getJoystickCount", &InputComponent::getJoystickCount);
 
-        stateView.new_usertype<JoystickMapping>
-                (
+        stateView.new_usertype<JoystickMapping>(
                     "JoystickMapping",
                     "AnalogLeftXAxis",&JoystickMapping::AnalogLeftXAxis ,
                     "AnalogLeftYAxis",&JoystickMapping::AnalogLeftYAxis ,
@@ -729,8 +643,7 @@ namespace octronic::dream // ===================================================
                     "DPadNorth",&JoystickMapping::DPadNorth,
                     "DPadWest",&JoystickMapping::DPadWest,
                     "DPadSouth",&JoystickMapping::DPadSouth,
-                    "DPadEast",&JoystickMapping::DPadEast
-                    );
+                    "DPadEast",&JoystickMapping::DPadEast);
 
         stateView.new_usertype<JoystickState>(
                     "JoystickState",
@@ -743,15 +656,13 @@ namespace octronic::dream // ===================================================
                     "setButtonCount", &JoystickState::setButtonCount,
                     "getAxisCount", &JoystickState::getAxisCount,
                     "setAxisCount", &JoystickState::setAxisCount,
-                    "getDeadZone", &JoystickState::getDeadZone
-                    );
+                    "getDeadZone", &JoystickState::getDeadZone);
 
         stateView.new_usertype<JoystickNavigation>(
                     "JoystickNavigation",
                     "update", &JoystickNavigation::update,
                     "setHeading", &JoystickNavigation::setHeading,
-                    "getHeading", &JoystickNavigation::getHeading
-                    );
+                    "getHeading", &JoystickNavigation::getHeading);
 
         stateView.new_enum(
                     "KeyboardMapping",
@@ -875,8 +786,7 @@ namespace octronic::dream // ===================================================
                     "KEY_RIGHT_CONTROL",  345,
                     "KEY_RIGHT_ALT",  346,
                     "KEY_RIGHT_SUPER",  347,
-                    "KEY_MENU",  348
-                    );
+                    "KEY_MENU",  348);
         stateView[LUA_COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
     }
 
@@ -908,15 +818,13 @@ namespace octronic::dream // ===================================================
                     "getState",&AudioRuntime::getState,
                     "play",&AudioRuntime::play,
                     "pause",&AudioRuntime::pause,
-                    "stop",&AudioRuntime::stop
-                    );
+                    "stop",&AudioRuntime::stop);
 
         stateView.new_enum(
                     "AudioState",
                     "PLAYING", AudioStatus::AUDIO_STATUS_PLAYING,
                     "PAUSED",  AudioStatus::AUDIO_STATUS_PAUSED,
-                    "STOPPED", AudioStatus::AUDIO_STATUS_STOPPED
-                    );
+                    "STOPPED", AudioStatus::AUDIO_STATUS_STOPPED);
     }
 
     void
@@ -930,8 +838,7 @@ namespace octronic::dream // ===================================================
                     sol::base_classes, sol::bases<Runtime>(),
                     "getCamera",&SceneRuntime::getCamera,
                     "getProjectRuntime", &SceneRuntime::getProjectRuntime,
-                    "getEntityRuntimeByUuid",&SceneRuntime::getEntityRuntimeByUuid
-                    );
+                    "getEntityRuntimeByUuid",&SceneRuntime::getEntityRuntimeByUuid);
     }
 
     void
@@ -958,16 +865,14 @@ namespace octronic::dream // ===================================================
                     sol::meta_function::subtraction, vec3SubtractionOverloads,
                     "x", &glm::vec3::x,
                     "y", &glm::vec3::y,
-                    "z", &glm::vec3::z
-                    );
+                    "z", &glm::vec3::z);
 
         stateView.new_usertype<glm::vec4>(
                     "vec4",
                     "x", &glm::vec4::x,
                     "y", &glm::vec4::y,
                     "z", &glm::vec4::z,
-                    "w", &glm::vec4::w
-                    );
+                    "w", &glm::vec4::w);
 
         stateView.new_usertype<glm::quat>(
                     "quat",
@@ -975,8 +880,7 @@ namespace octronic::dream // ===================================================
                     "w", &glm::quat::w,
                     "x", &glm::quat::x,
                     "y", &glm::quat::y,
-                    "z", &glm::quat::z
-                    );
+                    "z", &glm::quat::z);
 
         auto mat4MultiplicationOverloads = sol::overload(
                     [](const glm::mat4& v1, const glm::mat4& v2) -> glm::mat4 { return v1*v2; },
@@ -986,8 +890,7 @@ namespace octronic::dream // ===================================================
         stateView.new_usertype<glm::mat4>(
                     "mat4",
                     sol::constructors<glm::mat4(), glm::mat4(float), glm::mat4(glm::mat4)>(),
-                    sol::meta_function::multiplication, mat4MultiplicationOverloads
-                    );
+                    sol::meta_function::multiplication, mat4MultiplicationOverloads);
 
         stateView.set_function(
                     "translate",
@@ -1033,8 +936,7 @@ namespace octronic::dream // ===================================================
                     "AnimationRuntime",
                     "run",&AnimationRuntime::run,
                     "pause",&AnimationRuntime::pause,
-                    "reset",&AnimationRuntime::reset
-                    );
+                    "reset",&AnimationRuntime::reset);
     }
 
     void
@@ -1043,27 +945,15 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         debugRegisteringClass("Vector2");
         stateView.new_usertype<Vector2>(
-                    "Vector2",
-                    "x", &Vector2::x,
-                    "y", &Vector2::y
-                    );
+                    "Vector2");
 
-        debugRegisteringClass("Vector3");
-        stateView.new_usertype<Vector3>(
-                    "Vector3",
-                    "x",&Vector3::x,
-                    "y",&Vector3::y,
-                    "z",&Vector3::z
-                    );
+        debugRegisteringClass("vec3");
+        stateView.new_usertype<vec3>(
+                    "Vector3");
 
         debugRegisteringClass("Vector4");
         stateView.new_usertype<Vector4>(
-                    "Vector4",
-                    "w",&Vector4::w,
-                    "x",&Vector4::x,
-                    "y",&Vector4::y,
-                    "z",&Vector4::z
-                    );
+                    "Vector4");
     }
 
     void
@@ -1089,8 +979,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<AssetRuntime>(
                     "AssetRuntime",
-                    sol::base_classes, sol::bases<Runtime>()
-                    );
+                    sol::base_classes, sol::bases<Runtime>());
     }
 
     void
@@ -1100,8 +989,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<SharedAssetRuntime>(
                     "SharedAssetRuntime",
-                    sol::base_classes, sol::bases<AssetRuntime>()
-                    );
+                    sol::base_classes, sol::bases<AssetRuntime>());
     }
 
     void
@@ -1111,8 +999,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<DiscreteAssetRuntime>(
                     "DiscreteAssetRuntime",
-                    sol::base_classes, sol::bases<AssetRuntime>()
-                    );
+                    sol::base_classes, sol::bases<AssetRuntime>());
     }
 
     void
@@ -1138,7 +1025,6 @@ namespace octronic::dream // ===================================================
         exposeAnimationRuntime();
         exposeAudioRuntime();
         exposeEntityRuntime();
-        exposeLightRuntime();
         exposeModelRuntime();
         exposePathRuntime();
         exposePhysicsObjectRuntime();
@@ -1170,7 +1056,7 @@ namespace octronic::dream // ===================================================
 
         for (auto& scriptRuntime : *scriptCache->getRuntimeVectorHandle())
         {
-            scriptRuntime->pushNextTask();
+            scriptRuntime->pushTasks();
         }
     }
 
@@ -1185,6 +1071,8 @@ namespace octronic::dream // ===================================================
         PrintListeners.push_back(listener);
     }
 
-    ScriptPrintListener::~ScriptPrintListener(){}
+    ScriptPrintListener::~ScriptPrintListener()
+    {}
+
     lua_State* ScriptComponent::State = nullptr;
 }

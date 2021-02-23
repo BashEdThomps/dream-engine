@@ -30,7 +30,7 @@ namespace octronic::dream
        {
            json retval = json::object();
            retval[Constants::UUID] = uuid;
-           retval[Constants::TRANSFORM] = transform.getJson();
+           retval[Constants::TRANSFORM] = transform.toJson();
            return retval;
        }
     };
@@ -50,23 +50,11 @@ namespace octronic::dream
         void setKinematic(bool kinematic);
         bool getKinematic();
 
-        void  setHalfExtentsX(float halfExtentX);
-        float getHalfExtentsX();
+        void setHalfExtents(vec3 halfExtent);
+        vec3 getHalfExtents();
 
-        void  setHalfExtentsY(float halfExtentY);
-        float getHalfExtentsY();
-
-        void  setHalfExtentsZ(float halfExtentZ);
-        float getHalfExtentsZ();
-
-        void  setNormalX(float normalX);
-        float getNormalX();
-
-        void  setNormalY(float normalY);
-        float getNormalY();
-
-        void  setNormalZ(float normalZ);
-        float getNormalZ();
+        void  setNormal(vec3 normal);
+        vec3 getNormal();
 
         float getRadius();
         void  setRadius(float rad);
@@ -97,21 +85,19 @@ namespace octronic::dream
         UuidType getCollisionModel();
         void setCollisionModel(UuidType);
 
-        Vector3 getLinearFactor();
-        void setLinearFactor(const Vector3& lf);
+        vec3 getLinearFactor();
+        void setLinearFactor(const vec3& lf);
 
-        Vector3 getAngularFactor();
-        void setAngularFactor(const Vector3& af);
+        vec3 getAngularFactor();
+        void setAngularFactor(const vec3& af);
 
-        Vector3 getLinearVelocity();
-        void    setLinearVelocity(const Vector3& lf);
-        Vector3 getAngularVelocity();
-        void    setAngularVelocity(const Vector3& af);
+        vec3 getLinearVelocity();
+        void setLinearVelocity(const vec3& lf);
+        vec3 getAngularVelocity();
+        void setAngularVelocity(const vec3& af);
 
 
     protected:
         void makeCompoundChildren();
-        void makeHalfExtentsObject();
-        void makeNormalObject();
     };
 }

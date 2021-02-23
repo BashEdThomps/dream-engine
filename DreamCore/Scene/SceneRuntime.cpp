@@ -55,14 +55,15 @@ namespace octronic::dream
     (ProjectRuntime* project, SceneDefinition* sd)
         : Runtime(sd),
           mState(SceneState::SCENE_STATE_TO_LOAD),
-          mClearColour(Vector3(0.0f)),
+          mClearColor(vec4(0.0f)),
           mProjectRuntime(project),
           mRootEntityRuntime(nullptr),
-          mLightingPassShader(nullptr),
           mShadowPassShader(nullptr),
           mFontShader(nullptr),
           mSpriteShader(nullptr),
           mInputScript(nullptr),
+          mEnvironmentShader(nullptr),
+          mEnvironmentTexture(nullptr),
           mCamera(Camera(this)),
           mSceneStartTime(0),
           mSceneCurrentTime(0),
@@ -80,10 +81,7 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("SceneRuntime: Destructing");
-        if (mState != SCENE_STATE_DESTROYED)
-        {
-            destroyRuntime();
-        }
+        destroyRuntime();
     }
 
     void
@@ -98,10 +96,8 @@ namespace octronic::dream
             mRootEntityRuntime = nullptr;
         }
 
-        mLightingPassShader = nullptr;
         mShadowPassShader = nullptr;
         mFontShader = nullptr;
-        mEntityRuntimeCleanUpQueue.clear();
         mState = SceneState::SCENE_STATE_DESTROYED;
     }
 
@@ -120,7 +116,7 @@ namespace octronic::dream
         mState = state;
     }
 
-    Vector3
+    vec3
     SceneRuntime::getGravity
     ()
     {
@@ -128,12 +124,12 @@ namespace octronic::dream
         {
             return mProjectRuntime->getPhysicsComponent()->getGravity();
         }
-        return Vector3(0.0f);
+        return vec3(0.0f);
     }
 
     void
     SceneRuntime::setGravity
-    (const Vector3& gravity)
+    (const vec3& gravity)
     {
         if (mProjectRuntime)
         {
@@ -141,18 +137,18 @@ namespace octronic::dream
         }
     }
 
-    Vector3
-    SceneRuntime::getClearColour
+    vec4
+    SceneRuntime::getClearColor
     ()
     {
-        return mClearColour;
+        return mClearColor;
     }
 
     void
-    SceneRuntime::setClearColour
-    (const Vector3& clearColour)
+    SceneRuntime::setClearColor
+    (const vec4& clearColour)
     {
-        mClearColour = clearColour;
+        mClearColor = clearColour;
     }
 
     EntityRuntime*
@@ -309,33 +305,23 @@ namespace octronic::dream
         // Assign Runtime attributes from Definition
         setName(sceneDefinition->getName());
         setUuid(sceneDefinition->getUuid());
-        setClearColour(sceneDefinition->getClearColour());
+        setClearColor(sceneDefinition->getClearColor());
 
         // Setup Camera
-        mCamera.setTranslation(sceneDefinition->getCameraTranslation());
-        mCamera.setMovementSpeed(sceneDefinition->getCameraMovementSpeed());
-        mCamera.setPitch(sceneDefinition->getCameraPitch());
-        mCamera.setYaw(sceneDefinition->getCameraYaw());
+        mCamera.setTransform(sceneDefinition->getCameraTransform());
+        mCamera.setFieldOfView(sceneDefinition->getCameraFOV());
 
         //  Setup drawing parameters
         setMeshCullDistance(sceneDefinition->getMeshCullDistance());
         setMinDrawDistance(sceneDefinition->getMinDrawDistance());
         setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
 
-        // Load Scene-level Shaders
+        // Load Scene-level Shaders & Textures
         auto shaderCache = mProjectRuntime->getShaderCache();
-
-        UuidType lightPassShaderUuid = sceneDefinition->getLightingPassShader();
-        mLightingPassShader = shaderCache->getRuntimeHandle(lightPassShaderUuid);
-
-        if (mLightingPassShader == nullptr)
-        {
-            LOG_ERROR("SceneRuntime: Unable to load lighting shader {} for Scene {}",lightPassShaderUuid,getNameAndUuidString());
-            return false;
-        }
+        auto textureCache = mProjectRuntime->getTextureCache();
 
         UuidType shadowPassShaderUuid = sceneDefinition->getShadowPassShader();
-        mShadowPassShader = static_cast<ShaderRuntime*>(shaderCache->getRuntimeHandle(shadowPassShaderUuid));
+        mShadowPassShader = shaderCache->getRuntimeHandle(shadowPassShaderUuid);
 
         if (mShadowPassShader == nullptr)
         {
@@ -344,7 +330,7 @@ namespace octronic::dream
         }
 
         UuidType fontShaderUuid = sceneDefinition->getFontShader();
-        mFontShader = static_cast<ShaderRuntime*>(shaderCache->getRuntimeHandle(fontShaderUuid));
+        mFontShader = shaderCache->getRuntimeHandle(fontShaderUuid);
 
         if (mFontShader == nullptr)
         {
@@ -353,11 +339,30 @@ namespace octronic::dream
         }
 
         UuidType spriteShaderUuid = sceneDefinition->getSpriteShader();
-        mSpriteShader = static_cast<ShaderRuntime*>(shaderCache->getRuntimeHandle(spriteShaderUuid));
+        mSpriteShader = shaderCache->getRuntimeHandle(spriteShaderUuid);
 
         if (mSpriteShader == nullptr)
         {
             LOG_ERROR("SceneRuntime: Unable to load sprite shader {} for Scene {}",spriteShaderUuid,getNameAndUuidString());
+            return false;
+        }
+
+        UuidType environmentShaderUuid = sceneDefinition->getEnvironmentShader();
+        mEnvironmentShader = shaderCache->getRuntimeHandle(environmentShaderUuid);
+
+        if (mSpriteShader == nullptr)
+        {
+            LOG_ERROR("SceneRuntime: Unable to load Environment shader {} for Scene {}",environmentShaderUuid,getNameAndUuidString());
+            return false;
+        }
+
+
+        UuidType environmentTextureUuid = sceneDefinition->getEnvironmentTexture();
+        mEnvironmentTexture = textureCache->getRuntimeHandle(environmentTextureUuid);
+
+        if (mEnvironmentTexture == nullptr)
+        {
+            LOG_ERROR("SceneRuntime: Unable to Environment Texture {} for Scene {}",environmentTextureUuid,getNameAndUuidString());
             return false;
         }
 
@@ -395,9 +400,6 @@ namespace octronic::dream
         setRootEntityRuntime(er);
         setState(SceneState::SCENE_STATE_LOADED);
 
-        EntityRuntime* focused = getEntityRuntimeByUuid(sceneDefinition->getCameraFocusedOn());
-        mCamera.setFocusedEntity(focused);
-
         EntityRuntime* player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
         setPlayerEntity(player);
 
@@ -424,21 +426,6 @@ namespace octronic::dream
         {
             mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
         }
-    }
-
-    ShaderRuntime*
-    SceneRuntime::getLightingPassShader
-    ()
-    const
-    {
-        return mLightingPassShader;
-    }
-
-    void
-    SceneRuntime::setLightingPassShader
-    (ShaderRuntime* lightingShader)
-    {
-        mLightingPassShader = lightingShader;
     }
 
     void
@@ -594,19 +581,13 @@ namespace octronic::dream
         }
 
         float distance = std::numeric_limits<float>::max();
-        Vector3 camTrans = mCamera.getTranslation();
+        Transform camTrans = mCamera.getTransform();
         EntityRuntime* nearest = mRootEntityRuntime;
-        EntityRuntime* focused = mCamera.getFocusedEntity();
 
         mRootEntityRuntime->applyToAll(
                     function<EntityRuntime*(EntityRuntime*)>
                     ([&](EntityRuntime* next){
-                        if (next == focused)
-                        {
-                            return nullptr;
-                        }
-
-                        float nextDistance = next->distanceFrom(camTrans);
+                        float nextDistance = next->distanceFrom(camTrans.getTranslation());
                         if (nextDistance < distance)
                         {
                             distance = nextDistance;
@@ -712,5 +693,15 @@ namespace octronic::dream
     bool SceneRuntime::hasState(SceneState state) const
     {
         return mState == state;
+    }
+
+    TextureRuntime* SceneRuntime::getEnvironmentTexture() const
+    {
+       return mEnvironmentTexture;
+    }
+
+    ShaderRuntime* SceneRuntime::getEnvironmentShader() const
+    {
+       return mEnvironmentShader;
     }
 }

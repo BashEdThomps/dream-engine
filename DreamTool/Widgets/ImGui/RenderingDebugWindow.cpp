@@ -34,7 +34,8 @@ namespace octronic::dream::tool
                     if (ImGui::CollapsingHeader("Statistics"))
                     {
                         ImGui::PushItemWidth(-1);
-                        ImGui::PlotLines("FPS",&pRuntime->getFrameDurationHistory()[0],ProjectRuntime::MaxFrameCount, 0, "FPS", 0.f, 250.f, ImVec2(0,50));
+                        ImGui::PlotLines("FPS",&pRuntime->getFrameDurationHistory()[0],
+                                ProjectRuntime::MaxFrameCount, 0, "FPS", 0.f, 250.f, ImVec2(0,50));
                         ImGui::PopItemWidth();
                         ImGui::Text("Average: %.3f",pRuntime->getAverageFramerate());
                         ImGui::Separator();
@@ -47,33 +48,12 @@ namespace octronic::dream::tool
                         ImGui::Text("Shadow Draw Calls: %ld", ModelMesh::ShadowDrawCalls);
                     }
 
-                    if (ImGui::CollapsingHeader("Geometry Pass"))
-                    {
-
-                        ImGui::Columns(4);
-
-                        ImGui::Text("Albedo");
-                        ImGui::Image((void*)(intptr_t)gfx->getGeometryPassAlbedoBuffer(),PreviewSize, UV1, UV2);
-                        ImGui::NextColumn();
-
-                        ImGui::Text("Position");
-                        ImGui::Image((void*)(intptr_t)gfx->getGeometryPassPositionBuffer(),PreviewSize, UV1, UV2);
-                        ImGui::NextColumn();
-
-                        ImGui::Text("Normal");
-                        ImGui::Image((void*)(intptr_t)gfx->getGeometryPassNormalBuffer(),PreviewSize, UV1, UV2);
-                        ImGui::NextColumn();
-
-                        ImGui::Text("Ignore");
-                        ImGui::Image((void*)(intptr_t)gfx->getGeometryPassIgnoreBuffer(),PreviewSize, UV1, UV2);
-
-                        ImGui::Columns(1);
-                    }
-
                     if(ImGui::CollapsingHeader("Shadow Pass"))
                     {
+                        ImVec2 ca = ImGui::GetContentRegionAvail();
+                        ImVec2 img_size(ca.y, ca.y);
                         ImGui::Text("Depth");
-                        ImGui::Image((void*)(intptr_t)gfx->getShadowPassDepthBuffer(),PreviewSize,UV1,UV2);
+                        ImGui::Image((void*)(intptr_t)gfx->getShadowPassDepthBuffer(),img_size,UV1,UV2);
                     }
                 }
             }
@@ -81,7 +61,6 @@ namespace octronic::dream::tool
         }
     }
 
-    ImVec2 RenderingDebugWindow::PreviewSize = ImVec2(256,256);
     ImVec2 RenderingDebugWindow::UV1 = ImVec2(0,1);
     ImVec2 RenderingDebugWindow::UV2 = ImVec2(1,0);
 }

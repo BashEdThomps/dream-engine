@@ -46,191 +46,131 @@ namespace octronic::dream
     AssetDefinition::getAssetType
     ()
     {
-        
-            
-            return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
-        
+        return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
     }
 
     void
     AssetDefinition::setType
     (string type)
     {
-        
-            
-            mJson[Constants::ASSET_TYPE] = type;
-        
+        mJson[Constants::ASSET_TYPE] = type;
     }
 
     string
     AssetDefinition::getType
     ()
     {
-        
-            
-            if (mJson.find(Constants::ASSET_TYPE) == mJson.end())
-            {
-                mJson[Constants::ASSET_TYPE] = "";
-            }
-            return mJson[Constants::ASSET_TYPE];
-        
+        if (mJson.find(Constants::ASSET_TYPE) == mJson.end())
+        {
+            mJson[Constants::ASSET_TYPE] = "";
+        }
+        return mJson[Constants::ASSET_TYPE];
     }
 
     void
     AssetDefinition::setFormat
     (string format)
     {
-        
-            
-            mJson[Constants::ASSET_FORMAT] = format;
-        
+        mJson[Constants::ASSET_FORMAT] = format;
     }
 
     string
     AssetDefinition::getFormat
     ()
     {
-        
-            
-            if (mJson.find(Constants::ASSET_FORMAT) == mJson.end())
-            {
-                mJson[Constants::ASSET_FORMAT] = "";
-            }
+        if (mJson.find(Constants::ASSET_FORMAT) == mJson.end())
+        {
+            mJson[Constants::ASSET_FORMAT] = "";
+        }
 
-            return mJson[Constants::ASSET_FORMAT];
-        
+        return mJson[Constants::ASSET_FORMAT];
     }
 
     bool
     AssetDefinition::isTypeAnimation
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_ANIMATION;
-        
+        return getType() == Constants::ASSET_TYPE_ANIMATION;
     }
 
-    bool
-    AssetDefinition::isTypeLight
-    ()
-    {
-        
-            
-            return getType() == Constants::ASSET_TYPE_LIGHT;
-        
-    }
 
     bool AssetDefinition::isTypeMaterial()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_MATERIAL;
-        
+        return getType() == Constants::ASSET_TYPE_MATERIAL;
     }
 
     bool
     AssetDefinition::isTypeFont
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_FONT;
-        
+        return getType() == Constants::ASSET_TYPE_FONT;
     }
 
     bool
     AssetDefinition::isTypePhysicsObject
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
-        
+        return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
     }
 
     bool
     AssetDefinition::isTypeTexture
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_TEXTURE;
-        
+        return getType() == Constants::ASSET_TYPE_TEXTURE;
     }
 
     bool
     AssetDefinition::isTypePath
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_PATH;
-        
+        return getType() == Constants::ASSET_TYPE_PATH;
     }
 
     bool
     AssetDefinition::isTypeAudio
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_AUDIO;
-        
+        return getType() == Constants::ASSET_TYPE_AUDIO;
     }
 
     bool
     AssetDefinition::isTypeModel
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_MODEL;
-        
+        return getType() == Constants::ASSET_TYPE_MODEL;
     }
 
     bool
     AssetDefinition::isTypeScript
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_SCRIPT;
-        
+        return getType() == Constants::ASSET_TYPE_SCRIPT;
     }
 
     bool
     AssetDefinition::isTypeShader
     ()
     {
-        
-            
-            return getType() == Constants::ASSET_TYPE_SHADER;
-        
+        return getType() == Constants::ASSET_TYPE_SHADER;
     }
 
     string
     AssetDefinition::getGroup
     ()
     {
-        
-            
-            if (mJson.find(Constants::ASSET_ATTR_GROUP) == mJson.end())
-            {
-                mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
-            }
-            return mJson[Constants::ASSET_ATTR_GROUP];
-        
+        if (mJson.find(Constants::ASSET_ATTR_GROUP) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
+        }
+        return mJson[Constants::ASSET_ATTR_GROUP];
     }
 
     void
     AssetDefinition::setGroup
     (string group)
     {
-        
-            
-            mJson[Constants::ASSET_ATTR_GROUP] = group;
-        
+        mJson[Constants::ASSET_ATTR_GROUP] = group;
     }
 
 
@@ -238,46 +178,40 @@ namespace octronic::dream
     AssetDefinition::getProject
     ()
     {
-        
-            
-            return mProjectDefinition;
-        
+        return mProjectDefinition;
     }
 
     AssetDefinition*
     AssetDefinition::duplicate
     ()
     {
-        
-            
-            auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
-            newAD->mJson = mJson;
-            newAD->setUuid(Uuid::generateUuid());
-            string name = newAD->getName();
-            regex numRegex("(\\d+)$");
-            cmatch match;
-            string resultStr;
-            auto num = -1;
+        auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
+        newAD->mJson = mJson;
+        newAD->setUuid(Uuid::generateUuid());
+        string name = newAD->getName();
+        regex numRegex("(\\d+)$");
+        cmatch match;
+        string resultStr;
+        auto num = -1;
 
-            if (regex_search(name.c_str(),match,numRegex))
-            {
-                resultStr = match[0].str();
-                num = atoi(resultStr.c_str());
-            }
+        if (regex_search(name.c_str(),match,numRegex))
+        {
+            resultStr = match[0].str();
+            num = atoi(resultStr.c_str());
+        }
 
-            if (num > -1)
-            {
-                num++;
-                name = name.substr(0,name.length()-resultStr.length());
-                name.append(std::to_string(num));
-                newAD->setName(name);
-            }
-            else
-            {
-                newAD->setName(getName()+".1");
-            }
+        if (num > -1)
+        {
+            num++;
+            name = name.substr(0,name.length()-resultStr.length());
+            name.append(std::to_string(num));
+            newAD->setName(name);
+        }
+        else
+        {
+            newAD->setName(getName()+".1");
+        }
 
-            return newAD;
-        
+        return newAD;
     }
 }

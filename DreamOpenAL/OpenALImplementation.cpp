@@ -108,11 +108,11 @@ namespace octronic::dream::open_al
 
     void
     OpenALImplementation::setSourcePosision
-    (const Vector3& pos)
+    (const vec3& pos)
     {
         LOG_DEBUG(  "OpenALImplementation: SetSource Position {} {},{},{}" ,
-                    mALSource, pos.x(),pos.y(),pos.z());
-        alSource3f(mALSource, AL_POSITION, pos.x(), pos.y(), pos.z());
+                    mALSource, pos.x,pos.y,pos.z);
+        alSource3f(mALSource, AL_POSITION, pos.x, pos.y, pos.z);
     }
 
     void

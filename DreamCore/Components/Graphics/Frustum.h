@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/Math.h"
+
 #include "Entity/BoundingBox.h"
 
 #include <glm/matrix.hpp>
@@ -34,10 +34,10 @@ namespace octronic::dream
         ~Frustum();
         void updatePlanes();
         Frustum::TestResult testIntersection(const mat4& modelMatrix, const BoundingBox& box) const;
-        Frustum::TestResult testIntersectionWithPlane(Plane plane, const Vector3& modelPos, const BoundingBox& box) const;
+        Frustum::TestResult testIntersectionWithPlane(Plane plane, const vec3& modelPos, const BoundingBox& box) const;
 
     protected:
-        Vector4 mPlanes[6];
+        vec4 mPlanes[6];
         Camera* mCamera;
     };
 }

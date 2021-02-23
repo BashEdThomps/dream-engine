@@ -12,7 +12,8 @@ namespace octronic::dream
 {
     SharedAssetRuntime::SharedAssetRuntime
     (ProjectRuntime* prt, AssetDefinition* def)
-        : AssetRuntime(prt, def)
+        : AssetRuntime(prt, def),
+          mReloadFlag(false)
     {
     }
 
@@ -46,17 +47,15 @@ namespace octronic::dream
 
     void SharedAssetRuntime::removeInstance(EntityRuntime* er)
     {
-        auto itr = std::find(mInstances.begin(), mInstances.end(), er);
-        if (itr != mInstances.end())
-        {
-            mInstances.erase(itr);
-        }
+        removeInstanceByUuid(er->getUuid());
     }
 
-    void SharedAssetRuntime::removeInstanceByUuid(UuidType spriteUuid)
+    void SharedAssetRuntime::removeInstanceByUuid(UuidType uuid)
     {
         auto itr = std::find_if(mInstances.begin(), mInstances.end(),
-                    [&](EntityRuntime* runtime) { return runtime->getUuid() == spriteUuid; });
+                    [&](EntityRuntime* runtime) {
+                return runtime->getUuid() == uuid;
+        });
 
         if (itr != mInstances.end())
         {
@@ -67,5 +66,15 @@ namespace octronic::dream
     vector<EntityRuntime*>* SharedAssetRuntime::getInstanceVector()
     {
         return &mInstances;
+    }
+
+    bool SharedAssetRuntime::getReloadFlag() const
+    {
+        return mReloadFlag;
+    }
+
+    void SharedAssetRuntime::setReloadFlag(bool reloadFlag)
+    {
+        mReloadFlag = reloadFlag;
     }
 }

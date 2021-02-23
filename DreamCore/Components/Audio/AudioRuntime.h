@@ -20,7 +20,7 @@
 #include "AudioLoader.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
-#include "Common/Vector.h"
+#include "Math/Vector.h"
 
 #include <deque>
 
@@ -44,7 +44,7 @@ namespace octronic::dream
         virtual void play() = 0;
         virtual void pause() = 0;
         virtual void stop() = 0;
-        virtual void setSourcePosision(const Vector3& pos) = 0;
+        virtual void setSourcePosision(const vec3& pos) = 0;
         virtual void setVolume(float volume) = 0;
         virtual AudioStatus getState() = 0;
         virtual unsigned int getSampleOffset() const = 0;
@@ -78,7 +78,7 @@ namespace octronic::dream
         void pause();
         void stop();
         void setLooping(bool);
-        void setSourcePosision(Vector3 pos);
+        void setSourcePosision(vec3 pos);
         void setVolume(float volume);
         AudioStatus getState();
         unsigned int getSampleOffset() const;
@@ -86,7 +86,7 @@ namespace octronic::dream
         int getDurationInSamples();
         void setImplementation(const shared_ptr<AudioRuntimeImplementation>& impl);
         bool loadFromDefinition() override;
-        void pushNextTask() override;
+        void pushTasks() override;
 
     protected:
         void generateEventList();

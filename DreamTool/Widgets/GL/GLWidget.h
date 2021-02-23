@@ -33,8 +33,8 @@ namespace octronic::dream::tool
         void setProjectionMatrix(mat4);
         virtual void draw() override;
         void init();
-        void setPosition(vec3);
-        vec3 getPosition();
+        void setTransform(const Transform&);
+        Transform getTransform() const;
     protected:
         void addVertex(GLWidgetVertex lv);
         virtual void setShader();
@@ -42,7 +42,7 @@ namespace octronic::dream::tool
         void initVaoVbo();
 
     protected:
-        mat4 mModelMatrix;
+        Transform mTransform;
         mat4 mViewMatrix;
         mat4 mProjectionMatrix;
         GLuint mVao;
@@ -55,7 +55,5 @@ namespace octronic::dream::tool
         GLint mModelUniform;
         GLint mViewUniform;
         GLint mProjectionUniform;
-
-        // Inherited via DTWidget
     };
 }

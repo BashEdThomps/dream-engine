@@ -41,7 +41,6 @@ namespace octronic::dream
     ModelRuntime::ModelRuntime
     (ProjectRuntime* runtime, AssetDefinition* definition)
         : SharedAssetRuntime(runtime, definition),
-          mModelMatrix(mat4(1.0f)),
           mGlobalInverseTransform(mat4(1.0f))
     {
         LOG_TRACE( "ModelRuntime: Constructing {}", definition->getNameAndUuidString() );
@@ -80,7 +79,6 @@ namespace octronic::dream
         }
 
         mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
-        mDirectory = getAssetDirectoryPath();
         mBoundingBox.setToLimits();
         processNode(scene->mRootNode, scene);
         mLoaded = true;
@@ -92,7 +90,6 @@ namespace octronic::dream
     ModelRuntime::processNode
     (aiNode* node, const aiScene* scene)
     {
-        processAnimationData(node);
         // Process all the node's meshes (if any)
         aiMatrix4x4 rootTx = node->mTransformation;
         for(GLuint i = 0; i < node->mNumMeshes; i++)
@@ -110,7 +107,6 @@ namespace octronic::dream
         {
             processNode(node->mChildren[i], scene);
         }
-
     }
 
     vector<Vertex>
@@ -182,8 +178,6 @@ namespace octronic::dream
             vertices.push_back(vertex);
         }
         return vertices;
-
-
     }
 
     vector<GLuint>
@@ -204,29 +198,10 @@ namespace octronic::dream
 
     }
 
-    void
-    ModelRuntime::processBoneData
-    (aiMesh* mesh)
-    {
-        for (unsigned int i = 0; i < mesh->mNumBones; i++)
-        {
-            aiBone* nextBone = mesh->mBones[i];
-            string name(mesh->mBones[i]->mName.data);
-            mBones.insert(pair<string,Bone>(name,Bone()));
-        }
-    }
-
-    void
-    ModelRuntime::processAnimationData
-    (aiNode* node)
-    {
-    }
-
     shared_ptr<ModelMesh>
     ModelRuntime::processMesh
     (aiMesh* mesh, const aiScene* scene)
     {
-        processBoneData(mesh);
         vector<Vertex>  vertices = processVertexData(mesh);
         vector<GLuint>  indices = processIndexData(mesh);
 
@@ -255,7 +230,9 @@ namespace octronic::dream
             updateBoundingBox(mesh,bb);
             mBoundingBox.integrate(bb);
 
-            auto aMesh = make_shared<ModelMesh>(this, string(mesh->mName.C_Str()), vertices, indices, material, bb);
+            auto aMesh = make_shared<ModelMesh>(
+            	this, string(mesh->mName.C_Str()), vertices, indices,
+            	material, bb);
             material->addMesh(aMesh.get());
             material->debug();
             return aMesh;
@@ -298,6 +275,12 @@ namespace octronic::dream
         StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
         File* modelFile = fm->openFile(path);
 
+        if (!modelFile->exists())
+        {
+            LOG_ERROR("ModelRuntime: Model file does not exist");
+            return nullptr;
+        }
+
         if (!modelFile->readBinary())
         {
             LOG_ERROR("ModelRuntime: Error reading model file");
@@ -307,10 +290,8 @@ namespace octronic::dream
 
         auto importer = make_shared<Importer>();
         importer->ReadFileFromMemory(
-                    modelFile->getBinaryData(),
-                    modelFile->getBinaryDataSize(),
-                    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace
-                    );
+                    modelFile->getBinaryData(), modelFile->getBinaryDataSize(),
+                    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
         fm->closeFile(modelFile);
         modelFile = nullptr;
@@ -336,57 +317,43 @@ namespace octronic::dream
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (bb.getMaximum().x() < vertex.x)
+            if (bb.getMaximum().x < vertex.x)
             {
-                bb.getMaximum().setX(vertex.x);
+                bb.getMaximum().x = vertex.x;
             }
 
-            if (bb.getMaximum().y() > vertex.y)
+            if (bb.getMaximum().y > vertex.y)
             {
-                bb.getMaximum().setY(vertex.y);
+                bb.getMaximum().y = vertex.y;
             }
 
-            if (bb.getMaximum().z() < vertex.z)
+            if (bb.getMaximum().z < vertex.z)
             {
-                bb.getMaximum().setZ(vertex.z);
+                bb.getMaximum().z = vertex.z;
             }
 
             // Maximum
-            if (bb.getMinimum().x() > vertex.x)
+            if (bb.getMinimum().x > vertex.x)
             {
-                bb.getMinimum().setX(vertex.x);
+                bb.getMinimum().x = vertex.x;
             }
 
-            if (bb.getMinimum().y() > vertex.y)
+            if (bb.getMinimum().y > vertex.y)
             {
-                bb.getMinimum().setY(vertex.y);
+                bb.getMinimum().y = vertex.y;
             }
 
-            if (bb.getMinimum().z() > vertex.z)
+            if (bb.getMinimum().z > vertex.z)
             {
-                bb.getMinimum().setZ(vertex.z);
+                bb.getMinimum().z = vertex.z;
             }
         }
 
         float maxBound;
-        maxBound = (bb.getMaximum().x() > bb.getMaximum().y() ? bb.getMaximum().x() : bb.getMaximum().y());
-        maxBound = (maxBound > bb.getMaximum().z() ? maxBound : bb.getMaximum().z());
+        maxBound = (bb.getMaximum().x > bb.getMaximum().y ? bb.getMaximum().x : bb.getMaximum().y);
+        maxBound = (maxBound > bb.getMaximum().z ? maxBound : bb.getMaximum().z);
         bb.setMaxDimension(maxBound);
 
-    }
-
-    map<string,Bone>&
-    ModelRuntime::getBones
-    ()
-    {
-        return mBones;
-    }
-
-    map<string,ModelAnimation>&
-    ModelRuntime::getAnimations
-    ()
-    {
-        return mAnimations;
     }
 
     mat4 ModelRuntime::getGlobalInverseTransform() const
@@ -396,9 +363,7 @@ namespace octronic::dream
 
     void ModelRuntime::setGlobalInverseTransform(const mat4& globalInverseTransform)
     {
-
         mGlobalInverseTransform = globalInverseTransform;
-
     }
 
     glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
@@ -412,12 +377,23 @@ namespace octronic::dream
         return to;
     }
 
-    void ModelRuntime::pushNextTask()
+    void ModelRuntime::pushTasks()
     {
         auto projectTaskQueue = mProjectRuntimeHandle->getTaskQueue();
         auto gfxTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
+        auto gfxDestructionTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getDestructionTaskQueue();
 
-		if (!mLoaded && !mLoadError)
+        if (mReloadFlag)
+        {
+            mGlobalInverseTransform = mat4(1.f);
+            mMeshes.clear();
+            mMaterialNames.clear();
+            mLoaded = false;
+            mLoadError = false;
+            mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+            mReloadFlag = false;
+        }
+		else if (!mLoaded && !mLoadError)
         {
             if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
             {
@@ -428,7 +404,7 @@ namespace octronic::dream
         {
             for (auto mesh : mMeshes)
             {
-                mesh->pushNextTask();
+                mesh->pushTasks();
             }
         }
     }

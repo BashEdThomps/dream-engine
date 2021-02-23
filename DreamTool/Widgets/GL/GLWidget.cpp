@@ -13,7 +13,6 @@ namespace octronic::dream::tool
     GLWidget::GLWidget
     (DreamToolContext* project, bool visible)
         : DreamToolWidget (project, visible),
-          mModelMatrix(mat4(1.0f)),
           mViewMatrix(mat4(1.0f)),
           mProjectionMatrix(mat4(1.0f)),
           mVao(0),
@@ -94,14 +93,14 @@ namespace octronic::dream::tool
         GLCheckError();
     }
 
-    void GLWidget::setPosition(vec3 pos)
+    void GLWidget::setTransform(const Transform& tx)
     {
-        mModelMatrix = glm::translate(mat4(1.0f),pos);
+        mTransform = tx;
     }
 
-    vec3 GLWidget::getPosition()
+    Transform GLWidget::getTransform() const
     {
-       return vec3(mModelMatrix[3]);
+       return mTransform;
     }
 
     void
@@ -179,7 +178,7 @@ namespace octronic::dream::tool
             }
             else
             {
-                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mTransform.getMatrix()));
                 GLCheckError();
             }
 

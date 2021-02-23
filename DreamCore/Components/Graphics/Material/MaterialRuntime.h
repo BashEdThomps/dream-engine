@@ -26,7 +26,6 @@ using glm::vec3;
 
 namespace octronic::dream
 {
-    struct Vector3;
     class ModelMesh;
     class ShaderRuntime;
     class MaterialDefinition;
@@ -40,6 +39,7 @@ namespace octronic::dream
         ~MaterialRuntime() override;
 
         void addMesh(ModelMesh* mesh);
+        void removeMesh(ModelMesh* mesh);
         void clearMeshes();
         size_t countMeshes();
 
@@ -48,70 +48,42 @@ namespace octronic::dream
         void debug();
         void logMeshes();
 
-        void drawGeometryPass(Camera*);
         void drawShadowPass(ShaderRuntime* shader);
 
         bool loadFromDefinition() override;
 
-        TextureRuntime* getDiffuseTextureHandle() const;
-        void setDiffuseTextureHandle(TextureRuntime* diffuseTexture);
-
-        TextureRuntime* getSpecularTextureHandle() const;
-        void setSpecularTextureHandle(TextureRuntime* specularTexture);
+        TextureRuntime* getAlbedoTextureHandle() const;
+        void setAlbedoTextureHandle(TextureRuntime* texture);
 
         TextureRuntime* getNormalTextureHandle() const;
-        void setNormalTextureHandle(TextureRuntime* normalTexture);
+        void setNormalTextureHandle(TextureRuntime* texture);
 
-        TextureRuntime* getDisplacementTextureHandle() const;
-        void setDisplacementTextureHandle(TextureRuntime* displacementTexture);
+        TextureRuntime* getMetallicTextureHandle() const;
+        void setMetallicTextureHandle(TextureRuntime* texture);
+
+        TextureRuntime* getRoughnessTextureHandle() const;
+        void setRoughnessTextureHandle(TextureRuntime* texture);
+
+        TextureRuntime* getAoTextureHandle() const;
+        void setAoTextureHandle(TextureRuntime* texture);
 
         ShaderRuntime* getShaderHandle() const;
         void setShaderHandle(ShaderRuntime* shader);
 
-        vec3 getColorDiffuse() const;
-        void setColorDiffuse(vec3 colorDiffuse);
+        void pushTasks() override;
 
-        vec3 getColorAmbient() const;
-        void setColorAmbient(vec3 colorAmbient);
-
-        vec3 getColorSpecular() const;
-        void setColorSpecular(vec3 colorSpecular);
-
-        vec3 getColorEmissive() const;
-        void setColorEmissive(vec3 colorEmissive);
-
-        vec3 getColorReflective() const;
-        void setColorReflective(vec3 colorReflective);
-
-        float getShininessStrength() const;
-        void setShininessStrength(float shininessStrength);
-
-        bool getIgnore() const;
-        void setIgnore(bool ignore);
-
-        void pushNextTask() override;
+        // Used as InstanceVector is Entity*
+        vector<ModelMesh*>& getUsedByVector();
 
     protected:
-        float mOpacity = 0.0f;
-        float mBumpScaling = 0.0f;
-        float mHardness = 0.0f;
-        float mReflectivity = 0.0f;
-        float mShininessStrength = 0.0f;
-        float mRefracti = 0.0f;
-        bool mIgnore = false;
-
-        vec3 mColorDiffuse;
-        vec3 mColorAmbient;
-        vec3 mColorSpecular;
-        vec3 mColorEmissive;
-        vec3 mColorReflective;
-
-        TextureRuntime* mDiffuseTextureHandle;
-        TextureRuntime* mSpecularTextureHandle;
+        TextureRuntime* mAlbedoTextureHandle;
         TextureRuntime* mNormalTextureHandle;
-        TextureRuntime* mDisplacementTextureHandle;
+        TextureRuntime* mMetallicTextureHandle;
+        TextureRuntime* mRoughnessTextureHandle;
+        TextureRuntime* mAoTextureHandle;
         ShaderRuntime*  mShaderHandle;
 
+        // Used as InstanceVector is Entity*
         vector<ModelMesh*> mUsedBy;
     };
 }

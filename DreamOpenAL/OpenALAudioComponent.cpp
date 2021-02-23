@@ -60,16 +60,16 @@ namespace octronic::dream::open_al
         mDevice = alcOpenDevice(nullptr);
         mContext  = alcCreateContext(mDevice, nullptr);
         alcMakeContextCurrent(mContext);
-        Vector3 position(0.0f);
+        vec3 position(0.0f);
         setListenerPosition(position);
         return true;
     }
 
     void
     OpenALAudioComponent::setListenerPosition
-    (const Vector3& pos)
+    (const vec3& pos)
     {
-        alListener3f(AL_POSITION, pos.x(), pos.y(), pos.z());
+        alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
     }
 
     void

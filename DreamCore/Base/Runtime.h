@@ -16,7 +16,7 @@
 #include <memory>
 
 #include "Definition.h"
-#include "RuntimeLoadFromDefinitionTask.h"
+#include "RuntimeTasks.h"
 
 using std::string;
 using std::shared_ptr;
@@ -79,9 +79,9 @@ namespace octronic::dream
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        Definition* getDefinitionHandle();
+        Definition* getDefinitionHandle() const;
 
-        shared_ptr<RuntimeLoadFromDefinitionTask> getLoadFromDefinitionTask();
+        shared_ptr<RuntimeLoadFromDefinitionTask> getLoadFromDefinitionTask() const;
 
     protected:
         /**

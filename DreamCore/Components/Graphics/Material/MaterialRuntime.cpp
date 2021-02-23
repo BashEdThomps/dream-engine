@@ -27,15 +27,11 @@ namespace octronic::dream
 {
     MaterialRuntime::MaterialRuntime(ProjectRuntime* rt, MaterialDefinition* def)
         : SharedAssetRuntime(rt, def),
-          mColorDiffuse(vec3(0.0f)),
-          mColorAmbient(vec3(0.0f)),
-          mColorSpecular(vec3(0.0f)),
-          mColorEmissive(vec3(0.0f)),
-          mColorReflective(vec3(0.0f)),
-          mDiffuseTextureHandle(nullptr),
-          mSpecularTextureHandle(nullptr),
+          mAlbedoTextureHandle(nullptr),
           mNormalTextureHandle(nullptr),
-          mDisplacementTextureHandle(nullptr),
+          mMetallicTextureHandle(nullptr),
+          mRoughnessTextureHandle(nullptr),
+          mAoTextureHandle(nullptr),
           mShaderHandle(nullptr)
     {
         LOG_TRACE("MaterialRuntime: Constructing");
@@ -51,6 +47,17 @@ namespace octronic::dream
     (ModelMesh* mesh)
     {
         mUsedBy.push_back(mesh);
+    }
+
+    void
+    MaterialRuntime::removeMesh
+    (ModelMesh *mesh)
+    {
+       auto itr = std::find(mUsedBy.begin(), mUsedBy.end(), mesh);
+       if (itr != mUsedBy.end())
+       {
+           mUsedBy.erase(itr);
+       }
     }
 
     void
@@ -78,57 +85,24 @@ namespace octronic::dream
     MaterialRuntime::debug
     ()
     {
-        GLuint diff, spec, norm, disp;
-        diff = (mDiffuseTextureHandle  == nullptr ? 0 : mDiffuseTextureHandle->getGLID());
-        spec = (mSpecularTextureHandle == nullptr ? 0 : mSpecularTextureHandle->getGLID());
-        norm = (mNormalTextureHandle   == nullptr ? 0 : mNormalTextureHandle->getGLID());
-        disp = (mDisplacementTextureHandle == nullptr ? 0 : mDisplacementTextureHandle->getGLID());
+        GLuint albedo, normal, metallic, roughness, ao;
+        albedo    = (mAlbedoTextureHandle    == nullptr ? 0 : mAlbedoTextureHandle->getTextureID());
+        normal    = (mNormalTextureHandle    == nullptr ? 0 : mNormalTextureHandle->getTextureID());
+        metallic  = (mMetallicTextureHandle  == nullptr ? 0 : mMetallicTextureHandle->getTextureID());
+        roughness = (mRoughnessTextureHandle == nullptr ? 0 : mRoughnessTextureHandle->getTextureID());
+        ao        = (mAoTextureHandle        == nullptr ? 0 : mAoTextureHandle->getTextureID());
 
-        LOG_TRACE(
-                    "Maerial Parameters\n"
+        LOG_TRACE("Maerial Parameters\n"
             "Name....................{}\n"
-            "Opacity.................{}\n"
-            "BumpScaling.............{}\n"
-            "Hardness................{}\n"
-            "Reflectivity............{}\n"
-            "ShininessStrength.......{}\n"
-            "RefractI................{}\n"
-            "Ignore..................{}\n"
-
-            "DiffuseColour...........({},{},{})\n"
-            "AmbientColour...........({},{},{})\n"
-            "SpecularColour..........({},{},{})\n"
-            "EmissiveColour..........({},{},{})\n"
-            "ReflectiveColour........({},{},{})\n"
-
-            "DiffuseTexture..........{}\n"
-            "SpecularTexture.........{}\n"
+            "AlbedoTexture...........{}\n"
             "NormalTexture...........{}\n"
-            "DisplacementTexture.....{}\n"
+            "MetallicTexture.........{}\n"
+            "RoughnessTexture........{}\n"
+            "AoTexture...............{}\n"
             "Meshes..................{}",
-                    getName(),
-                    mOpacity,
-                    mBumpScaling,
-                    mHardness,
-                    mReflectivity,
-                    mShininessStrength,
-                    mRefracti,
-                    mIgnore,
-
-                    mColorDiffuse.r, mColorDiffuse.g, mColorDiffuse.b,
-                    mColorAmbient.r, mColorAmbient.g, mColorAmbient.b,
-                    mColorSpecular.r, mColorSpecular.g, mColorSpecular.b,
-                    mColorEmissive.r, mColorEmissive.g, mColorEmissive.b,
-                    mColorReflective.r, mColorReflective.g, mColorReflective.b,
-
-                    diff,
-                    spec,
-                    norm,
-                    disp,
-
-                    mUsedBy.size()
-                    );
-
+            getName(), albedo, normal,
+            metallic, roughness, ao,
+            mUsedBy.size());
     }
 
     void
@@ -143,14 +117,9 @@ namespace octronic::dream
         }
     }
 
-    void
-    MaterialRuntime::drawGeometryPass
-    (Camera* camera)
+    vector<ModelMesh*>& MaterialRuntime::getUsedByVector()
     {
-        for (auto mesh : mUsedBy)
-        {
-            mesh->drawGeometryPassRuntimes(camera, mShaderHandle);
-        }
+        return mUsedBy;
     }
 
     void
@@ -169,47 +138,24 @@ namespace octronic::dream
     {
         auto matDef = static_cast<MaterialDefinition*>(mDefinitionHandle);
 
-        // Parameters
-        mOpacity = matDef->getOpacity();
-        mBumpScaling = matDef->getBumpScaling();
-        mHardness = matDef->getHardness();
-        mReflectivity = matDef->getReflectivity();
-        mShininessStrength = matDef->getShininessStrength();
-        mRefracti = matDef->getRefractionIndex();
-        mIgnore = matDef->getIgnore();
-
-        // Colours
-        mColorDiffuse = matDef->getDiffuseColour().toGLM();
-        mColorSpecular = matDef->getSpecularColour().toGLM();
-        mColorAmbient = matDef->getAmbientColour().toGLM();
-        mColorEmissive = matDef->getEmissiveColour().toGLM();
-        mColorReflective = matDef->getReflectiveColour().toGLM();
-
         // Shaders & Textures
         auto shaderCache = mProjectRuntimeHandle->getShaderCache();
         auto textureCache = mProjectRuntimeHandle->getTextureCache();
-        ShaderRuntime* shader = shaderCache->getRuntimeHandle(matDef->getShader());
+        mShaderHandle = shaderCache->getRuntimeHandle(matDef->getShader());
 
-        if (shader == nullptr)
+        if (mShaderHandle == nullptr)
         {
             LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
             return false;
         }
 
-        auto diffuse = textureCache->getRuntimeHandle(matDef->getDiffuseTexture());
-        auto specular = textureCache->getRuntimeHandle(matDef->getSpecularTexture());
-        auto normal = textureCache->getRuntimeHandle(matDef->getNormalTexture());
-        auto displacement = textureCache->getRuntimeHandle(matDef->getDisplacementTexture());
-
-        setDiffuseTextureHandle(diffuse);
-        setSpecularTextureHandle(specular);
-        setNormalTextureHandle(normal);
-        setDisplacementTextureHandle(displacement);
-        setShaderHandle(shader);
-        shader->addMaterial(this);
-
+        mAlbedoTextureHandle = textureCache->getRuntimeHandle(matDef->getAlbedoTexture());
+        mNormalTextureHandle = textureCache->getRuntimeHandle(matDef->getNormalTexture());
+        mMetallicTextureHandle = textureCache->getRuntimeHandle(matDef->getMetallicTexture());
+        mRoughnessTextureHandle = textureCache->getRuntimeHandle(matDef->getRoughnessTexture());
+        mAoTextureHandle = textureCache->getRuntimeHandle(matDef->getAoTexture());
+        mShaderHandle->addMaterial(this);
         return true;
-
     }
 
     ShaderRuntime*
@@ -226,88 +172,18 @@ namespace octronic::dream
         mShaderHandle = shader;
     }
 
-    vec3 MaterialRuntime::getColorDiffuse() const
-    {
-        return mColorDiffuse;
-    }
-
-    void MaterialRuntime::setColorDiffuse(vec3 colorDiffuse)
-    {
-        mColorDiffuse = colorDiffuse;
-    }
-
-    vec3 MaterialRuntime::getColorAmbient() const
-    {
-        return mColorAmbient;
-    }
-
-    void MaterialRuntime::setColorAmbient(vec3 colorAmbient)
-    {
-        mColorAmbient = colorAmbient;
-    }
-
-    vec3 MaterialRuntime::getColorSpecular() const
-    {
-        return mColorSpecular;
-    }
-
-    void MaterialRuntime::setColorSpecular(vec3 colorSpecular)
-    {
-        mColorSpecular = colorSpecular;
-    }
-
-    vec3 MaterialRuntime::getColorEmissive() const
-    {
-        return mColorEmissive;
-    }
-
-    void MaterialRuntime::setColorEmissive(vec3 colorEmissive)
-    {
-        mColorEmissive = colorEmissive;
-    }
-
-    vec3 MaterialRuntime::getColorReflective() const
-    {
-        return mColorReflective;
-    }
-
-    void MaterialRuntime::setColorReflective(vec3 colorReflective)
-    {
-        mColorReflective = colorReflective;
-    }
-
-    float MaterialRuntime::getShininessStrength() const
-    {
-        return mShininessStrength;
-    }
-
-    void MaterialRuntime::setShininessStrength(float shininessStrength)
-    {
-        mShininessStrength = shininessStrength;
-    }
-
-    bool MaterialRuntime::getIgnore() const
-    {
-        return mIgnore;
-    }
-
-    void MaterialRuntime::setIgnore(bool ignore)
-    {
-        mIgnore = ignore;
-    }
-
     TextureRuntime*
-    MaterialRuntime::getDisplacementTextureHandle
+    MaterialRuntime::getAlbedoTextureHandle
     () const
     {
-        return mDisplacementTextureHandle;
+        return mAlbedoTextureHandle;
     }
 
     void
-    MaterialRuntime::setDisplacementTextureHandle
-    (TextureRuntime* displacementTexture)
+    MaterialRuntime::setAlbedoTextureHandle
+    (TextureRuntime* t)
     {
-        mDisplacementTextureHandle = displacementTexture;
+        mAlbedoTextureHandle = t;
     }
 
     TextureRuntime*
@@ -325,35 +201,48 @@ namespace octronic::dream
     }
 
     TextureRuntime*
-    MaterialRuntime::getSpecularTextureHandle
+    MaterialRuntime::getMetallicTextureHandle
     () const
     {
-        return mSpecularTextureHandle;
+        return mMetallicTextureHandle;
     }
 
     void
-    MaterialRuntime::setSpecularTextureHandle
-    (TextureRuntime* specularTexture)
+    MaterialRuntime::setMetallicTextureHandle
+    (TextureRuntime* t)
     {
-        mSpecularTextureHandle = specularTexture;
+        mMetallicTextureHandle = t;
     }
 
     TextureRuntime*
-    MaterialRuntime::getDiffuseTextureHandle
+    MaterialRuntime::getRoughnessTextureHandle
     () const
     {
-        return mDiffuseTextureHandle;
+        return mRoughnessTextureHandle;
     }
 
     void
-    MaterialRuntime::setDiffuseTextureHandle
-    (TextureRuntime* diffuseTexture)
+    MaterialRuntime::setRoughnessTextureHandle
+    (TextureRuntime* t)
     {
-        mDiffuseTextureHandle = diffuseTexture;
+        mRoughnessTextureHandle = t;
     }
 
+    TextureRuntime*
+    MaterialRuntime::getAoTextureHandle
+    () const
+    {
+        return mAoTextureHandle;
+    }
 
-    void MaterialRuntime::pushNextTask()
+    void
+    MaterialRuntime::setAoTextureHandle
+    (TextureRuntime* t)
+    {
+        mAoTextureHandle = t;
+    }
+
+    void MaterialRuntime::pushTasks()
     {
         auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
 

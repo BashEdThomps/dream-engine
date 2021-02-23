@@ -58,13 +58,10 @@ namespace octronic::dream
         vector<string> getMaterialNames();
         vector<shared_ptr<ModelMesh>>* getMeshes();
 
-        map<string, Bone>& getBones();
-        map<string, ModelAnimation>& getAnimations();
-
         mat4 getGlobalInverseTransform() const;
         void setGlobalInverseTransform(const mat4& globalInverseTransform);
 
-        void pushNextTask() override;
+        void pushTasks() override;
 
     private: // Methods
         void updateBoundingBox(aiMesh* mesh, BoundingBox& bb);
@@ -74,18 +71,12 @@ namespace octronic::dream
         shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        void processBoneData(aiMesh* mesh);
-        void processAnimationData(aiNode* mesh);
         mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
 
     private:
-        vector<shared_ptr<ModelMesh>> mMeshes;
-        string mDirectory;
         BoundingBox mBoundingBox;
-        mat4 mModelMatrix;
-        vector<string> mMaterialNames;
-        map<string,Bone> mBones;
-        map<string,ModelAnimation> mAnimations;
         mat4 mGlobalInverseTransform;
+        vector<shared_ptr<ModelMesh>> mMeshes;
+        vector<string> mMaterialNames;
     };
 }

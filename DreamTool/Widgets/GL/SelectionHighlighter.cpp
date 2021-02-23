@@ -33,7 +33,7 @@ namespace octronic::dream::tool
     (EntityRuntime* selected)
     {
         mSelectedEntityRuntime = selected;
-        LOG_ERROR("SelectionHighlighter: SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
+        LOG_INFO("SelectionHighlighter: SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
         updateGeometry();
     }
 
@@ -46,15 +46,15 @@ namespace octronic::dream::tool
     SelectionHighlighter::updateGeometry
     ()
     {
-        LOG_ERROR("SelectionHighlighter: Updating");
+        LOG_TRACE("SelectionHighlighter: Updating");
         if (mSelectedEntityRuntime == nullptr)
         {
             return;
         }
 
         BoundingBox bounds = mSelectedEntityRuntime->getBoundingBox();
-        LOG_ERROR("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.getMinimum().x() ,bounds.getMinimum().y(), bounds.getMinimum().z());
-        LOG_ERROR("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.getMaximum().x() ,bounds.getMaximum().y(), bounds.getMaximum().z());
+        LOG_INFO("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.getMinimum().x ,bounds.getMinimum().y, bounds.getMinimum().z);
+        LOG_INFO("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.getMaximum().x ,bounds.getMaximum().y, bounds.getMaximum().z);
 
         mVertexBuffer.clear();
         // Top Quad
@@ -74,14 +74,14 @@ namespace octronic::dream::tool
         bottomBackL.Color  = mSelectionColour;
         bottomBackR.Color  = mSelectionColour;
 
-        topFrontL.Position    = vec3(bounds.getMinimum().x()-mOffset, bounds.getMaximum().y()+mOffset, bounds.getMaximum().z()+mOffset);
-        topFrontR.Position    = vec3(bounds.getMaximum().x()+mOffset, bounds.getMaximum().y()+mOffset, bounds.getMaximum().z()+mOffset);
-        topBackL.Position     = vec3(bounds.getMinimum().x()-mOffset, bounds.getMaximum().y()+mOffset, bounds.getMinimum().z()-mOffset);
-        topBackR.Position     = vec3(bounds.getMaximum().x()+mOffset, bounds.getMaximum().y()+mOffset, bounds.getMinimum().z()-mOffset);
-        bottomFrontL.Position = vec3(bounds.getMinimum().x()-mOffset, bounds.getMinimum().y()-mOffset, bounds.getMaximum().z()+mOffset);
-        bottomFrontR.Position = vec3(bounds.getMaximum().x()+mOffset, bounds.getMinimum().y()-mOffset, bounds.getMaximum().z()+mOffset);
-        bottomBackL.Position  = vec3(bounds.getMinimum().x()-mOffset, bounds.getMinimum().y()-mOffset, bounds.getMinimum().z()-mOffset);
-        bottomBackR.Position  = vec3(bounds.getMaximum().x()+mOffset, bounds.getMinimum().y()-mOffset, bounds.getMinimum().z()-mOffset);
+        topFrontL.Position    = vec3(bounds.getMinimum().x-mOffset, bounds.getMaximum().y+mOffset, bounds.getMaximum().z+mOffset);
+        topFrontR.Position    = vec3(bounds.getMaximum().x+mOffset, bounds.getMaximum().y+mOffset, bounds.getMaximum().z+mOffset);
+        topBackL.Position     = vec3(bounds.getMinimum().x-mOffset, bounds.getMaximum().y+mOffset, bounds.getMinimum().z-mOffset);
+        topBackR.Position     = vec3(bounds.getMaximum().x+mOffset, bounds.getMaximum().y+mOffset, bounds.getMinimum().z-mOffset);
+        bottomFrontL.Position = vec3(bounds.getMinimum().x-mOffset, bounds.getMinimum().y-mOffset, bounds.getMaximum().z+mOffset);
+        bottomFrontR.Position = vec3(bounds.getMaximum().x+mOffset, bounds.getMinimum().y-mOffset, bounds.getMaximum().z+mOffset);
+        bottomBackL.Position  = vec3(bounds.getMinimum().x-mOffset, bounds.getMinimum().y-mOffset, bounds.getMinimum().z-mOffset);
+        bottomBackR.Position  = vec3(bounds.getMaximum().x+mOffset, bounds.getMinimum().y-mOffset, bounds.getMinimum().z-mOffset);
 
         if (mOutlineOnly)
         {
@@ -271,7 +271,7 @@ namespace octronic::dream::tool
                 GLCheckError();
             }
 
-            mModelMatrix = mSelectedEntityRuntime->getTransform().getMatrix();
+            mat4 modelMatrix = mSelectedEntityRuntime->getTransform().getMatrix();
             // Set the projection matrix
             if (mModelUniform == -1)
             {
@@ -280,7 +280,7 @@ namespace octronic::dream::tool
             }
             else
             {
-                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
+                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(modelMatrix));
                 GLCheckError();
             }
 

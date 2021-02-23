@@ -16,11 +16,11 @@
 #include "Base/Runtime.h"
 #include "Components/Script/ScriptTasks.h"
 #include "Components/Graphics/Frustum.h"
-#include "Components/Transform.h"
+#include "Math/Transform.h"
+#include "TransformSpace.h"
 
 #include <vector>
 #include <memory>
-#include <glm/gtc/matrix_transform.hpp>
 
 using std::vector;
 using std::function;
@@ -45,9 +45,6 @@ namespace octronic::dream
     class FontDefinition;
     class FontRuntime;
 
-    class LightDefinition;
-    class LightRuntime;
-
     class ModelDefinition;
     class ModelRuntime;
 
@@ -60,6 +57,9 @@ namespace octronic::dream
     class ScriptDefinition;
     class ScriptRuntime;
 
+    class TextureDefinition;
+    class TextureRuntime;
+
     class EntityRuntime : public Runtime
     {
     public:
@@ -68,8 +68,8 @@ namespace octronic::dream
 
         void collectGarbage();
 
-        SceneRuntime* getSceneRuntime();
-        EntityDefinition* getEntityDefinition();
+        SceneRuntime* getSceneRuntime() const;
+        EntityDefinition* getEntityDefinition() const;
 
         bool createAssetRuntimes();
         bool createAnimationRuntime(AnimationDefinition*);
@@ -78,54 +78,49 @@ namespace octronic::dream
         bool createModelRuntime(ModelDefinition*);
         bool createScriptRuntime(ScriptDefinition*);
         bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
-        bool createLightRuntime(LightDefinition*);
         bool createFontRuntime(FontDefinition*);
+        bool createTextureRuntime(TextureDefinition*);
 
-        FontRuntime* getFontRuntime();
-        AnimationRuntime* getAnimationRuntime();
-        PathRuntime*  getPathRuntime();
-        AudioRuntime* getAudioRuntime();
-        ModelRuntime* getModelRuntime();
-        ScriptRuntime* getScriptRuntime();
-        PhysicsObjectRuntime* getPhysicsObjectRuntime();
-        LightRuntime* getLightRuntime();
-        AssetRuntime* getAssetRuntime(AssetType);
+        FontRuntime* getFontRuntime() const;
+        AnimationRuntime* getAnimationRuntime() const;
+        PathRuntime*  getPathRuntime() const;
+        AudioRuntime* getAudioRuntime() const;
+        ModelRuntime* getModelRuntime() const;
+        ScriptRuntime* getScriptRuntime() const;
+        PhysicsObjectRuntime* getPhysicsObjectRuntime() const;
+        AssetRuntime* getAssetRuntime(AssetType) const;
+        TextureRuntime* getTextureRuntime() const;
 
-        bool hasAnimationRuntime();
-        bool hasPathRuntime();
-        bool hasAudioRuntime();
-        bool hasModelRuntime();
-        bool hasScriptRuntime();
-        bool hasPhysicsObjectRuntime();
-        bool hasLightRuntime();
-        bool hasFontRuntime();
+        bool hasAnimationRuntime() const;
+        bool hasPathRuntime() const;
+        bool hasAudioRuntime() const;
+        bool hasModelRuntime() const;
+        bool hasScriptRuntime() const;
+        bool hasPhysicsObjectRuntime() const;
+        bool hasFontRuntime() const;
+        bool hasTextureRuntime() const;
 
         Transform getTransform() const;
-        Transform getInitialTransform();
+        Transform getInitialTransform() const;
         void setTransform(const Transform& transform);
-        void translateWithChildren(const Vector3& translation);
-        void preTranslateWithChildren(const Vector3& translation);
-        void transformOffsetInitial(const mat4& matrix);
-        void translateOffsetInitial(const Vector3& tx);
-
-        bool getHasCameraFocus() const;
-        void setHasCameraFocus(bool);
+        void translateWithChildren(const vec3& translation);
+        void translateOffsetInitial(const vec3& tx);
 
         bool isPlayerObject() const;
-        bool hasEvents();
+        bool hasEvents() const;
         void addEvent(const Event& event);
         vector<Event>* getEventQueue();
         void clearEventQueue();
 
         EntityRuntime* getChildRuntimeByUuid(UuidType uuid);
         EntityRuntime* addChildFromTemplateUuid(UuidType uuid);
-        int countAllChildren();
-        size_t countChildren();
+        int countAllChildren() const;
+        size_t countChildren() const;
         void addChildRuntime(EntityRuntime*);
         void removeChildRuntime(EntityRuntime*);
         EntityRuntime* createAndAddChildRuntime(EntityDefinition*);
         vector<EntityRuntime*> getChildRuntimes();
-        bool isChildOf(EntityRuntime*);
+        bool isChildOf(EntityRuntime*) const;
 
         void setScriptInitialised(bool i);
         bool getScriptInitialised() const;
@@ -133,9 +128,9 @@ namespace octronic::dream
         void setScriptError(bool i);
         bool getScriptError() const;
 
-        bool isParentOf(EntityRuntime* child);
+        bool isParentOf(EntityRuntime* child) const;
         void setParentRuntime(EntityRuntime* parent);
-        EntityRuntime* getParentRuntime();
+        EntityRuntime* getParentRuntime() const;
 
         bool loadFromDefinition() override;
 
@@ -149,45 +144,44 @@ namespace octronic::dream
         void removeAudioRuntime();
         void removePathRuntime();
         void removeModelRuntime();
-        void removeLightRuntime();
         void removeScriptRuntime();
         void removePhysicsObjectRuntime();
         void removeFontRuntime();
+        void removeTextureRuntime();
 
         bool replaceAssetUuid(AssetType type, UuidType uuid);
         AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
         void setAssetDefinitionsMap(const map<AssetType, UuidType> &loadQueue);
-        map<AssetType, UuidType> getAssetDefinitionsMap();
+        map<AssetType, UuidType> getAssetDefinitionsMap() const;
+
         bool getAlwaysDraw() const;
         void setAlwaysDraw(bool alwaysDraw);
 
-        BoundingBox& getBoundingBox();
+        BoundingBox getBoundingBox() const;
         void setBoundingBox(const BoundingBox& boundingBox);
 
-        float distanceFrom(EntityRuntime* other);
-        float distanceFrom(const Vector3& other);
-        bool visibleInFrustum();
-        bool containedInFrustum();
-        bool containedInFrustumAfterTransform(const mat4& tx);
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const Vector3& tx);
+        float distanceFrom(const EntityRuntime* other) const;
+        float distanceFrom(const vec3& other) const;
+        bool visibleInFrustum() const;
+        bool containedInFrustum() const;
+        bool containedInFrustumAfterTransform(const mat4& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx) const;
 
         bool applyToAll(const function<bool(EntityRuntime*)>& fn);
         EntityRuntime* applyToAll(const function<EntityRuntime*(EntityRuntime*)>& fn);
-        void translateOffsetInitialWithChildren(const Vector3& translation);
+        void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
-
 
         long getObjectLifetime() const;
         void setObjectLifetime(long l);
-
         void updateLifetime();
 
         bool loadChildrenFromDefinition(EntityDefinition* definition);
 
-        shared_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask();
-        shared_ptr<EntityScriptOnInitTask> getScriptOnInitTask();
-        shared_ptr<EntityScriptOnEventTask> getScriptOnEventTask();
-        shared_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask();
+        shared_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask() const;
+        shared_ptr<EntityScriptOnInitTask> getScriptOnInitTask() const;
+        shared_ptr<EntityScriptOnEventTask> getScriptOnEventTask() const;
+        shared_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask() const;
 
         string getAttribute(const string& key) const;
         void setAttribute(const string& key, const string& value);
@@ -196,21 +190,23 @@ namespace octronic::dream
         string getFontText() const;
         void setFontText(const string& fontText);
 
-        Vector3 getFontColor() const;
-        void setFontColor(const Vector3& fontColor);
+        vec4 getFontColor() const;
+        void setFontColor(const vec4& fontColor);
 
         float getFontScale() const;
         void setFontScale(float fontScale);
 
         void pushTasks();
-        bool allRuntimesLoaded();
+        bool allRuntimesLoaded() const;
+
+        TransformSpace getTransformSpace() const;
+        void setTransformSpace(TransformSpace);
 
     protected:
         ProjectRuntime* mProjectRuntimeHandle;
         // Discrete Assets
         AnimationRuntime* mAnimationRuntime;
         AudioRuntime* mAudioRuntime;
-        LightRuntime* mLightRuntime;
         PathRuntime* mPathRuntime;
         PhysicsObjectRuntime* mPhysicsObjectRuntime;
         // Shared Runtimes
@@ -219,6 +215,7 @@ namespace octronic::dream
         bool mScriptInitialised;
         ModelRuntime* mModelRuntime;
         FontRuntime* mFontRuntime;
+        TextureRuntime* mTextureRuntime;
 
         Transform mInitialTransform;
         Transform mTransform;
@@ -228,7 +225,6 @@ namespace octronic::dream
         SceneRuntime* mSceneRuntime;
         EntityRuntime* mParentRuntime;
         BoundingBox mBoundingBox;
-        bool mHasCameraFocus;
         bool mDeleted;
         bool mHidden;
         bool mAlwaysDraw;
@@ -241,7 +237,8 @@ namespace octronic::dream
         shared_ptr<EntityScriptRemoveStateTask> mScriptRemoveStateTask;
         map<string,string> mAttributes;
         string mFontText;
-        Vector3 mFontColor;
+        vec4 mFontColor;
 		float mFontScale;
+        TransformSpace mTransformSpace;
     };
 }

@@ -16,7 +16,7 @@
 #pragma once
 
 #include "PhysicsTasks.h"
-#include "Common/Vector.h"
+#include "Math/Vector.h"
 #include "Components/Component.h"
 
 #include <LinearMath/btVector3.h>
@@ -50,8 +50,8 @@ namespace octronic::dream
     public:
         PhysicsComponent(ProjectRuntime* pr);
         ~PhysicsComponent() override;
-        void setGravity(const Vector3&);
-        Vector3 getGravity();
+        void setGravity(const vec3&);
+        vec3 getGravity();
         void setDebug(bool);
         bool getDebug();
         bool init() override;

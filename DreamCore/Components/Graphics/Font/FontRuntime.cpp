@@ -129,9 +129,9 @@ namespace octronic::dream
         float sx = entity->getFontScale();
         float sy = sx;
         Transform tx = entity->getTransform();
-        Vector3 translation = tx.getTranslation();
-        float x = translation.x();
-        float y = translation.y();
+        vec3 translation = tx.getTranslation();
+        float x = translation.x;
+        float y = translation.y;
         string text = entity->getFontText();
 
         glActiveTexture(GL_TEXTURE0);
@@ -398,7 +398,7 @@ namespace octronic::dream
         return true;
     }
 
-    void FontRuntime::pushNextTask()
+    void FontRuntime::pushTasks()
     {
         auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
         auto graphicsTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();

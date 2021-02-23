@@ -43,10 +43,16 @@ namespace octronic::dream::tool
             ImGui::Checkbox("Snap to Grid",&snapToGrid);
             ImGui::PushItemWidth(-1);
             float speed = 1.0f/mContext->getGrid()->getMinorSpacing();
-            vec3 cursorPosVec = mContext->getCursor()->getPosition();
-            if(ImGui::DragFloat3("##",glm::value_ptr(cursorPosVec),speed,speed,speed))
+            Transform cursorPosTx = mContext->getCursor()->getTransform();
+            float cursorPos[3] = {
+                cursorPosTx.getTranslation().x,
+				cursorPosTx.getTranslation().y,
+				cursorPosTx.getTranslation().z
+            };
+            if(ImGui::DragFloat3("##",cursorPos,speed,speed,speed))
             {
-                mContext->getCursor()->setPosition(cursorPosVec,snapToGrid);
+                cursorPosTx.setTranslation(vec3(cursorPos[0],cursorPos[1],cursorPos[2]));
+                mContext->getCursor()->setTransform(cursorPosTx);//,snapToGrid);
             }
             ImGui::PopItemWidth();
 
@@ -66,17 +72,26 @@ namespace octronic::dream::tool
             }
 
             ImGui::Separator();
-            auto gridTx = mContext->getGrid()->getTranslation();
-            float pos[3] = {
+
+            auto gridTx = mContext->getGrid()->getTransform().getTranslation();
+
+            float pos[3] =
+            {
                 gridTx.x,
                 gridTx.y,
                 gridTx.z
             };
+
             if(ImGui::DragFloat3("Position",pos,mContext->getGrid()->getMinorSpacing()))
             {
-                mContext->getGrid()->setTranslation(vec3(pos[0],pos[1],pos[2]));
+
+                auto transform = mContext->getGrid()->getTransform();
+                transform.setTranslation(vec3(pos[0],pos[1],pos[2]));
+                mContext->getGrid()->setTransform(transform);
             }
+
             ImGui::Separator();
+
             float size = mContext->getGrid()->getSize();
             if(ImGui::DragFloat("Size",&size,2.0f))
             {

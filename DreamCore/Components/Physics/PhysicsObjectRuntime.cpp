@@ -116,16 +116,16 @@ namespace octronic::dream
 
         mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
 
-        Vector3 lf, lv, af, av;
+        vec3 lf, lv, af, av;
         lf = pod->getLinearFactor();
         lv = pod->getLinearVelocity();
         af = pod->getAngularFactor();
         av = pod->getAngularVelocity();
 
-        setLinearFactor(lf.x(),lf.y(),lf.z());
-        setLinearVelocity(lv.x(),lv.y(),lv.z());
-        setAngularFactor(af.x(),af.y(),af.z());
-        setAngularVelocity(av.x(),av.y(),av.z());
+        setLinearFactor(lf);
+        setLinearVelocity(lv);
+        setAngularFactor(af);
+        setAngularVelocity(av);
 
         if (pod->getControllableCharacter())
         {
@@ -186,19 +186,15 @@ namespace octronic::dream
         }
         else if (format == Constants::COLLISION_SHAPE_BOX)
         {
-            btScalar boxX, boxY, boxZ;
-            boxX = pod->getHalfExtentsX();
-            boxY = pod->getHalfExtentsY();
-            boxZ = pod->getHalfExtentsZ();
-            collisionShape = new btBoxShape(btVector3(boxX,boxY,boxZ));
+            btVector3 box;
+            box = Vector3::toBullet(pod->getHalfExtents());
+            collisionShape = new btBoxShape(box);
         }
         else if (format == Constants::COLLISION_SHAPE_CYLINDER)
         {
-            btScalar boxX, boxY, boxZ;
-            boxX = pod->getHalfExtentsX();
-            boxY = pod->getHalfExtentsY();
-            boxZ = pod->getHalfExtentsZ();
-            collisionShape = new btCylinderShape(btVector3(boxX,boxY,boxZ));
+            btVector3 box;
+            box = Vector3::toBullet(pod->getHalfExtents());
+            collisionShape = new btCylinderShape(box);
         }
         else if (format == Constants::COLLISION_SHAPE_CAPSULE)
         {
@@ -251,12 +247,9 @@ namespace octronic::dream
         }
         else if (format == Constants::COLLISION_SHAPE_STATIC_PLANE)
         {
-            float x = pod->getNormalX();
-            float y = pod->getNormalY();
-            float z = pod->getNormalZ();
+            btVector3 planeNormal = Vector3::toBullet(pod->getNormal());
             float constant = pod->getConstant();
 
-            btVector3 planeNormal(x,y,z);
             auto planeConstant = btScalar(constant);
 
             collisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
@@ -352,37 +345,37 @@ namespace octronic::dream
         return mRigidBody;
     }
 
-    Vector3
+    vec3
     PhysicsObjectRuntime::getCenterOfMassPosition
     ()
     {
-        return Vector3(mRigidBody->getCenterOfMassPosition());
+        return Vector3::fromBullet(mRigidBody->getCenterOfMassPosition());
     }
 
     void
-    PhysicsObjectRuntime::applyCentralImpulse(const Vector3& force)
+    PhysicsObjectRuntime::applyCentralImpulse(const vec3& force)
     {
-        mRigidBody->applyCentralImpulse(force.toBullet());
+        mRigidBody->applyCentralImpulse(Vector3::toBullet(force));
     }
 
     void
-    PhysicsObjectRuntime::applyTorqueImpulse(const Vector3& torque)
+    PhysicsObjectRuntime::applyTorqueImpulse(const vec3& torque)
     {
-        mRigidBody->applyTorqueImpulse(torque.toBullet());
+        mRigidBody->applyTorqueImpulse(Vector3::toBullet(torque));
     }
 
     void
     PhysicsObjectRuntime::applyForce
-    (const Vector3& force)
+    (const vec3& force)
     {
-        mRigidBody->applyForce(force.toBullet(),btVector3(0.0f,0.0f,0.0f));
+        mRigidBody->applyForce(Vector3::toBullet(force),btVector3(0.0f,0.0f,0.0f));
     }
 
     void
     PhysicsObjectRuntime::applyTorque
-    (const Vector3& torque)
+    (const vec3& torque)
     {
-        mRigidBody->applyTorque(torque.toBullet());
+        mRigidBody->applyTorque(Vector3::toBullet(torque));
     }
 
     void
@@ -421,11 +414,11 @@ namespace octronic::dream
 
     void
     PhysicsObjectRuntime::setCenterOfMassTransform3fv
-    (const Vector3& tx)
+    (const vec3& tx)
     {
-        LOG_DEBUG("PhysicsObjectRuntime: Setting Center of mass {},{},{}", tx.x(), tx.y(), tx.z());
+        LOG_DEBUG("PhysicsObjectRuntime: Setting Center of mass {},{},{}", tx.x, tx.y, tx.z);
         auto mtx = mRigidBody->getCenterOfMassTransform();
-        mtx.setOrigin(tx.toBullet());
+        mtx.setOrigin(Vector3::toBullet(tx));
         mRigidBody->setCenterOfMassTransform(mtx);
     }
 
@@ -438,16 +431,16 @@ namespace octronic::dream
 
     void
     PhysicsObjectRuntime::setLinearVelocity
-    (float x, float y, float z)
+    (vec3 lv)
     {
-        mRigidBody->setLinearVelocity(btVector3(x,y,z));
+        mRigidBody->setLinearVelocity(Vector3::toBullet(lv));
     }
 
-    Vector3
+    vec3
     PhysicsObjectRuntime::getLinearVelocity
     ()
     {
-        return Vector3(mRigidBody->getLinearVelocity());
+        return Vector3::fromBullet(mRigidBody->getLinearVelocity());
     }
 
     PhysicsObjectDefinition*
@@ -461,23 +454,23 @@ namespace octronic::dream
 
     void
     PhysicsObjectRuntime::setLinearFactor
-    (float x, float y, float z)
+    (vec3 lf)
     {
-        mRigidBody->setLinearFactor(btVector3(x,y,z));
+        mRigidBody->setLinearFactor(Vector3::toBullet(lf));
     }
 
     void
     PhysicsObjectRuntime::setAngularFactor
-    (float x, float y, float z)
+    (vec3 v)
     {
-        mRigidBody->setAngularFactor(btVector3(x,y,z));
+        mRigidBody->setAngularFactor(Vector3::toBullet(v));
     }
 
     void
     PhysicsObjectRuntime::setAngularVelocity
-    (float x, float y, float z)
+    (vec3 v)
     {
-        mRigidBody->setAngularVelocity(btVector3(x,y,z));
+        mRigidBody->setAngularVelocity(Vector3::toBullet(v));
     }
 
     void
@@ -557,7 +550,7 @@ namespace octronic::dream
     }
 
 
-    void PhysicsObjectRuntime::pushNextTask()
+    void PhysicsObjectRuntime::pushTasks()
     {
         /*
             if (!pObj->isInPhysicsWorld())

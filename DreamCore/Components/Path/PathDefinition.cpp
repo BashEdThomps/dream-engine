@@ -12,8 +12,7 @@
 #include "PathDefinition.h"
 
 #include "Common/Constants.h"
-
-
+#include "Math/Vector.h"
 
 namespace octronic::dream
 {
@@ -140,7 +139,7 @@ namespace octronic::dream
         PathControlPoint cp;
         cp.id = js[Constants::ASSET_ATTR_ID];
         cp.index = js[Constants::ASSET_ATTR_INDEX];
-        cp.position = Vector3(js[Constants::ASSET_ATTR_POSITION]);
+        cp.position = vec3(js[Constants::ASSET_ATTR_POSITION]);
         return cp;
     }
 
@@ -149,7 +148,7 @@ namespace octronic::dream
     (const PathControlPoint& cp)
     {
         json js;
-        js[Constants::ASSET_ATTR_POSITION] = cp.position.toJson();
+        js[Constants::ASSET_ATTR_POSITION] = Vector3::toJson(cp.position);
         js[Constants::ASSET_ATTR_ID] = cp.id;
         js[Constants::ASSET_ATTR_INDEX] = cp.index;
         return js;
