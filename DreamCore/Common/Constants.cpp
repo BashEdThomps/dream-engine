@@ -85,13 +85,8 @@ namespace octronic::dream
     const string Constants::SCENE_ROOT_ENTITY = "root";
     const string Constants::SCENE_CLEAR_COLOR = "clearColor";
     const string Constants::SCENE_GRAVITY = "gravity";
-    const string Constants::SCENE_PHYSICS_DEBUG = "physicsDebug";
     const string Constants::SCENE_DEFAULT_NAME = "Untitled Scene";
-    const string Constants::SCENE_MESH_CULL_DISTANCE = "mesh_cull_distance";
-    const string Constants::SCENE_MIN_DRAW_DISTANCE = "min_draw";
-    const string Constants::SCENE_MAX_DRAW_DISTANCE = "max_draw";
-    const string Constants::SCENE_CAMERA_TRANSFORM = "camera_transform";
-    const string Constants::SCENE_CAMERA_FOV = "camera_fov";
+    const string Constants::SCENE_CAMERA = "camera";
     const string Constants::SCENE_SHADOW_PASS_SHADER = "shadow_pass_shader";
     const string Constants::SCENE_FONT_SHADER = "font_shader";
     const string Constants::SCENE_SPRITE_SHADER = "sprite_shader";
@@ -99,20 +94,26 @@ namespace octronic::dream
     const string Constants::SCENE_ENVIRONMENT_TEXTURE = "environment_texture";
     const string Constants::SCENE_ENVIRONMENT_SHADER = "environment_shader";
 
-    // Entity ==============================================================
+    // Camera ==================================================================
+    const string Constants::CAMERA_FOV = "fov";
+    const string Constants::CAMERA_MESH_CULL_DISTANCE = "mesh_cull_distance";
+    const string Constants::CAMERA_MIN_DRAW_DISTANCE = "min_draw";
+    const string Constants::CAMERA_MAX_DRAW_DISTANCE = "max_draw";
+    const string Constants::CAMERA_FREE_TRANSFORM = "free_transform";
+    const string Constants::CAMERA_ENTITY_UUID = "entity_uuid";
+    const string Constants::CAMERA_USE_ENTITY = "use_entity";
+
+
+    // Entity ==================================================================
     const string Constants::ENTITY = "entity";
     const string Constants::ENTITY_ROOT_NAME = "Root Entity";
     const string Constants::ENTITY_DEFAULT_NAME = "New Entity";
     const string Constants::ENTITY_CHILDREN = "children";
     const string Constants::ENTITY_ASSET_INSTANCES = "assetInstances";
-    const string Constants::ENTITY_ALWAYS_DRAW = "always_draw";
     const string Constants::ENTITY_TEMPLATE = "template";
-    const string Constants::ENTITY_HIDDEN = "hidden";
-    const string Constants::ENTITY_PLAYER_OBJECT = "player_object";
     const string Constants::ENTITY_FONT_COLOR = "font_color";
     const string Constants::ENTITY_FONT_SCALE = "font_scale";
     const string Constants::ENTITY_FONT_TEXT = "font_text";
-    const string Constants::ENTITY_TRANSFORM_SPACE = "transform_space";
 
     // Transform ================================================================
     const string Constants::TRANSFORM = "transform";

@@ -53,7 +53,7 @@ namespace octronic::dream
             {
                 string fileName(ent->d_name);
 
-                if (fileName[0] == '.') continue;
+                if (fileName.compare(".") == 0 || fileName.compare("..") == 0) continue;
 
                 if (usingRegex)
                 {
@@ -175,7 +175,7 @@ namespace octronic::dream
     {
         LOG_DEBUG("Directory: Deleting directory {}",mPath);
         auto files = list();
-        for (auto file : files)
+        for (auto& file : files)
         {
             if (file.compare(".") == 0) continue;
             if (file.compare("..") == 0) continue;
@@ -185,8 +185,6 @@ namespace octronic::dream
             if (d->isDirectory())
             {
                 d->deleteDirectory();
-                mStorageManager->closeDirectory(d);
-                d = nullptr;
             }
             else
             {
@@ -198,6 +196,8 @@ namespace octronic::dream
                 mStorageManager->closeFile(f);
                 f = nullptr;
             }
+            mStorageManager->closeDirectory(d);
+            d = nullptr;
         }
         if (rmdir(mPath.c_str()) != 0)
         {
@@ -205,7 +205,6 @@ namespace octronic::dream
             return false;
         }
         return true;
-
     }
 
     File* Directory::file(const string& fileName)
@@ -223,7 +222,7 @@ namespace octronic::dream
         {
             result = true;
         }
-        LOG_ERROR("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
+        LOG_DEBUG("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
         return result;
     }
 }

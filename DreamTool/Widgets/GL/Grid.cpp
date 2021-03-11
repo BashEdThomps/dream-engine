@@ -23,9 +23,8 @@ namespace octronic::dream::tool
 {
     Grid::Grid
     (DreamToolContext* p, AxisPair xp,
-     Transform tx,
             float majorSpacing,float minorSpacing, float size,
-            vec3 majorColour,vec3 minorColour)
+            vec4 majorColour, vec4 minorColour)
         : GLWidget(p,false),
           mAxisPair(xp),
           mSize(size),
@@ -35,7 +34,6 @@ namespace octronic::dream::tool
           mMinorColour(minorColour)
 
     {
-        mTransform = tx;
         LOG_DEBUG("Grid: Constructing with majorSpacing: {}, minorSpacing {}", mMajorSpacing, minorSpacing);
     }
 
@@ -63,7 +61,7 @@ namespace octronic::dream::tool
         // Major Grid
         for (float axis = mMajorSpacing; axis <= halfSize; axis += mMajorSpacing)
         {
-            GLWidgetVertex posStart, posEnd, negStart, negEnd;
+            TranslationColorVertex posStart, posEnd, negStart, negEnd;
             posStart.Color = mMajorColour;
             posEnd.Color = mMajorColour;
             negStart.Color = mMajorColour;
@@ -73,63 +71,63 @@ namespace octronic::dream::tool
             {
                 case XZ:
                     // X
-                    posStart.Position = vec3( axis, 0.0f,-halfSize);
-                    posEnd.Position   = vec3( axis, 0.0f, halfSize);
-                    negStart.Position = vec3(-axis, 0.0f,-halfSize);
-                    negEnd.Position   = vec3(-axis, 0.0f, halfSize);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3( axis, 0.0f,-halfSize);
+                    posEnd.Translation   = vec3( axis, 0.0f, halfSize);
+                    negStart.Translation = vec3(-axis, 0.0f,-halfSize);
+                    negEnd.Translation   = vec3(-axis, 0.0f, halfSize);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Z
-                    posStart.Position = vec3(-halfSize, 0.0f, axis);
-                    posEnd.Position   = vec3( halfSize, 0.0f, axis);
-                    negStart.Position = vec3(-halfSize, 0.0f,-axis);
-                    negEnd.Position   = vec3( halfSize, 0.0f,-axis);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(-halfSize, 0.0f, axis);
+                    posEnd.Translation   = vec3( halfSize, 0.0f, axis);
+                    negStart.Translation = vec3(-halfSize, 0.0f,-axis);
+                    negEnd.Translation   = vec3( halfSize, 0.0f,-axis);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
                 case YZ:
                     // Y
-                    posStart.Position = vec3(0.0f, axis,-halfSize);
-                    posEnd.Position   = vec3(0.0f, axis, halfSize);
-                    negStart.Position = vec3(0.0f,-axis,-halfSize);
-                    negEnd.Position   = vec3(0.0f,-axis, halfSize);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(0.0f, axis,-halfSize);
+                    posEnd.Translation   = vec3(0.0f, axis, halfSize);
+                    negStart.Translation = vec3(0.0f,-axis,-halfSize);
+                    negEnd.Translation   = vec3(0.0f,-axis, halfSize);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Z
-                    posStart.Position = vec3(0.0f,-halfSize, axis);
-                    posEnd.Position   = vec3(0.0f, halfSize, axis);
-                    negStart.Position = vec3(0.0f,-halfSize,-axis);
-                    negEnd.Position   = vec3(0.0f, halfSize,-axis);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(0.0f,-halfSize, axis);
+                    posEnd.Translation   = vec3(0.0f, halfSize, axis);
+                    negStart.Translation = vec3(0.0f,-halfSize,-axis);
+                    negEnd.Translation   = vec3(0.0f, halfSize,-axis);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
                 case XY:
                     // X
-                    posStart.Position = vec3( axis,-halfSize, 0.0f);
-                    posEnd.Position   = vec3( axis, halfSize, 0.0f);
-                    negStart.Position = vec3(-axis,-halfSize, 0.0f);
-                    negEnd.Position   = vec3(-axis, halfSize, 0.0f);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3( axis,-halfSize, 0.0f);
+                    posEnd.Translation   = vec3( axis, halfSize, 0.0f);
+                    negStart.Translation = vec3(-axis,-halfSize, 0.0f);
+                    negEnd.Translation   = vec3(-axis, halfSize, 0.0f);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Y
-                    posStart.Position = vec3(-halfSize, axis, 0.0f);
-                    posEnd.Position   = vec3( halfSize, axis, 0.0f);
-                    negStart.Position = vec3(-halfSize,-axis, 0.0f);
-                    negEnd.Position   = vec3( halfSize,-axis, 0.0f);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(-halfSize, axis, 0.0f);
+                    posEnd.Translation   = vec3( halfSize, axis, 0.0f);
+                    negStart.Translation = vec3(-halfSize,-axis, 0.0f);
+                    negEnd.Translation   = vec3( halfSize,-axis, 0.0f);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
             }
         }
@@ -145,7 +143,7 @@ namespace octronic::dream::tool
         // Major Grid
         for (float axis = mMinorSpacing; axis <= halfSize; axis += mMinorSpacing)
         {
-            GLWidgetVertex posStart, posEnd, negStart, negEnd;
+            TranslationColorVertex posStart, posEnd, negStart, negEnd;
             posStart.Color = mMinorColour;
             posEnd.Color   = mMinorColour;
             negStart.Color = mMinorColour;
@@ -155,63 +153,63 @@ namespace octronic::dream::tool
             {
                 case XZ:
                     // X
-                    posStart.Position = vec3( axis, 0.0f,-halfSize);
-                    posEnd.Position   = vec3( axis, 0.0f, halfSize);
-                    negStart.Position = vec3(-axis, 0.0f,-halfSize);
-                    negEnd.Position   = vec3(-axis, 0.0f, halfSize);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3( axis, 0.0f,-halfSize);
+                    posEnd.Translation   = vec3( axis, 0.0f, halfSize);
+                    negStart.Translation = vec3(-axis, 0.0f,-halfSize);
+                    negEnd.Translation   = vec3(-axis, 0.0f, halfSize);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Z
-                    posStart.Position = vec3(-halfSize, 0.0f, axis);
-                    posEnd.Position   = vec3( halfSize, 0.0f, axis);
-                    negStart.Position = vec3(-halfSize, 0.0f,-axis);
-                    negEnd.Position   = vec3( halfSize, 0.0f,-axis);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(-halfSize, 0.0f, axis);
+                    posEnd.Translation   = vec3( halfSize, 0.0f, axis);
+                    negStart.Translation = vec3(-halfSize, 0.0f,-axis);
+                    negEnd.Translation   = vec3( halfSize, 0.0f,-axis);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
                 case YZ:
                     // Y
-                    posStart.Position = vec3(0.0f, axis,-halfSize);
-                    posEnd.Position   = vec3(0.0f, axis, halfSize);
-                    negStart.Position = vec3(0.0f,-axis,-halfSize);
-                    negEnd.Position   = vec3(0.0f,-axis, halfSize);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(0.0f, axis,-halfSize);
+                    posEnd.Translation   = vec3(0.0f, axis, halfSize);
+                    negStart.Translation = vec3(0.0f,-axis,-halfSize);
+                    negEnd.Translation   = vec3(0.0f,-axis, halfSize);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Z
-                    posStart.Position = vec3(0.0f,-halfSize, axis);
-                    posEnd.Position   = vec3(0.0f, halfSize, axis);
-                    negStart.Position = vec3(0.0f,-halfSize,-axis);
-                    negEnd.Position   = vec3(0.0f, halfSize,-axis);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(0.0f,-halfSize, axis);
+                    posEnd.Translation   = vec3(0.0f, halfSize, axis);
+                    negStart.Translation = vec3(0.0f,-halfSize,-axis);
+                    negEnd.Translation   = vec3(0.0f, halfSize,-axis);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
                 case XY:
                     // X
-                    posStart.Position = vec3( axis,-halfSize, 0.0f);
-                    posEnd.Position   = vec3( axis, halfSize, 0.0f);
-                    negStart.Position = vec3(-axis,-halfSize, 0.0f);
-                    negEnd.Position   = vec3(-axis, halfSize, 0.0f);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3( axis,-halfSize, 0.0f);
+                    posEnd.Translation   = vec3( axis, halfSize, 0.0f);
+                    negStart.Translation = vec3(-axis,-halfSize, 0.0f);
+                    negEnd.Translation   = vec3(-axis, halfSize, 0.0f);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     // Y
-                    posStart.Position = vec3(-halfSize, axis, 0.0f);
-                    posEnd.Position   = vec3( halfSize, axis, 0.0f);
-                    negStart.Position = vec3(-halfSize,-axis, 0.0f);
-                    negEnd.Position   = vec3( halfSize,-axis, 0.0f);
-                    mVertexBuffer.push_back(posStart);
-                    mVertexBuffer.push_back(posEnd);
-                    mVertexBuffer.push_back(negStart);
-                    mVertexBuffer.push_back(negEnd);
+                    posStart.Translation = vec3(-halfSize, axis, 0.0f);
+                    posEnd.Translation   = vec3( halfSize, axis, 0.0f);
+                    negStart.Translation = vec3(-halfSize,-axis, 0.0f);
+                    negEnd.Translation   = vec3( halfSize,-axis, 0.0f);
+                    addLineVertex(posStart);
+                    addLineVertex(posEnd);
+                    addLineVertex(negStart);
+                    addLineVertex(negEnd);
                     break;
             }
         }
@@ -219,35 +217,35 @@ namespace octronic::dream::tool
 
     void Grid::initAxisLines()
     {
-        vec3 red(1,0,0);
-        vec3 green(0,1,0);
-        vec3 blue(0,0,1);
+        vec4 red(1,0,0,1);
+        vec4 green(0,1,0,1);
+        vec4 blue(0,0,1,1);
 
-        GLWidgetVertex xStart, xEnd;
-        xStart.Position = vec3(0);
+        TranslationColorVertex xStart, xEnd;
+        xStart.Translation = vec3(0);
         xStart.Color = red;
-        xEnd.Position = vec3(mSize/2,0,0);
+        xEnd.Translation = vec3(mSize/2,0,0);
         xEnd.Color = red;
-        mVertexBuffer.push_back(xStart);
-        mVertexBuffer.push_back(xEnd);
+        addLineVertex(xStart);
+        addLineVertex(xEnd);
 
-        GLWidgetVertex yStart, yEnd;
-        yStart.Position = vec3(0);
+        TranslationColorVertex yStart, yEnd;
+        yStart.Translation = vec3(0);
         yStart.Color = green;
-        yEnd.Position = vec3(0,mSize/2,0);
+        yEnd.Translation = vec3(0,mSize/2,0);
         yEnd.Color = green;
-        mVertexBuffer.push_back(yStart);
-        mVertexBuffer.push_back(yEnd);
+        addLineVertex(yStart);
+        addLineVertex(yEnd);
 
-        GLWidgetVertex zStart, zEnd;
-        zStart.Position = vec3(0);
+        TranslationColorVertex zStart, zEnd;
+        zStart.Translation = vec3(0);
         zStart.Color = blue;
-        zEnd.Position = vec3(0,0,mSize/2);
+        zEnd.Translation = vec3(0,0,mSize/2);
         zEnd.Color = blue;
-        mVertexBuffer.push_back(zStart);
-        mVertexBuffer.push_back(zEnd);
+        addLineVertex(zStart);
+        addLineVertex(zEnd);
 
-        GLWidgetVertex ax1HomeStart, ax1HomeEnd, ax2HomeStart, ax2HomeEnd;
+        TranslationColorVertex ax1HomeStart, ax1HomeEnd, ax2HomeStart, ax2HomeEnd;
         ax1HomeStart.Color = mMajorColour;
         ax1HomeEnd.Color   = mMajorColour;
         ax2HomeStart.Color = mMajorColour;
@@ -256,30 +254,30 @@ namespace octronic::dream::tool
         switch (mAxisPair)
         {
             case XZ:
-                ax1HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax1HomeEnd.Position   = vec3(-(mSize/2.0f),0.0f,0.0f);
-                ax2HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax2HomeEnd.Position   = vec3(0.0f,0.0f,-(mSize/2.0f));
+                ax1HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax1HomeEnd.Translation   = vec3(-(mSize/2.0f),0.0f,0.0f);
+                ax2HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax2HomeEnd.Translation   = vec3(0.0f,0.0f,-(mSize/2.0f));
                 break;
             case YZ:
-                ax1HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax1HomeEnd.Position   = vec3(0.0f,-(mSize/2.0f),0.0f);
-                ax2HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax2HomeEnd.Position   = vec3(0.0f,0.0f,-(mSize/2.0f));
+                ax1HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax1HomeEnd.Translation   = vec3(0.0f,-(mSize/2.0f),0.0f);
+                ax2HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax2HomeEnd.Translation   = vec3(0.0f,0.0f,-(mSize/2.0f));
                 break;
             case XY:
-                ax1HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax1HomeEnd.Position   = vec3(-(mSize/2.0f),0.0f,0.0f);
-                ax2HomeStart.Position = vec3(0.0f,0.0f,0.0f);
-                ax2HomeEnd.Position   = vec3(0.0f,-(mSize/2.0f),0.0f);
+                ax1HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax1HomeEnd.Translation   = vec3(-(mSize/2.0f),0.0f,0.0f);
+                ax2HomeStart.Translation = vec3(0.0f,0.0f,0.0f);
+                ax2HomeEnd.Translation   = vec3(0.0f,-(mSize/2.0f),0.0f);
                 break;
 
         }
 
-        mVertexBuffer.push_back(ax1HomeStart);
-        mVertexBuffer.push_back(ax1HomeEnd);
-        mVertexBuffer.push_back(ax2HomeStart);
-        mVertexBuffer.push_back(ax2HomeEnd);
+        addLineVertex(ax1HomeStart);
+        addLineVertex(ax1HomeEnd);
+        addLineVertex(ax2HomeStart);
+        addLineVertex(ax2HomeEnd);
     }
 
     Grid::AxisPair Grid::getAxisPair() const
@@ -287,12 +285,12 @@ namespace octronic::dream::tool
         return mAxisPair;
     }
 
-    vec3 Grid::getMinorColour() const
+    vec4 Grid::getMinorColour() const
     {
         return mMinorColour;
     }
 
-    void Grid::setMinorColour(vec3 minorColour)
+    void Grid::setMinorColour(vec4 minorColour)
     {
         mMinorColour = minorColour;
     }
@@ -303,12 +301,12 @@ namespace octronic::dream::tool
 
     }
 
-    vec3 Grid::getMajorColour() const
+    vec4 Grid::getMajorColour() const
     {
         return mMajorColour;
     }
 
-    void Grid::setMajorColour(vec3 majorColour)
+    void Grid::setMajorColour(vec4 majorColour)
     {
         mMajorColour = majorColour;
     }
@@ -353,20 +351,10 @@ namespace octronic::dream::tool
 
     void Grid::recalculateGridLines()
     {
-        mVertexBuffer.clear();
+        clearLineVertexBuffer();
         initAxisLines();
         initMajorGridData();
         initMinorGridData();
-
-        // Vertex Array
-        glBindVertexArray(mVao);
-        ShaderRuntime::CurrentVAO = mVao;
-        GLCheckError();
-        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderRuntime::CurrentVBO = mVbo;
-        GLCheckError();
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        GLCheckError();
-        glBindVertexArray(0);
+        submitLineVertexBuffer();
     }
 }

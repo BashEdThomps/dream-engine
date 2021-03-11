@@ -29,89 +29,84 @@ namespace octronic::dream::tool
     ()
     {
         Project* project = mContext->getProject();
+
         if (project)
         {
-            ImGui::Begin("Project Browser",&mVisible);
-            drawProjectTree();
-            ImGui::Separator();
-            drawAssetTree();
-            ImGui::End();
-        }
-    }
+            ImGui::Begin("Project",&mVisible);
+            // Project Tree
+            ProjectDefinition* projDef = project->getDefinition();
 
-    void
-    ProjectBrowser::drawProjectTree
-    ()
-    {
-        Project* project = mContext->getProject();
-        // Project Tree
-        ProjectDefinition* projDef = project->getDefinition();
-        ImGui::Text("Scenegraph");
-        ImGui::Separator();
-
-        if (projDef == nullptr)
-        {
-            ImGui::BulletText("No Project Open");
-            return;
-        }
-
-        ImGui::PushID("ProjectTree");
-        int treeID = 0;
-        bool projectNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,projDef->getName().c_str(),0);
-
-        if (ImGui::IsItemClicked())
-        {
-
-            LOG_TRACE("ProjectBrowser: Project clicked {}", projDef->getName());
-            mContext->getPropertiesWindow()->pushPropertyTarget
-            (
-                PropertyType_Project,
-                projDef,
-                project->getRuntime()
-            );
-        }
-
-        if (projectNodeOpen)
-        {
-            int sdTreeID = 0;
-            for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
+            if (projDef == nullptr)
             {
-                bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,
-                    node_flags, sDef->getName().c_str(), 0);
-
-                if (ImGui::IsItemClicked())
-                {
-                    LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
-                    ProjectRuntime* pRunt = project->getRuntime();
-                    SceneRuntime* sRunt = nullptr;
-
-                    if (pRunt)
-                    {
-                        sRunt = pRunt->getActiveSceneRuntime();
-                    }
-
-                    if (sRunt != nullptr)
-                    {
-                        if (sRunt->getUuid() != sDef->getUuid())
-                        {
-                            LOG_TRACE("ProjectBrowser: Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
-                            sRunt = nullptr;
-                        }
-                    }
-                    mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Scene, sDef,sRunt);
-                }
-
-                if (sceneNodeOpen)
-                {
-                    EntityDefinition* rootSo = sDef->getRootEntityDefinition();
-                    addEntity(rootSo);
-                    ImGui::TreePop();
-                }
+                ImGui::BulletText("No Project Open");
+                return;
             }
 
-            ImGui::TreePop();
-        } // Project Name
-        ImGui::PopID();
+            ImGui::PushID("ProjectTree");
+
+            int treeID = 0;
+            bool projectNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,projDef->getName().c_str(),0);
+
+            if (ImGui::IsItemClicked())
+            {
+
+                LOG_TRACE("ProjectBrowser: Project clicked {}", projDef->getName());
+                mContext->getPropertiesWindow()->pushPropertyTarget
+                        (
+                            PropertyType_Project,
+                            projDef,
+                            project->getRuntime()
+                            );
+            }
+
+            if (projectNodeOpen)
+            {
+                int sdTreeID = 0;
+                for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
+                {
+                    bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,
+                                                           node_flags, sDef->getName().c_str(), 0);
+
+                    if (ImGui::IsItemClicked())
+                    {
+                        LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
+                        ProjectRuntime* pRunt = project->getRuntime();
+                        SceneRuntime* sRunt = nullptr;
+
+                        if (pRunt)
+                        {
+                            sRunt = pRunt->getActiveSceneRuntime();
+                        }
+
+                        if (sRunt != nullptr)
+                        {
+                            if (sRunt->getUuid() != sDef->getUuid())
+                            {
+                                LOG_TRACE("ProjectBrowser: Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
+                                sRunt = nullptr;
+                            }
+                        }
+                        mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Scene, sDef,sRunt);
+                    }
+
+                    if (sceneNodeOpen)
+                    {
+                        EntityDefinition* rootSo = sDef->getRootEntityDefinition();
+                        addEntity(rootSo);
+                        ImGui::TreePop();
+                    }
+                }
+
+                ImGui::TreePop();
+            } // Project Name
+            ImGui::PopID();
+
+            ImGui::End();
+        }
+    	else
+        {
+            ImGui::Text("No Project Open");
+        }
     }
 
     void
@@ -123,13 +118,13 @@ namespace octronic::dream::tool
 
         if (def != nullptr)
         {
-            ProjectRuntime* projRunt = project->getRuntime();
-            SceneRuntime* sRunt = projRunt->getActiveSceneRuntime();
-            EntityRuntime* soRunt = nullptr;
+            ProjectRuntime* projectRuntime = project->getRuntime();
+            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            EntityRuntime* entityRuntime = nullptr;
 
-            if (sRunt)
+            if (sceneRuntime)
             {
-                soRunt = sRunt->getEntityRuntimeByUuid(def->getUuid());
+                entityRuntime = sceneRuntime->getEntityRuntimeByUuid(def->getUuid());
             }
 
             ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
@@ -140,9 +135,23 @@ namespace octronic::dream::tool
             // Flags
             stringstream nameStr;
             stringstream flagsStr;
+
             if (def->getIsTemplate())
             {
-               flagsStr << "T";
+                flagsStr << "T";
+            }
+
+            if (sceneRuntime)
+            {
+                CameraRuntime* cam = sceneRuntime->getCamera();
+                if (cam->getCameraEntityRuntime() == entityRuntime)
+                {
+					if (!flagsStr.str().empty())
+					{
+						flagsStr << ",";
+					}
+					flagsStr << "Cam";
+                }
             }
 
             if (flagsStr.str().size() > 0)
@@ -154,8 +163,8 @@ namespace octronic::dream::tool
 
             nameStr << def->getName();
             bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeId,
-               flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
-               nameStr.str().c_str(), 0);
+                                              flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
+                                              nameStr.str().c_str(), 0);
 
             // Entity Context Menu
             bool deleteClicked = false;
@@ -201,10 +210,10 @@ namespace octronic::dream::tool
                 {
                     parent->removeChildDefinition(def);
                 }
-                if (soRunt)
+                if (entityRuntime)
                 {
-                    auto parent = soRunt->getParentRuntime();
-                    parent->removeChildRuntime(soRunt);
+                    auto parent = entityRuntime->getParentEntityRuntime();
+                    parent->removeChildRuntime(entityRuntime);
                 }
                 mContext->getSelectionHighlighter()->clearSelection();
                 mContext->getPropertiesWindow()->removeFromHistory(def);
@@ -216,12 +225,12 @@ namespace octronic::dream::tool
                 for (auto node : mSelectedNodes)
                 {
                     auto defToCreate = dynamic_cast<EntityDefinition*>(node);
-                    EntityDefinition* newDef = new EntityDefinition(def,def->getSceneDefinition(),defToCreate->getJson(),true);
+                    EntityDefinition* newDef = new EntityDefinition(def,def->getSceneDefinition(),defToCreate->toJson(),true);
                     newDef->loadChildEntityDefinitions(true);
                     def->addChildDefinition(newDef);
-                    if (soRunt)
+                    if (entityRuntime)
                     {
-                        soRunt->createAndAddChildRuntime(newDef);
+                        entityRuntime->createAndAddChildRuntime(newDef);
                     }
                 }
                 mSelectedNodes.clear();
@@ -242,12 +251,12 @@ namespace octronic::dream::tool
                     mSelectedNodes.push_back(def);
                 }
 
-                if (soRunt)
+                if (entityRuntime)
                 {
-                    mContext->getSelectionHighlighter()->setSelectedEntity(soRunt);
+                    mContext->getSelectionHighlighter()->setSelectedEntity(entityRuntime);
                 }
                 LOG_TRACE("ProjectBrowser: Entity Clicked {}",def->getName());
-                mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Entity, def, soRunt);
+                mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Entity, def, entityRuntime);
             }
 
             // Drag Source
@@ -257,7 +266,7 @@ namespace octronic::dream::tool
                 mDragDropSource.parentDef = def->getParentEntity();
 
                 ImGui::SetDragDropPayload( Constants::ENTITY.c_str(),
-                    &mDragDropSource, sizeof(EntityDragSource*));
+                                           &mDragDropSource, sizeof(EntityDragSource*));
                 ImGui::Text("Reparent %s",def->getName().c_str());
                 ImGui::EndDragDropSource();
             }
@@ -269,21 +278,21 @@ namespace octronic::dream::tool
                 {
                     IM_ASSERT(payload->DataSize == sizeof(EntityDragSource*));
                     LOG_TRACE
-                    (
-                        "ProjectBrowser: Definition {} was dropped onto {}",
-                        mDragDropSource.objectDef->getNameAndUuidString(),
-                        def->getNameAndUuidString()
-                    );
+                            (
+                                "ProjectBrowser: Definition {} was dropped onto {}",
+                                mDragDropSource.objectDef->getNameAndUuidString(),
+                                def->getNameAndUuidString()
+                                );
 
                     mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef,false);
                     def->adoptChildDefinition(mDragDropSource.objectDef);
 
-                    if (soRunt)
+                    if (entityRuntime)
                     {
-                        soRunt->createAndAddChildRuntime(mDragDropSource.objectDef);
+                        entityRuntime->createAndAddChildRuntime(mDragDropSource.objectDef);
 
                         // get old parent runtime and remove children that were reparented
-                        auto oldParent = sRunt->getEntityRuntimeByUuid(mDragDropSource.parentDef->getUuid());
+                        auto oldParent = sceneRuntime->getEntityRuntimeByUuid(mDragDropSource.parentDef->getUuid());
                         if (oldParent)
                         {
                             auto oldRuntime = oldParent->getChildRuntimeByUuid(mDragDropSource.objectDef->getUuid());
@@ -306,7 +315,7 @@ namespace octronic::dream::tool
             // Show Node Contents
             if(nodeOpen)
             {
-                for (EntityDefinition* child : def->getChildDefinitionsList())
+                for (EntityDefinition* child : def->getChildDefinitionsVector())
                 {
                     addEntity(child);
                 }
@@ -315,96 +324,4 @@ namespace octronic::dream::tool
             ImGui::PopID();
         }
     }
-
-    void
-    ProjectBrowser::drawAssetTree
-    ()
-    {
-        ProjectDefinition* projDef = mContext->getProject()->getDefinition();
-        ImGui::Text("Assets");
-        ImGui::Separator();
-
-        if (projDef == nullptr)
-        {
-            return;
-        }
-
-        ImGui::PushID("AssetTree");
-        for (auto name : Constants::DREAM_ASSET_TYPES_READABLE_VECTOR)
-        {
-            AssetType type = Constants::getAssetTypeEnumFromString(name);
-            auto assets = projDef->getAssetDefinitionsVector(type);
-            auto typeGroups = projDef->getAssetDefinitionGroups()[type];
-            stringstream nameCount;
-            nameCount <<  name << " (" <<  assets.size() << ")";
-            ImGui::PushID(name.c_str());
-            static string selectedAssetType = "";
-            ImGui::SetNextTreeNodeOpen(selectedAssetType.compare(name) == 0);
-            bool headerOpen = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
-
-            // Context Menu
-            if (ImGui::BeginPopupContextItem())
-            {
-                char buf[buf_sz];
-                snprintf(buf,buf_sz,"New %s",name.c_str());
-                bool newClicked = ImGui::MenuItem(buf);
-                if (newClicked)
-                {
-                    AssetDefinition* newDef = projDef->createNewAssetDefinition(type);
-                    mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset,newDef,nullptr);
-                    projDef->regroupAssetDefinitions();
-                }
-                ImGui::EndPopup();
-            }
-
-            if (headerOpen)
-            {
-                // Group Nodes
-                selectedAssetType = name;
-                int assetDefTreeId = 0;
-                for (string group : typeGroups)
-                {
-                    ImGui::PushID(group.c_str());
-                    if (ImGui::TreeNode(group.c_str()))
-                    {
-                        // Asset Nodes
-                        for (auto asset : assets)
-                        {
-                            if (asset->getGroup().compare(group) == 0)
-                            {
-                                bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset->getName().c_str(),0);
-
-                                // Asset Def Contex Menu
-                                if (ImGui::BeginPopupContextItem())
-                                {
-                                    char buf[buf_sz];
-                                    snprintf(buf,buf_sz,"Delete %s",asset->getName().c_str());
-                                    bool deleteClicked = ImGui::MenuItem(buf);
-                                    if (deleteClicked)
-                                    {
-                                    }
-                                    ImGui::EndPopup();
-                                }
-
-                                if (nodeOpen)
-                                {
-                                    if (ImGui::IsItemClicked())
-                                    {
-                                        LOG_DEBUG("ProjectBrowser: Asset Definition Clicked {}", asset->getName());
-                                        mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset, asset, nullptr);
-                                    }
-                                    ImGui::TreePop();
-                                }
-                            }
-                        }
-                        ImGui::TreePop();
-                    }
-                    ImGui::PopID();
-                }
-            }
-            ImGui::PopID();
-        } // Asset Type Node
-        ImGui::PopID();
-    }
 }
-

@@ -64,7 +64,7 @@ namespace octronic::dream
         bool assetTypeDirectoryExists(AssetType type) const;
 
         bool createAssetTypeDirectory(AssetType type) const;
-        vector<UuidType> cleanupAssetsDirectory() const;
+        vector<string> cleanupAssetsDirectory() const;
 
         Project* newProject(Directory* projectDir);
         Project* openFromFile(File* file);

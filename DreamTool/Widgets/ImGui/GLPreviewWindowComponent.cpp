@@ -128,6 +128,8 @@ namespace octronic::dream::tool
 
         glBindFramebuffer(GL_FRAMEBUFFER,0);
 
+        GLCheckError();
+
         return true;
     }
 
@@ -146,6 +148,7 @@ namespace octronic::dream::tool
 
     void GLPreviewWindowComponent::draw()
     {
+        GLCheckError();
         LOG_TRACE("GLPreviewWindowComponent: {}", __FUNCTION__);
         mLastWidth = mWidth;
         mLastHeight = mHeight;
@@ -157,6 +160,7 @@ namespace octronic::dream::tool
         mHeight = contentAreaSize.y;
 
         glViewport(0,0,mWidth,mHeight);
+        GLCheckError();
 
         LOG_TRACE("GLPreviewWindowComponent: Got content area {}x{}", mWidth, mHeight);
 
@@ -214,6 +218,8 @@ namespace octronic::dream::tool
 
         ImGui::End();
         ImGui::PopStyleVar();
+
+        GLCheckError();
     }
 
     void GLPreviewWindowComponent::getCurrentDimensions()

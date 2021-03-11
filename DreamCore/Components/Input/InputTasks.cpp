@@ -3,12 +3,16 @@
 #include "InputComponent.h"
 #include "Common/Logger.h"
 #include "Scene/SceneRuntime.h"
+#include "Project/ProjectRuntime.h"
 
 namespace octronic::dream
 {
+
+    // InputPollDataTask =======================================================
+
     InputPollDataTask::InputPollDataTask
-    (ProjectRuntime* pr, InputComponent* cp)
-        : Task(pr, "InputPollDataTask"), mComponent(cp)
+    (ProjectRuntime* pr)
+        : Task(pr, "InputPollDataTask")
     {
     }
 
@@ -17,21 +21,28 @@ namespace octronic::dream
     ()
     {
 		LOG_TRACE("InputPollDataTask: Executing {}",getID());
-		mComponent->pollData();
+        auto inputComp = mProjectRuntimeHandle->getInputComponent();
+		inputComp->pollData();
 		setState(TaskState::TASK_STATE_COMPLETED);
     }
 
-    InputExecuteScriptTask::InputExecuteScriptTask
-    (ProjectRuntime* pr, InputComponent* cp)
-        : Task(pr, "InputExecuteScriptTask"), mComponent(cp)
+    // InputRegisterScriptTask =================================================
+
+    InputRegisterScriptTask::InputRegisterScriptTask
+    (ProjectRuntime* pr)
+        : Task(pr, "InputRegisterScriptTask")
     {
+
     }
 
-    void InputExecuteScriptTask::execute()
+    void
+    InputRegisterScriptTask::execute
+    ()
     {
-        LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
+		LOG_TRACE("InputRegisterScriptTask: Executing {}",getID());
+        auto inputComp = mProjectRuntimeHandle->getInputComponent();
 
-		if (mComponent->executeInputScript())
+		if (inputComp->registerInputScript())
 		{
 			setState(TaskState::TASK_STATE_COMPLETED);
 		}
@@ -39,5 +50,61 @@ namespace octronic::dream
 		{
 			setState(TaskState::TASK_STATE_FAILED);
 		}
+    }
+
+    // InputExecuteScriptTask ==================================================
+
+    InputExecuteScriptTask::InputExecuteScriptTask
+    (ProjectRuntime* pr)
+        : Task(pr, "InputExecuteScriptTask")
+    {
+    }
+
+    void
+    InputExecuteScriptTask::execute
+    ()
+    {
+        LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
+        auto inputComp = mProjectRuntimeHandle->getInputComponent();
+
+		if (inputComp->executeInputScript())
+		{
+			setState(TaskState::TASK_STATE_COMPLETED);
+		}
+		else
+		{
+			setState(TaskState::TASK_STATE_FAILED);
+		}
+    }
+
+    // InputRemoveScriptTask ===================================================
+
+    InputRemoveScriptTask::InputRemoveScriptTask
+    (ProjectRuntime* pr)
+        : DestructionTask(pr, "InputRemoveScriptTask")
+    {
+
+    }
+
+    void
+    InputRemoveScriptTask::execute
+    ()
+    {
+        LOG_TRACE("InputRemoveScriptTask: Executing {}",getID());
+        auto inputComp = mProjectRuntimeHandle->getInputComponent();
+
+		if (inputComp->removeInputScript(mInputScriptUuid))
+		{
+			setState(TaskState::TASK_STATE_COMPLETED);
+		}
+		else
+		{
+			setState(TaskState::TASK_STATE_FAILED);
+		}
+    }
+
+    void InputRemoveScriptTask::setInputScriptUuid(UuidType u)
+    {
+        mInputScriptUuid = u;
     }
 }

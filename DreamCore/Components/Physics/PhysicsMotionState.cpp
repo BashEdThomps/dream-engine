@@ -14,7 +14,6 @@
 
 #include "Common/Logger.h"
 #include "Entity/EntityRuntime.h"
-#include "Math/Quaternion.h"
 
 #include <iostream>
 #include <LinearMath/btMatrix3x3.h>
@@ -53,10 +52,15 @@ namespace octronic::dream
     {
         LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
         auto origin = worldTrans.getOrigin();
-        auto orientation = worldTrans.getRotation();
+        float yaw;
+        float pitch;
+        float roll;
+        worldTrans.getRotation().getEulerZYX(yaw, pitch, roll);
         Transform tx;
         tx.setTranslation(Vector3::fromBullet(origin));
-        //tx.setOrientation(mat4_cast(Quaternion::fromBullet(orientation)));
+        tx.setYaw(yaw);
+        tx.setPitch(pitch);
+        tx.setRoll(roll);
         mEntityRuntime->setTransform(tx);
     }
 

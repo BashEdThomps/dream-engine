@@ -215,13 +215,14 @@ namespace octronic::dream
         auto pDef = mProject->getDefinition();
         if (pDef)
         {
-            auto jsDef = pDef->getJson();
-            auto jsonStr = jsDef.dump();
+            auto jsDef = pDef->toJson();
+            auto jsonStr = jsDef.dump(1);
             auto path = getProjectFilePath();
             File* f = mStorageManager->openFile(path);
             bool retval = f->writeString(jsonStr);
             mStorageManager->closeFile(f);
             f = nullptr;
+            return retval;
         }
         return false;
     }
@@ -276,12 +277,12 @@ namespace octronic::dream
         return retval;
     }
 
-    vector<UuidType>
+    vector<string>
     ProjectDirectory::cleanupAssetsDirectory
     ()
     const
     {
-        vector<UuidType> retval;
+        vector<string> retval;
         auto pDef = mProject->getDefinition();
         if (!pDef)
         {
@@ -297,32 +298,33 @@ namespace octronic::dream
             Directory* assetDir = mStorageManager->openDirectory(path);
             if (assetDir->exists())
             {
-                auto subdirs = assetDir->listSubdirectories();
-                LOG_ERROR("ProjectDirectory: Cleaning up {} containing {} definitions", path, subdirs.size());
+                vector<string> subdirs = assetDir->listSubdirectories();
+                LOG_DEBUG("ProjectDirectory: Cleaning up {} containing {} definitions", path, subdirs.size());
                 int deletedCount=0;
-                for (const auto& subdirPath : subdirs)
+
+                for (string& subdirPath : subdirs)
                 {
                     Directory* subdir = mStorageManager->openDirectory(subdirPath);
                     if (subdir->exists())
                     {
                         UuidType name = static_cast<UuidType>(std::stoi(subdir->getName()));
-                        LOG_ERROR("ProjectDirectory: Checking subdir {} has definition",name);
-                        auto def = pDef->getAssetDefinitionByUuid(name);
+                        LOG_DEBUG("ProjectDirectory: Checking subdir {} has definition",name);
+                        AssetDefinition* def = pDef->getAssetDefinitionByUuid(name);
                         if (!def)
                         {
-                            LOG_ERROR("ProjectDirectory: Definition {} does not exist, removing...",name);
+                            LOG_DEBUG("ProjectDirectory: Definition {} does not exist, removing...",name);
                             subdir->deleteDirectory();
-                            retval.push_back(name);
+                            retval.push_back(subdirPath);
                         }
                     }
                     mStorageManager->closeDirectory(subdir);
                     subdir = nullptr;
                 }
-                LOG_ERROR("ProjectDirectory: Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+                LOG_DEBUG("ProjectDirectory: Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
             }
             else
             {
-                LOG_ERROR("ProjectDirectory: No Directory {}",path);
+                LOG_DEBUG("ProjectDirectory: No Directory {}",path);
             }
             mStorageManager->closeDirectory(assetDir);
             assetDir = nullptr;
@@ -478,7 +480,7 @@ namespace octronic::dream
             auto type = typePair.first;
             string assetDirPath = getAssetTypeDirectory(type,dir->getName());
             Directory* assetDir = mStorageManager->openDirectory(assetDirPath);
-            LOG_ERROR("ProjectDirectory: Checking for {}",assetDir->getPath());
+            LOG_DEBUG("ProjectDirectory: Checking for {}",assetDir->getPath());
             if (!assetDir->exists())
             {
                 mStorageManager->closeDirectory(assetDir);

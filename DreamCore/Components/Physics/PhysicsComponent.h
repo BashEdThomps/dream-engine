@@ -36,13 +36,13 @@ class btVector3;
 class btRigidBody;
 class btCollisionObject;
 class btPersistentManifold;
+class btIDebugDraw;
 
 namespace octronic::dream
 {
     class PhysicsObjectRuntime;
     class SceneRuntime;
     class EntityRuntime;
-    class Camera;
 
     class PhysicsComponent : public Component
     {
@@ -52,26 +52,20 @@ namespace octronic::dream
         ~PhysicsComponent() override;
         void setGravity(const vec3&);
         vec3 getGravity();
-        void setDebug(bool);
-        bool getDebug();
         bool init() override;
         void addPhysicsObjectRuntime(PhysicsObjectRuntime*);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
-        void setCamera(Camera* cam);
         void checkContactManifolds();
         EntityRuntime* getEntityRuntime(SceneRuntime* scene, const btCollisionObject*);
-        void drawDebug();
         void stepSimulation();
-        PhysicsDebugDrawer* getDebugDrawer();
         PhysicsUpdateWorldTask* getUpdateWorldTask();
-        PhysicsDrawDebugTask* getDrawDebugTask();
         void pushTasks() override;
+        void setDebugDrawer(btIDebugDraw* dd);
     private:
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
     private:
-        PhysicsDebugDrawer* mDebugDrawer;
         btDynamicsWorld *mDynamicsWorld;
         btBroadphaseInterface *mBroadphase;
         btDefaultCollisionConfiguration *mCollisionConfiguration;
@@ -79,7 +73,5 @@ namespace octronic::dream
         btSequentialImpulseConstraintSolver *mSolver;
         mat4 mProjectionMatrix;
         shared_ptr<PhysicsUpdateWorldTask> mUpdateWorldTask;
-        shared_ptr<PhysicsDrawDebugTask> mDrawDebugTask;
-        bool mDebug;
     };
 }

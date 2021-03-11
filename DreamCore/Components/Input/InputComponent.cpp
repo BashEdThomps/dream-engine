@@ -15,29 +15,31 @@
 
 #include "InputComponent.h"
 #include "InputTasks.h"
-
+#include "JoystickMappings.h"
+#include "JoystickFaceForwardNavigation.h"
+#include "KeyboardMapping.h"
 #include "Common/Logger.h"
 #include "Components/Time.h"
 #include "Math/Transform.h"
 #include "Components/Script/ScriptRuntime.h"
-#include "Components/Graphics/Camera.h"
+#include "Components/Graphics/CameraRuntime.h"
 #include "Scene/SceneRuntime.h"
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
 
-
 namespace octronic::dream
 {
     InputComponent::InputComponent
     (ProjectRuntime* rt)
         : Component (rt),
-          mCurrentSceneRuntime(nullptr),
           mJoystickMapping(JsPsxMapping),
           mJoystickNavigation(nullptr),
-          mPollDataTask(nullptr),
-          mExecuteScriptTask(nullptr),
+          mPollDataTask(make_shared<InputPollDataTask>(rt)),
+          mRegisterScriptTask(make_shared<InputRegisterScriptTask>(rt)),
+          mExecuteScriptTask(make_shared<InputExecuteScriptTask>(rt)),
+          mRemoveScriptTask(make_shared<InputRemoveScriptTask>(rt)),
           mJoystickCount(0)
     {
         LOG_TRACE("InputComponent: Constructing");
@@ -59,41 +61,12 @@ namespace octronic::dream
         return true;
     }
 
-    bool
-    InputComponent::executeInputScript
-    ()
-    {
-        if (mCurrentSceneRuntime)
-        {
-            mJoystickNavigation->update(mCurrentSceneRuntime);
-            auto inputScript = mCurrentSceneRuntime->getInputScript();
-            if (inputScript)
-            {
-                return inputScript->executeOnInput(this, mCurrentSceneRuntime);
-            }
-        }
-        return true;
-    }
+    // Keyboard ================================================================
 
-    void
-    InputComponent::pollData
-    ()
-    {
-        mLastKeyboardState = mKeyboardState;
-        mLastMouseState = mMouseState;
-        mLastJoystickState = mJoystickState;
-    }
-
-    bool
-    InputComponent::isKeyDown
-    (int key)
-    {
-        return mKeyboardState.KeysDown[key];
-    }
-
-    KeyboardState&
+    KeyboardState
     InputComponent::getKeyboardState
     ()
+    const
     {
         return mKeyboardState;
     }
@@ -105,9 +78,12 @@ namespace octronic::dream
         mKeyboardState = keyboardState;
     }
 
-    MouseState&
+    // Mouse ===================================================================
+
+    MouseState
     InputComponent::getMouseState
     ()
+    const
     {
         return mMouseState;
     }
@@ -119,9 +95,12 @@ namespace octronic::dream
         mMouseState = mouseState;
     }
 
-    JoystickState&
+    // Joystick ================================================================
+
+    JoystickState
     InputComponent::getJoystickState
     ()
+    const
     {
         return mJoystickState;
     }
@@ -133,60 +112,20 @@ namespace octronic::dream
         mJoystickState = joystickState;
     }
 
-    float
-    InputComponent::mouseDeltaX
-    ()
-    {
-        return mMouseState.PosX - mLastMouseState.PosX;
-    }
-
-    float
-    InputComponent::mouseDeltaY
-    ()
-    {
-        return mMouseState.PosY - mLastMouseState.PosY;
-    }
-
-    JoystickMapping&
+    JoystickMapping
     InputComponent::getJoystickMapping
     ()
+    const
     {
         return mJoystickMapping;
     }
 
-    shared_ptr<InputPollDataTask>
-    InputComponent::getPollDataTask
-    ()
-    {
-        return mPollDataTask;
-    }
-
-    shared_ptr<InputExecuteScriptTask>
-    InputComponent::getExecuteScriptTask
-    ()
-    {
-        return mExecuteScriptTask;
-    }
-
-    SceneRuntime*
-    InputComponent::getCurrentSceneRuntime
-    () const
-    {
-        return mCurrentSceneRuntime;
-    }
-
-    void
-    InputComponent::setCurrentSceneRuntime
-    (SceneRuntime *currentSceneRuntime)
-    {
-        mCurrentSceneRuntime = currentSceneRuntime;
-    }
-
-    JoystickNavigation*
+    shared_ptr<JoystickNavigation>
     InputComponent::getJoystickNavigation
     ()
+    const
     {
-        return mJoystickNavigation.get();
+        return mJoystickNavigation;
     }
 
     int
@@ -204,22 +143,110 @@ namespace octronic::dream
         mJoystickCount = joystickCount;
     }
 
+    // Scripting ===============================================================
+
+    bool
+    InputComponent::executeInputScript
+    ()
+    {
+        SceneRuntime* activeScene = mProjectRuntime->getActiveSceneRuntime();
+
+        if (activeScene != nullptr)
+        {
+            mJoystickNavigation->update(activeScene);
+        	ScriptRuntime* inputScript = activeScene->getInputScript();
+            if (inputScript != nullptr && inputScript->getLoaded())
+            {
+                return inputScript->executeOnInput(this, activeScene);
+            }
+        }
+        return true;
+    }
+
+    bool
+    InputComponent::registerInputScript
+    ()
+    {
+        SceneRuntime* activeScene = mProjectRuntime->getActiveSceneRuntime();
+        if (activeScene != nullptr)
+        {
+			ScriptRuntime* inputScript = activeScene->getInputScript();
+			if (inputScript != nullptr)
+			{
+				auto scriptComp = mProjectRuntime->getScriptComponent();
+				return scriptComp->registerInputScript(inputScript);
+			}
+        }
+        return false;
+    }
+
+    bool
+    InputComponent::removeInputScript
+    (UuidType inputScript)
+    {
+		if (inputScript != Uuid::INVALID)
+		{
+			auto scriptComp = mProjectRuntime->getScriptComponent();
+            mRegisterScriptTask->setState(TASK_STATE_QUEUED);
+			return scriptComp->removeInputScript(inputScript);
+		}
+        return false;
+    }
+
+    // Tasks ===================================================================
+
+    shared_ptr<InputRegisterScriptTask>
+    InputComponent::getRegisterScriptTask
+    ()
+    const
+    {
+        return mRegisterScriptTask;
+    }
+
+    shared_ptr<InputRemoveScriptTask>
+    InputComponent::getRemoveScriptTask
+    ()
+    const
+    {
+        return mRemoveScriptTask;
+    }
+
+    void
+    InputComponent::pollData
+    ()
+    {
+    }
+
     void
     InputComponent::pushTasks()
     {
-        /*
-        // Input component needs to be constructed
-        if (mInputScript)
+    	auto taskQueue = mProjectRuntime->getTaskQueue();
+        SceneRuntime* activeScene = mProjectRuntime->getActiveSceneRuntime();
+
+        taskQueue->pushTask(mPollDataTask);
+
+        if (activeScene != nullptr)
         {
-            mInputScript->pushTasks();
+            ScriptRuntime* inputScript = activeScene->getInputScript();
 
-			inputComponent->setCurrentSceneRuntime(this);
+			if (inputScript != nullptr)
+			{
+				auto lfdTask = inputScript->getLoadFromDefinitionTask();
 
-            // Process Input
-            InputExecuteScriptTask* inputExecuteTask = inputComponent->getExecuteScriptTask();
-			inputExecuteTask->dependsOn(inputPollDataTask);
-			taskManager->pushTasks();
+				if (lfdTask->hasState(TASK_STATE_COMPLETED) && inputScript->getLoaded())
+				{
+                    mRemoveScriptTask->setInputScriptUuid(inputScript->getUuid());
+
+					if (mRegisterScriptTask->hasState(TASK_STATE_QUEUED))
+					{
+						taskQueue->pushTask(mRegisterScriptTask);
+					}
+					else if (mRegisterScriptTask->hasState(TASK_STATE_COMPLETED))
+					{
+						taskQueue->pushTask(mExecuteScriptTask);
+					}
+				}
+			}
         }
-        */
     }
 }

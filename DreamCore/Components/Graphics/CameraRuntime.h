@@ -22,58 +22,85 @@
     #define _USE_MATH_DEFINES // for C++
 #endif
 
+#include "Base/Runtime.h"
 #include "Math/Transform.h"
 #include "Entity/BoundingBox.h"
 #include "Frustum.h"
 
+using nlohmann::json;
 using glm::mat4;
 
 namespace octronic::dream
 {
     class SceneRuntime;
     class EntityRuntime;
+	class CameraDefinition;
 
     /**
      * @brief Implements a Camera in 3D Space.
      */
-    class Camera
+    class CameraRuntime : public Runtime
     {
 
     public:
-        Camera(SceneRuntime* parent);
-        ~Camera();
+        CameraRuntime(CameraDefinition* cDef, SceneRuntime* parent);
+        ~CameraRuntime();
 
-        mat4 getViewMatrix() const;
         void update();
 
-        void setTransform(const Transform&);
-        Transform getTransform() const;
+		bool loadFromDefinition() override;
 
+        bool visibleInFrustum(const EntityRuntime*)const;
+        bool visibleInFrustum(const BoundingBox&) const;
+        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
         bool containedInFrustum(const EntityRuntime*) const;
         bool containedInFrustum(const BoundingBox&) const;
         bool containedInFrustumAfterTransform(const EntityRuntime*,const mat4& tx) const;
         bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const EntityRuntime*sor, const vec3& tx) const;
 
-        bool visibleInFrustum(const EntityRuntime*)const;
-        bool visibleInFrustum(const BoundingBox&) const;
+        void setTransform(const Transform&);
+        Transform getTransform() const;
 
+        mat4 getViewMatrix() const;
         mat4 getProjectionMatrix() const;
         void setProjectionMatrix(const mat4& projectionMatrix);
 
         void updateProjectionMatrix(float w, float h);
-        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
 
         void setFieldOfView(float fov);
         float getFieldOfView() const;
 
-    private:
-        void setFocusTranslationFromTarget(const vec3& target);
+        UuidType getCameraEntityUuid() const;
+        void setCameraEntityUuid(UuidType u);
+
+        EntityRuntime* getCameraEntityRuntime() const;
+        void setCameraEntityRuntime(EntityRuntime* er);
+
+        void setMeshCullDistance(float);
+        float getMeshCullDistance() const;
+
+        float getMinDrawDistance() const;
+        void setMinDrawDistance(float);
+
+        float getMaxDrawDistance() const;
+        void setMaxDrawDistance(float);
+
+        void setUseEntity(bool ue);
+        bool getUseEntity() const;
+
+		void captureDefinition();
 
     private:
-        float mFieldOfView;
-        Transform mTransform;
+        Transform mFreeTransform;
+        UuidType mCameraEntityUuid;
+        EntityRuntime* mCameraEntityRuntime;
         mat4 mProjectionMatrix;
         Frustum mFrustum;
         SceneRuntime* mSceneRuntime;
+        bool mUseEntity;
+        float mFieldOfView;
+        float mMinDrawDistance;
+        float mMaxDrawDistance;
+        float mMeshCullDistance;
     };
 }

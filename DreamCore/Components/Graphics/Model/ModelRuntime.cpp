@@ -132,6 +132,16 @@ namespace octronic::dream
                 vertex.Position = glm::vec3(0.0f);
             }
 
+            if(mesh->mTextureCoords[0])
+            {
+                vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
+                vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
+            }
+            else
+            {
+                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+            }
+
             if (mesh->mNormals)
             {
                 vertex.Normal.x = mesh->mNormals[i].x;
@@ -141,38 +151,6 @@ namespace octronic::dream
             else
             {
                 vertex.Normal = glm::vec3(0.0f);
-            }
-
-            if (mesh->mTangents)
-            {
-                vertex.Tangent.x = mesh->mTangents[i].x;
-                vertex.Tangent.y = mesh->mTangents[i].y;
-                vertex.Tangent.z = mesh->mTangents[i].z;
-            }
-            else
-            {
-                vertex.Tangent = glm::vec3(0.0f);
-            }
-
-            if (mesh->mBitangents)
-            {
-                vertex.Bitangent.x = mesh->mBitangents[i].x;
-                vertex.Bitangent.y = mesh->mBitangents[i].y;
-                vertex.Bitangent.z = mesh->mBitangents[i].z;
-            }
-            else
-            {
-                vertex.Bitangent = glm::vec3(0.0f);
-            }
-
-            if(mesh->mTextureCoords[0])
-            {
-                vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
-                vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
-            }
-            else
-            {
-                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
             }
 
             vertices.push_back(vertex);
@@ -186,12 +164,12 @@ namespace octronic::dream
     {
         vector<GLuint> indices;
         // Process indices
-        for(GLuint i = 0; i < mesh->mNumFaces; i++)
+        for(unsigned int face_index = 0; face_index < mesh->mNumFaces; face_index++)
         {
-            aiFace face = mesh->mFaces[i];
-            for(GLuint j = 0; j < face.mNumIndices; j++)
+            aiFace face = mesh->mFaces[face_index];
+            for(unsigned int indices_index = 0; indices_index < face.mNumIndices; indices_index++)
             {
-                indices.push_back(face.mIndices[j]);
+                indices.push_back(face.mIndices[indices_index]);
             }
         }
         return indices;
@@ -226,13 +204,11 @@ namespace octronic::dream
                 return nullptr;
             }
             LOG_DEBUG( "ModelRuntime: Using Material {}" , material->getName());
-            BoundingBox bb;
-            updateBoundingBox(mesh,bb);
+            BoundingBox bb = generateBoundingBox(mesh);
             mBoundingBox.integrate(bb);
 
-            auto aMesh = make_shared<ModelMesh>(
-            	this, string(mesh->mName.C_Str()), vertices, indices,
-            	material, bb);
+            auto aMesh = make_shared<ModelMesh>(this, string(mesh->mName.C_Str()),
+                                                vertices, indices, material, bb);
             material->addMesh(aMesh.get());
             material->debug();
             return aMesh;
@@ -245,16 +221,25 @@ namespace octronic::dream
         return nullptr;
     }
 
-    BoundingBox&
+    BoundingBox
     ModelRuntime::getBoundingBox
     ()
+    const
     {
         return mBoundingBox;
+    }
+
+    void
+    ModelRuntime::setBoundingBox
+    (const BoundingBox& bb)
+    {
+        mBoundingBox = bb;
     }
 
     vector<string>
     ModelRuntime::getMaterialNames
     ()
+    const
     {
         return mMaterialNames;
     }
@@ -275,6 +260,12 @@ namespace octronic::dream
         StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
         File* modelFile = fm->openFile(path);
 
+        if (modelFile == nullptr)
+        {
+            LOG_ERROR("ModelRuntime: Could not open Model file");
+            return nullptr;
+        }
+
         if (!modelFile->exists())
         {
             LOG_ERROR("ModelRuntime: Model file does not exist");
@@ -286,12 +277,13 @@ namespace octronic::dream
             LOG_ERROR("ModelRuntime: Error reading model file");
             fm->closeFile(modelFile);
             modelFile = nullptr;
+            return nullptr;
         }
 
         auto importer = make_shared<Importer>();
-        importer->ReadFileFromMemory(
-                    modelFile->getBinaryData(), modelFile->getBinaryDataSize(),
-                    aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        importer->ReadFileFromMemory(modelFile->getBinaryData(),
+    	    modelFile->getBinaryDataSize(),
+    	    aiProcess_Triangulate | aiProcess_FlipUVs);
 
         fm->closeFile(modelFile);
         modelFile = nullptr;
@@ -306,54 +298,39 @@ namespace octronic::dream
         return importer;
     }
 
-    void
-    ModelRuntime::updateBoundingBox
-    (aiMesh* mesh, BoundingBox& bb)
+    BoundingBox
+    ModelRuntime::generateBoundingBox
+    (aiMesh* mesh)
+    const
     {
         LOG_DEBUG( "ModelRuntime: Updating bounding box");
+
+        BoundingBox bb;
+        vec3 min, max;
+		min = bb.getMinimum();
+		max = bb.getMaximum();
 
         for (unsigned int i=0; i < mesh->mNumVertices; i++)
         {
             aiVector3D vertex = mesh->mVertices[i];
 
             // Maximum
-            if (bb.getMaximum().x < vertex.x)
-            {
-                bb.getMaximum().x = vertex.x;
-            }
-
-            if (bb.getMaximum().y > vertex.y)
-            {
-                bb.getMaximum().y = vertex.y;
-            }
-
-            if (bb.getMaximum().z < vertex.z)
-            {
-                bb.getMaximum().z = vertex.z;
-            }
-
+            if (max.x < vertex.x) max.x = vertex.x;
+            if (max.y < vertex.y) max.y = vertex.y;
+            if (max.z < vertex.z) max.z = vertex.z;
             // Maximum
-            if (bb.getMinimum().x > vertex.x)
-            {
-                bb.getMinimum().x = vertex.x;
-            }
-
-            if (bb.getMinimum().y > vertex.y)
-            {
-                bb.getMinimum().y = vertex.y;
-            }
-
-            if (bb.getMinimum().z > vertex.z)
-            {
-                bb.getMinimum().z = vertex.z;
-            }
+            if (min.x > vertex.x) min.x = vertex.x;
+            if (min.y > vertex.y) min.y = vertex.y;
+            if (min.z > vertex.z) min.z = vertex.z;
         }
 
         float maxBound;
-        maxBound = (bb.getMaximum().x > bb.getMaximum().y ? bb.getMaximum().x : bb.getMaximum().y);
-        maxBound = (maxBound > bb.getMaximum().z ? maxBound : bb.getMaximum().z);
+        maxBound = (max.x > max.y ? max.x : max.y);
+        maxBound = (maxBound > max.z ? maxBound : max.z);
+        bb.setMinimum(min);
+        bb.setMaximum(max);
         bb.setMaxDimension(maxBound);
-
+        return bb;
     }
 
     mat4 ModelRuntime::getGlobalInverseTransform() const
@@ -368,6 +345,7 @@ namespace octronic::dream
 
     glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
     (const aiMatrix4x4& from)
+    const
     {
         glm::mat4 to;
         to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
@@ -380,8 +358,6 @@ namespace octronic::dream
     void ModelRuntime::pushTasks()
     {
         auto projectTaskQueue = mProjectRuntimeHandle->getTaskQueue();
-        auto gfxTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getTaskQueue();
-        auto gfxDestructionTaskQueue = mProjectRuntimeHandle->getGraphicsComponent()->getDestructionTaskQueue();
 
         if (mReloadFlag)
         {

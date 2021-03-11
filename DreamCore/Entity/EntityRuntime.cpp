@@ -37,7 +37,6 @@
 #include "Project/ProjectRuntime.h"
 #include "Project/ProjectDefinition.h"
 #include "Common/Uuid.h"
-#include "Components/Script/ScriptTasks.h"
 #include "Components/Time.h"
 #include "Components/Cache.h"
 
@@ -46,14 +45,13 @@
 using std::vector;
 using std::make_shared;
 
-
 namespace octronic::dream
 {
     EntityRuntime::EntityRuntime(ProjectRuntime* pr, SceneRuntime* sr,EntityDefinition* sd,bool randomUuid)
         : Runtime(sd),
           mProjectRuntimeHandle(pr),
           mSceneRuntime(sr),
-          mParentRuntime(nullptr),
+          mParentEntityRuntime(nullptr),
 
           mAnimationRuntime(nullptr),
           mAudioRuntime(nullptr),
@@ -69,16 +67,13 @@ namespace octronic::dream
 
           mBoundingBox(),
           mDeleted(false),
-          mHidden(false),
-          mAlwaysDraw(false),
           mRandomUuid(randomUuid),
-          mObjectLifetime(0),
 
           mScriptCreateStateTask(nullptr),
           mScriptOnInitTask(nullptr),
           mScriptOnUpdateTask(nullptr),
           mScriptOnEventTask(nullptr),
-          mScriptRemoveStateTask(make_shared<EntityScriptRemoveStateTask>(sr->getProjectRuntime(), mUuid)),
+          mScriptRemoveStateTask(nullptr),
 
           mFontText(""),
           mFontColor(1.f),
@@ -86,19 +81,10 @@ namespace octronic::dream
     {
         LOG_TRACE("EntityRuntime: {}", __FUNCTION__);
 
-        mEventQueue.reserve(10);
-
         if (mRandomUuid)
         {
             mUuid = Uuid::generateUuid();
         }
-
-        if (static_cast<SceneDefinition*>(mSceneRuntime->getDefinitionHandle())->getPlayerObject() == mUuid)
-        {
-            mSceneRuntime->setPlayerEntity(this);
-        }
-
-        setAttribute("uuid",getUuidString());
     }
 
     EntityRuntime::~EntityRuntime
@@ -196,6 +182,7 @@ namespace octronic::dream
         if (mScriptRuntime)
         {
             mSceneRuntime->getProjectRuntime()->getDestructionTaskQueue()->pushTask(mScriptRemoveStateTask);
+            mScriptRuntime->removeInstance(this);
         	mScriptRuntime = nullptr;
         }
     }
@@ -355,20 +342,6 @@ namespace octronic::dream
         return mAssetDefinitions;
     }
 
-    bool
-    EntityRuntime::getAlwaysDraw
-    () const
-    {
-        return mAlwaysDraw;
-    }
-
-    void
-    EntityRuntime::setAlwaysDraw
-    (bool alwaysDraw)
-    {
-        mAlwaysDraw = alwaysDraw;
-    }
-
     PhysicsObjectRuntime*
     EntityRuntime::getPhysicsObjectRuntime
     ()
@@ -382,7 +355,7 @@ namespace octronic::dream
     ()
     const
     {
-        return mTransform;
+        return mCurrentTransform;
     }
 
     void
@@ -667,7 +640,7 @@ namespace octronic::dream
         auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
         if (cache != nullptr)
         {
-            mModelRuntime = static_cast<ModelRuntime*>(cache->getRuntimeHandle(definition));
+            mModelRuntime = cache->getRuntimeHandle(definition);
             if (mModelRuntime != nullptr)
             {
                 mModelRuntime->addInstance(this);
@@ -690,19 +663,15 @@ namespace octronic::dream
         auto scriptCache = mSceneRuntime->getProjectRuntime()->getScriptCache();
         if (scriptCache)
         {
-            mScriptRuntime = static_cast<ScriptRuntime*>(scriptCache->getRuntimeHandle(definition));
+            mScriptRuntime = scriptCache->getRuntimeHandle(definition);
             if (mScriptRuntime)
             {
                 mScriptCreateStateTask = make_shared<EntityScriptCreateStateTask>(mProjectRuntimeHandle, this);
-                mScriptOnInitTask       = make_shared<EntityScriptOnInitTask>(mProjectRuntimeHandle, this);
-                mScriptOnUpdateTask     = make_shared<EntityScriptOnUpdateTask>(mProjectRuntimeHandle,this);
-                mScriptOnEventTask      = make_shared<EntityScriptOnEventTask>(mProjectRuntimeHandle,this);
+                mScriptOnInitTask      = make_shared<EntityScriptOnInitTask>(mProjectRuntimeHandle, this);
+                mScriptOnUpdateTask    = make_shared<EntityScriptOnUpdateTask>(mProjectRuntimeHandle,this);
+                mScriptOnEventTask     = make_shared<EntityScriptOnEventTask>(mProjectRuntimeHandle,this);
+                mScriptRemoveStateTask = make_shared<EntityScriptRemoveStateTask>(mProjectRuntimeHandle,getUuid(), mScriptRuntime);
 
-                mScriptCreateStateTask->setScript(mScriptRuntime);
-                mScriptOnInitTask->setScript(mScriptRuntime);
-                mScriptOnUpdateTask->setScript(mScriptRuntime);
-                mScriptOnEventTask->setScript(mScriptRuntime);
-                mScriptRemoveStateTask->setScript(mScriptRuntime);
                 mScriptRuntime->addInstance(this);
 
                 return true;
@@ -757,17 +726,6 @@ namespace octronic::dream
 
     // Accessors ===============================================================
 
-    TransformSpace EntityRuntime::getTransformSpace()
-    const
-    {
-        return mTransformSpace;
-    }
-
-    void EntityRuntime::setTransformSpace(TransformSpace t)
-    {
-        mTransformSpace = t;
-    }
-
     EntityRuntime*
     EntityRuntime::getChildRuntimeByUuid
     (UuidType uuid)
@@ -808,20 +766,20 @@ namespace octronic::dream
     }
 
     void
-    EntityRuntime::setParentRuntime
+    EntityRuntime::setParentEntityRuntime
     (EntityRuntime* parent)
     {
-        mParentRuntime = parent;
-        setAttribute("parent",mParentRuntime->getUuidString());
+        mParentEntityRuntime = parent;
+        setAttribute("parent",mParentEntityRuntime->getUuidString());
 
     }
 
     EntityRuntime*
-    EntityRuntime::getParentRuntime
+    EntityRuntime::getParentEntityRuntime
     ()
     const
     {
-        return mParentRuntime;
+        return mParentEntityRuntime;
     }
 
     SceneRuntime*
@@ -843,7 +801,7 @@ namespace octronic::dream
     EntityRuntime::loadChildrenFromDefinition
     (EntityDefinition* definition)
     {
-        vector<EntityDefinition*> definitions = definition->getChildDefinitionsList();
+        vector<EntityDefinition*> definitions = definition->getChildDefinitionsVector();
         for (auto it = begin(definitions); it != end(definitions); it++)
         {
             auto sod = (*it);
@@ -863,16 +821,7 @@ namespace octronic::dream
     EntityRuntime::setTransform
     (const Transform& transform)
     {
-        mTransform = transform;
-    }
-
-    void
-    EntityRuntime::translateWithChildren
-    (const vec3& translation)
-    {
-        applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt){
-                       rt->getTransform().translate(translation);
-                       return static_cast<EntityRuntime*>(nullptr);}));
+        mCurrentTransform = transform;
     }
 
     Transform
@@ -881,13 +830,6 @@ namespace octronic::dream
     const
     {
         return mInitialTransform;
-    }
-
-    void
-    EntityRuntime::translateOffsetInitial
-    (const vec3& tx)
-    {
-        mTransform.setTranslation(mInitialTransform.getTranslation() + tx);
     }
 
     bool
@@ -902,20 +844,6 @@ namespace octronic::dream
     (bool deleted)
     {
         mDeleted = deleted;
-    }
-
-    bool
-    EntityRuntime::getHidden
-    () const
-    {
-        return mHidden;
-    }
-
-    void
-    EntityRuntime::setHidden
-    (bool hidden)
-    {
-        mHidden = hidden;
     }
 
     void
@@ -937,7 +865,7 @@ namespace octronic::dream
     (EntityDefinition* def)
     {
         auto* child = new EntityRuntime(mProjectRuntimeHandle,  mSceneRuntime, def, mRandomUuid);
-        child->setParentRuntime(this);
+        child->setParentEntityRuntime(this);
         if (!child->loadFromDefinition())
         {
             LOG_ERROR("EntityRuntime: Error creating child runtime");
@@ -969,7 +897,7 @@ namespace octronic::dream
 
             // Create child
             auto* child = new EntityRuntime(mProjectRuntimeHandle, mSceneRuntime, def,  true);
-            child->setParentRuntime(this);
+            child->setParentEntityRuntime(this);
             // Use definitoin
             if (!child->loadFromDefinition())
             {
@@ -997,8 +925,7 @@ namespace octronic::dream
             LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
             setName(def->getName());
             setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
-            setHidden(def->getHidden());
-            setTransformSpace(def->getTransformSpace());
+            setTransform(def->getTransform());
             initTransform();
 
             setAssetDefinitionsMap(def->getAssetDefinitionsMap());
@@ -1007,6 +934,7 @@ namespace octronic::dream
             {
                 return false;
             }
+
             if(!loadChildrenFromDefinition(def))
             {
                 return false;
@@ -1041,7 +969,7 @@ namespace octronic::dream
     (const EntityRuntime* other)
     const
     {
-        return mTransform.distanceFrom(other->getTransform());
+        return mCurrentTransform.distanceFrom(other->getTransform());
     }
 
     float
@@ -1049,7 +977,7 @@ namespace octronic::dream
     (const vec3& other)
     const
     {
-        return glm::distance(vec3(mTransform.getMatrix()[3]),other);
+        return glm::distance(mCurrentTransform.getTranslation(),other);
     }
 
     bool
@@ -1164,21 +1092,6 @@ namespace octronic::dream
                    }));
     }
 
-    long
-    EntityRuntime::getObjectLifetime
-    ()
-    const
-    {
-        return mObjectLifetime;
-    }
-
-    void
-    EntityRuntime::setObjectLifetime
-    (long d)
-    {
-        mObjectLifetime = d;
-    }
-
     shared_ptr<EntityScriptOnInitTask>
     EntityRuntime::getScriptOnInitTask
     ()
@@ -1208,14 +1121,6 @@ namespace octronic::dream
     const
     {
         return mScriptCreateStateTask;
-    }
-
-    void
-    EntityRuntime::updateLifetime
-    ()
-    {
-        long timeDelta = getSceneRuntime()->getProjectRuntime()->getTime()->getFrameTimeDelta();
-        mObjectLifetime += timeDelta;
     }
 
     string
@@ -1273,14 +1178,6 @@ namespace octronic::dream
     void EntityRuntime::setFontScale(float fontScale)
     {
         mFontScale = fontScale;
-    }
-
-    bool
-    EntityRuntime::isPlayerObject
-    ()
-    const
-    {
-        return mSceneRuntime->getPlayerEntity() == this;
     }
 
     void EntityRuntime::setScriptError(bool e)

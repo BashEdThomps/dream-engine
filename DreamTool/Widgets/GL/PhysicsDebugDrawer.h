@@ -16,46 +16,19 @@
 
 #pragma once
 
-#include "Components/Graphics/Shader/ShaderRuntime.h"
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-#include <LinearMath/btVector3.h>
+#include <DreamCore.h>
+#include "GLWidget.h"
 #include <LinearMath/btIDebugDraw.h>
 
-using std::vector;
-using std::string;
-using glm::vec3;
-
-namespace octronic::dream
+namespace octronic::dream::tool
 {
-
-    class Camera;
-
-    struct PhysicsDebugVertex
+    class PhysicsDebugDrawer : public GLWidget, btIDebugDraw
     {
-        vec3 Position;
-        vec3 Color;
-    };
-
-    class PhysicsDebugDrawer : public btIDebugDraw
-    {
-        Camera* mCamera;
-        GLuint mShaderProgram;
-        GLuint mVAO, mVBO;
-        vector<PhysicsDebugVertex> mVertexBuffer;
-        int mDebugMode;
 
     public:
-        PhysicsDebugDrawer();
+        PhysicsDebugDrawer(DreamToolContext* ctx);
         ~PhysicsDebugDrawer() override;
 
-        void init();
-        void initShader();
-        void initVaoVbo();
         void drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) override;
         void drawLine(const btVector3& from,const btVector3& to,const btVector3& color) override;
         void drawSphere (const btVector3& p, btScalar radius, const btVector3& color) override;
@@ -64,13 +37,9 @@ namespace octronic::dream
         void reportErrorWarning(const char* warningString) override;
         void draw3dText(const btVector3& location,const char* textString) override;
         void setDebugMode(int debugMode) override;
-        int  getDebugMode() const  override { return mDebugMode;}
+        int  getDebugMode() const override;
         string btVecToString(const btVector3&);
-        void drawAll();
-        void preRender();
-        void postRender();
-
-        void setCamera(Camera* camera);
+	private:
+        int mDebugMode;
     };
-
-} // End of Dream
+}

@@ -4,7 +4,6 @@
 
 #include "PhysicsObjectRuntime.h"
 #include "PhysicsComponent.h"
-#include "PhysicsDebugDrawer.h"
 
 namespace octronic::dream
 {
@@ -40,20 +39,5 @@ namespace octronic::dream
         LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getName());
         mComponent->stepSimulation();
         setState(TASK_STATE_COMPLETED);
-    }
-
-    PhysicsDrawDebugTask::PhysicsDrawDebugTask
-    (ProjectRuntime* pr, PhysicsComponent* cp)
-        : GraphicsTask(pr,"PhysicsDrawDebugTask"), mComponent(cp)
-    {
-    }
-
-    void
-    PhysicsDrawDebugTask::execute
-    ()
-    {
-        LOG_TRACE("PhysicsDrawDebugTask: Executing on Graphics thread");
-        mComponent->getDebugDrawer()->drawAll();
-        setState(TaskState::TASK_STATE_COMPLETED);
     }
 }

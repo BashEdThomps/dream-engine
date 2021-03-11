@@ -53,9 +53,10 @@ namespace octronic::dream
         ~ModelRuntime() override;
         bool loadFromDefinition() override;
 
-        BoundingBox& getBoundingBox();
+        BoundingBox getBoundingBox() const;
+        void setBoundingBox(const BoundingBox& bb);
 
-        vector<string> getMaterialNames();
+        vector<string> getMaterialNames() const;
         vector<shared_ptr<ModelMesh>>* getMeshes();
 
         mat4 getGlobalInverseTransform() const;
@@ -64,14 +65,14 @@ namespace octronic::dream
         void pushTasks() override;
 
     private: // Methods
-        void updateBoundingBox(aiMesh* mesh, BoundingBox& bb);
+        BoundingBox generateBoundingBox(aiMesh* mesh) const;
         void loadModel(string);
         shared_ptr<Importer> loadImporter(string path);
         void processNode(aiNode*, const aiScene*);
         shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
-        mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from);
+        mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from) const;
 
     private:
         BoundingBox mBoundingBox;

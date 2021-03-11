@@ -9,10 +9,7 @@ namespace octronic::dream::tool
     (DreamToolContext* p)
         : GLWidget(p,false)
     {
-        for (auto index : LightModelIndices)
-        {
-            mVertexBuffer.push_back(LightModelVertices.at(index));
-        }
+
     }
 
 
@@ -21,239 +18,112 @@ namespace octronic::dream::tool
     {
     }
 
-    void LightViewer::draw()
-    {
-        GLCheckError();
-        vector<AssetRuntime*> lightRuntimes;
-        Project* proj = mContext->getProject();
-        if (proj)
-        {
-            ProjectRuntime* pRuntime = proj->getRuntime();
-            if (pRuntime)
-            {
-                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
-                if (sRunt)
-                {
-                    /*
-                    lightRuntimes = sRunt->getAssetRuntimes(AssetType::ASSET_TYPE_ENUM_LIGHT);
-                    Camera* cam = sRunt->getCamera();
-                    if (cam)
-                    {
-                        mProjectionMatrix = cam->getProjectionMatrix();
-                        mViewMatrix = cam->getViewMatrix();
-                    }
-                    */
-                }
-            }
-        }
-
-        if (!mVertexBuffer.empty())
-        {
-            // Enable shader program
-            glUseProgram(mShaderProgram);
-            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-            GLCheckError();
-
-            // Vertex Array
-            glBindVertexArray(mVao);
-            ShaderRuntime::CurrentVAO = mVao;
-            GLCheckError();
-
-            glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderRuntime::CurrentVBO = mVbo;
-            GLCheckError();
-
-            //glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(LineVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-            //GLCheckError();
-
-            // Set the projection matrix
-            //GLint projUniform = glGetUniformLocation(mShaderProgram, "projection");
-            GLCheckError();
-            if (mProjectionUniform == -1)
-            {
-                LOG_ERROR("LightViewer: Unable to find Uniform Location for projection");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-                GLCheckError();
-            }
-
-            // Set the view matrix
-            GLCheckError();
-            if (mViewUniform == -1)
-            {
-                LOG_ERROR("LightViewer: Unable to find Uniform Location for view");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-                GLCheckError();
-            }
-
-
-            for (auto inst : lightRuntimes)
-            {
-                /*
-                auto light = dynamic_cast<LightRuntime*>(inst);
-                mat4 modelMatrix = light->getEntityRuntimeHandle()->getTransform().getMatrix();
-                vec3 lightColorVec = light->getDiffuse();
-                // Set the projection matrix
-                if (mModelUniform == -1)
-                {
-                    LOG_ERROR("LightViewer: Unable to find Uniform Location for model");
-                    break;
-                }
-                else
-                {
-                    glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-                    GLCheckError();
-                }
-
-                if (mLightColorUniform == -1)
-                {
-                   LOG_ERROR("LightViewer: Unable to find uniform location for lightColor");
-                   break;
-                }
-                else
-                {
-                    glUniform3fv(mLightColorUniform,1,glm::value_ptr(lightColorVec));
-                    GLCheckError();
-                }
-                // Draw
-                glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-                GLCheckError();
-                */
-            }
-        }
-    }
-
-    void LightViewer::init()
-    {
-       GLWidget::init();
-       // Vertex Array
-       glBindVertexArray(mVao);
-       ShaderRuntime::CurrentVAO = mVao;
-       GLCheckError();
-
-       glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-       ShaderRuntime::CurrentVBO = mVbo;
-       GLCheckError();
-
-       glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-       GLCheckError();
-
-       glBindVertexArray(0);
-
-        mLightColorUniform = glGetUniformLocation(mShaderProgram, "lightColor");
-        GLCheckError();
-    }
-
     void
-    LightViewer::setShader
+    LightViewer::init
     ()
     {
-        LOG_TRACE("LightViewer: Compiling LightViewer Shaders");
-        mVertexShaderSource =
-            "#version 330 core\n"
-            "\n"
-            "layout (location = 0) in vec3 position;\n"
-            "layout (location = 1) in vec3 color;\n"
-            "\n"
-            "out vec3 Color;\n"
-            "\n"
-            "uniform vec3 lightColor;\n"
-            "uniform mat4 model;\n"
-            "uniform mat4 view;\n"
-            "uniform mat4 projection;\n"
-            "\n"
-            "void main () {\n"
-            "    gl_Position = projection * view * model * vec4(position,1.0) ;\n"
-            "    Color = lightColor;\n"
-            "}";
-
-        mFragmentShaderSource =
-            "#version 330 core\n"
-            "\n"
-            "in vec3  Color;\n"
-            "\n"
-            "out vec4 fragColor;\n"
-            "\n"
-            "void main() { \n"
-            "    fragColor = vec4(Color,1.0);\n"
-            "}";
+		GLWidget::init();
+        clearTriangleVertexBuffer();
+        for (auto index : LightModelIndices)
+        {
+            addTriangleVertex(LightModelVertices.at(index));
+        }
+        submitTriangleVertexBuffer();
     }
 
-    const vector<GLWidgetVertex> LightViewer::LightModelVertices =
+    void LightViewer::draw
+    ()
     {
-        GLWidgetVertex{vec3(-0.125f, 0.500f, 0.000f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.500f, 0.000f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.462f, -0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.462f, -0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.354f, -0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.354f, -0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.191f, -0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.191f, -0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.000f, -0.500f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.000f, -0.500f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.191f, -0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.191f, -0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.354f, -0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.354f, -0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.462f, -0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.462f, -0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.500f, -0.000f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.500f, -0.000f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.462f, 0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.462f, 0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.354f, 0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.354f, 0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.191f, 0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.191f, 0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.000f, 0.500f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.000f, 0.500f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.191f, 0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.191f, 0.462f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.354f, 0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.354f, 0.354f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.462f, 0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.462f, 0.191f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.745f, -0.049f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.707f, -0.240f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.707f, -0.240f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.745f, -0.049f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.492f, -0.561f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.492f, -0.561f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.330f, -0.670f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.330f, -0.670f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.049f, -0.745f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.049f, -0.745f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.240f, -0.707f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.240f, -0.707f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.561f, -0.492f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.561f, -0.492f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.670f, -0.330f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.670f, -0.330f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.745f, 0.049f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.745f, 0.049f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.707f, 0.240f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.707f, 0.240f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.492f, 0.561f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.492f, 0.561f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f,-0.330f, 0.670f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.330f, 0.670f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.049f, 0.745f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.049f, 0.745f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.240f, 0.707f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.240f, 0.707f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.561f, 0.492f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.561f, 0.492f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.670f, 0.330f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f, 0.670f, 0.330f), vec3(1.0f)},
-        GLWidgetVertex{vec3(-0.125f, 0.000f, -0.000f), vec3(1.0f)},
-        GLWidgetVertex{vec3(0.125f,-0.000f, 0.000f), vec3(1.0f)},
+        Project* project = mContext->getProject();
+        if (project)
+        {
+			ProjectRuntime* projectRuntime = project->getRuntime();
+            if (projectRuntime)
+            {
+               GraphicsComponent* gc = projectRuntime->getGraphicsComponent();
+               if (gc)
+               {
+                  size_t num_lights = gc->getLightCount();
+                  for (size_t i=0; i<num_lights; i++)
+                  {
+                     vec3 color = gc->getLightColor(i);
+                     vec3 position = gc->getLightPosition(i);
+                     mTransform.setTranslation(position);
+                     GLWidget::draw();
+                  }
+               }
+            }
+        }
+    }
+
+    const vector<TranslationColorVertex> LightViewer::LightModelVertices =
+    {
+        {vec3(-0.125f, 0.500f, 0.000f),  vec4(1.0f)},
+        {vec3(0.125f, 0.500f, 0.000f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.462f, -0.191f), vec4(1.0f)},
+        {vec3(0.125f, 0.462f, -0.191f),  vec4(1.0f)},
+        {vec3(-0.125f, 0.354f, -0.354f), vec4(1.0f)},
+        {vec3(0.125f, 0.354f, -0.354f),  vec4(1.0f)},
+        {vec3(-0.125f, 0.191f, -0.462f), vec4(1.0f)},
+        {vec3(0.125f, 0.191f, -0.462f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.000f, -0.500f), vec4(1.0f)},
+        {vec3(0.125f,-0.000f, -0.500f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.191f, -0.462f), vec4(1.0f)},
+        {vec3(0.125f,-0.191f, -0.462f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.354f, -0.354f), vec4(1.0f)},
+        {vec3(0.125f,-0.354f, -0.354f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.462f, -0.191f), vec4(1.0f)},
+        {vec3(0.125f,-0.462f, -0.191f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.500f, -0.000f), vec4(1.0f)},
+        {vec3(0.125f,-0.500f, -0.000f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.462f, 0.191f),  vec4(1.0f)},
+        {vec3(0.125f,-0.462f, 0.191f),   vec4(1.0f)},
+        {vec3(-0.125f,-0.354f, 0.354f),  vec4(1.0f)},
+        {vec3(0.125f,-0.354f, 0.354f),   vec4(1.0f)},
+        {vec3(-0.125f,-0.191f, 0.462f),  vec4(1.0f)},
+        {vec3(0.125f,-0.191f, 0.462f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.000f, 0.500f),  vec4(1.0f)},
+        {vec3(0.125f, 0.000f, 0.500f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.191f, 0.462f),  vec4(1.0f)},
+        {vec3(0.125f, 0.191f, 0.462f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.354f, 0.354f),  vec4(1.0f)},
+        {vec3(0.125f, 0.354f, 0.354f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.462f, 0.191f),  vec4(1.0f)},
+        {vec3(0.125f, 0.462f, 0.191f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.745f, -0.049f), vec4(1.0f)},
+        {vec3(-0.125f, 0.707f, -0.240f), vec4(1.0f)},
+        {vec3(0.125f, 0.707f, -0.240f),  vec4(1.0f)},
+        {vec3(0.125f, 0.745f, -0.049f),  vec4(1.0f)},
+        {vec3(0.125f, 0.492f, -0.561f),  vec4(1.0f)},
+        {vec3(-0.125f, 0.492f, -0.561f), vec4(1.0f)},
+        {vec3(-0.125f, 0.330f, -0.670f), vec4(1.0f)},
+        {vec3(0.125f, 0.330f, -0.670f),  vec4(1.0f)},
+        {vec3(0.125f,-0.049f, -0.745f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.049f, -0.745f), vec4(1.0f)},
+        {vec3(-0.125f,-0.240f, -0.707f), vec4(1.0f)},
+        {vec3(0.125f,-0.240f, -0.707f),  vec4(1.0f)},
+        {vec3(0.125f,-0.561f, -0.492f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.561f, -0.492f), vec4(1.0f)},
+        {vec3(-0.125f,-0.670f, -0.330f), vec4(1.0f)},
+        {vec3(0.125f,-0.670f, -0.330f),  vec4(1.0f)},
+        {vec3(0.125f,-0.745f, 0.049f),   vec4(1.0f)},
+        {vec3(-0.125f,-0.745f, 0.049f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.707f, 0.240f),  vec4(1.0f)},
+        {vec3(0.125f,-0.707f, 0.240f),   vec4(1.0f)},
+        {vec3(0.125f,-0.492f, 0.561f),   vec4(1.0f)},
+        {vec3(-0.125f,-0.492f, 0.561f),  vec4(1.0f)},
+        {vec3(-0.125f,-0.330f, 0.670f),  vec4(1.0f)},
+        {vec3(0.125f,-0.330f, 0.670f),   vec4(1.0f)},
+        {vec3(0.125f, 0.049f, 0.745f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.049f, 0.745f),  vec4(1.0f)},
+        {vec3(-0.125f, 0.240f, 0.707f),  vec4(1.0f)},
+        {vec3(0.125f, 0.240f, 0.707f),   vec4(1.0f)},
+        {vec3(0.125f, 0.561f, 0.492f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.561f, 0.492f),  vec4(1.0f)},
+        {vec3(-0.125f, 0.670f, 0.330f),  vec4(1.0f)},
+        {vec3(0.125f, 0.670f, 0.330f),   vec4(1.0f)},
+        {vec3(-0.125f, 0.000f, -0.000f), vec4(1.0f)},
+        {vec3(0.125f,-0.000f, 0.000f),   vec4(1.0f)},
     };
 
     const vector<GLuint> LightViewer::LightModelIndices =

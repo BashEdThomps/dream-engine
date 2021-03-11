@@ -4,67 +4,94 @@ using std::make_shared;
 
 namespace octronic::dream
 {
-    Runtime::Runtime(Definition* def)
+    Runtime::Runtime
+    (Definition* def)
         : mDefinitionHandle(def),
-          mUuid(def == nullptr ? 0 : def->getUuid()),
+          mUuid(def == nullptr ? Uuid::INVALID : def->getUuid()),
           mName(def == nullptr ? "" : def->getName()),
           mLoadFromDefinitionTask(make_shared<RuntimeLoadFromDefinitionTask>(nullptr,this))
-{}
+	{}
 
-    Runtime::~Runtime()
+    Runtime::~Runtime
+    ()
     {
 
     }
 
-    UuidType Runtime::getUuid() const
+    UuidType
+    Runtime::getUuid
+    ()
+    const
     {
         return mUuid;
     }
 
-    string Runtime::getUuidString() const
+    string
+    Runtime::getUuidString
+    ()
+    const
     {
         return std::to_string(mUuid);
     }
 
-    void Runtime::setUuid(UuidType uuid)
+    void
+    Runtime::setUuid
+    (UuidType uuid)
     {
         mUuid = uuid;
     }
 
-    bool Runtime::hasUuid(UuidType uuid) const
+    bool
+    Runtime::hasUuid
+    (UuidType uuid)
+    const
     {
         return mUuid == uuid;
     }
 
-    string Runtime::getName() const
+    string
+    Runtime::getName
+    ()
+    const
     {
         return mName;
     }
 
-    void Runtime::setName(const string& name)
+    void
+    Runtime::setName
+    (const string& name)
     {
         mName = name;
     }
 
-    bool Runtime::hasName(const string& name) const
+    bool
+    Runtime::hasName
+    (const string& name)
+    const
     {
         return getName().compare(name) == 0;
     }
 
-    string Runtime::getNameAndUuidString()
+    string
+    Runtime::getNameAndUuidString
+    ()
     {
         stringstream ss;
         ss << "[" << getName() << " : " << getUuid() << "]";
         return ss.str();
     }
 
-    Definition* Runtime::getDefinitionHandle()
+    Definition*
+    Runtime::getDefinitionHandle
+    ()
     const
     {
         return mDefinitionHandle;
     }
 
-    shared_ptr<RuntimeLoadFromDefinitionTask> Runtime::getLoadFromDefinitionTask()
+    shared_ptr<RuntimeLoadFromDefinitionTask>
+    Runtime::getLoadFromDefinitionTask
+    ()
     const
     {
         return mLoadFromDefinitionTask;

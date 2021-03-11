@@ -48,6 +48,8 @@ namespace octronic::dream::tool
 
         static ImFont* RegularFont;
         static ImFont* MonoFont;
+        static float MouseWheelX;
+        static float MouseWheelY;
 
         GLFWwindow* getGlfwWindow();
         void getCurrentDimensions();

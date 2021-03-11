@@ -16,17 +16,22 @@
 
 #pragma once
 
-#include <memory>
 #include "Components/Component.h"
-#include "Mouse.h"
-#include "Keyboard.h"
-#include "Joystick.h"
+
+#include "MouseState.h"
+#include "KeyboardState.h"
 #include "InputTasks.h"
+#include "JoystickNavigation.h"
+#include "JoystickMapping.h"
+#include "JoystickState.h"
+
+#include <memory>
 
 using std::shared_ptr;
 
 namespace octronic::dream
 {
+    class ScriptRuntime;
     class InputComponent : public Component
     {
     public:
@@ -34,54 +39,43 @@ namespace octronic::dream
         ~InputComponent() override;
 
         bool init() override;
-        bool executeInputScript();
-        void pollData();
 
-        void debugKeyboard() const;
-        void debugMouse() const;
-        void debugState() const;
-
-        bool isKeyDown(int key);
-
-        KeyboardState& getKeyboardState();
+        // Keyboard ============================================================
+        KeyboardState getKeyboardState() const;
         void setKeyboardState(const KeyboardState& keyboardState);
-
-        MouseState& getMouseState();
+        // Mouse ===============================================================
+        MouseState getMouseState() const;
         void setMouseState(const MouseState& mouseState);
-
-        JoystickMapping& getJoystickMapping();
-        JoystickNavigation* getJoystickNavigation();
-        JoystickState& getJoystickState();
-        void setJoystickState(const JoystickState& joystickState);
-
-        float mouseDeltaX();
-        float mouseDeltaY();
-
-        shared_ptr<InputPollDataTask> getPollDataTask();
-        shared_ptr<InputExecuteScriptTask> getExecuteScriptTask();
-
-        SceneRuntime *getCurrentSceneRuntime() const;
-        void setCurrentSceneRuntime(SceneRuntime *currentSceneRuntime);
+        // Joystick ============================================================
+        JoystickMapping getJoystickMapping() const;
+        shared_ptr<JoystickNavigation> getJoystickNavigation() const;
         int getJoystickCount() const;
         void setJoystickCount(int joystickCount);
-
+        JoystickState getJoystickState() const;
+        void setJoystickState(const JoystickState& joystickState);
+        // Scripting ===========================================================
+        bool registerInputScript();
+        bool executeInputScript();
+        bool removeInputScript(UuidType id);
+        // Tasks ===============================================================
+        shared_ptr<InputRegisterScriptTask> getRegisterScriptTask() const;
+        shared_ptr<InputRemoveScriptTask> getRemoveScriptTask() const;
+        void pollData();
         void pushTasks() override;
-
     private:
-        SceneRuntime* mCurrentSceneRuntime;
-
+        // Keyboard
         KeyboardState mKeyboardState;
-        KeyboardState mLastKeyboardState;
-
+        // Mouse
         MouseState mMouseState;
-        MouseState mLastMouseState;
-
+        // Joystick
         int mJoystickCount;
         JoystickState mJoystickState;
-        JoystickState mLastJoystickState;
         JoystickMapping mJoystickMapping;
+        // Tasks
         shared_ptr<InputPollDataTask> mPollDataTask;
+        shared_ptr<InputRegisterScriptTask> mRegisterScriptTask;
         shared_ptr<InputExecuteScriptTask> mExecuteScriptTask;
+        shared_ptr<InputRemoveScriptTask> mRemoveScriptTask;
         shared_ptr<JoystickNavigation> mJoystickNavigation;
     };
 }

@@ -11,5 +11,10 @@ namespace octronic::dream::tool
         ToolPropertiesWindow(DreamToolContext* p);
         ~ToolPropertiesWindow() override;
         void draw() override;
+    protected:
+        void drawCursorSettings();
+        void drawSelectionSettings();
+        void drawGridSettings();
+    	void drawLightIndicatorSettings();
     };
 }

@@ -19,7 +19,7 @@
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
 #include "Components/Graphics/Model/ModelMesh.h"
-#include "Components/Graphics/Camera.h"
+#include "Components/Graphics/CameraRuntime.h"
 #include "Project/ProjectRuntime.h"
 #include "Components/Cache.h"
 

@@ -49,6 +49,8 @@ namespace octronic::dream
         bool getNeedsUpdate() const;
         void setNeedsUpdate(bool needsUpdate);
 
+        size_t getDataSize() const;
+
     private:
         void deleteData();
 
@@ -56,6 +58,7 @@ namespace octronic::dream
         UniformType mType;
         string      mName;
         void*       mData;
+        size_t      mDataSize;
         size_t      mCount;
         GLint       mLocation;
         bool        mNeedsUpdate;

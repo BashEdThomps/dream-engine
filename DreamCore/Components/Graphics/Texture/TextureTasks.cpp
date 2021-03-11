@@ -23,6 +23,8 @@ namespace octronic::dream
         {
             setState(TaskState::TASK_STATE_COMPLETED);
         }
+
+        GLCheckError();
     }
 
     // TextureRenderCubeMapTsk =================================================
@@ -42,12 +44,16 @@ namespace octronic::dream
             !mTextureRuntimeHandle->renderPreFilterCubeMap() ||
             !mTextureRuntimeHandle->renderBrdfLut())
         {
+
             setState(TaskState::TASK_STATE_DEFERRED);
         }
         else
         {
             setState(TaskState::TASK_STATE_COMPLETED);
         }
+
+        GLCheckError();
+
     }
 
     // TextureRemoveFromGLTask =================================================
@@ -78,37 +84,27 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("TextureRemoveFromGLTask: for texture {}, Executing on Graphics thread",mTextureID);
-        // Base Texture
+        // Textures
         if (mTextureID > 0) glDeleteTextures(1,&mTextureID);
-        // Environment
-        if (mCaptureFBO > 0) glDeleteBuffers(1,&mCaptureFBO);
-        if (mCaptureRBO > 0) glDeleteBuffers(1,&mCaptureRBO);
         if (mEquiToCubeTexture > 0) glDeleteTextures(1,&mEquiToCubeTexture);
         if (mIrradianceMapTexture > 0) glDeleteTextures(1,&mIrradianceMapTexture);
         if (mPreFilterTexture > 0) glDeleteTextures(1,&mPreFilterTexture);
         if (mBrdfLutTexture > 0) glDeleteTextures(1,&mBrdfLutTexture);
-        // Cube
-        if(mCubeVAO > 0) glDeleteBuffers(1, &mCubeVAO);
-        if(mCubeVBO > 0) glDeleteBuffers(1, &mCubeVBO);
-        // Quad
-        if(mQuadVAO > 0) glDeleteBuffers(1, &mQuadVAO);
-        if(mQuadVBO > 0) glDeleteBuffers(1, &mQuadVBO);
 
-        // Base Texture
-        mTextureID = 0;
         // Environment
-        mCaptureFBO = 0;
-        mCaptureRBO = 0;
-        mEquiToCubeTexture = 0;
-        mIrradianceMapTexture = 0;
-        mPreFilterTexture = 0;
-        mBrdfLutTexture = 0;
+        if (mCaptureRBO > 0) glDeleteRenderbuffers(1,&mCaptureRBO);
+        if (mCaptureFBO > 0) glDeleteFramebuffers(1,&mCaptureFBO);
+
         // Cube
-        mCubeVAO = 0;
-        mCubeVBO = 0;
+        if(mCubeVBO > 0) glDeleteBuffers(1, &mCubeVBO);
+        if(mCubeVAO > 0) glDeleteVertexArrays(1, &mCubeVAO);
         // Quad
-        mQuadVAO = 0;
-    	mQuadVBO = 0;
+        if(mQuadVBO > 0) glDeleteBuffers(1, &mQuadVBO);
+        if(mQuadVAO > 0) glDeleteVertexArrays(1, &mQuadVAO);
+
+        GLCheckError();
+
+        clearVariables();
 
         setState(TaskState::TASK_STATE_COMPLETED);
     }
@@ -170,5 +166,26 @@ namespace octronic::dream
     {
         mQuadVAO = VAO;
         mQuadVBO = VBO;
+    }
+
+    void
+    TextureRemoveFromGLTask::clearVariables
+    ()
+    {
+        // Base Texture
+        GLuint mTextureID = 0;
+        // Environment
+        GLuint mCaptureFBO = 0;
+        GLuint mCaptureRBO = 0;
+        GLuint mEquiToCubeTexture = 0;
+        GLuint mIrradianceMapTexture = 0;
+        GLuint mPreFilterTexture = 0;
+        GLuint mBrdfLutTexture = 0;
+        // Cube
+        GLuint mCubeVAO = 0;
+        GLuint mCubeVBO = 0;
+        // Quad
+        GLuint mQuadVAO = 0;
+    	GLuint mQuadVBO = 0;
     }
 }

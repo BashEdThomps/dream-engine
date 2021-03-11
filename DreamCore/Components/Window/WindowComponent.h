@@ -44,6 +44,7 @@ namespace octronic::dream
 
       void setWidth(int);
       void setHeight(int);
+
       int getWidth() const;
       int getHeight() const;
 
@@ -53,8 +54,6 @@ namespace octronic::dream
       void close();
       bool shouldClose() const;
       void setShouldClose(bool);
-      double getMouseX() const;
-      double getMouseY() const;
 
       void setWindowSizeChangedFlag(bool f);
       bool getWindowSizeChangedFlag() const;
@@ -64,8 +63,6 @@ namespace octronic::dream
       int mHeight;
       string mName;
       bool mShouldClose;
-      double mMouseX;
-      double mMouseY;
       bool mWindowSizeChangedFlag;
     };
 }

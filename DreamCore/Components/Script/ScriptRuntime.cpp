@@ -140,24 +140,66 @@ namespace octronic::dream
     }
 
 
-    bool ScriptRuntime::registerInputScript()
+    bool
+    ScriptRuntime::registerInputScript
+    ()
     {
         ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
         return scriptComponent->registerInputScript(this);
     }
 
-    bool ScriptRuntime::removeInputScript()
+    bool
+    ScriptRuntime::removeInputScript
+    ()
     {
         ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->removeInputScript(this);
+        return scriptComponent->removeInputScript(getUuid());
     }
 
+    bool
+    ScriptRuntime::hasSource
+    ()
+    const
+    {
+        return !mSource.empty();
+    }
 
-    void ScriptRuntime::pushTasks()
+    void
+    ScriptRuntime::pushTasks
+    ()
     {
         auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
+        auto activeScene = mProjectRuntimeHandle->getActiveSceneRuntime();
+        auto inputComp = mProjectRuntimeHandle->getInputComponent();
+        auto destructionTaskQueue = mProjectRuntimeHandle->getDestructionTaskQueue();
 
-        if (!mLoaded && !mLoadError)
+        if (mReloadFlag)
+        {
+            mLoaded = false;
+            mLoadError = false;
+            mSource = "";
+            mReloadFlag = false;
+            mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+
+            if (activeScene && activeScene->getInputScript() == this)
+            {
+                destructionTaskQueue->pushTask(inputComp->getRemoveScriptTask());
+                inputComp->getRegisterScriptTask()->setState(TASK_STATE_QUEUED);
+            }
+            else
+            {
+				for(EntityRuntime* entity : mInstances)
+				{
+					removeEntityState(entity->getUuid());
+
+					if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+					{
+						entity->setScriptInitialised(false);
+					}
+				}
+            }
+        }
+        else if (!mLoaded && !mLoadError)
         {
             if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
             {
@@ -173,7 +215,6 @@ namespace octronic::dream
                     // Do entity specific tasks
                     if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
                     {
-
                         // Not yet Initialised
                         if (!entity->getScriptInitialised())
                         {

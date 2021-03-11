@@ -234,6 +234,10 @@ namespace octronic::dream
     {
         LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
         rt->destroyRuntime();
+        if (mActiveSceneRuntime == rt)
+        {
+            mActiveSceneRuntime = nullptr;
+        }
     }
 
     // Running =================================================================
@@ -306,13 +310,6 @@ namespace octronic::dream
                         rt->createSceneTasks();
                     }
 
-                    // Draw PhysicsDebug
-                    if (rt!=nullptr)
-                    {
-                        mPhysicsComponent.setCamera(rt->getCamera());
-                    }
-                    mPhysicsComponent.drawDebug();
-
                     rt->collectGarbage();
                     break;
                 case SceneState::SCENE_STATE_TO_DESTROY:
@@ -328,7 +325,6 @@ namespace octronic::dream
 		ShaderRuntime::InvalidateState();
         mTaskQueue.executeQueue();
         mGraphicsComponent.getTaskQueue()->executeQueue();
-        mWindowComponentHandle->swapBuffers();
 
         collectGarbage();
 

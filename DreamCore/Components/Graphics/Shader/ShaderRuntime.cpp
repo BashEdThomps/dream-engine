@@ -59,7 +59,6 @@ namespace octronic::dream
         : SharedAssetRuntime(rt, definition),
           mShaderProgram(0),
           mNeedsRebind(true),
-          mMaterialLocation(UNIFORM_NOT_FOUND),
           mVertexShader(0),
           mFragmentShader(0),
           mVertexSource(""),
@@ -403,7 +402,6 @@ namespace octronic::dream
         if (location == UNIFORM_NOT_FOUND)
         {
             LOG_ERROR("ShaderRuntime: Uniform {} not found in shader {}", name, getNameAndUuidString());
-            //assert(false);
         }
         shared_ptr<ShaderUniform> newUniform = make_shared<ShaderUniform>(type,name,count,data);
         newUniform->setLocation(location);
@@ -424,14 +422,12 @@ namespace octronic::dream
             {
                 continue;
             }
-
             LOG_TRACE("ShaderRuntime: Uniform {} needs update",uniform->getName());
 
             if (uniform->getCount() == 0)
             {
                 continue;
             }
-
             LOG_TRACE("ShaderRuntime: Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
                       getUuid(),prog, uniform->getName(),
                       uniform->getLocation(), uniform->getCount());
@@ -443,105 +439,376 @@ namespace octronic::dream
                          uniform->getName(), getNameAndUuidString());
                 continue;
             }
-            else
+
+            assert(uniform->getData() != nullptr);
+
+            switch (uniform->getType())
             {
-                assert(uniform->getData() != nullptr);
-
-                switch (uniform->getType())
+                // int =====================================================
+                case UNIFORM_TYPE_INT1:
                 {
-                    // int =====================================================
-                    case UNIFORM_TYPE_INT1:
-                        glUniform1i(location,*static_cast<GLint*>(uniform->getData()));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_INT2:
-                        glUniform2iv(location,uniform->getCount(),value_ptr(*static_cast<ivec2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_INT3:
-                        glUniform3iv(location,uniform->getCount(),value_ptr(*static_cast<ivec3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_INT4:
-                        glUniform4iv(location,uniform->getCount(),value_ptr(*static_cast<ivec4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                        // uint ====================================================
-                    case UNIFORM_TYPE_UINT1:
-                        glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_UINT2:
-                        glUniform2uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_UINT3:
-                        glUniform3uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_UINT4:
-                        glUniform4uiv(location,uniform->getCount(),value_ptr(*static_cast<uvec4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                        // float ===================================================
-                    case UNIFORM_TYPE_FLOAT1:
-                        glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_FLOAT2:
-                        glUniform2fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_FLOAT3:
-                        glUniform3fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_FLOAT4:
-                        glUniform4fv(location,uniform->getCount(),glm::value_ptr(*static_cast<vec4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                        // Matrix ==================================================
-                    case UNIFORM_TYPE_MATRIX2:
-                        glUniformMatrix2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX3:
-                        glUniformMatrix3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX4:
-                        glUniformMatrix4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX2X3:
-                        glUniformMatrix2x3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2x3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX3X2:
-                        glUniformMatrix3x2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3x2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX2X4:
-                        glUniformMatrix2x4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat2x4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX4X2:
-                        glUniformMatrix4x2fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4x2*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX3X4:
-                        glUniformMatrix3x4fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat3x4*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-                    case UNIFORM_TYPE_MATRIX4X3:
-                        glUniformMatrix4x3fv(location, uniform->getCount(), GL_FALSE, glm::value_ptr(*static_cast<mat4x3*>(uniform->getData())));
-                        GLCheckError();
-                        break;
-
+                    GLint d = *(GLint*)uniform->getData();
+                    glUniform1i(location,d);
+                    GLCheckError();
+                    break;
                 }
+                case UNIFORM_TYPE_INT2:
+                    glUniform2iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_INT3:
+                    glUniform3iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_INT4:
+                    glUniform4iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                    // uint ====================================================
+                case UNIFORM_TYPE_UINT1:
+                    glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_UINT2:
+                    glUniform2uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_UINT3:
+                    glUniform3uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_UINT4:
+                    glUniform4uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                    // float ===================================================
+                case UNIFORM_TYPE_FLOAT1:
+                    glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_FLOAT2:
+                    glUniform2fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_FLOAT3:
+                    glUniform3fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_FLOAT4:
+                    glUniform4fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                    // Matrix ==================================================
+                case UNIFORM_TYPE_MATRIX2:
+                    glUniformMatrix2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX3:
+                    glUniformMatrix3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX4:
+                    glUniformMatrix4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX2X3:
+                    glUniformMatrix2x3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX3X2:
+                    glUniformMatrix3x2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX2X4:
+                    glUniformMatrix2x4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX4X2:
+                    glUniformMatrix4x2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX3X4:
+                    glUniformMatrix3x4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+                case UNIFORM_TYPE_MATRIX4X3:
+                    glUniformMatrix4x3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
+                    GLCheckError();
+                    break;
+
             }
             uniform->setNeedsUpdate(false);
         }
+    }
+
+    bool ShaderRuntime::checkUniformValue(ShaderUniform* uf)
+    {
+        static char namebuf[256];
+        void* data = nullptr;
+        int element_size = 0;
+
+        if (uf->getLocation() == ShaderRuntime::UNIFORM_NOT_FOUND) {
+            LOG_ERROR("ShaderRuntime: Check Error: Uniform not found {}",uf->getName());
+            return false;
+        }
+
+        switch(uf->getType())
+        {
+            // int =====================================================
+            case UNIFORM_TYPE_INT1:
+            {
+                element_size = 1;
+                data = malloc(sizeof(GLint)*uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformiv(mShaderProgram,getUniformLocation(namebuf), (GLint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_INT2:
+            {
+                element_size = 2;
+                data = malloc(uf->getCount()*element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformiv(mShaderProgram,getUniformLocation(namebuf), (GLint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_INT3:
+            {
+                element_size = 3;
+                data = malloc(uf->getCount()*element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformiv(mShaderProgram,getUniformLocation(namebuf), (GLint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_INT4:
+            {
+                element_size = 4;
+                data = malloc(sizeof(GLint) * uf->getCount()*element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformiv(mShaderProgram,getUniformLocation(namebuf), (GLint*)data + i * element_size);
+                }
+                break;
+            }
+                // uint ====================================================
+            case UNIFORM_TYPE_UINT1:
+            {
+                element_size = 1;
+                data = malloc(sizeof(GLuint) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformuiv(mShaderProgram,getUniformLocation(namebuf), (GLuint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_UINT2:
+            {
+                element_size = 2;
+                data = malloc(sizeof(GLuint) * uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformuiv(mShaderProgram,getUniformLocation(namebuf), (GLuint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_UINT3:
+            {
+                element_size = 3;
+                data = malloc(sizeof(GLuint) * uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformuiv(mShaderProgram,getUniformLocation(namebuf), (GLuint*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_UINT4:
+            {
+                element_size = 4;
+                data = malloc(sizeof(GLuint) * uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformuiv(mShaderProgram,getUniformLocation(namebuf), (GLuint*)data + i * element_size);
+                }
+                break;
+            }
+                // float ===================================================
+            case UNIFORM_TYPE_FLOAT1:
+            {
+                element_size = 1;
+                data = malloc(uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_FLOAT2:
+            {
+                element_size = 2;
+                data = malloc(sizeof(GLfloat) * uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_FLOAT3:
+            {
+                element_size = 3;
+                data = malloc(sizeof(GLfloat)*uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + i * element_size);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_FLOAT4:
+            {
+                element_size = 4;
+                data = malloc(sizeof(GLfloat) * uf->getCount() * element_size);
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + i * element_size);
+                }
+                break;
+            }
+                // Matrix ==================================================
+            case UNIFORM_TYPE_MATRIX2:
+            {
+                data = malloc(sizeof(mat2) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat2) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX3:
+            {
+                data = malloc(sizeof(mat3) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat3) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX4:
+            {
+                data = malloc(sizeof(mat4) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat4) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX2X3:
+            {
+                data = malloc(sizeof(mat2x3) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat2x3) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX3X2:
+            {
+                data = malloc(sizeof(mat3x2) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat3x2) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX2X4:
+            {
+                data = malloc(sizeof(mat2x4) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat2x4) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX4X2:
+            {
+                data = malloc(sizeof(mat4x2) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat4x2) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX3X4:
+            {
+                data = malloc(sizeof(mat3x4) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat3x4) * i);
+                }
+                break;
+            }
+            case UNIFORM_TYPE_MATRIX4X3:
+            {
+                data = malloc(sizeof(mat4x3) * uf->getCount());
+                for (int i=0; i<uf->getCount(); i++)
+                {
+                    if (uf->getCount() == 1)snprintf(namebuf, 256, "%s", uf->getName().c_str());
+                    else                    snprintf(namebuf, 256, "%s[%d]", uf->getName().c_str(), i);
+                    glGetUniformfv(mShaderProgram,getUniformLocation(namebuf), (GLfloat*)data + sizeof(mat4x3) * i);
+                }
+                break;
+            }
+        }
+
+        if (data == nullptr) return false;
+
+        GLCheckError();
+        int ret = memcmp(uf->getData(), data, uf->getDataSize());
+        free(data);
+        return ret == 0;
     }
 
     void
@@ -568,12 +835,12 @@ namespace octronic::dream
 
     void ShaderRuntime::setLightPositionsUniform(vec3* v, GLuint count)
     {
-       addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_POSITIONS, count, v);
+        addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_POSITIONS, count, (void*)v);
     }
 
     void ShaderRuntime::setLightColorsUniform(vec3* v, GLuint count)
     {
-       addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_COLORS, count, v);
+        addUniform(UNIFORM_TYPE_FLOAT3, UNIFORM_LIGHT_COLORS, count, (void*)v);
     }
 
 
@@ -582,7 +849,6 @@ namespace octronic::dream
         if (CurrentTextures[pos] != texture)
         {
             glActiveTexture(pos);
-            GLCheckError();
             glBindTexture(target, texture);
             GLCheckError();
             ShaderRuntime::CurrentTextures[pos] = texture;
@@ -635,7 +901,6 @@ namespace octronic::dream
     ShaderRuntime::bindMaterial
     (MaterialRuntime* material)
     {
-        GLuint id;
         if (material == nullptr)
         {
 
@@ -646,7 +911,7 @@ namespace octronic::dream
         auto albedo = material->getAlbedoTextureHandle();
         if (albedo != nullptr && albedo->getLoaded())
         {
-            id = albedo->getTextureID();
+            GLuint id = albedo->getTextureID();
             if (CurrentTextures[GL_TEXTURE0] != id)
             {
                 LOG_INFO("ShaderRuntime: Found Albedo Texture, binding {}",id);
@@ -659,7 +924,7 @@ namespace octronic::dream
         auto normal = material->getNormalTextureHandle();
         if (normal != nullptr && normal->getLoaded())
         {
-            id =  normal->getTextureID();
+            GLuint id  =  normal->getTextureID();
             if (CurrentTextures[GL_TEXTURE1] != id)
             {
                 LOG_INFO("ShaderRuntime: Found Normal Texture, binding {}",id);
@@ -672,7 +937,7 @@ namespace octronic::dream
         auto metallic = material->getMetallicTextureHandle();
         if (metallic != nullptr && metallic->getLoaded())
         {
-            id =  metallic->getTextureID();
+            GLuint id = metallic->getTextureID();
             if (CurrentTextures[GL_TEXTURE2] != id)
             {
                 LOG_INFO("ShaderRuntime: Found Metallic Texture, binding {}",id);
@@ -685,7 +950,7 @@ namespace octronic::dream
         auto roughness = material->getRoughnessTextureHandle();
         if (roughness != nullptr && roughness->getLoaded())
         {
-            id = roughness->getTextureID();
+            GLuint id = roughness->getTextureID();
             if (CurrentTextures[GL_TEXTURE3] != id)
             {
                 LOG_INFO("ShaderRuntime: Found Roughness Texture, binding {}",id);
@@ -698,7 +963,7 @@ namespace octronic::dream
         auto ao = material->getAoTextureHandle();
         if (ao != nullptr && ao->getLoaded())
         {
-            id = ao->getTextureID();
+            GLuint id = ao->getTextureID();
             if (CurrentTextures[GL_TEXTURE4] != id)
             {
                 LOG_INFO("ShaderRuntime: Found AO Texture, binding {}",id);

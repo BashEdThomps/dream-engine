@@ -19,7 +19,7 @@
 #include "ModelRuntime.h"
 #include "ModelTasks.h"
 #include "Common/Logger.h"
-#include "Components/Graphics/Camera.h"
+#include "Components/Graphics/CameraRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Entity/EntityRuntime.h"
@@ -39,6 +39,7 @@ namespace octronic::dream
           mVAO(0),
           mVBO(0),
           mIBO(0),
+          mLoaded(false),
           mVertices(vertices),
           mIndices(indices),
           mVerticesCount(vertices.size()),
@@ -54,9 +55,10 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("ModelMesh: Destroying Mesh for {}",mParent->getNameAndUuidString());
-        mFreeMeshTask->clearState();
-        mFreeMeshTask->setMaterialRuntime(mMaterial);
-        mFreeMeshTask->setMeshRemovedPointer(this);
+        if (mMaterial != nullptr)
+        {
+            mMaterial->removeMesh(this);
+        }
         mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
         auto gfxDestructionQueue = mParent->getProjectRuntimeHandle()->getGraphicsComponent()->getDestructionTaskQueue();
         gfxDestructionQueue->pushTask(mFreeMeshTask);
@@ -117,15 +119,16 @@ namespace octronic::dream
 
     void
     ModelMesh::drawModelRuntimes
-    (Camera* camera, ShaderRuntime* shader)
+    (CameraRuntime* camera, ShaderRuntime* shader)
     {
+        // TODO - Move this to grpahics component
         mRuntimesInFrustum.clear();
         auto runtimes = mParent->getInstanceVector();
 
         for (auto entity : *runtimes)
         {
             // TODO -- Per mesh Culling
-            if(true)//camera->visibleInFrustum(mBoundingBox, entity->getTransform().getMatrix()))
+            if(camera->visibleInFrustum(mBoundingBox, entity->getTransform().getMatrix()))
             {
                 mRuntimesInFrustum.push_back(entity);
             }
@@ -141,8 +144,14 @@ namespace octronic::dream
         shader->bindVertexArray(mVAO);
         shader->bindRuntimes(mRuntimesInFrustum);
         shader->syncUniforms();
+        GLCheckError();
 
         size_t size = mRuntimesInFrustum.size();
+        if (size == 0)
+        {
+            LOG_TRACE("ModelMesh: No runtimes to draw");
+            return;
+        }
         if (size > ShaderRuntime::MAX_RUNTIMES)
         {
             LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
@@ -150,11 +159,14 @@ namespace octronic::dream
         }
 
         size_t indices = mIndicesCount;
+        if (indices == 0) return;
+
         size_t tris = indices/3;
         MeshesDrawn += size;
         TrianglesDrawn += tris*size;
         glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
-        //renderDebugSphere();
+        //renderDebugSphere(shader);
+        GLCheckError();
         DrawCalls++;
     }
 
@@ -268,40 +280,44 @@ namespace octronic::dream
 
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(getVertices().size() * sizeof(Vertex)), &getVertices()[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertices.size() * sizeof(Vertex)), &mVertices[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(getIndices().size() * sizeof(GLuint)),&getIndices()[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLint>(mIndices.size() * sizeof(GLuint)),&mIndices[0], GL_STATIC_DRAW);
 
+        /*
+        	glVertexAttribPointer
+			index, size, type, is_normalized, stride, offset
+        */
         // Vertex Positions
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)), static_cast<GLvoid*>(nullptr));
-        // Vertex Normals
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Normal));
+                              static_cast<GLint>(sizeof(Vertex)),
+                              (GLvoid*)offsetof(Vertex,Position));
+
         // Vertex Texture Coords
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+                              static_cast<GLint>(sizeof(Vertex)),
+                              (GLvoid*)offsetof(Vertex, TexCoords));
+        // Vertex Normals
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
-        // Vertex Tangents
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
-        // Vertex Bitangents
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-                              static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+                              static_cast<GLint>(sizeof(Vertex)),
+                              (GLvoid*)offsetof(Vertex, Normal));
+
         glBindVertexArray(0);
+
         clearVertices();
         clearIndices();
+
+        mLoaded = true;
 
         return true;
     }
 
     // renders (and builds at first invocation) a sphere
     // -------------------------------------------------
-    void ModelMesh::renderDebugSphere()
+    void ModelMesh::renderDebugSphere(ShaderRuntime* shader)
     {
         static unsigned int sphereVAO = 0;
         static unsigned int indexCount;
@@ -400,8 +416,16 @@ namespace octronic::dream
             size = ShaderRuntime::MAX_RUNTIMES;
         }
 
+        shader->syncUniforms();
         glBindVertexArray(sphereVAO);
         glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, nullptr,size);
+        //glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+        GLCheckError();
+    }
+
+    bool ModelMesh::getLoaded() const
+    {
+        return mLoaded;
     }
 
 

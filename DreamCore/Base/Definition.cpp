@@ -17,7 +17,7 @@ namespace octronic::dream
     {}
 
     // public
-    json Definition::getJson
+    json Definition::toJson
     ()
     {
         return mJson;

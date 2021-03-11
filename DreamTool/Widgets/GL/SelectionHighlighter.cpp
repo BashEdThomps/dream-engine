@@ -13,12 +13,12 @@ namespace octronic::dream::tool
     (DreamToolContext* project)
         :GLWidget (project,false),
           mSelectedEntityRuntime(nullptr),
-          mSelectionColour(vec3(0.0,1.0f,0.40f)),
-          mOffset(0.25f),
-          mXColour(vec3(1.0f, 0.0f, 0.0f)),
-          mYColour(vec3(0.0f, 1.0f, 0.0f)),
-          mZColour(vec3(0.0f, 0.0f, 1.0f)),
-          mOutlineOnly(true)
+          mOffset(0.1f),
+          mSelectionColour(0.0,1.0f,0.40f,0.5f),
+          mOutlineColor(0.f,0.f,0.f,1.f),
+          mXColour(1.0f, 0.0f, 0.0f,1.f),
+          mYColour(0.0f, 1.0f, 0.0f,1.f),
+          mZColour(0.0f, 0.0f, 1.0f,1.f)
     {
     }
 
@@ -39,7 +39,7 @@ namespace octronic::dream::tool
 
     void SelectionHighlighter::init()
     {
-       GLWidget::init();
+        GLWidget::init();
     }
 
     void
@@ -47,23 +47,30 @@ namespace octronic::dream::tool
     ()
     {
         LOG_TRACE("SelectionHighlighter: Updating");
+
+        clearLineVertexBuffer();
+        clearPointVertexBuffer();
+        clearTriangleVertexBuffer();
+
         if (mSelectedEntityRuntime == nullptr)
         {
             return;
         }
 
         BoundingBox bounds = mSelectedEntityRuntime->getBoundingBox();
-        LOG_INFO("SelectionHighlighter: Minimum Bounds {},{},{}",bounds.getMinimum().x ,bounds.getMinimum().y, bounds.getMinimum().z);
-        LOG_INFO("SelectionHighlighter: Maximum Bounds {},{},{}",bounds.getMaximum().x ,bounds.getMaximum().y, bounds.getMaximum().z);
+        vec3 min, max;
+        min = bounds.getMinimum();
+        max = bounds.getMaximum();
+        LOG_INFO("SelectionHighlighter: Minimum Bounds {},{},{}",min.x ,min.y, min.z);
+        LOG_INFO("SelectionHighlighter: Maximum Bounds {},{},{}",max.x ,max.y, max.z);
 
-        mVertexBuffer.clear();
         // Top Quad
 
-        GLWidgetVertex
-            topFrontL, topFrontR,
-            topBackL, topBackR,
-            bottomFrontL, bottomFrontR,
-            bottomBackL, bottomBackR;
+        TranslationColorVertex
+                topFrontL, topFrontR,
+                topBackL, topBackR,
+                bottomFrontL, bottomFrontR,
+                bottomBackL, bottomBackR;
 
         topFrontL.Color    = mSelectionColour;
         topFrontR.Color    = mSelectionColour;
@@ -74,276 +81,173 @@ namespace octronic::dream::tool
         bottomBackL.Color  = mSelectionColour;
         bottomBackR.Color  = mSelectionColour;
 
-        topFrontL.Position    = vec3(bounds.getMinimum().x-mOffset, bounds.getMaximum().y+mOffset, bounds.getMaximum().z+mOffset);
-        topFrontR.Position    = vec3(bounds.getMaximum().x+mOffset, bounds.getMaximum().y+mOffset, bounds.getMaximum().z+mOffset);
-        topBackL.Position     = vec3(bounds.getMinimum().x-mOffset, bounds.getMaximum().y+mOffset, bounds.getMinimum().z-mOffset);
-        topBackR.Position     = vec3(bounds.getMaximum().x+mOffset, bounds.getMaximum().y+mOffset, bounds.getMinimum().z-mOffset);
-        bottomFrontL.Position = vec3(bounds.getMinimum().x-mOffset, bounds.getMinimum().y-mOffset, bounds.getMaximum().z+mOffset);
-        bottomFrontR.Position = vec3(bounds.getMaximum().x+mOffset, bounds.getMinimum().y-mOffset, bounds.getMaximum().z+mOffset);
-        bottomBackL.Position  = vec3(bounds.getMinimum().x-mOffset, bounds.getMinimum().y-mOffset, bounds.getMinimum().z-mOffset);
-        bottomBackR.Position  = vec3(bounds.getMaximum().x+mOffset, bounds.getMinimum().y-mOffset, bounds.getMinimum().z-mOffset);
+        topFrontL.Translation    = vec3(min.x-mOffset, max.y+mOffset, max.z+mOffset);
+        topFrontR.Translation    = vec3(max.x+mOffset, max.y+mOffset, max.z+mOffset);
+        topBackL.Translation     = vec3(min.x-mOffset, max.y+mOffset, min.z-mOffset);
+        topBackR.Translation     = vec3(max.x+mOffset, max.y+mOffset, min.z-mOffset);
+        bottomFrontL.Translation = vec3(min.x-mOffset, min.y-mOffset, max.z+mOffset);
+        bottomFrontR.Translation = vec3(max.x+mOffset, min.y-mOffset, max.z+mOffset);
+        bottomBackL.Translation  = vec3(min.x-mOffset, min.y-mOffset, min.z-mOffset);
+        bottomBackR.Translation  = vec3(max.x+mOffset, min.y-mOffset, min.z-mOffset);
 
-        if (mOutlineOnly)
-        {
-             // Top
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(topFrontR);
+        // Cube ================================================================
 
-            // Bottom
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(bottomFrontL);
+        // Top
+        addTriangleVertex(topBackL);
+        addTriangleVertex(topFrontR);
+        addTriangleVertex(topFrontL);
 
-            // Left
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(bottomFrontL);
+        addTriangleVertex(topBackL);
+        addTriangleVertex(topBackR);
+        addTriangleVertex(topFrontR);
 
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(topBackL);
+        // Bottom
+        addTriangleVertex(bottomBackR);
+        addTriangleVertex(bottomFrontL);
+        addTriangleVertex(bottomFrontR);
 
-            // Right
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(topFrontR);
+        addTriangleVertex(bottomBackR);
+        addTriangleVertex(bottomBackL);
+        addTriangleVertex(bottomFrontL);
 
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(bottomBackR);
+        // Left
+        addTriangleVertex(topBackL);
+        addTriangleVertex(topFrontL);
+        addTriangleVertex(bottomFrontL);
 
-            // Front
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(topFrontR);
+        addTriangleVertex(bottomFrontL);
+        addTriangleVertex(bottomBackL);
+        addTriangleVertex(topBackL);
 
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(bottomFrontR);
+        // Right
+        addTriangleVertex(bottomBackR);
+        addTriangleVertex(bottomFrontR);
+        addTriangleVertex(topFrontR);
 
-            // Back
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(topBackL);
+        addTriangleVertex(topFrontR);
+        addTriangleVertex(topBackR);
+        addTriangleVertex(bottomBackR);
 
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(topBackR);
-        }
-        else
-        {
-            // Top
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(topBackL);
+        // Front
+        addTriangleVertex(bottomFrontR);
+        addTriangleVertex(topFrontL);
+        addTriangleVertex(topFrontR);
 
-            // Bottom
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(bottomBackR);
+        addTriangleVertex(bottomFrontL);
+        addTriangleVertex(topFrontL);
+        addTriangleVertex(bottomFrontR);
 
-            // Left
-            mVertexBuffer.push_back(bottomFrontL);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(bottomFrontL);
+        // Back
+        addTriangleVertex(bottomBackL);
+        addTriangleVertex(topBackR);
+        addTriangleVertex(topBackL);
 
-            // Right
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(topFrontR);
+        addTriangleVertex(bottomBackL);
+        addTriangleVertex(bottomBackR);
+        addTriangleVertex(topBackR);
 
-            // Front
-            mVertexBuffer.push_back(topFrontR);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(bottomFrontR);
-            mVertexBuffer.push_back(topFrontL);
-            mVertexBuffer.push_back(bottomFrontL);
+        // XYZ Lines ===========================================================
 
-            // Back
-            mVertexBuffer.push_back(topBackL);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(bottomBackL);
-            mVertexBuffer.push_back(topBackR);
-            mVertexBuffer.push_back(bottomBackR);
-            mVertexBuffer.push_back(bottomBackL);
-        }
 
-         // Buffer Data
-        glBindVertexArray(mVao);
-        ShaderRuntime::CurrentVAO = mVao;
-        GLCheckError();
+        // Outlines ============================================================
 
-        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderRuntime::CurrentVBO = mVbo;
-        GLCheckError();
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        GLCheckError();
-        glBindVertexArray(0);
-    }
+        // Vertical
+        addLineVertex({bottomFrontL.Translation, mOutlineColor});
+        addLineVertex({topFrontL.Translation, mOutlineColor});
+        addLineVertex({bottomFrontR.Translation, mOutlineColor});
+        addLineVertex({topFrontR.Translation, mOutlineColor});
+        addLineVertex({bottomBackL.Translation, mOutlineColor});
+        addLineVertex({topBackL.Translation, mOutlineColor});
+        addLineVertex({bottomBackR.Translation, mOutlineColor});
+        addLineVertex({topBackR.Translation, mOutlineColor});
 
-    void SelectionHighlighter::draw()
-    {
-        GLCheckError();
+        // Top
+        addLineVertex({topBackR.Translation, mOutlineColor});
+        addLineVertex({topBackL.Translation, mOutlineColor});
+        addLineVertex({topBackL.Translation, mOutlineColor});
+        addLineVertex({topFrontL.Translation, mOutlineColor});
+        addLineVertex({topFrontL.Translation, mOutlineColor});
+        addLineVertex({topFrontR.Translation, mOutlineColor});
+        addLineVertex({topFrontR.Translation, mOutlineColor});
+        addLineVertex({topBackR.Translation, mOutlineColor});
 
-        if (!mSelectedEntityRuntime)
-        {
-            return;
-        }
+        // Bottom
+        addLineVertex({bottomBackR.Translation, mOutlineColor});
+        addLineVertex({bottomBackL.Translation, mOutlineColor});
+        addLineVertex({bottomBackL.Translation, mOutlineColor});
+        addLineVertex({bottomFrontL.Translation, mOutlineColor});
+        addLineVertex({bottomFrontL.Translation, mOutlineColor});
+        addLineVertex({bottomFrontR.Translation, mOutlineColor});
+        addLineVertex({bottomFrontR.Translation, mOutlineColor});
+        addLineVertex({bottomBackR.Translation, mOutlineColor});
 
-        Project* proj = mContext->getProject();
-        if (proj)
-        {
-            ProjectRuntime* pRuntime = proj->getRuntime();
-            if (pRuntime)
-            {
-                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
-                if (sRunt)
-                {
-                    Camera* cam = sRunt->getCamera();
-                    if (cam)
-                    {
-                        mProjectionMatrix = cam->getProjectionMatrix();
-                        mViewMatrix = cam->getViewMatrix();
-                    }
-                }
-            }
-        }
-
-        if (!mVertexBuffer.empty())
-        {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-            // Enable shader program
-            glUseProgram(mShaderProgram);
-            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-            GLCheckError();
-
-            // Vertex Array
-            glBindVertexArray(mVao);
-            ShaderRuntime::CurrentVAO = mVao;
-            GLCheckError();
-
-            glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderRuntime::CurrentVBO = mVbo;
-            GLCheckError();
-            if (mProjectionUniform == -1)
-            {
-                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for projection");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-                GLCheckError();
-            }
-
-            // Set the view matrix
-            GLCheckError();
-            if (mViewUniform == -1)
-            {
-                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for view");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-                GLCheckError();
-            }
-
-            mat4 modelMatrix = mSelectedEntityRuntime->getTransform().getMatrix();
-            // Set the projection matrix
-            if (mModelUniform == -1)
-            {
-                LOG_ERROR("SelectionHighlighter: Unable to find Uniform Location for model");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-                GLCheckError();
-            }
-
-            // Draw
-            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-            GLCheckError();
-
-            glDisable(GL_BLEND);
-        }
-    }
-
-    void
-    SelectionHighlighter::setShader
-    ()
-    {
-        mVertexShaderSource =
-            "#version 330 core\n"
-            "\n"
-            "layout (location = 0) in vec3 position;\n"
-            "layout (location = 1) in vec3 color;\n"
-            "\n"
-            "out vec3 Color;\n"
-            "\n"
-            "uniform mat4 model;\n"
-            "uniform mat4 view;\n"
-            "uniform mat4 projection;\n"
-            "\n"
-            "void main () {\n"
-            "    gl_Position = projection * view * model * vec4(position,1.0) ;\n"
-            "    Color = color;\n"
-            "}";
-
-        mFragmentShaderSource =
-            "#version 330 core\n"
-            "\n"
-            "in vec3  Color;\n"
-            "\n"
-            "out vec4 fragColor;\n"
-            "\n"
-            "void main() { \n"
-            "    fragColor = vec4(Color,0.5);\n"
-            "}";
-    }
-
-    bool
-    SelectionHighlighter::getOutlineOnly
-    ()
-    const
-    {
-        return mOutlineOnly;
-    }
-
-    void
-    SelectionHighlighter::setOutlineOnly
-    (bool outlineOnly)
-    {
-        mOutlineOnly = outlineOnly;
+        submitLineVertexBuffer();
+        submitTriangleVertexBuffer();
     }
 
     void
     SelectionHighlighter::clearSelection
     ()
     {
-       mSelectedEntityRuntime =  nullptr;
+        mSelectedEntityRuntime =  nullptr;
+    }
+
+    void SelectionHighlighter::draw()
+    {
+        Project* project = mContext->getProject();
+
+        mat4 model(1.f);
+        mat4 view(1.f);
+        mat4 projection(1.f);
+
+        if (project)
+        {
+            ProjectRuntime* pRuntime = project->getRuntime();
+            if (pRuntime)
+            {
+                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
+                if (sRunt)
+                {
+                    CameraRuntime* cam = sRunt->getCamera();
+                    if (cam)
+                    {
+                        projection = cam->getProjectionMatrix();
+                        view = cam->getViewMatrix();
+                    }
+                    else { return; }
+                }
+                else { return; }
+            }
+            else { return; }
+        }
+
+        if (mSelectedEntityRuntime)
+        {
+	        model = mSelectedEntityRuntime->getTransform().getMatrix();
+        }
+        else
+        {
+            model = mTransform.getMatrix();
+        }
+
+        glUseProgram(mShaderProgram);
+        GLCheckError();
+
+        glUniformMatrix4fv(mModelUniform,      1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(mViewUniform,       1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(projection));
+        GLCheckError();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+        drawTriangleBuffer();
+        drawPointBuffer();
+        drawLineBuffer();
+
+        glDisable(GL_BLEND);
+
+        GLCheckError();
     }
 }

@@ -53,7 +53,7 @@ namespace octronic::dream
         bool executeScriptOnEvent(ScriptRuntime* script, EntityRuntime* entity);
         bool executeScriptOnInput(ScriptRuntime* script, InputComponent* inputComp, SceneRuntime* sr);
         bool registerInputScript(ScriptRuntime* script);
-        bool removeInputScript(ScriptRuntime* script);
+        bool removeInputScript(UuidType script);
         bool createEntityState(ScriptRuntime* script, EntityRuntime* entity);
     	bool removeEntityState(UuidType uuid);
 
@@ -106,6 +106,5 @@ namespace octronic::dream
         void exposeTime();
         void exposeTransform();
         void exposeGLM();
-        void exposeOctronicMath();
     };
 }

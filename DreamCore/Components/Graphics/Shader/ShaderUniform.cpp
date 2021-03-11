@@ -42,101 +42,84 @@ namespace octronic::dream
           mCount(count),
           mLocation(0),
           mData(nullptr),
+          mDataSize(0),
           mNeedsUpdate(true)
     {
 
-        LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,count);
-        switch (type)
+        LOG_DEBUG("ShaderUniform: Constructing uniform {}, count {}",mName,mCount);
+        switch (mType)
         {
             // INT =============================================================
             case UNIFORM_TYPE_INT1:
-                mData = new GLint[count];
-                memcpy(mData,data,sizeof(GLint)*count);
+                mDataSize = sizeof(GLint)*mCount;
                 break;
             case UNIFORM_TYPE_INT2:
-                mData = new ivec2[count];
-                memcpy(mData,data,sizeof(ivec2)*count);
+                mDataSize = sizeof(GLint)*mCount*2;
                 break;
             case UNIFORM_TYPE_INT3:
-                mData = new ivec3[count];
-                memcpy(mData,data,sizeof(ivec3)*count);
+                mDataSize = sizeof(GLint)*mCount*3;
                 break;
             case UNIFORM_TYPE_INT4:
-                mData = new ivec4[count];
-                memcpy(mData,data,sizeof(ivec4)*count);
+                mDataSize = sizeof(GLint)*mCount*4;
                 break;
                 // UINT ============================================================
             case UNIFORM_TYPE_UINT1:
-                mData = new GLuint[count];
-                memcpy(mData,data,sizeof(GLuint)*count);
+                mDataSize = sizeof(GLuint)*mCount;
                 break;
             case UNIFORM_TYPE_UINT2:
-                mData = new uvec2[count];
-                memcpy(mData,data,sizeof(uvec2)*count);
+                mDataSize = sizeof(GLuint)*mCount*2;
                 break;
             case UNIFORM_TYPE_UINT3:
-                mData = new uvec3[count];
-                memcpy(mData,data,sizeof(uvec3)*count);
+                mDataSize = sizeof(GLuint)*mCount*3;
                 break;
             case UNIFORM_TYPE_UINT4:
-                mData = new uvec4[count];
-                memcpy(mData,data,sizeof(uvec4)*count);
+                mDataSize = sizeof(GLuint)*mCount*4;
                 break;
                 // FLOAT ===========================================================
             case UNIFORM_TYPE_FLOAT1:
-                mData = new GLint[count];
-                memcpy(mData,data,sizeof(GLfloat)*count);
+                mDataSize = sizeof(GLfloat)*mCount;
                 break;
             case UNIFORM_TYPE_FLOAT2:
-                mData = new vec2[count];
-                memcpy(mData,data,sizeof(vec2)*count);
+                mDataSize = sizeof(GLfloat)*mCount*2;
                 break;
             case UNIFORM_TYPE_FLOAT3:
-                mData = new vec3[count];
-                memcpy(mData,data,sizeof(vec3)*count);
+                mDataSize = sizeof(GLfloat)*mCount*3;
                 break;
             case UNIFORM_TYPE_FLOAT4:
-                mData = new vec4[count];
-                memcpy(mData,data,sizeof(vec4)*count);
+                mDataSize = sizeof(GLfloat)*mCount*4;
                 break;
-            // Matrix ==========================================================
+                // Matrix ==========================================================
             case UNIFORM_TYPE_MATRIX2:
-                mData = new mat2[count];
-                memcpy(mData,data,sizeof(mat2)*count);
+                mDataSize = sizeof(mat2)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX3:
-                mData = new mat3[count];
-                memcpy(mData,data,sizeof(mat3)*count);
+                mDataSize =  sizeof(mat3)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX4:
-                mData = new mat4[count];
-                memcpy(mData,data,sizeof(mat4)*count);
+                mDataSize = sizeof(mat4)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX2X3:
-                mData = new mat2x3[count];
-                memcpy(mData,data,sizeof(mat2x3)*count);
+                mDataSize = sizeof(mat2x3)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX3X2:
-                mData = new mat3x2[count];
-                memcpy(mData,data,sizeof(mat3x2)*count);
+                mDataSize = sizeof(mat3x2)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX2X4:
-                mData = new mat2x4[count];
-                memcpy(mData,data,sizeof(mat2x4)*count);
+                mDataSize =  sizeof(mat2x4)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX4X2:
-                mData = new mat4x2[count];
-                memcpy(mData,data,sizeof(mat4x2)*count);
+                mDataSize = sizeof(mat4x2)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX3X4:
-                mData = new mat3x4[count];
-                memcpy(mData,data,sizeof(mat3x4)*count);
+                mDataSize = sizeof(mat3x4)*mCount;
                 break;
             case UNIFORM_TYPE_MATRIX4X3:
-                mData = new mat4x3[count];
-                memcpy(mData,data,sizeof(mat4x3)*count);
+                mDataSize = sizeof(mat4x3)*mCount;
                 break;
         }
+
+        mData = malloc(mDataSize);
+        setData(data);
     }
 
     ShaderUniform::~ShaderUniform()
@@ -145,78 +128,9 @@ namespace octronic::dream
         deleteData();
     }
 
-	void ShaderUniform::deleteData()
+    void ShaderUniform::deleteData()
     {
-        switch (mType)
-        {
-            // INT =============================================================
-            case UNIFORM_TYPE_INT1:
-                delete[] static_cast<GLint*>(mData);
-                break;
-            case UNIFORM_TYPE_INT2:
-                delete[] static_cast<ivec2*>(mData);
-                break;
-            case UNIFORM_TYPE_INT3:
-                delete[] static_cast<ivec3*>(mData);
-                break;
-            case UNIFORM_TYPE_INT4:
-                delete[] static_cast<ivec4*>(mData);
-                break;
-                // UINT ============================================================
-            case UNIFORM_TYPE_UINT1:
-                delete[] static_cast<GLuint*>(mData);
-                break;
-            case UNIFORM_TYPE_UINT2:
-                delete[] static_cast<uvec2*>(mData);
-                break;
-            case UNIFORM_TYPE_UINT3:
-                delete[] static_cast<uvec3*>(mData);
-                break;
-            case UNIFORM_TYPE_UINT4:
-                delete[] static_cast<uvec4*>(mData);
-                break;
-                // FLOAT ===========================================================
-            case UNIFORM_TYPE_FLOAT1:
-                delete[] static_cast<GLfloat*>(mData);
-                break;
-            case UNIFORM_TYPE_FLOAT2:
-                delete[] static_cast<vec2*>(mData);
-                break;
-            case UNIFORM_TYPE_FLOAT3:
-                delete[] static_cast<vec3*>(mData);
-                break;
-            case UNIFORM_TYPE_FLOAT4:
-                delete[] static_cast<vec4*>(mData);
-                break;
-                // Matrix ==========================================================
-            case UNIFORM_TYPE_MATRIX2:
-                delete[] static_cast<mat2*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX3:
-                delete[] static_cast<mat3*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX4:
-                delete[] static_cast<mat4*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX2X3:
-                delete[] static_cast<mat2x3*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX3X2:
-                delete[] static_cast<mat3x2*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX2X4:
-                delete[] static_cast<mat2x4*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX4X2:
-                delete[] static_cast<mat4x2*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX3X4:
-                delete[] static_cast<mat3x4*>(mData);
-                break;
-            case UNIFORM_TYPE_MATRIX4X3:
-                delete[] static_cast<mat4x3*>(mData);
-                break;
-        }
+        free(mData);
         mData = nullptr;
     }
 
@@ -264,86 +178,24 @@ namespace octronic::dream
         return mData;
     }
 
+    size_t ShaderUniform::getDataSize() const
+    {
+        return mDataSize;
+    }
+
     void ShaderUniform::setData(void* data)
     {
-        size_t size = 0;
-        switch (mType)
+        // Correct space Allocated
+        if (mData != nullptr)
         {
-            // INT =============================================================
-            case UNIFORM_TYPE_INT1:
-                size = sizeof(GLint)*mCount;
-                break;
-            case UNIFORM_TYPE_INT2:
-                size = sizeof(ivec2)*mCount;
-                break;
-            case UNIFORM_TYPE_INT3:
-                size = sizeof(ivec3)*mCount;
-                break;
-            case UNIFORM_TYPE_INT4:
-                size = sizeof(ivec4)*mCount;
-                break;
-                // UINT ============================================================
-            case UNIFORM_TYPE_UINT1:
-                size = sizeof(GLuint)*mCount;
-                break;
-            case UNIFORM_TYPE_UINT2:
-                size = sizeof(uvec2)*mCount;
-                break;
-            case UNIFORM_TYPE_UINT3:
-                size = sizeof(uvec3)*mCount;
-                break;
-            case UNIFORM_TYPE_UINT4:
-                size = sizeof(uvec4)*mCount;
-                break;
-                // FLOAT ===========================================================
-            case UNIFORM_TYPE_FLOAT1:
-                size = sizeof(GLfloat)*mCount;
-                break;
-            case UNIFORM_TYPE_FLOAT2:
-                size = sizeof(vec2)*mCount;
-                break;
-            case UNIFORM_TYPE_FLOAT3:
-                size = sizeof(vec3)*mCount;
-                break;
-            case UNIFORM_TYPE_FLOAT4:
-                size = sizeof(vec4)*mCount;
-                break;
-                // Matrix ==========================================================
-            case UNIFORM_TYPE_MATRIX2:
-                size = sizeof(mat2)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX3:
-                size = sizeof(mat3)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX4:
-                size = sizeof(mat4)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX2X3:
-                size = sizeof(mat2x3)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX3X2:
-                size = sizeof(mat3x2)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX2X4:
-                size = sizeof(mat2x4)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX4X2:
-                size = sizeof(mat4x2)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX3X4:
-                size = sizeof(mat3x4)*mCount;
-                break;
-            case UNIFORM_TYPE_MATRIX4X3:
-                size = sizeof(mat4x3)*mCount;
-                break;
+            // Value is not equal to current
+            if (memcmp(mData,data, mDataSize) != 0)
+            {
+				memcpy(mData,data,mDataSize);
+				setNeedsUpdate(true);
+            }
         }
-
-        // Space Allocated & not equal to current
-        if (mData != nullptr && memcmp(mData,data, size) != 0)
-        {
-            memcpy(mData,data,size);
-            setNeedsUpdate(true);
-        }
+        else { assert(mData != nullptr); }
     }
 
     string

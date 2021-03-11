@@ -24,7 +24,7 @@
 #include "Components/Audio/AudioRuntime.h"
 #include "Components/Audio/AudioStatus.h"
 #include "Components/Graphics/Model/ModelRuntime.h"
-#include "Components/Graphics/Camera.h"
+#include "Components/Graphics/CameraRuntime.h"
 #include "Components/Graphics/GraphicsComponent.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Input/InputComponent.h"
@@ -43,8 +43,10 @@
 #define SOL_CHECK_ARGUMENTS 1
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol.h>
+#include "glm/vec3.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
+using glm::vec3;
 using std::stringstream;
 using std::exception;
 using std::cout;
@@ -158,7 +160,14 @@ namespace octronic::dream // ===================================================
     {
         LOG_DEBUG("ScriptComponent: Calling onUpdate for {}",entity->getNameAndUuidString());
         sol::state_view solStateView(ScriptComponent::State);
-        sol::protected_function onUpdateFunction = solStateView[entity->getUuid()][LUA_ON_UPDATE_FUNCTION];
+        sol::table entityTable = solStateView[entity->getUuid()];
+
+        if (entityTable == sol::lua_nil)
+        {
+            return false;
+        }
+
+        sol::protected_function onUpdateFunction = entityTable[LUA_ON_UPDATE_FUNCTION];
         auto result = onUpdateFunction(entity);
         if (!result.valid())
         {
@@ -169,7 +178,6 @@ namespace octronic::dream // ===================================================
                       entity->getNameAndUuidString(),
                       what);
             entity->setScriptError(true);
-            //assert(false);
             return false;
         }
         return true;
@@ -194,9 +202,18 @@ namespace octronic::dream // ===================================================
         LOG_DEBUG("ScriptComponent: Calling onInit in {} for {}",  script->getName(), entity->getName());
 
         sol::state_view solStateView(ScriptComponent::State);
-        sol::protected_function onInitFunction = solStateView[entity->getUuid()][LUA_ON_INIT_FUNCTION];
+
+         sol::table entityTable = solStateView[entity->getUuid()];
+
+        if (entityTable == sol::lua_nil)
+        {
+            return false;
+        }
+
+        sol::protected_function onInitFunction = entityTable[LUA_ON_INIT_FUNCTION];
 
         auto initResult = onInitFunction(entity);
+
         if (!initResult.valid())
         {
             // An error has occured
@@ -208,7 +225,6 @@ namespace octronic::dream // ===================================================
                         what
                         );
             entity->setScriptError(true);
-            //assert(false);
             return false;
         }
         entity->setScriptInitialised(true);
@@ -234,7 +250,15 @@ namespace octronic::dream // ===================================================
 
         LOG_DEBUG( "ScriptComponent: Calling onEvent for {}", entity->getNameAndUuidString());
         sol::state_view solStateView(ScriptComponent::State);
-        sol::protected_function onEventFunction = solStateView[entity->getUuid()][LUA_ON_EVENT_FUNCTION];
+
+         sol::table entityTable = solStateView[entity->getUuid()];
+
+        if (entityTable == sol::lua_nil)
+        {
+            return false;
+        }
+
+        sol::protected_function onEventFunction = entityTable[LUA_ON_EVENT_FUNCTION];
 
         for (const Event& e : *entity->getEventQueue())
         {
@@ -247,7 +271,6 @@ namespace octronic::dream // ===================================================
                 LOG_ERROR("ScriptComponent: {}:\nCould not execute onEvent in lua script:\n{}",
                           entity->getNameAndUuidString(), what);
                 entity->setScriptError(true);
-                //assert(false);
                 return false;
             }
         }
@@ -261,7 +284,14 @@ namespace octronic::dream // ===================================================
     {
         LOG_TRACE("ScriptComponent: Calling onInput function with {}",script->getUuid());
         sol::state_view solStateView(ScriptComponent::State);
-        sol::protected_function onInputFunction = solStateView[script->getUuid()][LUA_ON_INPUT_FUNCTION];
+        sol::table inputScriptTable = solStateView[script->getUuid()];
+
+        if (inputScriptTable == sol::lua_nil)
+        {
+            return false;
+        }
+
+        sol::protected_function onInputFunction = inputScriptTable[LUA_ON_INPUT_FUNCTION];
         auto result = onInputFunction(inputComp, sr);
         if (!result.valid())
         {
@@ -269,7 +299,6 @@ namespace octronic::dream // ===================================================
             sol::error err = result;
             string what = err.what();
             LOG_ERROR("ScriptComponent: Could not execute onInput in lua script:\n{}",what);
-            //assert(false);
             return false;
         }
         return true;
@@ -283,11 +312,14 @@ namespace octronic::dream // ===================================================
         LOG_TRACE("ScriptComponent: Registering Input Script");
         sol::state_view solStateView(ScriptComponent::State);
         sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
+
         solStateView[script->getUuid()] = environment;
+
         auto exec_result = solStateView.safe_script(
                     script->getSource(), environment,
                     [](lua_State*, sol::protected_function_result pfr){
                 return pfr;});
+
         // it did not work
         if(!exec_result.valid())
         {
@@ -295,22 +327,27 @@ namespace octronic::dream // ===================================================
             sol::error err = exec_result;
             string what = err.what();
             LOG_ERROR("ScriptComponent: Could not execute lua script:\n{}",what);
-            //assert(false);
             return false;
         }
+
         LOG_DEBUG("ScriptComponent: Loaded Input Script Successfully");
         return true;
     }
 
     bool
     ScriptComponent::removeInputScript
-    (ScriptRuntime* script)
+    (UuidType script)
     {
         LOG_TRACE("ScriptComponent: Removing Input Script Table");
         sol::state_view solStateView(ScriptComponent::State);
-        solStateView[script->getUuid()] = nullptr;
-        LOG_DEBUG("ScriptComponent: Removed input script Successfully");
-        return true;
+        if (solStateView[script] != sol::lua_nil)
+        {
+			solStateView[script] = sol::lua_nil;
+        	LOG_DEBUG("ScriptComponent: Removed input script Successfully");
+			return true;
+        }
+        LOG_ERROR("ScriptComponent: Failed to remove input script");
+        return false;
     }
 
     bool
@@ -329,7 +366,10 @@ namespace octronic::dream // ===================================================
         sol::environment environment(ScriptComponent::State, sol::create, solStateView.globals());
         solStateView[entity->getUuid()] = environment;
 
-        auto exec_result = solStateView.safe_script(script->getSource(), environment, [](lua_State*, sol::protected_function_result pfr) {return pfr;});
+        auto exec_result = solStateView.safe_script(
+                    script->getSource(), environment,
+                    [](lua_State*, sol::protected_function_result pfr)
+        			{return pfr;});
 
         // it did not work
         if(!exec_result.valid())
@@ -341,7 +381,9 @@ namespace octronic::dream // ===================================================
             entity->setScriptError(true);
             return false;
         }
+
         entity->setScriptInitialised(true);
+
         return true;
     }
 
@@ -369,10 +411,9 @@ namespace octronic::dream // ===================================================
                     "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid,
                     "getEntity",&ProjectRuntime::getEntityRuntimeByUuid,
                     "windowWidth",&ProjectRuntime::getWindowWidth,
-                    "windowHeight",&ProjectRuntime::getWindowHeight
-                    );
+                    "windowHeight",&ProjectRuntime::getWindowHeight);
 
-        stateView["Runtime"] = mProjectRuntime;
+        stateView["ProjectRuntime"] = mProjectRuntime;
     }
 
     void
@@ -383,9 +424,7 @@ namespace octronic::dream // ===================================================
         sol::state_view stateView(State);
         stateView.new_usertype<ProjectDirectory>(
                     "ProjectDirectory",
-                    "getAssetPath",static_cast<string (ProjectDirectory::*)(UuidType) const>(&ProjectDirectory::getAssetAbsolutePath)
-                    );
-
+                    "getAssetPath",static_cast<string (ProjectDirectory::*)(UuidType) const>(&ProjectDirectory::getAssetAbsolutePath));
         stateView["Directory"] = mProjectRuntime->getProject()->getDirectory();
     }
 
@@ -395,10 +434,10 @@ namespace octronic::dream // ===================================================
     {
         debugRegisteringClass("Camera");
         sol::state_view stateView(State);
-        stateView.new_usertype<Camera>(
+        stateView.new_usertype<CameraRuntime>(
                     "Camera",
-                    "setTransform",&Camera::setTransform,
-                    "getTransform",&Camera::getTransform);
+                    "setTransform",&CameraRuntime::setTransform,
+                    "getTransform",&CameraRuntime::getTransform);
 
         stateView.new_enum(
                     "FrustumPlane",
@@ -460,8 +499,7 @@ namespace octronic::dream // ===================================================
         debugRegisteringClass("PhysicsComponent");
         sol::state_view stateView(State);
         stateView.new_usertype<PhysicsComponent>(
-                    "PhysicsComponent",
-                    "setDebug",&PhysicsComponent::setDebug);
+                    "PhysicsComponent");
 
         stateView[LUA_COMPONENTS_TBL]["Physics"] = mProjectRuntime->getPhysicsComponent();
     }
@@ -509,9 +547,10 @@ namespace octronic::dream // ===================================================
                     "getNameAndUuidString",&EntityRuntime::getNameAndUuidString,
                     "getScene",&EntityRuntime::getSceneRuntime,
                     "getChildByUuid",&EntityRuntime::getChildRuntimeByUuid,
-                    "getParent",&EntityRuntime::getParentRuntime,
-                    "setParent",&EntityRuntime::setParentRuntime,
+                    "getParentEntity",&EntityRuntime::getParentEntityRuntime,
+                    "setParentEntity",&EntityRuntime::setParentEntityRuntime,
                     "getTransform",&EntityRuntime::getTransform,
+                    "setTransform",&EntityRuntime::setTransform,
                     "getPathRuntime",&EntityRuntime::getPathRuntime,
                     "getAnimationRuntime",&EntityRuntime::getAnimationRuntime,
                     "getAudioRuntime",&EntityRuntime::getAudioRuntime,
@@ -523,18 +562,12 @@ namespace octronic::dream // ===================================================
                     "hasPhysicsObjectRuntime",&EntityRuntime::hasPhysicsObjectRuntime,
                     "getDeleted",&EntityRuntime::getDeleted,
                     "setDeleted",&EntityRuntime::setDeleted,
-                    "getHidden",&EntityRuntime::getHidden,
-                    "setHidden",&EntityRuntime::setHidden,
                     "addEvent",&EntityRuntime::addEvent,
                     "replaceAssetUuid",&EntityRuntime::replaceAssetUuid,
-                    "translateWithChildren",&EntityRuntime::translateWithChildren,
-                    "translateOffsetInitial",&EntityRuntime::translateOffsetInitial,
-                    "translateOffsetInitialWithChildren",&EntityRuntime::translateOffsetInitialWithChildren,
                     "containedInFrustum",&EntityRuntime::containedInFrustum,
                     "containedInFrustumAfterTransform",&EntityRuntime::containedInFrustum,
                     "exceedsFrustumPlaneAtTranslation",&EntityRuntime::exceedsFrustumPlaneAtTranslation,
-                    "addChildFromTemplateUuid",&EntityRuntime::addChildFromTemplateUuid,
-                    "getObjectLifetime",&EntityRuntime::getObjectLifetime);
+                    "addChildFromTemplateUuid",&EntityRuntime::addChildFromTemplateUuid);
     }
 
     void
@@ -548,6 +581,12 @@ namespace octronic::dream // ===================================================
                     "translate",&Transform::translate,
                     "getTranslation",&Transform::getTranslation,
                     "setTranslation",&Transform::setTranslation,
+                    "getPitch",&Transform::getPitch,
+                    "setPitch",&Transform::setPitch,
+                    "getYaw",&Transform::getYaw,
+                    "setYaw",&Transform::setYaw,
+                    "getRoll",&Transform::getRoll,
+                    "setRoll",&Transform::setRoll,
                     "getScale",&Transform::getScale,
                     "setScale",&Transform::setScale);
     }
@@ -613,13 +652,20 @@ namespace octronic::dream // ===================================================
         stateView.new_usertype<InputComponent>(
                     "InputComponent",
                     sol::base_classes, sol::bases<Component>(),
-                    "isKeyDown",&InputComponent::isKeyDown,
                     "getKeyboardState",&InputComponent::getKeyboardState,
                     "getMouseState",&InputComponent::getMouseState,
                     "getJoystickState",&InputComponent::getJoystickState,
                     "getJoystickMapping",&InputComponent::getJoystickMapping,
                     "getJoystickNavigation", &InputComponent::getJoystickNavigation,
                     "getJoystickCount", &InputComponent::getJoystickCount);
+
+        stateView.new_usertype<MouseState>(
+                    "MouseState",
+                    "getPosX", &MouseState::getPosX,
+                    "getPosY", &MouseState::getPosY,
+                    "getScrollX", &MouseState::getScrollX,
+                    "getScrollY", &MouseState::getScrollY,
+                    "isButtonPressed", &MouseState::isButtonPressed);
 
         stateView.new_usertype<JoystickMapping>(
                     "JoystickMapping",
@@ -663,6 +709,11 @@ namespace octronic::dream // ===================================================
                     "update", &JoystickNavigation::update,
                     "setHeading", &JoystickNavigation::setHeading,
                     "getHeading", &JoystickNavigation::getHeading);
+
+        stateView.new_usertype<KeyboardState>(
+                    "KeyboardState",
+                    "isKeyPressed", &KeyboardState::isKeyPressed
+                    );
 
         stateView.new_enum(
                     "KeyboardMapping",
@@ -787,6 +838,7 @@ namespace octronic::dream // ===================================================
                     "KEY_RIGHT_ALT",  346,
                     "KEY_RIGHT_SUPER",  347,
                     "KEY_MENU",  348);
+
         stateView[LUA_COMPONENTS_TBL]["Input"] = mProjectRuntime->getInputComponent();
     }
 
@@ -848,24 +900,11 @@ namespace octronic::dream // ===================================================
         debugRegisteringClass("GLM");
         sol::state_view stateView(State);
 
-        auto vec3MultiplicationOverloads = sol::overload(
-                    [](const glm::vec3& v1, const glm::vec3& v2) -> glm::vec3 { return v1*v2; },
-        [](const glm::vec3& v1, float f) -> glm::vec3 { return v1*f; },
-        [](float f, const glm::vec3& v1) -> glm::vec3 { return f*v1; });
-
-        auto vec3SubtractionOverloads = sol::overload(
-                    [](const glm::vec3& v1, const glm::vec3& v2) -> glm::vec3 { return v1-v2; },
-        [](const glm::vec3& v1, float f) -> glm::vec3 { return v1-f; },
-        [](float f, const glm::vec3& v1) -> glm::vec3 { return f-v1; });
-
-        stateView.new_usertype<glm::vec3>(
+        stateView.new_usertype<vec3>(
                     "vec3",
-                    sol::constructors<glm::vec3(), glm::vec3(float), glm::vec3(float, float, float)>(),
-                    sol::meta_function::multiplication, vec3MultiplicationOverloads,
-                    sol::meta_function::subtraction, vec3SubtractionOverloads,
-                    "x", &glm::vec3::x,
-                    "y", &glm::vec3::y,
-                    "z", &glm::vec3::z);
+                    "x", &vec3::x,
+                    "y", &vec3::y,
+                    "z", &vec3::z);
 
         stateView.new_usertype<glm::vec4>(
                     "vec4",
@@ -937,23 +976,6 @@ namespace octronic::dream // ===================================================
                     "run",&AnimationRuntime::run,
                     "pause",&AnimationRuntime::pause,
                     "reset",&AnimationRuntime::reset);
-    }
-
-    void
-    ScriptComponent::exposeOctronicMath()
-    {
-        sol::state_view stateView(State);
-        debugRegisteringClass("Vector2");
-        stateView.new_usertype<Vector2>(
-                    "Vector2");
-
-        debugRegisteringClass("vec3");
-        stateView.new_usertype<vec3>(
-                    "Vector3");
-
-        debugRegisteringClass("Vector4");
-        stateView.new_usertype<Vector4>(
-                    "Vector4");
     }
 
     void
@@ -1047,7 +1069,6 @@ namespace octronic::dream // ===================================================
         exposeTime();
         exposeTransform();
         exposeGLM();
-        exposeOctronicMath();
     }
 
     void ScriptComponent::pushTasks()

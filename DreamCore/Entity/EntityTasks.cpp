@@ -1,7 +1,7 @@
-﻿#include "ScriptTasks.h"
+﻿#include "EntityTasks.h"
 
-#include "ScriptRuntime.h"
 #include "Common/Logger.h"
+#include "Components/Script/ScriptRuntime.h"
 #include "Scene/SceneRuntime.h"
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
@@ -21,7 +21,8 @@ namespace octronic::dream
     {
         LOG_TRACE("EntityScriptCreateStateTask: Executing {}",getID());
 
-        if(mScript->createEntityState(mEntity))
+        auto sr = mEntity->getScriptRuntime();
+        if(sr->createEntityState(mEntity))
         {
             setState(TASK_STATE_COMPLETED);
         }
@@ -30,12 +31,6 @@ namespace octronic::dream
             setState(TASK_STATE_FAILED);
         }
     }
-
-    void EntityScriptCreateStateTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
-    }
-
 
     // =========================================================================
 
@@ -50,7 +45,8 @@ namespace octronic::dream
     {
         LOG_TRACE("EntityScriptExecuteOnInitTask: Executing {}",getID());
 
-        if(mScript->executeOnInit(mEntity))
+        auto sr = mEntity->getScriptRuntime();
+        if(sr->executeOnInit(mEntity))
         {
             setState(TASK_STATE_COMPLETED);
         }
@@ -58,11 +54,6 @@ namespace octronic::dream
         {
             setState(TASK_STATE_FAILED);
         }
-    }
-
-    void EntityScriptOnInitTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
     }
 
     // =========================================================================
@@ -78,7 +69,8 @@ namespace octronic::dream
     {
         LOG_TRACE("EntityScriptOnUpdateTask: Executing {}",getID());
 
-        if(mScript->executeOnUpdate(mEntity))
+        auto sr = mEntity->getScriptRuntime();
+        if(sr->executeOnUpdate(mEntity))
         {
             setState(TASK_STATE_COMPLETED);
         }
@@ -86,11 +78,6 @@ namespace octronic::dream
         {
             setState(TASK_STATE_FAILED);
         }
-    }
-
-    void EntityScriptOnUpdateTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
     }
 
     // =========================================================================
@@ -107,7 +94,8 @@ namespace octronic::dream
     {
         LOG_TRACE("ScriptOnEventTask: Executing {}",getID());
 
-        if(mScript->executeOnEvent(mEntity))
+        auto sr = mEntity->getScriptRuntime();
+        if(sr->executeOnEvent(mEntity))
         {
             setState(TASK_STATE_COMPLETED);
         }
@@ -117,17 +105,13 @@ namespace octronic::dream
         }
     }
 
-    void EntityScriptOnEventTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
-    }
-
     // =========================================================================
 
     EntityScriptRemoveStateTask::EntityScriptRemoveStateTask
-    (ProjectRuntime* pr, UuidType uuid)
+    (ProjectRuntime* pr,UuidType entityUuid,  ScriptRuntime* sr)
         : DestructionTask(pr, "EntityScriptRemoveStateTask"),
-          mUuid(uuid)
+          mScript(sr),
+          mEntityUuid(entityUuid)
     {
         LOG_DEBUG("EntityScriptRemoveStateTask: {}", __FUNCTION__);
     }
@@ -136,7 +120,7 @@ namespace octronic::dream
     {
         LOG_TRACE("EntityScriptRemoveStateTask:Executing {}",getID());
 
-        if(mScript->removeEntityState(mUuid))
+        if(mScript->removeEntityState(mEntityUuid))
         {
             setState(TASK_STATE_COMPLETED);
         }
@@ -144,66 +128,6 @@ namespace octronic::dream
         {
             setState(TASK_STATE_FAILED);
         }
-    }
-
-    void EntityScriptRemoveStateTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
-    }
-
-    // =========================================================================
-
-    InputScriptCreateStateTask::InputScriptCreateStateTask
-    (ProjectRuntime* pr)
-        : Task(pr, "InputScriptCreateStateTask")
-    {
-    }
-
-    void InputScriptCreateStateTask::execute()
-    {
-        LOG_TRACE("InputScriptCreateStateTask: Executing {}",getID());
-
-        if(mScript->registerInputScript())
-        {
-            setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-            setState(TASK_STATE_FAILED);
-        }
-    }
-
-    void InputScriptCreateStateTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
-    }
-
-    // =========================================================================
-
-    InputScriptRemoveStateTask::InputScriptRemoveStateTask
-    (ProjectRuntime* pr)
-        : DestructionTask(pr, "InputScriptRemoveStateTask")
-    {
-        LOG_DEBUG("InputScriptRemoveStateTask: {}", __FUNCTION__);
-    }
-
-    void InputScriptRemoveStateTask::execute()
-    {
-        LOG_TRACE("InputScriptRemoveStateTask:Executing {}",getID());
-
-        if(mScript->removeInputScript())
-        {
-            setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-            setState(TASK_STATE_FAILED);
-        }
-    }
-
-    void InputScriptRemoveStateTask::setScript(ScriptRuntime *rt)
-    {
-        mScript = rt;
     }
 }
 

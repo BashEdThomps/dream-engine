@@ -25,9 +25,11 @@ add_executable (
 	Widgets/GL/AnimationViewer.cpp
 	Widgets/GL/PathViewer.cpp
 	Widgets/GL/Cursor.cpp
+	Widgets/GL/PhysicsDebugDrawer.cpp
 
 	Widgets/ImGui/SceneStateWindow.cpp
 	Widgets/ImGui/ProjectBrowser.cpp
+	Widgets/ImGui/AssetBrowser.cpp
 	Widgets/ImGui/ScriptDebugWindow.cpp
 	Widgets/ImGui/MenuBar.cpp
 	Widgets/ImGui/ImGuiWidget.cpp

@@ -21,6 +21,8 @@ namespace octronic::dream::tool
           mNewProjectFailed(false),
           mFileQuitClicked(false),
           mFilePreferencesClicked(false),
+          mSaveProjectFailed(false),
+          mSaveProjectSuccess(false),
           mMessagePadding(15.0f)
     {
     }
@@ -54,11 +56,12 @@ namespace octronic::dream::tool
             ImGui::EndMainMenuBar();
         }
 
-        checkFilePreferencesClicked();
         checkNewProjectFailed();
-        checkFileQuitClicked();
-
+        checkSaveProject();
         checkOpenProjectFailed();
+
+        checkFilePreferencesClicked();
+        checkFileQuitClicked();
 
     }
 
@@ -76,6 +79,50 @@ namespace octronic::dream::tool
 
             if (ImGui::Button("OK",ImVec2(-1,0)))
             {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+    }
+
+    void MenuBar::checkSaveProject()
+    {
+        if (mSaveProjectFailed)
+        {
+            ImGui::OpenPopup("Failed to Save Project");
+        }
+
+        if (ImGui::BeginPopupModal("Failed to Save Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Error while saving project");
+            ImGui::Separator();
+
+            if (ImGui::Button("Dang",ImVec2(-1,0)))
+            {
+                mSaveProjectFailed = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SetItemDefaultFocus();
+            ImGui::EndPopup();
+        }
+
+        if (mSaveProjectSuccess)
+        {
+            ImGui::OpenPopup("Saved Project");
+        }
+
+        if (ImGui::BeginPopupModal("Saved Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Project Saved Successfuly");
+
+            ImGui::Separator();
+
+            if (ImGui::Button("Nice",ImVec2(-1,0)))
+            {
+                mSaveProjectSuccess = false;
                 ImGui::CloseCurrentPopup();
             }
 
@@ -131,9 +178,22 @@ namespace octronic::dream::tool
 
             if (project)
             {
-                if (ImGui::MenuItem("Save")) onFileSaveClicked();
+                if (ImGui::MenuItem("Save"))
+                {
+                    if(mContext->getProjectDirectory()->saveProject())
+                    {
+                        mSaveProjectSuccess = true;
+                    }
+                    else
+                    {
+                        mSaveProjectFailed = true;
+                    }
+                }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Close")) onFileCloseClicked();
+                if (ImGui::MenuItem("Close"))
+                {
+                    mContext->closeProject();
+                }
             }
             ImGui::Separator();
             mFileQuitClicked = ImGui::MenuItem("Quit");
@@ -193,16 +253,18 @@ namespace octronic::dream::tool
 
     void MenuBar::checkFilePreferencesClicked()
     {
-		PreferencesModel* pm = mContext->getPreferencesModel();
+        PreferencesModel* pm = mContext->getPreferencesModel();
         if (mFilePreferencesClicked)
         {
             ImGui::OpenPopup("Preferences");
 
-            if (ImGui::BeginPopupModal("Preferences", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal("Preferences", nullptr))
             {
+                ImGui::Columns(3);
                 ImGui::Text("External Editor: ");
-                ImGui::SameLine();
+                ImGui::NextColumn();
                 ImGui::Text("%s",pm->getExternalEditorPath().c_str());
+                ImGui::NextColumn();
                 if (ImGui::Button("Choose External Editor..."))
                 {
                     nfdchar_t *selected_path = nullptr;
@@ -222,6 +284,8 @@ namespace octronic::dream::tool
                         LOG_ERROR("MenuBar: Select External Editor Error: %s", NFD_GetError() );
                     }
                 }
+
+                ImGui::Columns(1);
 
                 ImGui::Separator();
 
@@ -295,31 +359,24 @@ namespace octronic::dream::tool
         }
     }
 
-    void MenuBar::onFileCloseClicked()
-    {
-        mContext->closeProject();
-    }
-
-    void MenuBar::onFileSaveClicked()
-    {
-        if(mContext->getProjectDirectory()->saveProject())
-        {
-            setMessageString("Saved Successfully");
-        }
-    }
-
     void MenuBar::drawViewMenu()
     {
         if (ImGui::BeginMenu("View"))
         {
             Project* project = mContext->getProject();
 
-            bool showProjectBrowser = mContext->getProjectBrowser()->getVisible();
             if (project)
             {
+                bool showProjectBrowser = mContext->getProjectBrowser()->getVisible();
                 if(ImGui::Checkbox("Project Browser",&showProjectBrowser))
                 {
                     mContext->getProjectBrowser()->setVisible(showProjectBrowser);
+                }
+
+                bool showAssetBrowser = mContext->getAssetBrowser()->getVisible();
+                if(ImGui::Checkbox("Asset Browser",&showAssetBrowser))
+                {
+                    mContext->getAssetBrowser()->setVisible(showAssetBrowser);
                 }
 
                 bool showPropertiesWindow = mContext->getPropertiesWindow()->getVisible();
@@ -442,7 +499,7 @@ namespace octronic::dream::tool
     void MenuBar::drawToolsMenu()
     {
         bool modelBatchImportClicked = false;
-        bool assetCleanupClicked = false;
+        static bool assetCleanupClicked = false;
 
         if (ImGui::BeginMenu("Tools"))
         {
@@ -463,26 +520,37 @@ namespace octronic::dream::tool
             ImGui::OpenPopup("Asset Cleanup");
         }
 
+        static bool cleanupComplete = false;
+
         if(ImGui::BeginPopupModal("Asset Cleanup",nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Directories Removed");
             ImGui::Separator();
-            auto subdirsRemoved = mContext->getProjectDirectory()->cleanupAssetsDirectory();
-            if (subdirsRemoved.empty())
+            static vector<string> subdirsRemoved;
+            if (!cleanupComplete)
             {
-                ImGui::Text("None to remove.");
+                subdirsRemoved = mContext->getProjectDirectory()->cleanupAssetsDirectory();
+                cleanupComplete = true;
             }
             else
             {
-                for (UuidType sdir : subdirsRemoved)
+                if (subdirsRemoved.empty())
                 {
-                    ImGui::Text("%d",sdir);
+                    ImGui::Text("None to remove.");
+                }
+                else
+                {
+                    for (string& sdir : subdirsRemoved)
+                    {
+                        ImGui::Text("%s",sdir.c_str());
+                    }
                 }
             }
             ImGui::Separator();
             if(ImGui::Button("OK"))
             {
-                subdirsRemoved.clear();
+                cleanupComplete = false;
+                assetCleanupClicked = false;
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -530,7 +598,7 @@ namespace octronic::dream::tool
                 ImGui::Separator();
 
                 int index = 0;
-                for (string modelName : mContext->getModelDefinitionBatchImporter()->getModelsFoundNames())
+                for (string& modelName : mContext->getModelDefinitionBatchImporter()->getModelsFoundNames())
                 {
                     ImGui::Text("%s",modelName.c_str());
                     ImGui::NextColumn();
@@ -632,17 +700,20 @@ namespace octronic::dream::tool
                 }
             }
 
+
             int sceneToLoadIndex = -1;
             if (StringCombo("Load Scene", &sceneToLoadIndex, sceneNames, sceneNames.size()))
             {
-                SceneDefinition* selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
-
-                if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
+                if (projDef)
                 {
-                    auto newSceneRT = new SceneRuntime(pRuntime, selectedSceneDef);
-                    newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
-                    pRuntime->addSceneRuntime(newSceneRT);
-                    setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                    SceneDefinition* selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
+                    if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
+                    {
+                        auto newSceneRT = new SceneRuntime(pRuntime, selectedSceneDef);
+                        newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
+                        pRuntime->addSceneRuntime(newSceneRT);
+                        setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                    }
                 }
             }
 
@@ -681,7 +752,7 @@ namespace octronic::dream::tool
                     if (rt)
                     {
                         rt->setState(SceneState::SCENE_STATE_TO_DESTROY);
-                        setMessageString("Destroyed Scene: "+rt->getName());
+                        setMessageString("Destroying Scene: "+rt->getName());
                     }
                     mContext->getSelectionHighlighter()->clearSelection();
                 }
@@ -728,22 +799,6 @@ namespace octronic::dream::tool
                 {
                     mContext->getTaskManagerWindow()->setVisible(showTaskManager);
                 }
-
-                ProjectRuntime* pRuntime = project->getRuntime();
-
-                if (pRuntime)
-                {
-                    auto active = pRuntime->getActiveSceneRuntime();
-                    auto physicsDebug = active ? active->getPhysicsDebug() : false;
-                    if (ImGui::Checkbox("Physics Debug",&physicsDebug))
-                    {
-                        if (active)
-                        {
-                            active->setPhysicsDebug(physicsDebug);
-                            dynamic_cast<SceneDefinition*>(active->getDefinitionHandle())->setPhysicsDebug(physicsDebug);
-                        }
-                    }
-                }
             }
 
             if(ImGui::BeginMenu("Engine Logging"))
@@ -783,6 +838,4 @@ namespace octronic::dream::tool
             ImGui::EndMenu();
         }
     }
-
-
 }

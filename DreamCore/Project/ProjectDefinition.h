@@ -54,7 +54,7 @@ namespace octronic::dream
         AssetDefinition* createNewAssetDefinition(AssetType type);
         map<AssetType,vector<AssetDefinition*> > getAssetDefinitionsMap();
 
-        json getJson() override;
+        json toJson() override;
 
         void deleteAssetDefinitions();
         void deleteSceneDefinitions();

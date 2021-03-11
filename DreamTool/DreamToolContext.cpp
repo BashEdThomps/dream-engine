@@ -12,6 +12,7 @@ namespace octronic::dream::tool
           // ImGui
           mPropertiesWindow(this),
           mProjectBrowser(this),
+          mAssetBrowser(this),
           mScriptDebugWindow(this),
           mSceneStateWindow(this),
           mToolPropertiesWindow(this),
@@ -28,6 +29,7 @@ namespace octronic::dream::tool
           mCursor(this),
           mPathViewer(this),
           mAnimationViewer(this),
+          mPhysicsDebugDrawer(this),
           // Models
           mProjectDirectory(&mStorageManager),
           mModelDefinitionBatchImporter(this),
@@ -52,13 +54,9 @@ namespace octronic::dream::tool
 
     bool DreamToolContext::init()
     {
-#ifdef WIN32
-        windowComponent.setUiFontSize(24.0f);
-        windowComponent.setMonoFontSize(24.0f);
-#else
         mWindow.setUiFontSize(16.0f);
         mWindow.setMonoFontSize(18.0f);
-#endif
+
         if (!mWindow.init())
         {
             return false;
@@ -67,10 +65,12 @@ namespace octronic::dream::tool
         ScriptComponent::AddPrintListener(&mScriptDebugWindow);
         FontRuntime::InitFreetypeLibrary();
         mPreferencesModel.load();
+        mAudioComponent.init();
 
         // ImGui Widgets
         mWindow.addImGuiWidget(&mPropertiesWindow);
         mWindow.addImGuiWidget(&mProjectBrowser);
+        mWindow.addImGuiWidget(&mAssetBrowser);
         mWindow.addImGuiWidget(&mScriptDebugWindow);
         mWindow.addImGuiWidget(&mSceneStateWindow);
         mWindow.addImGuiWidget(&mMenuBar);
@@ -79,23 +79,37 @@ namespace octronic::dream::tool
         mWindow.addImGuiWidget(&mGamepadStateWindow);
         mWindow.addImGuiWidget(&mCacheContentWindow);
         mWindow.addImGuiWidget(&mTaskManagerWindow);
+        mGlPreviewWindowComponent.init();
         mWindow.addImGuiWidget(&mGlPreviewWindowComponent);
 
         // GL Widgets
-        mGlPreviewWindowComponent.init();
-        mAudioComponent.init();
+
         mGrid.init();
-        mLightViewer.init();
-        mSelectionHighlighter.init();
-        mCursor.init();
-        mPathViewer.init();
-        mAnimationViewer.init();
+        mGrid.setVisible(true);
         mWindow.addGLWidget(&mGrid);
-        mWindow.addGLWidget(&mLightViewer);
-        mWindow.addGLWidget(&mSelectionHighlighter);
+
+        mCursor.init();
+        mCursor.setVisible(true);
         mWindow.addGLWidget(&mCursor);
+
+        mSelectionHighlighter.init();
+        mWindow.addGLWidget(&mSelectionHighlighter);
+
+        mPhysicsDebugDrawer.init();
+        mPhysicsDebugDrawer.setVisible(true);
+        mWindow.addGLWidget(&mPhysicsDebugDrawer);
+
+        mLightViewer.init();
+        mLightViewer.setVisible(true);
+        mWindow.addGLWidget(&mLightViewer);
+
+        /*
+        mPathViewer.init();
         mWindow.addGLWidget(&mPathViewer);
+
+        mAnimationViewer.init();
         mWindow.addGLWidget(&mAnimationViewer);
+        */
         return true;
     }
 
@@ -120,16 +134,18 @@ namespace octronic::dream::tool
                 if (projectRuntime)
                 {
                     projectRuntime->step();
-					mGlPreviewWindowComponent.updateWindow();
+                    mGlPreviewWindowComponent.updateWindow();
                 }
             }
+
+            mGlPreviewWindowComponent.bindFrameBuffer();
+            mWindow.drawGLWidgets();
 
             // Draw ImGui
             mWindow.bindDefaultFrameBuffer();
             glClearColor(0.0f,0.0f,0.0f,0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             mWindow.update();
-            mWindow.drawGLWidgets();
             mWindow.drawImGui();
 
             if (ImGui::IsKeyPressed(GLFW_KEY_TAB,false))
@@ -171,64 +187,36 @@ namespace octronic::dream::tool
     DreamToolContext::handleEditorInput
     (SceneRuntime* sr)
     {
-        static ImGuiIO& io = ImGui::GetIO();
-        static float mouseScalar = 0.001f;
-        auto camera = sr->getCamera();
-        bool sendKeysToCamera = false;
-        if (!io.WantCaptureMouse)
+        ImGuiIO& io = ImGui::GetIO();
+
+        // Z
+        if (ImGui::IsKeyPressed(GLFW_KEY_W))
         {
-#ifdef __APPLE__
-            if (io.MouseDown[0])
-            {
-                sendKeysToCamera = true;
-            }
-            mCursor.setMousePosition(io.MousePos.x, io.MousePos.y);
-#else
-            if (io.MouseDown[2])
-            {
-                sendKeysToCamera = true;
-            }
-#endif
+            mCursor.onAction(CursorAction::ZPlus);
+        }
+        if (ImGui::IsKeyPressed(GLFW_KEY_S))
+        {
+            mCursor.onAction(CursorAction::ZMinus);
         }
 
-        if (!io.WantCaptureKeyboard)
+        // X
+        if (ImGui::IsKeyPressed(GLFW_KEY_A))
         {
-            if (sendKeysToCamera)
-            {
-            }
-            // Send to cursor
-            else
-            {
-                // Z
-                if (ImGui::IsKeyPressed(GLFW_KEY_W))
-                {
-                    mCursor.onAction(Cursor::ZPlus);
-                }
-                if (ImGui::IsKeyPressed(GLFW_KEY_S))
-                {
-                    mCursor.onAction(Cursor::ZMinus);
-                }
+            mCursor.onAction(CursorAction::XMinus);
+        }
+        if (ImGui::IsKeyPressed(GLFW_KEY_D))
+        {
+            mCursor.onAction(CursorAction::XPlus);
+        }
 
-                // X
-                if (ImGui::IsKeyPressed(GLFW_KEY_A))
-                {
-                    mCursor.onAction(Cursor::XMinus);
-                }
-                if (ImGui::IsKeyPressed(GLFW_KEY_D))
-                {
-                    mCursor.onAction(Cursor::XPlus);
-                }
-
-                // Y
-                if (ImGui::IsKeyPressed(GLFW_KEY_Q))
-                {
-                    mCursor.onAction(Cursor::YMinus);
-                }
-                if (ImGui::IsKeyPressed(GLFW_KEY_E))
-                {
-                    mCursor.onAction(Cursor::YPlus);
-                }
-            }
+        // Y
+        if (ImGui::IsKeyPressed(GLFW_KEY_Q))
+        {
+            mCursor.onAction(CursorAction::YMinus);
+        }
+        if (ImGui::IsKeyPressed(GLFW_KEY_E))
+        {
+            mCursor.onAction(CursorAction::YPlus);
         }
     }
 
@@ -243,19 +231,27 @@ namespace octronic::dream::tool
             auto inputComp = pRunt->getInputComponent();
             if (inputComp)
             {
-                MouseState& ms = inputComp->getMouseState();
-                KeyboardState& ks = inputComp->getKeyboardState();
-                JoystickState& js = inputComp->getJoystickState();
+                MouseState ms = inputComp->getMouseState();
+                KeyboardState ks = inputComp->getKeyboardState();
+                JoystickState js = inputComp->getJoystickState();
 
                 // Mouse
-                memcpy(ms.ButtonsDown, &io.MouseDown[0], sizeof(bool)*5);
-                ms.PosX = io.MousePos.x;
-                ms.PosY = io.MousePos.y;
-                ms.ScrollX = io.MouseWheelH;
-                ms.ScrollY = io.MouseWheel;
+                ms.setButtonsPressed(&io.MouseDown[0], 5);
+                ms.setPosX(io.MousePos.x);
+                ms.setPosY(io.MousePos.y);
+                ms.setScrollX(DreamToolWindow::MouseWheelX);
+                ms.setScrollY(DreamToolWindow::MouseWheelY);
+                DreamToolWindow::MouseWheelX = 0.f;
+                DreamToolWindow::MouseWheelY = 0.f;
+
+                if (io.MouseWheel != 0.f || io.MouseWheelH != 0.f)
+                {
+                    LOG_ERROR("DTContext: Got some scroll X:{} Y:{} ",
+                              io.MouseWheelH, io.MouseWheel);
+                }
 
                 // Keys
-                memcpy(ks.KeysDown, &io.KeysDown[0], sizeof(bool)*512);
+                ks.setKeysPressed(&io.KeysDown[0], 512);
 
                 // Joystick
                 int jsCount = 0;
@@ -288,6 +284,10 @@ namespace octronic::dream::tool
                         }
                     }
                 }
+
+                inputComp->setKeyboardState(ks);
+                inputComp->setMouseState(ms);
+                inputComp->setJoystickState(js);
                 inputComp->setJoystickCount(jsCount);
             }
         }
@@ -385,6 +385,13 @@ namespace octronic::dream::tool
     {
         return &mProjectBrowser;
     }
+
+    AssetBrowser*
+    DreamToolContext::getAssetBrowser()
+    {
+        return &mAssetBrowser;
+    }
+
 
     ScriptDebugWindow*
     DreamToolContext::getScriptDebugWindow()
@@ -569,8 +576,8 @@ namespace octronic::dream::tool
         File* targetFile = sm->openFile(filePath);
         if (!targetFile->exists())
         {
-        	LOG_DEBUG("DTContext: Attempted to open file that does not exist {}", targetFile->getPath());
-           return false;
+            LOG_DEBUG("DTContext: Attempted to open file that does not exist {}", targetFile->getPath());
+            return false;
         }
         sm->closeFile(targetFile);
         targetFile = nullptr;

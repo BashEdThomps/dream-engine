@@ -44,7 +44,7 @@ namespace octronic::dream
     class TextureRuntime;
     class ShaderRuntime;
     class EntityRuntime;
-    class Camera;
+    class CameraRuntime;
 
     class ModelMesh
     {
@@ -84,7 +84,7 @@ namespace octronic::dream
         const vector<Vertex>& getVertices() const;
         const vector<GLuint>& getIndices() const;
 
-        void drawModelRuntimes(Camera* camera, ShaderRuntime* shader);
+        void drawModelRuntimes(CameraRuntime* camera, ShaderRuntime* shader);
         void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
 
         GLuint getVAO() const;
@@ -104,8 +104,10 @@ namespace octronic::dream
         bool loadIntoGL();
         void pushTasks();
 
+        bool getLoaded() const;
+
     private:
-        void renderDebugSphere();
+        void renderDebugSphere(ShaderRuntime* shader);
     private:
         ModelRuntime* mParent;
         MaterialRuntime* mMaterial;
@@ -119,6 +121,7 @@ namespace octronic::dream
         size_t mVerticesCount;
         size_t mIndicesCount;
         BoundingBox mBoundingBox;
+        bool mLoaded;
         // Mesh Tasks
         // TODO, should be owned by mesh
         shared_ptr<ModelInitMeshTask> mInitMeshTask;

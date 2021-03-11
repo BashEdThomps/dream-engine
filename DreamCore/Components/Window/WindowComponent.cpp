@@ -20,9 +20,7 @@ namespace octronic::dream
           mWidth(0),
           mHeight(0),
           mShouldClose(false),
-          mWindowSizeChangedFlag(false),
-          mMouseX(0),
-          mMouseY(0)
+          mWindowSizeChangedFlag(false)
     {
     }
 
@@ -96,18 +94,6 @@ namespace octronic::dream
     (bool close)
     {
         mShouldClose = close;
-    }
-
-    double WindowComponent::getMouseX()
-    const
-    {
-        return mMouseX;
-    }
-
-    double WindowComponent::getMouseY()
-    const
-    {
-        return mMouseY;
     }
 
     void WindowComponent::setWindowSizeChangedFlag(bool f)

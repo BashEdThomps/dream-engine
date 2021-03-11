@@ -33,7 +33,7 @@ namespace octronic::dream::tool
                 InputComponent* inputComp = pRuntime->getInputComponent();
                 if (inputComp)
                 {
-                    JoystickState& js = inputComp->getJoystickState();
+                    JoystickState js = inputComp->getJoystickState();
 
                     ImGui::Text("Gamepad: %s",js.getName().c_str());
                     ImGui::Text("Axis");

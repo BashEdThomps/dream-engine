@@ -16,7 +16,6 @@
 #include <vector>
 #include <memory>
 
-#include "TransformSpace.h"
 #include "Base/Definition.h"
 #include "Math/Transform.h"
 
@@ -44,28 +43,24 @@ namespace octronic::dream
         Transform getTransform();
         void setTransform(Transform tform);
 
-        vector<EntityDefinition*>& getChildDefinitionsList();
+        vector<EntityDefinition*> getChildDefinitionsVector();
+        vector<string> getChildNamesVector();
         void adoptChildDefinition(EntityDefinition* child);
         void addChildDefinition(EntityDefinition* child);
         void removeChildDefinition(EntityDefinition* child, bool andDelete = true);
         EntityDefinition* createNewChildDefinition(json* def = nullptr);
 
         SceneDefinition* getSceneDefinition();
-        json getJson() override;
+        json toJson() override;
 
         EntityDefinition* getParentEntity();
         void setParentEntity(EntityDefinition* parentEntity);
         EntityDefinition* duplicate();
 
-        bool getAlwaysDraw();
-        void setAlwaysDraw(bool alwaysDraw);
-
         void setIsTemplate(bool d);
         bool getIsTemplate();
 
         void loadChildEntityDefinitions(bool randomUuid = false);
-        void setHidden(bool d);
-        bool getHidden();
 
         int getSelectedAssetIndex(AssetType type);
         void setSelectedAssetIndex(AssetType type, int index);
@@ -83,9 +78,6 @@ namespace octronic::dream
         void setFontScale(float s);
         float getFontScale();
 
-        TransformSpace getTransformSpace();
-        void setTransformSpace(TransformSpace t);
-
     private:
         void deleteChildEntityDefinitions();
         void setEmptyAssetsObject();
@@ -93,7 +85,5 @@ namespace octronic::dream
         EntityDefinition* mParentEntity;
         SceneDefinition* mSceneDefinition;
         vector<EntityDefinition*> mChildDefinitions;
-
-
     };
 }

@@ -109,5 +109,7 @@ namespace octronic::dream
          * @return Distance between this and other Transform
          */
         float distanceFrom(const Transform& other) const;
+
+        void operator=(const Transform& other);
     };
 }

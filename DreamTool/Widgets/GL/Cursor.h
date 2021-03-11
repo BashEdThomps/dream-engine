@@ -4,34 +4,39 @@
 
 namespace octronic::dream::tool
 {
+    enum CursorAction
+    {
+        XPlus,
+        XMinus,
+        YPlus,
+        YMinus,
+        ZPlus,
+        ZMinus
+    };
+
     class Cursor : public GLWidget
     {
-    public:
-        enum CursorAction
-        {
-            XPlus,
-            XMinus,
-            YPlus,
-            YMinus,
-            ZPlus,
-            ZMinus,
-            StepMajor,
-            StepMinor
-        };
-    private:
-        const static vector<GLWidgetVertex> ModelVertices;
-        const static vector<GLuint> ModelIndices;
 
-        bool mStepMajor;
     public:
         Cursor(DreamToolContext* st);
         ~Cursor() override;
-        void draw() override;
-        void init();
+        void init() override;
         void onAction(CursorAction a);
         void setPosition(vec3 pos, bool snap);
         void onAxisPairChanged(Grid::AxisPair);
         void setMousePosition(float x, float y);
         vec3 mouseToWorldSpace(float x, float y);
+
+        vec4 getOutlineColor() const;
+        void setOutlineColor(const vec4& outlineColor);
+
+    private:
+        const static vector<TranslationColorVertex> ModelVertices;
+        const static vector<GLuint> ModelIndices;
+    	const static vector<GLuint> OutlineIndices;
+
+    private:
+        vec4 mOutlineColor;
+        bool mStepMajor;
     };
 }

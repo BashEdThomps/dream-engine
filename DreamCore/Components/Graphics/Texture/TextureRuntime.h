@@ -32,6 +32,14 @@ namespace octronic::dream
     class TextureLoadIntoGLTask;
     class ShaderRuntime;
 
+    enum CubeDebugMode
+    {
+        CUBE_DEBUG_NONE = 0,
+        CUBE_DEBUG_ENVIRONMENT,
+        CUBE_DEBUG_IRRADIANCE,
+        CUBE_DEBUG_PREFILTER
+    };
+
     class TextureRuntime : public SharedAssetRuntime
     {
     public:
@@ -80,7 +88,13 @@ namespace octronic::dream
 
         bool isHDR() const;
 
+        CubeDebugMode getCubeDebugMode() const;
+        void setCubeDebugMode(const CubeDebugMode& debugMode);
+
+        GLuint getCubeDebugTexture();
+
     private:
+        CubeDebugMode mCubeDebugMode;
         bool mIsHDR;
         GLuint mGLTextureID;
         int mWidth;
@@ -115,5 +129,7 @@ namespace octronic::dream
 		// Statics
         const static glm::mat4 CubeCaptureProjection;
         const static glm::mat4 CubeCaptureViews[6];
+    	const static float CubeVertices[288];
+    	const static float QuadVertices[20];
     };
 }

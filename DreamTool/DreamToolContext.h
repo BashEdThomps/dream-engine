@@ -8,6 +8,7 @@
 
 // ImGui Widgets
 #include "Widgets/ImGui/ProjectBrowser.h"
+#include "Widgets/ImGui/AssetBrowser.h"
 #include "Widgets/ImGui/PropertiesWindow.h"
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/ScriptDebugWindow.h"
@@ -26,6 +27,7 @@
 #include "Widgets/GL/Cursor.h"
 #include "Widgets/GL/PathViewer.h"
 #include "Widgets/GL/AnimationViewer.h"
+#include "Widgets/GL/PhysicsDebugDrawer.h"
 
 // Models
 #include "Model/TemplatesModel.h"
@@ -59,6 +61,7 @@ namespace octronic::dream::tool
         octronic::dream::Project* getProject();
         PropertiesWindow*         getPropertiesWindow();
         ProjectBrowser*           getProjectBrowser();
+        AssetBrowser*             getAssetBrowser();
         ScriptDebugWindow*        getScriptDebugWindow();
         SceneStateWindow*         getSceneStateWindow();
         ToolPropertiesWindow*     getToolPropertiesWindow();
@@ -98,6 +101,7 @@ namespace octronic::dream::tool
         Project* mProject;
         PropertiesWindow mPropertiesWindow;
         ProjectBrowser mProjectBrowser;
+        AssetBrowser mAssetBrowser;
         ScriptDebugWindow mScriptDebugWindow;
         SceneStateWindow mSceneStateWindow;
         ToolPropertiesWindow mToolPropertiesWindow;
@@ -115,6 +119,7 @@ namespace octronic::dream::tool
         Cursor mCursor;
         PathViewer mPathViewer;
         AnimationViewer mAnimationViewer;
+        PhysicsDebugDrawer mPhysicsDebugDrawer;
 
         // Data Models
         TemplatesModel mTemplatesModel;

@@ -103,11 +103,25 @@ namespace octronic::dream
         mChildDefinitions.clear();
     }
 
-    vector<EntityDefinition*>&
-    EntityDefinition::getChildDefinitionsList
+    vector<EntityDefinition*>
+    EntityDefinition::getChildDefinitionsVector
     ()
     {
         return mChildDefinitions;
+    }
+
+    vector<string>
+    EntityDefinition::getChildNamesVector
+    ()
+    {
+        vector<string> names;
+        names.push_back(getName());
+        for (EntityDefinition* child : mChildDefinitions)
+        {
+            auto childNames = child->getChildNamesVector();
+            names.insert(names.end(), childNames.begin(), childNames.end());
+        }
+        return names;
     }
 
     void
@@ -197,29 +211,15 @@ namespace octronic::dream
     }
 
     json
-    EntityDefinition::getJson
+    EntityDefinition::toJson
     ()
     {
         mJson[Constants::ENTITY_CHILDREN] = json::array();
-        for (EntityDefinition* sceneObjectDefinition : mChildDefinitions)
+        for (EntityDefinition* entityDefinition : mChildDefinitions)
         {
-            mJson[Constants::ENTITY_CHILDREN].push_back(sceneObjectDefinition->getJson());
+            mJson[Constants::ENTITY_CHILDREN].push_back(entityDefinition->toJson());
         }
         return mJson;
-    }
-
-    bool EntityDefinition::getAlwaysDraw()
-    {
-        if (mJson.find(Constants::ENTITY_ALWAYS_DRAW) == mJson.end())
-        {
-            mJson[Constants::ENTITY_ALWAYS_DRAW] = false;
-        }
-        return mJson[Constants::ENTITY_ALWAYS_DRAW];
-    }
-
-    void EntityDefinition::setAlwaysDraw(bool alwaysDraw)
-    {
-        mJson[Constants::ENTITY_ALWAYS_DRAW] = alwaysDraw;
     }
 
     void EntityDefinition::setIsTemplate(bool d)
@@ -234,20 +234,6 @@ namespace octronic::dream
             mJson[Constants::ENTITY_TEMPLATE] = false;
         }
         return mJson[Constants::ENTITY_TEMPLATE];
-    }
-
-    void EntityDefinition::setHidden(bool d)
-    {
-        mJson[Constants::ENTITY_HIDDEN] = d;
-    }
-
-    bool EntityDefinition::getHidden()
-    {
-        if (mJson.find(Constants::ENTITY_HIDDEN) == mJson.end())
-        {
-            mJson[Constants::ENTITY_HIDDEN] = false;
-        }
-        return mJson[Constants::ENTITY_HIDDEN];
     }
 
     EntityDefinition*
@@ -267,7 +253,7 @@ namespace octronic::dream
             return nullptr;
         }
 
-        auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,getJson(),true);
+        auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,toJson(),true);
         newSOD->loadChildEntityDefinitions(true);
         newSOD->setUuid(Uuid::generateUuid());
         string name = newSOD->getName();
@@ -431,21 +417,5 @@ namespace octronic::dream
         }
         retval = mJson[Constants::ENTITY_FONT_SCALE];
         return retval;
-    }
-
-    TransformSpace EntityDefinition::getTransformSpace()
-    {
-       TransformSpace t = TRANSFORM_SPACE_WORLD;
-       if (mJson.find(Constants::ENTITY_TRANSFORM_SPACE) == mJson.end())
-       {
-           mJson[Constants::ENTITY_TRANSFORM_SPACE] = t;
-       }
-       t = mJson[Constants::ENTITY_TRANSFORM_SPACE];
-       return t;
-    }
-
-    void EntityDefinition::setTransformSpace(TransformSpace t)
-    {
-       mJson[Constants::ENTITY_TRANSFORM_SPACE] = t;
     }
 }

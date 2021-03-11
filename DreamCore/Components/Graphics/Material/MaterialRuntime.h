@@ -30,7 +30,7 @@ namespace octronic::dream
     class ShaderRuntime;
     class MaterialDefinition;
     class TextureRuntime;
-    class Camera;
+    class CameraRuntime;
 
     class MaterialRuntime : public SharedAssetRuntime
     {
@@ -72,7 +72,7 @@ namespace octronic::dream
 
         void pushTasks() override;
 
-        // Used as InstanceVector is Entity*
+        // Used because InstanceVector is of type Entity*
         vector<ModelMesh*>& getUsedByVector();
 
     protected:

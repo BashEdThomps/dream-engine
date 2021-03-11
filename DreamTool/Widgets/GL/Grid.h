@@ -31,19 +31,13 @@ namespace octronic::dream::tool
             YZ
         };
 
-        Grid(
-            DreamToolContext* p,
-            AxisPair xp = AxisPair::XZ,
-            Transform tx = Transform(),
-            float majorSpacing = 10.0f,
-            float minorSpacing = 1.0f,
-            float size = 100.0f,
-            vec3 majorColour = vec3(1.0f),
-            vec3 minorColour = vec3(0.6f)
-        );
+        Grid(DreamToolContext* p, AxisPair xp = AxisPair::XZ,
+            float majorSpacing = 10.0f, float minorSpacing = 1.0f, float size = 100.0f,
+            vec4 majorColour = vec4(1.0f, 1.0f, 1.0f, 1.0f),
+            vec4 minorColour = vec4(0.6f,0.6f,0.6f,1.f));
 
         ~Grid() override;
-        void init();
+        void init() override;
 
         float getMajorSpacing();
         void  setMajorSpacing(float);
@@ -55,11 +49,11 @@ namespace octronic::dream::tool
         void setSize(float);
         void recalculateGridLines();
 
-        vec3 getMajorColour() const;
-        void setMajorColour(vec3 majorColour);
+        vec4 getMajorColour() const;
+        void setMajorColour(vec4 majorColour);
 
-        vec3 getMinorColour() const;
-        void setMinorColour(vec3 minorColour);
+        vec4 getMinorColour() const;
+        void setMinorColour(vec4 minorColour);
 
         void setAxisPair(Grid::AxisPair);
 
@@ -72,11 +66,10 @@ namespace octronic::dream::tool
 
     protected: // Variables
         AxisPair mAxisPair;
-        vec3 mTranslation;
         float mSize;
         float mMajorSpacing;
         float mMinorSpacing;
-        vec3 mMajorColour;
-        vec3 mMinorColour;
+        vec4 mMajorColour;
+        vec4 mMinorColour;
     };
 }

@@ -49,6 +49,8 @@ namespace octronic::dream
 
         void pushTasks() override;
 
+        bool hasSource() const;
+
     private:
         string mSource;
 

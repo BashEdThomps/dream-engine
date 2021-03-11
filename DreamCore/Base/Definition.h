@@ -47,7 +47,7 @@ namespace octronic::dream
          * @brief Get the current json object describing this object
          * @return JSON data object.
          */
-        virtual json getJson();
+        virtual json toJson();
 
         /**
          * @param name Name to compare.

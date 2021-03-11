@@ -27,8 +27,11 @@
 #include <memory>
 
 using glm::mat4;
+using glm::vec3;
 using std::vector;
 using std::shared_ptr;
+
+#define GC_LIGHT_COUNT 4
 
 namespace octronic::dream
 {
@@ -105,6 +108,12 @@ namespace octronic::dream
         // Task ================================================================
         GraphicsTaskQueue* getTaskQueue();
         GraphicsDestructionTaskQueue* getDestructionTaskQueue();
+        // Lights ==============================================================
+        vec3 getLightPosition(size_t index) const;
+        void setLightPosition(size_t index, const vec3& p);
+        vec3 getLightColor(size_t index) const;
+        void setLightColor(size_t index, const vec3& p);
+        size_t getLightCount() const;
         // Misc ================================================================
         bool init() override;
         bool setupBuffers();
@@ -135,5 +144,8 @@ namespace octronic::dream
         shared_ptr<RenderTask> mRenderTask;
         // Misc ================================================================
         GLint mMaxFrameBufferSize;
+        // Lighting ============================================================
+        vec3 mLightPositions[GC_LIGHT_COUNT];
+        vec3 mLightColors[GC_LIGHT_COUNT];
     };
 }

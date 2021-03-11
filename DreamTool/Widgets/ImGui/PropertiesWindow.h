@@ -71,6 +71,5 @@ namespace octronic::dream::tool
         Definition* mDefinition;
         Runtime* mRuntime;
         ImVec2 mImageSize;
-        ImVec2 mBigEditorSize;
     };
 }

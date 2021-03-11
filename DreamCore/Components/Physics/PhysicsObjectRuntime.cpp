@@ -100,7 +100,7 @@ namespace octronic::dream
             LOG_ERROR( "PhysicsObjectRuntime: Unable to create collision shape" );
             return false;
         }
-        float mass = mDefinitionHandle->getJson()[Constants::ASSET_ATTR_MASS];
+        float mass = mDefinitionHandle->toJson()[Constants::ASSET_ATTR_MASS];
         // Transform and CentreOfMass
         mMotionState = new PhysicsMotionState(mEntityRuntimeHandle);
         // Mass, MotionState, Shape and LocalInertia

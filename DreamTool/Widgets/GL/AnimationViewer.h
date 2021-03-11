@@ -31,17 +31,16 @@ namespace octronic::dream::tool
         ~AnimationViewer() override;
 
         void setAnimationDefinition(AnimationDefinition* object);
-        void init();
-        void updateVertexBuffer();
+        void init() override;
         void regenerate();
         void generateLines();
         void generateNode(const AnimationKeyframe& kf);
 
     private:
         AnimationDefinition* mAnimationDefinition;
-        vec3 mSelectedColour;
-        vec3 mUnselectedColour;
-        vec3 mLineColour;
+        vec4 mSelectedColour;
+        vec4 mUnselectedColour;
+        vec4 mLineColour;
         int mSelectedKeyFrame;
         float mNodeSize;
     };

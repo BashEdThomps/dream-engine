@@ -14,22 +14,9 @@ namespace octronic::dream
     class EntityScriptCreateStateTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript;
     public:
         EntityScriptCreateStateTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
-        void setScript(ScriptRuntime* rt);
-    };
-
-    // =========================================================================
-
-    class InputScriptCreateStateTask : public Task
-    {
-        ScriptRuntime* mScript;
-    public:
-        InputScriptCreateStateTask(ProjectRuntime* pr);
-        void execute();
-        void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
@@ -37,12 +24,9 @@ namespace octronic::dream
     class EntityScriptOnInitTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript;
-
     public:
         EntityScriptOnInitTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
-        void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
@@ -50,12 +34,9 @@ namespace octronic::dream
     class EntityScriptOnUpdateTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript;
-
     public:
         EntityScriptOnUpdateTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
-        void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
@@ -63,35 +44,19 @@ namespace octronic::dream
     class EntityScriptOnEventTask : public Task
     {
         EntityRuntime* mEntity;
-        ScriptRuntime* mScript;
-
     public:
         EntityScriptOnEventTask(ProjectRuntime* pr, EntityRuntime* rt);
         void execute();
-        void setScript(ScriptRuntime* rt);
     };
 
     // =========================================================================
 
     class EntityScriptRemoveStateTask : public DestructionTask
     {
-        UuidType mUuid;
+        UuidType mEntityUuid;
         ScriptRuntime* mScript;
     public:
-        EntityScriptRemoveStateTask(ProjectRuntime* pr, UuidType uuid);
+        EntityScriptRemoveStateTask(ProjectRuntime* pr,UuidType entityUuid,  ScriptRuntime* sr);
         void execute();
-        void setScript(ScriptRuntime* rt);
     };
-
-    // =========================================================================
-
-    class InputScriptRemoveStateTask : public DestructionTask
-    {
-        ScriptRuntime* mScript;
-    public:
-        InputScriptRemoveStateTask(ProjectRuntime* pr);
-        void execute();
-        void setScript(ScriptRuntime* rt);
-    };
-
 }

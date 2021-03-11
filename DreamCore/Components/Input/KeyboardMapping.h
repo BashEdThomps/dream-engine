@@ -2,11 +2,6 @@
 
 namespace octronic::dream
 {
-    struct KeyboardState
-    {
-        bool KeysDown[512] = {false};
-    };
-
     namespace KeyboardMapping
     {
         const static int KEY_UNKNOWN          =  -1;

@@ -121,33 +121,35 @@ namespace octronic::dream
         const static string SCENE_ROOT_ENTITY;
         const static string SCENE_CLEAR_COLOR;
         const static string SCENE_GRAVITY;
-        const static string SCENE_PHYSICS_DEBUG;
         const static string SCENE_DEFAULT_NAME;
-        const static string SCENE_MESH_CULL_DISTANCE;
-        const static string SCENE_MIN_DRAW_DISTANCE;
-        const static string SCENE_MAX_DRAW_DISTANCE;
-        const static string SCENE_CAMERA_TRANSFORM;
-        const static string SCENE_CAMERA_FOV;
+
+        const static string SCENE_CAMERA;
         const static string SCENE_SHADOW_PASS_SHADER;
         const static string SCENE_FONT_SHADER;
         const static string SCENE_SPRITE_SHADER;
         const static string SCENE_INPUT_SCRIPT;
         const static string SCENE_ENVIRONMENT_TEXTURE;
         const static string SCENE_ENVIRONMENT_SHADER;
-        // Entity ==========================================================
+
+        // Camera ==============================================================
+        const static string CAMERA_FOV;
+        const static string CAMERA_MESH_CULL_DISTANCE;
+        const static string CAMERA_MIN_DRAW_DISTANCE;
+        const static string CAMERA_MAX_DRAW_DISTANCE;
+        const static string CAMERA_FREE_TRANSFORM;
+        const static string CAMERA_ENTITY_UUID;
+        const static string CAMERA_USE_ENTITY;
+
+        // Entity ==============================================================
         const static string ENTITY;
         const static string ENTITY_ROOT_NAME;
         const static string ENTITY_DEFAULT_NAME;
         const static string ENTITY_CHILDREN;
         const static string ENTITY_ASSET_INSTANCES;
-        const static string ENTITY_ALWAYS_DRAW;
         const static string ENTITY_TEMPLATE;
-        const static string ENTITY_HIDDEN;
-        const static string ENTITY_PLAYER_OBJECT;
         const static string ENTITY_FONT_COLOR;
         const static string ENTITY_FONT_TEXT;
         const static string ENTITY_FONT_SCALE;
-        const static string ENTITY_TRANSFORM_SPACE;
 
         // Transform ============================================================
         const static string TRANSFORM;

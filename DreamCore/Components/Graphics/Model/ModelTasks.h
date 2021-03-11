@@ -18,16 +18,12 @@ namespace octronic::dream
 
     class ModelFreeMeshTask : public GraphicsDestructionTask
     {
-        ModelMesh* mMeshRemoved;
-        MaterialRuntime* mMaterial;
         GLuint mVAO;
         GLuint mVBO;
         GLuint mIBO;
     public:
        ModelFreeMeshTask(ProjectRuntime* pr);
        void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
-       void setMaterialRuntime(MaterialRuntime*);
-       void setMeshRemovedPointer(ModelMesh* mesh);
        void execute() override;
     };
 }

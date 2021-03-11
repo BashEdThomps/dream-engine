@@ -252,7 +252,6 @@ namespace octronic::dream
         json scene;
         scene[Constants::UUID] = Uuid::generateUuid();
         scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
-        scene[Constants::SCENE_CAMERA_TRANSFORM] = Transform().toJson();
         auto sd = new SceneDefinition(this, scene);
         sd->createNewRootEntityDefinition();
         mSceneDefinitions.push_back(sd);
@@ -287,19 +286,19 @@ namespace octronic::dream
     }
 
     json
-    ProjectDefinition::getJson
+    ProjectDefinition::toJson
     ()
     {
         mJson[Constants::PROJECT_ASSET_ARRAY] = json::array();
         for (AssetDefinition* ad : getAssetDefinitionsVector())
         {
-            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->getJson());
+            mJson[Constants::PROJECT_ASSET_ARRAY].push_back(ad->toJson());
         }
 
         mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
         for (SceneDefinition* sd : getSceneDefinitionsVector())
         {
-            mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->getJson());
+            mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->toJson());
         }
 
         return mJson;

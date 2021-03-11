@@ -25,12 +25,4 @@ namespace octronic::dream
         PhysicsUpdateWorldTask(ProjectRuntime* pr, PhysicsComponent* cp);
         void execute();
     };
-
-    class PhysicsDrawDebugTask : public GraphicsTask
-    {
-        PhysicsComponent* mComponent;
-    public:
-        PhysicsDrawDebugTask(ProjectRuntime* pr, PhysicsComponent* cp);
-        void execute();
-    };
 }

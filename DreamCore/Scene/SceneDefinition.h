@@ -12,61 +12,36 @@
 
 #pragma once
 
-#include <vector>
 #include "Base/Definition.h"
 #include "Math/Transform.h"
+#include "Components/Graphics/CameraDefinition.h"
+
+#include <vector>
+#include <memory>
 
 using glm::vec4;
+using std::unique_ptr;
 
 namespace octronic::dream
 {
     class ProjectDefinition;
-    class Entity;
     class EntityDefinition;
 
     class SceneDefinition : public Definition
     {
-
-    private:
-        vector<EntityDefinition*> mTemplates;
-        EntityDefinition* mRootEntityDefinition;
-        ProjectDefinition* mProjectDefinition;
-
     public:
         SceneDefinition(ProjectDefinition* project, const json& data);
         ~SceneDefinition() override;
 
         void loadRootEntityDefinition();
 
-        void setPhysicsDebug(bool debug);
-        bool getPhysicsDebug();
+        // Rendering ===========================================================
 
-        void setMeshCullDistance(float mcd);
-        float getMeshCullDistance();
-
-        void addTemplate(EntityDefinition* _template);
-        EntityDefinition* getTemplateByUuid(UuidType uuid);
-
-        void setMinDrawDistance(float mdd);
-        float getMinDrawDistance();
-
-        void setMaxDrawDistance(float mdd);
-        float getMaxDrawDistance();
-
-        Transform getCameraTransform();
-        void setCameraTransform(const Transform& trans);
-
-        vec3 getGravity();
-        void setGravity(const vec3& gravity);
+        void setCamera(const json& cDef);
+        CameraDefinition* getCamera();
 
         vec4 getClearColor();
         void setClearColor(const vec4& clear);
-
-        EntityDefinition* getRootEntityDefinition();
-        ProjectDefinition* getProjectDefinition();
-        EntityDefinition* createNewRootEntityDefinition();
-
-        json getJson() override;
 
         UuidType getShadowPassShader();
         void setShadowPassShader(UuidType shader);
@@ -77,20 +52,42 @@ namespace octronic::dream
         UuidType getSpriteShader();
         void setSpriteShader(UuidType shader);
 
-        UuidType getInputScript();
-        void setInputScript(UuidType shader);
-
-        void setPlayerObject(UuidType po);
-        UuidType getPlayerObject();
-
-        void setCameraFOV(float);
-        float getCameraFOV();
-
         UuidType getEnvironmentTexture();
         void setEnvironmentTexture(UuidType u);
 
         UuidType getEnvironmentShader();
         void setEnvironmentShader(UuidType u);
 
+        // Input ===============================================================
+
+        UuidType getInputScript();
+        void setInputScript(UuidType shader);
+
+        // Physics =============================================================
+
+        vec3 getGravity();
+        void setGravity(const vec3& gravity);
+
+        // Entity Management ===================================================
+
+        void addTemplate(EntityDefinition* _template);
+        EntityDefinition* getTemplateByUuid(UuidType uuid);
+
+        EntityDefinition* getRootEntityDefinition();
+        ProjectDefinition* getProjectDefinition();
+        EntityDefinition* createNewRootEntityDefinition();
+
+        vector<string> getEntityNamesVector();
+
+        // Serialisation =======================================================
+
+        json toJson() override;
+
+        // Variabels ===========================================================
+    private:
+        unique_ptr<CameraDefinition> mCameraDefinition;
+        vector<EntityDefinition*> mTemplates;
+        EntityDefinition* mRootEntityDefinition;
+        ProjectDefinition* mProjectDefinition;
     };
 }

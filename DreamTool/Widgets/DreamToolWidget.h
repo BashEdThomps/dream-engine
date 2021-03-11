@@ -1,10 +1,3 @@
-//
-//  DTWidget.h
-//  DreamToolImGui
-//
-//  Created by Ashley Thompson on 24/10/2018.
-//
-
 #pragma once
 
 #include <DreamCore.h>

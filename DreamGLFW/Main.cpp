@@ -199,16 +199,19 @@ int main(int argc,char** argv)
             MainLoopDone = true;
         }
 
-        handleSceneInput(project);
+        if (project == nullptr) continue;
+        if (projectRuntime == nullptr) continue;
+
 		projectRuntime->step();
 
-        if (startupSceneRuntime->hasState(SceneState::SCENE_STATE_LOADED))
+        handleSceneInput(project);
+
+        if (startupSceneRuntime && startupSceneRuntime->hasState(SceneState::SCENE_STATE_LOADED))
         {
             projectRuntime->setActiveSceneRuntime(startupSceneRuntime->getUuid());
             startupSceneRuntime->setState(SceneState::SCENE_STATE_ACTIVE);
         }
-
-        //std::cout << "FPS: " << GLFWWindowComponent::FPS() << std::endl;
+        windowComponent.swapBuffers();
     }
 
     LOG_INFO("DreamGLFW: Run is done. Cleaning up");
@@ -223,25 +226,28 @@ int main(int argc,char** argv)
 void handleSceneInput(Project* project)
 {
     auto pRunt = project->getRuntime();
+
     if (pRunt)
     {
         auto inputComp = pRunt->getInputComponent();
         if (inputComp)
         {
-            MouseState& ms = inputComp->getMouseState();
-            KeyboardState& ks = inputComp->getKeyboardState();
-            JoystickState& js = inputComp->getJoystickState();
+            // Keyboard
+            KeyboardState ks = inputComp->getKeyboardState();
+            ks.setKeysPressed(GLFWWindowComponent::KeysDown, 512);
+            inputComp->setKeyboardState(ks);
 
             // Mouse
-            memcpy(ms.ButtonsDown, GLFWWindowComponent::MouseButtonsDown, sizeof(bool)*5);
-            ms.PosX = GLFWWindowComponent::MousePosX;
-            ms.PosY = GLFWWindowComponent::MousePosY;
-            ms.ScrollX = GLFWWindowComponent::MouseWheelH;
-            ms.ScrollY = GLFWWindowComponent::MouseWheel;
-
-            memcpy(ks.KeysDown, GLFWWindowComponent::KeysDown, sizeof(bool)*512);
+            MouseState ms = inputComp->getMouseState();
+            ms.setButtonsPressed(GLFWWindowComponent::MouseButtonsDown, 5);
+            ms.setPosX(GLFWWindowComponent::MousePosX);
+            ms.setPosY( GLFWWindowComponent::MousePosY);
+            ms.setScrollX( GLFWWindowComponent::MouseWheelH);
+            ms.setScrollY(GLFWWindowComponent::MouseWheel);
+            inputComp->setMouseState(ms);
 
             // Joystick
+            JoystickState js = inputComp->getJoystickState();
             int joystickCount = 0;
             for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
             {
@@ -272,6 +278,7 @@ void handleSceneInput(Project* project)
                     }
                 }
             }
+            inputComp->setJoystickState(js);
             inputComp->setJoystickCount(joystickCount);
         }
     }

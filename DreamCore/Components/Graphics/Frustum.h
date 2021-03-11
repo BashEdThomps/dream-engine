@@ -9,7 +9,7 @@ using glm::mat4;
 
 namespace octronic::dream
 {
-    class Camera;
+    class CameraRuntime;
     class Frustum
     {
     public:
@@ -30,7 +30,7 @@ namespace octronic::dream
             TEST_INSIDE
         };
 
-        Frustum(Camera* cam);
+        Frustum(CameraRuntime* cam);
         ~Frustum();
         void updatePlanes();
         Frustum::TestResult testIntersection(const mat4& modelMatrix, const BoundingBox& box) const;
@@ -38,6 +38,6 @@ namespace octronic::dream
 
     protected:
         vec4 mPlanes[6];
-        Camera* mCamera;
+        CameraRuntime* mCamera;
     };
 }

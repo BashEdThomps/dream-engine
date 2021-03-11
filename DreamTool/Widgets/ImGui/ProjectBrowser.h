@@ -27,8 +27,6 @@ namespace octronic::dream::tool
         void draw() override;
 
     private:
-        void drawAssetTree();
-        void drawProjectTree();
         void addEntity(EntityDefinition* def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;

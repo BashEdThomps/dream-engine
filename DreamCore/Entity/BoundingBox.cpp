@@ -22,18 +22,20 @@ using std::numeric_limits;
 
 namespace octronic::dream
 {
-    BoundingBox::BoundingBox(const vec3& min, const vec3& max)
-        : maxDimension(max.x*2),
-          minimum(min),
-          maximum(max)
+    BoundingBox::BoundingBox
+    (const vec3& min, const vec3& max)
+        : mMaxDimension(0),
+          mMinimum(min),
+          mMaximum(max)
     {
     }
 
 
-    BoundingBox::BoundingBox(const BoundingBox& other)
-        : maxDimension(other.maxDimension),
-          minimum(other.minimum),
-          maximum(other.maximum)
+    BoundingBox::BoundingBox
+    (const BoundingBox& other)
+        : mMaxDimension(other.mMaxDimension),
+          mMinimum(other.mMinimum),
+          mMaximum(other.mMaximum)
     {
 
     }
@@ -44,26 +46,29 @@ namespace octronic::dream
 
     }
 
-    void BoundingBox::from(const BoundingBox &bb)
+    void
+    BoundingBox::operator=
+    (const BoundingBox &bb)
     {
-       maxDimension = bb.maxDimension;
-       minimum = bb.minimum;
-       maximum = bb.maximum;
+       mMaxDimension = bb.mMaxDimension;
+       mMinimum = bb.mMinimum;
+       mMaximum = bb.mMaximum;
     }
 
     vec3
     BoundingBox::getCenter
-    () const
+    ()
+    const
     {
-       return vec3((minimum.x+maximum.x)/2, (minimum.y+maximum.y)/2, (minimum.z+maximum.z)/2);
+       return vec3((mMinimum.x+mMaximum.x)/2, (mMinimum.y+mMaximum.y)/2, (mMinimum.z+mMaximum.z)/2);
     }
 
     void
     BoundingBox::setToLimits
     ()
     {
-        maximum = vec3(numeric_limits<float>::min());
-        minimum = vec3(numeric_limits<float>::max());
+        mMaximum = vec3(numeric_limits<float>::min());
+        mMinimum = vec3(numeric_limits<float>::max());
     }
 
     vec3
@@ -71,10 +76,10 @@ namespace octronic::dream
     (const vec3& position, const vec3& normal)
     const
     {
-        vec3 positiveVertex = minimum;
-        if( normal.x >= 0.0f ) positiveVertex.x = maximum.x;
-        if( normal.y >= 0.0f ) positiveVertex.y = maximum.y;
-        if( normal.z >= 0.0f ) positiveVertex.z = maximum.z;
+        vec3 positiveVertex = mMinimum;
+        if( normal.x >= 0.0f ) positiveVertex.x = mMaximum.x;
+        if( normal.y >= 0.0f ) positiveVertex.y = mMaximum.y;
+        if( normal.z >= 0.0f ) positiveVertex.z = mMaximum.z;
         return position+positiveVertex;
     }
 
@@ -83,10 +88,10 @@ namespace octronic::dream
     (const vec3& position, const vec3& normal)
     const
     {
-        vec3 negativeVertex = maximum;
-        if(normal.x >= 0.0f ) negativeVertex.x = minimum.x;
-        if(normal.y >= 0.0f ) negativeVertex.y = minimum.y;
-        if(normal.z >= 0.0f ) negativeVertex.z = minimum.z;
+        vec3 negativeVertex = mMaximum;
+        if(normal.x >= 0.0f ) negativeVertex.x = mMinimum.x;
+        if(normal.y >= 0.0f ) negativeVertex.y = mMinimum.y;
+        if(normal.z >= 0.0f ) negativeVertex.z = mMinimum.z;
         return position+negativeVertex;
     }
 
@@ -95,57 +100,54 @@ namespace octronic::dream
     (const BoundingBox& bb)
     {
         // Maximum
-        if (maximum.x < bb.maximum.x)
-        {
-            maximum.x = bb.maximum.x;
-        }
-
-        if (bb.maximum.y < bb.maximum.y)
-        {
-            maximum.y = bb.maximum.y;
-        }
-
-        if (bb.maximum.z < bb.maximum.z)
-        {
-            maximum.z = bb.maximum.z;
-        }
-
-        // Maximum
-        if (bb.minimum.x > bb.minimum.x)
-        {
-            minimum.x = bb.minimum.x;
-        }
-
-        if (bb.minimum.y > bb.minimum.y)
-        {
-            minimum.y = bb.minimum.y;
-        }
-
-        if (bb.minimum.z > bb.minimum.z)
-        {
-            minimum.z = bb.minimum.z;
-        }
+        if (bb.mMaximum.x > mMaximum.x) mMaximum.x = bb.mMaximum.x;
+        if (bb.mMaximum.y > mMaximum.y) mMaximum.y = bb.mMaximum.y;
+        if (bb.mMaximum.z > mMaximum.z) mMaximum.z = bb.mMaximum.z;
+        // Minimum
+        if (bb.mMinimum.x < mMinimum.x) mMinimum.x = bb.mMinimum.x;
+        if (bb.mMinimum.y < mMinimum.y) mMinimum.y = bb.mMinimum.y;
+        if (bb.mMinimum.z < mMinimum.z) mMinimum.z = bb.mMinimum.z;
 
         float maxBound;
-        maxBound = maximum.x > maximum.y ? maximum.x : maximum.y;
-        maxBound = maxBound > maximum.z ? maxBound : maximum.z;
-
-        maxDimension = maxBound;
-
+        maxBound = mMaximum.x > mMaximum.y ? mMaximum.x : mMaximum.y;
+        maxBound = maxBound > mMaximum.z ? maxBound : mMaximum.z;
+        mMaxDimension = maxBound;
     }
 
-    vec3& BoundingBox::getMaximum()
+    vec3
+    BoundingBox::getMaximum
+    ()
+    const
     {
-        return maximum;
+        return mMaximum;
     }
 
-    vec3& BoundingBox::getMinimum()
+    vec3
+    BoundingBox::getMinimum
+    ()
+    const
     {
-        return minimum;
+        return mMinimum;
     }
 
-    void BoundingBox::setMaxDimension(float md)
+    void
+    BoundingBox::setMinimum
+    (const vec3 &v)
+    {
+        mMinimum = v;
+    }
+
+    void
+    BoundingBox::setMaximum
+    (const vec3 &v)
+    {
+        mMaximum = v;
+    }
+
+    void
+    BoundingBox::setMaxDimension
+    (float md)
 	{
-		maxDimension = md;
+		mMaxDimension = md;
 	}
 }

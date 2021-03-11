@@ -1,9 +1,9 @@
 #include "Frustum.h"
-#include "Camera.h"
+#include "CameraRuntime.h"
 
 namespace octronic::dream
 {
-    Frustum::Frustum(Camera* cam)
+    Frustum::Frustum(CameraRuntime* cam)
         : mCamera(cam)
     {
 

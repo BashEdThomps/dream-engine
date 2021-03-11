@@ -15,24 +15,18 @@ namespace octronic::dream::tool
         SelectionHighlighter(DreamToolContext* project);
         ~SelectionHighlighter() override;
         void setSelectedEntity(EntityRuntime* selected);
+        void init() override;
         void draw() override;
-        void init();
         void updateGeometry();
-        bool getOutlineOnly() const;
-        void setOutlineOnly(bool outlineOnly);
         void clearSelection();
 
     protected:
         EntityRuntime* mSelectedEntityRuntime;
-        vec3 mSelectionColour;
         float mOffset;
-        vec3 mXColour;
-        vec3 mYColour;
-        vec3 mZColour;
-
-        // GLWidget interface
-    protected:
-        void setShader() override;
-        bool mOutlineOnly;
+        vec4 mSelectionColour;
+        vec4 mOutlineColor;
+        vec4 mXColour;
+        vec4 mYColour;
+        vec4 mZColour;
     };
 }

@@ -18,7 +18,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 
-#include "Camera.h"
+#include "CameraRuntime.h"
 #include "Font/FontRuntime.h"
 #include "Model/ModelRuntime.h"
 #include "Model/ModelMesh.h"
@@ -71,10 +71,21 @@ namespace octronic::dream
           mDestructionTaskQueue("GraphicsDestructionTaskQueue"),
           mSetupBuffersTask(make_shared<SetupBuffersTask>(pr)),
           mHandleResizeTask(make_shared<HandleResizeTask>(pr)),
-          mRenderTask(make_shared<RenderTask>(pr))
+          mRenderTask(make_shared<RenderTask>(pr)),
+          mLightPositions{
+			{-20.0f,  20.0f, 20.0f},
+			{ 20.0f,  20.0f, 20.0f},
+			{-20.0f, -20.0f, 20.0f},
+			{ 20.0f, -20.0f, 20.0f}
+          },
+          mLightColors{
+              {300.0f, 300.0f, 300.0f},
+              {300.0f, 300.0f, 300.0f},
+              {300.0f, 300.0f, 300.0f},
+              {300.0f, 300.0f, 300.0f}
+          }
     {
         LOG_TRACE("GraphicsComponent: Constructing");
-        GLCheckError();
     }
 
     GraphicsComponent::~GraphicsComponent()
@@ -86,12 +97,16 @@ namespace octronic::dream
 
     // Init/Setup ===============================================================
 
-    bool GraphicsComponent::init()
+    bool
+    GraphicsComponent::init
+    ()
     {
         return true;
     }
 
-    bool GraphicsComponent::setupBuffers()
+    bool
+    GraphicsComponent::setupBuffers
+    ()
     {
         LOG_DEBUG("GraphicsComponent: setupBuffers");
 
@@ -136,7 +151,9 @@ namespace octronic::dream
         return true;
     }
 
-    bool GraphicsComponent::handleResize()
+    bool
+    GraphicsComponent::handleResize
+    ()
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         if (mProjectRuntime->getWindowComponent()->getWindowSizeChangedFlag())
@@ -197,20 +214,37 @@ namespace octronic::dream
         wc->bindFrameBuffer();
         GLCheckError();
 
-        assert(envShader != nullptr);
-        assert(envShader->getLoaded());
-        assert(envTexture != nullptr);
-        assert(envTexture->getLoaded());
+
+		// set depth function to less than AND equal for skybox depth trick.
+		// enable seamless cubemap sampling for lower mip levels in the pre-filter map.
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+        glDisable(GL_CULL_FACE);
+
+
+        if (envShader == nullptr) return;
+        if (!envShader->getLoaded()) return;
+        if (envTexture == nullptr) return;
+        if (!envTexture->getLoaded()) return;
 
         auto camera = sr->getCamera();
         envShader->use();
         envShader->setViewMatrixUniform(camera->getViewMatrix());
         envShader->setProjectionMatrixUniform(camera->getProjectionMatrix());
-        envShader->setTexture(GL_TEXTURE0, GL_TEXTURE_CUBE_MAP, envTexture->getCubeMapTextureID());
+
+        GLuint envTextureId = 0;
+
+        if (envTexture->getCubeDebugMode() == CUBE_DEBUG_NONE)
+        {
+            envTextureId = envTexture->getCubeMapTextureID();
+        }
+        else
+        {
+            envTextureId = envTexture->getCubeDebugTexture();
+        }
+        envShader->setTexture(GL_TEXTURE0, GL_TEXTURE_CUBE_MAP, envTextureId);
         envShader->syncUniforms();
         envTexture->renderCube();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        GLCheckError();
     }
 
     // Geometry Pass ============================================================
@@ -228,24 +262,7 @@ namespace octronic::dream
         auto shaderCache = mProjectRuntime->getShaderCache();
         auto windowComp = mProjectRuntime->getWindowComponent();
 
-        static glm::vec3 lightPositions[] =
-        {
-            glm::vec3(-20.0f,  20.0f, 20.0f),
-            glm::vec3( 20.0f,  20.0f, 20.0f),
-            glm::vec3(-20.0f, -20.0f, 20.0f),
-            glm::vec3( 20.0f, -20.0f, 20.0f),
-        };
 
-        static glm::vec3 lightColors[] =
-        {
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f)
-        };
-
-        int width = windowComp->getWidth();
-        int height = windowComp->getHeight();
 
         checkFrameBufferDimensions();
 
@@ -253,6 +270,9 @@ namespace octronic::dream
 
         glBindFramebuffer(GL_FRAMEBUFFER,windowComp->getFrameBuffer());
         GLCheckError();
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         auto camera = sr->getCamera();
         auto envTexture = sr->getEnvironmentTexture();
@@ -275,20 +295,24 @@ namespace octronic::dream
                 shader->setViewMatrixUniform(camera->getViewMatrix());
                 shader->setProjectionMatrixUniform(camera->getProjectionMatrix());
                 shader->setCameraPositionUniform(camera->getTransform().getTranslation());
+
                 shader->setIrradianceTextureUniform(envTexture->getIrradianceTextureID());
                 shader->setPreFilterTextureUniform(envTexture->getPreFilterTextureID());
                 shader->setBrdfLutTextureUniform(envTexture->getBrdfLutTextureID());
-                shader->setLightPositionsUniform(lightPositions, 4);
-                shader->setLightColorsUniform(lightColors, 4);
-                //shader->drawModels(camera);
+                shader->setLightPositionsUniform(&mLightPositions[0], 4);
+                shader->setLightColorsUniform(&mLightColors[0], 4);
+
                 for (auto material : shader->getMaterialsVector())
                 {
                     if (material->getUsedByVector().size() == 0) continue;
 
-                   	shader->bindMaterial(material);
-                    for (auto model : material->getUsedByVector())
+                    shader->bindMaterial(material);
+                    for (auto modelMesh : material->getUsedByVector())
                     {
-                        model->drawModelRuntimes(camera,shader);
+                        if (modelMesh->getLoaded())
+                        {
+                            modelMesh->drawModelRuntimes(camera,shader);
+                        }
                     }
                 }
             }
@@ -612,15 +636,59 @@ namespace octronic::dream
         }
     }
 
+    // Lights ==============================================================
+
+	vec3
+    GraphicsComponent::getLightPosition
+    (size_t index)
+    const
+    {
+        return mLightPositions[index];
+    }
+
+	void
+    GraphicsComponent::setLightPosition
+    (size_t index, const vec3& p)
+    {
+        mLightPositions[index] = p;
+    }
+
+	vec3
+    GraphicsComponent::getLightColor
+    (size_t index)
+    const
+    {
+    	return mLightColors[index];
+    }
+
+	void
+    GraphicsComponent::setLightColor
+    (size_t index, const vec3& p)
+    {
+    	mLightColors[index] = p;
+    }
+
+    size_t
+    GraphicsComponent::getLightCount
+    ()
+    const
+    {
+        return GC_LIGHT_COUNT;
+    }
+
     // Accessors ================================================================
 
-    GLuint GraphicsComponent::getShadowPassDepthBuffer()
+    GLuint
+    GraphicsComponent::getShadowPassDepthBuffer
+    ()
     const
     {
         return mShadowPassDepthBuffer;
     }
 
-    void GraphicsComponent::checkFrameBufferDimensions()
+    void
+    GraphicsComponent::checkFrameBufferDimensions
+    ()
     {
         LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
         glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&mMaxFrameBufferSize);
@@ -644,7 +712,9 @@ namespace octronic::dream
         }
     }
 
-    void GraphicsComponent::pushTasks()
+    void
+    GraphicsComponent::pushTasks
+    ()
     {
         // Materials
         auto materialCache = mProjectRuntime->getMaterialCache();
@@ -696,14 +766,18 @@ namespace octronic::dream
         }
     }
 
+
+
     GraphicsTaskQueue*
-    GraphicsComponent::getTaskQueue()
+    GraphicsComponent::getTaskQueue
+    ()
     {
         return &mTaskQueue;
     }
 
     GraphicsDestructionTaskQueue*
-    GraphicsComponent::getDestructionTaskQueue()
+    GraphicsComponent::getDestructionTaskQueue
+    ()
     {
         return &mDestructionTaskQueue;
     }

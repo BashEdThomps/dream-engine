@@ -168,7 +168,7 @@ namespace octronic::dream::glfw
         glfwSetCursorPosCallback(mWindow,CursorPositionCallback);
         glfwSetScrollCallback(mWindow,MouseWheelCallback);
 
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
         //glfwGetMonitorContentScale(glfwGetPrimaryMonitor(),mDPIScaleX,mDPIScaleY); Requires GLFW >=3.3
         glfwGetFramebufferSize(mWindow, &mWidth, &mHeight);
         LOG_DEBUG("GLFWWindowComponent: Queried Framebuffer size as {}x{}",mWidth,mHeight);
@@ -239,16 +239,6 @@ namespace octronic::dream::glfw
         if (mWindow != nullptr) glfwSwapBuffers(mWindow);
     }
 
-    int
-    GLFWWindowComponent::FPS
-    ()
-    {
-        LastTime = CurrentTime;
-        CurrentTime = glfwGetTime();
-        Frames = 1.0/(CurrentTime-LastTime);
-        return Frames;
-    }
-
     // These members are static so they can be accessed by GLFW Callbacks;
     bool  GLFWWindowComponent::WindowSizeChanged = false;
     bool  GLFWWindowComponent::MouseButtonsDown[5] = {false};
@@ -257,8 +247,5 @@ namespace octronic::dream::glfw
     float GLFWWindowComponent::MouseWheel = 0.0f;
     float GLFWWindowComponent::MouseWheelH = 0.0f;
     bool  GLFWWindowComponent::KeysDown[512] = {false};
-    float GLFWWindowComponent::LastTime = 0;
-    float GLFWWindowComponent::CurrentTime = 0;
-    int   GLFWWindowComponent::Frames = 0;
 }
 

@@ -8,13 +8,11 @@ namespace octronic::dream::tool
 {
     Cursor::Cursor(DreamToolContext* state)
         : GLWidget(state,false),
-          mStepMajor(false)
+          mStepMajor(false),
+          mOutlineColor(0.f,0.f,0.f,1.f)
     {
         LOG_TRACE("Cursor: Constructing");
-        for (auto index : ModelIndices)
-        {
-            mVertexBuffer.push_back(ModelVertices.at(index));
-        }
+
     }
 
     Cursor::~Cursor()
@@ -22,109 +20,26 @@ namespace octronic::dream::tool
         LOG_TRACE("Cursor: Destructing");
     }
 
-    void
-    Cursor::draw
-    ()
-    {
-
-        Project* proj = mContext->getProject();
-        if (proj)
-        {
-            ProjectRuntime* pRuntime = proj->getRuntime();
-            if (pRuntime)
-            {
-                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
-                if (sRunt)
-                {
-                    Camera* cam = sRunt->getCamera();
-                    if (cam)
-                    {
-                        mProjectionMatrix = cam->getProjectionMatrix();
-                        mViewMatrix = cam->getViewMatrix();
-                    }
-                }
-            }
-        }
-
-        if (!mVertexBuffer.empty())
-        {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-            // Enable shader program
-            glUseProgram(mShaderProgram);
-            ShaderRuntime::CurrentShaderProgram = mShaderProgram;
-            GLCheckError();
-
-
-            // Vertex Array
-            glBindVertexArray(mVao);
-            ShaderRuntime::CurrentVAO = mVao;
-            GLCheckError();
-
-            glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-            ShaderRuntime::CurrentVBO = mVbo;
-            GLCheckError();
-
-            GLCheckError();
-            if (mProjectionUniform == -1)
-            {
-                LOG_ERROR("Cursor: Unable to find Uniform Location for projection");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mProjectionUniform, 1, GL_FALSE, glm::value_ptr(mProjectionMatrix));
-                GLCheckError();
-            }
-
-            // Set the view matrix
-            GLCheckError();
-            if (mViewUniform == -1)
-            {
-                LOG_ERROR("Cursor: Unable to find Uniform Location for view");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mViewUniform, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
-                GLCheckError();
-            }
-
-            // Set the projection matrix
-            if (mModelUniform == -1)
-            {
-                LOG_ERROR("Cursor: Unable to find Uniform Location for model");
-                return;
-            }
-            else
-            {
-                glUniformMatrix4fv(mModelUniform, 1, GL_FALSE, glm::value_ptr(mTransform.getMatrix()));
-                GLCheckError();
-            }
-
-            // Draw
-            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mVertexBuffer.size()));
-            GLCheckError();
-
-            glDisable(GL_BLEND);
-        }
-    }
-
     void Cursor::init()
     {
         GLWidget::init();
-        // Vertex Array
-        glBindVertexArray(mVao);
-        ShaderRuntime::CurrentVAO = mVao;
-        GLCheckError();
-        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderRuntime::CurrentVBO = mVbo;
-        GLCheckError();
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        GLCheckError();
-        glBindVertexArray(0);
-        GLCheckError();
+        setLineWidth(3.f);
+        clearTriangleVertexBuffer();
+        clearLineVertexBuffer();
+        for (auto index : ModelIndices)
+        {
+            addTriangleVertex(ModelVertices.at(index));
+        }
+
+        for (auto index : OutlineIndices)
+        {
+            TranslationColorVertex v = ModelVertices.at(index);
+            v.Color = mOutlineColor;
+            addLineVertex(v);
+        }
+
+        submitTriangleVertexBuffer();
+        submitLineVertexBuffer();
     }
 
     void
@@ -138,27 +53,23 @@ namespace octronic::dream::tool
         // Make a move
         switch(a)
         {
-            case Cursor::XPlus:
+            case CursorAction::XPlus:
                 txDelta.x = step;
                 break;
-            case Cursor::XMinus:
+            case CursorAction::XMinus:
                 txDelta.x = -step;
                 break;
-            case Cursor::YPlus:
+            case CursorAction::YPlus:
                 txDelta.y = step;
                 break;
-            case Cursor::YMinus:
+            case CursorAction::YMinus:
                 txDelta.y = -step;
                 break;
-            case Cursor::ZPlus:
+            case CursorAction::ZPlus:
                 txDelta.z = step;
                 break;
-            case Cursor::ZMinus:
+            case CursorAction::ZMinus:
                 txDelta.z = -step;
-                break;
-            case Cursor::StepMajor:
-                break;
-            case Cursor::StepMinor:
                 break;
         }
 
@@ -213,22 +124,26 @@ namespace octronic::dream::tool
     (Grid::AxisPair ap)
     {
         vec3 current = mTransform.getTranslation();
-        static mat4 ident(1.f);
 
         switch (ap)
         {
-            // TODO
             case Grid::XY:
                 current.z = 0.0f;
-                //mTransform.setOrientation(glm::rotate(ident, radians(90.0f), vec3(1.f,0.f,0.f)));
+                mTransform.setPitch(radians(90.f));
+                mTransform.setYaw(0.f);
+                mTransform.setRoll(0.f);
                 break;
             case Grid::XZ:
                 current.y = 0.0f;
-                //mTransform.setOrientation(glm::rotate(ident, radians(90.f), vec3(0.f,1.0f,0.f)));
+                mTransform.setPitch(0.f);
+                mTransform.setYaw(0.f);
+                mTransform.setRoll(0.f);
                 break;
             case Grid::YZ:
                 current.x = 0.0f;
-                //mTransform.setOrientation(glm::rotate(ident, radians(-90.0f), vec3(0.0f,0.0f,1.f)));
+                mTransform.setPitch(0.f);
+                mTransform.setYaw(0.f);
+                mTransform.setRoll(radians(270.f));
                 break;
         }
         mTransform.setTranslation(current);
@@ -246,33 +161,41 @@ namespace octronic::dream::tool
     Cursor::mouseToWorldSpace
     (float x, float y)
     {
-        auto windowComp = mContext->getGlPreviewWindowComponent();
-        auto w = windowComp->getWidth();
-        auto h = windowComp->getHeight();
-        float depth = 0.5;
-        /*if (mState->project->getRuntime())
-        {
-            auto camTx = mState->project->getRuntime()->getActiveSceneRuntime()->getCamera()->getTranslation();
-            depth = glm::distance(vec3(0.0f),camTx);
-        }
-        */
-        mat4 mtx(1.0f);
-        vec3 out = glm::unProject(
-            vec3(x, y, depth),
-            mtx*mViewMatrix,
-            mProjectionMatrix,
-            vec4(0.0f,0.0f,w,h)
-        );
-        return out;
+        // TODO
+        return vec3(0.f);
     }
 
-    const vector<GLWidgetVertex> Cursor::ModelVertices =
+    vec4 Cursor::getOutlineColor() const
     {
-        GLWidgetVertex{vec3( 0.f, 0.f,  0.f), vec3(0.0f, 1.0f, 0.0f)},
-        GLWidgetVertex{vec3(-1.f, 4.f,  1.f), vec3(0.0f, 1.0f, 0.0f)},
-        GLWidgetVertex{vec3(-1.f, 4.f, -1.f), vec3(0.0f, 1.0f, 0.0f)},
-        GLWidgetVertex{vec3( 1.f, 4.f,  1.f), vec3(0.0f, 1.0f, 0.0f)},
-        GLWidgetVertex{vec3( 1.f, 4.f, -1.f), vec3(0.0f, 1.0f, 0.0f)},
+        return mOutlineColor;
+    }
+
+    void Cursor::setOutlineColor(const vec4& outlineColor)
+    {
+        mOutlineColor = outlineColor;
+    }
+
+    const vector<TranslationColorVertex> Cursor::ModelVertices =
+    {
+        {{ 0.f, 0.f,  0.f}, {0.0f, 1.0f, 0.0f, 1.f}}, // 0 Bottom
+        {{-1.f, 2.f,  1.f}, {0.0f, 1.0f, 0.0f, 1.f}}, // 1 Top back  Left
+        {{-1.f, 2.f, -1.f}, {0.0f, 1.0f, 0.0f, 1.f}}, // 2 Top front Left
+        {{ 1.f, 2.f,  1.f}, {0.0f, 1.0f, 0.0f, 1.f}}, // 3 Top back  Right
+        {{ 1.f, 2.f, -1.f}, {0.0f, 1.0f, 0.0f, 1.f}}, // 4 Top front Right
+    };
+
+    const vector<GLuint> Cursor::OutlineIndices =
+    {
+        // Sides
+        0, 1,
+        0, 2,
+        0, 3,
+        0, 4,
+        // Top
+        1, 2,
+        3, 4,
+        2, 4,
+        1, 3
     };
 
     const vector<GLuint> Cursor::ModelIndices =

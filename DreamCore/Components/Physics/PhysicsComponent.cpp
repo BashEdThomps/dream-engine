@@ -14,7 +14,6 @@
 */
 
 #include "PhysicsComponent.h"
-#include "PhysicsDebugDrawer.h"
 #include "PhysicsObjectRuntime.h"
 #include "PhysicsTasks.h"
 #include "Common/Logger.h"
@@ -36,16 +35,13 @@ namespace octronic::dream
     PhysicsComponent::PhysicsComponent
     (ProjectRuntime* pr)
         : Component(pr),
-          mDebugDrawer(nullptr),
           mDynamicsWorld(nullptr),
           mBroadphase(nullptr),
           mCollisionConfiguration(nullptr),
           mDispatcher(nullptr),
           mSolver(nullptr),
           mProjectionMatrix(mat4(1.0f)),
-          mUpdateWorldTask(make_shared<PhysicsUpdateWorldTask>(pr, this)),
-          mDrawDebugTask(make_shared<PhysicsDrawDebugTask>(pr, this)),
-          mDebug(false)
+          mUpdateWorldTask(make_shared<PhysicsUpdateWorldTask>(pr, this))
     {
     }
 
@@ -122,12 +118,6 @@ namespace octronic::dream
             delete mCollisionConfiguration;
             mCollisionConfiguration = nullptr;
         }
-
-        if (mDebugDrawer)
-        {
-            delete mDebugDrawer;
-            mDebugDrawer = nullptr;
-        }
     }
 
     void
@@ -179,11 +169,6 @@ namespace octronic::dream
         mSolver = new btSequentialImpulseConstraintSolver();
         mDynamicsWorld = new btDiscreteDynamicsWorld(
                     mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
-        //mDynamicsWorld->setGravity(mGravity);
-        mDebugDrawer = new PhysicsDebugDrawer();
-        mDebugDrawer->init();
-        mDebugDrawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
-        mDynamicsWorld->setDebugDrawer(mDebugDrawer);
 
         LOG_DEBUG("PhysicsComponent: Finished initialising PhysicsComponent");
         return true;
@@ -236,28 +221,6 @@ namespace octronic::dream
     }
 
     void
-    PhysicsComponent::setCamera
-    (Camera* camera)
-    {
-        if (mDebugDrawer != nullptr)
-        {
-            mDebugDrawer->setCamera(camera);
-        }
-    }
-
-    void
-    PhysicsComponent::setDebug
-    (bool debug)
-    {
-        mDebug = debug;
-    }
-
-    bool PhysicsComponent::getDebug()
-    {
-        return mDebug;
-    }
-
-    void
     PhysicsComponent::checkContactManifolds
     ()
     {
@@ -297,15 +260,6 @@ namespace octronic::dream
                         auto ptA = pt.getPositionWorldOnA();
                         auto ptB = pt.getPositionWorldOnB();
                         auto impulse = pt.getAppliedImpulse();
-
-                        if (sObjA->isPlayerObject())
-                        {
-                            aHitsB.setAttribute("character","true");
-                        }
-                        else if (sObjB->isPlayerObject())
-                        {
-                            bHitsA.setAttribute("character","true");
-                        }
 
                         aHitsB.setAttribute("collision","true");
                         aHitsB.setAttribute("collision.impulse",std::to_string(impulse));
@@ -354,38 +308,21 @@ namespace octronic::dream
                     }));
     }
 
-    void
-    PhysicsComponent::drawDebug
-    ()
-    {
-        mDebugDrawer->drawAll();
-    }
-
-    PhysicsDebugDrawer* PhysicsComponent::getDebugDrawer()
-    {
-        return mDebugDrawer;
-    }
-
     PhysicsUpdateWorldTask *PhysicsComponent::getUpdateWorldTask()
     {
         return mUpdateWorldTask.get();
     }
 
-    PhysicsDrawDebugTask* PhysicsComponent::getDrawDebugTask()
+    void
+    PhysicsComponent::setDebugDrawer
+    (btIDebugDraw* dd)
     {
-        return mDrawDebugTask.get();
-    }
+		mDynamicsWorld->setDebugDrawer(dd);
+	}
 
     void PhysicsComponent::pushTasks()
     {
 		auto taskQueue = mProjectRuntime->getTaskQueue();
 		taskQueue->pushTask(mUpdateWorldTask);
-        /*
-		if (mDebug)
-		{
-			auto gfxQueue = mProjectRuntime->getGraphicsComponent()->getTaskQueue();
-			gfxQueue->pushTask(mDrawDebugTask);
-		}
-        */
     }
 }

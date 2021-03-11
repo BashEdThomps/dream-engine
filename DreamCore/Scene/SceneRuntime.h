@@ -16,8 +16,7 @@
 
 #include "Base/Runtime.h"
 #include "Math/Transform.h"
-#include "Components/Graphics/Camera.h"
-#include "Components/Script/ScriptTasks.h"
+#include "Components/Graphics/CameraRuntime.h"
 
 #include <memory>
 #include <string>
@@ -29,14 +28,14 @@ using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class ProjectRuntime;
-    class Entity;
-    class SceneDefinition;
-    class AssetRuntime;
     class AssetDefinition;
+    class SceneDefinition;
+
+    class AssetRuntime;
     class EntityRuntime;
-    class ShaderRuntime;
+    class ProjectRuntime;
     class ScriptRuntime;
+    class ShaderRuntime;
     class TextureRuntime;
 
     class SceneRuntime : public Runtime
@@ -45,7 +44,7 @@ namespace octronic::dream
         SceneRuntime(ProjectRuntime* parent, SceneDefinition* sd);
         ~SceneRuntime() override;
 
-        Camera* getCamera();
+        CameraRuntime* getCamera();
 
         SceneState getState() const;
         void setState(SceneState state);
@@ -60,17 +59,7 @@ namespace octronic::dream
         bool loadFromDefinition() override;
         void destroyRuntime();
 
-        bool getPhysicsDebug() const;
-        void setPhysicsDebug(bool physicsDebug);
 
-        void setMeshCullDistance(float);
-        float getMeshCullDistance() const;
-
-        float getMinDrawDistance() const;
-        void setMinDrawDistance(float);
-
-        float getMaxDrawDistance() const;
-        void setMaxDrawDistance(float);
 
         void createSceneTasks();
 
@@ -101,21 +90,18 @@ namespace octronic::dream
         void setSpriteShader(ShaderRuntime* shader);
 
         TextureRuntime* getEnvironmentTexture() const;
+        void setEnvironmentTexture(TextureRuntime* );
+
+        void setEnvironmentShader(ShaderRuntime* );
         ShaderRuntime* getEnvironmentShader() const;
 
         vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
         vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
 
         /**
-         * @return Gets the ScriptRuntime that handles Input
-         */
-        ScriptRuntime* getInputScript() const;
-
-        /**
          * @return Gets the nearest Entity to the Camera's position excluding
          * the Entity the Camera is focused on.
          */
-        EntityRuntime* getNearestToCamera() const;
 
         unsigned long getSceneCurrentTime() const;
         void setSceneCurrentTime(unsigned long sceneCurrentTime);
@@ -123,8 +109,7 @@ namespace octronic::dream
         unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
-        void setPlayerEntity(EntityRuntime* po);
-        EntityRuntime* getPlayerEntity() const;
+        ScriptRuntime* getInputScript() const;
 
     protected:
         void updateLifetime();
@@ -140,17 +125,12 @@ namespace octronic::dream
         ShaderRuntime* mShadowPassShader;
         ShaderRuntime* mFontShader;
         ShaderRuntime* mSpriteShader;
-        ScriptRuntime* mInputScript;
         TextureRuntime* mEnvironmentTexture;
         ShaderRuntime* mEnvironmentShader;
-        shared_ptr<InputScriptCreateStateTask> mInputScriptCreateStateTask;
-        shared_ptr<InputScriptRemoveStateTask> mInputScriptRemoveStateTask;
-        Camera mCamera;
+        ScriptRuntime* mInputScript;
+        EntityRuntime* mCameraEntity;
+        shared_ptr<CameraRuntime> mCamera;
         unsigned long mSceneStartTime;
         unsigned long mSceneCurrentTime;
-        float mMinDrawDistance;
-        float mMaxDrawDistance;
-        float mMeshCullDistance;
-        EntityRuntime* mPlayerEntity;
     };
 }

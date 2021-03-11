@@ -12,12 +12,11 @@
 
 #pragma once
 
+#include "EntityTasks.h"
 #include "BoundingBox.h"
 #include "Base/Runtime.h"
-#include "Components/Script/ScriptTasks.h"
 #include "Components/Graphics/Frustum.h"
 #include "Math/Transform.h"
-#include "TransformSpace.h"
 
 #include <vector>
 #include <memory>
@@ -103,10 +102,7 @@ namespace octronic::dream
         Transform getTransform() const;
         Transform getInitialTransform() const;
         void setTransform(const Transform& transform);
-        void translateWithChildren(const vec3& translation);
-        void translateOffsetInitial(const vec3& tx);
 
-        bool isPlayerObject() const;
         bool hasEvents() const;
         void addEvent(const Event& event);
         vector<Event>* getEventQueue();
@@ -129,16 +125,13 @@ namespace octronic::dream
         bool getScriptError() const;
 
         bool isParentOf(EntityRuntime* child) const;
-        void setParentRuntime(EntityRuntime* parent);
-        EntityRuntime* getParentRuntime() const;
+        void setParentEntityRuntime(EntityRuntime* parent);
+        EntityRuntime* getParentEntityRuntime() const;
 
         bool loadFromDefinition() override;
 
         bool getDeleted() const;
         void setDeleted(bool deleted);
-
-        bool getHidden() const;
-        void setHidden(bool hidden);
 
         void removeAnimationRuntime();
         void removeAudioRuntime();
@@ -154,9 +147,6 @@ namespace octronic::dream
         void setAssetDefinitionsMap(const map<AssetType, UuidType> &loadQueue);
         map<AssetType, UuidType> getAssetDefinitionsMap() const;
 
-        bool getAlwaysDraw() const;
-        void setAlwaysDraw(bool alwaysDraw);
-
         BoundingBox getBoundingBox() const;
         void setBoundingBox(const BoundingBox& boundingBox);
 
@@ -171,10 +161,6 @@ namespace octronic::dream
         EntityRuntime* applyToAll(const function<EntityRuntime*(EntityRuntime*)>& fn);
         void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
-
-        long getObjectLifetime() const;
-        void setObjectLifetime(long l);
-        void updateLifetime();
 
         bool loadChildrenFromDefinition(EntityDefinition* definition);
 
@@ -199,46 +185,53 @@ namespace octronic::dream
         void pushTasks();
         bool allRuntimesLoaded() const;
 
-        TransformSpace getTransformSpace() const;
-        void setTransformSpace(TransformSpace);
-
     protected:
         ProjectRuntime* mProjectRuntimeHandle;
-        // Discrete Assets
+        SceneRuntime* mSceneRuntime;
+        EntityRuntime* mParentEntityRuntime;
+        vector<EntityRuntime*> mChildRuntimes;
+
+        // Discrete Assets =====================================================
         AnimationRuntime* mAnimationRuntime;
-        AudioRuntime* mAudioRuntime;
         PathRuntime* mPathRuntime;
         PhysicsObjectRuntime* mPhysicsObjectRuntime;
-        // Shared Runtimes
+
+        // Shared Runtimes =====================================================
+        // Audio
+        AudioRuntime* mAudioRuntime;
+
+        // Font
+        FontRuntime* mFontRuntime;
+        string mFontText;
+        vec4 mFontColor;
+		float mFontScale;
+
+        // Model
+        ModelRuntime* mModelRuntime;
+
+        // Script
         ScriptRuntime* mScriptRuntime;
         bool mScriptError;
         bool mScriptInitialised;
-        ModelRuntime* mModelRuntime;
-        FontRuntime* mFontRuntime;
-        TextureRuntime* mTextureRuntime;
-
-        Transform mInitialTransform;
-        Transform mTransform;
-        vector<Event> mEventQueue;
-        map<AssetType,UuidType> mAssetDefinitions;
-        vector<EntityRuntime*> mChildRuntimes;
-        SceneRuntime* mSceneRuntime;
-        EntityRuntime* mParentRuntime;
-        BoundingBox mBoundingBox;
-        bool mDeleted;
-        bool mHidden;
-        bool mAlwaysDraw;
-        bool mRandomUuid;
-        long mObjectLifetime;
         shared_ptr<EntityScriptCreateStateTask> mScriptCreateStateTask;
         shared_ptr<EntityScriptOnInitTask> mScriptOnInitTask;
         shared_ptr<EntityScriptOnUpdateTask> mScriptOnUpdateTask;
         shared_ptr<EntityScriptOnEventTask> mScriptOnEventTask;
         shared_ptr<EntityScriptRemoveStateTask> mScriptRemoveStateTask;
+
+        // Sprite Texture
+        TextureRuntime* mTextureRuntime;
+
+        // Transform
+        Transform mInitialTransform;
+        Transform mCurrentTransform;
+        BoundingBox mBoundingBox;
+
+        // Flags
+        bool mDeleted;
+        bool mRandomUuid;
         map<string,string> mAttributes;
-        string mFontText;
-        vec4 mFontColor;
-		float mFontScale;
-        TransformSpace mTransformSpace;
+        vector<Event> mEventQueue;
+        map<AssetType,UuidType> mAssetDefinitions;
     };
 }

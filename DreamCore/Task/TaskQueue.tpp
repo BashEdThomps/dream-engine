@@ -75,7 +75,7 @@ namespace octronic::dream
             }
             else
             {
-                LOG_ERROR("{}: Error, Processed task was not in the queue to remove?", mClassName);
+                LOG_ERROR("{}: Error, Processed \"{}\"task was not in the queue to remove?", t->getNameAndIDString(), mClassName);
                 assert(false);
             }
         }

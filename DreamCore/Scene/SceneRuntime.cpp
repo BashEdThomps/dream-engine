@@ -27,7 +27,7 @@
 #include "Components/Physics/PhysicsTasks.h"
 #include "Components/Input/InputTasks.h"
 #include "Components/Time.h"
-#include "Components/Graphics/Camera.h"
+#include "Components/Graphics/CameraRuntime.h"
 #include "Components/Animation/AnimationRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Audio/AudioRuntime.h"
@@ -61,18 +61,11 @@ namespace octronic::dream
           mShadowPassShader(nullptr),
           mFontShader(nullptr),
           mSpriteShader(nullptr),
-          mInputScript(nullptr),
           mEnvironmentShader(nullptr),
           mEnvironmentTexture(nullptr),
-          mCamera(Camera(this)),
+          mCamera(nullptr),
           mSceneStartTime(0),
-          mSceneCurrentTime(0),
-          mMinDrawDistance(0.1f),
-          mMaxDrawDistance(1000.0f),
-          mMeshCullDistance(1000.0f),
-          mPlayerEntity(nullptr),
-          mInputScriptCreateStateTask(make_shared<InputScriptCreateStateTask>(project)),
-          mInputScriptRemoveStateTask(make_shared<InputScriptRemoveStateTask>(project))
+          mSceneCurrentTime(0)
     {
         LOG_TRACE( "SceneRuntime: Constructing " );
     }
@@ -81,7 +74,6 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("SceneRuntime: Destructing");
-        destroyRuntime();
     }
 
     void
@@ -96,8 +88,18 @@ namespace octronic::dream
             mRootEntityRuntime = nullptr;
         }
 
+        if (mProjectRuntime->getActiveSceneRuntime() == this)
+        {
+			auto inputComp = mProjectRuntime->getInputComponent();
+            auto destructionQueue = mProjectRuntime->getDestructionTaskQueue();
+			destructionQueue->pushTask(inputComp->getRemoveScriptTask());
+        }
+
         mShadowPassShader = nullptr;
+        mEnvironmentShader = nullptr;
+        mEnvironmentTexture = nullptr;
         mFontShader = nullptr;
+        mSpriteShader = nullptr;
         mState = SceneState::SCENE_STATE_DESTROYED;
     }
 
@@ -307,15 +309,6 @@ namespace octronic::dream
         setUuid(sceneDefinition->getUuid());
         setClearColor(sceneDefinition->getClearColor());
 
-        // Setup Camera
-        mCamera.setTransform(sceneDefinition->getCameraTransform());
-        mCamera.setFieldOfView(sceneDefinition->getCameraFOV());
-
-        //  Setup drawing parameters
-        setMeshCullDistance(sceneDefinition->getMeshCullDistance());
-        setMinDrawDistance(sceneDefinition->getMinDrawDistance());
-        setMaxDrawDistance(sceneDefinition->getMaxDrawDistance());
-
         // Load Scene-level Shaders & Textures
         auto shaderCache = mProjectRuntime->getShaderCache();
         auto textureCache = mProjectRuntime->getTextureCache();
@@ -372,15 +365,14 @@ namespace octronic::dream
         auto scriptCache = mProjectRuntime->getScriptCache();
         UuidType inputScriptUuid = sceneDefinition->getInputScript();
         mInputScript = scriptCache->getRuntimeHandle(inputScriptUuid);
+
         if (mInputScript)
         {
-            LOG_TRACE("SceneRuntime: Setting up input script Tasks");
-            mInputScriptCreateStateTask->setScript(mInputScript);
-            mInputScriptRemoveStateTask->setScript(mInputScript);
+            LOG_TRACE("SceneRuntime: Setting up input");
         }
         else
         {
-            LOG_ERROR("SceneRuntime: Unable to load Input r Script {}",inputScriptUuid);
+            LOG_ERROR("SceneRuntime: Unable to load Input Script {}",inputScriptUuid);
         }
 
         // Physics
@@ -398,72 +390,14 @@ namespace octronic::dream
         }
 
         setRootEntityRuntime(er);
+
+        // Setup Camera
+        mCamera = make_shared<CameraRuntime>(sceneDefinition->getCamera(), this);
+        mCamera->loadFromDefinition();
+
         setState(SceneState::SCENE_STATE_LOADED);
 
-        EntityRuntime* player = getEntityRuntimeByUuid(sceneDefinition->getPlayerObject());
-        setPlayerEntity(player);
-
         return true;
-    }
-
-    bool
-    SceneRuntime::getPhysicsDebug
-    ()
-    const
-    {
-        if (mProjectRuntime)
-        {
-            return mProjectRuntime->getPhysicsComponent()->getDebug();
-        }
-        return false;
-    }
-
-    void
-    SceneRuntime::setPhysicsDebug
-    (bool physicsDebug)
-    {
-        if (mProjectRuntime)
-        {
-            mProjectRuntime->getPhysicsComponent()->setDebug(physicsDebug);
-        }
-    }
-
-    void
-    SceneRuntime::setMeshCullDistance
-    (float mcd)
-    {
-        mMeshCullDistance = mcd;
-    }
-
-    float
-    SceneRuntime::getMeshCullDistance
-    ()
-    const
-    {
-        return mMeshCullDistance;
-    }
-
-    void
-    SceneRuntime::setMinDrawDistance
-    (float f)
-    {
-        mMinDrawDistance = f;
-    }
-
-    float
-    SceneRuntime::getMinDrawDistance
-    ()
-    const
-    {
-        return mMinDrawDistance;
-    }
-
-    float
-    SceneRuntime::getMaxDrawDistance
-    ()
-    const
-    {
-        return mMaxDrawDistance;
     }
 
     vector<AssetRuntime*>
@@ -510,19 +444,11 @@ namespace octronic::dream
         return runtimes;
     }
 
-
-    void
-    SceneRuntime::setMaxDrawDistance
-    (float f)
-    {
-        mMaxDrawDistance = f;
-    }
-
-    Camera*
+    CameraRuntime*
     SceneRuntime::getCamera
     ()
     {
-        return &mCamera;
+        return mCamera.get();
     }
 
     ShaderRuntime*
@@ -562,43 +488,6 @@ namespace octronic::dream
         mSpriteShader = shader;
     }
 
-    ScriptRuntime*
-    SceneRuntime::getInputScript
-    ()
-    const
-    {
-        return mInputScript;
-    }
-
-    EntityRuntime*
-    SceneRuntime::getNearestToCamera
-    ()
-    const
-    {
-        if (mRootEntityRuntime != nullptr)
-        {
-            return nullptr;
-        }
-
-        float distance = std::numeric_limits<float>::max();
-        Transform camTrans = mCamera.getTransform();
-        EntityRuntime* nearest = mRootEntityRuntime;
-
-        mRootEntityRuntime->applyToAll(
-                    function<EntityRuntime*(EntityRuntime*)>
-                    ([&](EntityRuntime* next){
-                        float nextDistance = next->distanceFrom(camTrans.getTranslation());
-                        if (nextDistance < distance)
-                        {
-                            distance = nextDistance;
-                            nearest = next;
-                        }
-                        return nullptr;
-                    }));
-        return nearest;
-
-    }
-
     unsigned long
     SceneRuntime::getSceneCurrentTime
     ()
@@ -631,9 +520,8 @@ namespace octronic::dream
      * @brief SceneRuntime::createSceneTasks
      *
      * Entitys with DiscreetAssetRuntimes need to push back their own tasks,
-     * All SharedAssetRuntimes should be pushed back only once.
-     * This is handled by TaskThread->hasTask, to check if any of the threads
-     * already have a copy of the task.
+     * All SharedAssetRuntimes should be pushed by their caches.
+     *
      */
     void
     SceneRuntime::createSceneTasks
@@ -649,7 +537,6 @@ namespace octronic::dream
             mRootEntityRuntime->applyToAll(
                         function<EntityRuntime*(EntityRuntime*)>
                         ([&](EntityRuntime* rt){
-                            rt->updateLifetime();
                             rt->pushTasks();
                             return static_cast<EntityRuntime*>(nullptr);
                         }));
@@ -674,34 +561,36 @@ namespace octronic::dream
         }
     }
 
-    void
-    SceneRuntime::setPlayerEntity
-    (EntityRuntime* po)
-    {
-        mPlayerEntity = po;
-    }
-
-    EntityRuntime*
-    SceneRuntime::getPlayerEntity
-    ()
-    const
-    {
-        return mPlayerEntity;
-    }
-
-
     bool SceneRuntime::hasState(SceneState state) const
     {
         return mState == state;
     }
+
+
 
     TextureRuntime* SceneRuntime::getEnvironmentTexture() const
     {
        return mEnvironmentTexture;
     }
 
+    void SceneRuntime::setEnvironmentTexture(TextureRuntime* tr)
+    {
+       mEnvironmentTexture = tr;;
+    }
+
     ShaderRuntime* SceneRuntime::getEnvironmentShader() const
     {
        return mEnvironmentShader;
+    }
+
+    void SceneRuntime::setEnvironmentShader(ShaderRuntime* rt)
+    {
+       mEnvironmentShader = rt;
+    }
+
+
+    ScriptRuntime* SceneRuntime::getInputScript() const
+    {
+        return mInputScript;
     }
 }

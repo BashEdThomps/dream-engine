@@ -51,6 +51,7 @@ namespace octronic::dream
         void setBrdfLutTexture(GLuint texture);
         void setCubeBuffers(GLuint VAO, GLuint VBO);
         void setQuadBuffers(GLuint VAO, GLuint VBO);
+        void clearVariables();
         void execute() override;
     };
 }

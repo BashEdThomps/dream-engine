@@ -28,11 +28,11 @@ namespace octronic::dream::tool
     PathViewer::PathViewer
     (DreamToolContext* state, bool visible)
         : GLWidget(state, visible),
-          mSelectedColour(vec3(0.0f, 1.0f, 0.0f)),
+          mSelectedColour(0.0f, 1.0f, 0.0f,1.f),
           mPathRuntime(nullptr),
-          mUnselectedColour(vec3(0.75f, 0.75f, 0.0f)),
-          mCurveColour(vec3(1.0f, 0.0f, 1.0f)),
-          mTangentColour(vec3(0.25f,1.0f,0.0f)),
+          mUnselectedColour(0.75f, 0.75f, 0.0f,1.f),
+          mCurveColour(1.0f, 0.0f, 1.0f,1.f),
+          mTangentColour(0.25f,1.0f,0.0f,1.f),
           mDrawTangent(false),
           mNodeSize(0.25f),
           mSelectedCp(0),
@@ -46,7 +46,6 @@ namespace octronic::dream::tool
     {
         LOG_DEBUG("PathViewer: Destructing Object");
         clearRuntime();
-
     }
 
     void
@@ -63,7 +62,10 @@ namespace octronic::dream::tool
     {
         bool regen = (selected != mPathDefinition);
         mPathDefinition = selected;
-        if (regen){ regenerate(); }
+        if (regen)
+        {
+            regenerate();
+        }
     }
 
     bool
@@ -156,7 +158,9 @@ namespace octronic::dream::tool
 
         auto controls = mPathDefinition->getControlPoints();
 
-        mVertexBuffer.clear();
+        clearLineVertexBuffer();
+        clearPointVertexBuffer();
+        clearTriangleVertexBuffer();
 
         for (auto cp : controls)
         {
@@ -168,25 +172,7 @@ namespace octronic::dream::tool
             generateSpline();
         }
 
-        updateVertexBuffer();
-    }
-
-    void
-    PathViewer::updateVertexBuffer
-    ()
-    {
-        LOG_DEBUG("PathViewer: Updating Vertex Buffer") ;
-
-        // Vertex Array
-        glBindVertexArray(mVao);
-        ShaderRuntime::CurrentVAO = mVao;
-        GLCheckError();
-        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-        ShaderRuntime::CurrentVBO = mVbo;
-        GLCheckError();
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLint>(mVertexBuffer.size() * sizeof(GLWidgetVertex)), &mVertexBuffer[0], GL_STATIC_DRAW);
-        GLCheckError();
-        glBindVertexArray(0);
+        submitLineVertexBuffer();
     }
 
     void
@@ -205,13 +191,13 @@ namespace octronic::dream::tool
            vec3 current = splines.at(i-1);
            vec3 next = splines.at(i);
 
-           GLWidgetVertex v1,v2;
-           v1.Position  = current;
+           TranslationColorVertex v1,v2;
+           v1.Translation  = current;
            v1.Color = mCurveColour;
-           v2.Position = next;
+           v2.Translation = next;
            v2.Color = mCurveColour;
-           mVertexBuffer.push_back(v1);
-           mVertexBuffer.push_back(v2);
+           addLineVertex(v1);
+           addLineVertex(v2);
        }
 
        auto tans = mPathRuntime->getSplineDerivatives();
@@ -219,13 +205,13 @@ namespace octronic::dream::tool
        if (mDrawTangent && mTangentIndex > 0 && mTangentIndex < tans.size())
        {
            pair<vec3,vec3> tangent = tans.at(mTangentIndex);
-           GLWidgetVertex v1, v2;
-           v1.Position = tangent.first;
-           v1.Color = vec3(1,0,0);
-           v2.Position = tangent.second;
-           v2.Color = vec3(0,1,0);
-           mVertexBuffer.push_back(v1);
-           mVertexBuffer.push_back(v2);
+           TranslationColorVertex v1, v2;
+           v1.Translation = tangent.first;
+           v1.Color = vec4(1,0,0,1);
+           v2.Translation = tangent.second;
+           v2.Color = vec4(0,1,0,1);
+           addLineVertex(v1);
+           addLineVertex(v2);
        }
     }
 
@@ -238,109 +224,109 @@ namespace octronic::dream::tool
 
         LOG_TRACE("PathViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
 
-        vec3 colour = (mSelectedCp ==  index ? mSelectedColour : mUnselectedColour);
+        vec4 colour = (mSelectedCp ==  index ? mSelectedColour : mUnselectedColour);
         LOG_TRACE("PathViewer: Selected? {}",mSelectedCp == index);
 
         // Top Quad
 
-        GLWidgetVertex topFront1, topFront2;
-        topFront1.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex topFront1, topFront2;
+        topFront1.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         topFront1.Color = colour;
-        mVertexBuffer.push_back(topFront1);
-        topFront2.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        addLineVertex(topFront1);
+        topFront2.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         topFront2.Color = colour;
-        mVertexBuffer.push_back(topFront2);
+        addLineVertex(topFront2);
 
-        GLWidgetVertex topBack1, topBack2;
-        topBack1.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        TranslationColorVertex topBack1, topBack2;
+        topBack1.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         topBack1.Color = colour;
-        mVertexBuffer.push_back(topBack1);
-        topBack2.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        addLineVertex(topBack1);
+        topBack2.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         topBack2.Color = colour;
-        mVertexBuffer.push_back(topBack2);
+        addLineVertex(topBack2);
 
-        GLWidgetVertex topLeft1, topLeft2;
-        topLeft1.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex topLeft1, topLeft2;
+        topLeft1.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         topLeft1.Color = colour;
-        mVertexBuffer.push_back(topLeft1);
-        topLeft2.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        addLineVertex(topLeft1);
+        topLeft2.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         topLeft2.Color = colour;
-        mVertexBuffer.push_back(topLeft2);
+        addLineVertex(topLeft2);
 
-        GLWidgetVertex topRight1, topRight2;
-        topRight1.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex topRight1, topRight2;
+        topRight1.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         topRight1.Color = colour;
-        mVertexBuffer.push_back(topRight1);
-        topRight2.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        addLineVertex(topRight1);
+        topRight2.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         topRight2.Color = colour;
-        mVertexBuffer.push_back(topRight2);
+        addLineVertex(topRight2);
 
         // Bottom Quad
 
-        GLWidgetVertex bottomFront1, bottomFront2;
-        bottomFront1.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex bottomFront1, bottomFront2;
+        bottomFront1.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         bottomFront1.Color = colour;
-        mVertexBuffer.push_back(bottomFront1);
-        bottomFront2.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        addLineVertex(bottomFront1);
+        bottomFront2.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         bottomFront2.Color = colour;
-        mVertexBuffer.push_back(bottomFront2);
+        addLineVertex(bottomFront2);
 
-        GLWidgetVertex bottomBack1, bottomBack2;
-        bottomBack1.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        TranslationColorVertex bottomBack1, bottomBack2;
+        bottomBack1.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         bottomBack1.Color = colour;
-        mVertexBuffer.push_back(bottomBack1);
-        bottomBack2.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        addLineVertex(bottomBack1);
+        bottomBack2.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         bottomBack2.Color = colour;
-        mVertexBuffer.push_back(bottomBack2);
+        addLineVertex(bottomBack2);
 
-        GLWidgetVertex bottomLeft1, bottomLeft2;
-        bottomLeft1.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex bottomLeft1, bottomLeft2;
+        bottomLeft1.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         bottomLeft1.Color = colour;
-        mVertexBuffer.push_back(bottomLeft1);
-        bottomLeft2.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        addLineVertex(bottomLeft1);
+        bottomLeft2.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         bottomLeft2.Color = colour;
-        mVertexBuffer.push_back(bottomLeft2);
+        addLineVertex(bottomLeft2);
 
-        GLWidgetVertex bottomRight1, bottomRight2;
-        bottomRight1.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex bottomRight1, bottomRight2;
+        bottomRight1.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         bottomRight1.Color = colour;
-        mVertexBuffer.push_back(bottomRight1);
-        bottomRight2.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        addLineVertex(bottomRight1);
+        bottomRight2.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         bottomRight2.Color = colour;
-        mVertexBuffer.push_back(bottomRight2);
+        addLineVertex(bottomRight2);
 
         // Verticals
 
-        GLWidgetVertex frontLeft1, frontLeft2;
-        frontLeft1.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex frontLeft1, frontLeft2;
+        frontLeft1.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         frontLeft1.Color = colour;
-        mVertexBuffer.push_back(frontLeft1);
-        frontLeft2.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        addLineVertex(frontLeft1);
+        frontLeft2.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         frontLeft2.Color = colour;
-        mVertexBuffer.push_back(frontLeft2);
+        addLineVertex(frontLeft2);
 
-        GLWidgetVertex frontRight1, frontRight2;
-        frontRight1.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
+        TranslationColorVertex frontRight1, frontRight2;
+        frontRight1.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z-mNodeSize);
         frontRight1.Color = colour;
-        mVertexBuffer.push_back(frontRight1);
-        frontRight2.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
+        addLineVertex(frontRight1);
+        frontRight2.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z-mNodeSize);
         frontRight2.Color = colour;
-        mVertexBuffer.push_back(frontRight2);
+        addLineVertex(frontRight2);
 
-        GLWidgetVertex backLeft1, backLeft2;
-        backLeft1.Position = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        TranslationColorVertex backLeft1, backLeft2;
+        backLeft1.Translation = vec3(pos.x-mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         backLeft1.Color = colour;
-        mVertexBuffer.push_back(backLeft1);
-        backLeft2.Position = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        addLineVertex(backLeft1);
+        backLeft2.Translation = vec3(pos.x-mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         backLeft2.Color = colour;
-        mVertexBuffer.push_back(backLeft2);
+        addLineVertex(backLeft2);
 
-        GLWidgetVertex backRight1, backRight2;
-        backRight1.Position = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
+        TranslationColorVertex backRight1, backRight2;
+        backRight1.Translation = vec3(pos.x+mNodeSize, pos.y-mNodeSize, pos.z+mNodeSize);
         backRight1.Color = colour;
-        mVertexBuffer.push_back(backRight1);
-        backRight2.Position = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
+        addLineVertex(backRight1);
+        backRight2.Translation = vec3(pos.x+mNodeSize, pos.y+mNodeSize, pos.z+mNodeSize);
         backRight2.Color = colour;
-        mVertexBuffer.push_back(backRight2);
+        addLineVertex(backRight2);
     }
 }

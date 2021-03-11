@@ -41,7 +41,7 @@ namespace octronic::dream
 {
     class ShaderDefinition;
     class MaterialRuntime;
-    class Camera;
+    class CameraRuntime;
 
     class ShaderRuntime : public SharedAssetRuntime
     {
@@ -115,6 +115,8 @@ namespace octronic::dream
         void setTexture(GLenum pos, GLenum target, GLuint texture);
 
         void syncUniforms();
+
+    	bool checkUniformValue(ShaderUniform* uf);
         vector<shared_ptr<ShaderUniform>>* getUniformsVector();
 
         // Material ============================================================
@@ -172,7 +174,6 @@ namespace octronic::dream
         GLuint mShaderProgram;
 
         bool mNeedsRebind;
-        GLint mMaterialLocation;
 
         bool mVertexCompilationFailed;
         bool mFragmentCompilationFailed;

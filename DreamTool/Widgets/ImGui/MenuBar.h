@@ -32,13 +32,13 @@ namespace octronic::dream::tool
         // File menu
         void checkNewProjectFailed();
         void checkOpenProjectFailed();
+        void checkSaveProject();
         void checkFileQuitClicked();
+
         void checkFilePreferencesClicked();
         void drawFileMenu();
         void onFileNewClicked();
         void onFileOpenClicked();
-        void onFileSaveClicked();
-        void onFileCloseClicked();
 
         void drawViewMenu();
         void drawComponentsMenu();
@@ -52,6 +52,9 @@ namespace octronic::dream::tool
     private:
         bool mOpenProjectFailed;
         bool mNewProjectFailed;
+        bool mSaveProjectFailed;
+        bool mSaveProjectSuccess;
+
         bool mFileQuitClicked;
         bool mFilePreferencesClicked;
         string mMessageString;

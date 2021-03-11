@@ -15,7 +15,6 @@
 #include "Transform.h"
 
 #include "Math/Vector.h"
-#include "Math/Quaternion.h"
 #include "Math/Conversion.h"
 #include "Math/Matrix.h"
 
@@ -34,7 +33,7 @@ namespace octronic::dream
 {
     Transform::Transform
     ()
-        : mTranslation(1.0f),
+        : mTranslation(0.0f),
           mYaw(0.f),
           mPitch(0.f),
           mRoll(0.f),
@@ -71,6 +70,16 @@ namespace octronic::dream
         btTransform transform;
         transform.setFromOpenGLMatrix(glm::value_ptr(getMatrix()));
         return transform;
+    }
+
+
+    void Transform::operator=(const Transform& other)
+    {
+        mTranslation = other.mTranslation;
+        mPitch = other.mPitch;
+        mYaw = other.mYaw;
+        mRoll = other.mRoll;
+        mScale = other.mScale;
     }
 
     // JSON =====================================================================

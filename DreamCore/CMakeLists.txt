@@ -20,7 +20,6 @@ add_library(
 	Common/Uuid.cpp
 	# Math
 	Math/Matrix.cpp
-	Math/Quaternion.cpp
 	Math/Transform.cpp
 	Math/Vector.cpp
 	# Base
@@ -50,7 +49,8 @@ add_library(
 	Components/Audio/OggLoader.cpp
 	Components/Audio/WavLoader.cpp
 	# Components/Graphics
-	Components/Graphics/Camera.cpp
+	Components/Graphics/CameraDefinition.cpp
+	Components/Graphics/CameraRuntime.cpp
 	Components/Graphics/Frustum.cpp
 	Components/Graphics/GraphicsComponent.cpp
 	Components/Graphics/GraphicsComponentTasks.cpp
@@ -79,7 +79,12 @@ add_library(
 	# Components/Input
 	Components/Input/InputComponent.cpp
 	Components/Input/InputTasks.cpp
-	Components/Input/Joystick.cpp
+	Components/Input/JoystickState.cpp
+	Components/Input/JoystickNavigation.cpp
+	Components/Input/JoystickFaceForwardNavigation.cpp
+	Components/Input/Joystick2DPlaneNavigation.cpp
+	Components/Input/MouseState.cpp
+	Components/Input/KeyboardState.cpp
 	# Components/Path
 	Components/Path/PathTasks.cpp
 	Components/Path/PathRuntime.cpp
@@ -90,9 +95,7 @@ add_library(
 	Components/Physics/PhysicsObjectDefinition.cpp
 	Components/Physics/PhysicsObjectRuntime.cpp
 	Components/Physics/PhysicsMotionState.cpp
-	Components/Physics/PhysicsDebugDrawer.cpp
 	# Components/Script
-	Components/Script/ScriptTasks.cpp
 	Components/Script/ScriptRuntime.cpp
 	Components/Script/ScriptComponent.cpp
 	Components/Script/ScriptDefinition.cpp
@@ -109,6 +112,7 @@ add_library(
 	Entity/EntityRuntime.cpp
 	Entity/EntityDefinition.cpp
 	Entity/BoundingBox.cpp
+	Entity/EntityTasks.cpp
 	# Storage
 	Storage/File.cpp
 	Storage/StorageManager.cpp

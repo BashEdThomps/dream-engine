@@ -32,7 +32,7 @@ namespace octronic::dream::tool
         ~PathViewer() override;
 
         void setPathDefinition(PathDefinition* object);
-        void init();
+        void init() override;
 
         vector<vec3> generateSplines();
         void setPathVisible(bool visible);
@@ -51,16 +51,15 @@ namespace octronic::dream::tool
         void setTangentVisibility(bool);
         bool getTangentVisibility() const;
 
-        void updateVertexBuffer();
         void regenerate();
 
     private:
         PathDefinition* mPathDefinition;
         PathRuntime* mPathRuntime;
-        vec3 mSelectedColour;
-        vec3 mUnselectedColour;
-        vec3 mCurveColour;
-        vec3 mTangentColour;
+        vec4 mSelectedColour;
+        vec4 mUnselectedColour;
+        vec4 mCurveColour;
+        vec4 mTangentColour;
         size_t mTangentIndex;
         bool mDrawTangent;
         float mNodeSize;
