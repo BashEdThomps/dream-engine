@@ -16,16 +16,19 @@
 #include "AssetRuntime.h"
 
 #include "AssetDefinition.h"
+#include "Project/ProjectRuntime.h"
+#include "Storage/ProjectDirectory.h"
 #include "Common/Uuid.h"
+
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
     AssetRuntime::AssetRuntime
-    (ProjectRuntime* pr, AssetDefinition* definition)
-        : Runtime(definition),
-          mProjectRuntimeHandle(pr),
-          mLoaded(false),
-          mLoadError(false)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<AssetDefinition>& definition)
+        : DeferredLoadRuntime(pr, definition)
+
     {
     }
 
@@ -34,40 +37,38 @@ namespace octronic::dream
     {
     }
 
-    bool
-    AssetRuntime::getLoaded
+    string
+    AssetRuntime::getAssetFilePath
+    (const string& fmt)
+    {
+        if (auto prLock = mProjectRuntime.lock())
+        {
+            if (auto pDirLock = prLock->getProjectDirectory().lock())
+            {
+                if (auto defLock = mDefinition.lock())
+                {
+            		return pDirLock->getAssetAbsolutePath(static_pointer_cast<AssetDefinition>(defLock),fmt);
+                }
+            }
+        }
+        return "";
+    }
+
+    string
+    AssetRuntime::getAssetDirectoryPath
     ()
-    const
     {
-        return mLoaded;
-    }
-
-    void
-    AssetRuntime::setLoaded
-    (bool loaded)
-    {
-        mLoaded = loaded;
-    }
-
-    bool
-    AssetRuntime::getLoadError
-    ()
-    const
-    {
-        return mLoadError;
-    }
-
-    void
-    AssetRuntime::setLoadError
-    (bool loadError)
-    {
-        mLoadError = loadError;
-    }
-
-    ProjectRuntime* AssetRuntime::getProjectRuntimeHandle()
-    const
-    {
-        return mProjectRuntimeHandle;
+        if (auto prLock = mProjectRuntime.lock())
+        {
+            if (auto pDirLock = prLock->getProjectDirectory().lock())
+            {
+                if (auto defLock = mDefinition.lock())
+                {
+        			return pDirLock->getAssetDirectoryPath(static_pointer_cast<AssetDefinition>(defLock));
+                }
+            }
+        }
+        return "";
     }
 }
 

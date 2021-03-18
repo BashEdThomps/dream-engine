@@ -17,13 +17,16 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Common/Uuid.h"
 #include "Common/Constants.h" // AssetType
 
-
+using std::shared_ptr;
 using std::string;
 using std::vector;
+using std::enable_shared_from_this;
+using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -38,27 +41,28 @@ namespace octronic::dream
      * location on disk. All IO should be done through the ProjectDirectory, to
      * facilitate cross-platform abstractions.
      */
-    class ProjectDirectory
+    class ProjectDirectory : public enable_shared_from_this<ProjectDirectory>
     {
     public:
-        ProjectDirectory(StorageManager* fm);
-        ProjectDirectory(StorageManager* fm, Project* project);
+        ProjectDirectory(const weak_ptr<StorageManager>& fm);
+        ProjectDirectory(const weak_ptr<StorageManager>& fm, const weak_ptr<Project>& project);
         ~ProjectDirectory();
 
         bool baseDirectoryExists() const;
         bool createBaseDirectory() const;
         bool createAllAssetDirectories() const;
 
-        File* readAssetData(AssetDefinition*, const string &format = "") const;
-        bool writeAssetData(AssetDefinition*, uint8_t* data, size_t data_sz, const string &format = "") const;
+        weak_ptr<File> readAssetData(const weak_ptr<AssetDefinition>&, const string &format = "") const;
+        bool writeAssetData(const weak_ptr<AssetDefinition>&, const vector<uint8_t>& data, const string &format = "") const;
+        bool writeAssetStringData(const weak_ptr<AssetDefinition>&, const string& data, const string &format = "") const;
 
         string getAssetAbsolutePath(UuidType) const;
-        string getAssetAbsolutePath(AssetDefinition*) const;
-        string getAssetAbsolutePath(AssetDefinition*, const string &format) const;
-        string getAssetDirectoryPath(AssetDefinition*) const;
-        string getAssetTypeDirectory(AssetType type, const string &base = "") const;
+        string getAssetAbsolutePath(const weak_ptr<AssetDefinition>&) const;
+        string getAssetAbsolutePath(const weak_ptr<AssetDefinition>&, const string &format) const;
+        string getAssetDirectoryPath(const weak_ptr<AssetDefinition>&) const;
+        string getAssetTypeDirectory(AssetType type, const string& base = "") const;
 
-        bool removeAssetDirectory(AssetDefinition*) const;
+        bool removeAssetDirectory(const weak_ptr<AssetDefinition>&) const;
 
         string getProjectFilePath() const;
         bool assetTypeDirectoryExists(AssetType type) const;
@@ -66,20 +70,20 @@ namespace octronic::dream
         bool createAssetTypeDirectory(AssetType type) const;
         vector<string> cleanupAssetsDirectory() const;
 
-        Project* newProject(Directory* projectDir);
-        Project* openFromFile(File* file);
-        Project* openFromDirectory(Directory* directory);
+        shared_ptr<Project> newProject(const weak_ptr<Directory>& projectDir);
+        shared_ptr<Project> openFromFile(const weak_ptr<File>& file);
+        shared_ptr<Project> openFromDirectory(const weak_ptr<Directory>& directory);
         bool saveProject() const;
         void closeProject();
 
     protected:
-        string findProjectFileInDirectory(Directory* dir) const;
-        bool directoryContainsProject(Directory* dir) const;
-        bool findAssetDirectories(Directory* dir) const;
+        string findProjectFileInDirectory(const weak_ptr<Directory>& dir) const;
+        bool directoryContainsProject(const weak_ptr<Directory>& dir) const;
+        bool findAssetDirectories(const weak_ptr<Directory>& dir) const;
 
     private:
-        StorageManager* mStorageManager;
-        Project* mProject;
+        weak_ptr<StorageManager> mStorageManager;
+        shared_ptr<Project> mProject;
         string mPath;
     };
 }

@@ -14,14 +14,14 @@ namespace octronic::dream::tool
     public:
         SelectionHighlighter(DreamToolContext* project);
         ~SelectionHighlighter() override;
-        void setSelectedEntity(EntityRuntime* selected);
+        void setSelectedEntity(const shared_ptr<EntityRuntime>& selected);
         void init() override;
         void draw() override;
         void updateGeometry();
         void clearSelection();
 
     protected:
-        EntityRuntime* mSelectedEntityRuntime;
+        shared_ptr<EntityRuntime> mSelectedEntityRuntime;
         float mOffset;
         vec4 mSelectionColour;
         vec4 mOutlineColor;

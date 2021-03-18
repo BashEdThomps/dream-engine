@@ -8,9 +8,11 @@ namespace octronic::dream
     class AudioMarkersUpdateTask : public Task
     {
     public:
-        AudioMarkersUpdateTask(ProjectRuntime* pr, AudioRuntime* rt);
+        AudioMarkersUpdateTask(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<AudioRuntime>& rt);
         void execute();
     protected:
-        AudioRuntime* mAudioRuntime;
+        weak_ptr<AudioRuntime> mAudioRuntime;
     };
 }

@@ -20,7 +20,7 @@ namespace octronic::dream::tool
 
     void SceneStateWindow::draw()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
             ImGui::Begin("Scene States",&mVisible);
@@ -33,9 +33,8 @@ namespace octronic::dream::tool
             ImGui::NextColumn();
 
 
-            Project* project = mContext->getProject();
-            ProjectDefinition* pDef = project->getDefinition();
-            ProjectRuntime* pRunt = project->getRuntime();
+            auto pDef = project->getDefinition();
+            auto pRunt = project->getRuntime();
 
             if (pDef)
             {

@@ -10,19 +10,21 @@
 
 #include <sstream>
 
+using std::make_shared;
 using std::stringstream;
 
 namespace octronic::dream
 {
-    ProjectDirectory::ProjectDirectory(StorageManager* fileManager)
-        : mProject(nullptr),
-          mStorageManager(fileManager)
+    ProjectDirectory::ProjectDirectory
+    (const weak_ptr<StorageManager>& fileManager)
+        : mStorageManager(fileManager)
     {
         LOG_TRACE("ProjectDirectory: {}", __FUNCTION__);
     }
 
     ProjectDirectory::ProjectDirectory
-    (StorageManager* fileManager, Project* proj)
+    (const weak_ptr<StorageManager>& fileManager,
+     const weak_ptr<Project>& proj)
         : mProject(proj),
           mStorageManager(fileManager)
     {
@@ -41,9 +43,10 @@ namespace octronic::dream
     ()
     const
     {
-        Directory* d = mStorageManager->openDirectory(mPath);
+        auto smLock = mStorageManager.lock();
+        shared_ptr<Directory> d = smLock->openDirectory(mPath).lock();
         bool retval = d->exists();
-        mStorageManager->closeDirectory(d);
+        smLock->closeDirectory(d);
         return retval;
     }
 
@@ -53,16 +56,15 @@ namespace octronic::dream
     const
     {
         LOG_DEBUG("ProjectDirectory: Creating project directory {}",mPath);
-        Directory* d = mStorageManager->openDirectory(mPath);
+        auto smLock = mStorageManager.lock();
+        auto d = smLock->openDirectory(mPath).lock();
         if(!d->create())
         {
             LOG_ERROR("ProjectDirectory: Unable to create project directory {}",mPath);
-            mStorageManager->closeDirectory(d);
-            d = nullptr;
+            smLock->closeDirectory(d);
             return false;
         }
-        mStorageManager->closeDirectory(d);
-        d = nullptr;
+        smLock->closeDirectory(d);
         return true;
     }
 
@@ -84,30 +86,33 @@ namespace octronic::dream
         return true;
     }
 
-    File*
+    weak_ptr<File>
     ProjectDirectory::readAssetData
-    (AssetDefinition* assetDef, const string &format)
+    (const weak_ptr<AssetDefinition>& assetDef, const string &format)
     const
     {
         auto path = getAssetAbsolutePath(assetDef,format);
-        File* f = mStorageManager->openFile(path);
+        weak_ptr<File> f = mStorageManager.lock()->openFile(path);
         return f;
     }
 
     bool
     ProjectDirectory::writeAssetData
-    (AssetDefinition* assetDef, uint8_t* data, size_t data_size, const string& format)
+    (const weak_ptr<AssetDefinition>& assetDef,
+     const vector<uint8_t>& data, const string& format)
     const
     {
+        auto smLock = mStorageManager.lock();
         auto dataPath = getAssetDirectoryPath(assetDef);
         LOG_DEBUG("ProjectDirectory: Writing asset data to {}",dataPath);
 
         //Check target directory exists
-        Directory* dir = mStorageManager->openDirectory(dataPath);
+        auto dir = smLock->openDirectory(dataPath).lock();
         if (!dir->exists())
         {
             LOG_DEBUG("ProjectDirectory: Asset path does not exist {}",dataPath);
-            auto assetTypeEnum = Constants::getAssetTypeEnumFromString(assetDef->getType());
+            auto adLock = assetDef.lock();
+            auto assetTypeEnum = Constants::getAssetTypeEnumFromString(adLock->getType());
             if (!assetTypeDirectoryExists(assetTypeEnum))
             {
                 if(!createAssetTypeDirectory(assetTypeEnum))
@@ -124,9 +129,51 @@ namespace octronic::dream
         }
         auto path = getAssetAbsolutePath(assetDef,format);
         LOG_DEBUG("ProjectDirectory: Copying asset to {}",path);
-        File* file = mStorageManager->openFile(path);
-        bool retval = file->writeBinary(data, data_size);
-        mStorageManager->closeFile(file);
+        auto file = smLock->openFile(path).lock();
+        bool retval = file->writeBinary(data);
+        smLock->closeFile(file);
+        return retval;
+    }
+
+    bool
+    ProjectDirectory::writeAssetStringData
+    (const weak_ptr<AssetDefinition>& assetDef,
+     const string& data, const string& format)
+    const
+    {
+        auto smLock = mStorageManager.lock();
+        auto dataPath = getAssetDirectoryPath(assetDef);
+        LOG_DEBUG("ProjectDirectory: Writing asset data to {}",dataPath);
+
+        //Check target directory exists
+        auto dir = smLock->openDirectory(dataPath).lock();
+        if (!dir->exists())
+        {
+            LOG_DEBUG("ProjectDirectory: Asset path does not exist {}",dataPath);
+
+            auto adLock = assetDef.lock();
+            auto assetTypeEnum = Constants::getAssetTypeEnumFromString(adLock->getType());
+
+            if (!assetTypeDirectoryExists(assetTypeEnum))
+            {
+                if(!createAssetTypeDirectory(assetTypeEnum))
+                {
+                    LOG_ERROR("ProjectDirectory: Unable to create asset type directory");
+                    return false;
+                }
+            }
+
+            if(!dir->create())
+            {
+                LOG_ERROR("ProjectDirectory: Unable to create asset path {}",dataPath);
+                return false;
+            }
+        }
+        auto path = getAssetAbsolutePath(assetDef,format);
+        LOG_DEBUG("ProjectDirectory: Copying asset to {}",path);
+        auto file = smLock->openFile(path).lock();
+        bool retval = file->writeString(data);
+        smLock->closeFile(file);
         return retval;
     }
 
@@ -135,18 +182,20 @@ namespace octronic::dream
     (UuidType uuid)
     const
     {
-        auto assetDef = mProject->getDefinition()->getAssetDefinitionByUuid(uuid);
-        if (assetDef)
+        if (auto defLock = mProject->getDefinition().lock())
         {
-            stringstream path;
-            path << mPath
-                 << Constants::DIR_PATH_SEP
-                 << assetDef->getType()
-                 << Constants::DIR_PATH_SEP
-                 << assetDef->getUuid()
-                 << Constants::DIR_PATH_SEP
-                 << assetDef->getFormat();
-            return path.str();
+            if (auto assetDef = defLock->getAssetDefinitionByUuid(uuid).lock())
+            {
+                stringstream path;
+                path << mPath
+                     << Constants::DIR_PATH_SEP
+                     << assetDef->getType()
+                     << Constants::DIR_PATH_SEP
+                     << assetDef->getUuid()
+                     << Constants::DIR_PATH_SEP
+                     << assetDef->getFormat();
+                return path.str();
+            }
         }
         return "";
     }
@@ -154,56 +203,60 @@ namespace octronic::dream
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (AssetDefinition* assetDef, const string& format)
+    (const weak_ptr<AssetDefinition>& assetDef, const string& format)
     const
     {
-        stringstream path;
-        path << mPath
-             << Constants::DIR_PATH_SEP
-             << assetDef->getType()
-             << Constants::DIR_PATH_SEP
-             << assetDef->getUuid()
-             << Constants::DIR_PATH_SEP
-             << (format.empty() ? assetDef->getFormat() : format);
-        return path.str();
+        if(auto adLock = assetDef.lock())
+        {
+            stringstream path;
+            path << mPath
+                 << Constants::DIR_PATH_SEP
+                 << adLock->getType()
+                 << Constants::DIR_PATH_SEP
+                 << adLock->getUuid()
+                 << Constants::DIR_PATH_SEP
+                 << (format.empty() ? adLock->getFormat() : format);
+            return path.str();
+        }
+        return "";
 
     }
 
     string
     ProjectDirectory::getAssetAbsolutePath
-    (AssetDefinition* assetDef)
+    (const weak_ptr<AssetDefinition>& assetDef)
     const
     {
         return getAssetAbsolutePath(assetDef,"");
     }
 
-
     string
     ProjectDirectory::getAssetDirectoryPath
-    (AssetDefinition* assetDef)
+    (const weak_ptr<AssetDefinition>& assetDef)
     const
     {
+        auto adLock = assetDef.lock();
         stringstream path;
         path << mPath
              << Constants::DIR_PATH_SEP
-             << assetDef->getType()
+             << adLock->getType()
              << Constants::DIR_PATH_SEP
-             << assetDef->getUuid();
+             << adLock->getUuid();
         return path.str();
 
     }
 
     bool
     ProjectDirectory::removeAssetDirectory
-    (AssetDefinition* ad)
+    (const weak_ptr<AssetDefinition>& ad)
     const
     {
         auto path = getAssetDirectoryPath(ad);
+        auto smLock = mStorageManager.lock();
         LOG_DEBUG("ProjectDirectory: Removing asset directory {}",path);
-        Directory* d =  mStorageManager->openDirectory(path);
-        bool retval =  d->deleteDirectory();
-        mStorageManager->closeDirectory(d);
-        d = nullptr;
+        auto d =  smLock->openDirectory(path).lock();
+        bool retval = d->deleteDirectory();
+        smLock->closeDirectory(d);
         return retval;
     }
 
@@ -212,16 +265,15 @@ namespace octronic::dream
     ()
     const
     {
-        auto pDef = mProject->getDefinition();
-        if (pDef)
+        if (auto pDef = mProject->getDefinition().lock())
         {
             auto jsDef = pDef->toJson();
             auto jsonStr = jsDef.dump(1);
             auto path = getProjectFilePath();
-            File* f = mStorageManager->openFile(path);
+            auto smLock = mStorageManager.lock();
+            auto f = smLock->openFile(path).lock();
             bool retval = f->writeString(jsonStr);
-            mStorageManager->closeFile(f);
-            f = nullptr;
+            smLock->closeFile(f);
             return retval;
         }
         return false;
@@ -232,12 +284,16 @@ namespace octronic::dream
     ()
     const
     {
-        stringstream ss;
-        ss << mPath
-           << Constants::DIR_PATH_SEP
-           << mProject->getDefinition()->getUuid()
-           << Constants::PROJECT_EXTENSION;
-        return ss.str();
+        if (auto defLock = mProject->getDefinition().lock())
+        {
+            stringstream ss;
+            ss << mPath
+               << Constants::DIR_PATH_SEP
+               << defLock->getUuid()
+               << Constants::PROJECT_EXTENSION;
+            return ss.str();
+        }
+        return "";
     }
 
     bool
@@ -246,10 +302,16 @@ namespace octronic::dream
     const
     {
         string dirPath = getAssetTypeDirectory(type);
-        Directory* dir = mStorageManager->openDirectory(dirPath);
-        bool retval = dir->exists();
-        mStorageManager->closeDirectory(dir);
-        return retval;
+        if (auto smLock = mStorageManager.lock())
+        {
+            if (auto dir = smLock->openDirectory(dirPath).lock())
+            {
+                bool retval = dir->exists();
+                smLock->closeDirectory(dir);
+                return retval;
+            }
+        }
+        return false;
     }
 
     string
@@ -270,10 +332,11 @@ namespace octronic::dream
     const
     {
         string assetTypeDirPath = getAssetTypeDirectory(type);
-        Directory *dir = mStorageManager->openDirectory(assetTypeDirPath);
+        auto smLock = mStorageManager.lock();
+        auto dir = smLock->openDirectory(assetTypeDirPath).lock();
         LOG_DEBUG("ProjectDirectory: Creating asset dir {}", assetTypeDirPath);
         bool retval = dir->create();
-        mStorageManager->closeDirectory(dir);
+        smLock->closeDirectory(dir);
         return retval;
     }
 
@@ -283,58 +346,57 @@ namespace octronic::dream
     const
     {
         vector<string> retval;
-        auto pDef = mProject->getDefinition();
-        if (!pDef)
+        if (auto pDef = mProject->getDefinition().lock())
         {
             LOG_ERROR("ProjectDirectory: Cannot cleanup, no project definition");
             return retval;
-        }
 
-        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
-        {
-            AssetType type = typePair.first;
-            string typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-            string path = getAssetTypeDirectory(type);
-            Directory* assetDir = mStorageManager->openDirectory(path);
-            if (assetDir->exists())
+            for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
             {
-                vector<string> subdirs = assetDir->listSubdirectories();
-                LOG_DEBUG("ProjectDirectory: Cleaning up {} containing {} definitions", path, subdirs.size());
-                int deletedCount=0;
+                AssetType type = typePair.first;
+                string typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+                string path = getAssetTypeDirectory(type);
 
-                for (string& subdirPath : subdirs)
+                auto smLock = mStorageManager.lock();
+                auto assetDir = smLock->openDirectory(path).lock();
+
+                if (assetDir->exists())
                 {
-                    Directory* subdir = mStorageManager->openDirectory(subdirPath);
-                    if (subdir->exists())
+                    vector<string> subdirs = assetDir->listSubdirectories();
+                    LOG_DEBUG("ProjectDirectory: Cleaning up {} containing {} definitions", path, subdirs.size());
+                    int deletedCount=0;
+
+                    for (string& subdirPath : subdirs)
                     {
-                        UuidType name = static_cast<UuidType>(std::stoi(subdir->getName()));
-                        LOG_DEBUG("ProjectDirectory: Checking subdir {} has definition",name);
-                        AssetDefinition* def = pDef->getAssetDefinitionByUuid(name);
-                        if (!def)
+                        auto subdir = smLock->openDirectory(subdirPath).lock();
+                        if (subdir->exists())
                         {
-                            LOG_DEBUG("ProjectDirectory: Definition {} does not exist, removing...",name);
-                            subdir->deleteDirectory();
-                            retval.push_back(subdirPath);
+                            UuidType name = static_cast<UuidType>(std::stoi(subdir->getName()));
+                            LOG_DEBUG("ProjectDirectory: Checking subdir {} has definition",name);
+                            if (auto def = pDef->getAssetDefinitionByUuid(name).lock())
+                            {
+                                LOG_DEBUG("ProjectDirectory: Definition {} does not exist, removing...",name);
+                                subdir->deleteDirectory();
+                                retval.push_back(subdirPath);
+                            }
                         }
+                        smLock->closeDirectory(subdir);
                     }
-                    mStorageManager->closeDirectory(subdir);
-                    subdir = nullptr;
+                    LOG_DEBUG("ProjectDirectory: Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
                 }
-                LOG_DEBUG("ProjectDirectory: Deleted {}/{} {} asset directories",deletedCount,subdirs.size(),typeStr);
+                else
+                {
+                    LOG_DEBUG("ProjectDirectory: No Directory {}",path);
+                }
+                smLock->closeDirectory(assetDir);
             }
-            else
-            {
-                LOG_DEBUG("ProjectDirectory: No Directory {}",path);
-            }
-            mStorageManager->closeDirectory(assetDir);
-            assetDir = nullptr;
         }
         return retval;
     }
 
-    Project*
+    shared_ptr<Project>
     ProjectDirectory::newProject
-    (Directory* projectDir)
+    (const weak_ptr<Directory>& projectDir)
     {
         if (mProject)
         {
@@ -346,29 +408,34 @@ namespace octronic::dream
             return nullptr;
         }
 
-        mProject = new Project(this, mStorageManager);
-        mProject->setDefinition(ProjectDefinition::createNewProjectDefinition());
-        mPath = projectDir->getPath();
-
-        if(!baseDirectoryExists())
+        if(auto pdLock = projectDir.lock())
         {
-            createBaseDirectory();
+			mProject = make_shared<Project>(shared_from_this(), mStorageManager);
+			mProject->setDefinition(ProjectDefinition::createNewProjectDefinition());
+			mPath = pdLock->getPath();
+
+			if(!baseDirectoryExists())
+			{
+				createBaseDirectory();
+			}
+
+			createAllAssetDirectories();
+
+			saveProject();
+
         }
-
-        createAllAssetDirectories();
-
-        saveProject();
         return mProject;
 
     }
 
-    Project*
+    shared_ptr<Project>
     ProjectDirectory::openFromFile
-    (File* file)
+    (const weak_ptr<File>& file)
     {
-        LOG_DEBUG("ProjectDirectory: Loading project from FileReader", file->getPath());
+        auto fLock = file.lock();
+        LOG_DEBUG("ProjectDirectory: Loading project from FileReader", fLock->getPath());
 
-        string projectJsonStr = file->readString();
+        string projectJsonStr = fLock->readString();
 
         if (projectJsonStr.empty())
         {
@@ -387,40 +454,37 @@ namespace octronic::dream
             return nullptr;
         }
 
-        mPath = file->getDirectory();
+        mPath = fLock->getDirectory();
         LOG_DEBUG("ProjectDirectory: Project path is: \"{}\"", mPath);
-        mProject = new Project(this, mStorageManager);
-        auto pDef = new ProjectDefinition(projectJson);
+        mProject = make_shared<Project>(shared_from_this(), mStorageManager);
+        auto pDef = make_shared<ProjectDefinition>(projectJson);
         mProject->setDefinition(pDef);
         pDef->loadChildDefinitions();
         return mProject;
 
     }
 
-    Project*
+    shared_ptr<Project>
     ProjectDirectory::openFromDirectory
-    (Directory* directory)
+    (const weak_ptr<Directory>& directory)
     {
         string projectFileName = findProjectFileInDirectory(directory);
+        auto dirLock = directory.lock();
 
         if (projectFileName.empty())
         {
-            LOG_ERROR( "ProjectDirectory: Project: Error {} is not a valid project directory!", directory->getPath()  );
+            LOG_ERROR( "ProjectDirectory: Project: Error {} is not a valid project directory!", dirLock->getPath()  );
             return nullptr;
         }
 
-        LOG_DEBUG( "ProjectDirectory: Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , directory->getPath());
+        LOG_DEBUG( "ProjectDirectory: Project: Loading {}{} from Directory {}", projectFileName , Constants::PROJECT_EXTENSION , dirLock->getPath());
 
-        string projectFilePath = directory->getPath() + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
-
-        File* projectFile = mStorageManager->openFile(projectFilePath);
-
-        Project* retval = openFromFile(projectFile);
-        mStorageManager->closeFile(projectFile);
-        projectFile = nullptr;
-
+        auto smLock = mStorageManager.lock();
+        string projectFilePath = dirLock->getPath() + Constants::PROJECT_PATH_SEP + projectFileName + Constants::PROJECT_EXTENSION;
+        auto projectFile = smLock->openFile(projectFilePath).lock();
+        shared_ptr<Project> retval = openFromFile(projectFile);
+        smLock->closeFile(projectFile);
         return retval;
-
     }
 
     void
@@ -430,19 +494,18 @@ namespace octronic::dream
         mPath = "";
         if (mProject)
         {
-            delete mProject;
-            mProject = nullptr;
+            mProject.reset();
         }
-
     }
 
     string
     ProjectDirectory::findProjectFileInDirectory
-    (Directory* dir)
+    (const weak_ptr<Directory>& dir)
     const
     {
+        auto dirLock = dir.lock();
         vector<string> directoryContents;
-        directoryContents = dir->list();
+        directoryContents = dirLock->list();
 
         string projectFileName;
 
@@ -461,7 +524,7 @@ namespace octronic::dream
 
     bool
     ProjectDirectory::directoryContainsProject
-    (Directory* dir)
+    (const weak_ptr<Directory>& dir)
     const
     {
         bool hasJsonFile = !findProjectFileInDirectory(dir).empty();
@@ -471,23 +534,24 @@ namespace octronic::dream
 
     bool
     ProjectDirectory::findAssetDirectories
-    (Directory* dir)
+    (const weak_ptr<Directory>& dir)
     const
     {
+        auto smLock = mStorageManager.lock();
+        auto dirLock = dir.lock();
         auto assetTypes = Constants::DREAM_ASSET_TYPES_MAP;
         for (const auto &typePair : assetTypes)
         {
             auto type = typePair.first;
-            string assetDirPath = getAssetTypeDirectory(type,dir->getName());
-            Directory* assetDir = mStorageManager->openDirectory(assetDirPath);
+            string assetDirPath = getAssetTypeDirectory(type,dirLock->getName());
+            auto assetDir = smLock->openDirectory(assetDirPath).lock();
             LOG_DEBUG("ProjectDirectory: Checking for {}",assetDir->getPath());
             if (!assetDir->exists())
             {
-                mStorageManager->closeDirectory(assetDir);
-                assetDir = nullptr;
+                smLock->closeDirectory(assetDir);
                 return false;
             }
-            mStorageManager->closeDirectory(assetDir);
+            smLock->closeDirectory(assetDir);
             assetDir = nullptr;
         }
         return true;

@@ -15,7 +15,11 @@
 
 #pragma once
 
+#include <memory>
 
+using std::weak_ptr;
+using std::shared_ptr;
+using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
@@ -31,19 +35,19 @@ namespace octronic::dream
      * Component publically inherits from octronic::dream::LockableObject, which
      * provide the means to build thread safety into the Component.
      */
-    class Component
+    class Component : public enable_shared_from_this<Component>
     {
 
     public:
-        Component(ProjectRuntime* pr);
+        Component(const weak_ptr<ProjectRuntime>& pr);
         virtual ~Component();
         virtual bool init() = 0;
 
-        void setProjectRuntime(ProjectRuntime* pr);
+        void setProjectRuntime(const weak_ptr<ProjectRuntime>& pr);
 
         virtual void pushTasks() = 0;
 
     protected:
-        ProjectRuntime* mProjectRuntime;
+         weak_ptr<ProjectRuntime> mProjectRuntime;
     };
 }

@@ -26,25 +26,38 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
     AudioRuntime::AudioRuntime
-    (ProjectRuntime* project, AudioDefinition* def)
+    (const weak_ptr<ProjectRuntime>& project,
+     const weak_ptr<AudioDefinition>& def)
         : SharedAssetRuntime(project, def),
           mLooping(false),
           mStartTime(0),
           mLastSampleOffset(0),
-          mMarkersUpdateTask(make_shared<AudioMarkersUpdateTask>(project,this)),
           mImpl(nullptr)
     {
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
         generateEventList();
     }
 
-    AudioRuntime::~AudioRuntime()
+    AudioRuntime::~AudioRuntime
+    ()
     {
         LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
+    }
+
+    bool
+    AudioRuntime::init
+    ()
+    {
+        if(!SharedAssetRuntime::init()) return false;
+        mMarkersUpdateTask =
+                make_shared<AudioMarkersUpdateTask>(mProjectRuntime,
+                static_pointer_cast<AudioRuntime>(shared_from_this()));
+        return true;
     }
 
     void
@@ -174,7 +187,10 @@ namespace octronic::dream
         mStartTime = startTime;
     }
 
-    shared_ptr<AudioMarkersUpdateTask> AudioRuntime::getMarkersUpdateTask()
+    weak_ptr<AudioMarkersUpdateTask>
+    AudioRuntime::getMarkersUpdateTask
+    ()
+    const
     {
         return mMarkersUpdateTask;
     }
@@ -196,69 +212,79 @@ namespace octronic::dream
 
     void AudioRuntime::setSourcePosision(vec3 pos)
     {
-       mImpl->setSourcePosision(pos);
+        mImpl->setSourcePosision(pos);
     }
 
     void AudioRuntime::setVolume(float volume)
     {
-       mImpl->setVolume(volume);
+        mImpl->setVolume(volume);
     }
 
     AudioStatus AudioRuntime::getState()
     {
-       return mImpl->getState();
+        return mImpl->getState();
     }
 
     unsigned int AudioRuntime::getSampleOffset() const
     {
-   		return mImpl->getSampleOffset();
+        return mImpl->getSampleOffset();
     }
 
     void AudioRuntime::setSampleOffset(unsigned int offset)
     {
-    	mImpl->setSampleOffset(offset);
+        mImpl->setSampleOffset(offset);
     }
 
     int AudioRuntime::getDurationInSamples()
     {
-    	return mImpl->getDurationInSamples();
+        return mImpl->getDurationInSamples();
     }
 
 
     void AudioRuntime::setImplementation
     (const shared_ptr<AudioRuntimeImplementation>& impl)
     {
-		mImpl = impl;
-        mImpl->setParent(this);
+        mImpl = impl;
+        mImpl->setParent(static_pointer_cast<AudioRuntime>(shared_from_this()));
     }
 
-	bool AudioRuntime::loadFromDefinition()
+    bool
+    AudioRuntime::loadFromDefinition
+    ()
     {
-        return mImpl->loadFromDefinition(mProjectRuntimeHandle,static_cast<AudioDefinition*>(mDefinitionHandle));
+        return mImpl->loadFromDefinition(mProjectRuntime,static_pointer_cast<AudioDefinition>(mDefinition.lock()));
     }
 
-	void AudioRuntime::pushTasks()
+    void AudioRuntime::pushTasks()
     {
-        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
-
-        if (!mLoaded)
+        if (auto prLock = mProjectRuntime.lock())
         {
-            if (!mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+            if(auto taskQueue = prLock->getTaskQueue().lock())
             {
-                taskQueue->pushTask(mLoadFromDefinitionTask);
+                if (!mLoaded && !mLoadError &&
+                    mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+                {
+                    taskQueue->pushTask(static_pointer_cast<Task>(mLoadFromDefinitionTask));
+                }
             }
-        }
-        else
-        {
-            if (!mLoadError)
+            else
             {
-				for(EntityRuntime* entity : mInstances)
-				{
-                    if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+                if (!mLoadError)
+                {
+                    for(auto& entity : mInstances)
                     {
-                    	// Do entity specific tasks
+                        if (auto entityLock = entity.lock())
+                        {
+                            if (auto srLock = entityLock->getSceneRuntime().lock())
+                            {
+                                if (srLock->hasState(SCENE_STATE_ACTIVE))
+                                {
+                            		// Do entity specific tasks
+                                }
+                            }
+                        }
                     }
-				}
+                }
             }
         }
     }

@@ -14,7 +14,7 @@
 
 #include "SceneState.h"
 
-#include "Base/Runtime.h"
+#include "Base/DeferredLoadRuntime.h"
 #include "Math/Transform.h"
 #include "Components/Graphics/CameraRuntime.h"
 
@@ -38,65 +38,64 @@ namespace octronic::dream
     class ShaderRuntime;
     class TextureRuntime;
 
-    class SceneRuntime : public Runtime
+    class SceneRuntime : public DeferredLoadRuntime
     {
     public:
-        SceneRuntime(ProjectRuntime* parent, SceneDefinition* sd);
+        SceneRuntime(const weak_ptr<ProjectRuntime>& parent,
+                     const weak_ptr<SceneDefinition>& sd);
         ~SceneRuntime() override;
 
-        CameraRuntime* getCamera();
+        weak_ptr<CameraRuntime> getCamera() const;
 
         SceneState getState() const;
         void setState(SceneState state);
         bool hasState(SceneState state) const;
 
-        vec3 getGravity();
+        vec3 getGravity() const;
         void setGravity(const vec3& gravity);
 
-        vec4 getClearColor();
+        vec4 getClearColor() const;
         void setClearColor(const vec4& clear);
 
         bool loadFromDefinition() override;
         void destroyRuntime();
 
-
-
         void createSceneTasks();
 
         bool hasRootEntityRuntime() const;
-        void setRootEntityRuntime(EntityRuntime* e);
-        EntityRuntime* getRootEntityRuntime() ;
-
-        EntityRuntime* getEntityRuntimeByName(const string& name) const;
-        EntityRuntime* getEntityRuntimeByUuid(UuidType uuid) const;
+        void setRootEntityRuntime(const shared_ptr<EntityRuntime>& e);
+        weak_ptr<EntityRuntime> getRootEntityRuntime() const;
+        weak_ptr<EntityRuntime> getEntityRuntimeByName(const string& name) const;
+        weak_ptr<EntityRuntime> getEntityRuntimeByUuid(UuidType uuid) const;
 
         int countEntityRuntimes() const;
-        int countChildrenOfEntityRuntime(EntityRuntime*) const;
+        int countChildrenOfEntityRuntime(const weak_ptr<EntityRuntime>&) const;
 
         void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
 
-        ProjectRuntime* getProjectRuntime() const;
+        weak_ptr<ProjectRuntime> getProjectRuntime() const;
 
         void showScenegraph() const;
         void collectGarbage();
 
-        ShaderRuntime* getShadowPassShader() const;
-        void setShadowPassShader(ShaderRuntime* shadowPassShader);
+        weak_ptr<ShaderRuntime> getShadowPassShader() const;
+        void setShadowPassShader(const weak_ptr<ShaderRuntime>& shadowPassShader);
 
-        ShaderRuntime* getFontShader() const;
-        void setFontShader(ShaderRuntime* shader);
+        weak_ptr<ShaderRuntime> getFontShader() const;
+        void setFontShader(const weak_ptr<ShaderRuntime>& shader);
 
-		ShaderRuntime* getSpriteShader() const;
-        void setSpriteShader(ShaderRuntime* shader);
+		weak_ptr<ShaderRuntime> getSpriteShader() const;
+        void setSpriteShader(const weak_ptr<ShaderRuntime>& shader);
 
-        TextureRuntime* getEnvironmentTexture() const;
-        void setEnvironmentTexture(TextureRuntime* );
+        weak_ptr<TextureRuntime> getEnvironmentTexture() const;
+        void setEnvironmentTexture(const weak_ptr<TextureRuntime>& );
 
-        void setEnvironmentShader(ShaderRuntime* );
-        ShaderRuntime* getEnvironmentShader() const;
+        weak_ptr<ShaderRuntime> getEnvironmentShader() const;
+        void setEnvironmentShader(const weak_ptr<ShaderRuntime>&);
 
-        vector<AssetRuntime*> getAssetRuntimes(AssetType) const;
-        vector<EntityRuntime*> getEntitysWithRuntimeOf(AssetDefinition* def) const;
+        vector<weak_ptr<AssetRuntime>> getAssetRuntimes(AssetType) const;
+        vector<weak_ptr<EntityRuntime>> getEntitiesWithRuntimeOf(const weak_ptr<AssetDefinition>& def) const;
+        vector<weak_ptr<EntityRuntime>> getFlatVector() const;
 
         /**
          * @return Gets the nearest Entity to the Camera's position excluding
@@ -109,7 +108,9 @@ namespace octronic::dream
         unsigned long getSceneStartTime() const;
         void setSceneStartTime(unsigned long sceneStartTime);
 
-        ScriptRuntime* getInputScript() const;
+        weak_ptr<ScriptRuntime> getInputScript() const;
+
+        void updateFlatVector();
 
     protected:
         void updateLifetime();
@@ -119,16 +120,17 @@ namespace octronic::dream
     private:
         SceneState mState;
         vec4 mClearColor;
-        ProjectRuntime* mProjectRuntime;
-        vector<EntityRuntime*> mEntityRuntimeCleanUpQueue;
-        EntityRuntime* mRootEntityRuntime;
-        ShaderRuntime* mShadowPassShader;
-        ShaderRuntime* mFontShader;
-        ShaderRuntime* mSpriteShader;
-        TextureRuntime* mEnvironmentTexture;
-        ShaderRuntime* mEnvironmentShader;
-        ScriptRuntime* mInputScript;
-        EntityRuntime* mCameraEntity;
+        weak_ptr<ProjectRuntime> mProjectRuntime;
+        vector<weak_ptr<EntityRuntime>> mEntityRuntimeCleanUpQueue;
+        shared_ptr<EntityRuntime> mRootEntityRuntime;
+        vector<weak_ptr<EntityRuntime>> mFlatVector;
+        weak_ptr<ShaderRuntime> mShadowPassShader;
+        weak_ptr<ShaderRuntime> mFontShader;
+        weak_ptr<ShaderRuntime> mSpriteShader;
+        weak_ptr<TextureRuntime> mEnvironmentTexture;
+        weak_ptr<ShaderRuntime> mEnvironmentShader;
+        weak_ptr<ScriptRuntime> mInputScript;
+        weak_ptr<EntityRuntime> mCameraEntity;
         shared_ptr<CameraRuntime> mCamera;
         unsigned long mSceneStartTime;
         unsigned long mSceneCurrentTime;

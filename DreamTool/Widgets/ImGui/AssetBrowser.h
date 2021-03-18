@@ -22,6 +22,6 @@ namespace octronic::dream::tool
     private:
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
-        vector<Definition*> mSelectedNodes;
+        vector<shared_ptr<Definition>> mSelectedNodes;
     };
 }

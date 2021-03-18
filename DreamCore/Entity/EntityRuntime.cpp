@@ -44,1187 +44,1107 @@
 
 using std::vector;
 using std::make_shared;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-    EntityRuntime::EntityRuntime(ProjectRuntime* pr, SceneRuntime* sr,EntityDefinition* sd,bool randomUuid)
-        : Runtime(sd),
-          mProjectRuntimeHandle(pr),
-          mSceneRuntime(sr),
-          mParentEntityRuntime(nullptr),
+  EntityRuntime::EntityRuntime(
+      const weak_ptr<ProjectRuntime>& pr,
+      const weak_ptr<SceneRuntime>& sr,
+      const weak_ptr<EntityDefinition>& sd,
+      bool randomUuid)
+    : Runtime(sd),
+      mProjectRuntime(pr),
+      mSceneRuntime(sr),
+      mScriptInitialised(false),
+      mScriptError(false),
+      mBoundingBox(),
+      mDeleted(false),
+      mRandomUuid(randomUuid),
+      mFontText(""),
+      mFontColor(1.f),
+      mFontScale(1.f)
+  {
+    LOG_TRACE("EntityRuntime: {}", __FUNCTION__);
 
-          mAnimationRuntime(nullptr),
-          mAudioRuntime(nullptr),
-          mFontRuntime(nullptr),
-          mModelRuntime(nullptr),
-          mPathRuntime(nullptr),
-          mPhysicsObjectRuntime(nullptr),
-          mTextureRuntime(nullptr),
-
-          mScriptRuntime(nullptr),
-          mScriptInitialised(false),
-          mScriptError(false),
-
-          mBoundingBox(),
-          mDeleted(false),
-          mRandomUuid(randomUuid),
-
-          mScriptCreateStateTask(nullptr),
-          mScriptOnInitTask(nullptr),
-          mScriptOnUpdateTask(nullptr),
-          mScriptOnEventTask(nullptr),
-          mScriptRemoveStateTask(nullptr),
-
-          mFontText(""),
-          mFontColor(1.f),
-          mFontScale(1.f)
+    if (mRandomUuid)
     {
-        LOG_TRACE("EntityRuntime: {}", __FUNCTION__);
+      mUuid = Uuid::generateUuid();
+    }
+  }
 
-        if (mRandomUuid)
+  EntityRuntime::~EntityRuntime
+  ()
+  {
+    LOG_TRACE("EntityRuntime: {}", __FUNCTION__);
+
+    mChildRuntimes.clear();
+
+    removeAnimationRuntime();
+    removeAudioRuntime();
+    removeFontRuntime();
+    removeModelRuntime();
+    removePathRuntime();
+    removePhysicsObjectRuntime();
+    removeScriptRuntime();
+    removeTextureRuntime();
+  }
+
+  void
+  EntityRuntime::removeAnimationRuntime
+  ()
+  {
+  }
+
+  void
+  EntityRuntime::removeAudioRuntime
+  ()
+  {
+    if (auto arLock = mAudioRuntime.lock())
+    {
+      arLock->removeInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+    }
+  }
+
+  void
+  EntityRuntime::removePathRuntime
+  ()
+  {
+    mPathRuntime.reset();
+  }
+
+  void
+  EntityRuntime::removeModelRuntime
+  ()
+  {
+    if (auto mrLock = mModelRuntime.lock())
+    {
+      mrLock->removeInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+    }
+  }
+
+  void
+  EntityRuntime::removeFontRuntime
+  ()
+  {
+    if (auto frLock = mFontRuntime.lock())
+    {
+      frLock->removeInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+    }
+  }
+
+  void
+  EntityRuntime::removeTextureRuntime
+  ()
+  {
+    if (auto trLock = mTextureRuntime.lock())
+    {
+      trLock->removeInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+    }
+  }
+
+  void
+  EntityRuntime::removeScriptRuntime
+  ()
+  {
+    if (auto srLock = mScriptRuntime.lock())
+    {
+      if (auto sceneLock = mSceneRuntime.lock())
+      {
+        if (auto prLock = sceneLock->getProjectRuntime().lock())
         {
-            mUuid = Uuid::generateUuid();
+          if (auto dqLock = prLock->getDestructionTaskQueue().lock())
+          {
+            dqLock->pushTask(mScriptRemoveStateTask);
+            srLock->removeInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+          }
         }
+      }
     }
+  }
 
-    EntityRuntime::~EntityRuntime
-    ()
+  void
+  EntityRuntime::removePhysicsObjectRuntime
+  ()
+  {
+    if (auto srLock = mSceneRuntime.lock())
     {
-        LOG_TRACE("EntityRuntime: {}", __FUNCTION__);
-
-        for (auto child : mChildRuntimes)
+      if (hasPhysicsObjectRuntime())
+      {
+        if (auto prLock = srLock->getProjectRuntime().lock())
         {
-            delete child;
+          if (auto physicsComp = prLock->getPhysicsComponent().lock())
+          {
+            physicsComp->removePhysicsObjectRuntime(getPhysicsObjectRuntime());
+          }
         }
+      }
+    }
+  }
 
-        mChildRuntimes.clear();
+  weak_ptr<FontRuntime>
+  EntityRuntime::getFontRuntime
+  ()
+  const
+  {
+    return mFontRuntime;
+  }
 
-        removeAnimationRuntime();
-        removeAudioRuntime();
-        removeFontRuntime();
-        removeModelRuntime();
-        removePathRuntime();
-        removePhysicsObjectRuntime();
-        removeScriptRuntime();
-        removeTextureRuntime();
+  weak_ptr<AnimationRuntime>
+  EntityRuntime::getAnimationRuntime
+  ()
+  const
+  {
+    return mAnimationRuntime;
+  }
+
+  weak_ptr<PathRuntime>
+  EntityRuntime::getPathRuntime()
+  const
+  {
+    return mPathRuntime;
+  }
+
+  weak_ptr<AudioRuntime>
+  EntityRuntime::getAudioRuntime
+  ()
+  const
+  {
+    return mAudioRuntime;
+  }
+
+  weak_ptr<ModelRuntime>
+  EntityRuntime::getModelRuntime
+  ()
+  const
+  {
+    return mModelRuntime;
+  }
+
+  weak_ptr<ScriptRuntime>
+  EntityRuntime::getScriptRuntime
+  ()
+  const
+  {
+    return mScriptRuntime;
+  }
+
+  weak_ptr<TextureRuntime>
+  EntityRuntime::getTextureRuntime
+  ()
+  const
+  {
+    return mTextureRuntime;
+  }
+
+  weak_ptr<AssetRuntime>
+  EntityRuntime::getAssetRuntime
+  (AssetType type)
+  const
+  {
+    switch (type)
+    {
+      case ASSET_TYPE_ENUM_ANIMATION:
+        return getAnimationRuntime();
+      case ASSET_TYPE_ENUM_PATH:
+        return getPathRuntime();
+      case ASSET_TYPE_ENUM_AUDIO:
+        return getAudioRuntime();
+      case ASSET_TYPE_ENUM_FONT:
+        return getFontRuntime();
+      case ASSET_TYPE_ENUM_MODEL:
+        return getModelRuntime();
+      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+        return getPhysicsObjectRuntime();
+      case ASSET_TYPE_ENUM_SCRIPT:
+        return getScriptRuntime();
+      case ASSET_TYPE_ENUM_TEXTURE:
+        return getTextureRuntime();
+      default:
+        break;
+    }
+    return weak_ptr<AssetRuntime>();
+  }
+
+  bool
+  EntityRuntime::hasFontRuntime()
+  const
+  {
+    return !mFontRuntime.expired();
+  }
+
+  bool
+  EntityRuntime::hasAnimationRuntime
+  ()
+  const
+  {
+    return mAnimationRuntime != nullptr;
+  }
+
+  bool
+  EntityRuntime::hasModelRuntime
+  ()
+  const
+  {
+    return !mModelRuntime.expired();
+  }
+
+  bool
+  EntityRuntime::hasScriptRuntime
+  ()
+  const
+  {
+    return !mScriptRuntime.expired();
+  }
+
+  bool
+  EntityRuntime::hasTextureRuntime()
+  const
+  {
+    return !mTextureRuntime.expired();
+  }
+
+  void
+  EntityRuntime::setAssetDefinitionsMap
+  (const map<AssetType,UuidType>& assetMap)
+  {
+    mAssetDefinitions = assetMap;
+  }
+
+  map<AssetType,UuidType>
+  EntityRuntime::getAssetDefinitionsMap
+  ()
+  const
+  {
+    return mAssetDefinitions;
+  }
+
+  weak_ptr<PhysicsObjectRuntime>
+  EntityRuntime::getPhysicsObjectRuntime
+  ()
+  const
+  {
+    return mPhysicsObjectRuntime;
+  }
+
+  Transform
+  EntityRuntime::getTransform
+  ()
+  const
+  {
+    return mCurrentTransform;
+  }
+
+  void
+  EntityRuntime::initTransform
+  ()
+  {
+    if (auto defLock = mDefinition.lock())
+    {
+      mInitialTransform = (static_pointer_cast<EntityDefinition>(defLock))->getTransform();
+    }
+  }
+
+  bool
+  EntityRuntime::hasEvents
+  ()
+  const
+  {
+    return !mEventQueue.empty();
+  }
+
+  void
+  EntityRuntime::addEvent
+  (const Event& event)
+  {
+    if (!mDeleted)
+    {
+      LOG_TRACE("EntityRuntime: Event posted from {} to {}",
+                event.getAttribute("uuid"), getNameAndUuidString());
+      mEventQueue.push_back(std::move(event));
+    }
+  }
+
+  vector<Event>
+  EntityRuntime::getEventQueue
+  ()
+  {
+    return mEventQueue;
+  }
+
+  void
+  EntityRuntime::clearProcessedEvents
+  ()
+  {
+    LOG_TRACE("EntityRuntime: Clearing event queue");
+
+    for (auto itr = mEventQueue.begin(); itr != mEventQueue.end();)
+    {
+      if ((*itr).getProcessed())
+      {
+        mEventQueue.erase(itr);
+      }
+      else
+      {
+        itr++;
+      }
+    }
+  }
+
+  void
+  EntityRuntime::collectGarbage
+  ()
+  {
+    LOG_TRACE("EntityRuntime: Collecting Garbage {}" ,getNameAndUuidString());
+
+    vector<shared_ptr<EntityRuntime>> toDelete;
+
+    for (auto child : mChildRuntimes)
+    {
+      if (child->getDeleted())
+      {
+        toDelete.push_back(child);
+      }
     }
 
-    void
-    EntityRuntime::removeAnimationRuntime
-    ()
+    for (auto child : toDelete)
     {
-        if (mAnimationRuntime != nullptr)
+      LOG_TRACE("EntityRuntime: Deleting child {}",child->getNameAndUuidString());
+      mChildRuntimes.erase(find(mChildRuntimes.begin(), mChildRuntimes.end(), child));
+    }
+
+    clearProcessedEvents();
+  }
+
+  bool
+  EntityRuntime::hasPhysicsObjectRuntime
+  ()
+  const
+  {
+    return mPhysicsObjectRuntime != nullptr;
+  }
+
+  bool
+  EntityRuntime::hasPathRuntime
+  ()
+  const
+  {
+    return mPathRuntime != nullptr;
+  }
+
+  bool
+  EntityRuntime::hasAudioRuntime
+  ()
+  const
+  {
+    return !mAudioRuntime.expired();
+  }
+
+  bool
+  EntityRuntime::createAssetRuntimes
+  ()
+  {
+    bool result = false;
+
+    for (auto assetPair : mAssetDefinitions)
+    {
+      if (auto def = getAssetDefinitionByUuid(assetPair.second).lock())
+      {
+        LOG_TRACE("EntityRuntime: Creating {}",def->getNameAndUuidString());
+        switch (assetPair.first)
         {
-            delete mAnimationRuntime;
-            mAnimationRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeAudioRuntime
-    ()
-    {
-        if (mAudioRuntime!=nullptr)
-        {
-			mAudioRuntime->removeInstance(this);
-			mAudioRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removePathRuntime
-    ()
-    {
-        if (mPathRuntime != nullptr)
-        {
-            delete mPathRuntime;
-            mPathRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeModelRuntime
-    ()
-    {
-        if (mModelRuntime != nullptr)
-        {
-            mModelRuntime->removeInstance(this);
-            mModelRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeFontRuntime
-    ()
-    {
-        if (mFontRuntime != nullptr)
-        {
-            mFontRuntime->removeInstance(this);
-            mFontRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeTextureRuntime
-    ()
-    {
-        if (mTextureRuntime != nullptr)
-        {
-            mTextureRuntime->removeInstance(this);
-            mTextureRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removeScriptRuntime
-    ()
-    {
-        if (mScriptRuntime)
-        {
-            mSceneRuntime->getProjectRuntime()->getDestructionTaskQueue()->pushTask(mScriptRemoveStateTask);
-            mScriptRuntime->removeInstance(this);
-        	mScriptRuntime = nullptr;
-        }
-    }
-
-    void
-    EntityRuntime::removePhysicsObjectRuntime
-    ()
-    {
-        if (hasPhysicsObjectRuntime())
-        {
-            auto physicsComp = mSceneRuntime->getProjectRuntime()->getPhysicsComponent();
-            if (physicsComp != nullptr)
-            {
-                physicsComp->removePhysicsObjectRuntime(getPhysicsObjectRuntime());
-            }
-        }
-
-        if (mPhysicsObjectRuntime != nullptr)
-        {
-            delete mPhysicsObjectRuntime;
-            mPhysicsObjectRuntime = nullptr;
-        }
-    }
-
-    FontRuntime*
-    EntityRuntime::getFontRuntime()
-    const
-    {
-        return mFontRuntime;
-    }
-
-    AnimationRuntime*
-    EntityRuntime::getAnimationRuntime()
-    const
-    {
-        return mAnimationRuntime;
-    }
-
-    PathRuntime*
-    EntityRuntime::getPathRuntime()
-    const
-    {
-        return mPathRuntime;
-    }
-
-    AudioRuntime*
-    EntityRuntime::getAudioRuntime
-    ()
-    const
-    {
-        return mAudioRuntime;
-    }
-
-    ModelRuntime*
-    EntityRuntime::getModelRuntime
-    ()
-    const
-    {
-        return mModelRuntime;
-    }
-
-    ScriptRuntime*
-    EntityRuntime::getScriptRuntime
-    ()
-    const
-    {
-        return mScriptRuntime;
-    }
-
-    TextureRuntime*
-    EntityRuntime::getTextureRuntime
-    ()
-    const
-    {
-        return mTextureRuntime;
-    }
-
-    AssetRuntime*
-    EntityRuntime::getAssetRuntime
-    (AssetType type)
-    const
-    {
-        switch (type)
-        {
-            case ASSET_TYPE_ENUM_ANIMATION:
-                return getAnimationRuntime();
-            case ASSET_TYPE_ENUM_PATH:
-                return getPathRuntime();
-            case ASSET_TYPE_ENUM_AUDIO:
-                return getAudioRuntime();
-            case ASSET_TYPE_ENUM_FONT:
-                return getFontRuntime();
-            case ASSET_TYPE_ENUM_MODEL:
-                return getModelRuntime();
-            case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-                return getPhysicsObjectRuntime();
-            case ASSET_TYPE_ENUM_SCRIPT:
-                return getScriptRuntime();
-            case ASSET_TYPE_ENUM_TEXTURE:
-                return getTextureRuntime();
-            default:
-                break;
-        }
-        return nullptr;
-    }
-
-    bool
-    EntityRuntime::hasFontRuntime()
-    const
-    {
-        return mFontRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasAnimationRuntime
-    ()
-    const
-    {
-        return mAnimationRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasModelRuntime
-    ()
-    const
-    {
-        return mModelRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasScriptRuntime
-    ()
-    const
-    {
-        return mScriptRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasTextureRuntime()
-    const
-    {
-        return mTextureRuntime != nullptr;
-    }
-
-    void
-    EntityRuntime::setAssetDefinitionsMap
-    (const map<AssetType,UuidType>& assetMap)
-    {
-        mAssetDefinitions = assetMap;
-    }
-
-    map<AssetType,UuidType>
-    EntityRuntime::getAssetDefinitionsMap
-    ()
-    const
-    {
-        return mAssetDefinitions;
-    }
-
-    PhysicsObjectRuntime*
-    EntityRuntime::getPhysicsObjectRuntime
-    ()
-    const
-    {
-        return mPhysicsObjectRuntime;
-    }
-
-    Transform
-    EntityRuntime::getTransform
-    ()
-    const
-    {
-        return mCurrentTransform;
-    }
-
-    void
-    EntityRuntime::initTransform
-    ()
-    {
-        if (mDefinitionHandle)
-        {
-            mInitialTransform = (static_cast<EntityDefinition*>(mDefinitionHandle))->getTransform();
-        }
-    }
-
-    bool
-    EntityRuntime::hasEvents
-    ()
-    const
-    {
-        return !mEventQueue.empty();
-    }
-
-    void
-    EntityRuntime::addEvent
-    (const Event& event)
-    {
-        if (!mDeleted)
-        {
-            LOG_TRACE("EntityRuntime: Event posted from {} to {}",
-                      event.getAttribute("uuid"), getNameAndUuidString());
-            mEventQueue.push_back(std::move(event));
-        }
-    }
-
-    vector<Event>*
-    EntityRuntime::getEventQueue
-    ()
-    {
-        return &mEventQueue;
-    }
-
-    void
-    EntityRuntime::clearEventQueue
-    ()
-    {
-        LOG_TRACE("EntityRuntime: Clearing event queue");
-
-        for (auto itr = mEventQueue.begin(); itr != mEventQueue.end();)
-        {
-            if ((*itr).getProcessed())
-            {
-                mEventQueue.erase(itr);
-            }
-            else
-            {
-                itr++;
-            }
-        }
-    }
-
-    void
-    EntityRuntime::collectGarbage
-    ()
-    {
-        LOG_TRACE("EntityRuntime: Collecting Garbage {}" ,getNameAndUuidString());
-
-        vector<EntityRuntime*> toDelete;
-
-        for (auto child : mChildRuntimes)
-        {
-            if (child->getDeleted())
-            {
-                toDelete.push_back(child);
-            }
-        }
-
-        for (auto child : toDelete)
-        {
-            LOG_TRACE("EntityRuntime: Deleting child {}",child->getNameAndUuidString());
-            mChildRuntimes.erase(find(mChildRuntimes.begin(), mChildRuntimes.end(), child));
-            delete child;
-        }
-
-        clearEventQueue();
-    }
-
-    bool
-    EntityRuntime::hasPhysicsObjectRuntime
-    ()
-    const
-    {
-        return mPhysicsObjectRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasPathRuntime
-    ()
-    const
-    {
-        return mPathRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::hasAudioRuntime
-    ()
-    const
-    {
-        return mAudioRuntime != nullptr;
-    }
-
-    bool
-    EntityRuntime::createAssetRuntimes
-    ()
-    {
-        for (auto assetPair : mAssetDefinitions)
-        {
-            AssetDefinition* def = getAssetDefinitionByUuid(assetPair.second);
-            bool result = false;
-            if (def == nullptr)
-            {
-                LOG_ERROR("EntityRuntime: Could not find asset definition {}", assetPair.second);
-                continue;
-            }
-            LOG_TRACE("EntityRuntime: Creating {}",def->getNameAndUuidString());
-            switch (assetPair.first)
-            {
-                case AssetType::ASSET_TYPE_ENUM_ANIMATION:
-                    result = createAnimationRuntime(static_cast<AnimationDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_AUDIO:
-                    result = createAudioRuntime(static_cast<AudioDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_FONT:
-                    result = createFontRuntime(static_cast<FontDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_MODEL:
-                    result = createModelRuntime(static_cast<ModelDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_PATH:
-                    result = createPathRuntime(static_cast<PathDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-                    result = createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_SCRIPT:
-                    result = createScriptRuntime(static_cast<ScriptDefinition*>(def));
-                    break;
-                case AssetType::ASSET_TYPE_ENUM_TEXTURE:
-                    result = createTextureRuntime(static_cast<TextureDefinition*>(def));
-                    break;
-                default:
-                    return false;
-            }
-            if (!result)
-            {
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-    AssetDefinition*
-    EntityRuntime::getAssetDefinitionByUuid
-    (UuidType uuid)
-    {
-        auto project = mSceneRuntime->getProjectRuntime()->getProject();
-        if (project == nullptr)
-        {
-            LOG_ERROR("EntityRuntime: Project is not found");
-            return nullptr;
-        }
-        auto assetDefinition = project->getDefinition()->getAssetDefinitionByUuid(uuid);
-        if (assetDefinition == nullptr)
-        {
-            LOG_ERROR("EntityRuntime: AssetDefinition not found");
-        }
-        return assetDefinition;
-    }
-
-    bool
-    EntityRuntime::replaceAssetUuid
-    (AssetType type, UuidType uuid)
-    {
-        LOG_INFO("EntityRuntime: REPLACING asset Runtime from uuid {}", uuid);
-
-        auto project = mSceneRuntime->getProjectRuntime()->getProject();
-
-        if (project == nullptr)
-        {
-            LOG_ERROR("EntityRuntime: Project is not found");
+          case AssetType::ASSET_TYPE_ENUM_ANIMATION:
+            result = createAnimationRuntime(static_pointer_cast<AnimationDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_AUDIO:
+            result = createAudioRuntime(static_pointer_cast<AudioDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_FONT:
+            result = createFontRuntime(static_pointer_cast<FontDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_MODEL:
+            result = createModelRuntime(static_pointer_cast<ModelDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_PATH:
+            result = createPathRuntime(static_pointer_cast<PathDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+            result = createPhysicsObjectRuntime(static_pointer_cast<PhysicsObjectDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_SCRIPT:
+            result = createScriptRuntime(static_pointer_cast<ScriptDefinition>(def));
+            break;
+          case AssetType::ASSET_TYPE_ENUM_TEXTURE:
+            result = createTextureRuntime(static_pointer_cast<TextureDefinition>(def));
+            break;
+          default:
             return false;
         }
+        if (result) break;
+      }
+    }
+    return result;
+  }
 
-        auto def = project->getDefinition()->getAssetDefinitionByUuid(uuid);
-
-        if (def == nullptr)
+  weak_ptr<AssetDefinition>
+  EntityRuntime::getAssetDefinitionByUuid
+  (UuidType uuid)
+  {
+    if (auto srLock = mSceneRuntime.lock())
+    {
+      if (auto project = srLock->getProjectRuntime().lock())
+      {
+        if (auto projectDef = static_pointer_cast<ProjectDefinition>(project->getDefinition().lock()))
         {
-            LOG_ERROR("EntityRuntime: AssetDefinition not found");
+          return projectDef->getAssetDefinitionByUuid(uuid);
         }
+      }
+    }
+    return weak_ptr<AssetDefinition>();
+  }
 
-        switch (type)
+  bool
+  EntityRuntime::replaceAssetUuid
+  (AssetType type, UuidType uuid)
+  {
+    LOG_INFO("EntityRuntime: REPLACING asset Runtime from uuid {}", uuid);
+
+    if (auto srLock = mSceneRuntime.lock())
+    {
+      if (auto project = srLock->getProjectRuntime().lock())
+      {
+        if (auto projectDef = static_pointer_cast<ProjectDefinition>(project->getDefinition().lock()))
         {
-            case AssetType::ASSET_TYPE_ENUM_ANIMATION:
-                return createAnimationRuntime(static_cast<AnimationDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_AUDIO:
-                return createAudioRuntime(static_cast<AudioDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_FONT:
-                return createFontRuntime(static_cast<FontDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_MODEL:
-                return createModelRuntime(static_cast<ModelDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_PATH:
-                return createPathRuntime(static_cast<PathDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-                return createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_SCRIPT:
-                return createScriptRuntime(static_cast<ScriptDefinition*>(def));
-            case AssetType::ASSET_TYPE_ENUM_TEXTURE:
-               return createTextureRuntime(static_cast<TextureDefinition*>(def));
-            default:
-                return false;
-        }
-    }
-
-    // DiscreteAssetRuntimes ===================================================
-
-    bool
-    EntityRuntime::createPhysicsObjectRuntime
-    (PhysicsObjectDefinition* definition)
-    {
-        removePhysicsObjectRuntime();
-        LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
-        mPhysicsObjectRuntime = new PhysicsObjectRuntime(mProjectRuntimeHandle,definition, this);
-        return true;
-    }
-
-    bool
-    EntityRuntime::createAnimationRuntime
-    (AnimationDefinition* definition)
-    {
-        LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
-        removeAnimationRuntime();
-        mAnimationRuntime = new AnimationRuntime(mProjectRuntimeHandle, definition,this);
-        return true;
-    }
-
-    bool
-    EntityRuntime::createPathRuntime
-    (PathDefinition* definition)
-    {
-        LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
-        removePathRuntime();
-        mPathRuntime = new PathRuntime(mProjectRuntimeHandle, definition,this);
-        return true;
-    }
-
-    // SharedAssetRuntimes =====================================================
-
-    bool
-    EntityRuntime::createAudioRuntime
-    (AudioDefinition* definition)
-    {
-        // AudioRuntime must be taken from AudioComponent rather than AudioCache
-
-        auto audioComp = mProjectRuntimeHandle->getAudioComponent();
-        if (audioComp != nullptr)
-        {
-            mAudioRuntime = audioComp->getAudioRuntime(definition);
-            return mAudioRuntime != nullptr;
-        }
-        else
-        {
-            LOG_ERROR("EntityRuntime: Cannot create AudioRuntime. AudioComponent is nullptr");
-        }
-        return false;
-    }
-
-    bool
-    EntityRuntime::createModelRuntime
-    (ModelDefinition* definition)
-    {
-        removeModelRuntime();
-        LOG_INFO("EntityRuntime: Creating Model asset Runtime.");
-        auto cache = mSceneRuntime->getProjectRuntime()->getModelCache();
-        if (cache != nullptr)
-        {
-            mModelRuntime = cache->getRuntimeHandle(definition);
-            if (mModelRuntime != nullptr)
+          if (auto def = projectDef->getAssetDefinitionByUuid(uuid).lock())
+          {
+            switch (type)
             {
-                mModelRuntime->addInstance(this);
+              case AssetType::ASSET_TYPE_ENUM_ANIMATION:
+                return createAnimationRuntime(static_pointer_cast<AnimationDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_AUDIO:
+                return createAudioRuntime(static_pointer_cast<AudioDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_FONT:
+                return createFontRuntime(static_pointer_cast<FontDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_MODEL:
+                return createModelRuntime(static_pointer_cast<ModelDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_PATH:
+                return createPathRuntime(static_pointer_cast<PathDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+                return createPhysicsObjectRuntime(static_pointer_cast<PhysicsObjectDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_SCRIPT:
+                return createScriptRuntime(static_pointer_cast<ScriptDefinition>(def));
+              case AssetType::ASSET_TYPE_ENUM_TEXTURE:
+                return createTextureRuntime(static_pointer_cast<TextureDefinition>(def));
+              default:
+                break;
             }
-            else
-            {
-                LOG_ERROR("EntityRuntime: Error getting model Runtime, cache returned nullptr");
-                return false;
-            }
+          }
         }
-        return mModelRuntime != nullptr;
+      }
     }
+    return false;
+  }
 
-    bool
-    EntityRuntime::createScriptRuntime
-    (ScriptDefinition* definition)
+  // DiscreteAssetRuntimes ===================================================
+
+  bool
+  EntityRuntime::createPhysicsObjectRuntime
+  (const weak_ptr<PhysicsObjectDefinition>& definition)
+  {
+    removePhysicsObjectRuntime();
+    LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
+    mPhysicsObjectRuntime = make_shared<PhysicsObjectRuntime>(
+          mProjectRuntime,definition,
+          static_pointer_cast<EntityRuntime>(shared_from_this()));
+    return mPhysicsObjectRuntime->init();
+  }
+
+  bool
+  EntityRuntime::createAnimationRuntime
+  (const weak_ptr<AnimationDefinition>& definition)
+  {
+    LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
+    removeAnimationRuntime();
+    mAnimationRuntime = make_shared<AnimationRuntime>(
+          mProjectRuntime,
+          definition,static_pointer_cast<EntityRuntime>(shared_from_this()));
+    return mAnimationRuntime->init();
+  }
+
+  bool
+  EntityRuntime::createPathRuntime
+  (const weak_ptr<PathDefinition>& definition)
+  {
+    LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
+    removePathRuntime();
+    mPathRuntime = make_shared<PathRuntime>(
+          mProjectRuntime,
+          definition,
+          static_pointer_cast<EntityRuntime>(shared_from_this()));
+    return mPathRuntime->init();
+  }
+
+  // SharedAssetRuntimes =====================================================
+
+  bool
+  EntityRuntime::createAudioRuntime
+  (const weak_ptr<AudioDefinition>& definition)
+  {
+    // AudioRuntime must be taken from AudioComponent rather than AudioCache
+    if (auto prLock = mProjectRuntime.lock())
     {
-        removeScriptRuntime();
-        LOG_TRACE("EntityRuntime: Creating Script asset Runtime.");
-        auto scriptCache = mSceneRuntime->getProjectRuntime()->getScriptCache();
-        if (scriptCache)
+      if (auto audioComp = prLock->getAudioComponent().lock())
+      {
+        mAudioRuntime = audioComp->getAudioRuntime(definition);
+        return !mAudioRuntime.expired();
+      }
+    }
+    return false;
+  }
+
+  bool
+  EntityRuntime::createModelRuntime
+  (const weak_ptr<ModelDefinition>& definition)
+  {
+    removeModelRuntime();
+    LOG_INFO("EntityRuntime: Creating Model asset Runtime.");
+    if (auto prLock = mProjectRuntime.lock())
+    {
+      if (auto cache = prLock->getModelCache().lock())
+      {
+        mModelRuntime = cache->getRuntime(definition);
+        if (auto mr = mModelRuntime.lock())
         {
-            mScriptRuntime = scriptCache->getRuntimeHandle(definition);
-            if (mScriptRuntime)
-            {
-                mScriptCreateStateTask = make_shared<EntityScriptCreateStateTask>(mProjectRuntimeHandle, this);
-                mScriptOnInitTask      = make_shared<EntityScriptOnInitTask>(mProjectRuntimeHandle, this);
-                mScriptOnUpdateTask    = make_shared<EntityScriptOnUpdateTask>(mProjectRuntimeHandle,this);
-                mScriptOnEventTask     = make_shared<EntityScriptOnEventTask>(mProjectRuntimeHandle,this);
-                mScriptRemoveStateTask = make_shared<EntityScriptRemoveStateTask>(mProjectRuntimeHandle,getUuid(), mScriptRuntime);
-
-                mScriptRuntime->addInstance(this);
-
-                return true;
-            }
-            else
-            {
-                LOG_ERROR("EntityRuntime: Error getting script Runtime, cache returned nullptr");
-                return false;
-            }
+          mr->addInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
         }
-        LOG_ERROR("EntityRuntime: Script cache is null");
-        return false;
+      }
     }
+    return !mModelRuntime.expired();
+  }
 
-    bool
-    EntityRuntime::createFontRuntime
-    (FontDefinition* definition)
+  bool
+  EntityRuntime::createScriptRuntime
+  (const weak_ptr<ScriptDefinition>& definition)
+  {
+    removeScriptRuntime();
+    if (auto projectRuntime = mProjectRuntime.lock())
     {
-        removeFontRuntime();
-        LOG_TRACE( "EntityRuntime: Creating Font Asset Runtime." );
-        auto fontCache = mSceneRuntime->getProjectRuntime()->getFontCache();
-        mFontRuntime = static_cast<FontRuntime*>(fontCache->getRuntimeHandle(definition));
-        if (mFontRuntime == nullptr)
+      if (auto sceneRuntime = mSceneRuntime.lock())
+      {
+        if (auto scriptCache = projectRuntime->getScriptCache().lock())
         {
-            LOG_ERROR("EntityRuntime: Error creating Font runtime");
+          LOG_TRACE("EntityRuntime: Creating Script asset Runtime.");
+          auto shared_this = static_pointer_cast<EntityRuntime>(shared_from_this());
+          mScriptRuntime = scriptCache->getRuntime(definition);
+          if (auto scriptRuntime = mScriptRuntime.lock())
+          {
+            mScriptCreateStateTask = make_shared<EntityScriptCreateStateTask>(mProjectRuntime, shared_this);
+            mScriptOnInitTask      = make_shared<EntityScriptOnInitTask>(mProjectRuntime, shared_this);
+            mScriptOnUpdateTask    = make_shared<EntityScriptOnUpdateTask>(mProjectRuntime,shared_this);
+            mScriptOnEventTask     = make_shared<EntityScriptOnEventTask>(mProjectRuntime,shared_this);
+            mScriptRemoveStateTask = make_shared<EntityScriptRemoveStateTask>(mProjectRuntime,getUuid(), mScriptRuntime);
+            scriptRuntime->addInstance(shared_this);
+            return true;
+          }
         }
-        EntityDefinition* entityDef = static_cast<EntityDefinition*>(mDefinitionHandle);
-        mFontColor = entityDef->getFontColor();
-        mFontScale = entityDef->getFontScale();
-        mFontText = entityDef->getFontText();
-        mFontRuntime->addInstance(this);
-        return mFontRuntime != nullptr;
+      }
     }
+    return false;
+  }
 
-    bool
-    EntityRuntime::createTextureRuntime
-    (TextureDefinition* definition)
+  bool
+  EntityRuntime::createFontRuntime
+  (const weak_ptr<FontDefinition>& definition)
+  {
+    removeFontRuntime();
+    if (auto projectRuntime = mProjectRuntime.lock())
     {
-        removeTextureRuntime();
-        LOG_TRACE( "EntityRuntime: Creating Texture Asset Runtime." );
-        auto textureCache = mSceneRuntime->getProjectRuntime()->getTextureCache();
-        mTextureRuntime = static_cast<TextureRuntime*>(textureCache->getRuntimeHandle(definition));
-        if (mTextureRuntime == nullptr)
+      if (auto fontCache = projectRuntime->getFontCache().lock())
+      {
+        if (auto defLock = mDefinition.lock())
         {
-            LOG_ERROR("EntityRuntime: Error creating Texture runtime");
+          LOG_TRACE( "EntityRuntime: Creating Font Asset Runtime." );
+          mFontRuntime = fontCache->getRuntime(definition);
+          if (auto frLock = mFontRuntime.lock())
+          {
+            shared_ptr<EntityDefinition> entityDef = static_pointer_cast<EntityDefinition>(defLock);
+            mFontColor = entityDef->getFontColor();
+            mFontScale = entityDef->getFontScale();
+            mFontText = entityDef->getFontText();
+            frLock->addInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+            return true;
+          }
         }
-        EntityDefinition* entityDef = static_cast<EntityDefinition*>(mDefinitionHandle);
-        mTextureRuntime->addInstance(this);
-        return mTextureRuntime != nullptr;
+      }
     }
+    return false;
+  }
 
-
-    // Accessors ===============================================================
-
-    EntityRuntime*
-    EntityRuntime::getChildRuntimeByUuid
-    (UuidType uuid)
+  bool
+  EntityRuntime::createTextureRuntime
+  (const weak_ptr<TextureDefinition>& definition)
+  {
+    removeTextureRuntime();
+    if (auto projectRuntime = mProjectRuntime.lock())
     {
-        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+      if (auto textureCache = projectRuntime->getTextureCache().lock())
+      {
+        if (auto defLock = mDefinition.lock())
         {
-            if (*it != nullptr)
-            {
-                if ((*it)->hasUuid(uuid))
-                {
-                    return *it;
-                }
-            }
+          LOG_TRACE( "EntityRuntime: Creating Texture Asset Runtime." );
+          mTextureRuntime = textureCache->getRuntime(definition);
+          if (auto trLock = mTextureRuntime.lock())
+          {
+            auto entityDef = static_pointer_cast<EntityDefinition>(defLock);
+            trLock->addInstance(static_pointer_cast<EntityRuntime>(shared_from_this()));
+            return true;
+          }
         }
-        return nullptr;
+      }
     }
+    return false;
+  }
 
-    vector<EntityRuntime*>
-    EntityRuntime::getChildRuntimes
-    ()
-    {
-        return mChildRuntimes;
-    }
 
-    bool
-    EntityRuntime::isParentOf
-    (EntityRuntime*  child)
-    const
+  // Accessors ===============================================================
+
+  weak_ptr<EntityRuntime>
+  EntityRuntime::getChildRuntimeByUuid
+  (UuidType uuid)
+  {
+    for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
     {
-        for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
+      if (*it != nullptr)
+      {
+        if ((*it)->hasUuid(uuid))
         {
-            if ((*it) == child)
-            {
-                return true;
-            }
+          return *it;
         }
-        return false;
+      }
     }
+    return weak_ptr<EntityRuntime>();
+  }
 
-    void
-    EntityRuntime::setParentEntityRuntime
-    (EntityRuntime* parent)
+  vector<weak_ptr<EntityRuntime>>
+  EntityRuntime::generateFlatVector
+  ()
+  {
+    vector<weak_ptr<EntityRuntime>> retval;
+    if (mParentEntityRuntime.expired())
     {
-        mParentEntityRuntime = parent;
-        setAttribute("parent",mParentEntityRuntime->getUuidString());
-
+      retval.push_back(static_pointer_cast<EntityRuntime>(shared_from_this()));
     }
-
-    EntityRuntime*
-    EntityRuntime::getParentEntityRuntime
-    ()
-    const
+    for (auto er : getChildRuntimes())
     {
-        return mParentEntityRuntime;
+      if (auto erLock = er.lock())
+      {
+        retval.push_back(er);
+        auto fv = erLock->generateFlatVector();
+        fv.insert(fv.end(), fv.begin(), fv.end());
+      }
     }
+    return retval;
+  }
 
-    SceneRuntime*
-    EntityRuntime::getSceneRuntime
-    ()
-    const
+  vector<weak_ptr<EntityRuntime>>
+  EntityRuntime::getChildRuntimes
+  ()
+  const
+  {
+    vector<weak_ptr<EntityRuntime>> r;
+    r.insert(r.begin(),mChildRuntimes.begin(), mChildRuntimes.end());
+    return r;
+  }
+
+  bool
+  EntityRuntime::isParentOf
+  (const weak_ptr<EntityRuntime>&  child)
+  const
+  {
+    auto itr = std::find_if(mChildRuntimes.begin(), mChildRuntimes.end(),
+                            [&](const shared_ptr<EntityRuntime>& nextChild)
+    { return nextChild == child.lock(); });
+    return itr != mChildRuntimes.end();
+  }
+
+  void
+  EntityRuntime::setParentEntityRuntime
+  (const weak_ptr<EntityRuntime>& parent)
+  {
+    if (auto parentLock = parent.lock())
     {
-        return mSceneRuntime;
+      mParentEntityRuntime = parent;
+      setAttribute("parent",parentLock->getUuidString());
     }
+  }
 
-    EntityDefinition*
-    EntityRuntime::getEntityDefinition()
-    const
-    {
-        return static_cast<EntityDefinition*>(getDefinitionHandle());
-    }
+  weak_ptr<EntityRuntime>
+  EntityRuntime::getParentEntityRuntime
+  ()
+  const
+  {
+    return mParentEntityRuntime;
+  }
 
-    bool
-    EntityRuntime::loadChildrenFromDefinition
-    (EntityDefinition* definition)
+  weak_ptr<SceneRuntime>
+  EntityRuntime::getSceneRuntime
+  ()
+  const
+  {
+    return mSceneRuntime;
+  }
+
+  weak_ptr<EntityDefinition>
+  EntityRuntime::getEntityDefinition()
+  const
+  {
+    return static_pointer_cast<EntityDefinition>(getDefinition().lock());
+  }
+
+  bool
+  EntityRuntime::loadChildrenFromDefinition
+  (const weak_ptr<EntityDefinition>& definition)
+  {
+    if (auto defLock = definition.lock())
     {
-        vector<EntityDefinition*> definitions = definition->getChildDefinitionsVector();
-        for (auto it = begin(definitions); it != end(definitions); it++)
+      vector<weak_ptr<EntityDefinition>> definitions = defLock->getChildDefinitionsVector();
+
+      for (auto it = begin(definitions); it != end(definitions); it++)
+      {
+        if (auto entityDef = (*it).lock())
         {
-            auto sod = (*it);
-            if (sod->getIsTemplate())
-            {
-                static_cast<SceneDefinition*>(mSceneRuntime->getDefinitionHandle())->addTemplate(sod);
-            }
-            else
-            {
-                createAndAddChildRuntime(sod);
-            }
+          if (!entityDef->getIsTemplate())
+          {
+            createAndAddChildRuntime(entityDef);
+          }
         }
-        return true;
+      }
     }
+    return true;
+  }
 
-    void
-    EntityRuntime::setTransform
-    (const Transform& transform)
+  void
+  EntityRuntime::setTransform
+  (const Transform& transform)
+  {
+    mCurrentTransform = transform;
+  }
+
+  Transform
+  EntityRuntime::getInitialTransform
+  ()
+  const
+  {
+    return mInitialTransform;
+  }
+
+  bool
+  EntityRuntime::getDeleted
+  () const
+  {
+    return mDeleted;
+  }
+
+  void
+  EntityRuntime::setDeleted
+  (bool deleted)
+  {
+    mDeleted = deleted;
+  }
+
+  void
+  EntityRuntime::removeChildRuntime
+  (const weak_ptr<EntityRuntime>& child)
+  {
+    if (auto childLock = child.lock())
     {
-        mCurrentTransform = transform;
+      childLock->setDeleted(true);
     }
+  }
 
-    Transform
-    EntityRuntime::getInitialTransform
-    ()
-    const
+  void
+  EntityRuntime::addChildRuntime
+  (const shared_ptr<EntityRuntime>& rt)
+  {
+    mChildRuntimes.push_back(rt);
+  }
+
+  weak_ptr<EntityRuntime>
+  EntityRuntime::createAndAddChildRuntime
+  (const weak_ptr<EntityDefinition>& def)
+  {
+    auto child = make_shared<EntityRuntime>(mProjectRuntime,  mSceneRuntime, def, mRandomUuid);
+    child->setParentEntityRuntime(static_pointer_cast<EntityRuntime>(shared_from_this()));
+    if (!child->loadFromDefinition())
     {
-        return mInitialTransform;
+      LOG_ERROR("EntityRuntime: Error creating child runtime");
+      return weak_ptr<EntityRuntime>();
     }
+    addChildRuntime(child);
+    return child;
+  }
 
-    bool
-    EntityRuntime::getDeleted
-    () const
+  weak_ptr<EntityRuntime>
+  EntityRuntime::addChildFromTemplateUuid
+  (UuidType uuid)
+  {
+    if (auto srLock = mSceneRuntime.lock())
     {
-        return mDeleted;
-    }
-
-    void
-    EntityRuntime::setDeleted
-    (bool deleted)
-    {
-        mDeleted = deleted;
-    }
-
-    void
-    EntityRuntime::removeChildRuntime
-    (EntityRuntime* child)
-    {
-        child->setDeleted(true);
-    }
-
-    void
-    EntityRuntime::addChildRuntime
-    (EntityRuntime* rt)
-    {
-        mChildRuntimes.push_back(rt);
-    }
-
-    EntityRuntime*
-    EntityRuntime::createAndAddChildRuntime
-    (EntityDefinition* def)
-    {
-        auto* child = new EntityRuntime(mProjectRuntimeHandle,  mSceneRuntime, def, mRandomUuid);
-        child->setParentEntityRuntime(this);
-        if (!child->loadFromDefinition())
-        {
-            LOG_ERROR("EntityRuntime: Error creating child runtime");
-            delete child;
-            return nullptr;
-        }
-        addChildRuntime(child);
-        return child;
-    }
-
-    EntityRuntime*
-    EntityRuntime::addChildFromTemplateUuid
-    (UuidType uuid)
-    {
-        // Get the scene def
-        auto sceneDef = static_cast<SceneDefinition*>(mSceneRuntime->getDefinitionHandle());
+    	// Get the scene def
+      if (auto srDefLock = srLock->getDefinition().lock())
+      {
+        auto sceneDef = static_pointer_cast<SceneDefinition>(srDefLock);
 
         // Get the template def
-        auto def = sceneDef->getTemplateByUuid(uuid);
-
-        // Check template is good
-        if (def)
+        if (auto def = sceneDef->getTemplateByUuid(uuid).lock())
         {
-            if (!def->getIsTemplate())
-            {
-                LOG_ERROR("EntityRuntime: This SO is not a Template, too dangerous");
-                return nullptr;
-            }
-
+          if (def->getIsTemplate())
+          {
             // Create child
-            auto* child = new EntityRuntime(mProjectRuntimeHandle, mSceneRuntime, def,  true);
-            child->setParentEntityRuntime(this);
+            auto child = make_shared<EntityRuntime>(mProjectRuntime, mSceneRuntime, def,  true);
+            child->setParentEntityRuntime(static_pointer_cast<EntityRuntime>(shared_from_this()));
             // Use definitoin
-            if (!child->loadFromDefinition())
+            if (child->loadFromDefinition())
             {
-                LOG_DEBUG("EntityRuntime: Error creating child runtime");
-                delete child;
-                return nullptr;
+              // Add runtime
+              addChildRuntime(child);
+              LOG_DEBUG("EntityRuntime: Successfully added child from template {}",def->getNameAndUuidString());
+              return child;
             }
-            // Add runtime
-            addChildRuntime(child);
-            LOG_DEBUG("EntityRuntime: Successfully added child from template {}",def->getNameAndUuidString());
-            return child;
+          }
         }
-        LOG_DEBUG("EntityRuntime: Cannt create child, definition not found");
-        return nullptr;
+      }
     }
+    return weak_ptr<EntityRuntime>();
+  }
 
 
-    bool
-    EntityRuntime::loadFromDefinition
-    ()
+  bool
+  EntityRuntime::loadFromDefinition
+  ()
+  {
+    if (auto defLock = mDefinition.lock())
     {
-        if (mDefinitionHandle)
+      auto def = static_pointer_cast<EntityDefinition>(defLock);
+      LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
+      setName(def->getName());
+      setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
+      setTransform(def->getTransform());
+      setAssetDefinitionsMap(def->getAssetDefinitionsMap());
+
+      if (createAssetRuntimes())
+      {
+        if(loadChildrenFromDefinition(def))
         {
-            auto def = static_cast<EntityDefinition*>(mDefinitionHandle);
-            LOG_TRACE( "EntityRuntime: Using Definition {}", def->getNameAndUuidString());
-            setName(def->getName());
-            setUuid(mRandomUuid ? Uuid::generateUuid() : def->getUuid());
-            setTransform(def->getTransform());
-            initTransform();
-
-            setAssetDefinitionsMap(def->getAssetDefinitionsMap());
-
-            if (!createAssetRuntimes())
-            {
-                return false;
-            }
-
-            if(!loadChildrenFromDefinition(def))
-            {
-                return false;
-            }
-
-            return true;
+          return true;
         }
-        return false;
+      }
     }
+    return false;
+  }
 
-    BoundingBox
-    EntityRuntime::getBoundingBox
-    ()
-    const
+  BoundingBox
+  EntityRuntime::getBoundingBox
+  ()
+  const
+  {
+    if (auto mrLock = mModelRuntime.lock())
     {
-        if (mModelRuntime != nullptr)
-        {
-            return mModelRuntime->getBoundingBox();
-        }
-        return mBoundingBox;
+      return mrLock->getBoundingBox();
     }
+    return mBoundingBox;
+  }
 
-    void
-    EntityRuntime::setBoundingBox
-    (const BoundingBox& boundingBox)
+  void
+  EntityRuntime::setBoundingBox
+  (const BoundingBox& boundingBox)
+  {
+    mBoundingBox = boundingBox;
+  }
+
+  float
+  EntityRuntime::distanceFrom
+  (const weak_ptr<EntityRuntime>& other)
+  const
+  {
+    if (auto otherLock = other.lock())
     {
-        mBoundingBox = boundingBox;
+      return mCurrentTransform.distanceFrom(otherLock->getTransform());
     }
+    return 0.f;
+  }
 
-    float
-    EntityRuntime::distanceFrom
-    (const EntityRuntime* other)
-    const
+  float
+  EntityRuntime::distanceFrom
+  (const vec3& other)
+  const
+  {
+    return glm::distance(mCurrentTransform.getTranslation(),other);
+  }
+
+  bool
+  EntityRuntime::visibleInFrustum
+  ()
+  {
+    if (auto srLock = mSceneRuntime.lock())
     {
-        return mCurrentTransform.distanceFrom(other->getTransform());
+      if (auto cam = srLock->getCamera().lock())
+      {
+        return cam->visibleInFrustum(static_pointer_cast<EntityRuntime>(shared_from_this()));
+      }
     }
+    return false;
+  }
 
-    float
-    EntityRuntime::distanceFrom
-    (const vec3& other)
-    const
+  bool
+  EntityRuntime::containedInFrustum
+  ()
+  {
+    if (auto srLock = mSceneRuntime.lock())
     {
-        return glm::distance(mCurrentTransform.getTranslation(),other);
+      if (auto cam = srLock->getCamera().lock())
+      {
+        return cam->containedInFrustum(static_pointer_cast<EntityRuntime>(shared_from_this()));
+      }
     }
+    return false;
+  }
 
-    bool
-    EntityRuntime::visibleInFrustum
-    ()
-    const
+  weak_ptr<EntityScriptOnInitTask>
+  EntityRuntime::getScriptOnInitTask
+  ()
+  const
+  {
+    return mScriptOnInitTask;
+  }
+
+  weak_ptr<EntityScriptOnEventTask>
+  EntityRuntime::getScriptOnEventTask
+  ()
+  const
+  {
+    return mScriptOnEventTask;
+  }
+
+  weak_ptr<EntityScriptOnUpdateTask>
+  EntityRuntime::getScriptOnUpdateTask
+  ()
+  const
+  {
+    return mScriptOnUpdateTask;
+  }
+
+  weak_ptr<EntityScriptCreateStateTask>
+  EntityRuntime::getScriptCreateStateTask()
+  const
+  {
+    return mScriptCreateStateTask;
+  }
+
+  string
+  EntityRuntime::getAttribute
+  (const string& key)
+  const
+  {
+    if (mAttributes.count(key) > 0)
     {
-        auto cam = mSceneRuntime->getCamera();
-        if (cam)
-        {
-            return cam->visibleInFrustum(this);
-        }
-        return false;
+      return mAttributes.at(key);
     }
+    return "";
+  }
 
-    bool
-    EntityRuntime::containedInFrustum
-    ()
-    const
-    {
-        auto cam = mSceneRuntime->getCamera();
-        if (cam)
-        {
-            return cam->containedInFrustum(this);
-        }
-        return false;
-    }
+  void
+  EntityRuntime::setAttribute
+  (const string& key, const string& value)
+  {
+    mAttributes[key] = value;
+  }
 
-    bool
-    EntityRuntime::containedInFrustumAfterTransform
-    (const mat4& tx)
-    const
-    {
-        auto cam = mSceneRuntime->getCamera();
-        if (cam)
-        {
-            return cam->containedInFrustumAfterTransform(this,tx);
-        }
-        return false;
-    }
+  const map<string,string>&
+  EntityRuntime::getAttributesMap
+  ()
+  const
+  {
+    return mAttributes;
+  }
 
-    bool
-    EntityRuntime::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, const vec3& tx)
-    const
-    {
-        auto cam = mSceneRuntime->getCamera();
-        if (cam)
-        {
-            return cam->exceedsFrustumPlaneAtTranslation(plane,this,tx);
-        }
-        return false;
-    }
+  string EntityRuntime::getFontText() const
+  {
+    return mFontText;
+  }
 
-    bool
-    EntityRuntime::applyToAll
-    (const function<bool(EntityRuntime*)>& fn)
-    {
-        bool retval = fn(this);
+  void EntityRuntime::setFontText(const string& fontText)
+  {
+    mFontText = fontText;
+  }
 
-        size_t n = mChildRuntimes.size();
-        for (size_t i=0; i<n; i++ )
-        {
-            auto rt = mChildRuntimes.at(i);
-            if (rt)
-            {
-                retval = retval || (rt)->applyToAll(fn);
-            }
-        }
-        return retval;
-    }
+  vec4 EntityRuntime::getFontColor() const
+  {
+    return mFontColor;
+  }
 
-    EntityRuntime*
-    EntityRuntime::applyToAll
-    (const function<EntityRuntime*(EntityRuntime*)>& fn)
-    {
-        EntityRuntime* retval = fn(this);
+  void EntityRuntime::setFontColor(const vec4& fontColor)
+  {
+    mFontColor = fontColor;
+  }
 
-        if (retval != nullptr)
-        {
-            return retval;
-        }
+  float EntityRuntime::getFontScale() const
+  {
+    return mFontScale;
+  }
 
-        size_t n = mChildRuntimes.size();
-        for (size_t i=0; i<n; i++ )
-        {
-            auto rt = mChildRuntimes.at(i);
-            if (rt)
-            {
-                retval = (rt)->applyToAll(fn);
-                if (retval != nullptr)
-                {
-                    return retval;
-                }
-            }
-        }
-        return nullptr;
-    }
+  void EntityRuntime::setFontScale(float fontScale)
+  {
+    mFontScale = fontScale;
+  }
 
-    void
-    EntityRuntime::translateOffsetInitialWithChildren
-    (const vec3& translation)
-    {
-        static mat4 ident(1.0f);
-        applyToAll(function<EntityRuntime*(EntityRuntime*)>([&](EntityRuntime* rt)
-                   {
-                       auto initial = rt->getInitialTransform();
-                       Transform tx = initial;
-                       tx.setTranslation(tx.getTranslation()+translation);
-                       rt->setTransform(tx);
-                       return static_cast<EntityRuntime*>(nullptr);
-                   }));
-    }
+  void EntityRuntime::setScriptError(bool e)
+  {
+    mScriptError = e;
+  }
 
-    shared_ptr<EntityScriptOnInitTask>
-    EntityRuntime::getScriptOnInitTask
-    ()
-    const
-    {
-        return mScriptOnInitTask;
-    }
+  bool EntityRuntime::getScriptError() const
+  {
+    return mScriptError;
+  }
 
-    shared_ptr<EntityScriptOnEventTask>
-    EntityRuntime::getScriptOnEventTask
-    ()
-    const
-    {
-        return mScriptOnEventTask;
-    }
+  void EntityRuntime::setScriptInitialised(bool i)
+  {
+    mScriptInitialised = i;
+  }
 
-    shared_ptr<EntityScriptOnUpdateTask>
-    EntityRuntime::getScriptOnUpdateTask
-    ()
-    const
-    {
-        return mScriptOnUpdateTask;
-    }
+  bool EntityRuntime::getScriptInitialised() const
+  {
+    return mScriptInitialised;
+  }
 
-    shared_ptr<EntityScriptCreateStateTask>
-    EntityRuntime::getScriptCreateStateTask()
-    const
-    {
-        return mScriptCreateStateTask;
-    }
+  // For DiscreteAssetRuntimes
+  void EntityRuntime::pushTasks()
+  {
+    // For DiscreteAssetRuntimes ONLY, SharedAssetRuntimes handled by project
+    LOG_TRACE("EntityRuntime: Pushing tasks of {}", getNameAndUuidString());
+    // Animation
+    if (mAnimationRuntime) mAnimationRuntime->pushTasks();
+    // Physics
+    if (mPhysicsObjectRuntime) mPhysicsObjectRuntime->pushTasks();
+    // Path
+    if (mPathRuntime) mPathRuntime->pushTasks();
+  }
 
-    string
-    EntityRuntime::getAttribute
-    (const string& key)
-    const
-    {
-        if (mAttributes.count(key) > 0)
-        {
-            return mAttributes.at(key);
-        }
-        return "";
-    }
-
-    void
-    EntityRuntime::setAttribute
-    (const string& key, const string& value)
-    {
-        mAttributes[key] = value;
-    }
-
-    const map<string,string>&
-    EntityRuntime::getAttributesMap
-    ()
-    const
-    {
-        return mAttributes;
-    }
-
-    string EntityRuntime::getFontText() const
-    {
-        return mFontText;
-    }
-
-    void EntityRuntime::setFontText(const string& fontText)
-    {
-        mFontText = fontText;
-    }
-
-    vec4 EntityRuntime::getFontColor() const
-    {
-        return mFontColor;
-    }
-
-    void EntityRuntime::setFontColor(const vec4& fontColor)
-    {
-        mFontColor = fontColor;
-    }
-
-    float EntityRuntime::getFontScale() const
-    {
-        return mFontScale;
-    }
-
-    void EntityRuntime::setFontScale(float fontScale)
-    {
-        mFontScale = fontScale;
-    }
-
-    void EntityRuntime::setScriptError(bool e)
-    {
-        mScriptError = e;
-    }
-
-    bool EntityRuntime::getScriptError() const
-    {
-        return mScriptError;
-    }
-
-    void EntityRuntime::setScriptInitialised(bool i)
-    {
-        mScriptInitialised = i;
-    }
-
-    bool EntityRuntime::getScriptInitialised() const
-    {
-        return mScriptInitialised;
-    }
-
-    // For DiscreteAssetRuntimes
-    void EntityRuntime::pushTasks()
-    {
-        // For DiscreteAssetRuntimes ONLY, SharedAssetRuntimes handled by project
-        LOG_TRACE("EntityRuntime: Pushing tasks of {}", getNameAndUuidString());
-		// Animation
-		if (hasAnimationRuntime()) getAnimationRuntime()->pushTasks();
-		// Physics
-		if (hasPhysicsObjectRuntime()) getPhysicsObjectRuntime()->pushTasks();
-		// Path
-		if (hasPathRuntime()) getPathRuntime()->pushTasks();
-    }
-
-    bool EntityRuntime::allRuntimesLoaded()
-    const
-    {
-        bool all_loaded = true;
-       if (hasAnimationRuntime())     all_loaded &= mAnimationRuntime->getLoaded();
-       if (hasAudioRuntime())         all_loaded &= mAudioRuntime->getLoaded();
-       if (hasFontRuntime())          all_loaded &= mFontRuntime->getLoaded();
-       if (hasModelRuntime())         all_loaded &= mModelRuntime->getLoaded();
-       if (hasPathRuntime())          all_loaded &= mPathRuntime->getLoaded();
-       if (hasPhysicsObjectRuntime()) all_loaded &= mPhysicsObjectRuntime->getLoaded();
-       if (hasScriptRuntime())        all_loaded &= mScriptRuntime->getLoaded();
-       if (hasTextureRuntime())       all_loaded &= mTextureRuntime->getLoaded();
-       return  all_loaded;
-    }
+  bool EntityRuntime::allRuntimesLoaded()
+  const
+  {
+    bool all_loaded = true;
+    // Shared
+    if (auto audio = mAudioRuntime.lock()) all_loaded &= audio->getLoaded();
+    if (auto font = mFontRuntime.lock()) all_loaded &= font->getLoaded();
+    if (auto model = mModelRuntime.lock()) all_loaded &= model->getLoaded();
+    if (auto script = mScriptRuntime.lock()) all_loaded &= script->getLoaded();
+    if (auto texture = mTextureRuntime.lock()) all_loaded &= texture->getLoaded();
+    // Discrete
+    if (mAnimationRuntime) all_loaded &= mAnimationRuntime->getLoaded();
+    if (mPathRuntime) all_loaded &= mPathRuntime->getLoaded();
+    if (mPhysicsObjectRuntime) all_loaded &= mPhysicsObjectRuntime->getLoaded();
+    return  all_loaded;
+  }
 }

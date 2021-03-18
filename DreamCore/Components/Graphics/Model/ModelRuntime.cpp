@@ -38,350 +38,383 @@ using std::make_shared;
 
 namespace octronic::dream
 {
-    ModelRuntime::ModelRuntime
-    (ProjectRuntime* runtime, AssetDefinition* definition)
-        : SharedAssetRuntime(runtime, definition),
-          mGlobalInverseTransform(mat4(1.0f))
+  ModelRuntime::ModelRuntime
+  (const weak_ptr<ProjectRuntime>& runtime,
+   const weak_ptr<AssetDefinition>& definition)
+    : SharedAssetRuntime(runtime, definition),
+      mGlobalInverseTransform(mat4(1.0f))
+  {
+    if (auto defLock = mDefinition.lock())
     {
-        LOG_TRACE( "ModelRuntime: Constructing {}", definition->getNameAndUuidString() );
+      LOG_TRACE("ModelRuntime: Constructing {}", defLock->getNameAndUuidString());
+    }
+  }
+
+  ModelRuntime::~ModelRuntime
+  ()
+  {
+    LOG_TRACE( "ModelRuntime: Destroying Object");
+    mMeshes.clear();
+  }
+
+  bool
+  ModelRuntime::loadFromDefinition
+  ()
+  {
+    string path = getAssetFilePath();
+    LOG_INFO( "ModelRuntime: Loading Model - {}" , path);
+
+    mMaterialNames.clear();
+
+    auto model = loadImporter(path);
+
+    if (model == nullptr)
+    {
+      LOG_ERROR("ModelRuntime: Could not get model importer, load failed");
+      return false;
     }
 
-    ModelRuntime::~ModelRuntime
-    ()
+    const aiScene* scene = model->GetScene();
+
+    if(scene == nullptr)
     {
-        LOG_TRACE( "ModelRuntime: Destroying Object");
-        mMeshes.clear();
+      LOG_ERROR("ModelRuntime: Could not get assimp scene from model. Loading failed");
+      return false;
     }
 
-    bool
-    ModelRuntime::loadFromDefinition
-    ()
+    mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
+    mBoundingBox.setToLimits();
+    processNode(scene->mRootNode, scene);
+    mLoaded = true;
+    return mLoaded;
+  }
+
+  void
+  ModelRuntime::processNode
+  (aiNode* node, const aiScene* scene)
+  {
+    // Process all the node's meshes (if any)
+    aiMatrix4x4 rootTx = node->mTransformation;
+    for(GLuint i = 0; i < node->mNumMeshes; i++)
     {
-        string path = getAssetFilePath();
-        LOG_INFO( "ModelRuntime: Loading Model - {}" , path);
+      aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-        mMaterialNames.clear();
-
-        auto model = loadImporter(path);
-
-        if (model == nullptr)
-        {
-            LOG_ERROR("ModelRuntime: Could not get model importer, load failed");
-            return false;
-        }
-
-        const aiScene* scene = model->GetScene();
-
-        if(scene == nullptr)
-        {
-            LOG_ERROR("ModelRuntime: Could not get assimp scene from model. Loading failed");
-            return false;
-        }
-
-        mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
-        mBoundingBox.setToLimits();
-        processNode(scene->mRootNode, scene);
-        mLoaded = true;
-        return mLoaded;
-
+      auto aMesh = processMesh(mesh, scene);
+      if (aMesh != nullptr)
+      {
+        mMeshes.push_back(aMesh);
+      }
     }
-
-    void
-    ModelRuntime::processNode
-    (aiNode* node, const aiScene* scene)
+    // Then do the same for each of its children
+    for(GLuint i = 0; i < node->mNumChildren; i++)
     {
-        // Process all the node's meshes (if any)
-        aiMatrix4x4 rootTx = node->mTransformation;
-        for(GLuint i = 0; i < node->mNumMeshes; i++)
-        {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-
-            auto aMesh = processMesh(mesh, scene);
-            if (aMesh != nullptr)
-            {
-                mMeshes.push_back(aMesh);
-            }
-        }
-        // Then do the same for each of its children
-        for(GLuint i = 0; i < node->mNumChildren; i++)
-        {
-            processNode(node->mChildren[i], scene);
-        }
+      processNode(node->mChildren[i], scene);
     }
+  }
 
-    vector<Vertex>
-    ModelRuntime::processVertexData
-    (aiMesh* mesh)
+  vector<Vertex>
+  ModelRuntime::processVertexData
+  (aiMesh* mesh)
+  {
+    vector<Vertex>  vertices;
+    for(GLuint i = 0; i < mesh->mNumVertices; i++)
     {
-        vector<Vertex>  vertices;
-        for(GLuint i = 0; i < mesh->mNumVertices; i++)
-        {
-            Vertex vertex;
-            // Process vertex positions, normals and texture coordinates
-            // TODO - Optimise with memcpy if speed is REALLLLY an issue here,
-            // otherwise... nah. Profile it first.
+      Vertex vertex;
+      // Process vertex positions, normals and texture coordinates
+      // TODO - Optimise with memcpy if speed is REALLLLY an issue here,
+      // otherwise... nah. Profile it first.
 
-            if (mesh->mVertices)
-            {
-                vertex.Position.x = mesh->mVertices[i].x;
-                vertex.Position.y = mesh->mVertices[i].y;
-                vertex.Position.z = mesh->mVertices[i].z;
-            }
-            else
-            {
-                vertex.Position = glm::vec3(0.0f);
-            }
+      if (mesh->mVertices)
+      {
+        vertex.Position.x = mesh->mVertices[i].x;
+        vertex.Position.y = mesh->mVertices[i].y;
+        vertex.Position.z = mesh->mVertices[i].z;
+      }
+      else
+      {
+        vertex.Position = glm::vec3(0.0f);
+      }
 
-            if(mesh->mTextureCoords[0])
-            {
-                vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
-                vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
-            }
-            else
-            {
-                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            }
+      if (mesh->mNormals)
+      {
+        vertex.Normal.x = mesh->mNormals[i].x;
+        vertex.Normal.y = mesh->mNormals[i].y;
+        vertex.Normal.z = mesh->mNormals[i].z;
+      }
+      else
+      {
+        vertex.Normal = glm::vec3(0.0f);
+      }
 
-            if (mesh->mNormals)
-            {
-                vertex.Normal.x = mesh->mNormals[i].x;
-                vertex.Normal.y = mesh->mNormals[i].y;
-                vertex.Normal.z = mesh->mNormals[i].z;
-            }
-            else
-            {
-                vertex.Normal = glm::vec3(0.0f);
-            }
+      if (mesh->mTangents)
+      {
+        vertex.Tangent.x = mesh->mTangents[i].x;
+        vertex.Tangent.y = mesh->mTangents[i].y;
+        vertex.Tangent.z = mesh->mTangents[i].z;
+      }
+      else
+      {
+        vertex.Tangent = glm::vec3(0.0f);
+      }
 
-            vertices.push_back(vertex);
-        }
-        return vertices;
+      if (mesh->mBitangents)
+      {
+        vertex.Bitangent.x = mesh->mBitangents[i].x;
+        vertex.Bitangent.y = mesh->mBitangents[i].y;
+        vertex.Bitangent.z = mesh->mBitangents[i].z;
+      }
+      else
+      {
+        vertex.Bitangent = glm::vec3(0.0f);
+      }
+
+      if(mesh->mTextureCoords[0])
+      {
+        vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
+        vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
+      }
+      else
+      {
+        vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+      }
+
+      vertices.push_back(vertex);
     }
+    return vertices;
+  }
 
-    vector<GLuint>
-    ModelRuntime::processIndexData
-    (aiMesh* mesh)
+  vector<GLuint>
+  ModelRuntime::processIndexData
+  (aiMesh* mesh)
+  {
+    vector<GLuint> indices;
+    // Process indices
+    for(unsigned int face_index = 0; face_index < mesh->mNumFaces; face_index++)
     {
-        vector<GLuint> indices;
-        // Process indices
-        for(unsigned int face_index = 0; face_index < mesh->mNumFaces; face_index++)
-        {
-            aiFace face = mesh->mFaces[face_index];
-            for(unsigned int indices_index = 0; indices_index < face.mNumIndices; indices_index++)
-            {
-                indices.push_back(face.mIndices[indices_index]);
-            }
-        }
-        return indices;
-
+      aiFace face = mesh->mFaces[face_index];
+      for(unsigned int indices_index = 0; indices_index < face.mNumIndices; indices_index++)
+      {
+        indices.push_back(face.mIndices[indices_index]);
+      }
     }
+    return indices;
 
-    shared_ptr<ModelMesh>
-    ModelRuntime::processMesh
-    (aiMesh* mesh, const aiScene* scene)
+  }
+
+  shared_ptr<ModelMesh>
+  ModelRuntime::processMesh
+  (aiMesh* mesh, const aiScene* scene)
+  {
+    vector<Vertex>  vertices = processVertexData(mesh);
+    vector<GLuint>  indices = processIndexData(mesh);
+
+    // Load any new materials
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+    aiString name;
+    aiGetMaterialString(material, AI_MATKEY_NAME, &name);
+    mMaterialNames.push_back(string(name.C_Str()));
+
+    if (auto prLock = mProjectRuntime.lock())
     {
-        vector<Vertex>  vertices = processVertexData(mesh);
-        vector<GLuint>  indices = processIndexData(mesh);
-
-        // Load any new materials
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
-        aiString name;
-        aiGetMaterialString(material, AI_MATKEY_NAME, &name);
-        mMaterialNames.push_back(string(name.C_Str()));
-
-        auto materialCache = mProjectRuntimeHandle->getMaterialCache();
-        if(materialCache != nullptr)
+      if (auto materialCache = prLock->getMaterialCache().lock())
+      {
+        if (auto defLock = mDefinition.lock())
         {
-            auto materialName = string(name.C_Str());
-            auto modelDef = static_cast<ModelDefinition*>(mDefinitionHandle);
-            auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
-            auto material = materialCache->getRuntimeHandle(materialUuid);
-            if (material == nullptr)
-            {
-                LOG_ERROR( "ModelRuntime: No material for mesh {} in model {}. Cannot create mesh with null material.",
-                            mesh->mName.C_Str(), getNameAndUuidString());
-                return nullptr;
-            }
+          auto materialName = string(name.C_Str());
+          auto modelDef = static_pointer_cast<ModelDefinition>(defLock);
+          auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
+          if (auto material = materialCache->getRuntime(materialUuid).lock())
+          {
+
             LOG_DEBUG( "ModelRuntime: Using Material {}" , material->getName());
             BoundingBox bb = generateBoundingBox(mesh);
             mBoundingBox.integrate(bb);
 
-            auto aMesh = make_shared<ModelMesh>(this, string(mesh->mName.C_Str()),
-                                                vertices, indices, material, bb);
-            material->addMesh(aMesh.get());
+            auto aMesh = make_shared<ModelMesh>(
+                  static_pointer_cast<ModelRuntime>(shared_from_this()),
+                  string(mesh->mName.C_Str()),
+                  vertices, indices, material, bb);
+            aMesh->initTasks();
+            material->addMesh(aMesh);
             material->debug();
             return aMesh;
+          }
         }
-        else
+      }
+    }
+    return nullptr;
+  }
+
+  BoundingBox
+  ModelRuntime::getBoundingBox
+  ()
+  const
+  {
+    return mBoundingBox;
+  }
+
+  void
+  ModelRuntime::setBoundingBox
+  (const BoundingBox& bb)
+  {
+    mBoundingBox = bb;
+  }
+
+  vector<string>
+  ModelRuntime::getMaterialNames
+  ()
+  const
+  {
+    return mMaterialNames;
+  }
+
+  vector<weak_ptr<ModelMesh>>
+  ModelRuntime::getMeshes
+  ()
+  const
+  {
+    vector<weak_ptr<ModelMesh>> ret;
+    ret.insert(ret.begin(), mMeshes.begin(), mMeshes.end());
+    return ret;
+  }
+
+  shared_ptr<Importer>
+  ModelRuntime::loadImporter
+  (string path)
+  {
+    LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
+
+    if (auto prLock = mProjectRuntime.lock())
+    {
+      if (auto smLock = prLock->getStorageManager().lock())
+      {
+        if (auto modelFile = smLock->openFile(path).lock())
         {
-            LOG_CRITICAL("ModelRuntime: Material Cache is nullptr");
-        }
 
-        return nullptr;
-    }
+          if (modelFile->exists())
+          {
+            if (modelFile->readBinary())
+            {
+              auto importer = make_shared<Importer>();
+              auto binData = modelFile->getBinaryData();
+              importer->ReadFileFromMemory(&binData[0], binData.size(),
+                  aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
-    BoundingBox
-    ModelRuntime::getBoundingBox
-    ()
-    const
-    {
-        return mBoundingBox;
-    }
+              smLock->closeFile(modelFile);
 
-    void
-    ModelRuntime::setBoundingBox
-    (const BoundingBox& bb)
-    {
-        mBoundingBox = bb;
-    }
+              const aiScene* scene = importer->GetScene();
 
-    vector<string>
-    ModelRuntime::getMaterialNames
-    ()
-    const
-    {
-        return mMaterialNames;
-    }
+              if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+              {
+                LOG_ERROR( "ModelRuntime: Error {}" ,importer->GetErrorString() );
+                return nullptr;
+              }
 
-    vector<shared_ptr<ModelMesh>>*
-    ModelRuntime::getMeshes
-    ()
-    {
-        return &mMeshes;
-    }
-
-    shared_ptr<Importer>
-    ModelRuntime::loadImporter
-    (string path)
-    {
-        LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
-
-        StorageManager* fm = mProjectRuntimeHandle->getStorageManager();
-        File* modelFile = fm->openFile(path);
-
-        if (modelFile == nullptr)
-        {
-            LOG_ERROR("ModelRuntime: Could not open Model file");
-            return nullptr;
-        }
-
-        if (!modelFile->exists())
-        {
-            LOG_ERROR("ModelRuntime: Model file does not exist");
-            return nullptr;
-        }
-
-        if (!modelFile->readBinary())
-        {
+              return importer;
+            }
             LOG_ERROR("ModelRuntime: Error reading model file");
-            fm->closeFile(modelFile);
-            modelFile = nullptr;
-            return nullptr;
+            smLock->closeFile(modelFile);
+          }
         }
+      }
+    }
+    return nullptr;
+  }
 
-        auto importer = make_shared<Importer>();
-        importer->ReadFileFromMemory(modelFile->getBinaryData(),
-    	    modelFile->getBinaryDataSize(),
-    	    aiProcess_Triangulate | aiProcess_FlipUVs);
+  BoundingBox
+  ModelRuntime::generateBoundingBox
+  (aiMesh* mesh)
+  const
+  {
+    LOG_DEBUG( "ModelRuntime: Updating bounding box");
 
-        fm->closeFile(modelFile);
-        modelFile = nullptr;
+    BoundingBox bb;
+    vec3 min, max;
+    min = bb.getMinimum();
+    max = bb.getMaximum();
 
-        const aiScene* scene = importer->GetScene();
-        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            LOG_ERROR( "ModelRuntime: Error {}" ,importer->GetErrorString() );
-            return nullptr;
-        }
+    for (unsigned int i=0; i < mesh->mNumVertices; i++)
+    {
+      aiVector3D vertex = mesh->mVertices[i];
 
-        return importer;
+      // Maximum
+      if (max.x < vertex.x) max.x = vertex.x;
+      if (max.y < vertex.y) max.y = vertex.y;
+      if (max.z < vertex.z) max.z = vertex.z;
+      // Maximum
+      if (min.x > vertex.x) min.x = vertex.x;
+      if (min.y > vertex.y) min.y = vertex.y;
+      if (min.z > vertex.z) min.z = vertex.z;
     }
 
-    BoundingBox
-    ModelRuntime::generateBoundingBox
-    (aiMesh* mesh)
-    const
+    float maxBound;
+    maxBound = (max.x > max.y ? max.x : max.y);
+    maxBound = (maxBound > max.z ? maxBound : max.z);
+    bb.setMinimum(min);
+    bb.setMaximum(max);
+    bb.setMaxDimension(maxBound);
+    return bb;
+  }
+
+  mat4
+  ModelRuntime::getGlobalInverseTransform
+  () const
+  {
+    return mGlobalInverseTransform;
+  }
+
+  void
+  ModelRuntime::setGlobalInverseTransform
+  (const mat4& globalInverseTransform)
+  {
+    mGlobalInverseTransform = globalInverseTransform;
+  }
+
+  glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
+  (const aiMatrix4x4& from)
+  const
+  {
+    glm::mat4 to;
+    to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
+    to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
+    to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
+    to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
+    return to;
+  }
+
+  void ModelRuntime::pushTasks()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        LOG_DEBUG( "ModelRuntime: Updating bounding box");
-
-        BoundingBox bb;
-        vec3 min, max;
-		min = bb.getMinimum();
-		max = bb.getMaximum();
-
-        for (unsigned int i=0; i < mesh->mNumVertices; i++)
-        {
-            aiVector3D vertex = mesh->mVertices[i];
-
-            // Maximum
-            if (max.x < vertex.x) max.x = vertex.x;
-            if (max.y < vertex.y) max.y = vertex.y;
-            if (max.z < vertex.z) max.z = vertex.z;
-            // Maximum
-            if (min.x > vertex.x) min.x = vertex.x;
-            if (min.y > vertex.y) min.y = vertex.y;
-            if (min.z > vertex.z) min.z = vertex.z;
-        }
-
-        float maxBound;
-        maxBound = (max.x > max.y ? max.x : max.y);
-        maxBound = (maxBound > max.z ? maxBound : max.z);
-        bb.setMinimum(min);
-        bb.setMaximum(max);
-        bb.setMaxDimension(maxBound);
-        return bb;
-    }
-
-    mat4 ModelRuntime::getGlobalInverseTransform() const
-    {
-        return mGlobalInverseTransform;
-    }
-
-    void ModelRuntime::setGlobalInverseTransform(const mat4& globalInverseTransform)
-    {
-        mGlobalInverseTransform = globalInverseTransform;
-    }
-
-    glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
-    (const aiMatrix4x4& from)
-    const
-    {
-        glm::mat4 to;
-        to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
-        to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
-        to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
-        to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
-        return to;
-    }
-
-    void ModelRuntime::pushTasks()
-    {
-        auto projectTaskQueue = mProjectRuntimeHandle->getTaskQueue();
-
+      if (auto taskQueue = prLock->getTaskQueue().lock())
+      {
         if (mReloadFlag)
         {
-            mGlobalInverseTransform = mat4(1.f);
-            mMeshes.clear();
-            mMaterialNames.clear();
-            mLoaded = false;
-            mLoadError = false;
-            mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
-            mReloadFlag = false;
+          mGlobalInverseTransform = mat4(1.f);
+          mMeshes.clear();
+          mMaterialNames.clear();
+          mLoaded = false;
+          mLoadError = false;
+          mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+          mReloadFlag = false;
         }
-		else if (!mLoaded && !mLoadError)
+        else if (!mLoaded && !mLoadError)
         {
-            if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-            {
-               projectTaskQueue->pushTask(mLoadFromDefinitionTask);
-            }
+          if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+          {
+            taskQueue->pushTask(mLoadFromDefinitionTask);
+          }
         }
         else if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
         {
-            for (auto mesh : mMeshes)
-            {
-                mesh->pushTasks();
-            }
+          for (auto mesh : mMeshes)
+          {
+            mesh->pushTasks();
+          }
         }
+      }
     }
+  }
+
 }

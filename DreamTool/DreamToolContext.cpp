@@ -13,7 +13,7 @@ namespace octronic::dream::tool
           mPropertiesWindow(this),
           mProjectBrowser(this),
           mAssetBrowser(this),
-          mScriptDebugWindow(this),
+          mScriptDebugWindow(make_shared<ScriptDebugWindow>(this)),
           mSceneStateWindow(this),
           mToolPropertiesWindow(this),
           mMenuBar(this),
@@ -21,7 +21,7 @@ namespace octronic::dream::tool
           mGamepadStateWindow(this),
           mCacheContentWindow(this),
           mTaskManagerWindow(this),
-          mGlPreviewWindowComponent(this),
+          mGlPreviewWindowComponent(make_shared<GLPreviewWindowComponent>(this)),
           // GL
           mGrid(this),
           mLightViewer(this),
@@ -29,12 +29,13 @@ namespace octronic::dream::tool
           mCursor(this),
           mPathViewer(this),
           mAnimationViewer(this),
-          mPhysicsDebugDrawer(this),
+          mPhysicsDebugDrawer(make_shared<PhysicsDebugDrawer>(this)),
           // Models
-          mProjectDirectory(&mStorageManager),
+          mStorageManager(make_shared<StorageManager>()),
           mModelDefinitionBatchImporter(this),
           mTemplatesModel(this),
           mPreferencesModel(this),
+          mAudioComponent(make_shared<OpenALAudioComponent>()),
           // Args
           mCommandArgumentsCount(_argc),
           mCommandArgumentsVector(_argv),
@@ -43,6 +44,8 @@ namespace octronic::dream::tool
           mProjectBaseDirectory(nullptr)
     {
         LOG_TRACE("DTContext: Constructing");
+
+        mProjectDirectory = make_shared<ProjectDirectory>(mStorageManager);
         NFD_Init();
     }
 
@@ -62,16 +65,16 @@ namespace octronic::dream::tool
             return false;
         }
 
-        ScriptComponent::AddPrintListener(&mScriptDebugWindow);
+        ScriptComponent::AddPrintListener(mScriptDebugWindow);
         FontRuntime::InitFreetypeLibrary();
         mPreferencesModel.load();
-        mAudioComponent.init();
+        mAudioComponent->init();
 
         // ImGui Widgets
         mWindow.addImGuiWidget(&mPropertiesWindow);
         mWindow.addImGuiWidget(&mProjectBrowser);
         mWindow.addImGuiWidget(&mAssetBrowser);
-        mWindow.addImGuiWidget(&mScriptDebugWindow);
+        mWindow.addImGuiWidget(mScriptDebugWindow.get());
         mWindow.addImGuiWidget(&mSceneStateWindow);
         mWindow.addImGuiWidget(&mMenuBar);
         mWindow.addImGuiWidget(&mToolPropertiesWindow);
@@ -79,8 +82,8 @@ namespace octronic::dream::tool
         mWindow.addImGuiWidget(&mGamepadStateWindow);
         mWindow.addImGuiWidget(&mCacheContentWindow);
         mWindow.addImGuiWidget(&mTaskManagerWindow);
-        mGlPreviewWindowComponent.init();
-        mWindow.addImGuiWidget(&mGlPreviewWindowComponent);
+        mGlPreviewWindowComponent->init();
+        mWindow.addImGuiWidget(mGlPreviewWindowComponent.get());
 
         // GL Widgets
 
@@ -95,9 +98,9 @@ namespace octronic::dream::tool
         mSelectionHighlighter.init();
         mWindow.addGLWidget(&mSelectionHighlighter);
 
-        mPhysicsDebugDrawer.init();
-        mPhysicsDebugDrawer.setVisible(true);
-        mWindow.addGLWidget(&mPhysicsDebugDrawer);
+        mPhysicsDebugDrawer->init();
+        mPhysicsDebugDrawer->setVisible(true);
+        mWindow.addGLWidget(mPhysicsDebugDrawer.get());
 
         mLightViewer.init();
         mLightViewer.setVisible(true);
@@ -130,15 +133,15 @@ namespace octronic::dream::tool
 
             if (mProject)
             {
-                ProjectRuntime* projectRuntime = mProject->getRuntime();
+                auto projectRuntime = mProject->getRuntime();
                 if (projectRuntime)
                 {
                     projectRuntime->step();
-                    mGlPreviewWindowComponent.updateWindow();
+                    mGlPreviewWindowComponent->updateWindow();
                 }
             }
 
-            mGlPreviewWindowComponent.bindFrameBuffer();
+            mGlPreviewWindowComponent->bindFrameBuffer();
             mWindow.drawGLWidgets();
 
             // Draw ImGui
@@ -185,7 +188,7 @@ namespace octronic::dream::tool
 
     void
     DreamToolContext::handleEditorInput
-    (SceneRuntime* sr)
+    (const shared_ptr<SceneRuntime>& sr)
     {
         ImGuiIO& io = ImGui::GetIO();
 
@@ -222,7 +225,7 @@ namespace octronic::dream::tool
 
     void
     DreamToolContext::handleSceneInput
-    (SceneRuntime* sRunt)
+    (const shared_ptr<SceneRuntime>& sRunt)
     {
         ImGuiIO& io = ImGui::GetIO();
         auto pRunt = mProject->getRuntime();
@@ -231,16 +234,16 @@ namespace octronic::dream::tool
             auto inputComp = pRunt->getInputComponent();
             if (inputComp)
             {
-                MouseState ms = inputComp->getMouseState();
-                KeyboardState ks = inputComp->getKeyboardState();
-                JoystickState js = inputComp->getJoystickState();
+                auto ms = inputComp->getMouseState();
+                auto ks = inputComp->getKeyboardState();
+                auto js = inputComp->getJoystickState();
 
                 // Mouse
-                ms.setButtonsPressed(&io.MouseDown[0], 5);
-                ms.setPosX(io.MousePos.x);
-                ms.setPosY(io.MousePos.y);
-                ms.setScrollX(DreamToolWindow::MouseWheelX);
-                ms.setScrollY(DreamToolWindow::MouseWheelY);
+                ms->setButtonsPressed(&io.MouseDown[0], 5);
+                ms->setPosX(io.MousePos.x);
+                ms->setPosY(io.MousePos.y);
+                ms->setScrollX(DreamToolWindow::MouseWheelX);
+                ms->setScrollY(DreamToolWindow::MouseWheelY);
                 DreamToolWindow::MouseWheelX = 0.f;
                 DreamToolWindow::MouseWheelY = 0.f;
 
@@ -251,7 +254,7 @@ namespace octronic::dream::tool
                 }
 
                 // Keys
-                ks.setKeysPressed(&io.KeysDown[0], 512);
+                ks->setKeysPressed(&io.KeysDown[0], 512);
 
                 // Joystick
                 int jsCount = 0;
@@ -260,27 +263,27 @@ namespace octronic::dream::tool
                     if (glfwJoystickPresent(id))
                     {
                         jsCount++;
-                        js.setName(glfwGetJoystickName(id));
+                        js->setName(glfwGetJoystickName(id));
                         int numAxis, numButtons;
                         const float* axisData = glfwGetJoystickAxes(id,&numAxis);
                         const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
                         if (axisData != nullptr)
                         {
-                            js.setAxisCount(numAxis);
-                            memcpy((void*)js.getAxisDataPointer(),axisData,sizeof(float)*numAxis);
+                            js->setAxisCount(numAxis);
+                            memcpy((void*)js->getAxisDataPointer(),axisData,sizeof(float)*numAxis);
                         }
                         else
                         {
-                            js.setAxisCount(0);
+                            js->setAxisCount(0);
                         }
                         if (buttonData != nullptr)
                         {
-                            js.setButtonCount(numButtons);
-                            memcpy((void*)js.getButtonDataPointer(),buttonData,sizeof(unsigned char)*numButtons);
+                            js->setButtonCount(numButtons);
+                            memcpy((void*)js->getButtonDataPointer(),buttonData,sizeof(unsigned char)*numButtons);
                         }
                         else
                         {
-                            js.setButtonCount(0);
+                            js->setButtonCount(0);
                         }
                     }
                 }
@@ -298,13 +301,13 @@ namespace octronic::dream::tool
     ()
     {
         mPropertiesWindow.clearPropertyTargets();
-        mProjectDirectory.closeProject();
-        mProject = nullptr;
+        mProjectDirectory->closeProject();
+        mProject.reset();
         if (mProjectBaseDirectory)
         {
-            mStorageManager.closeDirectory(mProjectBaseDirectory);
+            mStorageManager->closeDirectory(mProjectBaseDirectory);
         }
-        mProjectBaseDirectory = nullptr;
+        mProjectBaseDirectory.reset();
     }
 
     bool
@@ -315,12 +318,12 @@ namespace octronic::dream::tool
 
         LOG_DEBUG("DTContext: Opening project {}",dir);
         mLastDirectory = dir;
-        mProjectBaseDirectory = mStorageManager.openDirectory(dir);
-        mProject = mProjectDirectory.openFromDirectory(mProjectBaseDirectory);
+        mProjectBaseDirectory = mStorageManager->openDirectory(dir);
+        mProject = mProjectDirectory->openFromDirectory(mProjectBaseDirectory);
         if(mProject)
         {
-            mProject->setAudioComponent(&mAudioComponent);
-            mProject->setWindowComponent(&mGlPreviewWindowComponent);
+            mProject->setAudioComponent(mAudioComponent);
+            mProject->setWindowComponent(mGlPreviewWindowComponent);
             mProject->createProjectRuntime();
             stringstream ss;
             ss  << "Opened Project: "
@@ -339,12 +342,12 @@ namespace octronic::dream::tool
 
         mLastDirectory = dir;
         closeProject();
-        mProjectBaseDirectory = mStorageManager.openDirectory(dir);
-        mProject = mProjectDirectory.newProject(mProjectBaseDirectory);
+        mProjectBaseDirectory = mStorageManager->openDirectory(dir);
+        mProject = mProjectDirectory->newProject(mProjectBaseDirectory);
 
         if(mProject)
         {
-            mProject->setWindowComponent(&mGlPreviewWindowComponent);
+            mProject->setWindowComponent(mGlPreviewWindowComponent);
             mProject->createProjectRuntime();
             stringstream ss;
             ss  << "Created Project in: "
@@ -368,8 +371,9 @@ namespace octronic::dream::tool
         return &mWindow;
     }
 
-    octronic::dream::Project*
+    shared_ptr<Project>
     DreamToolContext::getProject()
+    const
     {
         return mProject;
     }
@@ -393,10 +397,11 @@ namespace octronic::dream::tool
     }
 
 
-    ScriptDebugWindow*
+    shared_ptr<ScriptDebugWindow>
     DreamToolContext::getScriptDebugWindow()
+    const
     {
-        return &mScriptDebugWindow;
+        return mScriptDebugWindow;
     }
 
     SceneStateWindow*
@@ -441,10 +446,11 @@ namespace octronic::dream::tool
         return &mTaskManagerWindow;
     }
 
-    GLPreviewWindowComponent*
+    shared_ptr<GLPreviewWindowComponent>
     DreamToolContext::getGlPreviewWindowComponent()
+    const
     {
-        return &mGlPreviewWindowComponent;
+        return mGlPreviewWindowComponent;
     }
 
     Grid*
@@ -502,16 +508,18 @@ namespace octronic::dream::tool
         return &mModelDefinitionBatchImporter;
     }
 
-    ProjectDirectory*
+    shared_ptr<ProjectDirectory>
     DreamToolContext::getProjectDirectory()
+    const
     {
-        return &mProjectDirectory;
+        return mProjectDirectory;
     }
 
-    StorageManager*
+    shared_ptr<StorageManager>
     DreamToolContext::getStorageManager()
+    const
     {
-        return &mStorageManager;
+        return mStorageManager;
     }
 
     int
@@ -564,7 +572,9 @@ namespace octronic::dream::tool
     }
 
 
-    bool DreamToolContext::openInExternalEditor(AssetDefinition* definition, const string& format)
+    bool
+    DreamToolContext::openInExternalEditor
+    (const shared_ptr<AssetDefinition>& definition, const string& format)
     {
         if (mPreferencesModel.getExternalEditorPath().empty())
         {
@@ -572,8 +582,8 @@ namespace octronic::dream::tool
             return false;
         }
         string filePath = getProjectDirectory()->getAssetAbsolutePath(definition,format);
-        StorageManager* sm = getStorageManager();
-        File* targetFile = sm->openFile(filePath);
+        auto sm = getStorageManager();
+        auto targetFile = sm->openFile(filePath);
         if (!targetFile->exists())
         {
             LOG_DEBUG("DTContext: Attempted to open file that does not exist {}", targetFile->getPath());

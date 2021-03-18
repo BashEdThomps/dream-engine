@@ -10,10 +10,12 @@ namespace octronic::dream
 	class Joystick2DPlaneNavigation : public JoystickNavigation
     {
     public:
-        Joystick2DPlaneNavigation(JoystickState* state, JoystickMapping* mapping);
+        Joystick2DPlaneNavigation(
+                const weak_ptr<JoystickState>& state,
+                const weak_ptr<JoystickMapping>& mapping);
         ~Joystick2DPlaneNavigation();
 
-        void update(SceneRuntime* rt) override;
+        void update(const weak_ptr<SceneRuntime>& rt) override;
         void show();
         float getRightVelocity() const;
         float getLeftTheta() const;

@@ -26,7 +26,8 @@ using nlohmann::json;
 namespace octronic::dream
 {
     ModelDefinition::ModelDefinition
-    (ProjectDefinition* pd, const json &js)
+    (const shared_ptr<ProjectDefinition>& pd,
+     const json &js)
         : AssetDefinition("ModelDefinition",pd,js)
     {
         LOG_TRACE("ModelDefinition: Constructing {}", getNameAndUuidString());
@@ -69,15 +70,16 @@ namespace octronic::dream
         return true;
     }
 
-    json*
+    json
     ModelDefinition::getModelMaterials
     ()
+    const
     {
         if(mJson.find(Constants::ASSET_ATTR_MODEL_MATERIAL_LIST) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST] = json::array();
+            return json::array();
         }
-        return &mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
+        return mJson[Constants::ASSET_ATTR_MODEL_MATERIAL_LIST];
     }
 
     void
@@ -123,12 +125,12 @@ namespace octronic::dream
                 {
                     if (!nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL].is_number())
                     {
-                        nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = 0;
+                        nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL] = Uuid::INVALID;
                     }
                     return nextShader[Constants::ASSET_ATTR_MODEL_DREAM_MATERIAL];
                 }
             }
         }
-        return 0;
+        return Uuid::INVALID;
     }
 }

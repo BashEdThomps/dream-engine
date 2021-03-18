@@ -5,7 +5,11 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
+using std::shared_ptr;
+using std::weak_ptr;
+using std::enable_shared_from_this;
 using std::map;
 using std::vector;
 using std::string;
@@ -23,34 +27,34 @@ namespace octronic::dream
      * *** A DestructionTask MAY implement some logic, as the parent
      *     object may have been destroyed.
      */
-    class Task
+    class Task : public enable_shared_from_this<Task>
     {
     public:
         static int TaskIDGenerator;
         const static int INVALID_THREAD_ID;
         const static int INVALID_TASK_ID;
 
-        Task(ProjectRuntime* pr,  const string& taskName, bool persistent = false);
+        Task(const weak_ptr<ProjectRuntime>& pr,  const string& taskName);
         virtual ~Task();
 
         virtual void execute() = 0;
 
         int getID() const;
         string getName() const;
-        virtual string getNameAndIDString();
+        virtual string getNameAndIDString() const;
 
         void clearState();
-        void setState(TaskState s);
+        void setState(const TaskState& s);
         TaskState getState() const;
         bool hasState(const TaskState& s) const;
 
-        bool operator==(Task& other);
+        bool operator==(Task& other) const;
 
     public: // Statics
         static int taskIDGenerator();
 
     protected:
-		ProjectRuntime* mProjectRuntimeHandle;
+		weak_ptr<ProjectRuntime> mProjectRuntime;
 
     private:
         int mID;
@@ -70,6 +74,6 @@ namespace octronic::dream
     class DestructionTask : public Task
     {
     public:
-        DestructionTask(ProjectRuntime* pr, const string& taskName);
+        DestructionTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
     };
 }

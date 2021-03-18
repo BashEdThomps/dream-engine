@@ -19,7 +19,9 @@
 #include "RuntimeTasks.h"
 
 using std::string;
+using std::weak_ptr;
 using std::shared_ptr;
+using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
@@ -29,14 +31,14 @@ namespace octronic::dream
      * @brief Abstract class that contains Runtime data for DreamObjects that
      * are used to implement a Project.
      */
-    class Runtime
+    class Runtime : public enable_shared_from_this<Runtime>
     {
     public:
         /**
          * @brief Default Constructor
          * @param def Definition from which the Runtime was instanciated.
          */
-        Runtime(Definition* def);
+        Runtime(const weak_ptr<Definition>& def);
 
         /**
          * @brief Default destructor.
@@ -67,7 +69,7 @@ namespace octronic::dream
 
         bool hasName(const string& name) const;
 
-        string getNameAndUuidString();
+        string getNameAndUuidString() const;
 
         /**
          * @brief Use information from the give Definition to create the Runtime
@@ -79,15 +81,14 @@ namespace octronic::dream
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        Definition* getDefinitionHandle() const;
+        weak_ptr<Definition> getDefinition() const;
 
-        shared_ptr<RuntimeLoadFromDefinitionTask> getLoadFromDefinitionTask() const;
 
     protected:
         /**
          * @brief Definition from which this runtime was instanciated.
          */
-        Definition* mDefinitionHandle;
+        weak_ptr<Definition> mDefinition;
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
@@ -96,10 +97,5 @@ namespace octronic::dream
          * @brief Name of this Runtime, given by it's Definition.
          */
         string mName;
-
-        /**
-          * @brief Task to inflate the Runtime from it's definition
-          */
-        shared_ptr<RuntimeLoadFromDefinitionTask> mLoadFromDefinitionTask;
     };
 }

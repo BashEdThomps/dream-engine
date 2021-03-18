@@ -28,394 +28,395 @@
 using std::regex;
 using std::cmatch;
 using std::pair;
-
+using std::make_shared;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-    EntityDefinition::EntityDefinition
-    (EntityDefinition* parent,SceneDefinition* sceneDefinition,
-     const json &jsonData, bool randomUuid)
-        : Definition("EntityDefinition",jsonData),
-          mParentEntity(parent),
-          mSceneDefinition(sceneDefinition)
+  EntityDefinition::EntityDefinition
+  (const weak_ptr<EntityDefinition>& parent,
+   const weak_ptr<SceneDefinition>& sceneDefinition,
+   const json &jsonData, bool randomUuid)
+    : Definition("EntityDefinition",jsonData),
+      mParentEntity(parent),
+      mSceneDefinition(sceneDefinition)
+  {
+    if (randomUuid)
     {
-        if (randomUuid)
+      mJson[Constants::UUID] = Uuid::generateUuid();
+      LOG_TRACE( "EntityDefinition: With new UUID",getNameAndUuidString());
+    }
+    LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
+    mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
+  }
+
+  EntityDefinition::~EntityDefinition
+  ()
+  {
+    LOG_TRACE( "EntityDefinition: Destructing {}", getNameAndUuidString() );
+    deleteChildEntityDefinitions();
+  }
+
+  int
+  EntityDefinition::getChildCount
+  ()
+  const
+  {
+    return mChildDefinitions.size();
+  }
+
+  Transform
+  EntityDefinition::getTransform
+  ()
+  const
+  {
+    return Transform(mJson[Constants::TRANSFORM]);
+  }
+
+  void
+  EntityDefinition::setTransform
+  (const Transform& tform)
+  {
+    mJson[Constants::TRANSFORM] = tform.toJson();
+  }
+
+  void
+  EntityDefinition::loadChildEntityDefinitions
+  (bool randomUuid)
+  {
+    json childrenArray = mJson[Constants::ENTITY_CHILDREN];
+    if (!childrenArray.is_null() && childrenArray.is_array())
+    {
+      for (const json& childDefinition : childrenArray)
+      {
+        auto entityDefinition = make_shared<EntityDefinition>(static_pointer_cast<EntityDefinition>(shared_from_this()),mSceneDefinition,childDefinition,randomUuid);
+        entityDefinition->loadChildEntityDefinitions(randomUuid);
+        mChildDefinitions.push_back(entityDefinition);
+      }
+    }
+  }
+
+  void
+  EntityDefinition::deleteChildEntityDefinitions
+  ()
+  {
+    mChildDefinitions.clear();
+  }
+
+  vector<weak_ptr<EntityDefinition>>
+  EntityDefinition::getChildDefinitionsVector
+  ()
+  const
+  {
+    vector<weak_ptr<EntityDefinition>> v;
+    v.insert(v.begin(), mChildDefinitions.begin(), mChildDefinitions.end());
+    return v;
+  }
+
+  vector<string>
+  EntityDefinition::getChildNamesVector
+  ()
+  const
+  {
+    vector<string> names;
+    names.push_back(getName());
+    for (auto child : mChildDefinitions)
+    {
+      auto childNames = child->getChildNamesVector();
+      names.insert(names.end(), childNames.begin(), childNames.end());
+    }
+    return names;
+  }
+
+  void
+  EntityDefinition::addChildDefinition
+  (const shared_ptr<EntityDefinition>& child)
+  {
+    mChildDefinitions.push_back(child);
+  }
+
+  void
+  EntityDefinition::adoptChildDefinition
+  (const shared_ptr<EntityDefinition>& child)
+  {
+    child->setParentEntity(static_pointer_cast<EntityDefinition>(shared_from_this()));
+    mChildDefinitions.push_back(child);
+  }
+
+  void
+  EntityDefinition::removeChildDefinition
+  (const weak_ptr<EntityDefinition>& child)
+  {
+    if (auto childLock = child.lock())
+    {
+      std::remove_if(mChildDefinitions.begin(),
+                     mChildDefinitions.end(),
+                     [&](const shared_ptr<EntityDefinition>& nextChild)
+      {
+        return nextChild == childLock;
+      });
+    }
+  }
+
+  shared_ptr<EntityDefinition>
+  EntityDefinition::createNewChildDefinition
+  (const json& fromJson)
+  {
+    LOG_DEBUG("EntityDefinition: Creating new child scene object");
+
+    json defJson;
+
+    if (fromJson == nullptr)
+    {
+      LOG_DEBUG("EntityDefinition: from scratch");
+      defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
+
+      Transform transform;
+      defJson[Constants::TRANSFORM] = transform.toJson();
+    }
+    else
+    {
+      LOG_DEBUG("EntityDefinition: from template copy");
+      defJson = json::parse(fromJson.dump());
+    }
+
+    auto entityDefinition = make_shared<EntityDefinition>(
+          static_pointer_cast<EntityDefinition>(shared_from_this()),
+          mSceneDefinition,
+          defJson, true);
+    entityDefinition->loadChildEntityDefinitions(true);
+    addChildDefinition(entityDefinition);
+
+    return entityDefinition;
+  }
+
+
+  weak_ptr<SceneDefinition>
+  EntityDefinition::getSceneDefinition
+  ()
+  const
+  {
+    return mSceneDefinition;
+  }
+
+  json
+  EntityDefinition::toJson
+  ()
+  {
+    mJson[Constants::ENTITY_CHILDREN] = json::array();
+    for (auto entityDefinition : mChildDefinitions)
+    {
+      mJson[Constants::ENTITY_CHILDREN].push_back(entityDefinition->toJson());
+    }
+    return mJson;
+  }
+
+  void EntityDefinition::setIsTemplate(bool d)
+  {
+    mJson[Constants::ENTITY_TEMPLATE] = d;
+  }
+
+  bool EntityDefinition::getIsTemplate()
+  const
+  {
+    if (mJson.find(Constants::ENTITY_TEMPLATE) == mJson.end())
+    {
+      return false;
+    }
+    return mJson[Constants::ENTITY_TEMPLATE];
+  }
+
+  weak_ptr<EntityDefinition>
+  EntityDefinition::getParentEntity
+  ()
+  const
+  {
+    return mParentEntity;
+  }
+
+  shared_ptr<EntityDefinition>
+  EntityDefinition::duplicate
+  ()
+  {
+    // Nothing to assign duplicate to
+    if (auto parentLock = mParentEntity.lock())
+    {
+
+      auto newEntityDef = make_shared<EntityDefinition>(mParentEntity,mSceneDefinition,toJson(),true);
+      newEntityDef->loadChildEntityDefinitions(true);
+      newEntityDef->setUuid(Uuid::generateUuid());
+      string name = newEntityDef->getName();
+      regex numRegex("(\\d+)$");
+      cmatch match;
+      string resultStr;
+      auto num = -1;
+
+      if (regex_search(name.c_str(),match,numRegex))
+      {
+        resultStr = match[0].str();
+        num = atoi(resultStr.c_str());
+      }
+
+      if (num > -1)
+      {
+        num++;
+        name = name.substr(0,name.length()-resultStr.length());
+        name.append(std::to_string(num));
+        newEntityDef->setName(name);
+      }
+      else
+      {
+        newEntityDef->setName(getName()+".1");
+      }
+
+      parentLock->addChildDefinition(newEntityDef);
+      return newEntityDef;
+    }
+    return nullptr;
+  }
+
+  int
+  EntityDefinition::getSelectedAssetIndex
+  (AssetType type)
+  {
+    auto asset = getAssetDefinition(type);
+    if (asset == Uuid::INVALID)
+    {
+      return -1;
+    }
+    if (auto sceneDefLock = mSceneDefinition.lock())
+    {
+      if (auto pdLock = sceneDefLock->getProjectDefinition().lock())
+      {
+    		return pdLock->getAssetDefinitionIndex(type,asset);
+      }
+    }
+    return -1;
+  }
+
+  void
+  EntityDefinition::setSelectedAssetIndex
+  (AssetType type, int index)
+  {
+    if (auto sdLock = mSceneDefinition.lock())
+    {
+      if (auto pdLock = sdLock->getProjectDefinition().lock())
+      {
+        auto typesVector = pdLock->getAssetDefinitionsVectorForType(type);
+        if (auto asset = typesVector.at(index).lock())
         {
-            mJson[Constants::UUID] = Uuid::generateUuid();
-            LOG_TRACE( "EntityDefinition: With new UUID",getNameAndUuidString());
+          setAssetDefinition(type,asset->getUuid());
         }
-        LOG_TRACE( "EntityDefinition: Constructing {}",getNameAndUuidString());
-        mJson[Constants::TRANSFORM] = jsonData[Constants::TRANSFORM];
+      }
     }
+  }
 
-    EntityDefinition::~EntityDefinition
-    ()
+  void
+  EntityDefinition::setAssetDefinition
+  (AssetType type, UuidType uuid)
+  {
+    auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+    if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
+        mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
     {
-        LOG_TRACE( "EntityDefinition: Destructing {}", getNameAndUuidString() );
-        deleteChildEntityDefinitions();
+      mJson[Constants::ENTITY_ASSET_INSTANCES] = json::object();
     }
+    mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr] = uuid;
+  }
 
-    int
-    EntityDefinition::getChildCount
-    ()
+  map<AssetType, UuidType>
+  EntityDefinition::getAssetDefinitionsMap
+  ()
+  const
+  {
+    map<AssetType, UuidType> assetsMap;
+    for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
     {
-        return mChildDefinitions.size();
+      AssetType type = typePair.first;
+      UuidType uuid = getAssetDefinition(type);
+      if (uuid != Uuid::INVALID)
+      {
+        assetsMap.insert(pair<AssetType,UuidType>(type, uuid));
+      }
     }
+    return assetsMap;
+  }
 
-    Transform
-    EntityDefinition::getTransform
-    ()
+  UuidType
+  EntityDefinition::getAssetDefinition
+  (AssetType type)
+  const
+  {
+    // TODO, is this correct?
+    // Yes, if there was an array, replae with an object
+    auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
+    if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
+        mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
     {
-        return Transform(mJson[Constants::TRANSFORM]);
+      return Uuid::INVALID;
     }
 
-    void
-    EntityDefinition::setTransform
-    (Transform tform)
+    if (!mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr].is_number())
     {
-        mJson[Constants::TRANSFORM] = tform.toJson();
+      return Uuid::INVALID;
     }
 
-    void
-    EntityDefinition::loadChildEntityDefinitions
-    (bool randomUuid)
+    LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
+    return mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr];
+  }
+
+  void
+  EntityDefinition::setParentEntity
+  (const weak_ptr<EntityDefinition>& parentEntity)
+  {
+    mParentEntity = parentEntity;
+  }
+
+  void EntityDefinition::setFontColor(const vec4& color)
+  {
+    mJson[Constants::ENTITY_FONT_COLOR] =  Vector4::toJson(color);
+
+  }
+
+  vec4
+  EntityDefinition::getFontColor
+  ()
+  const
+  {
+    if (mJson.find(Constants::ENTITY_FONT_COLOR) == mJson.end())
     {
-        json childrenArray = mJson[Constants::ENTITY_CHILDREN];
-        if (!childrenArray.is_null() && childrenArray.is_array())
-        {
-            for (const json& childDefinition : childrenArray)
-            {
-                auto sceneObjectDefinition = new EntityDefinition(this,mSceneDefinition,childDefinition,randomUuid);
-                sceneObjectDefinition->loadChildEntityDefinitions(randomUuid);
-                mChildDefinitions.push_back(sceneObjectDefinition);
-            }
-        }
+      return vec4(0.f);
     }
+    return Vector4::fromJson(mJson[Constants::ENTITY_FONT_COLOR]);
+  }
 
-    void
-    EntityDefinition::deleteChildEntityDefinitions
-    ()
+  void EntityDefinition::setFontText(const string& text)
+  {
+    mJson[Constants::ENTITY_FONT_TEXT] = text;
+  }
+
+  string EntityDefinition::getFontText()
+  const
+  {
+    if (mJson.find(Constants::ENTITY_FONT_TEXT) == mJson.end())
     {
-        for (auto child : mChildDefinitions)
-        {
-            delete child;
-        }
-        mChildDefinitions.clear();
+      return "";
     }
+    return mJson[Constants::ENTITY_FONT_TEXT];
+  }
 
-    vector<EntityDefinition*>
-    EntityDefinition::getChildDefinitionsVector
-    ()
+  void EntityDefinition::setFontScale(float s)
+  {
+    mJson[Constants::ENTITY_FONT_SCALE] = s;
+  }
+
+  float EntityDefinition::getFontScale()
+  const
+  {
+    if (mJson.find(Constants::ENTITY_FONT_SCALE) == mJson.end())
     {
-        return mChildDefinitions;
+      return 1.f;
     }
-
-    vector<string>
-    EntityDefinition::getChildNamesVector
-    ()
-    {
-        vector<string> names;
-        names.push_back(getName());
-        for (EntityDefinition* child : mChildDefinitions)
-        {
-            auto childNames = child->getChildNamesVector();
-            names.insert(names.end(), childNames.begin(), childNames.end());
-        }
-        return names;
-    }
-
-    void
-    EntityDefinition::addChildDefinition
-    (EntityDefinition* child)
-    {
-        mChildDefinitions.push_back(child);
-    }
-
-    void
-    EntityDefinition::adoptChildDefinition
-    (EntityDefinition* child)
-    {
-        child->setParentEntity(this);
-        mChildDefinitions.push_back(child);
-    }
-
-    void
-    EntityDefinition::removeChildDefinition
-    (EntityDefinition* child, bool andDelete)
-    {
-        auto iter = begin(mChildDefinitions);
-        auto endPos = end(mChildDefinitions);
-        while (iter != endPos)
-        {
-            if ((*iter) == child)
-            {
-                LOG_DEBUG("EntityDefinition: Found child to {} remove from {}",
-                          child->getNameAndUuidString(), getNameAndUuidString());
-                if (andDelete)
-                {
-                    delete (*iter);
-                }
-                else
-                {
-                    (*iter)->setParentEntity(nullptr);
-                }
-                mChildDefinitions.erase(iter);
-                return;
-            }
-            iter++;
-        }
-    }
-
-    EntityDefinition*
-    EntityDefinition::createNewChildDefinition
-    (json* fromJson)
-    {
-        LOG_DEBUG("EntityDefinition: Creating new child scene object");
-
-        json defJson;
-
-        if (fromJson == nullptr)
-        {
-            LOG_DEBUG("EntityDefinition: from scratch");
-            defJson[Constants::NAME] = Constants::ENTITY_DEFAULT_NAME;
-
-            Transform transform;
-            defJson[Constants::TRANSFORM] = transform.toJson();
-        }
-        else
-        {
-            LOG_DEBUG("EntityDefinition: from template copy");
-            defJson = json::parse(fromJson->dump());
-        }
-
-        EntityDefinition* soDefinition;
-        soDefinition = new EntityDefinition
-                (
-                    this,
-                    mSceneDefinition,
-                    defJson,
-                    true
-                    );
-        soDefinition->loadChildEntityDefinitions(true);
-        addChildDefinition(soDefinition);
-
-        return soDefinition;
-    }
-
-
-    SceneDefinition*
-    EntityDefinition::getSceneDefinition
-    ()
-    {
-        return mSceneDefinition;
-    }
-
-    json
-    EntityDefinition::toJson
-    ()
-    {
-        mJson[Constants::ENTITY_CHILDREN] = json::array();
-        for (EntityDefinition* entityDefinition : mChildDefinitions)
-        {
-            mJson[Constants::ENTITY_CHILDREN].push_back(entityDefinition->toJson());
-        }
-        return mJson;
-    }
-
-    void EntityDefinition::setIsTemplate(bool d)
-    {
-        mJson[Constants::ENTITY_TEMPLATE] = d;
-    }
-
-    bool EntityDefinition::getIsTemplate()
-    {
-        if (mJson.find(Constants::ENTITY_TEMPLATE) == mJson.end())
-        {
-            mJson[Constants::ENTITY_TEMPLATE] = false;
-        }
-        return mJson[Constants::ENTITY_TEMPLATE];
-    }
-
-    EntityDefinition*
-    EntityDefinition::getParentEntity
-    ()
-    {
-        return mParentEntity;
-    }
-
-    EntityDefinition*
-    EntityDefinition::duplicate()
-    {
-        // Nothing to assign duplicate to
-        if (mParentEntity == nullptr)
-        {
-            LOG_ERROR("EntityDefinition: Cannot Duplicate. No parent to assign duplicate to");
-            return nullptr;
-        }
-
-        auto newSOD = new EntityDefinition(mParentEntity,mSceneDefinition,toJson(),true);
-        newSOD->loadChildEntityDefinitions(true);
-        newSOD->setUuid(Uuid::generateUuid());
-        string name = newSOD->getName();
-        regex numRegex("(\\d+)$");
-        cmatch match;
-        string resultStr;
-        auto num = -1;
-
-        if (regex_search(name.c_str(),match,numRegex))
-        {
-            resultStr = match[0].str();
-            num = atoi(resultStr.c_str());
-        }
-
-        if (num > -1)
-        {
-            num++;
-            name = name.substr(0,name.length()-resultStr.length());
-            name.append(std::to_string(num));
-            newSOD->setName(name);
-        }
-        else
-        {
-            newSOD->setName(getName()+".1");
-        }
-
-        mParentEntity->addChildDefinition(newSOD);
-        return newSOD;
-    }
-
-    int
-    EntityDefinition::getSelectedAssetIndex
-    (AssetType type)
-    {
-        auto asset = getAssetDefinition(type);
-        if (asset == Uuid::INVALID)
-        {
-            return -1;
-        }
-        return mSceneDefinition->getProjectDefinition()->getAssetDefinitionIndex(type,asset);
-    }
-
-    void
-    EntityDefinition::setSelectedAssetIndex
-    (AssetType type, int index)
-    {
-        auto typesVector = mSceneDefinition->getProjectDefinition()->getAssetDefinitionsVector(type);
-        auto asset = typesVector.at(index);
-        setAssetDefinition(type,asset->getUuid());
-    }
-
-    void
-    EntityDefinition::setAssetDefinition
-    (AssetType type, UuidType uuid)
-    {
-        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
-            mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
-        {
-            setEmptyAssetsObject();
-        }
-        mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr] = uuid;
-    }
-
-    map<AssetType, UuidType>
-    EntityDefinition::getAssetDefinitionsMap
-    ()
-    {
-        map<AssetType, UuidType> assetsMap;
-        for (const auto& typePair : Constants::DREAM_ASSET_TYPES_MAP)
-        {
-            AssetType type = typePair.first;
-            UuidType uuid = getAssetDefinition(type);
-            if (uuid != Uuid::INVALID)
-            {
-                assetsMap.insert(pair<AssetType,UuidType>(type, uuid));
-            }
-        }
-        return assetsMap;
-    }
-
-    UuidType
-    EntityDefinition::getAssetDefinition
-    (AssetType type)
-    {
-        // TODO, is this correct?
-        // Yes, if there was an array, replae with an object
-        auto typeStr = Constants::getAssetTypeStringFromTypeEnum(type);
-        if (mJson.find(Constants::ENTITY_ASSET_INSTANCES) == mJson.end() ||
-            mJson[Constants::ENTITY_ASSET_INSTANCES].is_array())
-        {
-            setEmptyAssetsObject();
-        }
-
-        if (!mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr].is_number())
-        {
-            return Uuid::INVALID;
-        }
-
-        LOG_TRACE("EntityDefinition: Found {} Runtime",typeStr);
-        return mJson[Constants::ENTITY_ASSET_INSTANCES][typeStr];
-    }
-
-    void
-    EntityDefinition::setEmptyAssetsObject()
-    {
-        mJson[Constants::ENTITY_ASSET_INSTANCES] = json::object();
-    }
-
-    void
-    EntityDefinition::setParentEntity
-    (EntityDefinition* parentEntity)
-    {
-        mParentEntity = parentEntity;
-    }
-
-    void EntityDefinition::setFontColor(const vec4& color)
-    {
-        mJson[Constants::ENTITY_FONT_COLOR] =  Vector4::toJson(color);
-
-    }
-
-    vec4 EntityDefinition::getFontColor()
-    {
-        vec4 retval(1.f);
-        if (mJson.find(Constants::ENTITY_FONT_COLOR) == mJson.end())
-        {
-            mJson[Constants::ENTITY_FONT_COLOR] = Vector4::toJson(retval);
-        }
-        retval = Vector4::fromJson(mJson[Constants::ENTITY_FONT_COLOR]);
-        return retval;
-    }
-
-    void EntityDefinition::setFontText(const string& text)
-    {
-        mJson[Constants::ENTITY_FONT_TEXT] = text;
-    }
-
-    string EntityDefinition::getFontText()
-    {
-        string retval = "";
-        if (mJson.find(Constants::ENTITY_FONT_TEXT) == mJson.end())
-        {
-            mJson[Constants::ENTITY_FONT_TEXT] = retval;
-        }
-        retval = mJson[Constants::ENTITY_FONT_TEXT];
-        return retval;
-    }
-
-    void EntityDefinition::setFontScale(float s)
-    {
-        mJson[Constants::ENTITY_FONT_SCALE] = s;
-    }
-
-    float EntityDefinition::getFontScale()
-    {
-        float retval = 1.f;
-        if (mJson.find(Constants::ENTITY_FONT_SCALE) == mJson.end())
-        {
-            mJson[Constants::ENTITY_FONT_SCALE] = retval;
-        }
-        retval = mJson[Constants::ENTITY_FONT_SCALE];
-        return retval;
-    }
+    return mJson[Constants::ENTITY_FONT_SCALE];
+  }
 }

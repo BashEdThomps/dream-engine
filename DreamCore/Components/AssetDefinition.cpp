@@ -29,7 +29,7 @@ using std::cmatch;
 namespace octronic::dream
 {
     AssetDefinition::AssetDefinition
-    (const string& className, ProjectDefinition* parent, const json &jsonDef)
+    (const string& className, const weak_ptr<ProjectDefinition>& parent, const json &jsonDef)
         : Definition(className, jsonDef),
           mProjectDefinition(parent)
     {
@@ -45,13 +45,14 @@ namespace octronic::dream
     AssetType
     AssetDefinition::getAssetType
     ()
+    const
     {
         return Constants::getAssetTypeEnumFromString(mJson[Constants::ASSET_TYPE]);
     }
 
     void
     AssetDefinition::setType
-    (string type)
+    (const string& type)
     {
         mJson[Constants::ASSET_TYPE] = type;
     }
@@ -59,17 +60,18 @@ namespace octronic::dream
     string
     AssetDefinition::getType
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_TYPE) == mJson.end())
         {
-            mJson[Constants::ASSET_TYPE] = "";
+            return "";
         }
         return mJson[Constants::ASSET_TYPE];
     }
 
     void
     AssetDefinition::setFormat
-    (string format)
+    (const string& format)
     {
         mJson[Constants::ASSET_FORMAT] = format;
     }
@@ -77,24 +79,26 @@ namespace octronic::dream
     string
     AssetDefinition::getFormat
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_FORMAT) == mJson.end())
         {
-            mJson[Constants::ASSET_FORMAT] = "";
+            return "";
         }
-
         return mJson[Constants::ASSET_FORMAT];
     }
 
     bool
     AssetDefinition::isTypeAnimation
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_ANIMATION;
     }
 
 
     bool AssetDefinition::isTypeMaterial()
+    const
     {
         return getType() == Constants::ASSET_TYPE_MATERIAL;
     }
@@ -102,6 +106,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeFont
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_FONT;
     }
@@ -109,6 +114,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypePhysicsObject
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
     }
@@ -116,6 +122,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeTexture
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_TEXTURE;
     }
@@ -123,6 +130,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypePath
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_PATH;
     }
@@ -130,6 +138,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeAudio
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_AUDIO;
     }
@@ -137,6 +146,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeModel
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_MODEL;
     }
@@ -144,6 +154,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeScript
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_SCRIPT;
     }
@@ -151,6 +162,7 @@ namespace octronic::dream
     bool
     AssetDefinition::isTypeShader
     ()
+    const
     {
         return getType() == Constants::ASSET_TYPE_SHADER;
     }
@@ -158,60 +170,69 @@ namespace octronic::dream
     string
     AssetDefinition::getGroup
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_GROUP) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_GROUP] = Constants::ASSET_ATTR_GROUP_DEFAULT;
+            return  Constants::ASSET_ATTR_GROUP_DEFAULT;
         }
         return mJson[Constants::ASSET_ATTR_GROUP];
     }
 
     void
     AssetDefinition::setGroup
-    (string group)
+    (const string& group)
     {
         mJson[Constants::ASSET_ATTR_GROUP] = group;
     }
 
 
-    ProjectDefinition*
+    weak_ptr<ProjectDefinition>
     AssetDefinition::getProject
     ()
+    const
     {
         return mProjectDefinition;
     }
 
-    AssetDefinition*
+    weak_ptr<AssetDefinition>
     AssetDefinition::duplicate
     ()
     {
-        auto newAD = mProjectDefinition->createNewAssetDefinition(getAssetType());
-        newAD->mJson = mJson;
-        newAD->setUuid(Uuid::generateUuid());
-        string name = newAD->getName();
-        regex numRegex("(\\d+)$");
-        cmatch match;
-        string resultStr;
-        auto num = -1;
-
-        if (regex_search(name.c_str(),match,numRegex))
+        if(auto pdLock = mProjectDefinition.lock())
         {
-            resultStr = match[0].str();
-            num = atoi(resultStr.c_str());
-        }
+            auto newAD = pdLock->createNewAssetDefinition(getAssetType());
+            if (auto adLock = newAD.lock())
+            {
+                adLock->mJson = mJson;
+                adLock->setUuid(Uuid::generateUuid());
+                string name = adLock->getName();
+                regex numRegex("(\\d+)$");
+                cmatch match;
+                string resultStr;
+                auto num = -1;
 
-        if (num > -1)
-        {
-            num++;
-            name = name.substr(0,name.length()-resultStr.length());
-            name.append(std::to_string(num));
-            newAD->setName(name);
-        }
-        else
-        {
-            newAD->setName(getName()+".1");
-        }
+                if (regex_search(name.c_str(),match,numRegex))
+                {
+                    resultStr = match[0].str();
+                    num = atoi(resultStr.c_str());
+                }
 
-        return newAD;
+                if (num > -1)
+                {
+                    num++;
+                    name = name.substr(0,name.length()-resultStr.length());
+                    name.append(std::to_string(num));
+                    adLock->setName(name);
+                }
+                else
+                {
+                    adLock->setName(getName()+".1");
+                }
+
+                return adLock;
+            }
+        }
+        return weak_ptr<AssetDefinition>();
     }
 }

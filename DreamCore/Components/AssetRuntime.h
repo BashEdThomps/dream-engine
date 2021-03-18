@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Base/Runtime.h"
+#include "Base/DeferredLoadRuntime.h"
 
 namespace octronic::dream
 {
@@ -25,35 +25,21 @@ namespace octronic::dream
     /**
      * @brief Holds runtime data for an Asset.
      */
-    class AssetRuntime : public Runtime
+    class AssetRuntime : public DeferredLoadRuntime
     {
     public:
         /**
          * @brief Default Constructor
          * @param asset AssetDefinition to construct runtime from
          */
-        AssetRuntime(ProjectRuntime* pr, AssetDefinition* assetDef);
+        AssetRuntime(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<AssetDefinition>& assetDef);
+
         virtual ~AssetRuntime();
 
-        virtual string getAssetFilePath(const string& fmt = "") = 0;
-        virtual string getAssetDirectoryPath() = 0;
-
-        bool getLoaded() const;
-        void setLoaded(bool);
-        bool getLoadError() const;
-        void setLoadError(bool);
-
-
-        ProjectRuntime* getProjectRuntimeHandle() const;
-
+        virtual string getAssetFilePath(const string& fmt = "");
+        virtual string getAssetDirectoryPath();
         virtual void pushTasks() = 0;
-
-    protected:
-        /**
-         * @brief Flag set when the runtime data has been loaded
-         */
-        bool mLoaded;
-        bool mLoadError;
-        ProjectRuntime* mProjectRuntimeHandle;
     };
 }

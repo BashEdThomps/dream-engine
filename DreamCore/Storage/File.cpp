@@ -31,10 +31,8 @@ using std::istreambuf_iterator;
 
 namespace octronic::dream
 {
-    File::File(string path)
+    File::File(const string& path)
         : mPath(path),
-          mBinaryData(nullptr),
-          mBinaryDataSize(0),
           mStringData("")
 	{
         LOG_DEBUG( "File:  {} {}" ,__FUNCTION__, mPath );
@@ -43,12 +41,6 @@ namespace octronic::dream
     File::~File()
     {
         LOG_DEBUG( "File: {} {}" ,__FUNCTION__, mPath );
-        if (mBinaryData != nullptr && mBinaryDataSize != 0)
-        {
-            delete[] mBinaryData;
-            mBinaryData = nullptr;
-            mBinaryDataSize = 0;
-        }
     }
 
     string File::getDirectory() const
@@ -81,20 +73,7 @@ namespace octronic::dream
             return mStringData;
         }
 
-        // Null termination not guaranteed, manually terminating the string
-        // seems like a good idea
-
-        char* temp_str = new char[mBinaryDataSize + 1];
-
-        strncpy(temp_str, (const char*)mBinaryData, mBinaryDataSize);
-        temp_str[mBinaryDataSize] = 0;
-
-        mStringData = std::move(string(temp_str));
-        delete[] temp_str;
-
-        delete[] mBinaryData;
-        mBinaryData = nullptr;
-        mBinaryDataSize = 0;
+        mStringData = string(mBinaryData.begin(), mBinaryData.end());
 
         return mStringData;
 
@@ -109,29 +88,29 @@ namespace octronic::dream
         std::ifstream infile;
         infile.open(mPath.c_str(), std::ios::binary);
         infile.seekg(0, std::ios::end);
-        mBinaryDataSize = infile.tellg();
+        size_t binaryDataSize = infile.tellg();
 
-        LOG_TRACE("File: binary size {}", mBinaryDataSize);
+        LOG_TRACE("File: binary size {}", binaryDataSize);
 
-        mBinaryData = new uint8_t[mBinaryDataSize];
-        memset(mBinaryData,0,sizeof(uint8_t) * mBinaryDataSize);
+        mBinaryData.clear();
+        mBinaryData.resize(binaryDataSize);
 
         infile.seekg(0, std::ios::beg);
-        infile.read((char*)mBinaryData, mBinaryDataSize);
+        infile.read((char*)&mBinaryData[0], binaryDataSize);
         infile.close();
 
         return true;
 
     }
 
-    bool File::writeBinary (const uint8_t* data, size_t size) const
+    bool File::writeBinary (const vector<uint8_t>& data) const
     {
         if (mPath.empty()) return false;
 
         auto file = fopen(mPath.c_str(),"wb");
-        auto bytesWritten = fwrite(data,sizeof(char),size,file);
+        auto bytesWritten = fwrite(&data[0],sizeof(char),data.size(),file);
         fclose(file);
-        return bytesWritten == size;
+        return bytesWritten == data.size();
     }
 
     bool File::writeString(const std::string& data) const
@@ -207,17 +186,12 @@ namespace octronic::dream
         return "";
     }
 
-    size_t File::getBinaryDataSize() const
-    {
-        return mBinaryDataSize;
-    }
-
     string File::getStringData() const
     {
         return mStringData;
     }
 
-    uint8_t* File::getBinaryData() const
+    vector<uint8_t> File::getBinaryData() const
     {
         return mBinaryData;
     }

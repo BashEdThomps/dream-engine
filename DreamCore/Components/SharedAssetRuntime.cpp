@@ -8,53 +8,57 @@
 #include "Storage/ProjectDirectory.h"
 #include "Entity/EntityRuntime.h"
 
+using std::dynamic_pointer_cast;
+
 namespace octronic::dream
 {
     SharedAssetRuntime::SharedAssetRuntime
-    (ProjectRuntime* prt, AssetDefinition* def)
+    (const weak_ptr<ProjectRuntime>& prt,
+     const weak_ptr<AssetDefinition>& def)
         : AssetRuntime(prt, def),
           mReloadFlag(false)
     {
     }
 
-    SharedAssetRuntime::~SharedAssetRuntime()
-    {
-
-    }
-
-    string SharedAssetRuntime::getAssetFilePath
-    (const string& fmt)
-    {
-        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
-        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinitionHandle),fmt);
-    }
-
-    string SharedAssetRuntime::getAssetDirectoryPath
+    SharedAssetRuntime::~SharedAssetRuntime
     ()
     {
-        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
-        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinitionHandle));
+
     }
 
-    void SharedAssetRuntime::addInstance(EntityRuntime* er)
+    void
+    SharedAssetRuntime::addInstance
+    (const weak_ptr<EntityRuntime>& er)
     {
-        auto itr = std::find(mInstances.begin(), mInstances.end(), er);
-        if (itr == mInstances.end())
+        if (auto erLock = er.lock())
         {
-            mInstances.push_back(er);
+			auto itr = std::find_if(mInstances.begin(), mInstances.end(),
+			[&](const weak_ptr<EntityRuntime>& nextEr){ return nextEr.lock() == erLock; });
+			if (itr == mInstances.end())
+			{
+				mInstances.push_back(er);
+			}
         }
     }
 
-    void SharedAssetRuntime::removeInstance(EntityRuntime* er)
+    void
+    SharedAssetRuntime::removeInstance
+    (const weak_ptr<EntityRuntime>& er)
     {
-        removeInstanceByUuid(er->getUuid());
+        if (auto erLock = er.lock())
+        {
+        	removeInstanceByUuid(erLock->getUuid());
+        }
     }
 
-    void SharedAssetRuntime::removeInstanceByUuid(UuidType uuid)
+    void
+    SharedAssetRuntime::removeInstanceByUuid
+    (UuidType uuid)
     {
         auto itr = std::find_if(mInstances.begin(), mInstances.end(),
-                    [&](EntityRuntime* runtime) {
-                return runtime->getUuid() == uuid;
+                    [&](const weak_ptr<EntityRuntime>& runtime)
+        {
+                return runtime.lock()->getUuid() == uuid;
         });
 
         if (itr != mInstances.end())
@@ -63,17 +67,25 @@ namespace octronic::dream
         }
     }
 
-    vector<EntityRuntime*>* SharedAssetRuntime::getInstanceVector()
+    vector<weak_ptr<EntityRuntime>>
+    SharedAssetRuntime::getInstanceVector
+    ()
+    const
     {
-        return &mInstances;
+        return mInstances;
     }
 
-    bool SharedAssetRuntime::getReloadFlag() const
+    bool
+    SharedAssetRuntime::getReloadFlag
+    ()
+    const
     {
         return mReloadFlag;
     }
 
-    void SharedAssetRuntime::setReloadFlag(bool reloadFlag)
+    void
+    SharedAssetRuntime::setReloadFlag
+    (bool reloadFlag)
     {
         mReloadFlag = reloadFlag;
     }

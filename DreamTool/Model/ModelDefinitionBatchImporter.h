@@ -19,7 +19,7 @@ namespace octronic::dream::tool
 
     struct ModelDefinitionBatchImportResult
     {
-        ModelDefinition* definition;
+        shared_ptr<ModelDefinition> definition;
         ModelImportResult result;
     };
 
@@ -31,7 +31,7 @@ namespace octronic::dream::tool
         void findModels();
 
         void import();
-        void setDirectory(string dir);
+        void setDirectory(const string& dir);
         void clearImportParameters();
         void clearModelsFound();
         void clearImportResults();
@@ -53,7 +53,7 @@ namespace octronic::dream::tool
         static string resultString(ModelImportResult result);
 
     private:
-        Directory* mDirectory;
+        shared_ptr<Directory> mDirectory;
         vector<string> mModelsFound;
         vector<ModelDefinitionBatchImportResult> mImportResults;
         bool* mModelsToImport;

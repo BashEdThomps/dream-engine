@@ -22,8 +22,8 @@ namespace octronic::dream::tool
     struct PropertiesTarget
     {
         PropertyType type;
-        Definition* definition;
-        Runtime* runtime;
+        shared_ptr<Definition> definition;
+        shared_ptr<Runtime> runtime;
     };
 
     class PropertiesWindow : public ImGuiWidget
@@ -33,15 +33,15 @@ namespace octronic::dream::tool
         ~PropertiesWindow() override;
 
         void draw() override;
-        void pushPropertyTarget(PropertyType, Definition*, Runtime*);
+        void pushPropertyTarget(PropertyType, const shared_ptr<Definition>&, const shared_ptr<Runtime>&);
         void popPropertyTarget();
         void clearPropertyTargets();
-        void removeFromHistory(Definition* def);
+        void removeFromHistory(const shared_ptr<Definition>& def);
 
     protected:
         void drawImGizmo();
         void drawTransformProperties();
-        int getStringIndexInVector(string str, vector<string> vec);
+        int getStringIndexInVector(const string& str, const vector<string>& vec);
         bool drawDeleteEntityButton();
         bool drawDeleteSceneButton();
         void drawNameAndIdProperties();
@@ -60,16 +60,16 @@ namespace octronic::dream::tool
         void drawPathAssetProperties();
         void drawTextureAssetProperties();
 
-        void setRuntime(Runtime* runt);
-        void setDefinition(Definition* def);
+        void setRuntime(const shared_ptr<Runtime> runt);
+        void setDefinition(const shared_ptr<Definition>& def);
         void setPropertyType(PropertyType t);
         void clear();
-        void replaceRuntimes(AssetDefinition* assetDef);
+        void replaceRuntimes(const shared_ptr<AssetDefinition>& assetDef);
     private:
         vector<PropertiesTarget> mHistory;
         PropertyType mType;
-        Definition* mDefinition;
-        Runtime* mRuntime;
+        shared_ptr<Definition> mDefinition;
+        shared_ptr<Runtime> mRuntime;
         ImVec2 mImageSize;
     };
 }

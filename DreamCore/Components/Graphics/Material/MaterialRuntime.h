@@ -35,11 +35,13 @@ namespace octronic::dream
     class MaterialRuntime : public SharedAssetRuntime
     {
     public:
-        MaterialRuntime(ProjectRuntime* rt, MaterialDefinition* def);
+        MaterialRuntime
+        (const weak_ptr<ProjectRuntime>& rt,
+         const weak_ptr<MaterialDefinition>& def);
         ~MaterialRuntime() override;
 
-        void addMesh(ModelMesh* mesh);
-        void removeMesh(ModelMesh* mesh);
+        void addMesh(const weak_ptr<ModelMesh>& mesh);
+        void removeMesh(const weak_ptr<ModelMesh>& mesh);
         void clearMeshes();
         size_t countMeshes();
 
@@ -48,42 +50,42 @@ namespace octronic::dream
         void debug();
         void logMeshes();
 
-        void drawShadowPass(ShaderRuntime* shader);
+        void drawShadowPass(const weak_ptr<ShaderRuntime>& shader);
 
         bool loadFromDefinition() override;
 
-        TextureRuntime* getAlbedoTextureHandle() const;
-        void setAlbedoTextureHandle(TextureRuntime* texture);
+        weak_ptr<TextureRuntime> getAlbedoTexture() const;
+        void setAlbedoTexture(const weak_ptr<TextureRuntime>& texture);
 
-        TextureRuntime* getNormalTextureHandle() const;
-        void setNormalTextureHandle(TextureRuntime* texture);
+        weak_ptr<TextureRuntime> getNormalTexture() const;
+        void setNormalTexture(const weak_ptr<TextureRuntime>& texture);
 
-        TextureRuntime* getMetallicTextureHandle() const;
-        void setMetallicTextureHandle(TextureRuntime* texture);
+        weak_ptr<TextureRuntime> getMetallicTexture() const;
+        void setMetallicTexture(const weak_ptr<TextureRuntime>& texture);
 
-        TextureRuntime* getRoughnessTextureHandle() const;
-        void setRoughnessTextureHandle(TextureRuntime* texture);
+        weak_ptr<TextureRuntime> getRoughnessTexture() const;
+        void setRoughnessTexture(const weak_ptr<TextureRuntime>& texture);
 
-        TextureRuntime* getAoTextureHandle() const;
-        void setAoTextureHandle(TextureRuntime* texture);
+        weak_ptr<TextureRuntime> getAoTexture() const;
+        void setAoTexture(const weak_ptr<TextureRuntime>& texture);
 
-        ShaderRuntime* getShaderHandle() const;
-        void setShaderHandle(ShaderRuntime* shader);
+        weak_ptr<ShaderRuntime> getShader() const;
+        void setShader(const weak_ptr<ShaderRuntime>& shader);
 
         void pushTasks() override;
 
         // Used because InstanceVector is of type Entity*
-        vector<ModelMesh*>& getUsedByVector();
+        vector<weak_ptr<ModelMesh>> getUsedByVector() const;
 
     protected:
-        TextureRuntime* mAlbedoTextureHandle;
-        TextureRuntime* mNormalTextureHandle;
-        TextureRuntime* mMetallicTextureHandle;
-        TextureRuntime* mRoughnessTextureHandle;
-        TextureRuntime* mAoTextureHandle;
-        ShaderRuntime*  mShaderHandle;
+        weak_ptr<TextureRuntime> mAlbedoTexture;
+        weak_ptr<TextureRuntime> mNormalTexture;
+        weak_ptr<TextureRuntime> mMetallicTexture;
+        weak_ptr<TextureRuntime> mRoughnessTexture;
+        weak_ptr<TextureRuntime> mAoTexture;
+        weak_ptr<ShaderRuntime>  mShader;
 
         // Used as InstanceVector is Entity*
-        vector<ModelMesh*> mUsedBy;
+        vector<weak_ptr<ModelMesh>> mUsedBy;
     };
 }

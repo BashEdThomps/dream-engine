@@ -5,7 +5,7 @@
 
 namespace octronic::dream
 {
-    PathUpdateTask::PathUpdateTask(ProjectRuntime* pr, PathRuntime* rt)
+    PathUpdateTask::PathUpdateTask(const shared_ptr<ProjectRuntime>& pr, PathRuntime* rt)
         : Task(pr, "PathUpdateTask"),
           mPathRuntime(rt)
     {

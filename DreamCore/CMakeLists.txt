@@ -25,6 +25,7 @@ add_library(
 	# Base
 	Base/Definition.cpp
 	Base/Runtime.cpp
+	Base/DeferredLoadRuntime.cpp
 	Base/RuntimeTasks.cpp
 	# Components
 	Components/AssetRuntime.cpp

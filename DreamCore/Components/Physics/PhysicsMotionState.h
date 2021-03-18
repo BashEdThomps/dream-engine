@@ -12,8 +12,10 @@
 #pragma once
 
 #include <LinearMath/btMotionState.h>
+#include <memory>
 
 class btTransform;
+using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -22,7 +24,7 @@ namespace octronic::dream
     class PhysicsMotionState : public btMotionState
     {
     public:
-        PhysicsMotionState(EntityRuntime* entity);
+        PhysicsMotionState(const weak_ptr<EntityRuntime>&entity);
         ~PhysicsMotionState();
 
         void getWorldTransform(btTransform&) const;
@@ -30,6 +32,6 @@ namespace octronic::dream
 
         void setKinematicPos(btTransform&);
     protected:
-        EntityRuntime* mEntityRuntime;
+        weak_ptr<EntityRuntime> mEntityRuntime;
     };
 }

@@ -23,15 +23,21 @@
 #include <tweeny.h>
 
 using tweeny::tween;
+using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
     class AnimationRuntime : public DiscreteAssetRuntime
     {
     public:
-        AnimationRuntime(ProjectRuntime* pr, AnimationDefinition*, EntityRuntime*);
+        AnimationRuntime(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<AnimationDefinition>&,
+                const weak_ptr<EntityRuntime>&);
+
         ~AnimationRuntime() override;
         bool loadFromDefinition() override;
+        bool init() override;
 
         void createTweens();
         void run();
@@ -42,15 +48,15 @@ namespace octronic::dream
         void orderByTime();
         void seekAll(unsigned int pos);
 
-        long getDuration();
+        long getDuration() const;
 
         void setAnimationSeekTime(long currentTime);
-        long getAnimationSeekTime();
+        long getAnimationSeekTime() const;
 
-        bool getRunning();
+        bool getRunning() const;
         void setRunning(bool running);
 
-        shared_ptr<AnimationUpdateTask> getUpdateTask();
+        weak_ptr<AnimationUpdateTask> getUpdateTask() const;
 
         void pushTasks() override;
 

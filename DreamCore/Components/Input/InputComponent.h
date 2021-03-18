@@ -35,24 +35,24 @@ namespace octronic::dream
     class InputComponent : public Component
     {
     public:
-        InputComponent(ProjectRuntime* rt);
+        InputComponent(const shared_ptr<ProjectRuntime>& rt);
         ~InputComponent() override;
 
         bool init() override;
 
         // Keyboard ============================================================
-        KeyboardState getKeyboardState() const;
-        void setKeyboardState(const KeyboardState& keyboardState);
+        shared_ptr<KeyboardState> getKeyboardState() const;
+        void setKeyboardState(const shared_ptr<KeyboardState>& keyboardState);
         // Mouse ===============================================================
-        MouseState getMouseState() const;
-        void setMouseState(const MouseState& mouseState);
+        shared_ptr<MouseState> getMouseState() const;
+        void setMouseState(const shared_ptr<MouseState>& mouseState);
         // Joystick ============================================================
-        JoystickMapping getJoystickMapping() const;
+        shared_ptr<JoystickMapping> getJoystickMapping() const;
         shared_ptr<JoystickNavigation> getJoystickNavigation() const;
         int getJoystickCount() const;
         void setJoystickCount(int joystickCount);
-        JoystickState getJoystickState() const;
-        void setJoystickState(const JoystickState& joystickState);
+        shared_ptr<JoystickState> getJoystickState() const;
+        void setJoystickState(const shared_ptr<JoystickState>& joystickState);
         // Scripting ===========================================================
         bool registerInputScript();
         bool executeInputScript();
@@ -64,13 +64,13 @@ namespace octronic::dream
         void pushTasks() override;
     private:
         // Keyboard
-        KeyboardState mKeyboardState;
+        shared_ptr<KeyboardState> mKeyboardState;
         // Mouse
-        MouseState mMouseState;
+        shared_ptr<MouseState> mMouseState;
         // Joystick
         int mJoystickCount;
-        JoystickState mJoystickState;
-        JoystickMapping mJoystickMapping;
+        shared_ptr<JoystickState> mJoystickState;
+        shared_ptr<JoystickMapping> mJoystickMapping;
         // Tasks
         shared_ptr<InputPollDataTask> mPollDataTask;
         shared_ptr<InputRegisterScriptTask> mRegisterScriptTask;

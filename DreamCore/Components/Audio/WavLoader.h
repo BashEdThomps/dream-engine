@@ -27,7 +27,8 @@ namespace octronic::dream
     public:
         WavLoader();
 		~WavLoader();
-		bool loadIntoBuffer(AudioDefinition* definition, ProjectRuntime* project) override;
+		bool loadIntoBuffer(const weak_ptr<AudioDefinition>& definition,
+                            const weak_ptr<ProjectRuntime>& project) override;
     private:
         WavHeader mWavHeader;
     };

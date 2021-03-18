@@ -9,25 +9,28 @@ namespace octronic::dream
 
     class ShaderCompileFragmentTask : public GraphicsTask
     {
-        ShaderRuntime* mShaderRuntime;
+        weak_ptr<ShaderRuntime> mShaderRuntime;
     public:
-        ShaderCompileFragmentTask(ProjectRuntime* prt, ShaderRuntime* rt);
+        ShaderCompileFragmentTask(const weak_ptr<ProjectRuntime>& prt,
+                                  const weak_ptr<ShaderRuntime>& rt);
         void execute();
     };
 
     class ShaderCompileVertexTask : public GraphicsTask
     {
-        ShaderRuntime* mShaderRuntime;
+        const weak_ptr<ShaderRuntime>& mShaderRuntime;
     public:
-        ShaderCompileVertexTask(ProjectRuntime* prt, ShaderRuntime* rt);
+        ShaderCompileVertexTask(const weak_ptr<ProjectRuntime>& prt,
+                                const weak_ptr<ShaderRuntime>& rt);
         void execute();
     };
 
     class ShaderLinkTask : public GraphicsTask
     {
-        ShaderRuntime* mShaderRuntime;
+        weak_ptr<ShaderRuntime> mShaderRuntime;
     public:
-        ShaderLinkTask(ProjectRuntime* prt, ShaderRuntime* rt);
+        ShaderLinkTask(const weak_ptr<ProjectRuntime>& prt,
+                       const weak_ptr<ShaderRuntime>& rt);
         void execute();
     };
 
@@ -35,7 +38,7 @@ namespace octronic::dream
     {
         GLuint mShaderProgram;
     public:
-        ShaderFreeTask(ProjectRuntime* prt);
+        ShaderFreeTask(const weak_ptr<ProjectRuntime>& prt);
         void setShaderProgram(GLuint rt);
         void execute() override;
     };

@@ -28,220 +28,314 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol.h>
 
+#include <memory>
+
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-    ScriptRuntime::ScriptRuntime
-    (ProjectRuntime* rt, ScriptDefinition* definition)
-        : SharedAssetRuntime(rt, definition),
-          mSource("")
+  ScriptRuntime::ScriptRuntime
+  (const weak_ptr<ProjectRuntime>& rt,
+   const weak_ptr<ScriptDefinition>& definition)
+    : SharedAssetRuntime(rt, definition),
+      mSource("")
+  {
+    LOG_TRACE( "ScriptRuntime: {} {}",__FUNCTION__, getNameAndUuidString());
+    return;
+  }
+
+  ScriptRuntime::~ScriptRuntime
+  ()
+  {
+    if (auto defLock = mDefinition.lock())
     {
-        LOG_TRACE( "ScriptRuntime: {} {}",__FUNCTION__, getNameAndUuidString());
-        return;
+      LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, defLock->getNameAndUuidString());
     }
+  }
 
-    ScriptRuntime::~ScriptRuntime
-    ()
+  bool
+  ScriptRuntime::loadFromDefinition
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        LOG_TRACE("ScriptRuntime: {} {}",__FUNCTION__, mDefinitionHandle->getNameAndUuidString());
-    }
+      auto path = getAssetFilePath();
+      LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
 
-    bool
-    ScriptRuntime::loadFromDefinition
-    ()
-    {
-        auto path = getAssetFilePath();
-        LOG_DEBUG( "ScriptRuntime: Script at {}" , path);
-
-        StorageManager* sm = mProjectRuntimeHandle->getStorageManager();
-        File* scriptFile = sm->openFile(path);
-
-        if (!scriptFile->exists())
+      if (auto sm = prLock->getStorageManager().lock())
+      {
+        if (auto scriptFile = sm->openFile(path).lock())
         {
+
+          if (!scriptFile->exists())
+          {
             LOG_ERROR("ScriptCache: Script file does not exist");
             setSource("");
             sm->closeFile(scriptFile);
             mLoadError = true;
             return false;
-        }
-        else
-        {
+          }
+          else
+          {
             setSource(scriptFile->readString());
             mLoaded = true;
+          }
+
+          sm->closeFile(scriptFile);
+          return true;
         }
-
-        sm->closeFile(scriptFile);
-        return true;
+      }
     }
+    return false;
+  }
 
-    bool
-    ScriptRuntime::createEntityState
-    (EntityRuntime* entity)
+  bool
+  ScriptRuntime::createEntityState
+  (const weak_ptr<EntityRuntime>& entity)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->createEntityState(this, entity);
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
+        return scriptComponent->createEntityState(static_pointer_cast<ScriptRuntime>(shared_from_this()), entity);
+      }
     }
+    return false;
+  }
 
-    bool
-    ScriptRuntime::removeEntityState
-    (UuidType uuid)
+  bool
+  ScriptRuntime::removeEntityState
+  (UuidType uuid)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
         return scriptComponent->removeEntityState(uuid);
+      }
     }
+    return false;
+  }
 
-    string
-    ScriptRuntime::getSource
-    ()
+  string
+  ScriptRuntime::getSource
+  ()
+  const
+  {
+    return mSource;
+  }
+
+  void
+  ScriptRuntime::setSource
+  (const string& source)
+  {
+    mSource = source;
+  }
+
+  // Function Execution =======================================================
+
+  bool
+  ScriptRuntime::executeOnUpdate
+  (const weak_ptr<EntityRuntime>& entity)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        return mSource;
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
+        return scriptComponent->executeScriptOnUpdate(static_pointer_cast<ScriptRuntime>(shared_from_this()), entity);
+      }
     }
+    return false;
+  }
 
-    void
-    ScriptRuntime::setSource
-    (const string& source)
+  bool
+  ScriptRuntime::executeOnInit
+  (const weak_ptr<EntityRuntime>& entity)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        mSource = source;
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
+
+        return scriptComponent->executeScriptOnInit(static_pointer_cast<ScriptRuntime>(shared_from_this()), entity);
+      }
     }
+    return false;
+  }
 
-    // Function Execution =======================================================
-
-    bool
-    ScriptRuntime::executeOnUpdate
-    (EntityRuntime* entity)
+  bool
+  ScriptRuntime::executeOnEvent
+  (const weak_ptr<EntityRuntime>& entity)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->executeScriptOnUpdate(this, entity);
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
+
+        return scriptComponent->executeScriptOnEvent(static_pointer_cast<ScriptRuntime>(shared_from_this()), entity);
+      }
     }
+    return false;
 
-    bool
-    ScriptRuntime::executeOnInit
-    (EntityRuntime* entity)
+  }
+
+  bool
+  ScriptRuntime::executeOnInput
+  (const weak_ptr<SceneRuntime>& sr)
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->executeScriptOnInit(this, entity);
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
+        return scriptComponent->executeScriptOnInput(static_pointer_cast<ScriptRuntime>(shared_from_this()), sr);
+      }
     }
+    return false;
+  }
 
-    bool
-    ScriptRuntime::executeOnEvent
-    (EntityRuntime* entity)
+
+  bool
+  ScriptRuntime::registerInputScript
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->executeScriptOnEvent(this, entity);
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
 
+        return scriptComponent->registerInputScript(static_pointer_cast<ScriptRuntime>(shared_from_this()));
+      }
     }
+    return false;
+  }
 
-    bool
-    ScriptRuntime::executeOnInput
-    (InputComponent* inputComp, SceneRuntime* sr)
+  bool
+  ScriptRuntime::removeInputScript
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->executeScriptOnInput(this, inputComp, sr);
-    }
+      if (auto scriptComponent = prLock->getScriptComponent().lock())
+      {
 
-
-    bool
-    ScriptRuntime::registerInputScript
-    ()
-    {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
-        return scriptComponent->registerInputScript(this);
-    }
-
-    bool
-    ScriptRuntime::removeInputScript
-    ()
-    {
-        ScriptComponent* scriptComponent = mProjectRuntimeHandle->getScriptComponent();
         return scriptComponent->removeInputScript(getUuid());
+      }
     }
+    return false;
+  }
 
-    bool
-    ScriptRuntime::hasSource
-    ()
-    const
+  bool
+  ScriptRuntime::hasSource
+  ()
+  const
+  {
+    return !mSource.empty();
+  }
+
+  void
+  ScriptRuntime::pushTasks
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        return !mSource.empty();
-    }
-
-    void
-    ScriptRuntime::pushTasks
-    ()
-    {
-        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
-        auto activeScene = mProjectRuntimeHandle->getActiveSceneRuntime();
-        auto inputComp = mProjectRuntimeHandle->getInputComponent();
-        auto destructionTaskQueue = mProjectRuntimeHandle->getDestructionTaskQueue();
-
-        if (mReloadFlag)
+      if (auto activeScene = prLock->getActiveSceneRuntime().lock())
+      {
+        if (auto inputComp = prLock->getInputComponent().lock())
         {
-            mLoaded = false;
-            mLoadError = false;
-            mSource = "";
-            mReloadFlag = false;
-            mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+          if (auto taskQueue = prLock->getTaskQueue().lock())
+          {
+            if (auto dTaskQueue = prLock->getDestructionTaskQueue().lock())
+            {
+              if (mReloadFlag)
+              {
+                // Unload for Reaload
+                mLoaded = false;
+                mLoadError = false;
+                mSource = "";
+                mReloadFlag = false;
+                mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
 
-            if (activeScene && activeScene->getInputScript() == this)
-            {
-                destructionTaskQueue->pushTask(inputComp->getRemoveScriptTask());
-                inputComp->getRegisterScriptTask()->setState(TASK_STATE_QUEUED);
-            }
-            else
-            {
-				for(EntityRuntime* entity : mInstances)
-				{
-					removeEntityState(entity->getUuid());
-
-					if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
-					{
-						entity->setScriptInitialised(false);
-					}
-				}
-            }
-        }
-        else if (!mLoaded && !mLoadError)
-        {
-            if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-            {
-                taskQueue->pushTask(mLoadFromDefinitionTask);
-            }
-        }
-        else
-        {
-            if (mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
-            {
-                for(EntityRuntime* entity : mInstances)
+                if (activeScene && activeScene->getInputScript().lock() == shared_from_this())
                 {
-                    // Do entity specific tasks
-                    if (entity->getSceneRuntime()->hasState(SCENE_STATE_ACTIVE))
+                  dTaskQueue->pushTask(inputComp->getRemoveScriptTask());
+                  inputComp->getRegisterScriptTask()->setState(TASK_STATE_QUEUED);
+                }
+                else
+                {
+                  for(auto entityWeak : mInstances)
+                  {
+                    if (auto entity = entityWeak.lock())
                     {
-                        // Not yet Initialised
-                        if (!entity->getScriptInitialised())
+                      removeEntityState(entity->getUuid());
+
+                      if (auto srLock = entity->getSceneRuntime().lock())
+                      {
+                        if (srLock->hasState(SCENE_STATE_ACTIVE))
                         {
-                            taskQueue->pushTask(entity->getScriptCreateStateTask());
+                          entity->setScriptInitialised(false);
                         }
-                        // Has been initialised
-                        else if (entity->allRuntimesLoaded())
+                      }
+                    }
+                  }
+                }
+              }
+              else if (!mLoaded && !mLoadError)
+              {
+                if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+                {
+                  taskQueue->pushTask(mLoadFromDefinitionTask);
+                }
+              }
+              else
+              {
+                if (mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
+                {
+                  for(auto entityWeak : mInstances)
+                  {
+                    if (auto entity = entityWeak.lock())
+                    {
+                      // Do entity specific tasks
+                      if (auto srLock = entity->getSceneRuntime().lock())
+                      {
+                        if (srLock->hasState(SCENE_STATE_ACTIVE))
                         {
-                            if (entity->getScriptOnInitTask()->hasState(TASK_STATE_QUEUED))
+                          // Not yet Initialised
+                          if (!entity->getScriptInitialised())
+                          {
+                            taskQueue->pushTask(entity->getScriptCreateStateTask());
+                          }
+                          // Has been initialised
+                          else if (entity->allRuntimesLoaded())
+                          {
+                            if (auto onInitTask = entity->getScriptOnInitTask().lock())
                             {
+                              if (onInitTask->hasState(TASK_STATE_QUEUED))
+                              {
                                 taskQueue->pushTask(entity->getScriptOnInitTask());
-                            }
-                            else
-                            {
+                              }
+                              else
+                              {
                                 // Always push update task
                                 taskQueue->pushTask(entity->getScriptOnUpdateTask());
 
                                 // If there are events to process, push on event task
                                 if (entity->hasEvents())
                                 {
-                                    taskQueue->pushTask(entity->getScriptOnEventTask());
+                                  taskQueue->pushTask(entity->getScriptOnEventTask());
                                 }
+                              }
                             }
+                          }
                         }
+                      }
                     }
+                  }
                 }
+              }
             }
+          }
         }
+      }
     }
+  }
 }

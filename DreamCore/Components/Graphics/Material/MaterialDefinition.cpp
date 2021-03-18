@@ -26,8 +26,8 @@
 namespace octronic::dream
 {
     MaterialDefinition::MaterialDefinition
-    (ProjectDefinition* pd, const json &js)
-        :AssetDefinition("MaterialDefinition",pd,js)
+    (const shared_ptr<ProjectDefinition>& pd, const json &js)
+        : AssetDefinition("MaterialDefinition",pd,js)
     {
         LOG_TRACE("MaterialDefinition: Constructing");
     }
@@ -42,10 +42,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getShader
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
     }
@@ -62,10 +63,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getAlbedoTexture
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO];
     }
@@ -82,10 +84,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getNormalTexture
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL];
     }
@@ -102,10 +105,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getMetallicTexture
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC];
     }
@@ -122,10 +126,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getRoughnessTexture
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS];
     }
@@ -142,10 +147,11 @@ namespace octronic::dream
     UuidType
     MaterialDefinition::getAoTexture
     ()
+    const
     {
         if(!mJson[Constants::ASSET_ATTR_MATERIAL_AO].is_number())
         {
-            mJson[Constants::ASSET_ATTR_MATERIAL_AO] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_MATERIAL_AO];
     }

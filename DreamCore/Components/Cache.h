@@ -8,7 +8,8 @@
 
 using std::vector;
 using std::string;
-using std::unique_ptr;
+using std::shared_ptr;
+using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -32,7 +33,7 @@ namespace octronic::dream
          * @brief Default Constructor.
          * @param parent ProjectRuntime that created this Cache.
          */
-        Cache(ProjectRuntime* prHandle);
+        Cache(const weak_ptr<ProjectRuntime>& pr);
 
         /**
          * @brief Default Destructor
@@ -47,7 +48,7 @@ namespace octronic::dream
          * @param definition The AssetDefinition for the AssetRuntime you wish
          * to instanciate.
          */
-        RuntimeType* getRuntimeHandle(DefinitionType* definition);
+        weak_ptr<RuntimeType> getRuntime(const weak_ptr<DefinitionType>& definition);
 
         /**
          * @return SharedAssetRuntime object specified by the given
@@ -57,13 +58,13 @@ namespace octronic::dream
          * @param uuid definition The AssetDefinition for the AssetRuntime you wish
          * to instanciate.
          */
-        RuntimeType* getRuntimeHandle(UuidType uuid);
+        weak_ptr<RuntimeType> getRuntime(UuidType uuid);
 
         /**
          * @return Reference to the vector of SharedAssetRuntimes managed by
          * this Cache.
          */
-        vector<unique_ptr<RuntimeType>>* getRuntimeVectorHandle();
+        vector<weak_ptr<RuntimeType>> getRuntimeVector() const;
 
         /**
          * @return std::string of the absolute path to the AssetDefinition's
@@ -71,13 +72,13 @@ namespace octronic::dream
          * @param definition The AssetDefinition of which you want to get the
          * absolute path;
          */
-        string getAbsolutePath(DefinitionType* definition);
+        string getAbsolutePath(const weak_ptr<DefinitionType>& definition) const;
 
         /**
          * @brief removeRuntime remove a runtime from the cache based on definition
          * @param definition
          */
-        void removeRuntime(DefinitionType* definition);
+        void removeRuntime(const weak_ptr<DefinitionType>& definition);
 
         /**
          * @brief removeRuntime remove a runtime from the cache based on uuid
@@ -94,7 +95,7 @@ namespace octronic::dream
          * @brief runtimeCount
          * @return the number of Runtimes in this Cache
          */
-        size_t runtimeCount();
+        size_t runtimeCount() const;
     protected:
 
         /**
@@ -106,24 +107,24 @@ namespace octronic::dream
          * LoadRuntime should not implement any logic, only call logic used
          * to load an Asset's data into RAM.
          */
-        RuntimeType* loadRuntime(DefinitionType* definition);
+        weak_ptr<RuntimeType> loadRuntime(const weak_ptr<DefinitionType>& definition);
 
         /**
          * @param uuid of the AssetDefinition to be retreived.
          * @return AssetDefinition specified by uuid, or nullptr if none is
          * found.
          */
-        DefinitionType* getAssetDefinitionByUuid(UuidType uuid);
+        weak_ptr<DefinitionType> getAssetDefinitionByUuid(UuidType uuid);
 
         /**
          * @brief Vector of SharedAssetRuntimes managed by this Cache.
          */
-        vector<unique_ptr<RuntimeType>> mRuntimes;
+        vector<shared_ptr<RuntimeType>> mRuntimes;
 
         /**
          * @brief Pointer to the ProjectRuntime that instanciated this Cache.
          */
-        ProjectRuntime* mProjectRuntimeHandle;
+        weak_ptr<ProjectRuntime> mProjectRuntime;
     };
 }
 

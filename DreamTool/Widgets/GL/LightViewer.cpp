@@ -34,13 +34,13 @@ namespace octronic::dream::tool
     void LightViewer::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
-			ProjectRuntime* projectRuntime = project->getRuntime();
+			auto projectRuntime = project->getRuntime();
             if (projectRuntime)
             {
-               GraphicsComponent* gc = projectRuntime->getGraphicsComponent();
+               auto gc = projectRuntime->getGraphicsComponent();
                if (gc)
                {
                   size_t num_lights = gc->getLightCount();

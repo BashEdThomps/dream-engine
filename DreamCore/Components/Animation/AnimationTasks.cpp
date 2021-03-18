@@ -6,7 +6,8 @@
 namespace octronic::dream
 {
     AnimationUpdateTask::AnimationUpdateTask
-    (ProjectRuntime* pr, AnimationRuntime* rt)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<AnimationRuntime>& rt)
         : Task(pr, "AnimationUpdateTask"),
           mAnimationRuntime(rt)
     {
@@ -14,8 +15,15 @@ namespace octronic::dream
 
     void AnimationUpdateTask::execute()
     {
-        LOG_CRITICAL("AnimationUpdateTask: Executing task {}",getID());
-		mAnimationRuntime->update();
-		setState(TaskState::TASK_STATE_COMPLETED);
+        if (auto animLock = mAnimationRuntime.lock())
+        {
+        	LOG_CRITICAL("AnimationUpdateTask: Executing task {}",getID());
+			animLock->update();
+			setState(TaskState::TASK_STATE_COMPLETED);
+        }
+        else
+        {
+        	setState(TASK_STATE_DEFERRED);
+        }
     }
 }

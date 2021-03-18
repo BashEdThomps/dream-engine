@@ -48,30 +48,32 @@ namespace octronic::dream
     {
 
     public:
-        PhysicsComponent(ProjectRuntime* pr);
+        PhysicsComponent(const weak_ptr<ProjectRuntime>& pr);
         ~PhysicsComponent() override;
         void setGravity(const vec3&);
-        vec3 getGravity();
+        vec3 getGravity() const;
         bool init() override;
-        void addPhysicsObjectRuntime(PhysicsObjectRuntime*);
-        void addRigidBody(btRigidBody*);
-        void removeRigidBody(btRigidBody*);
-        void removePhysicsObjectRuntime(PhysicsObjectRuntime*);
+        void addPhysicsObjectRuntime(const weak_ptr<PhysicsObjectRuntime>&);
+        void addRigidBody(const weak_ptr<btRigidBody>&);
+        void removeRigidBody(const weak_ptr<btRigidBody>&);
+        void removePhysicsObjectRuntime(const weak_ptr<PhysicsObjectRuntime>&);
         void checkContactManifolds();
-        EntityRuntime* getEntityRuntime(SceneRuntime* scene, const btCollisionObject*);
+
+        weak_ptr<EntityRuntime>getEntityRuntimeForCollisionObject
+        (const weak_ptr<SceneRuntime>& scene, const btCollisionObject*);
+
         void stepSimulation();
-        PhysicsUpdateWorldTask* getUpdateWorldTask();
+        weak_ptr<PhysicsUpdateWorldTask> getUpdateWorldTask();
         void pushTasks() override;
-        void setDebugDrawer(btIDebugDraw* dd);
+        void setDebugDrawer(const weak_ptr<btIDebugDraw>& dd);
     private:
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
     private:
-        btDynamicsWorld *mDynamicsWorld;
-        btBroadphaseInterface *mBroadphase;
-        btDefaultCollisionConfiguration *mCollisionConfiguration;
-        btCollisionDispatcher *mDispatcher;
-        btSequentialImpulseConstraintSolver *mSolver;
-        mat4 mProjectionMatrix;
+        shared_ptr<btDynamicsWorld> mDynamicsWorld;
+        shared_ptr<btBroadphaseInterface> mBroadphase;
+        shared_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
+        shared_ptr<btCollisionDispatcher> mDispatcher;
+        shared_ptr<btSequentialImpulseConstraintSolver> mSolver;
         shared_ptr<PhysicsUpdateWorldTask> mUpdateWorldTask;
     };
 }

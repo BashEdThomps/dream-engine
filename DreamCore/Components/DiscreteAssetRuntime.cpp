@@ -26,12 +26,16 @@
 #include "Scene/SceneRuntime.h"
 #include "Task/Task.h"
 
+using std::dynamic_pointer_cast;
+
 namespace octronic::dream
 {
     DiscreteAssetRuntime::DiscreteAssetRuntime
-    (ProjectRuntime* prt, AssetDefinition* def, EntityRuntime* runtime)
+    (const weak_ptr<ProjectRuntime>& prt,
+     const weak_ptr<AssetDefinition>& def,
+     const weak_ptr<EntityRuntime>& runtime)
         : AssetRuntime (prt, def),
-          mEntityRuntimeHandle(runtime)
+          mEntityRuntime(runtime)
     {
     }
 
@@ -39,27 +43,13 @@ namespace octronic::dream
     {
     }
 
-    string
-    DiscreteAssetRuntime::getAssetFilePath
-    (const string& fmt)
-    {
-        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
-        return pDir->getAssetAbsolutePath(static_cast<AssetDefinition*>(mDefinitionHandle),fmt);
-    }
 
-    string
-    DiscreteAssetRuntime::getAssetDirectoryPath
-    ()
-    {
-        auto pDir = mProjectRuntimeHandle->getProject()->getDirectory();
-        return pDir->getAssetDirectoryPath(static_cast<AssetDefinition*>(mDefinitionHandle));
-    }
 
-    EntityRuntime*
-    DiscreteAssetRuntime::getEntityRuntimeHandle
+    weak_ptr<EntityRuntime>
+    DiscreteAssetRuntime::getEntityRuntime
     ()
     const
     {
-        return mEntityRuntimeHandle;
+        return mEntityRuntime;
     }
 }

@@ -2,6 +2,7 @@
 
 #include "AssetRuntime.h"
 #include <vector>
+
 using std::vector;
 
 namespace octronic::dream
@@ -16,22 +17,22 @@ namespace octronic::dream
     class SharedAssetRuntime : public AssetRuntime
     {
     public:
-        SharedAssetRuntime(ProjectRuntime* prt, AssetDefinition* def);
+        SharedAssetRuntime(
+                const weak_ptr<ProjectRuntime>& prt,
+                const weak_ptr<AssetDefinition>& def);
+
         ~SharedAssetRuntime() override;
 
-        string getAssetFilePath(const string& fmt = "") override;
-        string getAssetDirectoryPath() override;
-
-        void addInstance(EntityRuntime* er);
-        void removeInstance(EntityRuntime* er);
+        void addInstance(const weak_ptr<EntityRuntime>& er);
+        void removeInstance(const weak_ptr<EntityRuntime>& er);
         void removeInstanceByUuid(UuidType spriteUuid);
-        vector<EntityRuntime*>* getInstanceVector();
+        vector<weak_ptr<EntityRuntime>> getInstanceVector() const;
 
         bool getReloadFlag() const;
         void setReloadFlag(bool reloadFlag);
 
     protected:
-        vector<EntityRuntime*> mInstances;
+        vector<weak_ptr<EntityRuntime>> mInstances;
         bool mReloadFlag;
     };
 }

@@ -19,7 +19,6 @@
 #include "Components/Component.h"
 #include "Math/Vector.h"
 
-
 namespace octronic::dream
 {
     class AudioRuntime;
@@ -32,7 +31,7 @@ namespace octronic::dream
         virtual void setListenerPosition(const vec3&) = 0;
         virtual void setVolume(float) = 0;
         virtual float getVolume() = 0;
-    	virtual AudioRuntime* getAudioRuntime(AudioDefinition* def) = 0;
+    	  virtual weak_ptr<AudioRuntime> getAudioRuntime(const weak_ptr<AudioDefinition>& def) = 0;
         void pushTasks() override;
     };
 }

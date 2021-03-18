@@ -24,51 +24,57 @@
 
 namespace octronic::dream
 {
-    PhysicsMotionState::PhysicsMotionState
-    (EntityRuntime* entity)
-        : btMotionState(),
-          mEntityRuntime(entity)
-    {
-        LOG_TRACE( "PhysicsMotionState: Constructor called" );
-    }
+  PhysicsMotionState::PhysicsMotionState
+  (const weak_ptr<EntityRuntime>& entity)
+    : btMotionState(),
+      mEntityRuntime(entity)
+  {
+    LOG_TRACE( "PhysicsMotionState: Constructor called" );
+  }
 
-    PhysicsMotionState::~PhysicsMotionState
-    ()
-    {
-        LOG_TRACE( "PhysicsMotionState: Destroying Object" );
-    }
+  PhysicsMotionState::~PhysicsMotionState
+  ()
+  {
+    LOG_TRACE( "PhysicsMotionState: Destroying Object" );
+  }
 
-    void
-    PhysicsMotionState::getWorldTransform
-    (btTransform& worldTrans) const
+  void
+  PhysicsMotionState::getWorldTransform
+  (btTransform& worldTrans) const
+  {
+    if (auto erLock = mEntityRuntime.lock())
     {
-        auto tx = mEntityRuntime->getTransform();
-        worldTrans.setFromOpenGLMatrix(glm::value_ptr(tx.getMatrix()));
+      auto tx = erLock->getTransform();
+      worldTrans.setFromOpenGLMatrix(glm::value_ptr(tx.getMatrix()));
     }
+  }
 
-    void
-    PhysicsMotionState::setWorldTransform
-    (const btTransform& worldTrans)
+  void
+  PhysicsMotionState::setWorldTransform
+  (const btTransform& worldTrans)
+  {
+    LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
+    if (auto erLock = mEntityRuntime.lock())
     {
-        LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
-        auto origin = worldTrans.getOrigin();
-        float yaw;
-        float pitch;
-        float roll;
-        worldTrans.getRotation().getEulerZYX(yaw, pitch, roll);
-        Transform tx;
-        tx.setTranslation(Vector3::fromBullet(origin));
-        tx.setYaw(yaw);
-        tx.setPitch(pitch);
-        tx.setRoll(roll);
-        mEntityRuntime->setTransform(tx);
+      auto origin = worldTrans.getOrigin();
+      float yaw;
+      float pitch;
+      float roll;
+      worldTrans.getRotation().getEulerZYX(yaw, pitch, roll);
+      Transform tx;
+      tx.setTranslation(Vector3::fromBullet(origin));
+      tx.setYaw(yaw);
+      tx.setPitch(pitch);
+      tx.setRoll(roll);
+      erLock->setTransform(tx);
     }
+  }
 
-    void
-    PhysicsMotionState::setKinematicPos
-    (btTransform &trans)
-    {
-        LOG_DEBUG( "PhysicsMotionState: setKinematicPos called" );
-        setWorldTransform(trans);
-    }
+  void
+  PhysicsMotionState::setKinematicPos
+  (btTransform &trans)
+  {
+    LOG_DEBUG( "PhysicsMotionState: setKinematicPos called" );
+    setWorldTransform(trans);
+  }
 }

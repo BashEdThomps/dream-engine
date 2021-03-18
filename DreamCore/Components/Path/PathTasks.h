@@ -10,7 +10,7 @@ namespace octronic::dream
     protected:
         PathRuntime* mPathRuntime;
     public:
-         PathUpdateTask(ProjectRuntime* pr, PathRuntime* rt);
+         PathUpdateTask(const shared_ptr<ProjectRuntime>& pr, PathRuntime* rt);
          void execute();
     };
 }

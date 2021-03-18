@@ -12,8 +12,6 @@
 
 #pragma once
 
-
-
 // Base
 #include "Base/Runtime.h"
 // Time
@@ -70,8 +68,7 @@ namespace octronic::dream
 	typedef Cache<TextureDefinition,TextureRuntime>   TextureCache;
 
     // Forward Declarations
-    class Project;
-    class Transform;
+    class ProjectDirectory;
     class AssetDefinition;
     class WindowComponent;
     class StorageManager;
@@ -87,66 +84,69 @@ namespace octronic::dream
 
     public: // Public Functions
 
-        ProjectRuntime(Project* parentProject, WindowComponent* wc, AudioComponent* ac, StorageManager* fm);
+        ProjectRuntime(const weak_ptr<ProjectDefinition>& parentProject,
+                       const weak_ptr<ProjectDirectory>& directory,
+                       const shared_ptr<WindowComponent>& wc,
+                       const shared_ptr<AudioComponent>& ac,
+                       const shared_ptr<StorageManager>& fm);
+
         ~ProjectRuntime() override;
 
         void setDone(bool);
         bool isDone() const;
 
-        Time* getTime();
+        weak_ptr<ProjectDirectory> getProjectDirectory() const;
 
-        AudioComponent*    getAudioComponent();
-        PhysicsComponent*  getPhysicsComponent();
-        GraphicsComponent* getGraphicsComponent();
-        WindowComponent*   getWindowComponent();
-        ScriptComponent*   getScriptComponent();
-        InputComponent*    getInputComponent();
-        StorageManager*    getStorageManager();
-        TaskQueue<shared_ptr<Task>>* getTaskQueue();
-        TaskQueue<shared_ptr<DestructionTask>>* getDestructionTaskQueue();
-
-        Project* getProject() const;
+        // Components ==========================================================
 
         bool initComponents();
+        weak_ptr<Time>              getTime() const;
+        weak_ptr<AudioComponent>    getAudioComponent() const;
+        weak_ptr<PhysicsComponent>  getPhysicsComponent() const;
+        weak_ptr<GraphicsComponent> getGraphicsComponent() const;
+        weak_ptr<WindowComponent>   getWindowComponent() const;
+        weak_ptr<ScriptComponent>   getScriptComponent() const;
+        weak_ptr<InputComponent>    getInputComponent() const;
+        weak_ptr<StorageManager>    getStorageManager() const;
+        weak_ptr<TaskQueue<Task>>   getTaskQueue() const;
+        weak_ptr<TaskQueue<DestructionTask>> getDestructionTaskQueue() const;
 
-        void collectGarbage();
-
-        void step();
-
-        int getWindowWidth() const;
-        void setWindowWidth(int);
-
-        int getWindowHeight() const;
-        void setWindowHeight(int);
-
-        bool constructSceneRuntime(SceneRuntime* rt);
-        void destructSceneRuntime(SceneRuntime* rt);
-        void clearAllCaches();
+        // Running =============================================================
 
         bool loadFromDefinition() override;
+        void collectGarbage();
+        void step();
 
-        shared_ptr<Cache<AudioDefinition, AudioRuntime>>       getAudioCache();
-        shared_ptr<Cache<ShaderDefinition, ShaderRuntime>>     getShaderCache();
-        shared_ptr<Cache<MaterialDefinition, MaterialRuntime>> getMaterialCache();
-        shared_ptr<Cache<ModelDefinition, ModelRuntime>>       getModelCache();
-        shared_ptr<Cache<TextureDefinition, TextureRuntime>>   getTextureCache();
-        shared_ptr<Cache<ScriptDefinition, ScriptRuntime>>     getScriptCache();
-        shared_ptr<Cache<FontDefinition, FontRuntime>>         getFontCache();
+
+        // Caches ==============================================================
+
+        weak_ptr<AudioCache>    getAudioCache() const;
+        weak_ptr<ShaderCache>   getShaderCache() const;
+        weak_ptr<MaterialCache> getMaterialCache() const;
+        weak_ptr<ModelCache>    getModelCache() const;
+        weak_ptr<TextureCache>  getTextureCache() const;
+        weak_ptr<ScriptCache>   getScriptCache() const;
+        weak_ptr<FontCache>     getFontCache() const;
+        bool initCaches();
+        void clearAllCaches();
+
+        // Scenes ==============================================================
+
+        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid) const;
+        weak_ptr<SceneRuntime> getActiveSceneRuntime() const;
+        weak_ptr<SceneRuntime> getSceneRuntimeByUuid(UuidType uuid) const;
+        bool constructSceneRuntime(const weak_ptr<SceneRuntime>& rt);
+        void destructSceneRuntime(const weak_ptr<SceneRuntime>& rt);
 
         bool hasActiveScene() const;
-
-        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid) const;
-
-        EntityRuntime* getEntityRuntimeByUuid(SceneRuntime* rt, UuidType uuid) const;
-        SceneRuntime* getActiveSceneRuntime() const;
-        SceneRuntime* getSceneRuntimeByUuid(UuidType uuid) const;
-
-        void addSceneRuntime(SceneRuntime*);
-        void removeSceneRuntime(SceneRuntime*);
+        void addSceneRuntime(const shared_ptr<SceneRuntime>&);
+        void removeSceneRuntime(const weak_ptr<SceneRuntime>&);
         void setActiveSceneRuntime(UuidType uuid);
-        vector<SceneRuntime*> getSceneRuntimeVector() const;
+        vector<weak_ptr<SceneRuntime>> getSceneRuntimeVector() const;
         bool hasSceneRuntime(UuidType uuid) const;
         bool hasLoadedScenes() const;
+
+        // Frames ==============================================================
 
         deque<float> getFrameDurationHistory() const;
         float getAverageFramerate();
@@ -162,22 +162,22 @@ namespace octronic::dream
 		void pushComponentTasks();
 
     private: // Member Variables
-        bool     mDone;
-        Time     mTime;
-        Project* mProjectHandle;
+        bool mDone;
+        weak_ptr<ProjectDirectory> mProjectDirectory;
 
-        // Component Handles
-        AudioComponent*  mAudioComponentHandle;
-        WindowComponent* mWindowComponentHandle;
-        StorageManager*  mStorageManagerHandle;
+        // Passed in Components, we take ownership
+        shared_ptr<AudioComponent>  mAudioComponent;
+        shared_ptr<WindowComponent> mWindowComponent;
+        shared_ptr<StorageManager>  mStorageManager;
 
-        // Component Handles
-        InputComponent    mInputComponent;
-        GraphicsComponent mGraphicsComponent;
-        PhysicsComponent  mPhysicsComponent;
-        ScriptComponent   mScriptComponent;
+        // Project created Components
+        shared_ptr<Time> mTime;
+        shared_ptr<InputComponent>    mInputComponent;
+        shared_ptr<GraphicsComponent> mGraphicsComponent;
+        shared_ptr<PhysicsComponent>  mPhysicsComponent;
+        shared_ptr<ScriptComponent>   mScriptComponent;
 
-        // Caches
+        // Caches, Project owns those too
         shared_ptr<AudioCache>     mAudioCache;
         shared_ptr<FontCache>      mFontCache;
         shared_ptr<MaterialCache>  mMaterialCache;
@@ -187,13 +187,15 @@ namespace octronic::dream
         shared_ptr<TextureCache>   mTextureCache;
 
         // SceneRuntime
-        SceneRuntime*         mActiveSceneRuntime;
-        vector<SceneRuntime*> mSceneRuntimeVector;
-        vector<SceneRuntime*> mSceneRuntimesToRemove;
-        deque<float>          mFrameDurationHistory;
+        weak_ptr<SceneRuntime> mActiveSceneRuntime;
+        vector<shared_ptr<SceneRuntime>> mSceneRuntimeVector;
+        vector<weak_ptr<SceneRuntime>> mSceneRuntimesToRemove;
 
         // Tasking
-        TaskQueue<shared_ptr<Task>>            mTaskQueue;
-        TaskQueue<shared_ptr<DestructionTask>> mDestructionTaskQueue;
+        shared_ptr<TaskQueue<Task>> mTaskQueue;
+        shared_ptr<TaskQueue<DestructionTask>> mDestructionTaskQueue;
+
+        // Frames
+        deque<float> mFrameDurationHistory;
     };
 }

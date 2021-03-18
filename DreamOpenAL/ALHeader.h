@@ -17,11 +17,11 @@
 #pragma once
 
 #if defined(__APPLE__)
-	#define AL_SILENCE_DEPRICATION
-    #include <OpenAL/al.h>
-    #include <OpenAL/alc.h>
+#define OPENAL_DEPRECATED
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 #elif defined(__ANDROID__)
 #elif defined(__linux__)
-    #include <al.h>
-    #include <alc.h>
+#include <al.h>
+#include <alc.h>
 #endif

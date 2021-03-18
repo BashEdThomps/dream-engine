@@ -22,7 +22,7 @@ namespace octronic::dream
 {
     // public
     AnimationDefinition::AnimationDefinition
-    (ProjectDefinition* pd, const json& js)
+    (const shared_ptr<ProjectDefinition>& pd, const json& js)
         : AssetDefinition("AnimationDefinition",pd,js)
     {
         if (mJson.find(Constants::ASSET_ATTR_KEYFRAMES) == mJson.end())

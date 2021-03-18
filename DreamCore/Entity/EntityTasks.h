@@ -13,9 +13,10 @@ namespace octronic::dream
 
     class EntityScriptCreateStateTask : public Task
     {
-        EntityRuntime* mEntity;
+        weak_ptr<EntityRuntime> mEntity;
     public:
-        EntityScriptCreateStateTask(ProjectRuntime* pr, EntityRuntime* rt);
+        EntityScriptCreateStateTask(const weak_ptr<ProjectRuntime>& pr,
+                                    const weak_ptr<EntityRuntime>& rt);
         void execute();
     };
 
@@ -23,9 +24,11 @@ namespace octronic::dream
 
     class EntityScriptOnInitTask : public Task
     {
-        EntityRuntime* mEntity;
+        weak_ptr<EntityRuntime> mEntity;
     public:
-        EntityScriptOnInitTask(ProjectRuntime* pr, EntityRuntime* rt);
+        EntityScriptOnInitTask(
+            const weak_ptr<ProjectRuntime>& pr,
+            const weak_ptr<EntityRuntime>& rt);
         void execute();
     };
 
@@ -33,9 +36,11 @@ namespace octronic::dream
 
     class EntityScriptOnUpdateTask : public Task
     {
-        EntityRuntime* mEntity;
+        weak_ptr<EntityRuntime> mEntity;
     public:
-        EntityScriptOnUpdateTask(ProjectRuntime* pr, EntityRuntime* rt);
+        EntityScriptOnUpdateTask(
+            const weak_ptr<ProjectRuntime>& pr,
+            const weak_ptr<EntityRuntime>& rt);
         void execute();
     };
 
@@ -43,9 +48,11 @@ namespace octronic::dream
 
     class EntityScriptOnEventTask : public Task
     {
-        EntityRuntime* mEntity;
+        weak_ptr<EntityRuntime> mEntity;
     public:
-        EntityScriptOnEventTask(ProjectRuntime* pr, EntityRuntime* rt);
+        EntityScriptOnEventTask(
+            const weak_ptr<ProjectRuntime>& pr,
+            const weak_ptr<EntityRuntime>& rt);
         void execute();
     };
 
@@ -54,9 +61,12 @@ namespace octronic::dream
     class EntityScriptRemoveStateTask : public DestructionTask
     {
         UuidType mEntityUuid;
-        ScriptRuntime* mScript;
+        weak_ptr<ScriptRuntime> mScript;
     public:
-        EntityScriptRemoveStateTask(ProjectRuntime* pr,UuidType entityUuid,  ScriptRuntime* sr);
+        EntityScriptRemoveStateTask(
+            const weak_ptr<ProjectRuntime>& pr,
+            UuidType entityUuid,
+            const weak_ptr<ScriptRuntime>& sr);
         void execute();
     };
 }

@@ -34,6 +34,7 @@
 #include "Model/PreferencesModel.h"
 #include "Model/ModelDefinitionBatchImporter.h"
 
+using octronic::dream::Project;
 using octronic::dream::ProjectRuntime;
 using octronic::dream::SceneRuntime;
 using octronic::dream::StorageManager;
@@ -49,20 +50,19 @@ namespace octronic::dream::tool
 
         bool init();
         void run();
-        void handleEditorInput(SceneRuntime*);
-        void handleSceneInput(SceneRuntime*);
+        void handleEditorInput(const shared_ptr<SceneRuntime>&);
+        void handleSceneInput(const shared_ptr<SceneRuntime>&);
         void closeProject();
-        bool openProject(const string &);
-        bool newProject(const string &dir);
-        bool openInExternalEditor(AssetDefinition* definition, const string& format = "");
+        bool openProject(const string&);
+        bool newProject(const string& dir);
+        bool openInExternalEditor(const shared_ptr<AssetDefinition>& definition, const string& format = "");
 
         // ImGui Widgets
         DreamToolWindow*          getWindow();
-        octronic::dream::Project* getProject();
+        shared_ptr<Project>       getProject() const;
         PropertiesWindow*         getPropertiesWindow();
         ProjectBrowser*           getProjectBrowser();
         AssetBrowser*             getAssetBrowser();
-        ScriptDebugWindow*        getScriptDebugWindow();
         SceneStateWindow*         getSceneStateWindow();
         ToolPropertiesWindow*     getToolPropertiesWindow();
         MenuBar*                  getMenuBar();
@@ -70,7 +70,9 @@ namespace octronic::dream::tool
         GamepadStateWindow*       getGamepadStateWindow();
         CacheContentWindow*       getCacheContentWindow();
         TaskManagerWindow*        getTaskManagerWindow();
-        GLPreviewWindowComponent* getGlPreviewWindowComponent();
+        shared_ptr<ScriptDebugWindow> getScriptDebugWindow() const;
+        shared_ptr<GLPreviewWindowComponent> getGlPreviewWindowComponent() const;
+
         // GL Widgets
         Grid*                 getGrid();
         LightViewer*          getLightViewer();
@@ -83,8 +85,8 @@ namespace octronic::dream::tool
         TemplatesModel*               getTemplatesModel();
         PreferencesModel*             getPreferencesModel();
         ModelDefinitionBatchImporter* getModelDefinitionBatchImporter();
-        ProjectDirectory*             getProjectDirectory();
-        StorageManager*               getStorageManager();
+        shared_ptr<ProjectDirectory>  getProjectDirectory() const;
+        shared_ptr<StorageManager>    getStorageManager() const;
 
         int         getCommandArgumentsCount();
         char**      getCommandArgumentsVector();
@@ -96,13 +98,13 @@ namespace octronic::dream::tool
         void        setLastDirectory(const string& lastDir);
 
     private:
+        shared_ptr<Project> mProject;
+
         // ImGui Widgets
         DreamToolWindow mWindow;
-        Project* mProject;
         PropertiesWindow mPropertiesWindow;
         ProjectBrowser mProjectBrowser;
         AssetBrowser mAssetBrowser;
-        ScriptDebugWindow mScriptDebugWindow;
         SceneStateWindow mSceneStateWindow;
         ToolPropertiesWindow mToolPropertiesWindow;
         MenuBar mMenuBar;
@@ -110,7 +112,9 @@ namespace octronic::dream::tool
         GamepadStateWindow mGamepadStateWindow;
         CacheContentWindow mCacheContentWindow;
         TaskManagerWindow mTaskManagerWindow;
-        GLPreviewWindowComponent mGlPreviewWindowComponent;
+
+        shared_ptr<ScriptDebugWindow> mScriptDebugWindow;
+        shared_ptr<GLPreviewWindowComponent> mGlPreviewWindowComponent;
 
         // GL Widgets
         Grid mGrid;
@@ -119,21 +123,21 @@ namespace octronic::dream::tool
         Cursor mCursor;
         PathViewer mPathViewer;
         AnimationViewer mAnimationViewer;
-        PhysicsDebugDrawer mPhysicsDebugDrawer;
+        shared_ptr<PhysicsDebugDrawer> mPhysicsDebugDrawer;
 
         // Data Models
         TemplatesModel mTemplatesModel;
         PreferencesModel mPreferencesModel;
         ModelDefinitionBatchImporter mModelDefinitionBatchImporter;
-        ProjectDirectory mProjectDirectory;
-        StorageManager mStorageManager;
-        OpenALAudioComponent mAudioComponent;
+        shared_ptr<ProjectDirectory> mProjectDirectory;
+        shared_ptr<StorageManager> mStorageManager;
+        shared_ptr<OpenALAudioComponent> mAudioComponent;
 
         int mCommandArgumentsCount;
         char** mCommandArgumentsVector;
         bool mMainLoopDone;
         InputTarget mInputTarget;
         string mLastDirectory;
-        Directory* mProjectBaseDirectory;
+        shared_ptr<Directory> mProjectBaseDirectory;
     };
 }

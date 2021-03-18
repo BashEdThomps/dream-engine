@@ -18,10 +18,10 @@ namespace octronic::dream
     class FontDefinition : public AssetDefinition
     {
     public:
-        FontDefinition(ProjectDefinition* pd, const json& js);
+        FontDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
 
         void setSize(unsigned int size);
-        unsigned int getSize();
+        unsigned int getSize() const;
     };
 
 }

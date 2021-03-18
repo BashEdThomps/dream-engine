@@ -9,9 +9,11 @@ namespace octronic::dream
    class AnimationUpdateTask : public Task
    {
    protected:
-        AnimationRuntime* mAnimationRuntime;
+        weak_ptr<AnimationRuntime> mAnimationRuntime;
    public:
-        AnimationUpdateTask(ProjectRuntime* pr, AnimationRuntime* rt);
+        AnimationUpdateTask(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<AnimationRuntime>& rt);
         void execute();
    };
 }

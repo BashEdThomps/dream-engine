@@ -29,6 +29,9 @@ namespace octronic::dream
         OggLoader();
 	    ~OggLoader();
 		string getOggErrorString(int error);
-		bool loadIntoBuffer(AudioDefinition* def, ProjectRuntime* project) override;
+
+		bool loadIntoBuffer
+        (const weak_ptr<AudioDefinition>& def,
+         const weak_ptr<ProjectRuntime>& project) override;
 	};
 }

@@ -17,8 +17,9 @@ namespace octronic::dream
 
     // Task ====================================================================
 
-    Task::Task(ProjectRuntime* pr, const string& taskName, bool persistent)
-        : mProjectRuntimeHandle(pr),
+    Task::Task(const weak_ptr<ProjectRuntime>& pr,
+               const string& taskName)
+        : mProjectRuntime(pr),
           mID(TaskIDGenerator++),
           mName(taskName)
     {
@@ -26,51 +27,76 @@ namespace octronic::dream
         clearState();
     }
 
-    Task::~Task()
+    Task::~Task
+    ()
     {}
 
-    int Task::getID() const
+    int
+    Task::getID
+    ()
+    const
     {
         return mID;
     }
 
-    bool Task::operator==(Task& other)
+    bool
+    Task::operator==
+    (Task& other)
+    const
     {
         return mID == other.getID();
     }
 
-    string Task::getName() const
+    string
+    Task::getName
+    ()
+    const
     {
         return mName;
     }
 
-    void Task::setState(TaskState s)
+    void
+    Task::setState
+    (const TaskState& s)
     {
         mState = s;
         LOG_TRACE("Task: {} is changing state to {}",getName(), TaskTaskStateToString(getState()));
     }
 
-    TaskState Task::getState() const
+    TaskState
+    Task::getState
+    ()
+    const
     {
         return mState;
     }
 
-    int Task::taskIDGenerator()
+    int
+    Task::taskIDGenerator
+    ()
     {
         return TaskIDGenerator++;
     }
 
-    bool Task::hasState(const TaskState& s) const
+    bool
+    Task::hasState
+    (const TaskState& s)
+    const
     {
         return mState == s;
     }
 
-    void Task::clearState()
+    void
+    Task::clearState
+    ()
     {
         mState = TASK_STATE_QUEUED;
     }
 
-    string Task::getNameAndIDString()
+    string
+    Task::getNameAndIDString
+    ()
+    const
 	{
         stringstream ss;
         ss << "[" << to_string(getID()) << "]" << getName();
@@ -79,8 +105,9 @@ namespace octronic::dream
 
     // DestructionTask =====================================================
 
-    DestructionTask::DestructionTask(ProjectRuntime* pr, const string& taskName)
-        : Task(pr, taskName, false)
+    DestructionTask::DestructionTask
+    (const weak_ptr<ProjectRuntime>& pr, const string& taskName)
+        : Task(pr, taskName)
     {
 
     }

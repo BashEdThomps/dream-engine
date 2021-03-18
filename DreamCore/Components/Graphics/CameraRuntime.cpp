@@ -26,15 +26,16 @@
 #include <glm/common.hpp>
 
 using glm::perspective;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
     CameraRuntime::CameraRuntime
-    (CameraDefinition* cDef, SceneRuntime* parent)
+    (const weak_ptr<CameraDefinition>& cDef,
+     const weak_ptr<SceneRuntime>& parent)
         : Runtime(cDef),
           mFreeTransform(true),
           mCameraEntityUuid(Uuid::INVALID),
-          mCameraEntityRuntime(nullptr),
           mProjectionMatrix(mat4(1.f)),
           mSceneRuntime(parent),
           mUseEntity(false),
@@ -54,15 +55,19 @@ namespace octronic::dream
 
     bool CameraRuntime::loadFromDefinition()
     {
-        CameraDefinition* cDef = static_cast<CameraDefinition*>(mDefinitionHandle);
-        mFreeTransform = cDef->getFreeTransform();
-        mCameraEntityUuid = cDef->getCameraEntityUuid();
-        mUseEntity = cDef->getUseEntity();
-        mFieldOfView = cDef->getFieldOfView();
-        mMinDrawDistance = cDef->getMinDrawDistance();
-        mMaxDrawDistance = cDef->getMaxDrawDistance();
-        mMeshCullDistance = cDef->getMeshCullDistance();
-        return true;
+        if (auto defLock = mDefinition.lock())
+        {
+            auto cDef = static_pointer_cast<CameraDefinition>(defLock);
+            mFreeTransform = cDef->getFreeTransform();
+            mCameraEntityUuid = cDef->getCameraEntityUuid();
+            mUseEntity = cDef->getUseEntity();
+            mFieldOfView = cDef->getFieldOfView();
+            mMinDrawDistance = cDef->getMinDrawDistance();
+            mMaxDrawDistance = cDef->getMaxDrawDistance();
+            mMeshCullDistance = cDef->getMeshCullDistance();
+            return true;
+        }
+        return false;
     }
 
     mat4
@@ -72,9 +77,9 @@ namespace octronic::dream
     {
         if (mUseEntity)
         {
-            if(mCameraEntityRuntime != nullptr)
+            if(auto camLock = mCameraEntityRuntime.lock())
             {
-                return mCameraEntityRuntime->getTransform().getMatrix();
+                return camLock->getTransform().getMatrix();
             }
             else
             {
@@ -91,28 +96,41 @@ namespace octronic::dream
     CameraRuntime::update
     ()
     {
-        if (mUseEntity)
+        if (auto srLock = mSceneRuntime.lock())
         {
-          	mCameraEntityRuntime = mSceneRuntime->getEntityRuntimeByUuid(mCameraEntityUuid);
+            if (mUseEntity)
+            {
+                mCameraEntityRuntime = srLock->getEntityRuntimeByUuid(mCameraEntityUuid);
+            }
+
+            if (auto prLock = srLock->getProjectRuntime().lock())
+            {
+                if (auto wcLock = prLock->getWindowComponent().lock())
+                {
+
+                    float windowWidth  = (float)wcLock->getWidth();
+                    float windowHeight = (float)wcLock->getHeight();
+                    if (windowWidth == 0.f || windowHeight == 0.f) return;
+
+                    mProjectionMatrix = perspective(mFieldOfView, windowWidth/windowHeight,
+                                                    mMinDrawDistance, mMaxDrawDistance);
+                    mFrustum.updatePlanes();
+                }
+            }
         }
-
-        auto wc = mSceneRuntime->getProjectRuntime()->getWindowComponent();
-        float windowWidth  = (float)wc->getWidth();
-        float windowHeight = (float)wc->getHeight();
-        if (windowWidth == 0.f || windowHeight == 0.f) return;
-
-        mProjectionMatrix = perspective(mFieldOfView, windowWidth/windowHeight,
-                                        mMinDrawDistance, mMaxDrawDistance);
-        mFrustum.updatePlanes();
     }
 
     bool
     CameraRuntime::containedInFrustum
-    (const EntityRuntime* sor)
+    (const weak_ptr<EntityRuntime>& er)
     const
     {
-        return mFrustum.testIntersection(sor->getTransform().getMatrix(),
-                                         sor->getBoundingBox()) == Frustum::TEST_INSIDE;
+        if (auto erLock = er.lock())
+        {
+            return mFrustum.testIntersection(erLock->getTransform().getMatrix(),
+                                             erLock->getBoundingBox()) == Frustum::TEST_INSIDE;
+        }
+        return false;
     }
 
     bool
@@ -126,29 +144,41 @@ namespace octronic::dream
 
     bool
     CameraRuntime::exceedsFrustumPlaneAtTranslation
-    (Frustum::Plane plane, const EntityRuntime* sor, const vec3& tx)
+    (Frustum::Plane plane, const weak_ptr<EntityRuntime>& er, const vec3& tx)
     const
     {
-        auto result = mFrustum.testIntersectionWithPlane(plane,tx,sor->getBoundingBox());
-        return result != Frustum::TEST_INSIDE;
+        if (auto erLock = er.lock())
+        {
+            auto result = mFrustum.testIntersectionWithPlane(plane,tx,erLock->getBoundingBox());
+            return result != Frustum::TEST_INSIDE;
+        }
+        return false;
     }
 
     bool
     CameraRuntime::containedInFrustumAfterTransform
-    (const EntityRuntime* sor, const mat4& tx)
+    (const weak_ptr<EntityRuntime>& er, const mat4& tx)
     const
     {
-        return mFrustum.testIntersection(sor->getTransform().getMatrix() * tx,
-                                         sor->getBoundingBox()) != Frustum::TEST_OUTSIDE;
+        if (auto erLock = er.lock())
+        {
+            return mFrustum.testIntersection(erLock->getTransform().getMatrix() * tx,
+                                             erLock->getBoundingBox()) != Frustum::TEST_OUTSIDE;
+        }
+        return false;
     }
 
     bool
     CameraRuntime::visibleInFrustum
-    (const EntityRuntime* sor)
+    (const weak_ptr<EntityRuntime>& er)
     const
     {
-        return mFrustum.testIntersection(sor->getTransform().getMatrix(),
-                                         sor->getBoundingBox()) != Frustum::TEST_OUTSIDE;
+        if (auto erLock = er.lock())
+        {
+            return mFrustum.testIntersection(erLock->getTransform().getMatrix(),
+                                             erLock->getBoundingBox()) != Frustum::TEST_OUTSIDE;
+        }
+        return false;
     }
 
     bool
@@ -182,41 +212,58 @@ namespace octronic::dream
         mProjectionMatrix = projectionMatrix;
     }
 
-    void CameraRuntime::setFieldOfView(float fov)
+    void
+    CameraRuntime::setFieldOfView
+    (float fov)
     {
         mFieldOfView = fov;
     }
 
-    float CameraRuntime::getFieldOfView() const
+    float
+    CameraRuntime::getFieldOfView
+    () const
     {
         return mFieldOfView;
     }
 
-    void CameraRuntime::setCameraEntityRuntime(EntityRuntime *er)
+    void
+    CameraRuntime::setCameraEntityRuntime
+    (const weak_ptr<EntityRuntime>& er)
     {
         mCameraEntityRuntime = er;
     }
 
-    EntityRuntime* CameraRuntime::getCameraEntityRuntime() const
+    weak_ptr<EntityRuntime>
+    CameraRuntime::getCameraEntityRuntime
+    () const
     {
         return mCameraEntityRuntime;
     }
 
-    UuidType CameraRuntime::getCameraEntityUuid() const
+    UuidType
+    CameraRuntime::getCameraEntityUuid
+    () const
     {
         return mCameraEntityUuid;
     }
 
-    void CameraRuntime::setCameraEntityUuid(UuidType u)
+    void
+    CameraRuntime::setCameraEntityUuid
+    (UuidType u)
     {
         mCameraEntityUuid = u;
     }
 
-    void CameraRuntime::setTransform(const Transform& t)
+    void
+    CameraRuntime::setTransform
+    (const Transform& t)
     {
         if (mUseEntity)
         {
-            if (mCameraEntityRuntime) mCameraEntityRuntime->setTransform(t);
+            if (auto ceLock = mCameraEntityRuntime.lock())
+            {
+                ceLock->setTransform(t);
+            }
         }
         else
         {
@@ -228,8 +275,14 @@ namespace octronic::dream
     {
         if (mUseEntity)
         {
-            if (mCameraEntityRuntime) return mCameraEntityRuntime->getTransform();
-            else return Transform();
+            if (auto ceLock = mCameraEntityRuntime.lock())
+            {
+                return ceLock->getTransform();
+            }
+            else
+            {
+                return Transform();
+            }
         }
         else
         {
@@ -293,13 +346,16 @@ namespace octronic::dream
 
     void CameraRuntime::captureDefinition()
     {
- 		CameraDefinition* cDef = static_cast<CameraDefinition*>(mDefinitionHandle);
-        cDef->setFreeTransform(mFreeTransform);
-        cDef->setCameraEntityUuid(mCameraEntityUuid);
-        cDef->setUseEntity(mUseEntity);
-        cDef->setFieldOfView(mFieldOfView);
-        cDef->setMinDrawDistance(mMinDrawDistance);
-        cDef->setMaxDrawDistance(mMaxDrawDistance);
-        cDef->setMeshCullDistance(mMeshCullDistance);
+        if (auto defLock = mDefinition.lock())
+        {
+            auto cDef = static_pointer_cast<CameraDefinition>(defLock);
+            cDef->setFreeTransform(mFreeTransform);
+            cDef->setCameraEntityUuid(mCameraEntityUuid);
+            cDef->setUseEntity(mUseEntity);
+            cDef->setFieldOfView(mFieldOfView);
+            cDef->setMinDrawDistance(mMinDrawDistance);
+            cDef->setMaxDrawDistance(mMaxDrawDistance);
+            cDef->setMeshCullDistance(mMeshCullDistance);
+        }
     }
 }

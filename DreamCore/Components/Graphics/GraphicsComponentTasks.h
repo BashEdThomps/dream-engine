@@ -4,47 +4,47 @@
 
 namespace octronic::dream
 {
-    // Construction Task =======================================================
+  // Construction Task =======================================================
 
-    class GraphicsTask : public Task
-    {
-    public:
-        GraphicsTask(ProjectRuntime* pr, const string& taskName);
-    };
+  class GraphicsTask : public Task
+  {
+  public:
+    GraphicsTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
+  };
 
-    // Destruction Task ========================================================
+  // Destruction Task ========================================================
 
-    class GraphicsDestructionTask : public DestructionTask
-    {
-    public:
-        GraphicsDestructionTask(ProjectRuntime* pr, const string& taskName);
-    };
+  class GraphicsDestructionTask : public DestructionTask
+  {
+  public:
+    GraphicsDestructionTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
+  };
 
 
-    // SetupBuffersTask ========================================================
+  // SetupBuffersTask ========================================================
 
-    class SetupBuffersTask : public GraphicsTask
-    {
-    public:
-        SetupBuffersTask(ProjectRuntime* pr);
-		void execute() override;
-    };
+  class SetupBuffersTask : public GraphicsTask
+  {
+  public:
+    SetupBuffersTask(const weak_ptr<ProjectRuntime>& pr);
+    void execute() override;
+  };
 
-	// HandleResizeTask ========================================================
+  // ResizeTask ========================================================
 
-    class HandleResizeTask : public GraphicsTask
-    {
-    public:
-        HandleResizeTask(ProjectRuntime* pr);
-		void execute() override;
-    };
+  class ResizeTask : public GraphicsTask
+  {
+  public:
+    ResizeTask(const weak_ptr<ProjectRuntime>& pr);
+    void execute() override;
+  };
 
-	// RenderTask ========================================================
+  // RenderTask ========================================================
 
-    class RenderTask : public GraphicsTask
-    {
-    public:
-        RenderTask(ProjectRuntime* pr);
-		void execute() override;
-    };
+  class RenderTask : public GraphicsTask
+  {
+  public:
+    RenderTask(const weak_ptr<ProjectRuntime>& pr);
+    void execute() override;
+  };
 }

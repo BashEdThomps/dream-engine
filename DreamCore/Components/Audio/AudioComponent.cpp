@@ -24,25 +24,30 @@
 
 namespace octronic::dream
 {
-    AudioComponent::AudioComponent
-    () : Component(nullptr)
-    {
-        LOG_TRACE("AudioComponent: Constructing");
-    }
+  AudioComponent::AudioComponent
+  () : Component(weak_ptr<ProjectRuntime>())
+  {
+    LOG_TRACE("AudioComponent: Constructing");
+  }
 
-    AudioComponent::~AudioComponent
-    ()
-    {
-        LOG_TRACE("AudioComponent: Destructing");
-    }
+  AudioComponent::~AudioComponent
+  ()
+  {
+    LOG_TRACE("AudioComponent: Destructing");
+  }
 
-    void AudioComponent::pushTasks()
+  void AudioComponent::pushTasks()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-		auto audioCache = mProjectRuntime->getAudioCache();
-
-        for (auto& audioRuntime : *audioCache->getRuntimeVectorHandle())
+      if (auto audioCache = prLock->getAudioCache().lock())
+      {
+        for (auto audioRuntime : audioCache->getRuntimeVector())
         {
-            audioRuntime->pushTasks();
+          auto arLock = audioRuntime.lock();
+          arLock->pushTasks();
         }
+      }
     }
+  }
 }

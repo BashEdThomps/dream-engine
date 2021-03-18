@@ -20,9 +20,12 @@
 
 #include <sstream>
 #include <json.hpp>
+#include <memory>
 
 using nlohmann::json;
 using std::stringstream;
+using std::weak_ptr;
+using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
@@ -30,10 +33,8 @@ namespace octronic::dream
      * @brief Definition is an abstract class that provides Name, ID and
      * JSON serialization functions.
      */
-    class Definition
+    class Definition : public enable_shared_from_this<Definition>
     {
-
-
     public:
         /**
          * @brief Default constructor.
@@ -53,12 +54,12 @@ namespace octronic::dream
          * @param name Name to compare.
          * @return True if this Definition has the given name.
          */
-        bool hasName(const string& name);
+        bool hasName(const string& name) const;
 
         /**
          * @return The Definition's name.
          */
-        string getName();
+        string getName() const;
 
         /**
          * @param name The name to give the Definition.
@@ -69,12 +70,12 @@ namespace octronic::dream
          * @param uuid uuid to compare.
          * @return True if this Definition has the give uuid.
          */
-        bool hasUuid(UuidType uuid);
+        bool hasUuid(UuidType uuid) const;
 
         /**
          * @return The Definition's uuid.
          */
-        UuidType getUuid();
+        UuidType getUuid() const;
 
         /**
          * @param uuid Uuid to give the Definition;
@@ -85,7 +86,7 @@ namespace octronic::dream
          * @return A combined name and uuid string in the following format:
          * "[ NAME : UUID ]"
          */
-        string getNameAndUuidString();
+        string getNameAndUuidString() const;
 
     protected:
         /**

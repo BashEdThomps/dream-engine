@@ -8,7 +8,9 @@
 namespace octronic::dream
 {
     PhysicsAddObjectTask::PhysicsAddObjectTask
-    (ProjectRuntime* pr, PhysicsComponent* cp, PhysicsObjectRuntime* rt)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<PhysicsComponent>& cp,
+     const weak_ptr<PhysicsObjectRuntime>& rt)
         : Task(pr, "PhysicsAddObjectTask"),
           mComponent(cp),
           mRuntime(rt)
@@ -20,14 +22,23 @@ namespace octronic::dream
     PhysicsAddObjectTask::execute
     ()
     {
+      if (auto pcLock = mComponent.lock())
+      {
+        if (auto rtLock = mRuntime.lock())
+        {
         LOG_TRACE("PhysicsAddObjectTask: Executing {}",getID());
-        mComponent->addPhysicsObjectRuntime(mRuntime);
-        mRuntime->setInPhysicsWorld(true);
+        pcLock->addPhysicsObjectRuntime(mRuntime);
+        rtLock->setInPhysicsWorld(true);
         setState(TaskState::TASK_STATE_COMPLETED);
+        return;
+        }
+      }
+      setState(TaskState::TASK_STATE_FAILED);
     }
 
     PhysicsUpdateWorldTask::PhysicsUpdateWorldTask
-    (ProjectRuntime* pr, PhysicsComponent* cp)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<PhysicsComponent>& cp)
         : Task(pr, "PhysicsUpdateWorldTask"), mComponent(cp)
     {
     }
@@ -36,8 +47,13 @@ namespace octronic::dream
     PhysicsUpdateWorldTask::execute
     ()
     {
+      if (auto pcLock = mComponent.lock())
+      {
         LOG_TRACE("PhysicsUpdateWorldTask: {} Executing",getName());
-        mComponent->stepSimulation();
+        pcLock->stepSimulation();
         setState(TASK_STATE_COMPLETED);
+        return;
+      }
+      setState(TASK_STATE_FAILED);
     }
 }

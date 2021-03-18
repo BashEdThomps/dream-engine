@@ -8,103 +8,113 @@
 namespace octronic::dream
 {
 
-    // InputPollDataTask =======================================================
+  // InputPollDataTask =======================================================
 
-    InputPollDataTask::InputPollDataTask
-    (ProjectRuntime* pr)
-        : Task(pr, "InputPollDataTask")
+  InputPollDataTask::InputPollDataTask
+  (const shared_ptr<ProjectRuntime>& pr)
+    : Task(pr, "InputPollDataTask")
+  {
+  }
+
+  void
+  InputPollDataTask::execute
+  ()
+  {
+    LOG_TRACE("InputPollDataTask: Executing {}",getID());
+    if (auto prLock = mProjectRuntime.lock())
     {
+      if (auto inputComp = prLock->getInputComponent().lock())
+      {
+        inputComp->pollData();
+        setState(TaskState::TASK_STATE_COMPLETED);
+      }
     }
+    setState(TASK_STATE_FAILED);
+  }
 
-    void
-    InputPollDataTask::execute
-    ()
+  // InputRegisterScriptTask =================================================
+
+  InputRegisterScriptTask::InputRegisterScriptTask
+  (const shared_ptr<ProjectRuntime>& pr)
+    : Task(pr, "InputRegisterScriptTask")
+  {
+
+  }
+
+  void
+  InputRegisterScriptTask::execute
+  ()
+  {
+    LOG_TRACE("InputRegisterScriptTask: Executing {}",getID());
+    if (auto prLock = mProjectRuntime.lock())
     {
-		LOG_TRACE("InputPollDataTask: Executing {}",getID());
-        auto inputComp = mProjectRuntimeHandle->getInputComponent();
-		inputComp->pollData();
-		setState(TaskState::TASK_STATE_COMPLETED);
+      if (auto inputComp = prLock->getInputComponent().lock())
+      {
+        if (inputComp->registerInputScript())
+        {
+          setState(TaskState::TASK_STATE_COMPLETED);
+        }
+      }
     }
+    setState(TaskState::TASK_STATE_FAILED);
+  }
 
-    // InputRegisterScriptTask =================================================
+  // InputExecuteScriptTask ==================================================
 
-    InputRegisterScriptTask::InputRegisterScriptTask
-    (ProjectRuntime* pr)
-        : Task(pr, "InputRegisterScriptTask")
+  InputExecuteScriptTask::InputExecuteScriptTask
+  (const shared_ptr<ProjectRuntime>& pr)
+    : Task(pr, "InputExecuteScriptTask")
+  {
+  }
+
+  void
+  InputExecuteScriptTask::execute
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-
-    }
-
-    void
-    InputRegisterScriptTask::execute
-    ()
-    {
-		LOG_TRACE("InputRegisterScriptTask: Executing {}",getID());
-        auto inputComp = mProjectRuntimeHandle->getInputComponent();
-
-		if (inputComp->registerInputScript())
-		{
-			setState(TaskState::TASK_STATE_COMPLETED);
-		}
-		else
-		{
-			setState(TaskState::TASK_STATE_FAILED);
-		}
-    }
-
-    // InputExecuteScriptTask ==================================================
-
-    InputExecuteScriptTask::InputExecuteScriptTask
-    (ProjectRuntime* pr)
-        : Task(pr, "InputExecuteScriptTask")
-    {
-    }
-
-    void
-    InputExecuteScriptTask::execute
-    ()
-    {
+      if (auto inputComp = prLock->getInputComponent().lock())
+      {
         LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
-        auto inputComp = mProjectRuntimeHandle->getInputComponent();
 
-		if (inputComp->executeInputScript())
-		{
-			setState(TaskState::TASK_STATE_COMPLETED);
-		}
-		else
-		{
-			setState(TaskState::TASK_STATE_FAILED);
-		}
+        if (inputComp->executeInputScript())
+        {
+          setState(TaskState::TASK_STATE_COMPLETED);
+        }
+      }
     }
+    setState(TaskState::TASK_STATE_FAILED);
+  }
 
-    // InputRemoveScriptTask ===================================================
+  // InputRemoveScriptTask ===================================================
 
-    InputRemoveScriptTask::InputRemoveScriptTask
-    (ProjectRuntime* pr)
-        : DestructionTask(pr, "InputRemoveScriptTask")
+  InputRemoveScriptTask::InputRemoveScriptTask
+  (const shared_ptr<ProjectRuntime>& pr)
+    : DestructionTask(pr, "InputRemoveScriptTask")
+  {
+
+  }
+
+  void
+  InputRemoveScriptTask::execute
+  ()
+  {
+    LOG_TRACE("InputRemoveScriptTask: Executing {}",getID());
+    if (auto prLock = mProjectRuntime.lock())
     {
-
+      if (auto inputComp = prLock->getInputComponent().lock())
+      {
+        if (inputComp->removeInputScript(mInputScriptUuid))
+        {
+          setState(TaskState::TASK_STATE_COMPLETED);
+        }
+      }
     }
+    setState(TaskState::TASK_STATE_FAILED);
+  }
 
-    void
-    InputRemoveScriptTask::execute
-    ()
-    {
-        LOG_TRACE("InputRemoveScriptTask: Executing {}",getID());
-        auto inputComp = mProjectRuntimeHandle->getInputComponent();
-
-		if (inputComp->removeInputScript(mInputScriptUuid))
-		{
-			setState(TaskState::TASK_STATE_COMPLETED);
-		}
-		else
-		{
-			setState(TaskState::TASK_STATE_FAILED);
-		}
-    }
-
-    void InputRemoveScriptTask::setInputScriptUuid(UuidType u)
-    {
-        mInputScriptUuid = u;
-    }
+  void InputRemoveScriptTask::setInputScriptUuid(UuidType u)
+  {
+    mInputScriptUuid = u;
+  }
 }

@@ -24,6 +24,7 @@
 using std::vector;
 using std::function;
 using std::shared_ptr;
+using std::weak_ptr;
 using nlohmann::json;
 
 namespace octronic::dream
@@ -62,33 +63,37 @@ namespace octronic::dream
     class EntityRuntime : public Runtime
     {
     public:
-        EntityRuntime(ProjectRuntime* pr, SceneRuntime* sceneRuntime, EntityDefinition* ed, bool randomUuid = false);
+        EntityRuntime(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<SceneRuntime>& sceneRuntime,
+                const weak_ptr<EntityDefinition>& ed,
+                bool randomUuid = false);
         ~EntityRuntime() override;
 
         void collectGarbage();
 
-        SceneRuntime* getSceneRuntime() const;
-        EntityDefinition* getEntityDefinition() const;
+        weak_ptr<SceneRuntime> getSceneRuntime() const;
+        weak_ptr<EntityDefinition> getEntityDefinition() const;
 
         bool createAssetRuntimes();
-        bool createAnimationRuntime(AnimationDefinition*);
-        bool createPathRuntime(PathDefinition*);
-        bool createAudioRuntime(AudioDefinition*);
-        bool createModelRuntime(ModelDefinition*);
-        bool createScriptRuntime(ScriptDefinition*);
-        bool createPhysicsObjectRuntime(PhysicsObjectDefinition*);
-        bool createFontRuntime(FontDefinition*);
-        bool createTextureRuntime(TextureDefinition*);
+        bool createAnimationRuntime(const weak_ptr<AnimationDefinition>&);
+        bool createPathRuntime(const weak_ptr<PathDefinition>&);
+        bool createAudioRuntime(const weak_ptr<AudioDefinition>&);
+        bool createModelRuntime(const weak_ptr<ModelDefinition>&);
+        bool createScriptRuntime(const weak_ptr<ScriptDefinition>&);
+        bool createPhysicsObjectRuntime(const weak_ptr<PhysicsObjectDefinition>&);
+        bool createFontRuntime(const weak_ptr<FontDefinition>&);
+        bool createTextureRuntime(const weak_ptr<TextureDefinition>&);
 
-        FontRuntime* getFontRuntime() const;
-        AnimationRuntime* getAnimationRuntime() const;
-        PathRuntime*  getPathRuntime() const;
-        AudioRuntime* getAudioRuntime() const;
-        ModelRuntime* getModelRuntime() const;
-        ScriptRuntime* getScriptRuntime() const;
-        PhysicsObjectRuntime* getPhysicsObjectRuntime() const;
-        AssetRuntime* getAssetRuntime(AssetType) const;
-        TextureRuntime* getTextureRuntime() const;
+        weak_ptr<FontRuntime> getFontRuntime() const;
+        weak_ptr<AnimationRuntime> getAnimationRuntime() const;
+        weak_ptr<PathRuntime>  getPathRuntime() const;
+        weak_ptr<AudioRuntime> getAudioRuntime() const;
+        weak_ptr<ModelRuntime> getModelRuntime() const;
+        weak_ptr<ScriptRuntime> getScriptRuntime() const;
+        weak_ptr<PhysicsObjectRuntime> getPhysicsObjectRuntime() const;
+        weak_ptr<AssetRuntime> getAssetRuntime(AssetType) const;
+        weak_ptr<TextureRuntime> getTextureRuntime() const;
 
         bool hasAnimationRuntime() const;
         bool hasPathRuntime() const;
@@ -105,18 +110,18 @@ namespace octronic::dream
 
         bool hasEvents() const;
         void addEvent(const Event& event);
-        vector<Event>* getEventQueue();
-        void clearEventQueue();
+        vector<Event> getEventQueue();
+        void clearProcessedEvents();
 
-        EntityRuntime* getChildRuntimeByUuid(UuidType uuid);
-        EntityRuntime* addChildFromTemplateUuid(UuidType uuid);
+        weak_ptr<EntityRuntime> getChildRuntimeByUuid(UuidType uuid);
+        weak_ptr<EntityRuntime> addChildFromTemplateUuid(UuidType uuid);
         int countAllChildren() const;
         size_t countChildren() const;
-        void addChildRuntime(EntityRuntime*);
-        void removeChildRuntime(EntityRuntime*);
-        EntityRuntime* createAndAddChildRuntime(EntityDefinition*);
-        vector<EntityRuntime*> getChildRuntimes();
-        bool isChildOf(EntityRuntime*) const;
+        void addChildRuntime(const shared_ptr<EntityRuntime>&);
+        void removeChildRuntime(const weak_ptr<EntityRuntime>&);
+        weak_ptr<EntityRuntime> createAndAddChildRuntime(const weak_ptr<EntityDefinition>&);
+        vector<weak_ptr<EntityRuntime>> getChildRuntimes() const;
+        bool isChildOf(const weak_ptr<EntityRuntime>&) const;
 
         void setScriptInitialised(bool i);
         bool getScriptInitialised() const;
@@ -124,9 +129,10 @@ namespace octronic::dream
         void setScriptError(bool i);
         bool getScriptError() const;
 
-        bool isParentOf(EntityRuntime* child) const;
-        void setParentEntityRuntime(EntityRuntime* parent);
-        EntityRuntime* getParentEntityRuntime() const;
+        bool isParentOf(const weak_ptr<EntityRuntime>& child) const;
+        void setParentEntityRuntime(const weak_ptr<EntityRuntime>& parent);
+        weak_ptr<EntityRuntime> getParentEntityRuntime() const;
+        vector<weak_ptr<EntityRuntime>> generateFlatVector();
 
         bool loadFromDefinition() override;
 
@@ -143,31 +149,26 @@ namespace octronic::dream
         void removeTextureRuntime();
 
         bool replaceAssetUuid(AssetType type, UuidType uuid);
-        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid);
+        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid);
         void setAssetDefinitionsMap(const map<AssetType, UuidType> &loadQueue);
         map<AssetType, UuidType> getAssetDefinitionsMap() const;
 
         BoundingBox getBoundingBox() const;
         void setBoundingBox(const BoundingBox& boundingBox);
 
-        float distanceFrom(const EntityRuntime* other) const;
+        float distanceFrom(const weak_ptr<EntityRuntime>& other) const;
         float distanceFrom(const vec3& other) const;
-        bool visibleInFrustum() const;
-        bool containedInFrustum() const;
-        bool containedInFrustumAfterTransform(const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const vec3& tx) const;
+        bool visibleInFrustum();
+        bool containedInFrustum();
 
-        bool applyToAll(const function<bool(EntityRuntime*)>& fn);
-        EntityRuntime* applyToAll(const function<EntityRuntime*(EntityRuntime*)>& fn);
-        void translateOffsetInitialWithChildren(const vec3& translation);
         void initTransform();
 
-        bool loadChildrenFromDefinition(EntityDefinition* definition);
+        bool loadChildrenFromDefinition(const weak_ptr<EntityDefinition>& definition);
 
-        shared_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask() const;
-        shared_ptr<EntityScriptOnInitTask> getScriptOnInitTask() const;
-        shared_ptr<EntityScriptOnEventTask> getScriptOnEventTask() const;
-        shared_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask() const;
+        weak_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask() const;
+        weak_ptr<EntityScriptOnInitTask> getScriptOnInitTask() const;
+        weak_ptr<EntityScriptOnEventTask> getScriptOnEventTask() const;
+        weak_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask() const;
 
         string getAttribute(const string& key) const;
         void setAttribute(const string& key, const string& value);
@@ -186,31 +187,31 @@ namespace octronic::dream
         bool allRuntimesLoaded() const;
 
     protected:
-        ProjectRuntime* mProjectRuntimeHandle;
-        SceneRuntime* mSceneRuntime;
-        EntityRuntime* mParentEntityRuntime;
-        vector<EntityRuntime*> mChildRuntimes;
+        weak_ptr<ProjectRuntime> mProjectRuntime;
+        weak_ptr<SceneRuntime> mSceneRuntime;
+        weak_ptr<EntityRuntime> mParentEntityRuntime;
+        vector<shared_ptr<EntityRuntime>> mChildRuntimes;
 
         // Discrete Assets =====================================================
-        AnimationRuntime* mAnimationRuntime;
-        PathRuntime* mPathRuntime;
-        PhysicsObjectRuntime* mPhysicsObjectRuntime;
+        shared_ptr<AnimationRuntime> mAnimationRuntime;
+        shared_ptr<PathRuntime> mPathRuntime;
+        shared_ptr<PhysicsObjectRuntime> mPhysicsObjectRuntime;
 
         // Shared Runtimes =====================================================
         // Audio
-        AudioRuntime* mAudioRuntime;
+        weak_ptr<AudioRuntime> mAudioRuntime;
 
         // Font
-        FontRuntime* mFontRuntime;
+        weak_ptr<FontRuntime> mFontRuntime;
         string mFontText;
         vec4 mFontColor;
 		float mFontScale;
 
         // Model
-        ModelRuntime* mModelRuntime;
+        weak_ptr<ModelRuntime> mModelRuntime;
 
         // Script
-        ScriptRuntime* mScriptRuntime;
+        weak_ptr<ScriptRuntime> mScriptRuntime;
         bool mScriptError;
         bool mScriptInitialised;
         shared_ptr<EntityScriptCreateStateTask> mScriptCreateStateTask;
@@ -220,7 +221,7 @@ namespace octronic::dream
         shared_ptr<EntityScriptRemoveStateTask> mScriptRemoveStateTask;
 
         // Sprite Texture
-        TextureRuntime* mTextureRuntime;
+        weak_ptr<TextureRuntime> mTextureRuntime;
 
         // Transform
         Transform mInitialTransform;

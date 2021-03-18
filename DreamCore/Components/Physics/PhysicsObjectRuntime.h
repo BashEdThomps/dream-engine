@@ -36,39 +36,44 @@ namespace octronic::dream
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
     public:
-        PhysicsObjectRuntime(ProjectRuntime*, PhysicsObjectDefinition*,EntityRuntime*);
+        PhysicsObjectRuntime(
+                const weak_ptr<ProjectRuntime>&,
+                const weak_ptr<PhysicsObjectDefinition>&,
+                const weak_ptr<EntityRuntime>&);
+
         ~PhysicsObjectRuntime() override;
         bool loadFromDefinition() override;
-        btCollisionShape* createCollisionShape(PhysicsObjectDefinition*);
-        btCollisionShape* getCollisionShape();
-        btRigidBody* getRigidBody();
-        void getWorldTransform(btTransform&);
-        btCollisionObject* getCollisionObject();
 
-        vec3 getCenterOfMassPosition();
+        shared_ptr<btCollisionShape> createCollisionShape(const weak_ptr<PhysicsObjectDefinition>&);
+        weak_ptr<btCollisionShape> getCollisionShape() const;
+        weak_ptr<btRigidBody> getRigidBody() const;
+        void getWorldTransform(btTransform&);
+        weak_ptr<btCollisionObject> getCollisionObject() const;
+
+        vec3 getCenterOfMassPosition() const;
         void applyCentralImpulse(const vec3&);
         void applyTorqueImpulse(const vec3&);
         void applyForce(const vec3&);
         void applyTorque(const vec3&);
         void clearForces();
 
-        void setCenterOfMassTransformTx(Transform& tx);
+        void setCenterOfMassTransformTx(const Transform& tx);
         void setCenterOfMassTransform3fv(const vec3& tx);
+        void setCenterOfMassTransformMat4(const mat4& tx);
         void setCenterOfMassTransform3f(float x, float y, float z);
-        void setCenterOfMassTransformMat4(mat4 tx);
 
-        void setWorldTransform(Transform& tx);
+        void setWorldTransform(const Transform& tx);
 
-        vec3 getLinearVelocity();
-        void setLinearVelocity(vec3);
+        vec3 getLinearVelocity() const;
+        void setLinearVelocity(const vec3&);
 
-        bool isInPhysicsWorld();
+        bool isInPhysicsWorld() const;
         void setInPhysicsWorld(bool inPhysicsWorld);
 
-        void setLinearFactor(vec3);
+        void setLinearFactor(const vec3&);
 
-        void setAngularFactor(vec3);
-        void setAngularVelocity(vec3);
+        void setAngularFactor(const vec3&);
+        void setAngularVelocity(const vec3&);
 
         float getRestitution() const;
         void setRestitution(float r);
@@ -80,22 +85,21 @@ namespace octronic::dream
         void setMass(float mass);
 
         void  setCcdSweptSphereRadius(float);
-        float getCcdSweptSphereRadius();
+        float getCcdSweptSphereRadius() const;
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
 
-        shared_ptr<PhysicsAddObjectTask> getAddObjectTask();
+        weak_ptr<PhysicsAddObjectTask> getAddObjectTask() const;
         void pushTasks() override;
 
     private:
-        PhysicsObjectDefinition* getAssetDefinitionByUuid(UuidType);
-        btCollisionShape* createTriangleMeshShape(ModelRuntime*);
-	private:
-        btCollisionShape* mCollisionShape;
-        btMotionState* mMotionState;
-        btRigidBody* mRigidBody;
-        btRigidBody::btRigidBodyConstructionInfo* mRigidBodyConstructionInfo;
-        bool mInPhysicsWorld;
+        weak_ptr<PhysicsObjectDefinition> getAssetDefinitionByUuid(UuidType);
+        shared_ptr<btCollisionShape> createTriangleMeshShape(const weak_ptr<ModelRuntime>&);
+        shared_ptr<btCollisionShape> mCollisionShape;
+        shared_ptr<btMotionState> mMotionState;
+        shared_ptr<btRigidBody> mRigidBody;
+        shared_ptr<btRigidBody::btRigidBodyConstructionInfo> mRigidBodyConstructionInfo;
         shared_ptr<PhysicsAddObjectTask> mAddObjectTask;
+        bool mInPhysicsWorld;
     };
 }

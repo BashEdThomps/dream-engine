@@ -4,6 +4,7 @@
 #include <sstream>
 
 using std::stringstream;
+using std::static_pointer_cast;
 using octronic::dream::Project;
 using octronic::dream::ProjectDefinition;
 
@@ -111,15 +112,15 @@ namespace octronic::dream::tool
     ModelDefinitionBatchImporter::findModels
     ()
     {
-        StorageManager* fm = mContext->getStorageManager();
+        auto fm = mContext->getStorageManager();
         mModelsFound.clear();
         if(mDirectory->exists())
         {
             for(string objFileName : mDirectory->list("\\.obj$"))
             {
-                File* objFile = mDirectory->file(objFileName);
+                auto objFile = mDirectory->file(objFileName);
                 string justName = objFile->getNameWithoutExtension();
-                File* mtlFile = mDirectory->file(justName+".mtl");
+                auto mtlFile = mDirectory->file(justName+".mtl");
                 if (objFile->exists() && mtlFile->exists())
                 {
                    LOG_ERROR("ModelDefinitionBatchImporter: Found Valid Model {}", justName);
@@ -181,8 +182,8 @@ namespace octronic::dream::tool
             assetName << justName;
             if (mModelsToImport[idx])
             {
-                ModelDefinition* modelDef = nullptr;
-                auto existing = dynamic_cast<ModelDefinition*>(projDef->getAssetDefinitionByName(assetName.str()));
+                shared_ptr<ModelDefinition> modelDef;
+                auto existing = static_pointer_cast<ModelDefinition>(projDef->getAssetDefinitionByName(assetName.str()));
                 if (existing)
                 {
                    modelDef = existing;
@@ -196,16 +197,16 @@ namespace octronic::dream::tool
                 }
                 else
                 {
-                    modelDef = dynamic_cast<ModelDefinition*>(projDef->createNewAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL));
+                    modelDef = static_pointer_cast<ModelDefinition>(projDef->createNewAssetDefinition(AssetType::ASSET_TYPE_ENUM_MODEL));
                     mImportResults.push_back(ModelDefinitionBatchImportResult{modelDef,ModelImportResult::CREATED});
                 }
 
                 modelDef->setName(assetName.str());
 
-                StorageManager* fm = mContext->getStorageManager();
+                auto fm = mContext->getStorageManager();
 
-                File* objFile = mDirectory->file(justName+".obj");
-                File* mtlFile = mDirectory->file(justName+".mtl");
+                auto objFile = mDirectory->file(justName+".obj");
+                auto mtlFile = mDirectory->file(justName+".mtl");
 
                 if (objFile->exists() && mtlFile->exists())
                 {
@@ -213,14 +214,12 @@ namespace octronic::dream::tool
                     objFile->readBinary();
                     mContext->getProjectDirectory()->writeAssetData(
                     	modelDef,
-                    	objFile->getBinaryData(),
-                    	objFile->getBinaryDataSize());
+                    	objFile->getBinaryData());
 
                     mtlFile->readBinary();
                     mContext->getProjectDirectory()->writeAssetData(
                     	modelDef,
                     	mtlFile->getBinaryData(),
-                    	mtlFile->getBinaryDataSize(),
                     	mtlFile->getNameWithExtension());
                 }
                 fm->closeFile(objFile);
@@ -245,9 +244,9 @@ namespace octronic::dream::tool
 
     void
     ModelDefinitionBatchImporter::setDirectory
-    (string dir)
+    (const string& dir)
     {
-        StorageManager* fm = mContext->getStorageManager();
+        auto fm = mContext->getStorageManager();
         mDirectory = fm->openDirectory(dir);
     }
 

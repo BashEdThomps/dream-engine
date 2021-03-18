@@ -61,7 +61,7 @@ namespace octronic::dream::tool
 
     void GLWidget::draw()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         mat4 model(1.f);
         mat4 view(1.f);
@@ -69,13 +69,13 @@ namespace octronic::dream::tool
 
         if (project)
         {
-            ProjectRuntime* pRuntime = project->getRuntime();
+            auto pRuntime = project->getRuntime();
             if (pRuntime)
             {
-                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
+                auto sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    CameraRuntime* cam = sRunt->getCamera();
+                    auto cam = sRunt->getCamera();
                     if (cam)
                     {
                         projection = cam->getProjectionMatrix();
@@ -457,13 +457,18 @@ namespace octronic::dream::tool
         LOG_TRACE("GLWidget: {}",__FUNCTION__);
         if (!mLineVertexBuffer.empty())
         {
+
+            GLCheckError();
             // Vertex Array
             glBindVertexArray(mLineVao);
+            GLCheckError();
             glBindBuffer(GL_ARRAY_BUFFER, mLineVbo);
+            GLCheckError();
             assert(mLineVertexBuffer.size() % 2 == 0);
             glBufferData(GL_ARRAY_BUFFER,
                          static_cast<GLint>(mLineVertexBuffer.size() * sizeof(TranslationColorVertex)),
                          &mLineVertexBuffer[0], GL_STATIC_DRAW);
+            GLCheckError();
             glBindVertexArray(0);
             GLCheckError();
         }

@@ -20,7 +20,7 @@ namespace octronic::dream::tool
     ScriptDebugWindow::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
             ImGui::Begin("Script Debug Output",&mVisible);

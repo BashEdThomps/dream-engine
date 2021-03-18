@@ -46,7 +46,7 @@ namespace octronic::dream
     class EntityRuntime;
     class CameraRuntime;
 
-    class ModelMesh
+    class ModelMesh : public enable_shared_from_this<ModelMesh>
     {
     public: // static
         static long DrawCalls;
@@ -67,25 +67,32 @@ namespace octronic::dream
         }
 
     public:
-        ModelMesh(ModelRuntime* parent, const string &name, const vector<Vertex> &vertexArray,
-            const vector<GLuint> &indexArray, MaterialRuntime* material, const BoundingBox &bb);
+        ModelMesh(
+                const weak_ptr<ModelRuntime>& parent,
+                const string &name,
+                const vector<Vertex>& vertexArray,
+                const vector<GLuint>& indexArray,
+                const weak_ptr<MaterialRuntime>& material,
+                const BoundingBox& bb);
 
         ~ModelMesh();
 
-        void logRuntimes();
-        void addRuntime(EntityRuntime* runt);
-        void removeRuntime(EntityRuntime* runt);
+        void initTasks();
 
-        MaterialRuntime* getMaterial();
+        void logRuntimes();
+        void addRuntime(const weak_ptr<EntityRuntime>& runt);
+        void removeRuntime(const weak_ptr<EntityRuntime>& runt);
+
+        weak_ptr<MaterialRuntime> getMaterial() const;
 
         string getName() const;
         void setName(const string& name);
 
-        const vector<Vertex>& getVertices() const;
-        const vector<GLuint>& getIndices() const;
+        vector<Vertex> getVertices() const;
+        vector<GLuint> getIndices() const;
 
-        void drawModelRuntimes(CameraRuntime* camera, ShaderRuntime* shader);
-        void drawShadowPassRuntimes(ShaderRuntime* shader, bool inFrustumOnly = false);
+        void drawModelRuntimes(const weak_ptr<CameraRuntime>& camera, const weak_ptr<ShaderRuntime>& shader);
+        void drawShadowPassRuntimes(const weak_ptr<ShaderRuntime>& shader, bool inFrustumOnly = false);
 
         GLuint getVAO() const;
         void setVAO(const GLuint& vAO);
@@ -99,31 +106,30 @@ namespace octronic::dream
         BoundingBox getBoundingBox() const;
         void clearVertices();
         void clearIndices();
-        size_t getIndicesCount();
-        size_t getVerticesCount();
+        size_t getIndicesCount() const;
+        size_t getVerticesCount() const;
         bool loadIntoGL();
         void pushTasks();
 
         bool getLoaded() const;
 
     private:
-        void renderDebugSphere(ShaderRuntime* shader);
+        void renderDebugSphere(const weak_ptr<ShaderRuntime>& shader);
     private:
-        ModelRuntime* mParent;
-        MaterialRuntime* mMaterial;
+        weak_ptr<ModelRuntime> mParent;
+        weak_ptr<MaterialRuntime> mMaterial;
         string mName;
         GLuint mVAO;
         GLuint mVBO;
         GLuint mIBO;
         vector<Vertex> mVertices;
         vector<GLuint> mIndices;
-        vector<EntityRuntime*> mRuntimesInFrustum;
+        vector<weak_ptr<EntityRuntime>> mRuntimesInFrustum;
         size_t mVerticesCount;
         size_t mIndicesCount;
         BoundingBox mBoundingBox;
         bool mLoaded;
         // Mesh Tasks
-        // TODO, should be owned by mesh
         shared_ptr<ModelInitMeshTask> mInitMeshTask;
         shared_ptr<ModelFreeMeshTask> mFreeMeshTask;
     };

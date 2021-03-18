@@ -18,12 +18,12 @@ namespace octronic::dream
     class ModelDefinition : public AssetDefinition
     {
     public:
-        ModelDefinition(ProjectDefinition* pd, const json& js);
+        ModelDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
         ~ModelDefinition() override;
         bool isFormatAssimp();
 
         bool addModelMaterial(const string& material, UuidType shader);
-        json* getModelMaterials();
+        json getModelMaterials() const;
         void removeModelMaterial(const string& material);
         void clearModelMaterialList();
         UuidType getDreamMaterialForModelMaterial(const string& mat);

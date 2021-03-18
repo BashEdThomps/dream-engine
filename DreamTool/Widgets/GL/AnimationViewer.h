@@ -30,14 +30,14 @@ namespace octronic::dream::tool
         AnimationViewer(DreamToolContext* state, bool visible = false);
         ~AnimationViewer() override;
 
-        void setAnimationDefinition(AnimationDefinition* object);
+        void setAnimationDefinition(const shared_ptr<AnimationDefinition>& object);
         void init() override;
         void regenerate();
         void generateLines();
         void generateNode(const AnimationKeyframe& kf);
 
     private:
-        AnimationDefinition* mAnimationDefinition;
+        shared_ptr<AnimationDefinition> mAnimationDefinition;
         vec4 mSelectedColour;
         vec4 mUnselectedColour;
         vec4 mLineColour;

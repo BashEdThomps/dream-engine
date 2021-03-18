@@ -10,9 +10,11 @@ namespace octronic::dream
 
     class ModelInitMeshTask : public GraphicsTask
     {
-        ModelMesh* mMesh;
+        weak_ptr<ModelMesh> mMesh;
     public:
-        ModelInitMeshTask(ProjectRuntime* pr, ModelMesh* mesh);
+        ModelInitMeshTask(
+            const weak_ptr<ProjectRuntime>& pr,
+            const weak_ptr<ModelMesh>& mesh);
         void execute() override;
     };
 
@@ -22,7 +24,7 @@ namespace octronic::dream
         GLuint mVBO;
         GLuint mIBO;
     public:
-       ModelFreeMeshTask(ProjectRuntime* pr);
+       ModelFreeMeshTask(const weak_ptr<ProjectRuntime>& pr);
        void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
        void execute() override;
     };

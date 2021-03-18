@@ -22,28 +22,28 @@ namespace octronic::dream::tool
     GamepadStateWindow::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
 
             ImGui::Begin("Gamepad State",&mVisible);
-            ProjectRuntime* pRuntime = project->getRuntime();
+            auto pRuntime = project->getRuntime();
             if (pRuntime)
             {
-                InputComponent* inputComp = pRuntime->getInputComponent();
+                auto inputComp = pRuntime->getInputComponent();
                 if (inputComp)
                 {
-                    JoystickState js = inputComp->getJoystickState();
+                    auto js = inputComp->getJoystickState();
 
-                    ImGui::Text("Gamepad: %s",js.getName().c_str());
+                    ImGui::Text("Gamepad: %s",js->getName().c_str());
                     ImGui::Text("Axis");
                     {
                         ImGui::Columns(2);
-                        for (int i=0; i<js.getAxisCount(); i++)
+                        for (int i=0; i<js->getAxisCount(); i++)
                         {
                             stringstream label;
                             label << "Asix " << i;
-                            float val = js.getAxisDataPointer()[i];
+                            float val = js->getAxisDataPointer()[i];
                             ImGui::SliderFloat(label.str().c_str(),&val,-1.0f,1.0f);
                             ImGui::NextColumn();
                         }
@@ -53,11 +53,11 @@ namespace octronic::dream::tool
                     ImGui::Text("Buttons");
                     {
                         ImGui::Columns(4);
-                        for (int i = 0; i < js.getButtonCount(); i++ )
+                        for (int i = 0; i < js->getButtonCount(); i++ )
                         {
                             stringstream label;
                             label << "Button " << i;
-                            bool val = js.getButtonDataPointer()[i];;
+                            bool val = js->getButtonDataPointer()[i];;
                             ImGui::Checkbox(label.str().c_str(),&val);
                             ImGui::NextColumn();
                         }

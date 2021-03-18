@@ -11,18 +11,23 @@ namespace octronic::dream
 
     class PhysicsAddObjectTask : public Task
     {
-        PhysicsComponent* mComponent;
-        PhysicsObjectRuntime* mRuntime;
+        weak_ptr<PhysicsComponent> mComponent;
+        weak_ptr<PhysicsObjectRuntime> mRuntime;
     public:
-        PhysicsAddObjectTask(ProjectRuntime* pr, PhysicsComponent* cp, PhysicsObjectRuntime* rt);
+        PhysicsAddObjectTask(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<PhysicsComponent>& cp,
+                const weak_ptr<PhysicsObjectRuntime>& rt);
         void execute();
     };
 
     class PhysicsUpdateWorldTask : public Task
     {
-        PhysicsComponent* mComponent;
+        weak_ptr<PhysicsComponent> mComponent;
     public:
-        PhysicsUpdateWorldTask(ProjectRuntime* pr, PhysicsComponent* cp);
+        PhysicsUpdateWorldTask(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<PhysicsComponent>& cp);
         void execute();
     };
 }

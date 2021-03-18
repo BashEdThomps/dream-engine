@@ -29,9 +29,13 @@ namespace octronic::dream
 {
     class PathRuntime : public DiscreteAssetRuntime
     {
-
+    public:// static
+        const static int SPLINE_DIMENSIONS;
+        const static int SPLINE_DEGREES;
     public:
-        PathRuntime(ProjectRuntime*, PathDefinition*,EntityRuntime*);
+        PathRuntime(const weak_ptr<ProjectRuntime>&,
+                    const weak_ptr<PathDefinition>&,
+                    const weak_ptr<EntityRuntime>&);
         ~PathRuntime() override;
         bool loadFromDefinition() override;
 
@@ -43,8 +47,7 @@ namespace octronic::dream
         void update();
 
         void generate();
-        const static int SPLINE_DIMENSIONS;
-        const static int SPLINE_DEGREES;
+
 
         size_t getCurrentIndex() const;
         void setCurrentIndex(size_t currentIndex);
@@ -53,13 +56,13 @@ namespace octronic::dream
 
         bool getWrapPath() const;
         void setWrapPath(bool wrapPath);
-        mat4 getHeading(vec3 point, vec3 v1, vec3 v2);
+        mat4 getHeading(const vec3& point, const vec3& v1, const vec3& v2) const;
 
         vector<pair<vec3,vec3> > getSplineDerivatives() const;
         void setToCurrentPoint();
         void nextPoint();
 
-        PathUpdateTask* getUpdateTask();
+        shared_ptr<PathUpdateTask> getUpdateTask() const;
 
         void pushTasks() override;
 
@@ -73,6 +76,6 @@ namespace octronic::dream
         Transform mCurrentTransform;
         float mVelocity;
         float mDistanceToTravel;
-        PathUpdateTask* mUpdateTask;
+        shared_ptr<PathUpdateTask> mUpdateTask;
     };
 }

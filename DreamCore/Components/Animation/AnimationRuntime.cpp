@@ -29,20 +29,27 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 
 using std::make_shared;
+using std::dynamic_pointer_cast;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
     AnimationRuntime::AnimationRuntime
-    (ProjectRuntime* pr, AnimationDefinition* definition,EntityRuntime* runtime)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<AnimationDefinition>& definition,
+     const weak_ptr<EntityRuntime>& runtime)
         : DiscreteAssetRuntime(pr, definition,runtime),
           mRunning(false),
           mAnimationSeekTime(0),
           mDuration(1),
-          mRelative(false),
-          mOriginalTransform(runtime->getTransform()),
-          mUpdateTask(make_shared<AnimationUpdateTask>(pr,this))
+          mRelative(false)
     {
         LOG_TRACE("AnimationRuntime: Constructing Object");
+
+        if (auto entityLock = mEntityRuntime.lock())
+        {
+            mOriginalTransform = entityLock->getTransform();
+        }
     }
 
     AnimationRuntime::~AnimationRuntime()
@@ -50,15 +57,27 @@ namespace octronic::dream
         LOG_TRACE("AnimationRuntime: Destroying Object");
     }
 
-    bool
-    AnimationRuntime::loadFromDefinition()
+    bool AnimationRuntime::init()
     {
-        auto animDef = static_cast<AnimationDefinition*>(mDefinitionHandle);
-        mKeyframes = animDef->getKeyframes();
-        mRelative = animDef->getRelative();
-        createTweens();
-        mLoaded = true;
-        return mLoaded;
+        if (!DiscreteAssetRuntime::init()) return false;
+        mUpdateTask = make_shared<AnimationUpdateTask>(mProjectRuntime,static_pointer_cast<AnimationRuntime>(shared_from_this()));
+        return true;
+    }
+
+    bool
+    AnimationRuntime::loadFromDefinition
+    ()
+    {
+        if (auto defLock = mDefinition.lock())
+        {
+            auto animDef = static_pointer_cast<AnimationDefinition>(defLock);
+            mKeyframes = animDef->getKeyframes();
+            mRelative = animDef->getRelative();
+            createTweens();
+            mLoaded = true;
+            return mLoaded;
+        }
+        return false;
     }
 
     void
@@ -81,6 +100,7 @@ namespace octronic::dream
     long
     AnimationRuntime::getAnimationSeekTime
     ()
+    const
     {
         return mAnimationSeekTime;
     }
@@ -95,6 +115,7 @@ namespace octronic::dream
     bool
     AnimationRuntime::getRunning
     ()
+    const
     {
         return mRunning;
     }
@@ -106,8 +127,10 @@ namespace octronic::dream
         mRunning = running;
     }
 
-    shared_ptr<AnimationUpdateTask>
-    AnimationRuntime::getUpdateTask()
+    weak_ptr<AnimationUpdateTask>
+    AnimationRuntime::getUpdateTask
+    ()
+    const
     {
         return mUpdateTask;
     }
@@ -256,12 +279,16 @@ namespace octronic::dream
             //tx.setOrientation(newOrient);
             tx.setScale(newSx);
         }
-        mEntityRuntimeHandle->setTransform(tx);
+        if (auto entityLock = mEntityRuntime.lock())
+        {
+            entityLock->setTransform(tx);
+        }
     }
 
     long
     AnimationRuntime::getDuration
     ()
+    const
     {
         return mDuration;
     }
@@ -276,8 +303,13 @@ namespace octronic::dream
     void
     AnimationRuntime::update()
     {
-        auto timeDelta = mProjectRuntimeHandle->getTime()->getFrameTimeDelta();
-        stepAnimation(timeDelta);
+        if (auto prLock = mProjectRuntime.lock())
+        {
+            if (auto timeLock = prLock->getTime().lock())
+            {
+                stepAnimation(timeLock->getFrameTimeDelta());
+            }
+        }
     }
 
     void
@@ -394,6 +426,15 @@ namespace octronic::dream
 
     void AnimationRuntime::pushTasks()
     {
-
+		if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED) && mLoaded)
+        {
+           if (auto prLock = mProjectRuntime.lock())
+           {
+               if (auto taskQueue = prLock->getTaskQueue().lock())
+               {
+                   taskQueue->pushTask(mUpdateTask);
+               }
+           }
+        }
     }
 }

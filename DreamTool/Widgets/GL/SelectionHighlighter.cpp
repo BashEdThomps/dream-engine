@@ -30,7 +30,7 @@ namespace octronic::dream::tool
 
     void
     SelectionHighlighter::setSelectedEntity
-    (EntityRuntime* selected)
+    (const shared_ptr<EntityRuntime>& selected)
     {
         mSelectedEntityRuntime = selected;
         LOG_INFO("SelectionHighlighter: SelectedEntity changed to {}",mSelectedEntityRuntime->getNameAndUuidString());
@@ -194,7 +194,7 @@ namespace octronic::dream::tool
 
     void SelectionHighlighter::draw()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         mat4 model(1.f);
         mat4 view(1.f);
@@ -202,13 +202,13 @@ namespace octronic::dream::tool
 
         if (project)
         {
-            ProjectRuntime* pRuntime = project->getRuntime();
+            auto pRuntime = project->getRuntime();
             if (pRuntime)
             {
-                SceneRuntime* sRunt = pRuntime->getActiveSceneRuntime();
+                auto sRunt = pRuntime->getActiveSceneRuntime();
                 if (sRunt)
                 {
-                    CameraRuntime* cam = sRunt->getCamera();
+                    auto cam = sRunt->getCamera();
                     if (cam)
                     {
                         projection = cam->getProjectionMatrix();

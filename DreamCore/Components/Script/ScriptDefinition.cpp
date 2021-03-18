@@ -18,7 +18,7 @@
 namespace octronic::dream
 {
     ScriptDefinition::ScriptDefinition
-    (ProjectDefinition* pd, const json &js)
+    (const shared_ptr<ProjectDefinition>& pd, const json &js)
         : AssetDefinition("ScriptDefinition",pd,js)
     {
 

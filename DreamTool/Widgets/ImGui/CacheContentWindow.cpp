@@ -33,7 +33,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Audio", audioCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *audioCache->getRuntimeVectorHandle())
+                    for (auto instance : audioCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -44,7 +44,7 @@ namespace octronic::dream::tool
 
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *fontCache->getRuntimeVectorHandle())
+                    for (auto instance : fontCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -54,7 +54,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Material", materialCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *materialCache->getRuntimeVectorHandle())
+                    for (auto instance : materialCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -64,7 +64,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Model", modelCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *modelCache->getRuntimeVectorHandle())
+                    for (auto instance : modelCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -74,7 +74,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Script", scriptCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *scriptCache->getRuntimeVectorHandle())
+                    for (auto instance : scriptCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -84,7 +84,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Shader", shaderCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *shaderCache->getRuntimeVectorHandle())
+                    for (auto instance : shaderCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }
@@ -94,7 +94,7 @@ namespace octronic::dream::tool
                 snprintf(title, 128, formatStr.c_str(), "Texture", textureCache->runtimeCount());
                 if (ImGui::CollapsingHeader(title))
                 {
-                    for (auto& instance : *textureCache->getRuntimeVectorHandle())
+                    for (auto instance : textureCache->getRuntimeVector())
                     {
                         ImGui::Text("%s",instance->getNameAndUuidString().c_str());
                     }

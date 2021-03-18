@@ -28,21 +28,22 @@ namespace octronic::dream
     class ScriptRuntime : public SharedAssetRuntime
     {
     public:
-        ScriptRuntime(ProjectRuntime*, ScriptDefinition*);
+        ScriptRuntime(const weak_ptr<ProjectRuntime>&,
+                      const weak_ptr<ScriptDefinition>&);
         ~ScriptRuntime() override;
         bool loadFromDefinition() override;
 
-        bool createEntityState(EntityRuntime* rt);
+        bool createEntityState(const weak_ptr<EntityRuntime>& rt);
         bool removeEntityState(UuidType uuid);
 
-        string getSource();
+        string getSource() const;
         void setSource(const string& source);
 
-        bool executeOnInit(EntityRuntime* state);
-        bool executeOnUpdate(EntityRuntime* state);
-        bool executeOnEvent(EntityRuntime* state);
+        bool executeOnInit(const weak_ptr<EntityRuntime>& state);
+        bool executeOnUpdate(const weak_ptr<EntityRuntime>& state);
+        bool executeOnEvent(const weak_ptr<EntityRuntime>& state);
 
-        bool executeOnInput(InputComponent*, SceneRuntime*);
+        bool executeOnInput(const weak_ptr<SceneRuntime>&);
 
         bool registerInputScript();
         bool removeInputScript();
@@ -53,6 +54,5 @@ namespace octronic::dream
 
     private:
         string mSource;
-
     };
 }

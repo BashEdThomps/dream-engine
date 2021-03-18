@@ -17,7 +17,8 @@
 namespace octronic::dream
 {
     PathDefinition::PathDefinition
-    (ProjectDefinition* pd, const json& js)
+    (const shared_ptr<ProjectDefinition>& pd,
+     const json& js)
         : AssetDefinition("PathDefinition",pd,js)
     {
     }
@@ -38,10 +39,11 @@ namespace octronic::dream
     bool
     PathDefinition::getWrap
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_WRAP) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_WRAP] = false;
+            return false;
         }
         return mJson[Constants::ASSET_ATTR_WRAP];
     }
@@ -49,9 +51,14 @@ namespace octronic::dream
     vector<PathControlPoint>
     PathDefinition::getControlPoints
     ()
+    const
     {
         vector<PathControlPoint> retval;
-        ensureControlPointsArray();
+
+        if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
+        {
+            return retval;
+        }
 
         for (auto cpJS : mJson[Constants::ASSET_ATTR_CONTROL_POINTS])
         {
@@ -68,7 +75,10 @@ namespace octronic::dream
     {
         PathControlPoint cp;
         cp.id = nextID();
-        ensureControlPointsArray();
+        if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
+        }
         mJson[Constants::ASSET_ATTR_CONTROL_POINTS].push_back(wrapControlPoint(cp));
         return cp;
     }
@@ -76,10 +86,11 @@ namespace octronic::dream
     string
     PathDefinition::getSplineType
     ()
+    const
     {
         if (mJson.find(Constants::DREAM_PATH_SPLINE_TYPE) == mJson.end())
         {
-            mJson[Constants::DREAM_PATH_SPLINE_TYPE] = Constants::DREAM_PATH_TYPE_CLAMPED;
+            return Constants::DREAM_PATH_TYPE_CLAMPED;
         }
         return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
     }
@@ -94,8 +105,10 @@ namespace octronic::dream
     tsBSplineType
     PathDefinition::getSplineTypeEnum
     ()
+    const
     {
         string type = getSplineType();
+
         if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
         {
             return TS_OPENED;
@@ -124,10 +137,11 @@ namespace octronic::dream
     double
     PathDefinition::getStepScalar
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_STEP_SCALAR) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_STEP_SCALAR] = 1.0;
+            return 1.f;
         }
         return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
     }
@@ -135,6 +149,7 @@ namespace octronic::dream
     PathControlPoint
     PathDefinition::unwrapControlPoint
     (const json& js)
+    const
     {
         PathControlPoint cp;
         cp.id = js[Constants::ASSET_ATTR_ID];
@@ -146,6 +161,7 @@ namespace octronic::dream
     json
     PathDefinition::wrapControlPoint
     (const PathControlPoint& cp)
+    const
     {
         json js;
         js[Constants::ASSET_ATTR_POSITION] = Vector3::toJson(cp.position);
@@ -158,12 +174,11 @@ namespace octronic::dream
     PathDefinition::deleteControlPoint
     (const PathControlPoint& cp)
     {
-        ensureControlPointsArray();
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (; itr != end; itr++)
+        for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+             itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
         {
-            if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+            auto nextCp = (*itr);
+            if (nextCp[Constants::ASSET_ATTR_ID] == cp.id)
             {
                 mJson[Constants::ASSET_ATTR_CONTROL_POINTS].erase(itr) ;
                 return;
@@ -175,7 +190,6 @@ namespace octronic::dream
     PathDefinition::updateControlPoint
     (const PathControlPoint& cp)
     {
-        ensureControlPointsArray();
         auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
         auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
         for (; itr != end; itr++)
@@ -193,12 +207,11 @@ namespace octronic::dream
     ()
     {
         int maxID = 0;
-        ensureControlPointsArray();
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (;itr != end; itr++)
+        for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+             itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
         {
-            int nextID = (*itr)[Constants::ASSET_ATTR_ID];
+            auto nextCp = (*itr);
+            int nextID = nextCp[Constants::ASSET_ATTR_ID];
             if (nextID > maxID)
             {
                 maxID = nextID;
@@ -207,23 +220,14 @@ namespace octronic::dream
         return maxID+1;
     }
 
-    void
-    PathDefinition::ensureControlPointsArray
-    ()
-    {
-        if (!mJson[Constants::ASSET_ATTR_CONTROL_POINTS].is_array())
-        {
-            mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
-        }
-    }
-
     float
     PathDefinition::getVelocity
     ()
+    const
     {
         if (!mJson[Constants::ASSET_ATTR_VELOCITY].is_number())
         {
-            mJson[Constants::ASSET_ATTR_VELOCITY] = 1.0f;
+            return 1.0f;
         }
         return mJson[Constants::ASSET_ATTR_VELOCITY];
     }

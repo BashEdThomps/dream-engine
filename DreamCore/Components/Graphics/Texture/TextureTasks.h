@@ -10,17 +10,19 @@ namespace octronic::dream
 
     class TextureLoadIntoGLTask : public GraphicsTask
     {
-        TextureRuntime* mTextureRuntimeHandle;
+        weak_ptr<TextureRuntime> mTextureRuntime;
     public:
-        TextureLoadIntoGLTask(ProjectRuntime* pr, TextureRuntime* rt);
+        TextureLoadIntoGLTask(const weak_ptr<ProjectRuntime>& pr,
+                              const weak_ptr<TextureRuntime>& rt);
         void execute();
     };
 
     class TextureSetupEnvironmentTask : public GraphicsTask
     {
-        TextureRuntime* mTextureRuntimeHandle;
+        weak_ptr<TextureRuntime> mTextureRuntime;
     public:
-        TextureSetupEnvironmentTask(ProjectRuntime* pr, TextureRuntime* rt);
+        TextureSetupEnvironmentTask(const weak_ptr<ProjectRuntime>& pr,
+                                    const weak_ptr<TextureRuntime>& rt);
         void execute() override;
     };
 
@@ -42,7 +44,7 @@ namespace octronic::dream
         GLuint mQuadVAO;
     	GLuint mQuadVBO;
     public:
-        TextureRemoveFromGLTask(ProjectRuntime* pr);
+        TextureRemoveFromGLTask(const weak_ptr<ProjectRuntime>& pr);
         void setTextureID(GLuint id);
         void setCaptureBuffers(GLuint fbo, GLuint rbo);
         void setEquiToCubeTexture(GLuint texture);

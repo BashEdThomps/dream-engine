@@ -21,6 +21,7 @@
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
 #include "Math/Vector.h"
+#include "AudioRuntimeImplementation.h"
 
 #include <deque>
 
@@ -31,52 +32,29 @@ namespace octronic::dream
     class AudioDefinition;
     class AudioComponent;
 
-    class AudioRuntimeImplementation
-    {
-    public:
-        AudioRuntimeImplementation(const shared_ptr<AudioLoader>& loader)
-            : mLoader(loader)
-        {}
-
-        ~AudioRuntimeImplementation()
-        {}
-
-        virtual void play() = 0;
-        virtual void pause() = 0;
-        virtual void stop() = 0;
-        virtual void setSourcePosision(const vec3& pos) = 0;
-        virtual void setVolume(float volume) = 0;
-        virtual AudioStatus getState() = 0;
-        virtual unsigned int getSampleOffset() const = 0;
-        virtual void setSampleOffset(unsigned int offset) = 0;
-        virtual int getDurationInSamples() = 0;
-        virtual bool loadFromDefinition(ProjectRuntime* pr, AudioDefinition* ad) = 0;
-        void setParent(AudioRuntime* p) {mParent = p;};
-    protected:
-        shared_ptr<AudioLoader> mLoader;
-        AudioRuntime* mParent;
-    };
-
     /**
-     * @brief AudioRuntime data for an OpenAL based Audio Clip.
+     * @brief AudioRuntime holds data for an Audio Clip.
      */
     class AudioRuntime : public SharedAssetRuntime
     {
     public:
 
-        AudioRuntime(ProjectRuntime* project, AudioDefinition* def);
+        AudioRuntime(const weak_ptr<ProjectRuntime>& project,
+                     const weak_ptr<AudioDefinition>& def);
+
         ~AudioRuntime() override;
 
         bool isLooping() const ;
         long long getStartTime() const;
         void setStartTime(long long startTime);
         void updateMarkers();
-        shared_ptr<AudioMarkersUpdateTask> getMarkersUpdateTask();
-        shared_ptr<AudioLoader> getAudioLoader();
+        weak_ptr<AudioMarkersUpdateTask> getMarkersUpdateTask() const;
+        weak_ptr<AudioLoader> getAudioLoader() const;
 
         void play();
         void pause();
         void stop();
+        bool init() override;
         void setLooping(bool);
         void setSourcePosision(vec3 pos);
         void setVolume(float volume);
@@ -92,6 +70,9 @@ namespace octronic::dream
         void generateEventList();
 
     protected:
+        /**
+         * @brief mImpl - We take ownership of the Impl
+         */
         shared_ptr<AudioRuntimeImplementation> mImpl;
         bool mLooping;
         long long mStartTime;

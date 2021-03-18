@@ -8,84 +8,102 @@ using std::stringstream;
 
 namespace octronic::dream
 {
-    // GraphicsComponentTask ===================================================
+  // GraphicsComponentTask ===================================================
 
-    GraphicsTask::GraphicsTask(ProjectRuntime* pr, const string& taskName)
-        : Task(pr, taskName)
+  GraphicsTask::GraphicsTask
+  (const weak_ptr<ProjectRuntime>& pr, const string& taskName)
+    : Task(pr, taskName)
+  {
+
+  }
+
+  // GraphicsComponentDestructionTask ========================================
+
+  GraphicsDestructionTask::GraphicsDestructionTask
+  (const weak_ptr<ProjectRuntime>& pr, const string& taskName)
+    : DestructionTask(pr, taskName)
+  {
+
+  }
+
+  // SetupBuffersTask ========================================================
+
+  SetupBuffersTask::SetupBuffersTask
+  (const weak_ptr<ProjectRuntime>& pr)
+    : GraphicsTask(pr, "SetupBuffersTask")
+  {
+  }
+
+  void SetupBuffersTask::execute()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-
-    }
-
-    // GraphicsComponentDestructionTask ========================================
-
-    GraphicsDestructionTask::GraphicsDestructionTask
-    (ProjectRuntime* pr, const string& taskName)
-        : DestructionTask(pr, taskName)
-    {
-
-    }
-
-    // SetupBuffersTask ========================================================
-
-    SetupBuffersTask::SetupBuffersTask(ProjectRuntime* pr)
-        : GraphicsTask(pr, "SetupBuffersTask")
-    {
-    }
-
-    void SetupBuffersTask::execute()
-    {
-        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
+      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
+      {
         if (graphicsComponent->setupBuffers())
         {
-           setState(TASK_STATE_COMPLETED);
+          setState(TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TASK_STATE_DEFERRED);
+          setState(TASK_STATE_DEFERRED);
         }
+      }
     }
+  }
 
-    // HandleResizeTask ========================================================
+  // ResizeTask ========================================================
 
-    HandleResizeTask::HandleResizeTask(ProjectRuntime* pr)
-        : GraphicsTask(pr, "HandleResizeTask")
+  ResizeTask::ResizeTask
+  (const weak_ptr<ProjectRuntime>& pr)
+    : GraphicsTask(pr, "ResizeTask")
+  {
+  }
+
+  void ResizeTask::execute()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-    }
-
-    void HandleResizeTask::execute()
-    {
-        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
+      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
+      {
         if (graphicsComponent->handleResize())
         {
-           setState(TASK_STATE_COMPLETED);
+          setState(TASK_STATE_COMPLETED);
         }
         else
         {
-            setState(TASK_STATE_FAILED);
+          setState(TASK_STATE_FAILED);
         }
+      }
     }
+  }
 
-    // RenderTask ==============================================================
+  // RenderTask ==============================================================
 
-    RenderTask::RenderTask(ProjectRuntime* pr)
-        : GraphicsTask(pr, "RenderTask")
+  RenderTask::RenderTask
+  (const weak_ptr<ProjectRuntime>& pr)
+    : GraphicsTask(pr, "RenderTask")
+  {
+  }
+
+  void RenderTask::execute()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-    }
-
-    void RenderTask::execute()
-    {
-        auto graphicsComponent = mProjectRuntimeHandle->getGraphicsComponent();
-        auto sr = mProjectRuntimeHandle->getActiveSceneRuntime();
-        if (sr!=nullptr)
+      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
+      {
+        if (auto sr = prLock->getActiveSceneRuntime().lock())
         {
-            graphicsComponent->clearBuffers(sr);
-			graphicsComponent->renderModels(sr);
-            graphicsComponent->renderEnvironment(sr);
-			//graphicsComponent->renderShadowPass(sr);
-			//graphicsComponent->renderSprites(sr);
-			//graphicsComponent->renderFonts(sr);
+          graphicsComponent->clearBuffers(sr);
+          graphicsComponent->renderModels(sr);
+          graphicsComponent->renderEnvironment(sr);
+          //graphicsComponent->renderShadowPass(sr);
+          //graphicsComponent->renderSprites(sr);
+          //graphicsComponent->renderFonts(sr);
 
         }
         setState(TASK_STATE_COMPLETED);
+      }
     }
+  }
 }

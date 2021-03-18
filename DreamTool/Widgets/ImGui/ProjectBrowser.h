@@ -14,8 +14,8 @@ namespace octronic::dream::tool
 {
     struct EntityDragSource
     {
-       EntityDefinition* parentDef = nullptr;
-       EntityDefinition* objectDef = nullptr;
+       shared_ptr<EntityDefinition> parentDef;
+       shared_ptr<EntityDefinition> objectDef;
     };
 
 
@@ -27,10 +27,10 @@ namespace octronic::dream::tool
         void draw() override;
 
     private:
-        void addEntity(EntityDefinition* def);
+        void addEntity(const shared_ptr<EntityDefinition>& def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
-        vector<Definition*> mSelectedNodes;
+        vector<shared_ptr<Definition>> mSelectedNodes;
         EntityDragSource mDragDropSource;
     };
 }

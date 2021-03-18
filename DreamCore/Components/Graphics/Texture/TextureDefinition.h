@@ -24,25 +24,25 @@ namespace octronic::dream
     class TextureDefinition : public AssetDefinition
     {
     public:
-        TextureDefinition(ProjectDefinition* pd, const json& js);
+        TextureDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
         ~TextureDefinition() override;
 
-        bool getIsEnvironmentTexture();
+        bool getIsEnvironmentTexture() const;
         void setIsEnvironmentTexture(bool b);
 
-        bool getFlipVertical();
+        bool getFlipVertical() const;
         void setFlipVertical(bool b);
 
-        UuidType getEquiToCubeMapShader();
+        UuidType getEquiToCubeMapShader() const;
         void setEquiToCubeMapShader(UuidType u);
 
-        UuidType getIrradianceMapShader();
+        UuidType getIrradianceMapShader() const;
         void setIrradianceMapShader(UuidType u);
 
-        UuidType getPreFilterShader();
+        UuidType getPreFilterShader() const;
         void setPreFilterShader(UuidType u);
 
-        UuidType getBrdfLutShader();
+        UuidType getBrdfLutShader() const;
         void setBrdfLutShader(UuidType u);
     };
 }

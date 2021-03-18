@@ -26,6 +26,7 @@
 		#define LOG_LEVEL_ERROR spdlog::level::err
 		#define LOG_LEVEL_OFF spdlog::level::off
 		#define LOG_GET_LEVEL() spdlog::get_level()
+		#define LOG_PATTERN(x) spdlog::set_pattern(x)
 #else
 	#define LOG_LEVEL(x)
 	#define LOG_TRACE(...)
@@ -41,4 +42,5 @@
 	#define LOG_LEVEL_WARN
 	#define LOG_LEVEL_ERROR
 	#define LOG_LEVEL_OFF
+	#define LOG_PATTERN(x)
 #endif

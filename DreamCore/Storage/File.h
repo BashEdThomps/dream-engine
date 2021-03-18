@@ -15,10 +15,11 @@
 
 #pragma once
 
-
+#include <vector>
 #include <string>
 
 using std::string;
+using std::vector;
 
 namespace octronic::dream
 {
@@ -27,10 +28,12 @@ namespace octronic::dream
 		friend class StorageManager;
 
     public:
-		File(string path);
-        ~File();
+		File(const string& path);
         File(const File&) = delete;
         File& operator=(const File&) = delete;
+
+        ~File();
+
         string getDirectory() const;
         string getPath() const;
 
@@ -39,9 +42,8 @@ namespace octronic::dream
         bool writeString(const string&) const;
 
         virtual bool readBinary();
-        size_t getBinaryDataSize() const;
-		uint8_t* getBinaryData() const;
-        virtual bool writeBinary(const uint8_t* data, size_t size) const;
+		vector<uint8_t> getBinaryData() const;
+        virtual bool writeBinary(const vector<uint8_t>& data) const;
 
         bool deleteFile() const;
         virtual bool exists() const;
@@ -50,13 +52,10 @@ namespace octronic::dream
         string getNameWithoutExtension() const;
         string getExtension() const;
 
-
-
 	protected:
         string mPath;
 		string mStringData;
-		uint8_t*  mBinaryData;
-		size_t mBinaryDataSize;
+		vector<uint8_t> mBinaryData;
     };
 }
 

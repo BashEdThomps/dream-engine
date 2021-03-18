@@ -19,7 +19,7 @@ namespace octronic::dream
     class ScriptDefinition : public AssetDefinition
     {
     public:
-        ScriptDefinition(ProjectDefinition* pd, const json& js);
+        ScriptDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
         virtual ~ScriptDefinition();
         bool isFormatLua();
     };

@@ -57,26 +57,26 @@ namespace octronic::dream
     class AudioDefinition : public AssetDefinition
     {
     public:
-        AudioDefinition(ProjectDefinition* pd, const json& js);
+        AudioDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
         ~AudioDefinition() override;
 
-        bool isFormatWav();
-        bool isFormatOgg();
+        bool isFormatWav() const;
+        bool isFormatOgg() const;
 
         void setLoop(bool);
-        bool getLoop();
+        bool getLoop() const;
 
-        bool getSpectrumAnalyser();
+        bool getSpectrumAnalyser() const;
         void setSpectrumAnalyser(bool);
 
         int createMarker();
         void removeMarker(const int index);
-        int countMarkers();
+        int countMarkers() const;
 
-        string getMarkerName(unsigned int index);
-        void setMarkerName(unsigned int index, string name);
+        string getMarkerName(unsigned int index) const;
+        void setMarkerName(unsigned int index, const string& name);
 
-        int getMarkerSampleIndex(unsigned int index);
+        int getMarkerSampleIndex(unsigned int index) const;
         void setMarkerSampleIndex(unsigned int index, int smpl);
 
         int getMarkerRepeat(unsigned int index);

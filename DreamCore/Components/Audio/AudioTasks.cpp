@@ -6,7 +6,8 @@
 namespace octronic::dream
 {
     AudioMarkersUpdateTask::AudioMarkersUpdateTask
-    (ProjectRuntime* pr, AudioRuntime* rt)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<AudioRuntime>& rt)
         : Task(pr,"AudioMarkersUpdateTask"),
           mAudioRuntime(rt)
     {
@@ -17,7 +18,10 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("AudioMarkersUpdateTask: Executing {}",getID());
-		mAudioRuntime->updateMarkers();
+        if (auto arLock = mAudioRuntime.lock())
+        {
+			arLock->updateMarkers();
+        }
 		setState(TaskState::TASK_STATE_COMPLETED);
     }
 }

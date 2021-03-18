@@ -43,20 +43,21 @@ namespace octronic::dream
     {
 
     public:
-        CameraRuntime(CameraDefinition* cDef, SceneRuntime* parent);
+        CameraRuntime(const weak_ptr<CameraDefinition>& cDef,
+                      const weak_ptr<SceneRuntime>& parent);
         ~CameraRuntime();
 
         void update();
 
 		bool loadFromDefinition() override;
 
-        bool visibleInFrustum(const EntityRuntime*)const;
+        bool visibleInFrustum(const weak_ptr<EntityRuntime>&)const;
         bool visibleInFrustum(const BoundingBox&) const;
         bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
-        bool containedInFrustum(const EntityRuntime*) const;
+        bool containedInFrustum(const weak_ptr<EntityRuntime>&) const;
         bool containedInFrustum(const BoundingBox&) const;
-        bool containedInFrustumAfterTransform(const EntityRuntime*,const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const EntityRuntime*sor, const vec3& tx) const;
+        bool containedInFrustumAfterTransform(const weak_ptr<EntityRuntime>&,const mat4& tx) const;
+        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const weak_ptr<EntityRuntime>&sor, const vec3& tx) const;
 
         void setTransform(const Transform&);
         Transform getTransform() const;
@@ -73,8 +74,8 @@ namespace octronic::dream
         UuidType getCameraEntityUuid() const;
         void setCameraEntityUuid(UuidType u);
 
-        EntityRuntime* getCameraEntityRuntime() const;
-        void setCameraEntityRuntime(EntityRuntime* er);
+        weak_ptr<EntityRuntime> getCameraEntityRuntime() const;
+        void setCameraEntityRuntime(const weak_ptr<EntityRuntime>& er);
 
         void setMeshCullDistance(float);
         float getMeshCullDistance() const;
@@ -93,10 +94,10 @@ namespace octronic::dream
     private:
         Transform mFreeTransform;
         UuidType mCameraEntityUuid;
-        EntityRuntime* mCameraEntityRuntime;
+        weak_ptr<EntityRuntime> mCameraEntityRuntime;
         mat4 mProjectionMatrix;
         Frustum mFrustum;
-        SceneRuntime* mSceneRuntime;
+        weak_ptr<SceneRuntime> mSceneRuntime;
         bool mUseEntity;
         float mFieldOfView;
         float mMinDrawDistance;

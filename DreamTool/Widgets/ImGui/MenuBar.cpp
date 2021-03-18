@@ -36,7 +36,7 @@ namespace octronic::dream::tool
     MenuBar::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -167,7 +167,7 @@ namespace octronic::dream::tool
 
     void MenuBar::drawFileMenu()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         if (ImGui::BeginMenu("File"))
         {
@@ -363,7 +363,7 @@ namespace octronic::dream::tool
     {
         if (ImGui::BeginMenu("View"))
         {
-            Project* project = mContext->getProject();
+            auto project = mContext->getProject();
 
             if (project)
             {
@@ -412,7 +412,7 @@ namespace octronic::dream::tool
 
     void MenuBar::drawComponentsMenu()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         bool showPleaseDestroyScenesDialog = false;
 
@@ -434,8 +434,8 @@ namespace octronic::dream::tool
             }
 
             float volume = 1.0f;
-            ProjectRuntime* rt = project->getRuntime();
-            AudioComponent* audioComp = rt->getAudioComponent();
+            auto rt = project->getRuntime();
+            auto audioComp = rt->getAudioComponent();
 
             if (audioComp)
             {
@@ -452,8 +452,7 @@ namespace octronic::dream::tool
 
             bool scripting = false;
 
-            ProjectRuntime* pRuntime = project->getRuntime();
-
+            auto pRuntime = project->getRuntime();
 
             if (ImGui::MenuItem("Clear Caches"))
             {
@@ -677,9 +676,9 @@ namespace octronic::dream::tool
 
     void MenuBar::drawSceneMenu()
     {
-        Project* project = mContext->getProject();
-        ProjectDefinition* projDef = nullptr;
-        ProjectRuntime* pRuntime = nullptr;
+        auto project = mContext->getProject();
+        shared_ptr<ProjectDefinition> projDef;
+        shared_ptr<ProjectRuntime> pRuntime;
 
         if (ImGui::BeginMenu("Scene"))
         {
@@ -706,13 +705,20 @@ namespace octronic::dream::tool
             {
                 if (projDef)
                 {
-                    SceneDefinition* selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
+                    auto selectedSceneDef = projDef->getSceneDefinitionAtIndex(sceneToLoadIndex);
                     if (!pRuntime->hasSceneRuntime(selectedSceneDef->getUuid()))
                     {
-                        auto newSceneRT = new SceneRuntime(pRuntime, selectedSceneDef);
-                        newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
-                        pRuntime->addSceneRuntime(newSceneRT);
-                        setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                        auto newSceneRT = make_shared<SceneRuntime>(pRuntime, selectedSceneDef);
+                        if (newSceneRT->init())
+                        {
+							newSceneRT->setState(SceneState::SCENE_STATE_TO_LOAD);
+							pRuntime->addSceneRuntime(newSceneRT);
+							setMessageString("Added Scene Runtime: "+newSceneRT->getName());
+                        }
+                        else
+                        {
+							setMessageString("Scene Init Failed: "+newSceneRT->getName());
+                        }
                     }
                 }
             }
@@ -764,7 +770,7 @@ namespace octronic::dream::tool
 
     void MenuBar::drawDebugMenu()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         if (ImGui::BeginMenu("Debug"))
         {
@@ -800,7 +806,7 @@ namespace octronic::dream::tool
                     mContext->getTaskManagerWindow()->setVisible(showTaskManager);
                 }
             }
-
+#ifdef ENABLE_LOGGING
             if(ImGui::BeginMenu("Engine Logging"))
             {
                 spdlog::level::level_enum mode =  LOG_GET_LEVEL();
@@ -835,6 +841,7 @@ namespace octronic::dream::tool
                 LOG_LEVEL(mode);
                 ImGui::EndMenu();
             }
+#endif
             ImGui::EndMenu();
         }
     }

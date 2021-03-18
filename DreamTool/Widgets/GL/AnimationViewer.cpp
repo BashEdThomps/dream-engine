@@ -48,11 +48,14 @@ namespace octronic::dream::tool
 
     void
     AnimationViewer::setAnimationDefinition
-    (AnimationDefinition* selected)
+    (const shared_ptr<AnimationDefinition>& selected)
     {
         bool regen = (selected != mAnimationDefinition);
         mAnimationDefinition = selected;
-        if (regen){ regenerate(); }
+        if (regen)
+        {
+            regenerate();
+        }
     }
 
     void

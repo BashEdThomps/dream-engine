@@ -20,7 +20,7 @@ namespace octronic::dream
     class AnimationDefinition : public AssetDefinition
     {
     public:
-        AnimationDefinition(ProjectDefinition*, const json&);
+        AnimationDefinition(const shared_ptr<ProjectDefinition>&, const json&);
         ~AnimationDefinition() override;
 
         vector<AnimationKeyframe> getKeyframes();

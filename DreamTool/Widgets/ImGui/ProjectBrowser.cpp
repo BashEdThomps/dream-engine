@@ -28,13 +28,13 @@ namespace octronic::dream::tool
     ProjectBrowser::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
 
         if (project)
         {
             ImGui::Begin("Project",&mVisible);
             // Project Tree
-            ProjectDefinition* projDef = project->getDefinition();
+            auto projDef = project->getDefinition();
 
             if (projDef == nullptr)
             {
@@ -62,7 +62,7 @@ namespace octronic::dream::tool
             if (projectNodeOpen)
             {
                 int sdTreeID = 0;
-                for (SceneDefinition* sDef : projDef->getSceneDefinitionsVector())
+                for (auto sDef : projDef->getSceneDefinitionsVector())
                 {
                     bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,
                                                            node_flags, sDef->getName().c_str(), 0);
@@ -70,8 +70,8 @@ namespace octronic::dream::tool
                     if (ImGui::IsItemClicked())
                     {
                         LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
-                        ProjectRuntime* pRunt = project->getRuntime();
-                        SceneRuntime* sRunt = nullptr;
+                        auto pRunt = project->getRuntime();
+                        shared_ptr<SceneRuntime> sRunt;
 
                         if (pRunt)
                         {
@@ -91,7 +91,7 @@ namespace octronic::dream::tool
 
                     if (sceneNodeOpen)
                     {
-                        EntityDefinition* rootSo = sDef->getRootEntityDefinition();
+                        auto rootSo = sDef->getRootEntityDefinition();
                         addEntity(rootSo);
                         ImGui::TreePop();
                     }
@@ -111,16 +111,16 @@ namespace octronic::dream::tool
 
     void
     ProjectBrowser::addEntity
-    (EntityDefinition* def)
+    (const shared_ptr<EntityDefinition>& def)
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         int treeId = 0;
 
         if (def != nullptr)
         {
-            ProjectRuntime* projectRuntime = project->getRuntime();
-            SceneRuntime* sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            EntityRuntime* entityRuntime = nullptr;
+            auto projectRuntime = project->getRuntime();
+            auto sceneRuntime = projectRuntime->getActiveSceneRuntime();
+            shared_ptr<EntityRuntime> entityRuntime;
 
             if (sceneRuntime)
             {
@@ -143,7 +143,7 @@ namespace octronic::dream::tool
 
             if (sceneRuntime)
             {
-                CameraRuntime* cam = sceneRuntime->getCamera();
+                auto cam = sceneRuntime->getCamera();
                 if (cam->getCameraEntityRuntime() == entityRuntime)
                 {
 					if (!flagsStr.str().empty())
@@ -224,8 +224,8 @@ namespace octronic::dream::tool
             {
                 for (auto node : mSelectedNodes)
                 {
-                    auto defToCreate = dynamic_cast<EntityDefinition*>(node);
-                    EntityDefinition* newDef = new EntityDefinition(def,def->getSceneDefinition(),defToCreate->toJson(),true);
+                    auto defToCreate = static_pointer_cast<EntityDefinition>(node);
+                    shared_ptr<EntityDefinition> newDef = make_shared<EntityDefinition>(def,def->getSceneDefinition(),defToCreate->toJson(),true);
                     newDef->loadChildEntityDefinitions(true);
                     def->addChildDefinition(newDef);
                     if (entityRuntime)
@@ -277,14 +277,11 @@ namespace octronic::dream::tool
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::ENTITY.c_str()))
                 {
                     IM_ASSERT(payload->DataSize == sizeof(EntityDragSource*));
-                    LOG_TRACE
-                            (
-                                "ProjectBrowser: Definition {} was dropped onto {}",
+                    LOG_TRACE("ProjectBrowser: Definition {} was dropped onto {}",
                                 mDragDropSource.objectDef->getNameAndUuidString(),
-                                def->getNameAndUuidString()
-                                );
+                                def->getNameAndUuidString());
 
-                    mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef,false);
+                    mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef);
                     def->adoptChildDefinition(mDragDropSource.objectDef);
 
                     if (entityRuntime)
@@ -315,7 +312,7 @@ namespace octronic::dream::tool
             // Show Node Contents
             if(nodeOpen)
             {
-                for (EntityDefinition* child : def->getChildDefinitionsVector())
+                for (auto child : def->getChildDefinitionsVector())
                 {
                     addEntity(child);
                 }

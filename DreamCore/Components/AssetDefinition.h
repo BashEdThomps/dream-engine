@@ -18,6 +18,10 @@
 #include "Base/Definition.h"
 #include "Math/Transform.h"
 
+#include <memory>
+
+using std::weak_ptr;
+using std::shared_ptr;
 using std::vector;
 
 namespace octronic::dream
@@ -36,49 +40,49 @@ namespace octronic::dream
          * @param project ProjectDefinition that owns this AssetDefinition
          * @param data JSON object from which to construct the AssetDefinition
          */
-        AssetDefinition(const string& className, ProjectDefinition* project, const json& data);
+        AssetDefinition(const string& className, const weak_ptr<ProjectDefinition>& project, const json& data);
         virtual ~AssetDefinition();
 
         /**
          * @return Returns the Dream::AssetType of the AssetDefinition
          * @see Dream::AssetType
          */
-        AssetType getAssetType();
+        AssetType getAssetType() const;
 
         /**
          * @return Get the pointer to the parant ProjectDefinition
          */
-        ProjectDefinition* getProject();
+        weak_ptr<ProjectDefinition> getProject() const;
 
         /**
          * @brief Set the type from a string
          */
-        void setType(string);
+        void setType(const string&);
 
         /**
          * @return Get the type as a string
          */
-        string getType();
+        string getType() const;
 
-        void setFormat(string);
-        string getFormat();
+        void setFormat(const string&);
+        string getFormat() const;
 
-        string getGroup();
-        void setGroup(string group);
+        string getGroup() const;
+        void setGroup(const string& group);
 
-        AssetDefinition* duplicate();
+        weak_ptr<AssetDefinition> duplicate();
 
-        bool isTypeAnimation();
-        bool isTypeAudio();
-        bool isTypeFont();
-        bool isTypeMaterial();
-        bool isTypeModel();
-        bool isTypeScript();
-        bool isTypeShader();
-        bool isTypePath();
-        bool isTypePhysicsObject();
-        bool isTypeTexture();
+        bool isTypeAnimation() const;
+        bool isTypeAudio() const;
+        bool isTypeFont() const;
+        bool isTypeMaterial() const;
+        bool isTypeModel() const;
+        bool isTypeScript() const;
+        bool isTypeShader() const;
+        bool isTypePath() const;
+        bool isTypePhysicsObject() const;
+        bool isTypeTexture() const;
     protected:
-        ProjectDefinition* mProjectDefinition;
+        weak_ptr<ProjectDefinition> mProjectDefinition;
     };
 }

@@ -20,7 +20,7 @@ namespace octronic::dream
 {
 
     Component::Component
-    (ProjectRuntime* pr)
+    (const weak_ptr<ProjectRuntime>& pr)
         : mProjectRuntime(pr)
     {
 
@@ -32,7 +32,8 @@ namespace octronic::dream
 
     }
 
-    void Component::setProjectRuntime(ProjectRuntime *pr)
+    void Component::setProjectRuntime
+    (const weak_ptr<ProjectRuntime>& pr)
     {
         mProjectRuntime = pr;
     }

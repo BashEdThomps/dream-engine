@@ -23,76 +23,77 @@
 #include "Project/ProjectRuntime.h"
 #include "Components/Cache.h"
 
+using std::static_pointer_cast;
+
 namespace octronic::dream
 {
-    MaterialRuntime::MaterialRuntime(ProjectRuntime* rt, MaterialDefinition* def)
-        : SharedAssetRuntime(rt, def),
-          mAlbedoTextureHandle(nullptr),
-          mNormalTextureHandle(nullptr),
-          mMetallicTextureHandle(nullptr),
-          mRoughnessTextureHandle(nullptr),
-          mAoTextureHandle(nullptr),
-          mShaderHandle(nullptr)
+  MaterialRuntime::MaterialRuntime(
+      const weak_ptr<ProjectRuntime>& rt,
+      const weak_ptr<MaterialDefinition>& def)
+    : SharedAssetRuntime(rt, def)
+  {
+    LOG_TRACE("MaterialRuntime: Constructing");
+  }
+
+  MaterialRuntime::~MaterialRuntime()
+  {
+    LOG_TRACE("MaterialRuntime: Destructing");
+  }
+
+  void
+  MaterialRuntime::addMesh
+  (const weak_ptr<ModelMesh>& mesh)
+  {
+    mUsedBy.push_back(mesh);
+  }
+
+  void
+  MaterialRuntime::removeMesh
+  (const weak_ptr<ModelMesh>& mesh)
+  {
+    auto itr = std::find_if(mUsedBy.begin(), mUsedBy.end(),
+    	[&](const weak_ptr<ModelMesh>& next){
+      	return next.lock() == mesh.lock();
+    	});
+    if (itr != mUsedBy.end())
     {
-        LOG_TRACE("MaterialRuntime: Constructing");
+      mUsedBy.erase(itr);
     }
+  }
 
-    MaterialRuntime::~MaterialRuntime()
-    {
-        LOG_TRACE("MaterialRuntime: Destructing");
-    }
+  void
+  MaterialRuntime::clearMeshes
+  ()
+  {
+    mUsedBy.clear();
+  }
 
-    void
-    MaterialRuntime::addMesh
-    (ModelMesh* mesh)
-    {
-        mUsedBy.push_back(mesh);
-    }
+  size_t
+  MaterialRuntime::countMeshes
+  ()
+  {
+    return mUsedBy.size();
+  }
 
-    void
-    MaterialRuntime::removeMesh
-    (ModelMesh *mesh)
-    {
-       auto itr = std::find(mUsedBy.begin(), mUsedBy.end(), mesh);
-       if (itr != mUsedBy.end())
-       {
-           mUsedBy.erase(itr);
-       }
-    }
+  bool
+  MaterialRuntime::operator==
+  (MaterialRuntime& other)
+  {
+    return getName() == other.getName();
+  }
 
-    void
-    MaterialRuntime::clearMeshes
-    ()
-    {
-        mUsedBy.clear();
-    }
+  void
+  MaterialRuntime::debug
+  ()
+  {
+    GLuint albedo, normal, metallic, roughness, ao;
+    albedo    = (mAlbedoTexture.expired()    ? 0 : mAlbedoTexture.lock()->getTextureID());
+    normal    = (mNormalTexture.expired()    ? 0 : mNormalTexture.lock()->getTextureID());
+    metallic  = (mMetallicTexture.expired()  ? 0 : mMetallicTexture.lock()->getTextureID());
+    roughness = (mRoughnessTexture.expired() ? 0 : mRoughnessTexture.lock()->getTextureID());
+    ao        = (mAoTexture.expired()        ? 0 : mAoTexture.lock()->getTextureID());
 
-    size_t
-    MaterialRuntime::countMeshes
-    ()
-    {
-        return mUsedBy.size();
-    }
-
-    bool
-    MaterialRuntime::operator==
-    (MaterialRuntime& other)
-    {
-        return getName() == other.getName();
-    }
-
-    void
-    MaterialRuntime::debug
-    ()
-    {
-        GLuint albedo, normal, metallic, roughness, ao;
-        albedo    = (mAlbedoTextureHandle    == nullptr ? 0 : mAlbedoTextureHandle->getTextureID());
-        normal    = (mNormalTextureHandle    == nullptr ? 0 : mNormalTextureHandle->getTextureID());
-        metallic  = (mMetallicTextureHandle  == nullptr ? 0 : mMetallicTextureHandle->getTextureID());
-        roughness = (mRoughnessTextureHandle == nullptr ? 0 : mRoughnessTextureHandle->getTextureID());
-        ao        = (mAoTextureHandle        == nullptr ? 0 : mAoTextureHandle->getTextureID());
-
-        LOG_TRACE("Maerial Parameters\n"
+    LOG_TRACE("Maerial Parameters\n"
             "Name....................{}\n"
             "AlbedoTexture...........{}\n"
             "NormalTexture...........{}\n"
@@ -100,155 +101,184 @@ namespace octronic::dream
             "RoughnessTexture........{}\n"
             "AoTexture...............{}\n"
             "Meshes..................{}",
-            getName(), albedo, normal,
-            metallic, roughness, ao,
-            mUsedBy.size());
-    }
+              getName(), albedo, normal,
+              metallic, roughness, ao,
+              mUsedBy.size());
+  }
 
-    void
-    MaterialRuntime::logMeshes
-    ()
+  void
+  MaterialRuntime::logMeshes
+  ()
+  {
+    LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
+    for (auto mesh : mUsedBy)
     {
-        LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
-        for (auto mesh : mUsedBy)
-        {
-            LOG_DEBUG("\t\t{}", mesh->getName());
-            mesh->logRuntimes();
-        }
+      if (auto meshLock = mesh.lock())
+      {
+        LOG_DEBUG("\t\t{}", meshLock->getName());
+        meshLock->logRuntimes();
+      }
     }
+  }
 
-    vector<ModelMesh*>& MaterialRuntime::getUsedByVector()
+  vector<weak_ptr<ModelMesh>>
+  MaterialRuntime::getUsedByVector()
+  const
+  {
+    return mUsedBy;
+  }
+
+  void
+  MaterialRuntime::drawShadowPass
+  (const weak_ptr<ShaderRuntime>& shader)
+  {
+    for (auto mesh : mUsedBy)
     {
-        return mUsedBy;
+      if (auto meshLock = mesh.lock())
+      {
+        meshLock->drawShadowPassRuntimes(shader);
+      }
     }
+  }
 
-    void
-    MaterialRuntime::drawShadowPass
-    (ShaderRuntime* shader)
+  bool
+  MaterialRuntime::loadFromDefinition
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        for (auto mesh : mUsedBy)
-        {
-            mesh->drawShadowPassRuntimes(shader);
-        }
-    }
-
-    bool
-    MaterialRuntime::loadFromDefinition
-    ()
-    {
-        auto matDef = static_cast<MaterialDefinition*>(mDefinitionHandle);
+      if (auto defLock = mDefinition.lock())
+      {
+        auto matDef = static_pointer_cast<MaterialDefinition>(defLock);
 
         // Shaders & Textures
-        auto shaderCache = mProjectRuntimeHandle->getShaderCache();
-        auto textureCache = mProjectRuntimeHandle->getTextureCache();
-        mShaderHandle = shaderCache->getRuntimeHandle(matDef->getShader());
-
-        if (mShaderHandle == nullptr)
+        if (auto shaderCache = prLock->getShaderCache().lock())
         {
-            LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
-            return false;
+
+          if (auto textureCache = prLock->getTextureCache().lock())
+          {
+            mShader = shaderCache->getRuntime(matDef->getShader());
+
+            if (mShader.expired())
+            {
+              LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
+              return false;
+            }
+
+            if (auto shaderLock = mShader.lock())
+            {
+              mAlbedoTexture = textureCache->getRuntime(matDef->getAlbedoTexture());
+              mNormalTexture = textureCache->getRuntime(matDef->getNormalTexture());
+              mMetallicTexture = textureCache->getRuntime(matDef->getMetallicTexture());
+              mRoughnessTexture = textureCache->getRuntime(matDef->getRoughnessTexture());
+              mAoTexture = textureCache->getRuntime(matDef->getAoTexture());
+              shaderLock->addMaterial(static_pointer_cast<MaterialRuntime>(shared_from_this()));
+              return true;
+            }
+          }
         }
-
-        mAlbedoTextureHandle = textureCache->getRuntimeHandle(matDef->getAlbedoTexture());
-        mNormalTextureHandle = textureCache->getRuntimeHandle(matDef->getNormalTexture());
-        mMetallicTextureHandle = textureCache->getRuntimeHandle(matDef->getMetallicTexture());
-        mRoughnessTextureHandle = textureCache->getRuntimeHandle(matDef->getRoughnessTexture());
-        mAoTextureHandle = textureCache->getRuntimeHandle(matDef->getAoTexture());
-        mShaderHandle->addMaterial(this);
-        return true;
+      }
     }
+    return false;
+  }
 
-    ShaderRuntime*
-    MaterialRuntime::getShaderHandle
-    () const
+  weak_ptr<ShaderRuntime>
+  MaterialRuntime::getShader
+  () const
+  {
+    return mShader;
+  }
+
+  void
+  MaterialRuntime::setShader
+  (const weak_ptr<ShaderRuntime>& shader)
+  {
+    mShader = shader;
+  }
+
+  weak_ptr<TextureRuntime>
+  MaterialRuntime::getAlbedoTexture
+  () const
+  {
+    return mAlbedoTexture;
+  }
+
+  void
+  MaterialRuntime::setAlbedoTexture
+  (const weak_ptr<TextureRuntime>& t)
+  {
+    mAlbedoTexture = t;
+  }
+
+  weak_ptr<TextureRuntime>
+  MaterialRuntime::getNormalTexture
+  () const
+  {
+    return mNormalTexture;
+  }
+
+  void
+  MaterialRuntime::setNormalTexture
+  (const weak_ptr<TextureRuntime>& normalTexture)
+  {
+    mNormalTexture = normalTexture;
+  }
+
+  weak_ptr<TextureRuntime>
+  MaterialRuntime::getMetallicTexture
+  () const
+  {
+    return mMetallicTexture;
+  }
+
+  void
+  MaterialRuntime::setMetallicTexture
+  (const weak_ptr<TextureRuntime>& t)
+  {
+    mMetallicTexture = t;
+  }
+
+  weak_ptr<TextureRuntime>
+  MaterialRuntime::getRoughnessTexture
+  () const
+  {
+    return mRoughnessTexture;
+  }
+
+  void
+  MaterialRuntime::setRoughnessTexture
+  (const weak_ptr<TextureRuntime>& t)
+  {
+    mRoughnessTexture = t;
+  }
+
+  weak_ptr<TextureRuntime>
+  MaterialRuntime::getAoTexture
+  () const
+  {
+    return mAoTexture;
+  }
+
+  void
+  MaterialRuntime::setAoTexture
+  (const weak_ptr<TextureRuntime>& t)
+  {
+    mAoTexture = t;
+  }
+
+  void
+  MaterialRuntime::pushTasks
+  ()
+  {
+    if (auto prLock = mProjectRuntime.lock())
     {
-        return mShaderHandle;
-    }
-
-    void
-    MaterialRuntime::setShaderHandle
-    (ShaderRuntime* shader)
-    {
-        mShaderHandle = shader;
-    }
-
-    TextureRuntime*
-    MaterialRuntime::getAlbedoTextureHandle
-    () const
-    {
-        return mAlbedoTextureHandle;
-    }
-
-    void
-    MaterialRuntime::setAlbedoTextureHandle
-    (TextureRuntime* t)
-    {
-        mAlbedoTextureHandle = t;
-    }
-
-    TextureRuntime*
-    MaterialRuntime::getNormalTextureHandle
-    () const
-    {
-        return mNormalTextureHandle;
-    }
-
-    void
-    MaterialRuntime::setNormalTextureHandle
-    (TextureRuntime* normalTexture)
-    {
-        mNormalTextureHandle = normalTexture;
-    }
-
-    TextureRuntime*
-    MaterialRuntime::getMetallicTextureHandle
-    () const
-    {
-        return mMetallicTextureHandle;
-    }
-
-    void
-    MaterialRuntime::setMetallicTextureHandle
-    (TextureRuntime* t)
-    {
-        mMetallicTextureHandle = t;
-    }
-
-    TextureRuntime*
-    MaterialRuntime::getRoughnessTextureHandle
-    () const
-    {
-        return mRoughnessTextureHandle;
-    }
-
-    void
-    MaterialRuntime::setRoughnessTextureHandle
-    (TextureRuntime* t)
-    {
-        mRoughnessTextureHandle = t;
-    }
-
-    TextureRuntime*
-    MaterialRuntime::getAoTextureHandle
-    () const
-    {
-        return mAoTextureHandle;
-    }
-
-    void
-    MaterialRuntime::setAoTextureHandle
-    (TextureRuntime* t)
-    {
-        mAoTextureHandle = t;
-    }
-
-    void MaterialRuntime::pushTasks()
-    {
-        auto taskQueue = mProjectRuntimeHandle->getTaskQueue();
-
+      if (auto taskQueue = prLock->getTaskQueue().lock())
+      {
         if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
         {
-            taskQueue->pushTask(mLoadFromDefinitionTask);
+          taskQueue->pushTask(mLoadFromDefinitionTask);
         }
+      }
     }
+  }
 }

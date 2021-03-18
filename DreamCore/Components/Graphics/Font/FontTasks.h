@@ -11,9 +11,10 @@ namespace octronic::dream
 
     class FontLoadIntoGLTask : public GraphicsTask
     {
-        FontRuntime* mFontRuntime;
+        weak_ptr<FontRuntime> mFontRuntime;
     public:
-        FontLoadIntoGLTask(ProjectRuntime* pr, FontRuntime* rt);
+        FontLoadIntoGLTask(const weak_ptr<ProjectRuntime>& pr,
+                           const weak_ptr<FontRuntime>& rt);
         void execute();
     };
 
@@ -23,7 +24,7 @@ namespace octronic::dream
         GLuint mFontVao;
         GLuint mFontVbo;
     public:
-        FontRemoveFromGLTask(ProjectRuntime* pr);
+        FontRemoveFromGLTask(const weak_ptr<ProjectRuntime>& pr);
         void setFontAtlasTexture(GLuint id);
         void setFontVao(GLuint id);
         void setFontVbo(GLuint id);

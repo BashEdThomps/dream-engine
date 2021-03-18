@@ -40,7 +40,7 @@ namespace octronic::dream::open_al
         void setListenerPosition(const vec3&) override;
         void setVolume(float) override;
         float getVolume() override;
-        AudioRuntime* getAudioRuntime(AudioDefinition* def) override;
+        weak_ptr<AudioRuntime> getAudioRuntime(const weak_ptr<AudioDefinition>& def) override;
 
         private:
         ALCdevice*  mDevice;

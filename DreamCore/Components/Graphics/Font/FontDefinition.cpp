@@ -16,25 +16,28 @@
 namespace octronic::dream
 {
     FontDefinition::FontDefinition
-    (ProjectDefinition* pd, const json &js)
-        :AssetDefinition("FontDefinition",pd,js)
+    (const shared_ptr<ProjectDefinition>& pd, const json &js)
+        : AssetDefinition("FontDefinition",pd,js)
     {
     }
 
-    void FontDefinition::setSize(unsigned int size)
+    void
+    FontDefinition::setSize
+    (unsigned int size)
     {
         mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
     }
 
-    unsigned int FontDefinition::getSize()
+    unsigned int
+    FontDefinition::getSize
+    ()
+    const
     {
-        unsigned int size = 1;
         if (mJson.find(Constants::ASSET_ATTR_FONT_SIZE) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_FONT_SIZE] = size;
+            return 1;
         }
-        size = mJson[Constants::ASSET_ATTR_FONT_SIZE];
-        return size;
+        return mJson[Constants::ASSET_ATTR_FONT_SIZE];
     }
 }
 

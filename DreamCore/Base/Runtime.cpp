@@ -1,16 +1,25 @@
 #include "Runtime.h"
+#include "Project/ProjectRuntime.h"
 
 using std::make_shared;
 
 namespace octronic::dream
 {
     Runtime::Runtime
-    (Definition* def)
-        : mDefinitionHandle(def),
-          mUuid(def == nullptr ? Uuid::INVALID : def->getUuid()),
-          mName(def == nullptr ? "" : def->getName()),
-          mLoadFromDefinitionTask(make_shared<RuntimeLoadFromDefinitionTask>(nullptr,this))
-	{}
+    (const weak_ptr<Definition>& def)
+        : mDefinition(def)
+	{
+        if (auto defLock = mDefinition.lock())
+        {
+			mUuid = defLock->getUuid();
+			mName = defLock->getName();
+        }
+        else
+        {
+            mUuid = Uuid::INVALID;
+			mName = "";
+        }
+    }
 
     Runtime::~Runtime
     ()
@@ -75,25 +84,18 @@ namespace octronic::dream
     string
     Runtime::getNameAndUuidString
     ()
+    const
     {
         stringstream ss;
         ss << "[" << getName() << " : " << getUuid() << "]";
         return ss.str();
     }
 
-    Definition*
-    Runtime::getDefinitionHandle
+    weak_ptr<Definition>
+    Runtime::getDefinition
     ()
     const
     {
-        return mDefinitionHandle;
-    }
-
-    shared_ptr<RuntimeLoadFromDefinitionTask>
-    Runtime::getLoadFromDefinitionTask
-    ()
-    const
-    {
-        return mLoadFromDefinitionTask;
+        return mDefinition;
     }
 }

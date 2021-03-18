@@ -17,7 +17,7 @@
 
 #include "Common/Uuid.h"
 
-
+#include <memory>
 #include <string>
 #include <vector>
 #include <json.hpp>
@@ -25,7 +25,10 @@
 using std::string;
 using std::shared_ptr;
 using std::vector;
+using std::shared_ptr;
 using nlohmann::json;
+using std::enable_shared_from_this;
+using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -39,37 +42,34 @@ namespace octronic::dream
     class StorageManager;
     class AudioComponent;
 
-    class Project
+    class Project : public enable_shared_from_this<Project>
     {
-
-
-        // Public Methods
     public:
-        Project(ProjectDirectory* dir, StorageManager* fm);
+        Project(const weak_ptr<ProjectDirectory>& dir, const weak_ptr<StorageManager>& fm);
         ~Project();
 
-        ProjectRuntime* getRuntime() const;
-        ProjectRuntime* createProjectRuntime();
+        weak_ptr<ProjectRuntime> getRuntime() const;
+        weak_ptr<ProjectRuntime> createProjectRuntime();
         bool hasProjectRuntime() const;
         void resetProjectRuntime();
 
-        ProjectDefinition* getDefinition() const;
-        void setDefinition(ProjectDefinition* definition);
+        weak_ptr<ProjectDefinition> getDefinition() const;
+        void setDefinition(const shared_ptr<ProjectDefinition>& definition);
         bool hasProjectDefinition() const;
 
-        AssetDefinition* getAssetDefinitionByUuid(UuidType uuid) const;
-        void setWindowComponent(WindowComponent* windowComponent);
-        void setStorageManager(StorageManager* storageManager);
-        void setAudioComponent(AudioComponent* audioComponent);
+        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid) const;
+        void setWindowComponent(const shared_ptr<WindowComponent>& windowComponent);
+        void setStorageManager(const shared_ptr<StorageManager>& storageManager);
+        void setAudioComponent(const shared_ptr<AudioComponent>& audioComponent);
 
-        ProjectDirectory* getDirectory() const;
-            // Variables
+        weak_ptr<ProjectDirectory> getDirectory() const;
+
     private:
-        ProjectDirectory* mDirectory;
-        ProjectDefinition* mDefinition;
-        ProjectRuntime* mRuntime;
-        WindowComponent* mWindowComponent;
-        AudioComponent* mAudioComponent;
-        StorageManager* mStorageManager;
+        shared_ptr<ProjectDirectory> mDirectory;
+        shared_ptr<ProjectDefinition> mDefinition;
+        shared_ptr<ProjectRuntime> mRuntime;
+        shared_ptr<WindowComponent> mWindowComponent;
+        shared_ptr<AudioComponent> mAudioComponent;
+        shared_ptr<StorageManager> mStorageManager;
     };
 }

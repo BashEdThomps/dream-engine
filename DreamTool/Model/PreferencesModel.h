@@ -19,6 +19,7 @@ namespace octronic::dream::tool
         ~PreferencesModel();
 
         string getExternalEditorPath();
+        bool hasExternalEditorPath();
         void setExternalEditorPath(const string& path);
 
         bool load();

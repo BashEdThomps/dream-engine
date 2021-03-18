@@ -12,10 +12,13 @@
 #include "PhysicsObjectDefinition.h"
 #include "Math/Vector.h"
 
+using std::static_pointer_cast;
+
 namespace octronic::dream
 {
     PhysicsObjectDefinition::PhysicsObjectDefinition
-    (ProjectDefinition* pd, const json &js)
+    (const shared_ptr<ProjectDefinition>& pd,
+     const json &js)
         : AssetDefinition("PhysicsObjectDefinition",pd,js)
     {
 
@@ -31,10 +34,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getMass
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_MASS].is_number())
+        if (mJson.find(Constants::ASSET_ATTR_MASS) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_MASS] = 0;
+           return 0;
         }
         return mJson[Constants::ASSET_ATTR_MASS];
     }
@@ -49,10 +53,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getMargin
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_MARGIN].is_number())
+        if (mJson.find(Constants::ASSET_ATTR_MARGIN) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_MARGIN] = 0;
+            return 0.f;
         }
         return mJson[Constants::ASSET_ATTR_MARGIN];
     }
@@ -67,17 +72,18 @@ namespace octronic::dream
     bool
     PhysicsObjectDefinition::getKinematic
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_KINEMATIC) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_KINEMATIC] = false;
+            return false;
         }
         return mJson[Constants::ASSET_ATTR_KINEMATIC];
     }
 
     void
     PhysicsObjectDefinition::setHalfExtents
-    (vec3 halfExtent)
+    (const vec3& halfExtent)
     {
         mJson[Constants::ASSET_ATTR_SIZE] = Vector3::toJson(halfExtent);
     }
@@ -85,10 +91,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getHalfExtents
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_SIZE) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_SIZE][Constants::X] = Vector3::toJson(vec3(0.f));
+            return vec3(0.f);
         }
         return Vector3::fromJson(mJson[Constants::ASSET_ATTR_SIZE]);
     }
@@ -103,10 +110,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getNormal
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_NORMAL) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_NORMAL] = Vector3::toJson(vec3(0));
+            return vec3(0.f);
         }
         return Vector3::fromJson(mJson[Constants::ASSET_ATTR_NORMAL]);
     }
@@ -114,10 +122,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getRadius
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_RADIUS) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_RADIUS] = 0;
+            return 0;
         }
         return mJson[Constants::ASSET_ATTR_RADIUS];
     }
@@ -129,11 +138,14 @@ namespace octronic::dream
         mJson[Constants::ASSET_ATTR_RADIUS] = rad;
     }
 
-    float PhysicsObjectDefinition::getHeight()
+    float
+    PhysicsObjectDefinition::getHeight
+    ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_HEIGHT) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_HEIGHT] = 0;
+            return 0;
         }
         return mJson[Constants::ASSET_ATTR_HEIGHT];
     }
@@ -146,10 +158,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getConstant
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_CONSTANT) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_CONSTANT] = 0;
+            return 0;
         }
         return mJson[Constants::ASSET_ATTR_CONSTANT];
     }
@@ -164,10 +177,11 @@ namespace octronic::dream
     bool
     PhysicsObjectDefinition::getControllableCharacter
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_CONTROLLABLE) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_CONTROLLABLE] = false;
+            return false;
         }
         return mJson[Constants::ASSET_ATTR_CONTROLLABLE];
     }
@@ -184,11 +198,14 @@ namespace octronic::dream
         mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
     }
 
-    float PhysicsObjectDefinition::getCcdSweptSphereRadius()
+    float
+    PhysicsObjectDefinition::getCcdSweptSphereRadius
+    ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_CCD_SPR) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_CCD_SPR] = 0.0f;
+            return 0.f;
         }
         return mJson[Constants::ASSET_ATTR_CCD_SPR];
     }
@@ -196,10 +213,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getRestitution
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_RESTITUTION) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_RESTITUTION] = 0.0f;
+            return 0.f;
         }
         return mJson[Constants::ASSET_ATTR_RESTITUTION];
     }
@@ -214,10 +232,11 @@ namespace octronic::dream
     float
     PhysicsObjectDefinition::getFriction
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_FRICTION) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_FRICTION] = 0.0f;
+            return 0.f;
         }
         return mJson[Constants::ASSET_ATTR_FRICTION];
     }
@@ -232,9 +251,12 @@ namespace octronic::dream
 
     void
     PhysicsObjectDefinition::addCompoundChild
-    (CompoundChildDefinition def)
+    (const CompoundChildDefinition& def)
     {
-        makeCompoundChildren();
+        if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+        {
+            mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN] = json::array();
+        }
         mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN].push_back(def.getJson());
     }
 
@@ -242,12 +264,16 @@ namespace octronic::dream
     PhysicsObjectDefinition::getCompoundChildren
     ()
     {
-        makeCompoundChildren();
         vector<CompoundChildDefinition> retval;
+        if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+        {
+            return retval;
+        }
+
         for (json childJson : mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN])
         {
             CompoundChildDefinition def;
-            def.parent = this;
+            def.parent = static_pointer_cast<PhysicsObjectDefinition>(shared_from_this());
             def.uuid = childJson[Constants::UUID];
             def.transform.fromJson(childJson[Constants::TRANSFORM]);
             retval.push_back(def);
@@ -258,9 +284,13 @@ namespace octronic::dream
 
     void
     PhysicsObjectDefinition::updateCompoundChildTransform
-    (CompoundChildDefinition def)
+    (const CompoundChildDefinition& def)
     {
-        makeCompoundChildren();
+        if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+        {
+            return;
+        }
+
         for(auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
                  iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++)
         {
@@ -275,9 +305,13 @@ namespace octronic::dream
 
     void
     PhysicsObjectDefinition::removeCompoundChild
-    (CompoundChildDefinition def)
+    (const CompoundChildDefinition& def)
     {
-        makeCompoundChildren();
+        if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
+        {
+            return;
+        }
+
         for(auto iter = begin(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]);
                  iter != end(mJson[Constants::ASSET_ATTR_COMPOUND_CHILDREN]); iter++ )
         {
@@ -302,10 +336,11 @@ namespace octronic::dream
     UuidType
     PhysicsObjectDefinition::getCollisionModel
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_COLLISION_MODEL].is_number())
+		if (mJson.find(Constants::ASSET_ATTR_COLLISION_MODEL) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = 0;
+            return Uuid::INVALID;
         }
         return mJson[Constants::ASSET_ATTR_COLLISION_MODEL];
     }
@@ -320,10 +355,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getLinearFactor
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_LINEAR_FENTITY].is_object())
+        if (mJson.find(Constants::ASSET_ATTR_LINEAR_FENTITY) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3::toJson(vec3(0.0f));
+            return vec3(0.0f);
         }
         return vec3(mJson[Constants::ASSET_ATTR_LINEAR_FENTITY]);
     }
@@ -338,10 +374,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getAngularFactor
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY].is_object())
+        if (mJson.find(Constants::ASSET_ATTR_ANGULAR_FENTITY) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3::toJson(vec3(0.0f));
+            return vec3(0.f);
         }
         return vec3(mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY]);
     }
@@ -356,10 +393,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getLinearVelocity
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY].is_object())
+        if (mJson.find(Constants::ASSET_ATTR_LINEAR_VELOCITY) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3::toJson(vec3(0.0f));
+            return vec3(0.f);
         }
         return vec3(mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY]);
     }
@@ -374,10 +412,11 @@ namespace octronic::dream
     vec3
     PhysicsObjectDefinition::getAngularVelocity
     ()
+    const
     {
-        if (!mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY].is_object())
+        if (mJson.find(Constants::ASSET_ATTR_ANGULAR_VELOCITY) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3::toJson(vec3(0.0f));
+            return vec3(0.f);
         }
         return vec3(mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY]);
     }

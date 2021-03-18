@@ -20,7 +20,7 @@
 #include <memory>
 
 using glm::vec4;
-using std::unique_ptr;
+using std::shared_ptr;
 
 namespace octronic::dream
 {
@@ -30,7 +30,7 @@ namespace octronic::dream
     class SceneDefinition : public Definition
     {
     public:
-        SceneDefinition(ProjectDefinition* project, const json& data);
+        SceneDefinition(const weak_ptr<ProjectDefinition>& project, const json& data);
         ~SceneDefinition() override;
 
         void loadRootEntityDefinition();
@@ -38,46 +38,46 @@ namespace octronic::dream
         // Rendering ===========================================================
 
         void setCamera(const json& cDef);
-        CameraDefinition* getCamera();
+        weak_ptr<CameraDefinition> getCamera() const;
 
-        vec4 getClearColor();
+        vec4 getClearColor() const;
         void setClearColor(const vec4& clear);
 
-        UuidType getShadowPassShader();
+        UuidType getShadowPassShader() const;
         void setShadowPassShader(UuidType shader);
 
-        UuidType getFontShader();
+        UuidType getFontShader() const;
         void setFontShader(UuidType shader);
 
-        UuidType getSpriteShader();
+        UuidType getSpriteShader() const;
         void setSpriteShader(UuidType shader);
 
-        UuidType getEnvironmentTexture();
+        UuidType getEnvironmentTexture() const;
         void setEnvironmentTexture(UuidType u);
 
-        UuidType getEnvironmentShader();
+        UuidType getEnvironmentShader() const;
         void setEnvironmentShader(UuidType u);
 
         // Input ===============================================================
 
-        UuidType getInputScript();
+        UuidType getInputScript() const;
         void setInputScript(UuidType shader);
 
         // Physics =============================================================
 
-        vec3 getGravity();
+        vec3 getGravity() const;
         void setGravity(const vec3& gravity);
 
         // Entity Management ===================================================
 
-        void addTemplate(EntityDefinition* _template);
-        EntityDefinition* getTemplateByUuid(UuidType uuid);
+        void addTemplate(const shared_ptr<EntityDefinition>& _template);
+        weak_ptr<EntityDefinition> getTemplateByUuid(UuidType uuid) const;
 
-        EntityDefinition* getRootEntityDefinition();
-        ProjectDefinition* getProjectDefinition();
-        EntityDefinition* createNewRootEntityDefinition();
+        weak_ptr<EntityDefinition> getRootEntityDefinition() const;
+        weak_ptr<ProjectDefinition> getProjectDefinition() const;
+        void createNewRootEntityDefinition();
 
-        vector<string> getEntityNamesVector();
+        vector<string> getEntityNamesVector() const;
 
         // Serialisation =======================================================
 
@@ -85,9 +85,9 @@ namespace octronic::dream
 
         // Variabels ===========================================================
     private:
-        unique_ptr<CameraDefinition> mCameraDefinition;
-        vector<EntityDefinition*> mTemplates;
-        EntityDefinition* mRootEntityDefinition;
-        ProjectDefinition* mProjectDefinition;
+        shared_ptr<CameraDefinition> mCameraDefinition;
+        vector<shared_ptr<EntityDefinition>> mTemplates;
+        shared_ptr<EntityDefinition> mRootEntityDefinition;
+        weak_ptr<ProjectDefinition> mProjectDefinition;
     };
 }

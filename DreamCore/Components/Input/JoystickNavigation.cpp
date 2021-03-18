@@ -2,28 +2,29 @@
 
 namespace octronic::dream
 {
-    JoystickNavigation::JoystickNavigation
-	(JoystickState* state, JoystickMapping* mapping)
-        : mJoystickState(state), mJoystickMapping(mapping)
-    {
+  JoystickNavigation::JoystickNavigation
+  (const weak_ptr<JoystickState>& state,
+   const weak_ptr<JoystickMapping>& mapping)
+    : mJoystickState(state), mJoystickMapping(mapping)
+  {
 
-    }
+  }
 
-    JoystickNavigation::~JoystickNavigation
-	()
-    {}
+  JoystickNavigation::~JoystickNavigation
+  ()
+  {}
 
-    void
-	JoystickNavigation::setHeading
-	(const vec2& h)
-    {
-        mHeading = h;
-    }
+  void
+  JoystickNavigation::setHeading
+  (const vec2& h)
+  {
+    mHeading = h;
+  }
 
-    vec2
-	JoystickNavigation::getHeading
-	()
-    {
-        return mHeading;
-    }
+  vec2
+  JoystickNavigation::getHeading
+  ()
+  {
+    return mHeading;
+  }
 }

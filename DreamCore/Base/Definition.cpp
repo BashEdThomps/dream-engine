@@ -25,6 +25,7 @@ namespace octronic::dream
 
     bool // public
     Definition::hasName(const string& name)
+    const
     {
         string s = mJson[Constants::NAME];
         return s.compare(name) == 0;
@@ -32,10 +33,11 @@ namespace octronic::dream
 
     string  // public
     Definition::getName()
+    const
     {
         if (mJson.find(Constants::NAME) == mJson.end())
         {
-            mJson[Constants::NAME] = "";
+            return "";
         }
         return mJson[Constants::NAME];
     }
@@ -48,6 +50,7 @@ namespace octronic::dream
 
     bool // public
     Definition::hasUuid(UuidType uuid)
+    const
     {
         UuidType s = mJson[Constants::UUID];
         return s == uuid;
@@ -55,10 +58,11 @@ namespace octronic::dream
 
     UuidType // public
     Definition::getUuid()
+    const
     {
         if (mJson.find(Constants::UUID) == mJson.end())
         {
-            mJson[Constants::UUID] = Uuid::generateUuid();
+            return Uuid::INVALID;
         }
         return mJson[Constants::UUID];
     }
@@ -71,6 +75,7 @@ namespace octronic::dream
 
     string  // public
     Definition::getNameAndUuidString()
+    const
     {
         stringstream ss;
         ss << "[" << getName() << " : " << getUuid() << "]";

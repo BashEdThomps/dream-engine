@@ -44,8 +44,8 @@ namespace octronic::dream
     class MaterialRuntime;
     class ShaderRuntime;
 
-    typedef TaskQueue<shared_ptr<GraphicsTask>> GraphicsTaskQueue;
-    typedef TaskQueue<shared_ptr<GraphicsDestructionTask>> GraphicsDestructionTaskQueue;
+    typedef TaskQueue<GraphicsTask> GraphicsTaskQueue;
+    typedef TaskQueue<GraphicsDestructionTask> GraphicsDestructionTaskQueue;
 
 
     /**
@@ -86,28 +86,28 @@ namespace octronic::dream
     class GraphicsComponent : public Component
     {
     public:
-        GraphicsComponent(ProjectRuntime* pr);
+        GraphicsComponent(const weak_ptr<ProjectRuntime>& pr);
         ~GraphicsComponent() override;
 
-        void clearBuffers(SceneRuntime* sr);
+        void clearBuffers(const weak_ptr<SceneRuntime>& sr);
         // Geometry ============================================================
-        void renderModels(SceneRuntime*);
+        void renderModels(const weak_ptr<SceneRuntime>&);
         // Environment =========================================================
-        void renderEnvironment(SceneRuntime*);
+        void renderEnvironment(const weak_ptr<SceneRuntime>&);
         // Shadow ==============================================================
         bool setupShadowBuffers();
         void freeShadowBuffers();
-        void renderShadowPass(SceneRuntime*);
+        void renderShadowPass(const weak_ptr<SceneRuntime>&);
 	    GLuint getShadowPassDepthBuffer() const;
         // Sprite ===============================================================
-        void renderSprites(SceneRuntime* sceneRuntime);
+        void renderSprites(const weak_ptr<SceneRuntime>& sceneRuntime);
         bool setupSpriteQuad();
         void freeSpriteQuad();
         // Font ================================================================
-        void renderFonts(SceneRuntime* sceneRuntime);
+        void renderFonts(const weak_ptr<SceneRuntime>& sceneRuntime);
         // Task ================================================================
-        GraphicsTaskQueue* getTaskQueue();
-        GraphicsDestructionTaskQueue* getDestructionTaskQueue();
+        weak_ptr<GraphicsTaskQueue> getTaskQueue() const;
+        weak_ptr<GraphicsDestructionTaskQueue> getDestructionTaskQueue() const;
         // Lights ==============================================================
         vec3 getLightPosition(size_t index) const;
         void setLightPosition(size_t index, const vec3& p);
@@ -126,7 +126,7 @@ namespace octronic::dream
 
     private:
         // Shadow ==============================================================
-        EntityRuntime* mShadowLight;
+        weak_ptr<EntityRuntime> mShadowLight;
         GLuint mShadowPassFB;
         GLuint mShadowPassDepthBuffer;
         mat4 mShadowMatrix;
@@ -136,11 +136,11 @@ namespace octronic::dream
         GLuint mSpriteQuadVAO;
         GLuint mSpriteQuadVBO;
         // Task ================================================================
-        GraphicsTaskQueue mTaskQueue;
-        GraphicsDestructionTaskQueue mDestructionTaskQueue;
+        shared_ptr<GraphicsTaskQueue> mTaskQueue;
+        shared_ptr<GraphicsDestructionTaskQueue> mDestructionTaskQueue;
         // Tasks
         shared_ptr<SetupBuffersTask> mSetupBuffersTask;
-        shared_ptr<HandleResizeTask> mHandleResizeTask;
+        shared_ptr<ResizeTask> mResizeTask;
         shared_ptr<RenderTask> mRenderTask;
         // Misc ================================================================
         GLint mMaxFrameBufferSize;

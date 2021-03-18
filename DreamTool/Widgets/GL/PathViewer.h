@@ -31,7 +31,7 @@ namespace octronic::dream::tool
         PathViewer(DreamToolContext* state, bool visible = false);
         ~PathViewer() override;
 
-        void setPathDefinition(PathDefinition* object);
+        void setPathDefinition(const shared_ptr<PathDefinition>& object);
         void init() override;
 
         vector<vec3> generateSplines();
@@ -54,8 +54,8 @@ namespace octronic::dream::tool
         void regenerate();
 
     private:
-        PathDefinition* mPathDefinition;
-        PathRuntime* mPathRuntime;
+        shared_ptr<PathDefinition> mPathDefinition;
+        shared_ptr<PathRuntime> mPathRuntime;
         vec4 mSelectedColour;
         vec4 mUnselectedColour;
         vec4 mCurveColour;

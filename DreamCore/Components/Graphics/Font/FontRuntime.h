@@ -16,63 +16,63 @@ typedef int FT_Error;
 
 namespace octronic::dream
 {
-    // Forward Declarations
-    class File;
-    class FontDefinition;
-    class EntityRuntime;
+  // Forward Declarations
+  class File;
+  class FontDefinition;
+  class EntityRuntime;
 
-	class FontRuntime : public SharedAssetRuntime
-	{
-	public:
-		FontRuntime(ProjectRuntime* e, FontDefinition* def);
-        ~FontRuntime();
+  class FontRuntime : public SharedAssetRuntime
+  {
+  public:
+    FontRuntime(const weak_ptr<ProjectRuntime>& e,
+                const weak_ptr<FontDefinition>& def);
+    ~FontRuntime();
 
-		bool loadFromDefinition() override;
+    bool loadFromDefinition() override;
+    bool init() override;
+    bool loadIntoGL();
+    void pushTasks() override;
 
-        float getWidthOf(string s);
-        void draw(EntityRuntime* fti);
+    void draw(const weak_ptr<EntityRuntime>& fti);
 
-		int getSize() const;
-		void setSize(int size);
+    float getWidthOf(string s);
 
-        void setFontFile(File* file);
-        File* getFontFile() const;
+    int getSize() const;
+    void setSize(int size);
 
-        FontCharacterInfo* getCharacterInfo();
+    void setFontFile(const weak_ptr<File>& file);
+    weak_ptr<File> getFontFile() const;
 
-        void setVao(GLuint vao);
-        void setVbo(GLuint vbo);
-        void setAtlasTexture(GLuint atlasTexture);
-        void setAtlasWidth(unsigned int atlasWidth);
-        void setAtlasHeight(unsigned int atlasHeight);
+    void setVao(GLuint vao);
+    void setVbo(GLuint vbo);
+    void setAtlasTexture(GLuint atlasTexture);
+    void setAtlasWidth(unsigned int atlasWidth);
+    void setAtlasHeight(unsigned int atlasHeight);
 
-        GLuint getAtlasTexture() const;
-        unsigned int getAtlasWidth() const;
-        unsigned int getAtlasHeight() const;
+    GLuint getAtlasTexture() const;
+    unsigned int getAtlasWidth() const;
+    unsigned int getAtlasHeight() const;
 
-        bool loadIntoGL();
 
-        void pushTasks() override;
 
-     	static bool InitFreetypeLibrary();
-    	static void CleanupFreetypeLibrary();
-    	static FT_Library GetFreeTypeLibrary();
-    	static const char* GetFreetypeErrorMessage(FT_Error err);
+    static bool InitFreetypeLibrary();
+    static void CleanupFreetypeLibrary();
+    static FT_Library GetFreeTypeLibrary();
+    static const char* GetFreetypeErrorMessage(FT_Error err);
 
-    private:
+  private:
+    static FT_Library sFreeTypeLibrary;
 
-        static FT_Library sFreeTypeLibrary;
-
-    private:
-        int mSize;
-        FontCharacterInfo mCharacterInfo[CHAR_INFO_SZ];
-        GLuint mAtlasTexture;
-		unsigned int mAtlasWidth;
-		unsigned int mAtlasHeight;
-		GLuint mVao;
-		GLuint mVbo;
-        File* mFontFile;
-		shared_ptr<FontLoadIntoGLTask> mFontLoadIntoGLTask;
-		shared_ptr<FontRemoveFromGLTask> mFontRemoveFromGLTask;
-	};
+  private:
+    int mSize;
+    FontCharacterInfo mCharacterInfo[CHAR_INFO_SZ];
+    GLuint mAtlasTexture;
+    unsigned int mAtlasWidth;
+    unsigned int mAtlasHeight;
+    GLuint mVao;
+    GLuint mVbo;
+    weak_ptr<File> mFontFile;
+    shared_ptr<FontLoadIntoGLTask> mFontLoadIntoGLTask;
+    shared_ptr<FontRemoveFromGLTask> mFontRemoveFromGLTask;
+  };
 }

@@ -39,7 +39,10 @@ namespace octronic::dream::open_al
         OpenALImplementation(const shared_ptr<AudioLoader>& loader);
         ~OpenALImplementation();
 
-        bool loadFromDefinition(ProjectRuntime* pr, AudioDefinition* ad) override;
+        bool loadFromDefinition(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<AudioDefinition>& ad) override;
+
         void setSampleOffset(unsigned int offset) override;
         int getDurationInSamples() override;
         void setSourcePosision(const vec3& pos) override;

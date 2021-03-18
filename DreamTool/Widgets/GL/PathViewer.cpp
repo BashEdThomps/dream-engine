@@ -29,7 +29,6 @@ namespace octronic::dream::tool
     (DreamToolContext* state, bool visible)
         : GLWidget(state, visible),
           mSelectedColour(0.0f, 1.0f, 0.0f,1.f),
-          mPathRuntime(nullptr),
           mUnselectedColour(0.75f, 0.75f, 0.0f,1.f),
           mCurveColour(1.0f, 0.0f, 1.0f,1.f),
           mTangentColour(0.25f,1.0f,0.0f,1.f),
@@ -58,7 +57,7 @@ namespace octronic::dream::tool
 
     void
     PathViewer::setPathDefinition
-    (PathDefinition* selected)
+    (const shared_ptr<PathDefinition>& selected)
     {
         bool regen = (selected != mPathDefinition);
         mPathDefinition = selected;
@@ -87,11 +86,7 @@ namespace octronic::dream::tool
     PathViewer::clearRuntime
     ()
     {
-        if (mPathRuntime)
-        {
-            delete mPathRuntime;
-            mPathRuntime = nullptr;
-        }
+        mPathRuntime = nullptr;
     }
 
     void

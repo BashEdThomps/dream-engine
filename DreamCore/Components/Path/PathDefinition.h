@@ -19,46 +19,39 @@
 #pragma once
 
 #include "Components/AssetDefinition.h"
+#include "PathControlPoint.h"
 #include <tinysplinecpp.h>
 
 namespace octronic::dream
 {
 
-    struct PathControlPoint
-    {
-       int id = 0;
-       int index = 0;
-       vec3 position = vec3(0.0f);
-    };
-
     class PathDefinition : public AssetDefinition
     {
     public:
-        PathDefinition(ProjectDefinition*, const json&);
+        PathDefinition(const shared_ptr<ProjectDefinition>&, const json&);
         ~PathDefinition() override;
 
         void setWrap(bool wrap);
-        bool getWrap();
+        bool getWrap() const;
 
-        float getVelocity();
+        float getVelocity() const;
         void setVelocity(float v);
 
         PathControlPoint addControlPoint();
         void deleteControlPoint(const PathControlPoint& cp);
         void updateControlPoint(const PathControlPoint& cp);
-        vector<PathControlPoint> getControlPoints();
+        vector<PathControlPoint> getControlPoints() const;
 
-        string getSplineType();
+        string getSplineType() const;
         void setSplineType(const string& type);
-        tsBSplineType getSplineTypeEnum();
+        tsBSplineType getSplineTypeEnum() const;
 
         void setStepScalar(double scaler);
-        double getStepScalar();
+        double getStepScalar() const;
 
-        PathControlPoint unwrapControlPoint(const json&);
-        json wrapControlPoint(const PathControlPoint& cp);
+        PathControlPoint unwrapControlPoint(const json&) const;
+        json wrapControlPoint(const PathControlPoint& cp) const;
     protected:
         int nextID();
-        void ensureControlPointsArray();
     };
 }

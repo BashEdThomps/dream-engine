@@ -26,110 +26,113 @@ using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class TextureDefinition;
-    class EntityRuntime;
-    class TextureRemoveFromGLTask;
-    class TextureLoadIntoGLTask;
-    class ShaderRuntime;
+  class TextureDefinition;
+  class EntityRuntime;
+  class TextureRemoveFromGLTask;
+  class TextureLoadIntoGLTask;
+  class ShaderRuntime;
 
-    enum CubeDebugMode
-    {
-        CUBE_DEBUG_NONE = 0,
-        CUBE_DEBUG_ENVIRONMENT,
-        CUBE_DEBUG_IRRADIANCE,
-        CUBE_DEBUG_PREFILTER
-    };
+  enum CubeDebugMode
+  {
+    CUBE_DEBUG_NONE = 0,
+    CUBE_DEBUG_ENVIRONMENT,
+    CUBE_DEBUG_IRRADIANCE,
+    CUBE_DEBUG_PREFILTER
+  };
 
-    class TextureRuntime : public SharedAssetRuntime
-    {
-    public:
-        TextureRuntime(ProjectRuntime* pr, TextureDefinition* def);
-        ~TextureRuntime() override;
+  class TextureRuntime : public SharedAssetRuntime
+  {
+  public:
+    TextureRuntime(
+        const weak_ptr<ProjectRuntime>& pr,
+        const weak_ptr<TextureDefinition>& def);
+    ~TextureRuntime() override;
 
-        bool operator==(const TextureRuntime& other);
+    bool operator==(const TextureRuntime& other);
 
-        bool loadFromDefinition() override;
+    bool loadFromDefinition() override;
+    bool init() override;
 
-        GLuint getTextureID() const;
-        void setTextureID(const GLuint& id);
+    GLuint getTextureID() const;
+    void setTextureID(const GLuint& id);
 
-        GLuint getCubeMapTextureID() const;
-        GLuint getIrradianceTextureID() const;
-        GLuint getPreFilterTextureID() const;
-        GLuint getBrdfLutTextureID() const;
+    GLuint getCubeMapTextureID() const;
+    GLuint getIrradianceTextureID() const;
+    GLuint getPreFilterTextureID() const;
+    GLuint getBrdfLutTextureID() const;
 
-        string getPath() const;
-        void setPath(const string& path);
+    string getPath() const;
+    void setPath(const string& path);
 
-        int getWidth() const;
-        void setWidth(int width);
+    int getWidth() const;
+    void setWidth(int width);
 
-        int getHeight() const;
-        void setHeight(int height);
+    int getHeight() const;
+    void setHeight(int height);
 
-        int getChannels() const;
-        void setChannels(int channels);
+    int getChannels() const;
+    void setChannels(int channels);
 
-        void* getImage() const;
-        void setImage(void* image);
+    void* getImage() const;
+    void setImage(void* image);
 
-        void pushTasks() override;
+    void pushTasks() override;
 
-        bool loadTextureIntoGL();
-        bool renderEquirectangularToCubeMap();
-        bool renderIrradianceCubeMap();
-        bool renderPreFilterCubeMap();
-        bool renderBrdfLut();
-        void renderCube();
-        void renderQuad();
+    bool loadTextureIntoGL();
+    bool renderEquirectangularToCubeMap();
+    bool renderIrradianceCubeMap();
+    bool renderPreFilterCubeMap();
+    bool renderBrdfLut();
+    void renderCube();
+    void renderQuad();
 
-        bool getIsEnvironmentTexture() const;
-        void setIsEnvironmentTexture(bool b);
+    bool getIsEnvironmentTexture() const;
+    void setIsEnvironmentTexture(bool b);
 
-        bool isHDR() const;
+    bool isHDR() const;
 
-        CubeDebugMode getCubeDebugMode() const;
-        void setCubeDebugMode(const CubeDebugMode& debugMode);
+    CubeDebugMode getCubeDebugMode() const;
+    void setCubeDebugMode(const CubeDebugMode& debugMode);
 
-        GLuint getCubeDebugTexture();
+    GLuint getCubeDebugTexture();
 
-    private:
-        CubeDebugMode mCubeDebugMode;
-        bool mIsHDR;
-        GLuint mGLTextureID;
-        int mWidth;
-        int mHeight;
-        int mChannels;
-        bool mIsEnvironmentTexture;
-        void* mImage;
-        GLuint mCaptureFBO;
-        GLuint mCaptureRBO;
-        // Equirectangular to Cube Map
-        GLuint mEquiToCubeTexture;
-        ShaderRuntime* mEquiToCubeShader;
-        // Irradiance Map
-        GLuint mIrradianceMapTexture;
-        ShaderRuntime* mIrradianceMapShader;
-        // Pre Filter
-        GLuint mPreFilterCubeMapTexture;
-        ShaderRuntime* mPreFilterShader;
-        // BRDF LUT
-        GLuint mBrdfLutTexture;
-        ShaderRuntime* mBrdfLutShader;
-        // Cube
-        GLuint mCubeVAO;
-        GLuint mCubeVBO;
-        // Quad
-        GLuint mQuadVAO;
-    	GLuint mQuadVBO;
-        // Tasks
-        shared_ptr<TextureLoadIntoGLTask>    mLoadIntoGLTask;
-        shared_ptr<TextureSetupEnvironmentTask> mRenderCubeMapTask;
-        shared_ptr<TextureRemoveFromGLTask>  mRemoveFromGLTask;
-		// Statics
-        const static glm::mat4 CubeCaptureProjection;
-        const static glm::mat4 CubeCaptureViews[6];
-    	const static float CubeVertices[288];
-    	const static float QuadVertices[20];
-    };
+  private:
+    CubeDebugMode mCubeDebugMode;
+    bool mIsHDR;
+    GLuint mGLTextureID;
+    int mWidth;
+    int mHeight;
+    int mChannels;
+    bool mIsEnvironmentTexture;
+    void* mImage;
+    GLuint mCaptureFBO;
+    GLuint mCaptureRBO;
+    // Equirectangular to Cube Map
+    GLuint mEquiToCubeTexture;
+    weak_ptr<ShaderRuntime> mEquiToCubeShader;
+    // Irradiance Map
+    GLuint mIrradianceMapTexture;
+    weak_ptr<ShaderRuntime> mIrradianceMapShader;
+    // Pre Filter
+    GLuint mPreFilterCubeMapTexture;
+    weak_ptr<ShaderRuntime> mPreFilterShader;
+    // BRDF LUT
+    GLuint mBrdfLutTexture;
+    weak_ptr<ShaderRuntime> mBrdfLutShader;
+    // Cube
+    GLuint mCubeVAO;
+    GLuint mCubeVBO;
+    // Quad
+    GLuint mQuadVAO;
+    GLuint mQuadVBO;
+    // Tasks
+    shared_ptr<TextureLoadIntoGLTask>       mLoadIntoGLTask;
+    shared_ptr<TextureSetupEnvironmentTask> mRenderCubeMapTask;
+    shared_ptr<TextureRemoveFromGLTask>     mRemoveFromGLTask;
+    // Statics
+    const static glm::mat4 CubeCaptureProjection;
+    const static glm::mat4 CubeCaptureViews[6];
+    const static float CubeVertices[288];
+    const static float QuadVertices[20];
+  };
 }

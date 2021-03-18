@@ -2,9 +2,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 using std::string;
 using std::vector;
+using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -41,13 +43,13 @@ namespace octronic::dream
 	{
 	public:
 		TaskQueue(const string& className);
-		void pushTask(const TaskType& t);
+		void pushTask(const weak_ptr<TaskType>& t);
 		void executeQueue();
-		bool hasTask(const TaskType& t) const;
-		vector<TaskType>* getTaskQueue() const;
+		bool hasTask(const weak_ptr<TaskType>& t) const;
+		vector<weak_ptr<TaskType>> getTaskQueue() const;
 		size_t getTaskCount() const;
 	private:
-		vector<TaskType> mQueue;
+		vector<weak_ptr<TaskType>> mQueue;
         string mClassName;
 	};
 }

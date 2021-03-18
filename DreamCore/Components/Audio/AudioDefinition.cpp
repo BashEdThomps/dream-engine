@@ -27,7 +27,7 @@ using std::lock_guard;
 namespace octronic::dream
 {
     AudioDefinition::AudioDefinition
-    (ProjectDefinition* pd, const json &js)
+    (const shared_ptr<ProjectDefinition>& pd, const json &js)
         : AssetDefinition("AudioDefinition",pd,js)
     {
         LOG_TRACE("AudioDefinition: Constructing");
@@ -41,6 +41,7 @@ namespace octronic::dream
     bool
     AudioDefinition::isFormatWav
     ()
+    const
     {
         return getFormat() == Constants::ASSET_FORMAT_AUDIO_WAV;
     }
@@ -48,6 +49,7 @@ namespace octronic::dream
     bool
     AudioDefinition::isFormatOgg
     ()
+    const
     {
         return getFormat() == Constants::ASSET_FORMAT_AUDIO_OGG;
     }
@@ -62,10 +64,11 @@ namespace octronic::dream
     bool
     AudioDefinition::getLoop
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_LOOP) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_LOOP] = false;
+            return false;
         }
         return mJson[Constants::ASSET_ATTR_LOOP];
     }
@@ -73,10 +76,11 @@ namespace octronic::dream
     bool
     AudioDefinition::getSpectrumAnalyser
     ()
+    const
     {
         if (mJson.find(Constants::ASSET_ATTR_SPECTRUM_ANALYSER) == mJson.end())
         {
-            mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER] = false;
+            return false;
         }
         return mJson[Constants::ASSET_ATTR_SPECTRUM_ANALYSER];
     }
@@ -91,13 +95,14 @@ namespace octronic::dream
     string
     AudioDefinition::getMarkerName
     (unsigned int index)
+    const
     {
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME];
     }
 
     void
     AudioDefinition::setMarkerName
-    (unsigned int index, string name)
+    (unsigned int index, const string& name)
     {
         mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_NAME] = name;
     }
@@ -105,6 +110,7 @@ namespace octronic::dream
     int
     AudioDefinition::getMarkerSampleIndex
     (unsigned int index)
+    const
     {
         return mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS][index][Constants::ASSET_ATTR_AUDIO_EM_S_INDEX];
     }
@@ -179,6 +185,7 @@ namespace octronic::dream
     int
     AudioDefinition::countMarkers
     ()
+    const
     {
         return static_cast<int>(mJson[Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS].size());
     }

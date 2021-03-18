@@ -1,6 +1,6 @@
 #include "RuntimeTasks.h"
 
-#include "Components/AssetRuntime.h"
+#include "DeferredLoadRuntime.h"
 #include "Common/Logger.h"
 
 using std::to_string;
@@ -8,31 +8,38 @@ using std::to_string;
 namespace octronic::dream
 {
 	RuntimeLoadFromDefinitionTask::RuntimeLoadFromDefinitionTask
-    (ProjectRuntime* pr, Runtime* runtime)
+    (const weak_ptr<ProjectRuntime>& pr,
+     const weak_ptr<DeferredLoadRuntime>& runtime)
         : Task(pr,"LoadFromDefinitionTask"),
         mRuntime(runtime)
 	{
-        LOG_TRACE("RuntimeLoadFromDefTask: Constructing for Runtime: {}", mRuntime->getNameAndUuidString());
+        LOG_TRACE("RuntimeLoadFromDefTask: Constructing for Runtime: {}", mRuntime.lock()->getNameAndUuidString());
 	}
 
     void RuntimeLoadFromDefinitionTask::execute()
     {
-        LOG_TRACE("RuntimeLoadFromDefTask: Executing for Runtime: {}", mRuntime->getNameAndUuidString());
-        if (mRuntime->loadFromDefinition())
+        if (auto rtLock = mRuntime.lock())
         {
-        	setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-            setState(TASK_STATE_DEFERRED);
+			LOG_TRACE("RuntimeLoadFromDefTask: Executing for Runtime: {}", rtLock->getNameAndUuidString());
+			if (rtLock->loadFromDefinition())
+			{
+				setState(TASK_STATE_COMPLETED);
+			}
+			else
+			{
+				setState(TASK_STATE_DEFERRED);
+			}
         }
     }
 
-    string RuntimeLoadFromDefinitionTask::getNameAndIDString()
+    string
+    RuntimeLoadFromDefinitionTask::getNameAndIDString
+    ()
+    const
 	{
         stringstream ss;
         ss << "[" << to_string(getID()) << "]" << getName()
-           << "(" << mRuntime->getNameAndUuidString() << ")";
+           << "(" << mRuntime.lock()->getNameAndUuidString() << ")";
         return ss.str();
     }
 }

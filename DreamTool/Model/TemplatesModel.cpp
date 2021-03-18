@@ -29,8 +29,8 @@ namespace octronic::dream::tool
     (AssetType t)
     {
        auto path = getTemplatesDirectory(t);
-       StorageManager* fm = mContext->getStorageManager();
-       Directory* dir = fm->openDirectory(path);
+       auto fm = mContext->getStorageManager();
+       auto dir = fm->openDirectory(path);
        auto retval = dir->list();
        fm->closeDirectory(dir);
        return retval;
@@ -47,8 +47,8 @@ namespace octronic::dream::tool
            << Constants::DIR_PATH_SEP
            << format;
         LOG_DEBUG("TemplatesModel: Loading template from {}" , ss.str());
-        StorageManager* fm = mContext->getStorageManager();
-        File* templateFile = fm->openFile(ss.str());
+        auto fm = mContext->getStorageManager();
+        auto templateFile = fm->openFile(ss.str());
         if (templateFile->exists())
         {
 			auto retval = templateFile->readString();

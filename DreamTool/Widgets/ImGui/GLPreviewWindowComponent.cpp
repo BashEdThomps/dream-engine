@@ -172,13 +172,13 @@ namespace octronic::dream::tool
         }
 
         ImGuiIO& io = ImGui::GetIO();
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
-            ProjectRuntime* pRunt = project->getRuntime();
+            auto pRunt = project->getRuntime();
             if (pRunt)
             {
-                SceneRuntime* asRunt = pRunt->getActiveSceneRuntime();
+                auto asRunt = pRunt->getActiveSceneRuntime();
                 if (asRunt)
                 {
                     ImGui::Image((void*)(intptr_t)mTexture,ImVec2(mWidth,mHeight),UV1, UV2);

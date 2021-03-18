@@ -35,652 +35,659 @@
 
 using std::make_shared;
 using std::make_unique;
+using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-    ProjectRuntime::ProjectRuntime
-    (Project* project, WindowComponent* windowComponent, AudioComponent* ac, StorageManager* fm)
-        : Runtime(project->getDefinition()),
-          mDone(false),
-          mProjectHandle(project),
-          mAudioComponentHandle(ac),
-          mWindowComponentHandle(windowComponent),
-          mStorageManagerHandle(fm),
-          mInputComponent(this),
-          mGraphicsComponent(this),
-          mPhysicsComponent(this),
-          mScriptComponent(this),
-          mActiveSceneRuntime(nullptr),
-          mTaskQueue("ProjectTaskQueue"),
-          mDestructionTaskQueue("ProjectDestructionTaskQueue"),
-          mAudioCache(make_shared<Cache<AudioDefinition,AudioRuntime>>(this)),
-          mTextureCache(make_shared<Cache<TextureDefinition, TextureRuntime>>(this)),
-          mMaterialCache(make_shared<Cache<MaterialDefinition,MaterialRuntime>>(this)),
-          mModelCache(make_shared<Cache<ModelDefinition,ModelRuntime>>(this)),
-          mShaderCache(make_shared<Cache<ShaderDefinition,ShaderRuntime>>(this)),
-          mScriptCache(make_shared<Cache<ScriptDefinition,ScriptRuntime>>(this)),
-          mFontCache(make_shared<Cache<FontDefinition,FontRuntime>>(this))
+  ProjectRuntime::ProjectRuntime
+  (const weak_ptr<ProjectDefinition>& project,
+   const weak_ptr<ProjectDirectory>& directory,
+   const shared_ptr<WindowComponent>& windowComponent,
+   const shared_ptr<AudioComponent>& ac,
+   const shared_ptr<StorageManager>& fm)
+    : Runtime(project),
+      mProjectDirectory(directory),
+      mDone(false),
+      mAudioComponent(ac),
+      mWindowComponent(windowComponent),
+      mStorageManager(fm),
+      mTime(make_shared<Time>()),
+      mTaskQueue(make_shared<TaskQueue<Task>>("ProjectTaskQueue")),
+      mDestructionTaskQueue(make_shared<TaskQueue<DestructionTask>>("ProjectDestructionTaskQueue"))
+  {
+    LOG_DEBUG( "ProjectRuntime: Constructing" );
+    mFrameDurationHistory.resize(MaxFrameCount);
+  }
+
+  ProjectRuntime::~ProjectRuntime
+  ()
+  {
+    LOG_DEBUG( "ProjectRuntime: Destructing" );
+  }
+
+  // Init ====================================================================
+
+  bool
+  ProjectRuntime::initComponents
+  ()
+  {
+    LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
+
+    if (!initWindowComponent())
     {
-        LOG_DEBUG( "ProjectRuntime: Constructing" );
-        mFrameDurationHistory.resize(MaxFrameCount);
+      LOG_ERROR("ProjectRuntime: Failed to init WindowComponent");
+      return false;
     }
 
-    ProjectRuntime::~ProjectRuntime
-    ()
+    if (!initGraphicsComponent())
     {
-        LOG_DEBUG( "ProjectRuntime: Destructing" );
+      LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
+      return false;
     }
 
-    // Init ====================================================================
-
-    bool
-    ProjectRuntime::initComponents
-    ()
+    if (!initInputComponent())
     {
-        LOG_TRACE( "ProjectRuntime: {}",__FUNCTION__ );
-
-        if (!initWindowComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init WindowComponent");
-            return false;
-        }
-
-        if (!initGraphicsComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init GraphicsComponent");
-            return false;
-        }
-
-        if (!initInputComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init InputComponent");
-            return false;
-        }
-
-        if(!initPhysicsComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init PhysicsComponent");
-            return false;
-        }
-
-        if(!initAudioComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init AudioComponent");
-            return false;
-        }
-
-        if (!initScriptComponent())
-        {
-            LOG_ERROR("ProjectRuntime: Failed to init ScriptComponent");
-            return false;
-        }
-
-        LOG_DEBUG( "ProjectRuntime: Successfully created Components." );
-
-        return true;
+      LOG_ERROR("ProjectRuntime: Failed to init InputComponent");
+      return false;
     }
 
-    bool
-    ProjectRuntime::initWindowComponent
-    ()
+    if(!initPhysicsComponent())
     {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (!mWindowComponentHandle)
+      LOG_ERROR("ProjectRuntime: Failed to init PhysicsComponent");
+      return false;
+    }
+
+    if(!initAudioComponent())
+    {
+      LOG_ERROR("ProjectRuntime: Failed to init AudioComponent");
+      return false;
+    }
+
+    if (!initScriptComponent())
+    {
+      LOG_ERROR("ProjectRuntime: Failed to init ScriptComponent");
+      return false;
+    }
+
+    LOG_DEBUG( "ProjectRuntime: Successfully created Components." );
+
+    return true;
+  }
+
+  bool
+  ProjectRuntime::initWindowComponent
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    if (!mWindowComponent)
+    {
+      LOG_CRITICAL("ProjectRuntime: Window component is null");
+      return false;
+    }
+    auto projDef = static_pointer_cast<ProjectDefinition>(mDefinition.lock());
+    mWindowComponent->setName(projDef->getName());
+    return true;
+  }
+
+  bool
+  ProjectRuntime::initAudioComponent
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    // Audio component must be initialised outside of dream
+    if(mAudioComponent == nullptr)
+    {
+      LOG_ERROR("ProjectRuntime: AudioComponent is null");
+      return false;
+    }
+    mAudioComponent->setProjectRuntime(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    return true;
+  }
+
+  bool ProjectRuntime::initInputComponent()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+
+    mInputComponent = make_shared<InputComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    if (!mInputComponent->init())
+    {
+      LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
+      return false;
+    }
+    return true;
+  }
+
+  bool
+  ProjectRuntime::initPhysicsComponent
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    mPhysicsComponent = make_shared<PhysicsComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+
+    if (!mPhysicsComponent->init())
+    {
+      LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
+      return false;
+    }
+    return true;
+  }
+
+  bool
+  ProjectRuntime::initGraphicsComponent
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+
+    mGraphicsComponent = make_shared<GraphicsComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    if (!mGraphicsComponent->init())
+    {
+      LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
+      return false;
+    }
+    return true;
+  }
+
+  bool
+  ProjectRuntime::initScriptComponent
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+
+    mScriptComponent = make_shared<ScriptComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    if(!mScriptComponent->init())
+    {
+      LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
+      return false;
+    }
+    return true;
+  }
+
+  bool
+  ProjectRuntime::constructSceneRuntime
+  (const weak_ptr<SceneRuntime>& rt)
+  {
+    LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
+    if (auto srLock = rt.lock())
+    {
+      if (auto task = srLock->getLoadFromDefinitionTask().lock())
+      {
+        if (task->hasState(TASK_STATE_QUEUED))
         {
-            LOG_CRITICAL("ProjectRuntime: Window component is null");
-            return false;
+          mTaskQueue->pushTask(task);
+          return true;
         }
-        auto projDef = static_cast<ProjectDefinition*>(mDefinitionHandle);
-        mWindowComponentHandle->setName(projDef->getName());
-        return true;
+      }
+    }
+    return false;
+  }
+
+  bool
+  ProjectRuntime::loadFromDefinition
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+
+    if (!initCaches())
+    {
+      return false;
     }
 
-    bool
-    ProjectRuntime::initAudioComponent
-    ()
+    if (!initComponents())
     {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if(mAudioComponentHandle == nullptr)
-        {
-            LOG_ERROR("ProjectRuntime: AudioComponent is null");
-            return false;
-        }
-        mAudioComponentHandle->setProjectRuntime(this);
-
-        // Audio component must be initialised outside of dream
-        return true;
+      return false;
     }
 
-    bool ProjectRuntime::initInputComponent()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        auto projectDef = static_cast<ProjectDefinition*>(mDefinitionHandle);
+    return true;
+  }
 
-        if (!mInputComponent.init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
-            return false;
-        }
-        return true;
+  bool ProjectRuntime::initCaches()
+  {
+    mAudioCache    =  make_shared<AudioCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mTextureCache  =  make_shared<TextureCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mMaterialCache =  make_shared<MaterialCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mModelCache    =  make_shared<ModelCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mShaderCache   =  make_shared<ShaderCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mScriptCache   =  make_shared<ScriptCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mFontCache     =  make_shared<FontCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    return true;
+  }
+
+  void
+  ProjectRuntime::destructSceneRuntime
+  (const weak_ptr<SceneRuntime>& rt)
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    if (auto srLock = rt.lock())
+    {
+      srLock->destroyRuntime();
+      if (mActiveSceneRuntime.lock().get() == srLock.get())
+      {
+        mActiveSceneRuntime = weak_ptr<SceneRuntime>();
+      }
     }
+  }
 
-    bool
-    ProjectRuntime::initPhysicsComponent
-    ()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+  // Running =================================================================
 
-        if (!mPhysicsComponent.init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
-            return false;
-        }
-        return true;
-    }
-
-    bool
-    ProjectRuntime::initGraphicsComponent
-    ()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if (!mGraphicsComponent.init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
-            return false;
-        }
-        return true;
-    }
-
-    bool
-    ProjectRuntime::initScriptComponent
-    ()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        if(!mScriptComponent.init())
-        {
-            LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
-            return false;
-        }
-        return true;
-    }
-
-    bool
-    ProjectRuntime::constructSceneRuntime
-    (SceneRuntime* rt)
-    {
-        LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
-        auto t = rt->getLoadFromDefinitionTask();
-        if (t->hasState(TASK_STATE_QUEUED)) mTaskQueue.pushTask(t);
-        return true;
-    }
-
-    bool
-    ProjectRuntime::loadFromDefinition
-    ()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-
-        if (!initComponents())
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    void
-    ProjectRuntime::destructSceneRuntime
-    (SceneRuntime* rt)
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        rt->destroyRuntime();
-        if (mActiveSceneRuntime == rt)
-        {
-            mActiveSceneRuntime = nullptr;
-        }
-    }
-
-    // Running =================================================================
-
-    void
-    ProjectRuntime::collectGarbage
-    ()
-    {
-        LOG_DEBUG("\n"
+  void
+  ProjectRuntime::collectGarbage
+  ()
+  {
+    LOG_DEBUG("\n"
         "=======================================================================\n"
         "CollectGarbage Called @ {}\n"
         "=======================================================================",
-                  mTime.getAbsoluteTime());
+              mTime->getAbsoluteTime());
 
-        mDestructionTaskQueue.executeQueue();
-        mGraphicsComponent.getDestructionTaskQueue()->executeQueue();
-
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        for (auto rt : mSceneRuntimesToRemove)
-        {
-        	rt->collectGarbage();
-
-            auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),rt);
-            if (itr != mSceneRuntimeVector.end())
-            {
-                mSceneRuntimeVector.erase(itr);
-            }
-
-            delete rt;
-        }
-        mSceneRuntimesToRemove.clear();
+    mDestructionTaskQueue->executeQueue();
+    if (auto gfxDestQueue = mGraphicsComponent->getDestructionTaskQueue().lock())
+    {
+      gfxDestQueue->executeQueue();
     }
 
-    void ProjectRuntime::pushComponentTasks()
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    for (auto sceneRuntimeWeak : mSceneRuntimesToRemove)
     {
-        // Maintain this order
-        mWindowComponentHandle->pushTasks();
-        mInputComponent.pushTasks();
-        mAudioComponentHandle->pushTasks();
-        mPhysicsComponent.pushTasks();
-        mScriptComponent.pushTasks();
-        mGraphicsComponent.pushTasks();
-    }
-
-    void
-    ProjectRuntime::step
-    ()
-    {
-        LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
-
-        pushComponentTasks();
-
-        for (auto rt : mSceneRuntimeVector)
-        {
-            switch (rt->getState())
-            {
-                case SceneState::SCENE_STATE_TO_LOAD:
-                    constructSceneRuntime(rt);
-                    break;
-                case SceneState::SCENE_STATE_LOADED:
-                    break;
-                case SceneState::SCENE_STATE_ACTIVE:
-                    mTime.updateFrameTime();
-                    mFrameDurationHistory.push_back(1000.0f/mTime.getFrameTimeDelta());
-                    if (mFrameDurationHistory.size() > MaxFrameCount) mFrameDurationHistory.pop_front();
-
-                    if (rt != nullptr)
-                    {
-                        rt->getCamera()->update();
-                        rt->createSceneTasks();
-                    }
-
-                    rt->collectGarbage();
-                    break;
-                case SceneState::SCENE_STATE_TO_DESTROY:
-                    destructSceneRuntime(rt);
-                    break;
-                case SceneState::SCENE_STATE_DESTROYED:
-                    mSceneRuntimesToRemove.push_back(rt);
-                    break;
-            }
-        }
-
-		ModelMesh::ClearCounters();
-		ShaderRuntime::InvalidateState();
-        mTaskQueue.executeQueue();
-        mGraphicsComponent.getTaskQueue()->executeQueue();
-
-        collectGarbage();
-
-        LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
-    }
-
-    void
-    ProjectRuntime::clearAllCaches
-    ()
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-
-        mDestructionTaskQueue.executeQueue();
-        mGraphicsComponent.getDestructionTaskQueue()->executeQueue();
-
-        mAudioCache->clear();
-        mModelCache->clear();
-        mShaderCache->clear();
-        mMaterialCache->clear();
-        mTextureCache->clear();
-        mScriptCache->clear();
-        mFontCache->clear();
-    }
-
-    // Accessors  ==============================================================
-
-    shared_ptr<Cache<AudioDefinition,AudioRuntime>>
-    ProjectRuntime::getAudioCache
-    ()
-    {
-        return mAudioCache;
-    }
-
-    shared_ptr<Cache<ShaderDefinition,ShaderRuntime>>
-    ProjectRuntime::getShaderCache
-    ()
-    {
-        return mShaderCache;
-    }
-
-    shared_ptr<Cache<MaterialDefinition,MaterialRuntime>>
-    ProjectRuntime::getMaterialCache
-    ()
-    {
-        return mMaterialCache;
-    }
-
-    shared_ptr<Cache<ModelDefinition,ModelRuntime>>
-    ProjectRuntime::getModelCache
-    ()
-    {
-        return mModelCache;
-    }
-
-    shared_ptr<Cache<TextureDefinition,TextureRuntime>>
-    ProjectRuntime::getTextureCache
-    ()
-    {
-        return mTextureCache;
-    }
-
-    shared_ptr<Cache<ScriptDefinition,ScriptRuntime>>
-    ProjectRuntime::getScriptCache
-    ()
-    {
-        return mScriptCache;
-    }
-
-    shared_ptr<Cache<FontDefinition,FontRuntime>>
-    ProjectRuntime::getFontCache()
-    {
-        return mFontCache;
-    }
-
-    AssetDefinition*
-    ProjectRuntime::getAssetDefinitionByUuid
-    (UuidType uuid)
-    const
-    {
-        if (mProjectHandle != nullptr)
-        {
-            return mProjectHandle->getAssetDefinitionByUuid(uuid);
-        }
-        return nullptr;
-    }
-
-    EntityRuntime*
-    ProjectRuntime::getEntityRuntimeByUuid
-    (SceneRuntime* rt, UuidType uuid)
-    const
-    {
-        if (rt == nullptr)
-        {
-            return nullptr;
-        }
-
-        return rt->getEntityRuntimeByUuid(uuid);
-    }
-
-    bool
-    ProjectRuntime::hasActiveScene
-    ()
-    const
-    {
-        return mActiveSceneRuntime != nullptr;
-    }
-
-    bool
-    ProjectRuntime::hasLoadedScenes
-    ()
-    const
-    {
-        for (auto srt : mSceneRuntimeVector)
-        {
-            if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
-                srt->getState() < SceneState::SCENE_STATE_DESTROYED)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    bool
-    ProjectRuntime::hasSceneRuntime
-    (UuidType uuid)
-    const
-    {
-        bool result = false;
-        for (auto srt : mSceneRuntimeVector)
-        {
-            if (srt->getUuid() == uuid)
-            {
-                result = true;
-            }
-
-            if (result) break;
-        }
-        return result;
-    }
-
-    deque<float> ProjectRuntime::getFrameDurationHistory() const
-    {
-        return mFrameDurationHistory;
-    }
-
-    float ProjectRuntime::getAverageFramerate()
-    {
-        float f = 0.0;
-        for (const auto& dur : mFrameDurationHistory)
-        {
-            f += dur;
-        }
-        return f/MaxFrameCount;
-    }
-
-    TaskQueue<shared_ptr<Task>>* ProjectRuntime::getTaskQueue()
-    {
-        return &mTaskQueue;
-    }
-
-    TaskQueue<shared_ptr<DestructionTask>>* ProjectRuntime::getDestructionTaskQueue()
-    {
-        return &mDestructionTaskQueue;
-    }
-
-    WindowComponent*
-    ProjectRuntime::getWindowComponent
-    ()
-    {
-        return mWindowComponentHandle;
-    }
-
-    void
-    ProjectRuntime::setDone
-    (bool done)
-    {
-        mDone = done;
-    }
-
-    Time*
-    ProjectRuntime::getTime
-    ()
-    {
-        return &mTime;
-    }
-
-    bool
-    ProjectRuntime::isDone
-    ()
-    const
-    {
-        return mDone;
-    }
-
-    AudioComponent*
-    ProjectRuntime::getAudioComponent
-    ()
-    {
-        return mAudioComponentHandle;
-    }
-
-    PhysicsComponent*
-    ProjectRuntime::getPhysicsComponent
-    ()
-    {
-        return &mPhysicsComponent;
-    }
-
-    GraphicsComponent*
-    ProjectRuntime::getGraphicsComponent
-    ()
-    {
-        return &mGraphicsComponent;
-    }
-
-    ScriptComponent*
-    ProjectRuntime::getScriptComponent
-    ()
-    {
-        return &mScriptComponent;
-    }
-
-    StorageManager*
-    ProjectRuntime::getStorageManager
-    ()
-    {
-        return mStorageManagerHandle;
-    }
-
-
-
-    int
-    ProjectRuntime::getWindowWidth
-    ()
-    const
-    {
-        if (mWindowComponentHandle != nullptr)
-        {
-            return mWindowComponentHandle->getWidth();
-        }
-        return 0;
-    }
-
-    void
-    ProjectRuntime::setWindowWidth
-    (int w)
-    {
-        if (mWindowComponentHandle != nullptr)
-        {
-            mWindowComponentHandle->setWidth(w);
-        }
-    }
-
-    int
-    ProjectRuntime::getWindowHeight
-    ()
-    const
-    {
-        if (mWindowComponentHandle != nullptr)
-        {
-            return mWindowComponentHandle->getHeight();
-        }
-        return 0;
-    }
-
-    void
-    ProjectRuntime::setWindowHeight
-    (int h)
-    {
-        if (mWindowComponentHandle != nullptr)
-        {
-            mWindowComponentHandle->setHeight(h);
-        }
-    }
-
-    SceneRuntime*
-    ProjectRuntime::getActiveSceneRuntime
-    ()
-    const
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        return mActiveSceneRuntime;
-    }
-
-    SceneRuntime*
-    ProjectRuntime::getSceneRuntimeByUuid
-    (UuidType uuid)
-    const
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        for (auto* sr : mSceneRuntimeVector)
-        {
-            if (sr->getUuid() == uuid)
-            {
-                return sr;
-            }
-        }
-        return nullptr;
-    }
-
-    void
-    ProjectRuntime::setActiveSceneRuntime
-    (UuidType uuid)
-    {
-        LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-        mActiveSceneRuntime = getSceneRuntimeByUuid(uuid);
-        mActiveSceneRuntime->setState(SCENE_STATE_ACTIVE);
-    }
-
-    vector<SceneRuntime*>
-    ProjectRuntime::getSceneRuntimeVector
-    ()
-    const
-    {
-        return mSceneRuntimeVector;
-    }
-
-    void
-    ProjectRuntime::addSceneRuntime
-    (SceneRuntime* rt)
-    {
-        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
-        if (itr == mSceneRuntimeVector.end())
-        {
-            LOG_TRACE("ProjectRuntime: Adding SceneRuntime {}",rt->getNameAndUuidString());
-            mSceneRuntimeVector.push_back(rt);
-        }
-    }
-
-    void
-    ProjectRuntime::removeSceneRuntime
-    (SceneRuntime* rt)
-    {
-        auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+      if (auto srLock = sceneRuntimeWeak.lock())
+      {
+        srLock->collectGarbage();
+        auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),srLock);
         if (itr != mSceneRuntimeVector.end())
         {
-            mSceneRuntimeVector.erase(itr);
+          mSceneRuntimeVector.erase(itr);
         }
+      }
     }
+    mSceneRuntimesToRemove.clear();
+  }
 
-    Project*
-    ProjectRuntime::getProject
-    ()
-    const
+  void ProjectRuntime::pushComponentTasks()
+  {
+    // Maintain this order
+    mWindowComponent->pushTasks();
+    mInputComponent->pushTasks();
+    mAudioComponent->pushTasks();
+    mPhysicsComponent->pushTasks();
+    mScriptComponent->pushTasks();
+    mGraphicsComponent->pushTasks();
+  }
+
+  void
+  ProjectRuntime::step
+  ()
+  {
+    LOG_TRACE("\n\n=========================[ Update Started ]=========================\n\n");
+
+    pushComponentTasks();
+
+    for (auto rt : mSceneRuntimeVector)
     {
-        return mProjectHandle;
+      switch (rt->getState())
+      {
+        case SceneState::SCENE_STATE_TO_LOAD:
+          constructSceneRuntime(rt);
+          break;
+        case SceneState::SCENE_STATE_LOADED:
+          break;
+        case SceneState::SCENE_STATE_ACTIVE:
+          mTime->updateFrameTime();
+          mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
+          if (mFrameDurationHistory.size() > MaxFrameCount) mFrameDurationHistory.pop_front();
+
+          if (auto camera = rt->getCamera().lock())
+          {
+            camera->update();
+          }
+          rt->updateFlatVector();
+          rt->createSceneTasks();
+
+          rt->collectGarbage();
+          break;
+        case SceneState::SCENE_STATE_TO_DESTROY:
+          destructSceneRuntime(rt);
+          break;
+        case SceneState::SCENE_STATE_DESTROYED:
+          mSceneRuntimesToRemove.push_back(rt);
+          break;
+      }
     }
 
-    InputComponent*
-    ProjectRuntime::getInputComponent
-    ()
+    ModelMesh::ClearCounters();
+    ShaderRuntime::InvalidateState();
+    mTaskQueue->executeQueue();
+    if (auto gfxQueue = mGraphicsComponent->getTaskQueue().lock())
     {
-        return &mInputComponent;
+      gfxQueue->executeQueue();
     }
 
-    int ProjectRuntime::MaxFrameCount = 100;
+    collectGarbage();
+
+    LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
+  }
+
+  void
+  ProjectRuntime::clearAllCaches
+  ()
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+
+    mDestructionTaskQueue->executeQueue();
+    if (auto gfxDestQueue = mGraphicsComponent->getDestructionTaskQueue().lock())
+    {
+      gfxDestQueue->executeQueue();
+    }
+
+    mAudioCache->clear();
+    mModelCache->clear();
+    mShaderCache->clear();
+    mMaterialCache->clear();
+    mTextureCache->clear();
+    mScriptCache->clear();
+    mFontCache->clear();
+  }
+
+  // Accessors  ==============================================================
+
+  weak_ptr<AudioCache>
+  ProjectRuntime::getAudioCache
+  ()
+  const
+  {
+    return mAudioCache;
+  }
+
+  weak_ptr<ShaderCache>
+  ProjectRuntime::getShaderCache
+  ()
+  const
+  {
+    return mShaderCache;
+  }
+
+  weak_ptr<MaterialCache>
+  ProjectRuntime::getMaterialCache
+  ()
+  const
+  {
+    return mMaterialCache;
+  }
+
+  weak_ptr<ModelCache>
+  ProjectRuntime::getModelCache
+  ()
+  const
+  {
+    return mModelCache;
+  }
+
+  weak_ptr<TextureCache>
+  ProjectRuntime::getTextureCache
+  ()
+  const
+  {
+    return mTextureCache;
+  }
+
+  weak_ptr<ScriptCache>
+  ProjectRuntime::getScriptCache
+  ()
+  const
+  {
+    return mScriptCache;
+  }
+
+  weak_ptr<FontCache>
+  ProjectRuntime::getFontCache
+  ()
+  const
+  {
+    return mFontCache;
+  }
+
+  weak_ptr<AssetDefinition>
+  ProjectRuntime::getAssetDefinitionByUuid
+  (UuidType uuid)
+  const
+  {
+    if (auto pdLock = static_pointer_cast<ProjectDefinition>(mDefinition.lock()))
+    {
+      return pdLock->getAssetDefinitionByUuid(uuid);
+    }
+    return weak_ptr<AssetDefinition>();
+  }
+
+  bool
+  ProjectRuntime::hasActiveScene
+  ()
+  const
+  {
+    return mActiveSceneRuntime.expired();
+  }
+
+  bool
+  ProjectRuntime::hasLoadedScenes
+  ()
+  const
+  {
+    for (auto srt : mSceneRuntimeVector)
+    {
+      if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
+          srt->getState() < SceneState::SCENE_STATE_DESTROYED)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  bool
+  ProjectRuntime::hasSceneRuntime
+  (UuidType uuid)
+  const
+  {
+    bool result = false;
+    for (auto srt : mSceneRuntimeVector)
+    {
+      if (srt->getUuid() == uuid)
+      {
+        result = true;
+      }
+
+      if (result) break;
+    }
+    return result;
+  }
+
+  deque<float> ProjectRuntime::getFrameDurationHistory() const
+  {
+    return mFrameDurationHistory;
+  }
+
+  float ProjectRuntime::getAverageFramerate()
+  {
+    float f = 0.0;
+    for (const auto& dur : mFrameDurationHistory)
+    {
+      f += dur;
+    }
+    return f/MaxFrameCount;
+  }
+
+  weak_ptr<TaskQueue<Task>>
+  ProjectRuntime::getTaskQueue
+  ()
+  const
+  {
+    return mTaskQueue;
+  }
+
+  weak_ptr<TaskQueue<DestructionTask>>
+  ProjectRuntime::getDestructionTaskQueue
+  ()
+  const
+  {
+    return mDestructionTaskQueue;
+  }
+
+  weak_ptr<WindowComponent>
+  ProjectRuntime::getWindowComponent
+  ()
+  const
+  {
+    return mWindowComponent;
+  }
+
+  void
+  ProjectRuntime::setDone
+  (bool done)
+  {
+    mDone = done;
+  }
+
+  weak_ptr<Time>
+  ProjectRuntime::getTime
+  ()
+  const
+  {
+    return mTime;
+  }
+
+  bool
+  ProjectRuntime::isDone
+  ()
+  const
+  {
+    return mDone;
+  }
+
+  weak_ptr<AudioComponent>
+  ProjectRuntime::getAudioComponent
+  ()
+  const
+  {
+    return mAudioComponent;
+  }
+
+  weak_ptr<PhysicsComponent>
+  ProjectRuntime::getPhysicsComponent
+  ()
+  const
+  {
+    return mPhysicsComponent;
+  }
+
+  weak_ptr<GraphicsComponent>
+  ProjectRuntime::getGraphicsComponent
+  ()
+  const
+  {
+    return mGraphicsComponent;
+  }
+
+  weak_ptr<ScriptComponent>
+  ProjectRuntime::getScriptComponent
+  ()
+  const
+  {
+    return mScriptComponent;
+  }
+
+  weak_ptr<StorageManager>
+  ProjectRuntime::getStorageManager
+  ()
+  const
+  {
+    return mStorageManager;
+  }
+
+  weak_ptr<SceneRuntime>
+  ProjectRuntime::getActiveSceneRuntime
+  ()
+  const
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    return mActiveSceneRuntime;
+  }
+
+  weak_ptr<SceneRuntime>
+  ProjectRuntime::getSceneRuntimeByUuid
+  (UuidType uuid)
+  const
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    for (auto sr : mSceneRuntimeVector)
+    {
+      if (sr->getUuid() == uuid)
+      {
+        return sr;
+      }
+    }
+    return weak_ptr<SceneRuntime>();
+  }
+
+  void
+  ProjectRuntime::setActiveSceneRuntime
+  (UuidType uuid)
+  {
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    mActiveSceneRuntime = getSceneRuntimeByUuid(uuid);
+    if (auto asrLock = mActiveSceneRuntime.lock())
+    {
+      asrLock->setState(SCENE_STATE_ACTIVE);
+    }
+  }
+
+  vector<weak_ptr<SceneRuntime>>
+  ProjectRuntime::getSceneRuntimeVector
+  ()
+  const
+  {
+    vector<weak_ptr<SceneRuntime>> ret;
+    ret.insert(ret.end(), mSceneRuntimeVector.begin(), mSceneRuntimeVector.end());
+    return ret;
+  }
+
+  void
+  ProjectRuntime::addSceneRuntime
+  (const shared_ptr<SceneRuntime>& rt)
+  {
+    auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
+    if (itr == mSceneRuntimeVector.end())
+    {
+      LOG_TRACE("ProjectRuntime: Adding SceneRuntime {}",rt->getNameAndUuidString());
+      mSceneRuntimeVector.push_back(rt);
+    }
+  }
+
+  void
+  ProjectRuntime::removeSceneRuntime
+  (const weak_ptr<SceneRuntime>& rt)
+  {
+    if (auto rtLock = rt.lock())
+    {
+    auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rtLock);
+    if (itr != mSceneRuntimeVector.end())
+    {
+      mSceneRuntimeVector.erase(itr);
+    }
+    }
+  }
+
+  weak_ptr<InputComponent>
+  ProjectRuntime::getInputComponent
+  ()
+  const
+  {
+    return mInputComponent;
+  }
+
+  weak_ptr<ProjectDirectory>
+  ProjectRuntime::getProjectDirectory()
+  const
+  {
+    return mProjectDirectory;
+  }
+
+  int ProjectRuntime::MaxFrameCount = 100;
 }

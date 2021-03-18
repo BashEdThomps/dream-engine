@@ -20,27 +20,27 @@ namespace octronic::dream
     class MaterialDefinition : public AssetDefinition
     {
     public:
-        MaterialDefinition(ProjectDefinition* pd, const json& js);
+        MaterialDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
         ~MaterialDefinition() override;
 
         // Shader
-        UuidType getShader();
+        UuidType getShader() const;
         void setShader(UuidType);
 
         // Textures
-        UuidType getAlbedoTexture();
+        UuidType getAlbedoTexture() const;
         void setAlbedoTexture(UuidType);
 
-        UuidType getNormalTexture();
+        UuidType getNormalTexture() const;
         void setNormalTexture(UuidType);
 
-        UuidType getMetallicTexture();
+        UuidType getMetallicTexture() const;
         void setMetallicTexture(UuidType);
 
-        UuidType getRoughnessTexture();
+        UuidType getRoughnessTexture() const;
         void setRoughnessTexture(UuidType);
 
-        UuidType getAoTexture();
+        UuidType getAoTexture() const;
         void setAoTexture(UuidType);
     };
 }

@@ -35,18 +35,16 @@
 
 #include <algorithm>
 #include <thread>
+#include <memory>
 
-
+using std::make_shared;
 
 namespace octronic::dream
 {
     Project::Project
-    (ProjectDirectory* dir, StorageManager* fm)
+    (const weak_ptr<ProjectDirectory>& dir,
+     const weak_ptr<StorageManager>& fm)
         : mDirectory(dir),
-          mDefinition(nullptr),
-          mRuntime(nullptr),
-          mWindowComponent(nullptr),
-          mAudioComponent(nullptr),
           mStorageManager(fm)
     {
         LOG_TRACE("Project: Constructing");
@@ -56,33 +54,21 @@ namespace octronic::dream
     ()
     {
         LOG_TRACE("Project: Destructing");
-
-        if (mRuntime != nullptr)
-        {
-            delete mRuntime;
-            mRuntime = nullptr;
-        }
-
-        if (mDefinition != nullptr)
-        {
-            delete mDefinition;
-            mDefinition = nullptr;
-        }
     }
 
-    ProjectRuntime* // public
+    weak_ptr<ProjectRuntime>
     Project::createProjectRuntime
     ()
     {
         LOG_DEBUG("Project: Creating project runtime for {}", mDefinition->getNameAndUuidString());
-        mRuntime = new ProjectRuntime(this, mWindowComponent,mAudioComponent,mStorageManager);
+        mRuntime = make_shared<ProjectRuntime>(mDefinition, mDirectory, mWindowComponent,mAudioComponent,mStorageManager);
         if (!mRuntime->loadFromDefinition())
         {
             LOG_CRITICAL("Project: Failed to create project runtime");
-            delete mRuntime;
-            mRuntime = nullptr;
+            mRuntime.reset();
+        	return mRuntime;
         }
-        return mRuntime;
+        return weak_ptr<ProjectRuntime>();
     }
 
     bool
@@ -93,14 +79,15 @@ namespace octronic::dream
         return mRuntime != nullptr;
     }
 
-    void Project::resetProjectRuntime()
+    void
+    Project::resetProjectRuntime
+    ()
     {
         LOG_DEBUG("Project: Resetting project runtime");
-        delete mRuntime;
-        mRuntime = nullptr;
+        mRuntime.reset();
     }
 
-    bool // public
+    bool
     Project::hasProjectDefinition
     ()
     const
@@ -108,7 +95,7 @@ namespace octronic::dream
         return mDefinition != nullptr;
     }
 
-    ProjectRuntime* // public
+    weak_ptr<ProjectRuntime>
     Project::getRuntime
     ()
     const
@@ -116,46 +103,47 @@ namespace octronic::dream
         return mRuntime;
     }
 
-    ProjectDefinition* // public
+    weak_ptr<ProjectDefinition>
     Project::getDefinition
     () const
     {
         return mDefinition;
     }
 
-    AssetDefinition* // public
+    weak_ptr<AssetDefinition>
     Project::getAssetDefinitionByUuid
     (UuidType uuid)
     const
     {
         if (mDefinition != nullptr)
         {
-            return dynamic_cast<ProjectDefinition*>(mDefinition)->getAssetDefinitionByUuid(uuid);
+            return mDefinition->getAssetDefinitionByUuid(uuid);
         }
-        return nullptr;
+        return weak_ptr<AssetDefinition>();
     }
 
-    void // public
+    void
     Project::setDefinition
-    (ProjectDefinition* definition)
+    (const shared_ptr<ProjectDefinition>& definition)
     {
         mDefinition = definition;
     }
 
-    void // public
+    void
     Project::setWindowComponent
-    (WindowComponent* windowComponent)
+    (const shared_ptr<WindowComponent>& windowComponent)
     {
         mWindowComponent = windowComponent;
     }
 
-    void  // public
-    Project::setAudioComponent(AudioComponent* audioComponent)
+    void
+    Project::setAudioComponent
+    (const shared_ptr<AudioComponent>& audioComponent)
     {
         mAudioComponent = audioComponent;
     }
 
-    ProjectDirectory* // public
+    weak_ptr<ProjectDirectory>
     Project::getDirectory
     ()
     const

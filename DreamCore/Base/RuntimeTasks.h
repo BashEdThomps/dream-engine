@@ -4,15 +4,19 @@
 
 namespace octronic::dream
 {
-	class Runtime;
+	class DeferredLoadRuntime;
+    class ProjectRuntime;
+    class DeferredLoadRuntime;
 
 	class RuntimeLoadFromDefinitionTask : public Task
 	{
 	public:
-		RuntimeLoadFromDefinitionTask(ProjectRuntime* pr, Runtime* runtime);
+		RuntimeLoadFromDefinitionTask(
+                const weak_ptr<ProjectRuntime>& pr,
+                const weak_ptr<DeferredLoadRuntime>& runtime);
 		void execute() override;
-        string getNameAndIDString() override;
+        string getNameAndIDString() const override;
 	private:
-		Runtime* mRuntime;
+		weak_ptr<DeferredLoadRuntime> mRuntime;
 	};
 }

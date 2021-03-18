@@ -29,8 +29,8 @@ namespace octronic::dream::tool
     PreferencesModel::load
     ()
     {
-        StorageManager* fm = mContext->getStorageManager();
-        File* f = fm->openFile (PREFS_FILE_NAME);
+        auto fm = mContext->getStorageManager();
+        auto f = fm->openFile (PREFS_FILE_NAME);
         if (f->exists())
         {
             mJson = json::parse(f->readString());
@@ -45,8 +45,8 @@ namespace octronic::dream::tool
     PreferencesModel::save
     ()
     {
-        StorageManager* fm = mContext->getStorageManager();
-        File* f = fm->openFile(PREFS_FILE_NAME);
+        auto fm = mContext->getStorageManager();
+        auto f = fm->openFile(PREFS_FILE_NAME);
         bool retval = f->writeString(mJson.dump(1));
         fm->closeFile(f);
         return retval;
@@ -59,6 +59,12 @@ namespace octronic::dream::tool
            mJson[PREFS_EXTERNAL_EDITOR_PATH] = "";
        }
        return mJson[PREFS_EXTERNAL_EDITOR_PATH];
+    }
+
+    bool
+    PreferencesModel::hasExternalEditorPath()
+    {
+       return !getExternalEditorPath().empty();
     }
 
     void PreferencesModel::setExternalEditorPath(const string& editor)

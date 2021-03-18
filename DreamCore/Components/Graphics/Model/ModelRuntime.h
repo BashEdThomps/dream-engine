@@ -48,7 +48,9 @@ namespace octronic::dream
     class ModelRuntime : public SharedAssetRuntime
     {
     public:
-        ModelRuntime(ProjectRuntime*, AssetDefinition*);
+        ModelRuntime(
+                const weak_ptr<ProjectRuntime>&,
+                const weak_ptr<AssetDefinition>&);
 
         ~ModelRuntime() override;
         bool loadFromDefinition() override;
@@ -57,7 +59,7 @@ namespace octronic::dream
         void setBoundingBox(const BoundingBox& bb);
 
         vector<string> getMaterialNames() const;
-        vector<shared_ptr<ModelMesh>>* getMeshes();
+        vector<weak_ptr<ModelMesh>> getMeshes() const;
 
         mat4 getGlobalInverseTransform() const;
         void setGlobalInverseTransform(const mat4& globalInverseTransform);

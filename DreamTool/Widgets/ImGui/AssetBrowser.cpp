@@ -28,11 +28,11 @@ namespace octronic::dream::tool
     AssetBrowser::draw
     ()
     {
-        Project* project = mContext->getProject();
+        auto project = mContext->getProject();
         if (project)
         {
             ImGui::Begin("Assets",&mVisible);
-            ProjectDefinition* projDef = mContext->getProject()->getDefinition();
+            auto projDef = mContext->getProject()->getDefinition();
 
             if (projDef == nullptr)
             {
@@ -60,7 +60,7 @@ namespace octronic::dream::tool
                     bool newClicked = ImGui::MenuItem(buf);
                     if (newClicked)
                     {
-                        AssetDefinition* newDef = projDef->createNewAssetDefinition(type);
+                        auto newDef = projDef->createNewAssetDefinition(type);
                         mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset,newDef,nullptr);
                         projDef->regroupAssetDefinitions();
                     }

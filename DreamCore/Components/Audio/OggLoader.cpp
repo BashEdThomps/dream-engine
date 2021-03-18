@@ -35,11 +35,11 @@ size_t octronic_dream_oggloader_read
 {
     // copy the next elementCount bytes from dataSource into buffer
 	assert(elementSize == 1);
-    File* f = (File*)dataSource;
+    shared_ptr<File> f = *(shared_ptr<File>*)dataSource;
     size_t capped_count = 0;
-    if(seekIndex+elementCount > f->getBinaryDataSize())
+    if(seekIndex+elementCount > f->getBinaryData().size())
     {
-       size_t overflow =  (seekIndex+elementCount) - f->getBinaryDataSize();
+       size_t overflow =  (seekIndex+elementCount) - f->getBinaryData().size();
        capped_count = elementCount-overflow;
     }
     else
@@ -48,7 +48,7 @@ size_t octronic_dream_oggloader_read
     }
     //LOG_TRACE("OggLoader: Accessing index[{}/{}] Requesting {} elements (capped to {})",
     //          seekIndex, f->getBinaryDataSize(), elementCount,capped_count);
-    uint8_t* data = f->getBinaryData();
+    vector<uint8_t> data = f->getBinaryData();
     memcpy(buffer,&data[seekIndex], capped_count);
     seekIndex += capped_count;
     return capped_count;
@@ -71,19 +71,23 @@ namespace octronic::dream
 
     bool
     OggLoader::loadIntoBuffer
-    (AudioDefinition* audioDefinition, ProjectRuntime* projectRuntime)
+    (const weak_ptr<AudioDefinition>& audioDefinition,
+     const weak_ptr<ProjectRuntime>& projectRuntime)
     {
         LOG_TRACE("OggLoader: {}",__FUNCTION__);
 
-        Project* project = projectRuntime->getProject();
-        ProjectDirectory* pd = project->getDirectory();
-        auto absPath = pd->getAssetAbsolutePath(audioDefinition);
+        auto adLock = audioDefinition.lock();
+        auto prLock = projectRuntime.lock();
+        auto pDirLock = prLock->getProjectDirectory().lock();
+        auto absPath = pDirLock->getAssetAbsolutePath(audioDefinition);
+
         LOG_DEBUG("OggLoader: Loading Runtime: {}", absPath);
 
 
         // Open/Read the file
-        StorageManager* sm = projectRuntime->getStorageManager();
-        File *file = sm->openFile(absPath);
+        auto sm = prLock->getStorageManager().lock();
+        auto file = sm->openFile(absPath).lock();
+
         if (file == nullptr || !file->exists())
         {
             LOG_ERROR("OggLoader: Cannot open {} for reading, may not exist", absPath);
@@ -109,7 +113,7 @@ namespace octronic::dream
 
         // Try opening the given file
         OggVorbis_File oggFile;
-        int error = ov_open_callbacks(file, &oggFile, nullptr, 0, callbacks);
+        int error = ov_open_callbacks(&file, &oggFile, nullptr, 0, callbacks);
         if (error < 0)
         {
             LOG_ERROR("OggLoader: Error opening {} for decoding, ov_open failed\n\t{}", absPath, getOggErrorString(error));
@@ -154,9 +158,7 @@ namespace octronic::dream
             expanding_buffer.insert(expanding_buffer.end(), &fixed_buffer[0], &fixed_buffer[0] + bytes);
         }
         while (bytes > 0);
-        mAudioBuffer = new uint8_t[expanding_buffer.size()];
-        mAudioBufferSize = expanding_buffer.size();
-        memcpy(mAudioBuffer, &expanding_buffer[0], expanding_buffer.size());
+        mAudioBuffer.insert(mAudioBuffer.begin(), expanding_buffer.begin(), expanding_buffer.end());
 
         // Clean up!
         ov_clear(&oggFile);
