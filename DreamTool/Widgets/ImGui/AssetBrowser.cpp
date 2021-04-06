@@ -1,10 +1,6 @@
 #include "AssetBrowser.h"
 
-#ifdef WIN32
-#include <Windows.h>
-#endif
-
-#include "PropertiesWindow.h"
+#include "Widgets/ImGui/PropertiesWindow/PropertiesWindow.h"
 #include "DreamToolContext.h"
 
 #include <DreamCore.h>
@@ -15,109 +11,103 @@ using std::stringstream;
 
 namespace octronic::dream::tool
 {
-    AssetBrowser::AssetBrowser(DreamToolContext* project)
-        : ImGuiWidget(project)
-    {}
+  AssetBrowser::AssetBrowser(DreamToolContext& project)
+    : ImGuiWidget(project)
+  {}
 
-    AssetBrowser::~AssetBrowser
-    ()
-    {
-    }
+  AssetBrowser::~AssetBrowser
+  ()
+  {
+  }
 
-    void
-    AssetBrowser::draw
-    ()
+  void
+  AssetBrowser::draw
+  ()
+  {
+    auto& pCtxOpt = getContext().getProjectContext();
+
+    ImGui::Begin("Assets",&mVisible);
+    if (pCtxOpt)
     {
-        auto project = mContext->getProject();
-        if (project)
+      auto& pCtx = pCtxOpt.value();
+
+      auto& projDefOpt = pCtx.getProjectDefinition();
+
+      if (!projDefOpt.has_value())
+      {
+        return;
+      }
+
+      auto& projDef = projDefOpt.value();
+
+      ImGui::PushID("AssetTree");
+      for (auto readablePair : AssetTypeHelper::ReadableTypesMap)
+      {
+        AssetType type = readablePair.first;
+        string name = readablePair.second;
+
+        auto assets = projDef.getAssetDefinitionsVector(type);
+        stringstream nameCount;
+        nameCount <<  name << " (" <<  assets.size() << ")";
+        ImGui::PushID(name.c_str());
+        static string selectedAssetType = "";
+        ImGui::SetNextTreeNodeOpen(selectedAssetType.compare(name) == 0);
+        bool headerOpen = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
+
+        // Context Menu
+        if (ImGui::BeginPopupContextItem())
         {
-            ImGui::Begin("Assets",&mVisible);
-            auto projDef = mContext->getProject()->getDefinition();
+          char buf[buf_sz];
+          snprintf(buf,buf_sz,"New %s",name.c_str());
+          bool newClicked = ImGui::MenuItem(buf);
+          if (newClicked)
+          {
+            auto& newDef = projDef.createNewAssetDefinition(type);
+            getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_Asset,newDef});
+          }
+          ImGui::EndPopup();
+        }
 
-            if (projDef == nullptr)
+        if (headerOpen)
+        {
+          // Group Nodes
+          selectedAssetType = name;
+          int assetDefTreeId = 0;
+          // Asset Nodes
+          for (auto& assetWrap : assets)
+          {
+            auto& asset = assetWrap.get();
+
+            bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset.getName().c_str(),0);
+
+            // Asset Def Contex Menu
+            if (ImGui::BeginPopupContextItem())
             {
-                return;
+              char buf[buf_sz];
+              snprintf(buf,buf_sz,"Delete %s",asset.getName().c_str());
+              bool deleteClicked = ImGui::MenuItem(buf);
+              if (deleteClicked)
+              {
+              }
+              ImGui::EndPopup();
             }
 
-            ImGui::PushID("AssetTree");
-            for (auto name : Constants::DREAM_ASSET_TYPES_READABLE_VECTOR)
+            if (nodeOpen)
             {
-                AssetType type = Constants::getAssetTypeEnumFromString(name);
-                auto assets = projDef->getAssetDefinitionsVector(type);
-                auto typeGroups = projDef->getAssetDefinitionGroups()[type];
-                stringstream nameCount;
-                nameCount <<  name << " (" <<  assets.size() << ")";
-                ImGui::PushID(name.c_str());
-                static string selectedAssetType = "";
-                ImGui::SetNextTreeNodeOpen(selectedAssetType.compare(name) == 0);
-                bool headerOpen = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
-
-                // Context Menu
-                if (ImGui::BeginPopupContextItem())
-                {
-                    char buf[buf_sz];
-                    snprintf(buf,buf_sz,"New %s",name.c_str());
-                    bool newClicked = ImGui::MenuItem(buf);
-                    if (newClicked)
-                    {
-                        auto newDef = projDef->createNewAssetDefinition(type);
-                        mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset,newDef,nullptr);
-                        projDef->regroupAssetDefinitions();
-                    }
-                    ImGui::EndPopup();
-                }
-
-                if (headerOpen)
-                {
-                    // Group Nodes
-                    selectedAssetType = name;
-                    int assetDefTreeId = 0;
-                    for (string group : typeGroups)
-                    {
-                        ImGui::PushID(group.c_str());
-                        if (ImGui::TreeNode(group.c_str()))
-                        {
-                            // Asset Nodes
-                            for (auto asset : assets)
-                            {
-                                if (asset->getGroup().compare(group) == 0)
-                                {
-                                    bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++assetDefTreeId,leaf_flags,asset->getName().c_str(),0);
-
-                                    // Asset Def Contex Menu
-                                    if (ImGui::BeginPopupContextItem())
-                                    {
-                                        char buf[buf_sz];
-                                        snprintf(buf,buf_sz,"Delete %s",asset->getName().c_str());
-                                        bool deleteClicked = ImGui::MenuItem(buf);
-                                        if (deleteClicked)
-                                        {
-                                        }
-                                        ImGui::EndPopup();
-                                    }
-
-                                    if (nodeOpen)
-                                    {
-                                        if (ImGui::IsItemClicked())
-                                        {
-                                            LOG_DEBUG("AssetBrowser: Asset Definition Clicked {}", asset->getName());
-                                            mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Asset, asset, nullptr);
-                                        }
-                                        ImGui::TreePop();
-                                    }
-                                }
-                            }
-                            ImGui::TreePop();
-                        }
-                        ImGui::PopID();
-                    }
-                }
-                ImGui::PopID();
-            } // Asset Type Node
-            ImGui::PopID();
-
-            ImGui::End();
+              if (ImGui::IsItemClicked())
+              {
+                LOG_DEBUG("AssetBrowser: Asset Definition Clicked {}", asset.getName());
+                getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_Asset, asset});
+              }
+              ImGui::TreePop();
+            }
+          }
         }
+        ImGui::PopID();
+      } // Asset Type Node
+      ImGui::PopID();
     }
+    ImGui::End();
+  }
 }
 

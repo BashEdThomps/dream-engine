@@ -3,7 +3,7 @@
 
 namespace octronic::dream
 {
-    Frustum::Frustum(CameraRuntime* cam)
+    Frustum::Frustum(CameraRuntime& cam)
         : mCamera(cam)
     {
 
@@ -18,8 +18,8 @@ namespace octronic::dream
     Frustum::updatePlanes
     ()
     {
-        const mat4 &v = mCamera->getViewMatrix();
-        const mat4 &p = mCamera->getProjectionMatrix();
+        const mat4 &v = mCamera.get().getViewMatrix();
+        const mat4 &p = mCamera.get().getProjectionMatrix();
 
         mat4 clipMatrix;
 

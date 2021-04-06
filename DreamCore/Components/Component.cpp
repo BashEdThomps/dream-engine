@@ -19,22 +19,32 @@
 namespace octronic::dream
 {
 
-    Component::Component
-    (const weak_ptr<ProjectRuntime>& pr)
-        : mProjectRuntime(pr)
-    {
+  Component::Component
+  ()
+  {}
 
-    }
+  Component::Component(ProjectRuntime& pr)
+    : mProjectRuntime(pr)
+  {
 
-    Component::~Component
-    ()
-    {
+  }
 
-    }
+  Component::~Component()
+  {
 
-    void Component::setProjectRuntime
-    (const weak_ptr<ProjectRuntime>& pr)
-    {
-        mProjectRuntime = pr;
-    }
+  }
+
+  void
+  Component::setProjectRuntime
+  (ProjectRuntime& pr)
+  {
+    mProjectRuntime = pr;
+  }
+
+  ProjectRuntime&
+  Component::getProjectRuntime
+  ()
+  {
+    return mProjectRuntime.value().get();
+  }
 }

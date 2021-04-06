@@ -28,7 +28,7 @@ namespace octronic::dream::tool
     class GLWidget : public DreamToolWidget
     {
     public:
-        GLWidget(DreamToolContext* project, bool visible = true);
+        GLWidget(DreamToolContext& project, bool visible = true);
         virtual ~GLWidget() override;
         virtual void draw() override;
         virtual void init();

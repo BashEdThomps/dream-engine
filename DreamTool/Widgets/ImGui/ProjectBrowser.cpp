@@ -4,7 +4,7 @@
 #include <Windows.h>
 #endif
 
-#include "PropertiesWindow.h"
+#include "PropertiesWindow/PropertiesWindow.h"
 #include "DreamToolContext.h"
 
 #include <DreamCore.h>
@@ -12,313 +12,250 @@
 #include <sstream>
 
 using std::stringstream;
+using std::exception;
+using octronic::dream::Constants;
 
 namespace octronic::dream::tool
 {
-    ProjectBrowser::ProjectBrowser(DreamToolContext* project)
-        : ImGuiWidget(project)
-    {}
+  ProjectBrowser::ProjectBrowser
+  (DreamToolContext& project)
+    : ImGuiWidget(project)
+  {}
 
-    ProjectBrowser::~ProjectBrowser
-    ()
+  ProjectBrowser::~ProjectBrowser
+  ()
+  {
+  }
+
+  void
+  ProjectBrowser::draw
+  ()
+  {
+    ImGui::Begin("Project",&mVisible);
+
+    auto& pCtxOpt = getContext().getProjectContext();
+    if (pCtxOpt)
     {
-    }
+      auto& pCtx = pCtxOpt.value();
+      auto& pDefOpt = pCtx.getProjectDefinition();
 
-    void
-    ProjectBrowser::draw
-    ()
-    {
-        auto project = mContext->getProject();
+      if (pDefOpt)
+      {
+        auto& pDef = pDefOpt.value();
 
-        if (project)
+        // Project Tree
+        ImGui::PushID("ProjectTree");
+
+        int treeID = 0;
+        bool projectNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,pDef.getName().c_str(),0);
+
+        auto& propsWindow = getContext().getPropertiesWindow();
+
+        if (ImGui::IsItemClicked())
         {
-            ImGui::Begin("Project",&mVisible);
-            // Project Tree
-            auto projDef = project->getDefinition();
+          LOG_TRACE("ProjectBrowser: Project clicked {}", pDef.getName());
+          propsWindow.pushPropertyTarget({PropertyType_Project, pDef});
+        }
 
-            if (projDef == nullptr)
-            {
-                ImGui::BulletText("No Project Open");
-                return;
-            }
+        if (projectNodeOpen)
+        {
+          int sdTreeID = 0;
 
-            ImGui::PushID("ProjectTree");
-
-            int treeID = 0;
-            bool projectNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++treeID,node_flags,projDef->getName().c_str(),0);
+          for (auto& sDef : pDef.getSceneDefinitionsVector())
+          {
+            bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID, node_flags, sDef.getName().c_str(), 0);
 
             if (ImGui::IsItemClicked())
             {
-
-                LOG_TRACE("ProjectBrowser: Project clicked {}", projDef->getName());
-                mContext->getPropertiesWindow()->pushPropertyTarget
-                        (
-                            PropertyType_Project,
-                            projDef,
-                            project->getRuntime()
-                            );
+              LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef.getName());
+              propsWindow.pushPropertyTarget({PropertyType_Scene, sDef});
             }
 
-            if (projectNodeOpen)
+            if (sceneNodeOpen)
             {
-                int sdTreeID = 0;
-                for (auto sDef : projDef->getSceneDefinitionsVector())
-                {
-                    bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID,
-                                                           node_flags, sDef->getName().c_str(), 0);
+              auto& rootSo = sDef.getRootSceneEntityDefinition().value();
+              addEntityNode(rootSo);
+              ImGui::TreePop();
+            }
+          }
 
-                    if (ImGui::IsItemClicked())
-                    {
-                        LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef->getName());
-                        auto pRunt = project->getRuntime();
-                        shared_ptr<SceneRuntime> sRunt;
-
-                        if (pRunt)
-                        {
-                            sRunt = pRunt->getActiveSceneRuntime();
-                        }
-
-                        if (sRunt != nullptr)
-                        {
-                            if (sRunt->getUuid() != sDef->getUuid())
-                            {
-                                LOG_TRACE("ProjectBrowser: Scene runtime != scene definition \n{} vs {}", sDef->getUuid(), sRunt->getUuid());
-                                sRunt = nullptr;
-                            }
-                        }
-                        mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Scene, sDef,sRunt);
-                    }
-
-                    if (sceneNodeOpen)
-                    {
-                        auto rootSo = sDef->getRootEntityDefinition();
-                        addEntity(rootSo);
-                        ImGui::TreePop();
-                    }
-                }
-
-                ImGui::TreePop();
-            } // Project Name
-            ImGui::PopID();
-
-            ImGui::End();
-        }
-    	else
-        {
-            ImGui::Text("No Project Open");
-        }
+          ImGui::TreePop();
+        } // Project Name
+        ImGui::PopID();
+      }
     }
-
-    void
-    ProjectBrowser::addEntity
-    (const shared_ptr<EntityDefinition>& def)
+    else
     {
-        auto project = mContext->getProject();
-        int treeId = 0;
-
-        if (def != nullptr)
-        {
-            auto projectRuntime = project->getRuntime();
-            auto sceneRuntime = projectRuntime->getActiveSceneRuntime();
-            shared_ptr<EntityRuntime> entityRuntime;
-
-            if (sceneRuntime)
-            {
-                entityRuntime = sceneRuntime->getEntityRuntimeByUuid(def->getUuid());
-            }
-
-            ImGuiTreeNodeFlags flags = (def->getChildCount() == 0 ? leaf_flags : node_flags);
-            ImGui::PushID(def->getUuid());
-
-            bool isSelected = find(mSelectedNodes.begin(), mSelectedNodes.end(), def) != mSelectedNodes.end();
-
-            // Flags
-            stringstream nameStr;
-            stringstream flagsStr;
-
-            if (def->getIsTemplate())
-            {
-                flagsStr << "T";
-            }
-
-            if (sceneRuntime)
-            {
-                auto cam = sceneRuntime->getCamera();
-                if (cam->getCameraEntityRuntime() == entityRuntime)
-                {
-					if (!flagsStr.str().empty())
-					{
-						flagsStr << ",";
-					}
-					flagsStr << "Cam";
-                }
-            }
-
-            if (flagsStr.str().size() > 0)
-            {
-                nameStr << "(";
-                nameStr << flagsStr.str();
-                nameStr << ") ";
-            }
-
-            nameStr << def->getName();
-            bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeId,
-                                              flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
-                                              nameStr.str().c_str(), 0);
-
-            // Entity Context Menu
-            bool deleteClicked = false;
-            bool copyToClicked = false;
-
-            if (ImGui::BeginPopupContextItem())
-            {
-                string defName = def->getName();
-                if (mSelectedNodes.size() > 1)
-                {
-                    ImGui::Text("%d objects selected",static_cast<int>(mSelectedNodes.size()));
-                }
-                else
-                {
-                    ImGui::Text("%s",defName.c_str());
-                }
-
-                // No Root Deletion
-                if (def->getParentEntity())
-                {
-                    // Deletion
-                    ImGui::Separator();
-                    char deleteBuffer[buf_sz];
-                    snprintf(deleteBuffer, buf_sz, "Delete %s",defName.c_str());
-                    deleteClicked = ImGui::MenuItem(deleteBuffer);
-                }
-
-                // Copying
-                ImGui::Separator();
-
-                char copySelectedBuffer[buf_sz];
-                snprintf(copySelectedBuffer,buf_sz,"Copy selected object(s) into %s",defName.c_str());
-                copyToClicked = ImGui::MenuItem(copySelectedBuffer);
-
-                ImGui::EndPopup();
-            }
-
-            // Context Menu Items
-            if (deleteClicked)
-            {
-                auto parent = def->getParentEntity();
-                if (parent)
-                {
-                    parent->removeChildDefinition(def);
-                }
-                if (entityRuntime)
-                {
-                    auto parent = entityRuntime->getParentEntityRuntime();
-                    parent->removeChildRuntime(entityRuntime);
-                }
-                mContext->getSelectionHighlighter()->clearSelection();
-                mContext->getPropertiesWindow()->removeFromHistory(def);
-                mContext->getPropertiesWindow()->popPropertyTarget();
-                mSelectedNodes.clear();
-            }
-            else if (copyToClicked)
-            {
-                for (auto node : mSelectedNodes)
-                {
-                    auto defToCreate = static_pointer_cast<EntityDefinition>(node);
-                    shared_ptr<EntityDefinition> newDef = make_shared<EntityDefinition>(def,def->getSceneDefinition(),defToCreate->toJson(),true);
-                    newDef->loadChildEntityDefinitions(true);
-                    def->addChildDefinition(newDef);
-                    if (entityRuntime)
-                    {
-                        entityRuntime->createAndAddChildRuntime(newDef);
-                    }
-                }
-                mSelectedNodes.clear();
-            }
-
-            // Node Selection
-            if (ImGui::IsItemClicked())
-            {
-                if (ImGui::GetIO().KeyCtrl)
-                {
-                    // CTRL+click to toggle
-                    mSelectedNodes.push_back(def);
-                }
-                else
-                {
-                    // Click to single-select or CTRL+click to toggle
-                    mSelectedNodes.clear();
-                    mSelectedNodes.push_back(def);
-                }
-
-                if (entityRuntime)
-                {
-                    mContext->getSelectionHighlighter()->setSelectedEntity(entityRuntime);
-                }
-                LOG_TRACE("ProjectBrowser: Entity Clicked {}",def->getName());
-                mContext->getPropertiesWindow()->pushPropertyTarget(PropertyType_Entity, def, entityRuntime);
-            }
-
-            // Drag Source
-            if (def->getParentEntity() && ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-            {
-                mDragDropSource.objectDef = def;
-                mDragDropSource.parentDef = def->getParentEntity();
-
-                ImGui::SetDragDropPayload( Constants::ENTITY.c_str(),
-                                           &mDragDropSource, sizeof(EntityDragSource*));
-                ImGui::Text("Reparent %s",def->getName().c_str());
-                ImGui::EndDragDropSource();
-            }
-
-            // Drop Target
-            if (ImGui::BeginDragDropTarget())
-            {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::ENTITY.c_str()))
-                {
-                    IM_ASSERT(payload->DataSize == sizeof(EntityDragSource*));
-                    LOG_TRACE("ProjectBrowser: Definition {} was dropped onto {}",
-                                mDragDropSource.objectDef->getNameAndUuidString(),
-                                def->getNameAndUuidString());
-
-                    mDragDropSource.parentDef->removeChildDefinition(mDragDropSource.objectDef);
-                    def->adoptChildDefinition(mDragDropSource.objectDef);
-
-                    if (entityRuntime)
-                    {
-                        entityRuntime->createAndAddChildRuntime(mDragDropSource.objectDef);
-
-                        // get old parent runtime and remove children that were reparented
-                        auto oldParent = sceneRuntime->getEntityRuntimeByUuid(mDragDropSource.parentDef->getUuid());
-                        if (oldParent)
-                        {
-                            auto oldRuntime = oldParent->getChildRuntimeByUuid(mDragDropSource.objectDef->getUuid());
-                            if (oldRuntime)
-                            {
-                                oldParent->removeChildRuntime(oldRuntime);
-                            }
-                        }
-                        // Clear from properties
-                        mContext->getPropertiesWindow()->removeFromHistory(mDragDropSource.objectDef);
-                        mContext->getPropertiesWindow()->popPropertyTarget();
-                    }
-                    // Clear DragDrop pointers
-                    mDragDropSource.objectDef = nullptr;
-                    mDragDropSource.parentDef = nullptr;
-                }
-                ImGui::EndDragDropTarget();
-            }
-
-            // Show Node Contents
-            if(nodeOpen)
-            {
-                for (auto child : def->getChildDefinitionsVector())
-                {
-                    addEntity(child);
-                }
-                ImGui::TreePop();
-            }
-            ImGui::PopID();
-        }
+      ImGui::BulletText("No Project Open");
     }
+    ImGui::End();
+  }
+
+  void
+  ProjectBrowser::addEntityNode
+  (SceneEntityDefinition& sceneEntityDef)
+  {
+    auto& sceneDef = sceneEntityDef.getSceneDefinition();
+
+    int treeId = 0;
+    ImGuiTreeNodeFlags flags = (sceneEntityDef.countChildDefinitions() == 0 ? leaf_flags : node_flags);
+    ImGui::PushID(sceneEntityDef.getUuid());
+
+    bool isSelected = find_if(mSelectedNodes.begin(), mSelectedNodes.end(),
+                              [&](reference_wrapper<Definition>& next){ return next.get().getUuid() == sceneEntityDef.getUuid(); }) != mSelectedNodes.end();
+
+    // Flags
+    stringstream nameStr;
+    stringstream flagsStr;
+
+    auto& cam = sceneDef.getCameraDefinition();
+
+    if (cam.getCameraEntityUuid() == sceneEntityDef.getUuid())
+    {
+      if (!flagsStr.str().empty())
+      {
+        flagsStr << ",";
+      }
+      flagsStr << "CAM";
+    }
+
+    if (flagsStr.str().size() > 0)
+    {
+      nameStr << "(";
+      nameStr << flagsStr.str();
+      nameStr << ") ";
+    }
+
+    nameStr << sceneEntityDef.getName();
+    bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeId,
+                                      flags | (isSelected ? ImGuiTreeNodeFlags_Selected : 0),
+                                      nameStr.str().c_str(), 0);
+
+    // Entity Context Menu
+    bool deleteClicked = false;
+    bool copyToClicked = false;
+
+    if (ImGui::BeginPopupContextItem())
+    {
+      string defName = sceneEntityDef.getName();
+      if (mSelectedNodes.size() > 1)
+      {
+        ImGui::Text("%d objects selected",static_cast<int>(mSelectedNodes.size()));
+      }
+      else
+      {
+        ImGui::Text("%s",defName.c_str());
+      }
+
+      // No Root Deletion
+      if (sceneEntityDef.hasParentDefinition())
+      {
+        // Deletion
+        ImGui::Separator();
+        char deleteBuffer[buf_sz];
+        snprintf(deleteBuffer, buf_sz, "Delete %s",defName.c_str());
+        deleteClicked = ImGui::MenuItem(deleteBuffer);
+      }
+
+      // Copying
+      ImGui::Separator();
+
+      char copySelectedBuffer[buf_sz];
+      snprintf(copySelectedBuffer,buf_sz,"Copy selected object(s) into %s",defName.c_str());
+      copyToClicked = ImGui::MenuItem(copySelectedBuffer);
+
+      ImGui::EndPopup();
+    }
+
+    // Context Menu Items
+    if (deleteClicked)
+    {
+      auto parentOpt = sceneEntityDef.getParentDefinition();
+
+      if (parentOpt)
+      {
+        auto& parent = parentOpt.value().get();
+        parent.removeChildDefinition(sceneEntityDef);
+      }
+
+      mSelectedNodes.clear();
+    }
+    else if (copyToClicked)
+    {
+      for (auto& node : mSelectedNodes)
+      {
+        auto& defToCreate = static_cast<SceneEntityDefinition&>(node.get());
+        sceneEntityDef.createChildDefinitionFrom(defToCreate);
+      }
+      mSelectedNodes.clear();
+    }
+
+    // Node Selection
+    if (ImGui::IsItemClicked())
+    {
+      if (ImGui::GetIO().KeyCtrl)
+      {
+        // CTRL+click to toggle
+        mSelectedNodes.push_back(sceneEntityDef);
+      }
+      else
+      {
+        // Click to single-select or CTRL+click to toggle
+        mSelectedNodes.clear();
+        mSelectedNodes.push_back(sceneEntityDef);
+      }
+
+      //getContext().getSelectionHighlighter().setSelectedEntity(sceneEntityDef);
+      LOG_TRACE("ProjectBrowser: Entity Clicked {}",sceneEntityDef.getName());
+      getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_SceneEntity, sceneEntityDef});
+    }
+
+    // Drag Source
+    if (sceneEntityDef.hasParentDefinition() && ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+    {
+      mDragDropSource.selfDefinition = sceneEntityDef;
+      mDragDropSource.parentDefinition = sceneEntityDef.getParentDefinition();
+
+      ImGui::SetDragDropPayload( Constants::SCENE_ENTITY_DEFINITION.c_str(),
+                                 &mDragDropSource, sizeof(SceneEntityDragDropSource*));
+      ImGui::Text("Reparent %s",sceneEntityDef.getName().c_str());
+      ImGui::EndDragDropSource();
+    }
+
+    // Drop Target
+    if (ImGui::BeginDragDropTarget())
+    {
+      if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(Constants::SCENE_ENTITY_DEFINITION.c_str()))
+      {
+        IM_ASSERT(payload->DataSize == sizeof(SceneEntityDragDropSource*));
+
+        auto& sourceDefinition = mDragDropSource.selfDefinition.value().get();
+
+        LOG_TRACE("ProjectBrowser: Definition {} was dropped onto {}",
+                  sourceDefinition.getNameAndUuidString(), sceneEntityDef.getNameAndUuidString());
+
+        auto& parentDef = mDragDropSource.parentDefinition.value().get();
+
+        sceneEntityDef.createChildDefinitionFrom(sourceDefinition);
+        parentDef.removeChildDefinition(sourceDefinition);
+
+
+        // Clear DragDrop pointers
+        mDragDropSource.selfDefinition.reset();
+        mDragDropSource.parentDefinition.reset();
+      }
+      ImGui::EndDragDropTarget();
+    }
+
+    // Show Node Contents
+    if(nodeOpen)
+    {
+      for (auto& child : sceneEntityDef.getChildDefinitionsVector())
+      {
+        addEntityNode(child);
+      }
+      ImGui::TreePop();
+    }
+    ImGui::PopID();
+  }
 }

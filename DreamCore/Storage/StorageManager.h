@@ -10,29 +10,31 @@
 
 using std::string;
 using std::vector;
-using std::shared_ptr;
-using std::weak_ptr;
-using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
-	class File;
-	class Directory;
+  class File;
+  class Directory;
 
-    class StorageManager: public enable_shared_from_this<StorageManager>
-	{
-	public:
-		StorageManager();
-		~StorageManager();
+  class StorageManager
+  {
+  public:
+    StorageManager();
 
-		virtual weak_ptr<File> openFile(const string& path);
-		void closeFile(const weak_ptr<File>& f);
+    StorageManager(const StorageManager&) = delete;
+    StorageManager& operator=(const StorageManager&) = delete;
 
-		virtual weak_ptr<Directory> openDirectory(const string& path);
-		void closeDirectory(const weak_ptr<Directory>& d);
+    StorageManager(StorageManager&&) = default;
+    StorageManager& operator=(StorageManager&&) = default;
 
-	protected:
-		vector<shared_ptr<File>> mOpenFiles;
-		vector<shared_ptr<Directory>> mOpenDirectories;
-	};
+    virtual File& openFile(const string& path);
+    void closeFile(const File& f);
+
+    virtual Directory& openDirectory(const string& path);
+    void closeDirectory(const Directory& d);
+
+  protected:
+    vector<File> mOpenFiles;
+    vector<Directory> mOpenDirectories;
+  };
 }

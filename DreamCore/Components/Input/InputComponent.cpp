@@ -28,32 +28,18 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
+using std::make_unique;
 using std::static_pointer_cast;
 
 namespace octronic::dream
 {
   InputComponent::InputComponent
-  (const shared_ptr<ProjectRuntime>& rt)
+  (ProjectRuntime& rt)
     : Component (rt),
-      mJoystickMapping(make_shared<JoystickMapping>(JsPsxMapping)),
-      mKeyboardState(make_shared<KeyboardState>()),
-      mMouseState(make_shared<MouseState>()),
-      mJoystickState(make_shared<JoystickState>()),
-      mPollDataTask(make_shared<InputPollDataTask>(rt)),
-      mRegisterScriptTask(make_shared<InputRegisterScriptTask>(rt)),
-      mExecuteScriptTask(make_shared<InputExecuteScriptTask>(rt)),
-      mRemoveScriptTask(make_shared<InputRemoveScriptTask>(rt)),
-      mJoystickCount(0)
+      mJoystickCount(0),
+      mJoystickMapping(JsPsxMapping)
   {
     LOG_TRACE("InputComponent: Constructing");
-    //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
-    mJoystickNavigation = make_shared<JoystickFaceForwardNavigation>(mJoystickState,mJoystickMapping);
-  }
-
-  InputComponent::~InputComponent
-  ()
-  {
-    LOG_TRACE("InputComponent: Destructing");
   }
 
   bool
@@ -61,74 +47,75 @@ namespace octronic::dream
   ()
   {
     LOG_DEBUG("InputComponent: Initialising...");
+    //mJoystickNavigation = make_shared<Joystick2DPlaneNavigation>(&mJoystickState,&mJoystickMapping);
+    mJoystickNavigation = make_unique<JoystickFaceForwardNavigation>(mJoystickState,mJoystickMapping);
+    mPollDataTask = make_shared<InputPollDataTask>(getProjectRuntime());
+    mRegisterScriptTask = make_shared<InputRegisterScriptTask>(getProjectRuntime());
+    mExecuteScriptTask = make_shared<InputExecuteScriptTask>(getProjectRuntime());
+    mRemoveScriptTask = make_shared<InputRemoveScriptTask>(getProjectRuntime());
     return true;
   }
 
   // Keyboard ================================================================
 
-  shared_ptr<KeyboardState>
+  KeyboardState&
   InputComponent::getKeyboardState
   ()
-  const
   {
     return mKeyboardState;
   }
 
   void
   InputComponent::setKeyboardState
-  (const shared_ptr<KeyboardState>& keyboardState)
+  (const KeyboardState& keyboardState)
   {
     mKeyboardState = keyboardState;
   }
 
   // Mouse ===================================================================
 
-  shared_ptr<MouseState>
+  MouseState&
   InputComponent::getMouseState
   ()
-  const
   {
     return mMouseState;
   }
 
   void
   InputComponent::setMouseState
-  (const shared_ptr<MouseState>& mouseState)
+  (const MouseState& mouseState)
   {
     mMouseState = mouseState;
   }
 
   // Joystick ================================================================
 
-  shared_ptr<JoystickState>
+  JoystickState&
   InputComponent::getJoystickState
   ()
-  const
   {
     return mJoystickState;
   }
 
   void
   InputComponent::setJoystickState
-  (const shared_ptr<JoystickState>& joystickState)
+  (const JoystickState& joystickState)
   {
     mJoystickState = joystickState;
   }
 
-  shared_ptr<JoystickMapping>
+  JoystickMapping&
   InputComponent::getJoystickMapping
   ()
-  const
   {
     return mJoystickMapping;
   }
 
-  shared_ptr<JoystickNavigation>
+  JoystickNavigation*
   InputComponent::getJoystickNavigation
   ()
-  const
   {
-    return mJoystickNavigation;
+    return mJoystickNavigation.get();
   }
 
   int
@@ -152,39 +139,33 @@ namespace octronic::dream
   InputComponent::executeInputScript
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto activeSceneOpt = getProjectRuntime().getActiveSceneRuntime();
+    if (activeSceneOpt)
     {
-      if (auto activeScene = prLock->getActiveSceneRuntime().lock())
+      auto& activeScene = activeSceneOpt.value().get();
+      auto& inputScript = activeScene.getInputScript();
+
+      mJoystickNavigation->update(activeScene);
+
+      if (inputScript.getLoaded())
       {
-        mJoystickNavigation->update(activeScene);
-        if (auto inputScript = activeScene->getInputScript().lock())
-        {
-          if (inputScript->getLoaded())
-          {
-            return inputScript->executeOnInput(activeScene);
-          }
-        }
+        return inputScript.executeOnInput(activeScene);
       }
     }
-    return true;
+    return false;
   }
 
   bool
   InputComponent::registerInputScript
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto activeSceneOpt = getProjectRuntime().getActiveSceneRuntime();
+    if (activeSceneOpt)
     {
-      if (auto activeScene = prLock->getActiveSceneRuntime().lock())
-      {
-        if (auto inputScript = activeScene->getInputScript().lock())
-        {
-          if (auto scriptComp = prLock->getScriptComponent().lock())
-          {
-          	return scriptComp->registerInputScript(inputScript);
-          }
-        }
-      }
+      auto& activeScene = activeSceneOpt.value().get();
+      auto& inputScript = activeScene.getInputScript();
+      auto& scriptComp = getProjectRuntime().getScriptComponent();
+      return scriptComp.registerInputScript(inputScript);
     }
     return false;
   }
@@ -195,14 +176,9 @@ namespace octronic::dream
   {
     if (inputScript != Uuid::INVALID)
     {
-      if (auto prLock = mProjectRuntime.lock())
-      {
-        if (auto scriptComp = prLock->getScriptComponent().lock())
-        {
-          mRegisterScriptTask->setState(TASK_STATE_QUEUED);
-          return scriptComp->removeInputScript(inputScript);
-        }
-      }
+      auto& scriptComp = getProjectRuntime().getScriptComponent();
+      mRegisterScriptTask->setState(TASK_STATE_QUEUED);
+      return scriptComp.removeInputScript(inputScript);
     }
     return false;
   }
@@ -234,34 +210,26 @@ namespace octronic::dream
   void
   InputComponent::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& tq = getProjectRuntime().getTaskQueue();
+    tq.pushTask(mPollDataTask);
+
+    auto activeSceneOpt = getProjectRuntime().getActiveSceneRuntime();
+    if (activeSceneOpt)
     {
-      if (auto tqLock = prLock->getTaskQueue().lock())
+      auto& activeScene = activeSceneOpt.value().get();
+      auto& inputScript = activeScene.getInputScript();
+      auto lfdTask = inputScript.getLoadFromDefinitionTask();
+
+      if (lfdTask->hasState(TASK_STATE_COMPLETED) && inputScript.getLoaded())
       {
-        tqLock->pushTask(mPollDataTask);
-
-        if (auto activeScene = prLock->getActiveSceneRuntime().lock())
+        if (mRegisterScriptTask->hasState(TASK_STATE_QUEUED))
         {
-          if (auto inputScript = activeScene->getInputScript().lock())
-          {
-            if (auto lfdTask = inputScript->getLoadFromDefinitionTask().lock())
-            {
-
-              if (lfdTask->hasState(TASK_STATE_COMPLETED) && inputScript->getLoaded())
-              {
-                mRemoveScriptTask->setInputScriptUuid(inputScript->getUuid());
-
-                if (mRegisterScriptTask->hasState(TASK_STATE_QUEUED))
-                {
-                  tqLock->pushTask(mRegisterScriptTask);
-                }
-                else if (mRegisterScriptTask->hasState(TASK_STATE_COMPLETED))
-                {
-                  tqLock->pushTask(mExecuteScriptTask);
-                }
-              }
-            }
-          }
+          tq.pushTask(mRegisterScriptTask);
+          mRemoveScriptTask->setInputScriptUuid(inputScript.getUuid());
+        }
+        else if (mRegisterScriptTask->hasState(TASK_STATE_COMPLETED))
+        {
+          tq.pushTask(mExecuteScriptTask);
         }
       }
     }

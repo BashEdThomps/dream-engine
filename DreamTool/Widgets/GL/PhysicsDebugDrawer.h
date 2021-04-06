@@ -26,7 +26,7 @@ namespace octronic::dream::tool
     {
 
     public:
-        PhysicsDebugDrawer(DreamToolContext* ctx);
+        PhysicsDebugDrawer(DreamToolContext& ctx);
         ~PhysicsDebugDrawer() override;
 
         void drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor) override;

@@ -15,7 +15,6 @@
 
 #include "ModelRuntime.h"
 
-#include "ModelMesh.h"
 #include "ModelDefinition.h"
 #include "Components/Cache.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
@@ -35,58 +34,68 @@
 using Assimp::Importer;
 using std::pair;
 using std::make_shared;
+using std::make_unique;
 
 namespace octronic::dream
 {
   ModelRuntime::ModelRuntime
-  (const weak_ptr<ProjectRuntime>& runtime,
-   const weak_ptr<AssetDefinition>& definition)
+  (ProjectRuntime& runtime,
+   AssetDefinition& definition)
     : SharedAssetRuntime(runtime, definition),
       mGlobalInverseTransform(mat4(1.0f))
   {
-    if (auto defLock = mDefinition.lock())
-    {
-      LOG_TRACE("ModelRuntime: Constructing {}", defLock->getNameAndUuidString());
-    }
-  }
-
-  ModelRuntime::~ModelRuntime
-  ()
-  {
-    LOG_TRACE( "ModelRuntime: Destroying Object");
-    mMeshes.clear();
+    LOG_TRACE("ModelRuntime: Constructing {}", getDefinition().getNameAndUuidString());
   }
 
   bool
   ModelRuntime::loadFromDefinition
   ()
   {
-    string path = getAssetFilePath();
+    auto& projectDir = getProjectRuntime().getProjectDirectory();
+    string path = projectDir.getAssetAbsolutePath(static_cast<ModelDefinition&>(getDefinition()));
     LOG_INFO( "ModelRuntime: Loading Model - {}" , path);
 
     mMaterialNames.clear();
 
-    auto model = loadImporter(path);
+    auto& sm = getProjectRuntime().getStorageManager();
+    auto& modelFile = sm.openFile(path);
 
-    if (model == nullptr)
+    if (modelFile.exists())
     {
-      LOG_ERROR("ModelRuntime: Could not get model importer, load failed");
-      return false;
+      if (modelFile.readBinary())
+      {
+        auto importer = Importer();
+        auto binData = modelFile.getBinaryData();
+        importer.ReadFileFromMemory(&binData[0], binData.size(),
+            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+        sm.closeFile(modelFile);
+
+        const aiScene* scene = importer.GetScene();
+
+        if(scene == nullptr)
+        {
+          LOG_ERROR("ModelRuntime: Could not get assimp scene from model. Loading failed");
+          return false;
+        }
+
+        if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        {
+          LOG_ERROR( "ModelRuntime: Error {}" ,importer.GetErrorString() );
+          throw std::exception();
+        }
+
+        mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
+        mBoundingBox.setToLimits();
+        processNode(scene->mRootNode, scene);
+        mLoaded = true;
+        return mLoaded;
+
+      }
+      LOG_ERROR("ModelRuntime: Error reading model file");
+      sm.closeFile(modelFile);
     }
-
-    const aiScene* scene = model->GetScene();
-
-    if(scene == nullptr)
-    {
-      LOG_ERROR("ModelRuntime: Could not get assimp scene from model. Loading failed");
-      return false;
-    }
-
-    mGlobalInverseTransform = aiMatrix4x4ToGlm(scene->mRootNode->mTransformation.Inverse());
-    mBoundingBox.setToLimits();
-    processNode(scene->mRootNode, scene);
-    mLoaded = true;
-    return mLoaded;
+    throw std::exception();
   }
 
   void
@@ -94,16 +103,12 @@ namespace octronic::dream
   (aiNode* node, const aiScene* scene)
   {
     // Process all the node's meshes (if any)
-    aiMatrix4x4 rootTx = node->mTransformation;
     for(GLuint i = 0; i < node->mNumMeshes; i++)
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
       auto aMesh = processMesh(mesh, scene);
-      if (aMesh != nullptr)
-      {
-        mMeshes.push_back(aMesh);
-      }
+      mMeshes.push_back(aMesh);
     }
     // Then do the same for each of its children
     for(GLuint i = 0; i < node->mNumChildren; i++)
@@ -201,7 +206,7 @@ namespace octronic::dream
 
   }
 
-  shared_ptr<ModelMesh>
+  ModelMesh
   ModelRuntime::processMesh
   (aiMesh* mesh, const aiScene* scene)
   {
@@ -209,41 +214,35 @@ namespace octronic::dream
     vector<GLuint>  indices = processIndexData(mesh);
 
     // Load any new materials
-    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    aiMaterial* assimpMaterial = scene->mMaterials[mesh->mMaterialIndex];
 
     aiString name;
-    aiGetMaterialString(material, AI_MATKEY_NAME, &name);
+    aiGetMaterialString(assimpMaterial, AI_MATKEY_NAME, &name);
     mMaterialNames.push_back(string(name.C_Str()));
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& materialCache = getProjectRuntime().getMaterialCache();
+    auto materialName = string(name.C_Str());
+    auto& modelDef = static_cast<ModelDefinition&>(getDefinition());
+    auto materialUuid = modelDef.getDreamMaterialForModelMaterial(materialName);
+
+    auto& pDef = static_cast<ProjectDefinition&>(getProjectRuntime().getDefinition());
+    auto matDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,materialUuid);
+    if (matDef)
     {
-      if (auto materialCache = prLock->getMaterialCache().lock())
-      {
-        if (auto defLock = mDefinition.lock())
-        {
-          auto materialName = string(name.C_Str());
-          auto modelDef = static_pointer_cast<ModelDefinition>(defLock);
-          auto materialUuid = modelDef->getDreamMaterialForModelMaterial(materialName);
-          if (auto material = materialCache->getRuntime(materialUuid).lock())
-          {
+      auto& dreamMaterial = materialCache.getRuntime(static_cast<MaterialDefinition&>(matDef.value().get()));
 
-            LOG_DEBUG( "ModelRuntime: Using Material {}" , material->getName());
-            BoundingBox bb = generateBoundingBox(mesh);
-            mBoundingBox.integrate(bb);
+      LOG_DEBUG( "ModelRuntime: Using Material {}" , dreamMaterial.getName());
+      BoundingBox bb = generateBoundingBox(mesh);
+      mBoundingBox.integrate(bb);
 
-            auto aMesh = make_shared<ModelMesh>(
-                  static_pointer_cast<ModelRuntime>(shared_from_this()),
-                  string(mesh->mName.C_Str()),
-                  vertices, indices, material, bb);
-            aMesh->initTasks();
-            material->addMesh(aMesh);
-            material->debug();
-            return aMesh;
-          }
-        }
-      }
+      ModelMesh aMesh(*this, string(mesh->mName.C_Str()),
+                      vertices, indices, dreamMaterial, bb);
+      aMesh.initTasks();
+      dreamMaterial.addMesh(aMesh);
+      dreamMaterial.debug();
+    	return aMesh;
     }
-    return nullptr;
+    throw std::exception();
   }
 
   BoundingBox
@@ -269,57 +268,11 @@ namespace octronic::dream
     return mMaterialNames;
   }
 
-  vector<weak_ptr<ModelMesh>>
+  vector<ModelMesh>&
   ModelRuntime::getMeshes
   ()
-  const
   {
-    vector<weak_ptr<ModelMesh>> ret;
-    ret.insert(ret.begin(), mMeshes.begin(), mMeshes.end());
-    return ret;
-  }
-
-  shared_ptr<Importer>
-  ModelRuntime::loadImporter
-  (string path)
-  {
-    LOG_DEBUG("ModelRuntime: Loading {} from disk",  path);
-
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto smLock = prLock->getStorageManager().lock())
-      {
-        if (auto modelFile = smLock->openFile(path).lock())
-        {
-
-          if (modelFile->exists())
-          {
-            if (modelFile->readBinary())
-            {
-              auto importer = make_shared<Importer>();
-              auto binData = modelFile->getBinaryData();
-              importer->ReadFileFromMemory(&binData[0], binData.size(),
-                  aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-
-              smLock->closeFile(modelFile);
-
-              const aiScene* scene = importer->GetScene();
-
-              if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-              {
-                LOG_ERROR( "ModelRuntime: Error {}" ,importer->GetErrorString() );
-                return nullptr;
-              }
-
-              return importer;
-            }
-            LOG_ERROR("ModelRuntime: Error reading model file");
-            smLock->closeFile(modelFile);
-          }
-        }
-      }
-    }
-    return nullptr;
+    return  mMeshes;
   }
 
   BoundingBox
@@ -385,36 +338,30 @@ namespace octronic::dream
 
   void ModelRuntime::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& taskQueue = getProjectRuntime().getTaskQueue();
+    if (mReloadFlag)
     {
-      if (auto taskQueue = prLock->getTaskQueue().lock())
+      mGlobalInverseTransform = mat4(1.f);
+      mMeshes.clear();
+      mMaterialNames.clear();
+      mLoaded = false;
+      mLoadError = false;
+      mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+      mReloadFlag = false;
+    }
+    else if (!mLoaded && !mLoadError)
+    {
+      if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
       {
-        if (mReloadFlag)
-        {
-          mGlobalInverseTransform = mat4(1.f);
-          mMeshes.clear();
-          mMaterialNames.clear();
-          mLoaded = false;
-          mLoadError = false;
-          mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
-          mReloadFlag = false;
-        }
-        else if (!mLoaded && !mLoadError)
-        {
-          if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-          {
-            taskQueue->pushTask(mLoadFromDefinitionTask);
-          }
-        }
-        else if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
-        {
-          for (auto mesh : mMeshes)
-          {
-            mesh->pushTasks();
-          }
-        }
+        taskQueue.pushTask(mLoadFromDefinitionTask);
+      }
+    }
+    else if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED))
+    {
+      for (auto& mesh : mMeshes)
+      {
+        mesh.pushTasks();
       }
     }
   }
-
 }

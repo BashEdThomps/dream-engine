@@ -15,30 +15,29 @@
 #include "Base/Definition.h"
 #include "Math/Transform.h"
 #include "Components/Graphics/CameraDefinition.h"
+#include "Entity/SceneEntityDefinition.h"
 
 #include <vector>
 #include <memory>
 
 using glm::vec4;
-using std::shared_ptr;
 
 namespace octronic::dream
 {
     class ProjectDefinition;
-    class EntityDefinition;
 
     class SceneDefinition : public Definition
     {
     public:
-        SceneDefinition(const weak_ptr<ProjectDefinition>& project, const json& data);
-        ~SceneDefinition() override;
+        SceneDefinition(ProjectDefinition& project, const json& data) ;
 
-        void loadRootEntityDefinition();
+        SceneDefinition(SceneDefinition&&) = default;
+        SceneDefinition& operator=(SceneDefinition&&) = default;
 
         // Rendering ===========================================================
 
-        void setCamera(const json& cDef);
-        weak_ptr<CameraDefinition> getCamera() const;
+        void setCameraDefinitionFromJson(const json& cDef);
+        CameraDefinition& getCameraDefinition();
 
         vec4 getClearColor() const;
         void setClearColor(const vec4& clear);
@@ -68,16 +67,14 @@ namespace octronic::dream
         vec3 getGravity() const;
         void setGravity(const vec3& gravity);
 
-        // Entity Management ===================================================
+        // Scene Entity Management =============================================
 
-        void addTemplate(const shared_ptr<EntityDefinition>& _template);
-        weak_ptr<EntityDefinition> getTemplateByUuid(UuidType uuid) const;
+        optional<SceneEntityDefinition>& getRootSceneEntityDefinition();
+        optional<reference_wrapper<SceneEntityDefinition>> getSceneEntityByUuid(UuidType);
 
-        weak_ptr<EntityDefinition> getRootEntityDefinition() const;
-        weak_ptr<ProjectDefinition> getProjectDefinition() const;
-        void createNewRootEntityDefinition();
+        // Project =============================================================
 
-        vector<string> getEntityNamesVector() const;
+        ProjectDefinition& getProjectDefinition();
 
         // Serialisation =======================================================
 
@@ -85,9 +82,8 @@ namespace octronic::dream
 
         // Variabels ===========================================================
     private:
-        shared_ptr<CameraDefinition> mCameraDefinition;
-        vector<shared_ptr<EntityDefinition>> mTemplates;
-        shared_ptr<EntityDefinition> mRootEntityDefinition;
-        weak_ptr<ProjectDefinition> mProjectDefinition;
+        CameraDefinition mCameraDefinition;
+        optional<SceneEntityDefinition> mRootSceneEntityDefinition;
+        reference_wrapper<ProjectDefinition> mProjectDefinition;
     };
 }

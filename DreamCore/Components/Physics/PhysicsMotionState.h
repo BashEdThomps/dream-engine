@@ -14,8 +14,10 @@
 #include <LinearMath/btMotionState.h>
 #include <memory>
 
+using std::shared_ptr;
+using std::reference_wrapper;
+
 class btTransform;
-using std::weak_ptr;
 
 namespace octronic::dream
 {
@@ -24,14 +26,16 @@ namespace octronic::dream
     class PhysicsMotionState : public btMotionState
     {
     public:
-        PhysicsMotionState(const weak_ptr<EntityRuntime>&entity);
+        PhysicsMotionState(EntityRuntime& entity);
         ~PhysicsMotionState();
 
-        void getWorldTransform(btTransform&) const;
-        void setWorldTransform(const btTransform&);
+        void getWorldTransform(btTransform&) const override;
+        void setWorldTransform(const btTransform&) override;
 
         void setKinematicPos(btTransform&);
+
+        EntityRuntime& getEntityRuntime() const;
     protected:
-        weak_ptr<EntityRuntime> mEntityRuntime;
+        reference_wrapper<EntityRuntime> mEntityRuntime;
     };
 }

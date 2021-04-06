@@ -17,59 +17,24 @@
 
 #include "AssetDefinition.h"
 #include "Project/ProjectRuntime.h"
-#include "Storage/ProjectDirectory.h"
+#include "Project/ProjectDirectory.h"
 #include "Common/Uuid.h"
-
-using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-    AssetRuntime::AssetRuntime
-    (const weak_ptr<ProjectRuntime>& pr,
-     const weak_ptr<AssetDefinition>& definition)
-        : DeferredLoadRuntime(pr, definition)
+  AssetRuntime::AssetRuntime
+  (ProjectRuntime& pr,
+   AssetDefinition& definition)
+    : DeferredLoadRuntime(pr, definition)
 
-    {
-    }
+  {
+  }
 
-    AssetRuntime::~AssetRuntime
-    ()
-    {
-    }
 
-    string
-    AssetRuntime::getAssetFilePath
-    (const string& fmt)
-    {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if (auto pDirLock = prLock->getProjectDirectory().lock())
-            {
-                if (auto defLock = mDefinition.lock())
-                {
-            		return pDirLock->getAssetAbsolutePath(static_pointer_cast<AssetDefinition>(defLock),fmt);
-                }
-            }
-        }
-        return "";
-    }
-
-    string
-    AssetRuntime::getAssetDirectoryPath
-    ()
-    {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if (auto pDirLock = prLock->getProjectDirectory().lock())
-            {
-                if (auto defLock = mDefinition.lock())
-                {
-        			return pDirLock->getAssetDirectoryPath(static_pointer_cast<AssetDefinition>(defLock));
-                }
-            }
-        }
-        return "";
-    }
+  AssetRuntime::~AssetRuntime
+  ()
+  {
+  }
 }
 
 

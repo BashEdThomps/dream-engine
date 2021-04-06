@@ -4,32 +4,34 @@
 
 namespace octronic::dream
 {
-	class CameraDefinition : public Definition
-	{
-	public:
-		CameraDefinition(const json& js);
-		~CameraDefinition();
+  class CameraDefinition : public Definition
+  {
+  public:
+    CameraDefinition(const json& js);
 
-		void setFieldOfView(float fov);
-        float getFieldOfView();
+    CameraDefinition(CameraDefinition&&) = default;
+    CameraDefinition& operator=(CameraDefinition&&) = default;
 
-		Transform getFreeTransform();
-		void setFreeTransform(const Transform& t);
+    void setFieldOfView(float fov);
+    float getFieldOfView() const;
 
-        UuidType getCameraEntityUuid();
-        void setCameraEntityUuid(UuidType u);
+    Transform getFreeTransform() const;
+    void setFreeTransform(const Transform& t);
 
-        void setMeshCullDistance(float);
-        float getMeshCullDistance();
+    UuidType getCameraEntityUuid() const;
+    void setCameraEntityUuid(UuidType u);
 
-        float getMinDrawDistance();
-        void setMinDrawDistance(float);
+    void setMeshCullDistance(float);
+    float getMeshCullDistance() const;
 
-        float getMaxDrawDistance();
-        void setMaxDrawDistance(float);
+    float getMinDrawDistance() const;
+    void setMinDrawDistance(float);
 
-        void setUseEntity(bool ue);
-        bool getUseEntity();
+    float getMaxDrawDistance() const;
+    void setMaxDrawDistance(float);
 
-	};
+    void setUseEntity(bool ue);
+    bool getUseEntity() const;
+
+  };
 }

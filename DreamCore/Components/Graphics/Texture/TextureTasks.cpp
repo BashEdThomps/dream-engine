@@ -4,71 +4,82 @@
 namespace octronic::dream
 {
 
+  // TextureRuntimeTask =======================================================
+
+  TextureRuntimeTask::TextureRuntimeTask
+  (ProjectRuntime& pr, TextureRuntime& tr, const string& name)
+    : GraphicsTask(pr,name),
+      mTextureRuntime(tr)
+  {
+
+  }
+
+  TextureRuntime&
+  TextureRuntimeTask::getTextureRuntime
+  ()
+  const
+  {
+    return mTextureRuntime.get();
+  }
+
   // TextureLoadIntoGLTask ===================================================
 
   TextureLoadIntoGLTask::TextureLoadIntoGLTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<TextureRuntime>& rt)
-    : GraphicsTask(pr, "TextureLoadIntoGLTask"),
-      mTextureRuntime(rt)
+  (ProjectRuntime& pr,TextureRuntime& rt)
+    : TextureRuntimeTask(pr, rt, "TextureLoadIntoGLTask")
   {
   }
 
   void TextureLoadIntoGLTask::execute()
   {
-    if (auto rtLock = mTextureRuntime.lock())
-    {
-      LOG_TRACE("TextureLoadIntoGLTask: {} Executing on Graphics thread",
-                rtLock->getNameAndUuidString());
-      if (!rtLock->loadTextureIntoGL())
-      {
-        setState(TaskState::TASK_STATE_FAILED);
-      }
-      else
-      {
-        setState(TaskState::TASK_STATE_COMPLETED);
-      }
+    auto& tr = getTextureRuntime();
+    LOG_TRACE("TextureLoadIntoGLTask: {} Executing on Graphics thread",
+              tr.getNameAndUuidString());
 
-      GLCheckError();
+    if (!tr.loadTextureIntoGL())
+    {
+      setState(TaskState::TASK_STATE_FAILED);
     }
+    else
+    {
+      setState(TaskState::TASK_STATE_COMPLETED);
+    }
+
+    GLCheckError();
   }
 
   // TextureRenderCubeMapTsk =================================================
 
   TextureSetupEnvironmentTask::TextureSetupEnvironmentTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<TextureRuntime>& rt)
-    : GraphicsTask(pr, "TextureRenderCubeMapTask"),
-      mTextureRuntime(rt)
+  (ProjectRuntime& pr,TextureRuntime& rt)
+    : TextureRuntimeTask(pr, rt, "TextureRenderCubeMapTask")
   {
 
   }
 
   void TextureSetupEnvironmentTask::execute()
   {
-    if (auto rtLock = mTextureRuntime.lock())
+    auto& tr = getTextureRuntime();
+    if (!tr.renderEquirectangularToCubeMap() ||
+        !tr.renderIrradianceCubeMap() ||
+        !tr.renderPreFilterCubeMap() ||
+        !tr.renderBrdfLut())
     {
-      if (!rtLock->renderEquirectangularToCubeMap() ||
-          !rtLock->renderIrradianceCubeMap() ||
-          !rtLock->renderPreFilterCubeMap() ||
-          !rtLock->renderBrdfLut())
-      {
 
-        setState(TaskState::TASK_STATE_DEFERRED);
-      }
-      else
-      {
-        setState(TaskState::TASK_STATE_COMPLETED);
-      }
-
-      GLCheckError();
+      setState(TaskState::TASK_STATE_DEFERRED);
     }
+    else
+    {
+      setState(TaskState::TASK_STATE_COMPLETED);
+    }
+
+    GLCheckError();
   }
 
   // TextureRemoveFromGLTask =================================================
 
   TextureRemoveFromGLTask::TextureRemoveFromGLTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsDestructionTask(pr, "TextureRemoveFromGLTask"),
       // Base Texture
       mTextureID(0),
@@ -184,19 +195,19 @@ namespace octronic::dream
   ()
   {
     // Base Texture
-    GLuint mTextureID = 0;
+    mTextureID = 0;
     // Environment
-    GLuint mCaptureFBO = 0;
-    GLuint mCaptureRBO = 0;
-    GLuint mEquiToCubeTexture = 0;
-    GLuint mIrradianceMapTexture = 0;
-    GLuint mPreFilterTexture = 0;
-    GLuint mBrdfLutTexture = 0;
+    mCaptureFBO = 0;
+    mCaptureRBO = 0;
+    mEquiToCubeTexture = 0;
+    mIrradianceMapTexture = 0;
+    mPreFilterTexture = 0;
+    mBrdfLutTexture = 0;
     // Cube
-    GLuint mCubeVAO = 0;
-    GLuint mCubeVBO = 0;
+    mCubeVAO = 0;
+    mCubeVBO = 0;
     // Quad
-    GLuint mQuadVAO = 0;
-    GLuint mQuadVBO = 0;
+    mQuadVAO = 0;
+    mQuadVBO = 0;
   }
 }

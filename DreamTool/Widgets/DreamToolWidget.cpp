@@ -9,7 +9,8 @@
 
 namespace octronic::dream::tool
 {
-    DreamToolWidget::DreamToolWidget(DreamToolContext* ctx, bool visible)
+    DreamToolWidget::DreamToolWidget
+    (DreamToolContext& ctx, bool visible)
     : mContext(ctx),
       mVisible(visible)
     {
@@ -34,5 +35,13 @@ namespace octronic::dream::tool
     (bool v)
     {
         mVisible = v;
+    }
+
+    DreamToolContext&
+    DreamToolWidget::getContext
+    ()
+    const
+    {
+      return mContext.get();
     }
 }

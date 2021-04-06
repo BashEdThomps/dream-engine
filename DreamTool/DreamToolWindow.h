@@ -60,11 +60,11 @@ namespace octronic::dream::tool
         void drawGLWidgets();
         void update();
 
-        void addImGuiWidget(ImGuiWidget* widget);
-        void removeImGuiWidget(ImGuiWidget* widget);
+        void addImGuiWidget(ImGuiWidget& widget);
+        void removeImGuiWidget(ImGuiWidget& widget);
 
-        void addGLWidget(GLWidget* widget);
-        void removeGLWidget(GLWidget* widget);
+        void addGLWidget(GLWidget& widget);
+        void removeGLWidget(GLWidget& widget);
 
         float getUiFontSize() const;
         void setUiFontSize(float uiFontSize);
@@ -81,8 +81,8 @@ namespace octronic::dream::tool
         void setTheme();
         void setFont();
         GLFWwindow* mWindow;
-        vector<GLWidget*> mGLWidgets;
-        vector<ImGuiWidget*> mImGuiWidgets;
+        vector<reference_wrapper<GLWidget>> mGLWidgets;
+        vector<reference_wrapper<ImGuiWidget>> mImGuiWidgets;
         float mUiFontSize;
         float mMonoFontSize;
         float mDPIScaleX, mDPIScaleY;

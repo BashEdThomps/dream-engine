@@ -15,76 +15,18 @@
 
 namespace octronic::dream
 {
-    /*
-    class AudioEventMarker
-    {
-    public:
-        // No-Args Constructor
-        AudioEventMarker()
-            : index(-1),
-              name(""),
-              sampleIndex(-1)
-        {}
-
-        // Args Constructor
-        AudioEventMarker(int idx, string n, int sIndex)
-            : index(idx),
-              name(n),
-              sampleIndex(sIndex)
-        {}
-
-        // Copy Constructor
-        AudioEventMarker(const AudioEventMarker& other)
-        {
-            index = other.index;
-            name = other.name;
-            sampleIndex = other.sampleIndex;
-        }
-
-        bool operator==(const AudioEventMarker& other)
-        {
-            return index == other.index &&
-                   name.compare(other.name) == 0 &&
-                   sampleIndex == other.sampleIndex;
-        }
-
-        int index;
-        string name;
-        int sampleIndex;
-    };
-    */
-
     class AudioDefinition : public AssetDefinition
     {
     public:
-        AudioDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
-        ~AudioDefinition() override;
+        AudioDefinition(ProjectDefinition& pd, const json& js) ;
+
+        AudioDefinition(AudioDefinition&&) =default;
+        AudioDefinition& operator=(AudioDefinition&&) =default;
 
         bool isFormatWav() const;
         bool isFormatOgg() const;
 
         void setLoop(bool);
         bool getLoop() const;
-
-        bool getSpectrumAnalyser() const;
-        void setSpectrumAnalyser(bool);
-
-        int createMarker();
-        void removeMarker(const int index);
-        int countMarkers() const;
-
-        string getMarkerName(unsigned int index) const;
-        void setMarkerName(unsigned int index, const string& name);
-
-        int getMarkerSampleIndex(unsigned int index) const;
-        void setMarkerSampleIndex(unsigned int index, int smpl);
-
-        int getMarkerRepeat(unsigned int index);
-        void setMarkerRepeat(unsigned int index, int repeat);
-
-        int getMarkerRepeatPeriod(unsigned int index);
-        void setMarkerRepeatPeriod(unsigned int index, int rp);
-
     };
-
 }

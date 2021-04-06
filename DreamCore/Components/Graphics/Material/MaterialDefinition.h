@@ -11,7 +11,6 @@
  */
 #pragma once
 
-
 #include "Components/AssetDefinition.h"
 
 namespace octronic::dream
@@ -20,28 +19,30 @@ namespace octronic::dream
     class MaterialDefinition : public AssetDefinition
     {
     public:
-        MaterialDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
-        ~MaterialDefinition() override;
+        MaterialDefinition(ProjectDefinition& pd, const json& js);
+
+				MaterialDefinition(MaterialDefinition&&) = default;
+        MaterialDefinition& operator=(MaterialDefinition&&) = default;
 
         // Shader
-        UuidType getShader() const;
-        void setShader(UuidType);
+        UuidType getShaderUuid() const;
+        void setShaderUuid(UuidType);
 
         // Textures
-        UuidType getAlbedoTexture() const;
-        void setAlbedoTexture(UuidType);
+        UuidType getAlbedoTextureUuid() const;
+        void setAlbedoTextureUuid(UuidType);
 
-        UuidType getNormalTexture() const;
-        void setNormalTexture(UuidType);
+        UuidType getNormalTextureUuid() const;
+        void setNormalTextureUuid(UuidType);
 
-        UuidType getMetallicTexture() const;
-        void setMetallicTexture(UuidType);
+        UuidType getMetallicTextureUuid() const;
+        void setMetallicTextureUuid(UuidType);
 
-        UuidType getRoughnessTexture() const;
-        void setRoughnessTexture(UuidType);
+        UuidType getRoughnessTextureUuid() const;
+        void setRoughnessTextureUuid(UuidType);
 
-        UuidType getAoTexture() const;
-        void setAoTexture(UuidType);
+        UuidType getAoTextureUuid() const;
+        void setAoTextureUuid(UuidType);
     };
 }
 

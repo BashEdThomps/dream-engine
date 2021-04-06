@@ -20,7 +20,7 @@
 namespace octronic::dream::tool
 {
     PhysicsDebugDrawer::PhysicsDebugDrawer
-    (DreamToolContext* ctx)
+    (DreamToolContext& ctx)
         : GLWidget(ctx, true)
     {
         LOG_DEBUG( "PhysicaDebugDrawer: Constructing Object" );

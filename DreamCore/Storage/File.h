@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "Base/UseCountable.h"
+
 #include <vector>
 #include <string>
 
@@ -23,39 +25,40 @@ using std::vector;
 
 namespace octronic::dream
 {
-    class File
-    {
-		friend class StorageManager;
+  class File : public UseCountable
+  {
 
-    public:
-		File(const string& path);
-        File(const File&) = delete;
-        File& operator=(const File&) = delete;
+  public:
+    File(const string& path);
 
-        ~File();
+    File(File&) = delete;
+    File& operator=(const File&) = delete;
 
-        string getDirectory() const;
-        string getPath() const;
+    File(File&&) = default;
+    File& operator=(File&&) = default;
 
-        string readString();
-		string getStringData() const;
-        bool writeString(const string&) const;
+    string getDirectory() const;
+    string getPath() const;
 
-        virtual bool readBinary();
-		vector<uint8_t> getBinaryData() const;
-        virtual bool writeBinary(const vector<uint8_t>& data) const;
+    string readString();
+    string getStringData() const;
+    bool writeString(const string&) const;
 
-        bool deleteFile() const;
-        virtual bool exists() const;
+    virtual bool readBinary();
+    vector<uint8_t> getBinaryData() const;
+    virtual bool writeBinary(const vector<uint8_t>& data) const;
 
-        string getNameWithExtension() const;
-        string getNameWithoutExtension() const;
-        string getExtension() const;
+    bool deleteFile() const;
+    virtual bool exists() const;
 
-	protected:
-        string mPath;
-		string mStringData;
-		vector<uint8_t> mBinaryData;
-    };
+    string getNameWithExtension() const;
+    string getNameWithoutExtension() const;
+    string getExtension() const;
+
+  protected:
+    string mPath;
+    string mStringData;
+    vector<uint8_t> mBinaryData;
+  };
 }
 

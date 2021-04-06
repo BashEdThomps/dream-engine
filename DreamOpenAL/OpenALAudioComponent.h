@@ -30,20 +30,20 @@ using octronic::dream::AudioRuntime;
 
 namespace octronic::dream::open_al
 {
-    class OpenALAudioComponent : public AudioComponent
-    {
+  class OpenALAudioComponent : public AudioComponent
+  {
 
-    public:
-        OpenALAudioComponent();
-        ~OpenALAudioComponent() override;
-        bool init() override;
-        void setListenerPosition(const vec3&) override;
-        void setVolume(float) override;
-        float getVolume() override;
-        weak_ptr<AudioRuntime> getAudioRuntime(const weak_ptr<AudioDefinition>& def) override;
+  public:
+    OpenALAudioComponent();
+    ~OpenALAudioComponent() override;
+    bool init() override;
+    void setListenerPosition(const vec3&) override;
+    void setVolume(float) override;
+    float getVolume() override;
+    AudioRuntime& getAudioRuntime(AudioDefinition& def) override;
 
-        private:
-        ALCdevice*  mDevice;
-        ALCcontext* mContext;
-    };
+  private:
+    ALCdevice*  mDevice;
+    ALCcontext* mContext;
+  };
 }

@@ -16,7 +16,7 @@
 namespace octronic::dream
 {
     WindowComponent::WindowComponent()
-        : Component(weak_ptr<ProjectRuntime>()),
+        : Component(),
           mWidth(0),
           mHeight(0),
           mShouldClose(false),

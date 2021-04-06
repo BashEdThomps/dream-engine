@@ -17,9 +17,8 @@
 #pragma once
 
 #define GLM_FORCE_RADIANS
-
 #ifdef WIN32
-    #define _USE_MATH_DEFINES // for C++
+#define _USE_MATH_DEFINES // for C++
 #endif
 
 #include "Base/Runtime.h"
@@ -27,81 +26,83 @@
 #include "Entity/BoundingBox.h"
 #include "Frustum.h"
 
+#include <optional>
+
+using std::optional;
 using nlohmann::json;
 using glm::mat4;
 
 namespace octronic::dream
 {
-    class SceneRuntime;
-    class EntityRuntime;
-	class CameraDefinition;
+  class SceneRuntime;
+  class EntityRuntime;
+  class CameraDefinition;
 
-    /**
-     * @brief Implements a Camera in 3D Space.
-     */
-    class CameraRuntime : public Runtime
-    {
+  class CameraRuntime : public Runtime
+  {
 
-    public:
-        CameraRuntime(const weak_ptr<CameraDefinition>& cDef,
-                      const weak_ptr<SceneRuntime>& parent);
-        ~CameraRuntime();
+  public:
+    CameraRuntime(SceneRuntime& parent, CameraDefinition& cDef);
+    CameraRuntime(CameraRuntime&&) = default;
+    CameraRuntime& operator=(CameraRuntime&&) = default;
+    ~CameraRuntime();
 
-        void update();
+    void update();
 
-		bool loadFromDefinition() override;
+    bool loadFromDefinition() override;
 
-        bool visibleInFrustum(const weak_ptr<EntityRuntime>&)const;
-        bool visibleInFrustum(const BoundingBox&) const;
-        bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
-        bool containedInFrustum(const weak_ptr<EntityRuntime>&) const;
-        bool containedInFrustum(const BoundingBox&) const;
-        bool containedInFrustumAfterTransform(const weak_ptr<EntityRuntime>&,const mat4& tx) const;
-        bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const weak_ptr<EntityRuntime>&sor, const vec3& tx) const;
+    bool visibleInFrustum(const EntityRuntime&)const;
+    bool visibleInFrustum(const BoundingBox&) const;
+    bool visibleInFrustum(const BoundingBox& bb,const mat4& tx) const;
+    bool containedInFrustum(const EntityRuntime&) const;
+    bool containedInFrustum(const BoundingBox&) const;
+    bool containedInFrustumAfterTransform(const EntityRuntime&,const mat4& tx) const;
+    bool exceedsFrustumPlaneAtTranslation(Frustum::Plane plane, const EntityRuntime& sor, const vec3& tx) const;
 
-        void setTransform(const Transform&);
-        Transform getTransform() const;
+    void setTransform(const Transform&);
+    Transform getTransform() const;
 
-        mat4 getViewMatrix() const;
-        mat4 getProjectionMatrix() const;
-        void setProjectionMatrix(const mat4& projectionMatrix);
+    mat4 getViewMatrix() const;
+    mat4 getProjectionMatrix() const;
+    void setProjectionMatrix(const mat4& projectionMatrix);
 
-        void updateProjectionMatrix(float w, float h);
+    void updateProjectionMatrix(float w, float h);
 
-        void setFieldOfView(float fov);
-        float getFieldOfView() const;
+    void setFieldOfView(float fov);
+    float getFieldOfView() const;
 
-        UuidType getCameraEntityUuid() const;
-        void setCameraEntityUuid(UuidType u);
+    UuidType getCameraEntityUuid() const;
+    void setCameraEntityUuid(UuidType u);
 
-        weak_ptr<EntityRuntime> getCameraEntityRuntime() const;
-        void setCameraEntityRuntime(const weak_ptr<EntityRuntime>& er);
+    EntityRuntime& getCameraEntityRuntime();
+    void setCameraEntityRuntime(EntityRuntime& er);
 
-        void setMeshCullDistance(float);
-        float getMeshCullDistance() const;
+    void setMeshCullDistance(float);
+    float getMeshCullDistance() const;
 
-        float getMinDrawDistance() const;
-        void setMinDrawDistance(float);
+    float getMinDrawDistance() const;
+    void setMinDrawDistance(float);
 
-        float getMaxDrawDistance() const;
-        void setMaxDrawDistance(float);
+    float getMaxDrawDistance() const;
+    void setMaxDrawDistance(float);
 
-        void setUseEntity(bool ue);
-        bool getUseEntity() const;
+    void setUseEntity(bool ue);
+    bool getUseEntity() const;
 
-		void captureDefinition();
+    void captureDefinition();
+    SceneRuntime& getSceneRuntime() const;
 
-    private:
-        Transform mFreeTransform;
-        UuidType mCameraEntityUuid;
-        weak_ptr<EntityRuntime> mCameraEntityRuntime;
-        mat4 mProjectionMatrix;
-        Frustum mFrustum;
-        weak_ptr<SceneRuntime> mSceneRuntime;
-        bool mUseEntity;
-        float mFieldOfView;
-        float mMinDrawDistance;
-        float mMaxDrawDistance;
-        float mMeshCullDistance;
-    };
+  private:
+    Transform mFreeTransform;
+    UuidType mCameraEntityUuid;
+    optional<reference_wrapper<EntityRuntime>> mCameraEntityRuntime;
+    mat4 mProjectionMatrix;
+    Frustum mFrustum;
+    reference_wrapper<SceneRuntime> mSceneRuntime;
+    bool mUseEntity;
+    float mFieldOfView;
+    float mMinDrawDistance;
+    float mMaxDrawDistance;
+    float mMeshCullDistance;
+  };
 }

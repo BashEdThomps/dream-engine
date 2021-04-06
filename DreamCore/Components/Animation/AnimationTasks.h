@@ -4,16 +4,15 @@
 
 namespace octronic::dream
 {
-    class AnimationRuntime;
+  class AnimationRuntime;
 
-   class AnimationUpdateTask : public Task
-   {
-   protected:
-        weak_ptr<AnimationRuntime> mAnimationRuntime;
-   public:
-        AnimationUpdateTask(
-                const weak_ptr<ProjectRuntime>& pr,
-                const weak_ptr<AnimationRuntime>& rt);
-        void execute();
-   };
+  class AnimationUpdateTask : public Task
+  {
+
+  public:
+    AnimationUpdateTask(ProjectRuntime& pr, AnimationRuntime& rt);
+    void execute();
+  protected:
+    reference_wrapper<AnimationRuntime> mAnimationRuntime;
+  };
 }

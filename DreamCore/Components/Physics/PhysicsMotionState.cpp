@@ -25,7 +25,7 @@
 namespace octronic::dream
 {
   PhysicsMotionState::PhysicsMotionState
-  (const weak_ptr<EntityRuntime>& entity)
+  (EntityRuntime& entity)
     : btMotionState(),
       mEntityRuntime(entity)
   {
@@ -42,11 +42,8 @@ namespace octronic::dream
   PhysicsMotionState::getWorldTransform
   (btTransform& worldTrans) const
   {
-    if (auto erLock = mEntityRuntime.lock())
-    {
-      auto tx = erLock->getTransform();
-      worldTrans.setFromOpenGLMatrix(glm::value_ptr(tx.getMatrix()));
-    }
+    const auto& tx = getEntityRuntime().getTransform();
+    worldTrans.setFromOpenGLMatrix(glm::value_ptr(tx.getMatrix()));
   }
 
   void
@@ -54,20 +51,17 @@ namespace octronic::dream
   (const btTransform& worldTrans)
   {
     LOG_DEBUG( "PhysicsMotionState: setWorldTransform called" );
-    if (auto erLock = mEntityRuntime.lock())
-    {
-      auto origin = worldTrans.getOrigin();
-      float yaw;
-      float pitch;
-      float roll;
-      worldTrans.getRotation().getEulerZYX(yaw, pitch, roll);
-      Transform tx;
-      tx.setTranslation(Vector3::fromBullet(origin));
-      tx.setYaw(yaw);
-      tx.setPitch(pitch);
-      tx.setRoll(roll);
-      erLock->setTransform(tx);
-    }
+    auto origin = worldTrans.getOrigin();
+    float yaw;
+    float pitch;
+    float roll;
+    worldTrans.getRotation().getEulerZYX(yaw, pitch, roll);
+    Transform tx;
+    tx.setTranslation(Vector3::fromBullet(origin));
+    tx.setYaw(yaw);
+    tx.setPitch(pitch);
+    tx.setRoll(roll);
+    getEntityRuntime().setTransform(tx);
   }
 
   void
@@ -76,5 +70,14 @@ namespace octronic::dream
   {
     LOG_DEBUG( "PhysicsMotionState: setKinematicPos called" );
     setWorldTransform(trans);
+  }
+
+
+  EntityRuntime&
+  PhysicsMotionState::getEntityRuntime
+  ()
+  const
+  {
+    return mEntityRuntime.get();
   }
 }

@@ -31,7 +31,7 @@ namespace octronic::dream::tool
             YZ
         };
 
-        Grid(DreamToolContext* p, AxisPair xp = AxisPair::XZ,
+        Grid(DreamToolContext& p, AxisPair xp = AxisPair::XZ,
             float majorSpacing = 10.0f, float minorSpacing = 1.0f, float size = 100.0f,
             vec4 majorColour = vec4(1.0f, 1.0f, 1.0f, 1.0f),
             vec4 minorColour = vec4(0.6f,0.6f,0.6f,1.f));

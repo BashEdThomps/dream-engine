@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "ModelMesh.h"
+
 #include "Common/GLHeader.h"
 
 #include <assimp/Importer.hpp>
@@ -39,27 +41,25 @@ using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class ShaderRuntime;
-    class ModelMesh;
     struct Vertex;
+    class ShaderRuntime;
     class MaterialRuntime;
     class EntityRuntime;
 
     class ModelRuntime : public SharedAssetRuntime
     {
     public:
-        ModelRuntime(
-                const weak_ptr<ProjectRuntime>&,
-                const weak_ptr<AssetDefinition>&);
+        ModelRuntime(ProjectRuntime&,AssetDefinition&);
+        ModelRuntime(ModelRuntime&& other) = default;
+        ModelRuntime& operator=(ModelRuntime&& other) = default;
 
-        ~ModelRuntime() override;
         bool loadFromDefinition() override;
 
         BoundingBox getBoundingBox() const;
         void setBoundingBox(const BoundingBox& bb);
 
         vector<string> getMaterialNames() const;
-        vector<weak_ptr<ModelMesh>> getMeshes() const;
+        vector<ModelMesh>& getMeshes();
 
         mat4 getGlobalInverseTransform() const;
         void setGlobalInverseTransform(const mat4& globalInverseTransform);
@@ -69,9 +69,8 @@ namespace octronic::dream
     private: // Methods
         BoundingBox generateBoundingBox(aiMesh* mesh) const;
         void loadModel(string);
-        shared_ptr<Importer> loadImporter(string path);
         void processNode(aiNode*, const aiScene*);
-        shared_ptr<ModelMesh> processMesh(aiMesh*, const aiScene*);
+        ModelMesh processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from) const;
@@ -79,7 +78,7 @@ namespace octronic::dream
     private:
         BoundingBox mBoundingBox;
         mat4 mGlobalInverseTransform;
-        vector<shared_ptr<ModelMesh>> mMeshes;
+        vector<ModelMesh> mMeshes;
         vector<string> mMaterialNames;
     };
 }

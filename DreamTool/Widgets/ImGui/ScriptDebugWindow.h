@@ -10,7 +10,7 @@ namespace octronic::dream::tool
     class ScriptDebugWindow : public ImGuiWidget, public ScriptPrintListener
     {
     public:
-        ScriptDebugWindow(DreamToolContext* proj);
+        ScriptDebugWindow(DreamToolContext& proj);
         ~ScriptDebugWindow() override;
 
         void draw() override;

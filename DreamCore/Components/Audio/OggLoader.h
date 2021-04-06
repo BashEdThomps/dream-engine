@@ -22,16 +22,14 @@ using std::string;
 
 namespace octronic::dream
 {
-    class OggLoader : public AudioLoader
-    {
-    public:
-		static const uint16_t OGG_LOAD_BUFFER_SIZE;
-        OggLoader();
-	    ~OggLoader();
-		string getOggErrorString(int error);
+  class OggLoader : public AudioLoader
+  {
+  public:
+    static const uint16_t OGG_LOAD_BUFFER_SIZE;
+    OggLoader();
+    ~OggLoader();
+    string getOggErrorString(int error);
 
-		bool loadIntoBuffer
-        (const weak_ptr<AudioDefinition>& def,
-         const weak_ptr<ProjectRuntime>& project) override;
-	};
+    bool loadIntoBuffer(ProjectRuntime& project, AudioDefinition& def) override;
+  };
 }

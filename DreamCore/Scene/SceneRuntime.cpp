@@ -13,7 +13,7 @@
 #include "SceneRuntime.h"
 
 #include "SceneDefinition.h"
-#include "Entity/EntityDefinition.h"
+#include "Entity/TemplateEntityDefinition.h"
 #include "Entity/EntityRuntime.h"
 #include "Common/Logger.h"
 #include "Components/Audio/AudioComponent.h"
@@ -37,559 +37,491 @@
 #include "Components/Script/ScriptRuntime.h"
 #include "Project/ProjectRuntime.h"
 #include "Components/Cache.h"
+
 #include <iostream>
+#include <exception>
 
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-using std::make_shared;
-using std::static_pointer_cast;
+using std::exception;
 
 namespace octronic::dream
 {
-    SceneRuntime::SceneRuntime
-    (const weak_ptr<ProjectRuntime>& project,
-     const weak_ptr<SceneDefinition>& sd)
-        : DeferredLoadRuntime(project, sd),
-          mProjectRuntime(project),
-          mState(SceneState::SCENE_STATE_TO_LOAD),
-          mClearColor(vec4(0.0f)),
-          mSceneStartTime(0),
-          mSceneCurrentTime(0)
+  SceneRuntime::SceneRuntime
+  (ProjectRuntime& project,
+   SceneDefinition& sd)
+    : DeferredLoadRuntime(project, sd),
+      mState(SceneState::SCENE_STATE_TO_LOAD),
+      mClearColor(vec4(0.0f)),
+      mCameraRuntime(*this, sd.getCameraDefinition()),
+      mSceneStartTime(0),
+      mSceneCurrentTime(0)
+  {
+    LOG_TRACE( "SceneRuntime: Constructing " );
+  }
+
+  void
+  SceneRuntime::destroyRuntime
+  ()
+  {
+    LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
+
+    auto activeSrOpt = getProjectRuntime().getActiveSceneRuntime();
+
+    if (activeSrOpt)
     {
-        LOG_TRACE( "SceneRuntime: Constructing " );
+      auto& activeSr = activeSrOpt.value().get();
+
+      if (activeSr == *this)
+      {
+        auto& inputComp = getProjectRuntime().getInputComponent();
+        auto& destructionQueue = getProjectRuntime().getDestructionTaskQueue();
+        destructionQueue.pushTask(inputComp.getRemoveScriptTask());
+      }
+      mState = SceneState::SCENE_STATE_DESTROYED;
+    }
+  }
+
+  SceneState
+  SceneRuntime::getState
+  ()
+  const
+  {
+    return mState;
+  }
+
+  void
+  SceneRuntime::setState
+  (SceneState state)
+  {
+    mState = state;
+  }
+
+  vec3
+  SceneRuntime::getGravity
+  ()
+  {
+    auto& physicsComp = getProjectRuntime().getPhysicsComponent();
+    return physicsComp.getGravity();
+  }
+
+  void
+  SceneRuntime::setGravity
+  (const vec3& gravity)
+  {
+    auto& physicsComp = getProjectRuntime().getPhysicsComponent();
+    physicsComp.setGravity(gravity);
+  }
+
+  vec4
+  SceneRuntime::getClearColor
+  ()
+  const
+  {
+    return mClearColor;
+  }
+
+  void
+  SceneRuntime::setClearColor
+  (const vec4& clearColour)
+  {
+    mClearColor = clearColour;
+  }
+
+  EntityRuntime&
+  SceneRuntime::getEntityRuntimeByUuid
+  (UuidType uuid)
+  {
+    for (auto& er : mFlatVector)
+    {
+      if (er.get().hasUuid(uuid)) return er;
+    }
+    throw std::exception();
+  }
+
+  EntityRuntime&
+  SceneRuntime::getEntityRuntimeByName
+  (const string& name)
+  {
+    for (auto& er : mFlatVector)
+    {
+      if (er.get().hasName(name)) return er;
+    }
+    throw std::exception();
+  }
+
+  int
+  SceneRuntime::countEntityRuntimes
+  ()
+  const
+  {
+    return mFlatVector.size();
+  }
+
+  void
+  SceneRuntime::showScenegraph
+  ()
+  const
+  {
+    for (auto& er : mFlatVector)
+    {
+      LOG_TRACE("SceneRuntime: {}", er.get().getNameAndUuidString());
+    }
+  }
+
+  EntityRuntime&
+  SceneRuntime::getRootEntityRuntime
+  ()
+  {
+    return mRootEntityRuntime.value();
+  }
+
+  void
+  SceneRuntime::collectGarbage
+  ()
+  {
+    LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
+    for (auto& er : mFlatVector)
+    {
+      er.get().collectGarbage();
+    }
+  }
+
+  bool
+  SceneRuntime::loadFromDefinition
+  ()
+  {
+    auto& pr = getProjectRuntime();
+    auto& sceneDefinition = static_cast<SceneDefinition&>(getDefinition());
+
+    LOG_DEBUG( "SceneRuntime: Using SceneDefinition ",  sceneDefinition.getNameAndUuidString() );
+
+    // Assign Runtime attributes from Definition
+    setName(sceneDefinition.getName());
+    setUuid(sceneDefinition.getUuid());
+    setClearColor(sceneDefinition.getClearColor());
+
+    auto& pDef = static_cast<ProjectDefinition&>(pr.getDefinition());
+    auto& shaderCache = pr.getShaderCache();
+    // Load Scene-level Shaders & Textures
+
+    UuidType shadowPassShaderUuid = sceneDefinition.getShadowPassShader();
+    auto shadowPassDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, shadowPassShaderUuid);
+    if (shadowPassDef)
+    {
+    	mShadowPassShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shadowPassDef.value().get()));
     }
 
-    SceneRuntime::~SceneRuntime
-    ()
+    if (!mShadowPassShader)
     {
-        LOG_TRACE("SceneRuntime: Destructing");
+      LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shadowPassShaderUuid,getNameAndUuidString());
+      return false;
     }
 
-    void
-    SceneRuntime::destroyRuntime
-    ()
+    UuidType fontShaderUuid = sceneDefinition.getFontShader();
+    auto fontShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, fontShaderUuid);
+    if (fontShaderDef)
     {
-        LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
-
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if (prLock->getActiveSceneRuntime().lock() == static_pointer_cast<SceneRuntime>(shared_from_this()))
-            {
-                if(auto inputComp = prLock->getInputComponent().lock())
-                {
-                    if (auto destructionQueue = prLock->getDestructionTaskQueue().lock())
-                    {
-                        destructionQueue->pushTask(inputComp->getRemoveScriptTask());
-                    }
-                }
-            }
-        }
-        mState = SceneState::SCENE_STATE_DESTROYED;
+    	mFontShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(fontShaderDef.value().get()));
     }
 
-    SceneState
-    SceneRuntime::getState
-    ()
-    const
+    if (!mFontShader)
     {
-        return mState;
+      LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
+      return false;
     }
 
-    void
-    SceneRuntime::setState
-    (SceneState state)
+    UuidType spriteShaderUuid = sceneDefinition.getSpriteShader();
+    auto spriteShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, spriteShaderUuid);
+    if (spriteShaderDef)
     {
-        mState = state;
+    	mSpriteShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(spriteShaderDef.value().get()));
     }
 
-    vec3
-    SceneRuntime::getGravity
-    ()
-    const
+    if (!mSpriteShader)
     {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if (auto pcLock = prLock->getPhysicsComponent().lock())
-            {
-                return pcLock->getGravity();
-            }
-        }
-        return vec3(0.0f);
+      LOG_ERROR("SceneRuntime: Unable to load sprite shader {} for Scene {}",spriteShaderUuid,getNameAndUuidString());
+      return false;
     }
 
-    void
-    SceneRuntime::setGravity
-    (const vec3& gravity)
+    UuidType environmentShaderUuid = sceneDefinition.getEnvironmentShader();
+    auto envShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, environmentShaderUuid);
+    if (envShaderDef)
     {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if (auto pcLock = prLock->getPhysicsComponent().lock())
-            {
-                pcLock->setGravity(gravity);
-            }
-        }
+    	mEnvironmentShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(envShaderDef.value().get()));
     }
 
-    vec4
-    SceneRuntime::getClearColor
-    ()
-    const
+    if (!mSpriteShader)
     {
-        return mClearColor;
+      LOG_ERROR("SceneRuntime: Unable to load Environment shader {} for Scene {}",environmentShaderUuid,getNameAndUuidString());
+      return false;
     }
 
-    void
-    SceneRuntime::setClearColor
-    (const vec4& clearColour)
+    auto& textureCache = pr.getTextureCache();
+    UuidType environmentTextureUuid = sceneDefinition.getEnvironmentTexture();
+    auto envTexDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE, environmentTextureUuid);
+    if (envTexDef)
     {
-        mClearColor = clearColour;
+    	mEnvironmentTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(envTexDef.value().get()));
     }
 
-    weak_ptr<EntityRuntime>
-    SceneRuntime::getEntityRuntimeByUuid
-    (UuidType uuid)
-    const
+    if (!mEnvironmentTexture)
     {
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock())
-            {
-                if (erLock->hasUuid(uuid)) return er;
-            }
-        }
-
-        return weak_ptr<EntityRuntime>();
+      LOG_ERROR("SceneRuntime: Unable to Environment Texture {} for Scene {}",environmentTextureUuid,getNameAndUuidString());
+      return false;
     }
 
-    weak_ptr<EntityRuntime>
-    SceneRuntime::getEntityRuntimeByName
-    (const string& name)
-    const
+    // Scripts
+    auto& scriptCache = pr.getScriptCache();
+    UuidType inputScriptUuid = sceneDefinition.getInputScript();
+    auto scriptDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SCRIPT,inputScriptUuid);
+    if (scriptDef)
     {
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock())
-            {
-                if (erLock->hasName(name)) return er;
-            }
-        }
-        return weak_ptr<EntityRuntime>();
+    	mInputScript = scriptCache.getRuntime(static_cast<ScriptDefinition&>(scriptDef.value().get()));
     }
 
-    int
-    SceneRuntime::countEntityRuntimes
-    ()
-    const
+    if (!mInputScript)
     {
-        return mFlatVector.size();
+      LOG_ERROR("SceneRuntime: Unable to load Input Script {}",inputScriptUuid);
     }
 
-    void
-    SceneRuntime::showScenegraph
-    ()
-    const
+    // Physics
+    auto& pc = pr.getPhysicsComponent();
+    pc.setGravity(sceneDefinition.getGravity());
+
+    // Create Root EntityRuntime
+    try
     {
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock())
-            {
-                LOG_TRACE("SceneRuntime: {}", erLock->getNameAndUuidString());
-            }
-        }
-    }
+    	auto& entityDef = sceneDefinition.getRootSceneEntityDefinition();
+    	auto templateDef = pDef.getTemplateEntityDefinitionByUuid(entityDef.value().getTemplateUuid());
+      mRootEntityRuntime.emplace(getProjectRuntime(), *this, entityDef.value(), templateDef.value().get());
 
-    void
-    SceneRuntime::setRootEntityRuntime
-    (const shared_ptr<EntityRuntime>& root)
-    {
-        mRootEntityRuntime = root;
-    }
-
-    weak_ptr<EntityRuntime>
-    SceneRuntime::getRootEntityRuntime
-    ()
-    const
-    {
-        return mRootEntityRuntime;
-    }
-
-    void
-    SceneRuntime::collectGarbage
-    ()
-    {
-        LOG_DEBUG( "SceneRuntime: Collecting Garbage {}" , getNameAndUuidString() );
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock()) erLock->collectGarbage();
-        }
-    }
-
-    weak_ptr<ProjectRuntime>
-    SceneRuntime::getProjectRuntime
-    ()
-    const
-    {
-        return mProjectRuntime;
-    }
-
-    bool
-    SceneRuntime::hasRootEntityRuntime
-    ()
-    const
-    {
-        return mRootEntityRuntime != nullptr;
-    }
-
-    bool
-    SceneRuntime::loadFromDefinition
-    ()
-    {
-        if (auto projRuntLock = mProjectRuntime.lock())
-        {
-            if (auto sceneDefLock = mDefinition.lock())
-            {
-                auto sceneDefinition = static_pointer_cast<SceneDefinition>(sceneDefLock);
-
-                LOG_DEBUG( "SceneRuntime: Using SceneDefinition ",  sceneDefinition->getNameAndUuidString() );
-
-                // Assign Runtime attributes from Definition
-                setName(sceneDefinition->getName());
-                setUuid(sceneDefinition->getUuid());
-                setClearColor(sceneDefinition->getClearColor());
-
-                if (auto shaderCache = projRuntLock->getShaderCache().lock())
-                {
-                    // Load Scene-level Shaders & Textures
-
-                    UuidType shadowPassShaderUuid = sceneDefinition->getShadowPassShader();
-                    mShadowPassShader = shaderCache->getRuntime(shadowPassShaderUuid);
-
-                    if (mShadowPassShader.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to load shadow shader {} for Scene {}",shadowPassShaderUuid,getNameAndUuidString());
-                        return false;
-                    }
-
-                    UuidType fontShaderUuid = sceneDefinition->getFontShader();
-                    mFontShader = shaderCache->getRuntime(fontShaderUuid);
-
-                    if (mFontShader.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to load font shader {} for Scene {}",fontShaderUuid,getNameAndUuidString());
-                        return false;
-                    }
-
-                    UuidType spriteShaderUuid = sceneDefinition->getSpriteShader();
-                    mSpriteShader = shaderCache->getRuntime(spriteShaderUuid);
-
-                    if (mSpriteShader.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to load sprite shader {} for Scene {}",spriteShaderUuid,getNameAndUuidString());
-                        return false;
-                    }
-
-                    UuidType environmentShaderUuid = sceneDefinition->getEnvironmentShader();
-                    mEnvironmentShader = shaderCache->getRuntime(environmentShaderUuid);
-
-                    if (mSpriteShader.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to load Environment shader {} for Scene {}",environmentShaderUuid,getNameAndUuidString());
-                        return false;
-                    }
-                    if (auto gfxCompLock = projRuntLock->getGraphicsComponent().lock())
-                    {
-                        gfxCompLock->logShaders();
-                    }
-                }
-
-
-                if (auto textureCache = projRuntLock->getTextureCache().lock())
-                {
-                    UuidType environmentTextureUuid = sceneDefinition->getEnvironmentTexture();
-                    mEnvironmentTexture = textureCache->getRuntime(environmentTextureUuid);
-
-                    if (mEnvironmentTexture.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to Environment Texture {} for Scene {}",environmentTextureUuid,getNameAndUuidString());
-                        return false;
-                    }
-                }
-
-                // Scripts
-                if (auto scriptCache = projRuntLock->getScriptCache().lock())
-                {
-                    UuidType inputScriptUuid = sceneDefinition->getInputScript();
-                    mInputScript = scriptCache->getRuntime(inputScriptUuid);
-
-                    if (mInputScript.expired())
-                    {
-                        LOG_ERROR("SceneRuntime: Unable to load Input Script {}",inputScriptUuid);
-                    }
-                }
-
-                // Physics
-                if (auto pcLock = projRuntLock->getPhysicsComponent().lock())
-                {
-                    pcLock->setGravity(sceneDefinition->getGravity());
-                }
-
-                // Create Root EntityRuntime
-                auto entityDef = sceneDefinition->getRootEntityDefinition();
-                auto er = make_shared<EntityRuntime>(mProjectRuntime, static_pointer_cast<SceneRuntime>(shared_from_this()), entityDef);
-
-                if (!er->loadFromDefinition())
-                {
-                    LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
-                    return false;
-                }
-
-                setRootEntityRuntime(er);
-
-                // Setup Camera
-                mCamera = make_shared<CameraRuntime>(sceneDefinition->getCamera(), static_pointer_cast<SceneRuntime>(shared_from_this()));
-                mCamera->loadFromDefinition();
-
-                setState(SceneState::SCENE_STATE_LOADED);
-
-                return true;
-            }
-        }
+      if (!mRootEntityRuntime.value().loadFromDefinition())
+      {
+        LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
         return false;
+      }
     }
-
-    vector<weak_ptr<AssetRuntime>>
-    SceneRuntime::getAssetRuntimes
-    (AssetType t)
-    const
+    catch (exception& ex)
     {
-        vector<weak_ptr<AssetRuntime>> runtimes;
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock())
-            {
-                auto inst = erLock->getAssetRuntime(t);
-                if (!inst.expired())
-                {
-                    runtimes.push_back(inst);
-                }
-            }
-        }
-        return runtimes;
+      LOG_ERROR("SceneRuntime: Error while loading, no root entity definition found");
+      setState(SCENE_STATE_TO_DESTROY);
+    	return false;
     }
 
-    vector<weak_ptr<EntityRuntime>>
-    SceneRuntime::getEntitiesWithRuntimeOf
-    (const weak_ptr<AssetDefinition>& def)
-    const
+    // Setup Camera
+    mCameraRuntime.loadFromDefinition();
+
+    setState(SceneState::SCENE_STATE_LOADED);
+
+    return true;
+  }
+
+  vector<reference_wrapper<AssetRuntime>>
+  SceneRuntime::getAssetRuntimes
+  (AssetType type)
+  const
+  {
+    vector<reference_wrapper<AssetRuntime>> runtimes;
+    for (auto& erRef : mFlatVector)
     {
-        vector<weak_ptr<EntityRuntime>> runtimes;
-        if (auto defLock = def.lock())
-        {
-            auto type = defLock->getAssetType();
-            for (auto er : mFlatVector)
-            {
-                if (auto erLock = er.lock())
-                {
-                    auto inst = erLock->getAssetRuntime(type);
-                    if (auto instLock = inst.lock())
-                    {
-                        if (instLock->getUuid() == defLock->getUuid()) runtimes.push_back(er);
-                    }
-                }
-            }
-        }
-        return runtimes;
+      auto& er = erRef.get();
+      runtimes.push_back(er.getAssetRuntime(type));
     }
+    return runtimes;
+  }
 
-    weak_ptr<CameraRuntime>
-    SceneRuntime::getCamera
-    ()
-    const
+  vector<reference_wrapper<EntityRuntime>>
+  SceneRuntime::getEntitiesWithRuntimeOf
+  (AssetDefinition& def)
+  const
+  {
+    vector<reference_wrapper<EntityRuntime>> runtimes;
+    auto type = def.getAssetType();
+    for (auto erRef : mFlatVector)
     {
-        return mCamera;
+      auto& er = erRef.get();
+      auto& inst = er.getAssetRuntime(type);
+      if (inst.getUuid() == def.getUuid()) runtimes.push_back(er);
     }
+    return runtimes;
+  }
 
-    weak_ptr<ShaderRuntime>
-    SceneRuntime::getShadowPassShader
-    ()
-    const
-    {
-        return mShadowPassShader;
-    }
+  CameraRuntime&
+  SceneRuntime::getCameraRuntime
+  ()
+  {
+    return mCameraRuntime;
+  }
 
-    void
-    SceneRuntime::setShadowPassShader
-    (const weak_ptr<ShaderRuntime>& shadowPassShader)
-    {
-        mShadowPassShader = shadowPassShader;
-    }
+  ShaderRuntime&
+  SceneRuntime::getShadowPassShader
+  ()
+  {
+    return mShadowPassShader.value();
+  }
 
-    weak_ptr<ShaderRuntime>
-    SceneRuntime::getFontShader
-    ()
-    const
-    {
-        return mFontShader;
-    }
+  void
+  SceneRuntime::setShadowPassShader
+  (ShaderRuntime& shadowPassShader)
+  {
+    mShadowPassShader = shadowPassShader;
+  }
 
-    void
-    SceneRuntime::setFontShader
-    (const weak_ptr<ShaderRuntime>& fontShader)
-    {
-        mFontShader = fontShader;
-    }
+  ShaderRuntime&
+  SceneRuntime::getFontShader
+  ()
+  {
+    return mFontShader.value();
+  }
 
-    weak_ptr<ShaderRuntime>
-    SceneRuntime::getSpriteShader
-    ()
-    const
-    {
-        return mSpriteShader;
-    }
+  void
+  SceneRuntime::setFontShader
+  (ShaderRuntime& fontShader)
+  {
+    mFontShader = fontShader;
+  }
 
-    void
-    SceneRuntime::setSpriteShader
-    (const weak_ptr<ShaderRuntime>& shader)
-    {
-        mSpriteShader = shader;
-    }
+  ShaderRuntime&
+  SceneRuntime::getSpriteShader
+  ()
+  {
+    return mSpriteShader.value();
+  }
 
-    unsigned long
-    SceneRuntime::getSceneCurrentTime
-    ()
-    const
-    {
-        return mSceneCurrentTime;
-    }
+  void
+  SceneRuntime::setSpriteShader
+  (ShaderRuntime& shader)
+  {
+    mSpriteShader = shader;
+  }
 
-    void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
-    {
-        mSceneCurrentTime = sceneCurrentTime;
-    }
+  unsigned long
+  SceneRuntime::getSceneCurrentTime
+  ()
+  const
+  {
+    return mSceneCurrentTime;
+  }
 
-    unsigned long
-    SceneRuntime::getSceneStartTime
-    ()
-    const
-    {
-        return mSceneStartTime;
-    }
+  void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
+  {
+    mSceneCurrentTime = sceneCurrentTime;
+  }
 
-    void
-    SceneRuntime::setSceneStartTime
-    (unsigned long sceneStartTime)
-    {
-        mSceneStartTime = sceneStartTime;
-    }
+  unsigned long
+  SceneRuntime::getSceneStartTime
+  ()
+  const
+  {
+    return mSceneStartTime;
+  }
 
-    /**
+  void
+  SceneRuntime::setSceneStartTime
+  (unsigned long sceneStartTime)
+  {
+    mSceneStartTime = sceneStartTime;
+  }
+
+  /**
      * @brief SceneRuntime::createSceneTasks
      *
      * Entitys with DiscreetAssetRuntimes need to push back their own tasks,
      * All SharedAssetRuntimes should be pushed by their caches.
      *
      */
-    void
-    SceneRuntime::createSceneTasks
-    ()
+  void
+  SceneRuntime::createSceneTasks
+  ()
+  {
+    LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
+
+    updateLifetime();
+
+    for (auto& er : mFlatVector)
     {
-        LOG_DEBUG("SceneRuntime: Building SceneRuntime Task Queue...");
-
-        updateLifetime();
-
-        for (auto er : mFlatVector)
-        {
-            if (auto erLock = er.lock())
-            {
-                erLock->pushTasks();
-            }
-        }
-        LOG_TRACE("SceneRuntime: Finished {}",__FUNCTION__);
+      er.get().pushTasks();
     }
 
-    void
-    SceneRuntime::updateFlatVector
-    ()
-    {
-        mFlatVector.clear();
-        if (mRootEntityRuntime)
-        {
-            mFlatVector = mRootEntityRuntime->generateFlatVector();
-        }
-    }
+    LOG_TRACE("SceneRuntime: Finished {}",__FUNCTION__);
+  }
 
-    void
-    SceneRuntime::updateLifetime
-    ()
+  void
+  SceneRuntime::updateFlatVector
+  ()
+  {
+    mFlatVector.clear();
+    if (mRootEntityRuntime)
     {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            auto time = prLock->getTime().lock();
-            long timeDelta = time->getFrameTimeDelta();
-            if (timeDelta <= Time::DELTA_MAX)
-            {
-                long frameTime = time->getCurrentFrameTime();
-                if (getSceneStartTime() <= 0)
-                {
-                    setSceneStartTime(frameTime);
-                }
-                setSceneCurrentTime(frameTime-getSceneStartTime());
-            }
-        }
+      mFlatVector = mRootEntityRuntime.value().generateFlatVector();
     }
+  }
 
-    bool
-    SceneRuntime::hasState
-    (SceneState state) const
-    {
-        return mState == state;
-    }
+  void
+  SceneRuntime::updateLifetime
+  ()
+  {
+    auto& pr = getProjectRuntime();
+    auto& time = pr.getTime();
 
-    weak_ptr<TextureRuntime>
-    SceneRuntime::getEnvironmentTexture
-    () const
-    {
-        return mEnvironmentTexture;
-    }
+    long timeDelta = time.getFrameTimeDelta();
 
-    void
-    SceneRuntime::setEnvironmentTexture
-    (const weak_ptr<TextureRuntime>& tr)
+    if (timeDelta <= Time::DELTA_MAX)
     {
-        mEnvironmentTexture = tr;;
+      long frameTime = time.getCurrentFrameTime();
+      if (getSceneStartTime() <= 0)
+      {
+        setSceneStartTime(frameTime);
+      }
+      setSceneCurrentTime(frameTime-getSceneStartTime());
     }
+  }
 
-    weak_ptr<ShaderRuntime>
-    SceneRuntime::getEnvironmentShader
-    () const
-    {
-        return mEnvironmentShader;
-    }
+  bool
+  SceneRuntime::hasState
+  (SceneState state) const
+  {
+    return mState == state;
+  }
 
-    void
-    SceneRuntime::setEnvironmentShader
-    (const weak_ptr<ShaderRuntime>& rt)
-    {
-        mEnvironmentShader = rt;
-    }
+  TextureRuntime&
+  SceneRuntime::getEnvironmentTexture
+  ()
+  {
+    return mEnvironmentTexture.value();
+  }
 
-    weak_ptr<ScriptRuntime>
-    SceneRuntime::getInputScript
-    () const
-    {
-        return mInputScript;
-    }
+  void
+  SceneRuntime::setEnvironmentTexture
+  (TextureRuntime& tr)
+  {
+    mEnvironmentTexture = tr;
+  }
 
-    vector<weak_ptr<EntityRuntime>>
-    SceneRuntime::getFlatVector
-    () const
-    {
-        return mFlatVector;
-    }
+  ShaderRuntime&
+  SceneRuntime::getEnvironmentShader
+  ()
+  {
+    return mEnvironmentShader.value();
+  }
+
+  void
+  SceneRuntime::setEnvironmentShader
+  (ShaderRuntime& rt)
+  {
+    mEnvironmentShader = rt;
+  }
+
+  ScriptRuntime&
+  SceneRuntime::getInputScript
+  ()
+  {
+    return mInputScript.value();
+  }
+
+  vector<reference_wrapper<EntityRuntime>>
+  SceneRuntime::getFlatVector
+  () const
+  {
+    return mFlatVector;
+  }
 }

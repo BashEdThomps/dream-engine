@@ -16,226 +16,217 @@
 
 namespace octronic::dream
 {
-    PathDefinition::PathDefinition
-    (const shared_ptr<ProjectDefinition>& pd,
-     const json& js)
-        : AssetDefinition("PathDefinition",pd,js)
+  PathDefinition::PathDefinition
+  (ProjectDefinition& pd,
+   const json& js)
+    : AssetDefinition(pd,js)
+  {
+  }
+
+  void
+  PathDefinition::setWrap
+  (bool wrap)
+  {
+    mJson[Constants::ASSET_ATTR_WRAP] = wrap;
+  }
+
+  bool
+  PathDefinition::getWrap
+  ()
+  const
+  {
+    if (mJson.find(Constants::ASSET_ATTR_WRAP) == mJson.end())
     {
+      return false;
+    }
+    return mJson[Constants::ASSET_ATTR_WRAP];
+  }
+
+  vector<PathControlPoint>
+  PathDefinition::getControlPoints
+  ()
+  const
+  {
+    vector<PathControlPoint> retval;
+    if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
+    {
+      return retval;
     }
 
-    PathDefinition::~PathDefinition
-    ()
+    for (auto& cpJS : mJson[Constants::ASSET_ATTR_CONTROL_POINTS])
     {
-
+      retval.push_back(unwrapControlPoint(cpJS));
     }
+    return retval;
+  }
 
-    void
-    PathDefinition::setWrap
-    (bool wrap)
+  PathControlPoint
+  PathDefinition::addControlPoint
+  ()
+  {
+    PathControlPoint cp;
+    cp.id = nextID();
+    if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
     {
-        mJson[Constants::ASSET_ATTR_WRAP] = wrap;
+      mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
     }
+    mJson[Constants::ASSET_ATTR_CONTROL_POINTS].push_back(wrapControlPoint(cp));
+    return cp;
+  }
 
-    bool
-    PathDefinition::getWrap
-    ()
-    const
+  string
+  PathDefinition::getSplineType
+  ()
+  const
+  {
+    if (mJson.find(Constants::DREAM_PATH_SPLINE_TYPE) == mJson.end())
     {
-        if (mJson.find(Constants::ASSET_ATTR_WRAP) == mJson.end())
-        {
-            return false;
-        }
-        return mJson[Constants::ASSET_ATTR_WRAP];
+      return Constants::DREAM_PATH_TYPE_CLAMPED;
     }
+    return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
+  }
 
-    vector<PathControlPoint>
-    PathDefinition::getControlPoints
-    ()
-    const
+  void
+  PathDefinition::setSplineType
+  (const string& type)
+  {
+    mJson[Constants::DREAM_PATH_SPLINE_TYPE] = type;
+  }
+
+  tsBSplineType
+  PathDefinition::getSplineTypeEnum
+  ()
+  const
+  {
+    string type = getSplineType();
+
+    if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
     {
-        vector<PathControlPoint> retval;
-
-        if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
-        {
-            return retval;
-        }
-
-        for (auto cpJS : mJson[Constants::ASSET_ATTR_CONTROL_POINTS])
-        {
-            retval.push_back(unwrapControlPoint(cpJS));
-        }
-
-        return retval;
-
+      return TS_OPENED;
     }
-
-    PathControlPoint
-    PathDefinition::addControlPoint
-    ()
+    else if (type.compare(Constants::DREAM_PATH_TYPE_CLAMPED) == 0)
     {
-        PathControlPoint cp;
-        cp.id = nextID();
-        if (mJson.find(Constants::ASSET_ATTR_CONTROL_POINTS) == mJson.end())
-        {
-            mJson[Constants::ASSET_ATTR_CONTROL_POINTS] = json::array();
-        }
-        mJson[Constants::ASSET_ATTR_CONTROL_POINTS].push_back(wrapControlPoint(cp));
-        return cp;
+      return TS_CLAMPED;
     }
-
-    string
-    PathDefinition::getSplineType
-    ()
-    const
+    else if (type.compare(Constants::DREAM_PATH_TYPE_BEZIER) == 0)
     {
-        if (mJson.find(Constants::DREAM_PATH_SPLINE_TYPE) == mJson.end())
-        {
-            return Constants::DREAM_PATH_TYPE_CLAMPED;
-        }
-        return mJson[Constants::DREAM_PATH_SPLINE_TYPE];
+      return TS_BEZIERS;
     }
-
-    void
-    PathDefinition::setSplineType
-    (const string& type)
+    else
     {
-        mJson[Constants::DREAM_PATH_SPLINE_TYPE] = type;
+      return TS_NONE;
     }
+  }
 
-    tsBSplineType
-    PathDefinition::getSplineTypeEnum
-    ()
-    const
+  void
+  PathDefinition::setStepScalar
+  (double scalar)
+  {
+    mJson[Constants::ASSET_ATTR_STEP_SCALAR] = scalar;
+  }
+
+  double
+  PathDefinition::getStepScalar
+  ()
+  const
+  {
+    if (mJson.find(Constants::ASSET_ATTR_STEP_SCALAR) == mJson.end())
     {
-        string type = getSplineType();
-
-        if (type.compare(Constants::DREAM_PATH_TYPE_OPEN) == 0)
-        {
-            return TS_OPENED;
-        }
-        else if (type.compare(Constants::DREAM_PATH_TYPE_CLAMPED) == 0)
-        {
-            return TS_CLAMPED;
-        }
-        else if (type.compare(Constants::DREAM_PATH_TYPE_BEZIER) == 0)
-        {
-            return TS_BEZIERS;
-        }
-        else
-        {
-            return TS_NONE;
-        }
+      return 1.f;
     }
+    return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
+  }
 
-    void
-    PathDefinition::setStepScalar
-    (double scalar)
+  PathControlPoint
+  PathDefinition::unwrapControlPoint
+  (const json& js)
+  const
+  {
+    PathControlPoint cp;
+    cp.id = js[Constants::ASSET_ATTR_ID];
+    cp.index = js[Constants::ASSET_ATTR_INDEX];
+    cp.position = vec3(js[Constants::ASSET_ATTR_POSITION]);
+    return cp;
+  }
+
+  json
+  PathDefinition::wrapControlPoint
+  (const PathControlPoint& cp)
+  const
+  {
+    json js;
+    js[Constants::ASSET_ATTR_POSITION] = Vector3::toJson(cp.position);
+    js[Constants::ASSET_ATTR_ID] = cp.id;
+    js[Constants::ASSET_ATTR_INDEX] = cp.index;
+    return js;
+  }
+
+  void
+  PathDefinition::deleteControlPoint
+  (const PathControlPoint& cp)
+  {
+    for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+         itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
     {
-        mJson[Constants::ASSET_ATTR_STEP_SCALAR] = scalar;
+      auto nextCp = (*itr);
+      if (nextCp[Constants::ASSET_ATTR_ID] == cp.id)
+      {
+        mJson[Constants::ASSET_ATTR_CONTROL_POINTS].erase(itr) ;
+        return;
+      }
     }
+  }
 
-    double
-    PathDefinition::getStepScalar
-    ()
-    const
+  void
+  PathDefinition::updateControlPoint
+  (const PathControlPoint& cp)
+  {
+    auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+    auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
+    for (; itr != end; itr++)
     {
-        if (mJson.find(Constants::ASSET_ATTR_STEP_SCALAR) == mJson.end())
-        {
-            return 1.f;
-        }
-        return mJson[Constants::ASSET_ATTR_STEP_SCALAR];
+      if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
+      {
+        (*itr) = wrapControlPoint(cp);
+        return;
+      }
     }
+  }
 
-    PathControlPoint
-    PathDefinition::unwrapControlPoint
-    (const json& js)
-    const
+  int
+  PathDefinition::nextID
+  ()
+  {
+    int maxID = 0;
+    for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
+         itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
     {
-        PathControlPoint cp;
-        cp.id = js[Constants::ASSET_ATTR_ID];
-        cp.index = js[Constants::ASSET_ATTR_INDEX];
-        cp.position = vec3(js[Constants::ASSET_ATTR_POSITION]);
-        return cp;
+      auto nextCp = (*itr);
+      int nextID = nextCp[Constants::ASSET_ATTR_ID];
+      if (nextID > maxID)
+      {
+        maxID = nextID;
+      }
     }
+    return maxID+1;
+  }
 
-    json
-    PathDefinition::wrapControlPoint
-    (const PathControlPoint& cp)
-    const
+  float
+  PathDefinition::getVelocity
+  ()
+  const
+  {
+    if (!mJson[Constants::ASSET_ATTR_VELOCITY].is_number())
     {
-        json js;
-        js[Constants::ASSET_ATTR_POSITION] = Vector3::toJson(cp.position);
-        js[Constants::ASSET_ATTR_ID] = cp.id;
-        js[Constants::ASSET_ATTR_INDEX] = cp.index;
-        return js;
+      return 1.0f;
     }
+    return mJson[Constants::ASSET_ATTR_VELOCITY];
+  }
 
-    void
-    PathDefinition::deleteControlPoint
-    (const PathControlPoint& cp)
-    {
-        for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-             itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
-        {
-            auto nextCp = (*itr);
-            if (nextCp[Constants::ASSET_ATTR_ID] == cp.id)
-            {
-                mJson[Constants::ASSET_ATTR_CONTROL_POINTS].erase(itr) ;
-                return;
-            }
-        }
-    }
-
-    void
-    PathDefinition::updateControlPoint
-    (const PathControlPoint& cp)
-    {
-        auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-        auto end = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end();
-        for (; itr != end; itr++)
-        {
-            if ((*itr)[Constants::ASSET_ATTR_ID] == cp.id)
-            {
-                (*itr) = wrapControlPoint(cp);
-                return;
-            }
-        }
-    }
-
-    int
-    PathDefinition::nextID
-    ()
-    {
-        int maxID = 0;
-        for (auto itr = mJson[Constants::ASSET_ATTR_CONTROL_POINTS].begin();
-             itr != mJson[Constants::ASSET_ATTR_CONTROL_POINTS].end(); itr++)
-        {
-            auto nextCp = (*itr);
-            int nextID = nextCp[Constants::ASSET_ATTR_ID];
-            if (nextID > maxID)
-            {
-                maxID = nextID;
-            }
-        }
-        return maxID+1;
-    }
-
-    float
-    PathDefinition::getVelocity
-    ()
-    const
-    {
-        if (!mJson[Constants::ASSET_ATTR_VELOCITY].is_number())
-        {
-            return 1.0f;
-        }
-        return mJson[Constants::ASSET_ATTR_VELOCITY];
-    }
-
-    void
-    PathDefinition::setVelocity
-    (float v)
-    {
-        mJson[Constants::ASSET_ATTR_VELOCITY] = v;
-    }
+  void
+  PathDefinition::setVelocity
+  (float v)
+  {
+    mJson[Constants::ASSET_ATTR_VELOCITY] = v;
+  }
 }

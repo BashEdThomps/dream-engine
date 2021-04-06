@@ -25,6 +25,7 @@
 #include "Math/Transform.h"
 #include "PhysicsTasks.h"
 
+
 namespace octronic::dream
 {
     class PhysicsMotionState;
@@ -36,19 +37,15 @@ namespace octronic::dream
     class PhysicsObjectRuntime : public DiscreteAssetRuntime
     {
     public:
-        PhysicsObjectRuntime(
-                const weak_ptr<ProjectRuntime>&,
-                const weak_ptr<PhysicsObjectDefinition>&,
-                const weak_ptr<EntityRuntime>&);
+        PhysicsObjectRuntime(ProjectRuntime&, PhysicsObjectDefinition&, EntityRuntime&);
 
-        ~PhysicsObjectRuntime() override;
         bool loadFromDefinition() override;
 
-        shared_ptr<btCollisionShape> createCollisionShape(const weak_ptr<PhysicsObjectDefinition>&);
-        weak_ptr<btCollisionShape> getCollisionShape() const;
-        weak_ptr<btRigidBody> getRigidBody() const;
+        btCollisionShape* createCollisionShape(PhysicsObjectDefinition&);
+        btCollisionShape* getCollisionShape() const;
+        btRigidBody* getRigidBody() const;
         void getWorldTransform(btTransform&);
-        weak_ptr<btCollisionObject> getCollisionObject() const;
+        btCollisionObject* getCollisionObject() const;
 
         vec3 getCenterOfMassPosition() const;
         void applyCentralImpulse(const vec3&);
@@ -89,16 +86,14 @@ namespace octronic::dream
         void setCameraControllableCharacter();
         void setKinematic(bool setKenematic);
 
-        weak_ptr<PhysicsAddObjectTask> getAddObjectTask() const;
         void pushTasks() override;
 
     private:
-        weak_ptr<PhysicsObjectDefinition> getAssetDefinitionByUuid(UuidType);
-        shared_ptr<btCollisionShape> createTriangleMeshShape(const weak_ptr<ModelRuntime>&);
-        shared_ptr<btCollisionShape> mCollisionShape;
-        shared_ptr<btMotionState> mMotionState;
-        shared_ptr<btRigidBody> mRigidBody;
-        shared_ptr<btRigidBody::btRigidBodyConstructionInfo> mRigidBodyConstructionInfo;
+        btCollisionShape* createTriangleMeshShape(ModelRuntime&);
+        btCollisionShape* mCollisionShape;
+        btMotionState* mMotionState;
+        btRigidBody* mRigidBody;
+        btRigidBody::btRigidBodyConstructionInfo* mRigidBodyConstructionInfo;
         shared_ptr<PhysicsAddObjectTask> mAddObjectTask;
         bool mInPhysicsWorld;
     };

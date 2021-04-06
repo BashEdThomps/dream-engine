@@ -8,7 +8,7 @@ namespace octronic::dream::tool
         : public ImGuiWidget
     {
     public:
-        SceneStateWindow(DreamToolContext*);
+        SceneStateWindow(DreamToolContext&);
         ~SceneStateWindow() override;
 
         void draw() override;

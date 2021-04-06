@@ -24,12 +24,14 @@
 
 namespace octronic::dream
 {
-
     class PathDefinition : public AssetDefinition
     {
     public:
-        PathDefinition(const shared_ptr<ProjectDefinition>&, const json&);
-        ~PathDefinition() override;
+        PathDefinition(ProjectDefinition&, const json&);
+
+        PathDefinition(PathDefinition&&) = default;
+        PathDefinition& operator=(PathDefinition&&) = default;
+
 
         void setWrap(bool wrap);
         bool getWrap() const;

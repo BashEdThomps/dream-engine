@@ -27,6 +27,13 @@ namespace octronic::dream
     {
     public:
         ShaderUniform(UniformType type, string name, size_t count, void* data);
+
+        ShaderUniform(ShaderUniform&) = delete;
+        ShaderUniform& operator=(ShaderUniform&) = delete;
+
+        ShaderUniform(ShaderUniform&&) = default;
+        ShaderUniform& operator=(ShaderUniform&&) = default;
+
         ~ShaderUniform();
 
         bool operator==(const ShaderUniform& other) const;

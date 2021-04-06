@@ -15,18 +15,17 @@ add_executable (
 	Model/Model.cpp
 	Model/PreferencesModel.cpp
 	Model/TemplatesModel.cpp
-	Model/ModelDefinitionBatchImporter.cpp
 
 	Widgets/DreamToolWidget.cpp
 	Widgets/GL/GLWidget.cpp
 	Widgets/GL/LightViewer.cpp
 	Widgets/GL/SelectionHighlighter.cpp
 	Widgets/GL/Grid.cpp
-	Widgets/GL/AnimationViewer.cpp
 	Widgets/GL/PathViewer.cpp
 	Widgets/GL/Cursor.cpp
 	Widgets/GL/PhysicsDebugDrawer.cpp
 
+	Widgets/ImGui/ImGuiPanel.cpp
 	Widgets/ImGui/SceneStateWindow.cpp
 	Widgets/ImGui/ProjectBrowser.cpp
 	Widgets/ImGui/AssetBrowser.cpp
@@ -35,11 +34,20 @@ add_executable (
 	Widgets/ImGui/ImGuiWidget.cpp
 	Widgets/ImGui/GamepadStateWindow.cpp
 	Widgets/ImGui/GLPreviewWindowComponent.cpp
-	Widgets/ImGui/PropertiesWindow.cpp
 	Widgets/ImGui/ToolPropertiesWindow.cpp
 	Widgets/ImGui/RenderingDebugWindow.cpp
 	Widgets/ImGui/CacheContentWindow.cpp
 	Widgets/ImGui/TaskManagerWindow.cpp
+
+  Widgets/ImGui/PropertiesWindow/ProjectPropertiesPanel.cpp
+	Widgets/ImGui/PropertiesWindow/PropertiesWindow.cpp
+	Widgets/ImGui/PropertiesWindow/PropertyTarget.cpp
+	Widgets/ImGui/PropertiesWindow/NameAndUuidPanel.cpp
+	Widgets/ImGui/PropertiesWindow/ScenePropertiesPanel.cpp
+  Widgets/ImGui/PropertiesWindow/AssetPropertiesPanel.cpp
+  Widgets/ImGui/PropertiesWindow/TemplateEntityPropertiesPanel.cpp
+  Widgets/ImGui/PropertiesWindow/SceneEntityPropertiesPanel.cpp
+  Widgets/ImGui/PropertiesWindow/TransformPropertiesPanel.cpp
 )
 
 target_include_directories(

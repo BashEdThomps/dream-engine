@@ -7,13 +7,13 @@
 
 layout (location = 0) in vec3 aPos;
 
-out vec3 localPos;
+out vec3 WorldPos;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 
 void main()
 {
-    localPos = aPos;  
-    gl_Position =  uProjectionMatrix * uViewMatrix * vec4(localPos, 1.0);
+    WorldPos = aPos;  
+    gl_Position =  uProjectionMatrix * uViewMatrix * vec4(WorldPos, 1.0);
 }

@@ -20,8 +20,11 @@ namespace octronic::dream
     class AnimationDefinition : public AssetDefinition
     {
     public:
-        AnimationDefinition(const shared_ptr<ProjectDefinition>&, const json&);
-        ~AnimationDefinition() override;
+        AnimationDefinition(ProjectDefinition&, const json&) ;
+
+        AnimationDefinition(AnimationDefinition&&) = default;
+        AnimationDefinition& operator=(AnimationDefinition&&) = default;
+
 
         vector<AnimationKeyframe> getKeyframes();
 
@@ -29,7 +32,7 @@ namespace octronic::dream
         void updateKeyframe(const AnimationKeyframe& kf);
         void removeKeyframe(const AnimationKeyframe &kf);
 
-        bool getRelative();
+        bool getRelative() const;
         void setRelative(bool relative);
 
         int nextKeyframeID();

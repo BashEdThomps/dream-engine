@@ -137,7 +137,13 @@
  *      * \link octronic::dream::TextureDefinition \endlink
  *      * \link octronic::dream::TextureRuntime \endlink
  *
- * \section BuildDependencies Build Dependencies
+ * \section Memory Management Policy
+ * SharedAssetRuntimes are owned by their respective Cache Objects.
+ * DiscreteAssetRuntimes are owned by their EntityRuntime.
+ * ScenesRuntimes are owned by the ProjectRuntime.
+ * ProjectRuntimes are owned by the ProjectContext.
+ *
+ * \section Build Dependencies Build Dependencies
  * Dream uses the following Dependencies.
  * * [Assimp](https://github.com/assimp/assimp)
  * * [Bullet](https://github.com/bulletphysics/bullet3)

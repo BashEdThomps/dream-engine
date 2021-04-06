@@ -5,21 +5,18 @@
 namespace octronic::dream
 {
   FontLoadIntoGLTask::FontLoadIntoGLTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<FontRuntime>& rt)
+  (ProjectRuntime& pr,FontRuntime& rt)
     : GraphicsTask(pr, "FontLoadIntoGLTask"),
       mFontRuntime(rt)
   {
   }
 
-  void FontLoadIntoGLTask::execute()
+  void
+  FontLoadIntoGLTask::execute
+  ()
   {
-    if (auto frLock = mFontRuntime.lock())
-    {
-    LOG_TRACE("FontLoadIntoGLTask: {} Executing on Graphics thread",frLock->getNameAndUuidString());
-
-
-    if (!frLock->loadIntoGL())
+    LOG_TRACE("FontLoadIntoGLTask: {} Executing on Graphics thread",getFontRuntime().getNameAndUuidString());
+    if (!getFontRuntime().loadIntoGL())
     {
       setState(TaskState::TASK_STATE_FAILED);
     }
@@ -27,16 +24,22 @@ namespace octronic::dream
     {
       setState(TaskState::TASK_STATE_COMPLETED);
     }
-    }
+  }
+
+  FontRuntime& FontLoadIntoGLTask::getFontRuntime() const
+  {
+    return mFontRuntime.get();
   }
 
   FontRemoveFromGLTask::FontRemoveFromGLTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsDestructionTask(pr, "FontRemoveFromGLTask")
   {
   }
 
-  void FontRemoveFromGLTask::execute()
+  void
+  FontRemoveFromGLTask::execute
+  ()
   {
     LOG_TRACE("FontRemoveFromGLTask: with texture:{} vao:{} vbo:{}, Executing on Graphics thread",
               mFontAtlasTexture, mFontVao, mFontVbo);
@@ -48,17 +51,23 @@ namespace octronic::dream
     setState(TaskState::TASK_STATE_COMPLETED);
   }
 
-  void FontRemoveFromGLTask::setFontAtlasTexture(GLuint id)
+  void
+  FontRemoveFromGLTask::setFontAtlasTexture
+  (GLuint id)
   {
     mFontAtlasTexture = id;
   }
 
-  void FontRemoveFromGLTask::setFontVao(GLuint id)
+  void
+  FontRemoveFromGLTask::setFontVao
+  (GLuint id)
   {
     mFontVao = id;
   }
 
-  void FontRemoveFromGLTask::setFontVbo(GLuint id)
+  void
+  FontRemoveFromGLTask::setFontVbo
+  (GLuint id)
   {
     mFontVbo = id;
   }

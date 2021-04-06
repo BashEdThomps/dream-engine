@@ -35,21 +35,23 @@ namespace octronic::dream::open_al
     class OpenALImplementation : public AudioRuntimeImplementation
     {
     public:
-
-        OpenALImplementation(const shared_ptr<AudioLoader>& loader);
+        OpenALImplementation(AudioRuntime& parent);
         ~OpenALImplementation();
 
-        bool loadFromDefinition(
-                const weak_ptr<ProjectRuntime>& pr,
-                const weak_ptr<AudioDefinition>& ad) override;
-
+        bool loadFromDefinition() override;
         void setSampleOffset(unsigned int offset) override;
         int getDurationInSamples() override;
-        void setSourcePosision(const vec3& pos) override;
+
+        void setSourcePosition(const vec3& pos) override;
+        vec3 getSourcePosition() const override;
+
         void setVolume(float volume) override;
+        float getVolume() const override;
+
         void play() override;
         void pause() override;
         void stop() override;
+
         AudioStatus getState() override;
         unsigned int getSampleOffset() const override;
 

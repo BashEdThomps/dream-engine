@@ -15,13 +15,13 @@
 
 #pragma once
 
+#include "Common/AssetType.h"
 #include "Base/Definition.h"
 #include "Math/Transform.h"
 
 #include <memory>
 
-using std::weak_ptr;
-using std::shared_ptr;
+using std::reference_wrapper;
 using std::vector;
 
 namespace octronic::dream
@@ -40,8 +40,11 @@ namespace octronic::dream
          * @param project ProjectDefinition that owns this AssetDefinition
          * @param data JSON object from which to construct the AssetDefinition
          */
-        AssetDefinition(const string& className, const weak_ptr<ProjectDefinition>& project, const json& data);
-        virtual ~AssetDefinition();
+        AssetDefinition(ProjectDefinition& project, const json& data);
+
+
+        AssetDefinition(AssetDefinition&&) = default;
+        AssetDefinition& operator=(AssetDefinition&&) = default;
 
         /**
          * @return Returns the Dream::AssetType of the AssetDefinition
@@ -52,7 +55,7 @@ namespace octronic::dream
         /**
          * @return Get the pointer to the parant ProjectDefinition
          */
-        weak_ptr<ProjectDefinition> getProject() const;
+        ProjectDefinition& getProject() const;
 
         /**
          * @brief Set the type from a string
@@ -70,7 +73,7 @@ namespace octronic::dream
         string getGroup() const;
         void setGroup(const string& group);
 
-        weak_ptr<AssetDefinition> duplicate();
+        void duplicateInto(AssetDefinition&);
 
         bool isTypeAnimation() const;
         bool isTypeAudio() const;
@@ -82,7 +85,8 @@ namespace octronic::dream
         bool isTypePath() const;
         bool isTypePhysicsObject() const;
         bool isTypeTexture() const;
+
     protected:
-        weak_ptr<ProjectDefinition> mProjectDefinition;
+        reference_wrapper<ProjectDefinition> mProjectDefinition;
     };
 }

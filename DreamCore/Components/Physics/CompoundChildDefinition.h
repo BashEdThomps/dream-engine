@@ -8,26 +8,35 @@
 
 #include <memory>
 
-using std::shared_ptr;
 using nlohmann::json;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
-	class PhysicsObjectDefinition;
+  class PhysicsObjectDefinition;
 
-	class CompoundChildDefinition
+  class CompoundChildDefinition
+  {
+  public:
+    reference_wrapper<PhysicsObjectDefinition> parent;
+    Transform transform;
+    UuidType uuid;
+
+  public:
+    CompoundChildDefinition(PhysicsObjectDefinition& p, const Transform& tx, UuidType id)
+      : parent(p),
+        transform(tx),
+        uuid(id)
     {
-    public:
-       shared_ptr<PhysicsObjectDefinition> parent;
-       Transform transform;
-       UuidType uuid;
 
-       json getJson() const
-       {
-           json retval = json::object();
-           retval[Constants::UUID] = uuid;
-           retval[Constants::TRANSFORM] = transform.toJson();
-           return retval;
-       }
-    };
+    }
+
+    json getJson() const
+    {
+      json retval = json::object();
+      retval[Constants::UUID] = uuid;
+      retval[Constants::TRANSFORM] = transform.toJson();
+      return retval;
+    }
+  };
 }

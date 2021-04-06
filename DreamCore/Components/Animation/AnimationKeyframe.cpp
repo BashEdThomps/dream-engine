@@ -5,156 +5,156 @@
 
 namespace octronic::dream
 {
-    AnimationKeyframe::AnimationKeyframe
-    (int id)
-        : mID(id),
-          mTime(0),
-          mEasingType(AnimationEasing::EasingType::EasingBounceInOut)
-    {
+  AnimationKeyframe::AnimationKeyframe
+  (int id)
+    : mID(id),
+      mTime(0),
+      mEasingType(AnimationEasing::EasingType::EasingBounceInOut)
+  {
 
+  }
+
+  AnimationKeyframe::~AnimationKeyframe
+  ()
+  {
+    LOG_TRACE("AnimationKeyFrame: Destructing");
+  }
+
+  long
+  AnimationKeyframe::getTime
+  ()
+  const
+  {
+    return mTime;
+  }
+
+  void
+  AnimationKeyframe::setTime
+  (long time)
+  {
+    mTime = time;
+  }
+
+  void
+  AnimationKeyframe::fromJson
+  (const json &js)
+  {
+    if (js.find(Constants::KEYFRAME_ID) != js.end())
+    {
+      mID = js[Constants::KEYFRAME_ID];
     }
 
-    AnimationKeyframe::~AnimationKeyframe
-    ()
+    if (js.find(Constants::KEYFRAME_TIME) != js.end())
     {
-        LOG_TRACE("AnimationKeyFrame: Destructing");
+      mTime = js[Constants::KEYFRAME_TIME];
     }
 
-    long
-    AnimationKeyframe::getTime
-    ()
-    const
+    if (js.find(Constants::KEYFRAME_EASING_TYPE) != js.end())
     {
-        return mTime;
+      mEasingType = static_cast<AnimationEasing::EasingType>(js[Constants::KEYFRAME_EASING_TYPE]);
     }
 
-    void
-    AnimationKeyframe::setTime
-    (long time)
+    if (js.find(Constants::KEYFRAME_VALUE) != js.end())
     {
-        mTime = time;
+      mValue = js[Constants::KEYFRAME_VALUE];
     }
+  }
 
-    void
-    AnimationKeyframe::fromJson
-    (const json &js)
-    {
-        if (js.find(Constants::KEYFRAME_ID) != js.end())
-        {
-            mID = js[Constants::KEYFRAME_ID];
-        }
+  json
+  AnimationKeyframe::toJson
+  ()
+  const
+  {
+    json js = json::object();
+    js[Constants::KEYFRAME_ID] = mID;
+    js[Constants::KEYFRAME_TIME] = mTime;
+    js[Constants::KEYFRAME_EASING_TYPE] = static_cast<unsigned int>(mEasingType);
+    js[Constants::KEYFRAME_VALUE] = mValue;
+    return js;
+  }
 
-        if (js.find(Constants::KEYFRAME_TIME) != js.end())
-        {
-            mTime = js[Constants::KEYFRAME_TIME];
-        }
+  bool
+  AnimationKeyframe::operator>
+  (const AnimationKeyframe& other)
+  const
+  {
+    return mTime > other.mTime;
+  }
 
-        if (js.find(Constants::KEYFRAME_EASING_TYPE) != js.end())
-        {
-            mEasingType = static_cast<AnimationEasing::EasingType>(js[Constants::KEYFRAME_EASING_TYPE]);
-        }
+  bool
+  AnimationKeyframe::operator<=
+  (const AnimationKeyframe& other)
+  const
+  {
+    return mTime <= other.mTime;
+  }
 
-        if (js.find(Constants::KEYFRAME_TRANSFORM) != js.end())
-        {
-            mTransform = Transform(js[Constants::KEYFRAME_TRANSFORM]);
-        }
-    }
+  bool
+  AnimationKeyframe::operator<
+  (const AnimationKeyframe& other)
+  const
+  {
+    return mTime < other.mTime;
+  }
 
-    json
-    AnimationKeyframe::toJson
-    ()
-    const
-    {
-        json js = json::object();
-        js[Constants::KEYFRAME_ID] = mID;
-        js[Constants::KEYFRAME_TIME] = mTime;
-        js[Constants::KEYFRAME_EASING_TYPE] = static_cast<unsigned int>(mEasingType);
-        js[Constants::KEYFRAME_TRANSFORM] = mTransform.toJson();
-        return js;
-    }
+  bool
+  AnimationKeyframe::operator>=
+  (const AnimationKeyframe& other)
+  const
+  {
+    return mTime >= other.mTime;
+  }
 
-    bool
-    AnimationKeyframe::operator>
-    (const AnimationKeyframe& other)
-    const
-    {
-        return mTime > other.mTime;
-    }
+  bool
+  AnimationKeyframe::operator==
+  (const AnimationKeyframe& other)
+  const
+  {
+    return mID == other.mID;
+  }
 
-    bool
-    AnimationKeyframe::operator<=
-    (const AnimationKeyframe& other)
-    const
-    {
-        return mTime <= other.mTime;
-    }
+  int
+  AnimationKeyframe::getID
+  ()
+  const
+  {
+    return mID;
+  }
 
-    bool
-    AnimationKeyframe::operator<
-    (const AnimationKeyframe& other)
-    const
-    {
-        return mTime < other.mTime;
-    }
+  void
+  AnimationKeyframe::setID
+  (int iD)
+  {
+    mID = iD;
+  }
 
-    bool
-    AnimationKeyframe::operator>=
-    (const AnimationKeyframe& other)
-    const
-    {
-        return mTime >= other.mTime;
-    }
+  float
+  AnimationKeyframe::getValue
+  ()
+  const
+  {
+    return mValue;
+  }
 
-    bool
-    AnimationKeyframe::operator==
-    (const AnimationKeyframe& other)
-    const
-    {
-       return mID == other.mID;
-    }
+  void
+  AnimationKeyframe::setValue
+  (float v)
+  {
+    mValue = v;;
+  }
 
-    int
-    AnimationKeyframe::getID
-    ()
-    const
-    {
-        return mID;
-    }
+  AnimationEasing::EasingType
+  AnimationKeyframe::getEasingType
+  ()
+  const
+  {
+    return mEasingType;
+  }
 
-    void
-    AnimationKeyframe::setID
-    (int iD)
-    {
-        mID = iD;
-    }
-
-    Transform
-    AnimationKeyframe::getTransform
-    ()
-    const
-    {
-        return mTransform;
-    }
-
-    void
-    AnimationKeyframe::setTransform
-    (const Transform& transform)
-    {
-        mTransform = transform;
-    }
-
-    AnimationEasing::EasingType
-    AnimationKeyframe::getEasingType
-    ()
-    const
-    {
-        return mEasingType;
-    }
-
-    void
-    AnimationKeyframe::setEasingType
-    (AnimationEasing::EasingType type)
-    {
-        mEasingType = type;
-    }
+  void
+  AnimationKeyframe::setEasingType
+  (AnimationEasing::EasingType type)
+  {
+    mEasingType = type;
+  }
 }

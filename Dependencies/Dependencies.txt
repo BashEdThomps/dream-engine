@@ -48,8 +48,8 @@ include_directories(${glm_src_dir})
 
 # ImGui
 if (NOT ANDROID)
-	set (imgui_src_dir Dependencies/imgui-docking/)
 	#set (imgui_src_dir Dependencies/imgui-1.79/)
+	set (imgui_src_dir Dependencies/imgui-docking/)
 	set (imgui_output_dir ${CMAKE_BINARY_DIR}/build_imgui)
 	file(MAKE_DIRECTORY ${imgui_output_dir})
 	add_subdirectory(${imgui_src_dir} ${imgui_output_dir} EXCLUDE_FROM_ALL)
@@ -70,6 +70,7 @@ include_directories(${lua_src_dir}/src)
 
 # NativeFileDialog
 if (NOT ANDROID)
+	#set (nfd_src_dir Dependencies/nativefiledialog/)
 	set (nfd_src_dir Dependencies/nativefiledialog-extended/)
 	set (nfd_output_dir ${CMAKE_BINARY_DIR}/build_nfd)
 	file(MAKE_DIRECTORY ${nfd_output_dir})

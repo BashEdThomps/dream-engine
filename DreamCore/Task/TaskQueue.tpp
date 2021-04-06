@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TaskState.h"
+#include "TaskQueue.h"
 #include "Common/Logger.h"
 
 namespace octronic::dream
@@ -16,20 +17,17 @@ namespace octronic::dream
   template <typename TaskType>
   void
   TaskQueue<TaskType>::pushTask
-  (const weak_ptr<TaskType>& task)
+  (const shared_ptr<TaskType>& task)
   {
-    if (auto taskLock = task.lock())
+    LOG_TRACE("{}: {} {}", mClassName, __FUNCTION__, task->getNameAndIDString());
+    if (!hasTask(task))
     {
-      LOG_TRACE("{}: {} {}", mClassName, __FUNCTION__, taskLock->getNameAndIDString());
-      if (!hasTask(task))
-      {
-        taskLock->clearState();
-        mQueue.push_back(task);
-      }
-      else if (!taskLock->hasState(TASK_STATE_DEFERRED))
-      {
-        assert(false);
-      }
+    	task->setState(TASK_STATE_QUEUED);
+      mQueue.push_back(task);
+    }
+    else if (!task->hasState(TASK_STATE_DEFERRED))
+    {
+      assert(false);
     }
   }
 
@@ -38,37 +36,33 @@ namespace octronic::dream
   TaskQueue<TaskType>::executeQueue
   ()
   {
-    vector<weak_ptr<TaskType>> completed;
+    vector<shared_ptr<TaskType>> completed;
 
     // Process the task queue ==========================================
     LOG_TRACE("{}: has {} tasks", mClassName, mQueue.size());
 
     for (auto itr = mQueue.begin(); itr != mQueue.end(); itr++)
     {
-      weak_ptr<TaskType> task = (*itr);
-      if (auto taskLock = task.lock())
-      {
-        LOG_INFO("{}: Processing task {}", mClassName, taskLock->getNameAndIDString());
+      shared_ptr<TaskType> task = (*itr);
+      LOG_INFO("{}: Processing task {}", mClassName, task->getNameAndIDString());
 
-        if (taskLock->hasState(TASK_STATE_QUEUED) || taskLock->hasState(TASK_STATE_DEFERRED))
+      if (task->hasState(TASK_STATE_QUEUED) || task->hasState(TASK_STATE_DEFERRED))
+      {
+        LOG_TRACE("{}: Task {} is queued... executing", mClassName,
+                  task->getNameAndIDString());
+
+        // try execution
+        task->execute();
+
+        if (task->hasState(TASK_STATE_COMPLETED))
         {
-          LOG_TRACE("{}: Task {} is queued... executing", mClassName,  taskLock->getNameAndIDString());
-          // try execution
-          taskLock->execute();
-          if (taskLock->hasState(TASK_STATE_COMPLETED))
-          {
-            LOG_TRACE("{}: Task {} was completed", mClassName,  taskLock->getNameAndIDString());
-            completed.push_back(task);
-          }
-          else if (taskLock->hasState(TASK_STATE_FAILED))
-          {
-            // Saturate the log before assertion  :'(
-            for (int i=0; i<100;i++)
-            {
-              LOG_TRACE("{}: Task {} FAILED", mClassName,  taskLock->getNameAndIDString());
-            }
-            assert(false);
-          }
+          LOG_TRACE("{}: Task {} was completed", mClassName,  task->getNameAndIDString());
+          completed.push_back(task);
+        }
+        else if (task->hasState(TASK_STATE_FAILED))
+        {
+          LOG_ERROR("{}: Task {} FAILED", mClassName,  task->getNameAndIDString());
+          assert(false);
         }
       }
     }
@@ -77,28 +71,23 @@ namespace octronic::dream
     // the task queue
     for (auto itr = completed.begin(); itr != completed.end(); itr++)
     {
-      weak_ptr<TaskType> t = (*itr);
+      shared_ptr<TaskType>& task = (*itr);
 
-      if (auto taskLock = t.lock())
+      auto q_itr = find(mQueue.begin(),mQueue.end(),task);
+
+      if (q_itr != mQueue.end())
       {
-        auto q_itr = find_if(
-              mQueue.begin(),mQueue.end(),
-              [&](const weak_ptr<TaskType>& next)
-              {return next.lock() == taskLock;});
-
-        if (q_itr != mQueue.end())
-        {
-          LOG_TRACE("{}: Task {} is being popped off the queue", mClassName,  t.lock()->getNameAndIDString());
-          mQueue.erase(q_itr);
-        }
-        else
-        {
-          LOG_ERROR("{}: Error, Processed \"{}\"task was not in the queue to remove?", taskLock->getNameAndIDString(), mClassName);
-          assert(false);
-        }
+        LOG_TRACE("{}: Task {} is being popped off the queue", mClassName,
+                  task->getNameAndIDString());
+        mQueue.erase(q_itr);
+      }
+      else
+      {
+        LOG_ERROR("{}: Error, Processed \"{}\"task was not in the queue to remove?",
+                  task->getNameAndIDString(), mClassName);
+        assert(false);
       }
     }
-    completed.clear();
 
     LOG_TRACE("{}: Thread has finished it's task queue",  mClassName);
   }
@@ -106,13 +95,12 @@ namespace octronic::dream
   template <typename TaskType>
   bool
   TaskQueue<TaskType>::hasTask
-  (const weak_ptr<TaskType>& t)
+  (const shared_ptr<TaskType>& t)
   const
   {
     auto itr = find_if(mQueue.begin(), mQueue.end(),
-                       [&](const weak_ptr<TaskType>& fromVec)
-    { return fromVec.lock() == t.lock(); });
-
+                       [&](const shared_ptr<TaskType>& fromVec)
+    { return fromVec.get() == t.get(); } );
     return itr != mQueue.end();
   }
 

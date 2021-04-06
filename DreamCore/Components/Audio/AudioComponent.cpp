@@ -25,7 +25,7 @@
 namespace octronic::dream
 {
   AudioComponent::AudioComponent
-  () : Component(weak_ptr<ProjectRuntime>())
+  () : Component()
   {
     LOG_TRACE("AudioComponent: Constructing");
   }
@@ -38,16 +38,14 @@ namespace octronic::dream
 
   void AudioComponent::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    if (mProjectRuntime)
     {
-      if (auto audioCache = prLock->getAudioCache().lock())
-      {
-        for (auto audioRuntime : audioCache->getRuntimeVector())
-        {
-          auto arLock = audioRuntime.lock();
-          arLock->pushTasks();
-        }
-      }
+      ProjectRuntime& pr = mProjectRuntime.value().get();
+			AudioCache& audioCache = pr.getAudioCache();
+			for (auto& audioRuntime : audioCache.getRuntimeVector())
+			{
+			  audioRuntime.pushTasks();
+			}
     }
   }
 }

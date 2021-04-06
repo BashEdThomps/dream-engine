@@ -13,26 +13,27 @@ namespace octronic::dream
     /**
      * @brief A SharedAssetRuntime is shared by several EntityRuntimes. Entities
      * using this Runtime are stored in the mInstances vector.
+     *
+     * SharedAssetRuntimes should be owned ONLY by their respective Cache object.
+     * The Cache stores them  and observers will store references.
      */
     class SharedAssetRuntime : public AssetRuntime
     {
     public:
-        SharedAssetRuntime(
-                const weak_ptr<ProjectRuntime>& prt,
-                const weak_ptr<AssetDefinition>& def);
+        SharedAssetRuntime(ProjectRuntime& prt,AssetDefinition& def);
+        SharedAssetRuntime(SharedAssetRuntime&&) = default;
+        SharedAssetRuntime& operator=(SharedAssetRuntime&&) = default;
 
-        ~SharedAssetRuntime() override;
-
-        void addInstance(const weak_ptr<EntityRuntime>& er);
-        void removeInstance(const weak_ptr<EntityRuntime>& er);
+        void addInstance(EntityRuntime& er);
+        void removeInstance(EntityRuntime& er);
         void removeInstanceByUuid(UuidType spriteUuid);
-        vector<weak_ptr<EntityRuntime>> getInstanceVector() const;
+        vector<reference_wrapper<EntityRuntime>>& getInstanceVector();
 
         bool getReloadFlag() const;
         void setReloadFlag(bool reloadFlag);
 
     protected:
-        vector<weak_ptr<EntityRuntime>> mInstances;
+        vector<reference_wrapper<EntityRuntime>> mInstances;
         bool mReloadFlag;
     };
 }

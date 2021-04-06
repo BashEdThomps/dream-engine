@@ -7,7 +7,7 @@
 
 using glm::vec2;
 using std::shared_ptr;
-using std::weak_ptr;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
@@ -15,16 +15,14 @@ namespace octronic::dream
   class JoystickNavigation
   {
   public:
-    JoystickNavigation(
-        const weak_ptr<JoystickState>& state,
-        const weak_ptr<JoystickMapping>& mapping);
+    JoystickNavigation(JoystickState& state, JoystickMapping& mapping);
     virtual ~JoystickNavigation();
-    virtual void update(const weak_ptr<SceneRuntime>& rt) = 0;
+    virtual void update(SceneRuntime& rt) = 0;
     void setHeading(const vec2& h);
     vec2 getHeading();
   protected:
-    shared_ptr<JoystickState> mJoystickState;
-    shared_ptr<JoystickMapping> mJoystickMapping;
+    reference_wrapper<JoystickState> mJoystickState;
+    reference_wrapper<JoystickMapping> mJoystickMapping;
     vec2 mHeading;
   };
 }

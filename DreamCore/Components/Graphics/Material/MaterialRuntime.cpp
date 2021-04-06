@@ -28,37 +28,28 @@ using std::static_pointer_cast;
 namespace octronic::dream
 {
   MaterialRuntime::MaterialRuntime(
-      const weak_ptr<ProjectRuntime>& rt,
-      const weak_ptr<MaterialDefinition>& def)
+      ProjectRuntime& rt,
+      MaterialDefinition& def)
     : SharedAssetRuntime(rt, def)
+
   {
     LOG_TRACE("MaterialRuntime: Constructing");
   }
 
-  MaterialRuntime::~MaterialRuntime()
-  {
-    LOG_TRACE("MaterialRuntime: Destructing");
-  }
-
   void
   MaterialRuntime::addMesh
-  (const weak_ptr<ModelMesh>& mesh)
+  (ModelMesh& mesh)
   {
     mUsedBy.push_back(mesh);
   }
 
   void
   MaterialRuntime::removeMesh
-  (const weak_ptr<ModelMesh>& mesh)
+  (ModelMesh& mesh)
   {
-    auto itr = std::find_if(mUsedBy.begin(), mUsedBy.end(),
-    	[&](const weak_ptr<ModelMesh>& next){
-      	return next.lock() == mesh.lock();
-    	});
-    if (itr != mUsedBy.end())
-    {
-      mUsedBy.erase(itr);
-    }
+    std::remove_if(mUsedBy.begin(), mUsedBy.end(),
+                   [&](reference_wrapper<ModelMesh>& next)
+    { return &next.get() == &mesh; });
   }
 
   void
@@ -87,11 +78,11 @@ namespace octronic::dream
   ()
   {
     GLuint albedo, normal, metallic, roughness, ao;
-    albedo    = (mAlbedoTexture.expired()    ? 0 : mAlbedoTexture.lock()->getTextureID());
-    normal    = (mNormalTexture.expired()    ? 0 : mNormalTexture.lock()->getTextureID());
-    metallic  = (mMetallicTexture.expired()  ? 0 : mMetallicTexture.lock()->getTextureID());
-    roughness = (mRoughnessTexture.expired() ? 0 : mRoughnessTexture.lock()->getTextureID());
-    ao        = (mAoTexture.expired()        ? 0 : mAoTexture.lock()->getTextureID());
+    albedo    = (!mAlbedoTexture.has_value()    ? 0 : mAlbedoTexture.value().get().getTextureID());
+    normal    = (!mNormalTexture.has_value()    ? 0 : mNormalTexture.value().get().getTextureID());
+    metallic  = (!mMetallicTexture.has_value()  ? 0 : mMetallicTexture.value().get().getTextureID());
+    roughness = (!mRoughnessTexture.has_value() ? 0 : mRoughnessTexture.value().get().getTextureID());
+    ao        = (!mAoTexture.has_value()        ? 0 : mAoTexture.value().get().getTextureID());
 
     LOG_TRACE("Maerial Parameters\n"
             "Name....................{}\n"
@@ -111,17 +102,14 @@ namespace octronic::dream
   ()
   {
     LOG_DEBUG("\tMeshes for material {} : {}",getName(),mUsedBy.size());
-    for (auto mesh : mUsedBy)
+    for (auto& mesh : mUsedBy)
     {
-      if (auto meshLock = mesh.lock())
-      {
-        LOG_DEBUG("\t\t{}", meshLock->getName());
-        meshLock->logRuntimes();
-      }
+      LOG_DEBUG("\t\t{}", mesh.get().getName());
+      mesh.get().logRuntimes();
     }
   }
 
-  vector<weak_ptr<ModelMesh>>
+  vector<reference_wrapper<ModelMesh>>
   MaterialRuntime::getUsedByVector()
   const
   {
@@ -130,14 +118,11 @@ namespace octronic::dream
 
   void
   MaterialRuntime::drawShadowPass
-  (const weak_ptr<ShaderRuntime>& shader)
+  (ShaderRuntime& shader)
   {
-    for (auto mesh : mUsedBy)
+    for (auto& mesh : mUsedBy)
     {
-      if (auto meshLock = mesh.lock())
-      {
-        meshLock->drawShadowPassRuntimes(shader);
-      }
+      mesh.get().drawShadowPassRuntimes(shader);
     }
   }
 
@@ -145,44 +130,60 @@ namespace octronic::dream
   MaterialRuntime::loadFromDefinition
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& matDef = static_cast<MaterialDefinition&>(getDefinition());
+
+    // Shaders & Textures
+    auto& pRunt = getProjectRuntime();
+    auto& pDef = static_cast<ProjectDefinition&>(pRunt.getDefinition());
+    auto& shaderCache = pRunt.getShaderCache();
+    auto& textureCache = pRunt.getTextureCache();
+    auto shaderDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_SHADER, matDef.getShaderUuid());
+    if (shaderDef)
     {
-      if (auto defLock = mDefinition.lock())
-      {
-        auto matDef = static_pointer_cast<MaterialDefinition>(defLock);
-
-        // Shaders & Textures
-        if (auto shaderCache = prLock->getShaderCache().lock())
-        {
-
-          if (auto textureCache = prLock->getTextureCache().lock())
-          {
-            mShader = shaderCache->getRuntime(matDef->getShader());
-
-            if (mShader.expired())
-            {
-              LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef->getNameAndUuidString());
-              return false;
-            }
-
-            if (auto shaderLock = mShader.lock())
-            {
-              mAlbedoTexture = textureCache->getRuntime(matDef->getAlbedoTexture());
-              mNormalTexture = textureCache->getRuntime(matDef->getNormalTexture());
-              mMetallicTexture = textureCache->getRuntime(matDef->getMetallicTexture());
-              mRoughnessTexture = textureCache->getRuntime(matDef->getRoughnessTexture());
-              mAoTexture = textureCache->getRuntime(matDef->getAoTexture());
-              shaderLock->addMaterial(static_pointer_cast<MaterialRuntime>(shared_from_this()));
-              return true;
-            }
-          }
-        }
-      }
+      mShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shaderDef.value().get()));
     }
-    return false;
+
+    if (!mShader)
+    {
+      LOG_ERROR("MaterialCache: Cannot create material {} with null shader", matDef.getNameAndUuidString());
+      return false;
+    }
+
+    auto albedoDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, matDef.getAlbedoTextureUuid());
+    if (albedoDef)
+    {
+      mAlbedoTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(albedoDef.value().get()));
+    }
+
+    auto normalDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, matDef.getNormalTextureUuid());
+    if(normalDef)
+    {
+      mNormalTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(normalDef.value().get()));
+    }
+
+    auto metallicDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, matDef.getMetallicTextureUuid());
+    if(metallicDef)
+    {
+      mMetallicTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(metallicDef.value().get()));
+    }
+
+    auto roughnessDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, matDef.getRoughnessTextureUuid());
+    if (roughnessDef)
+    {
+      mRoughnessTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(roughnessDef.value().get()));
+    }
+
+    auto aoDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE, matDef.getAoTextureUuid());
+    if (aoDef)
+    {
+      mAoTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(aoDef.value().get()));
+    }
+
+    mShader.value().get().addMaterial(*this);
+    return true;
   }
 
-  weak_ptr<ShaderRuntime>
+  optional<reference_wrapper<ShaderRuntime>>
   MaterialRuntime::getShader
   () const
   {
@@ -191,12 +192,12 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setShader
-  (const weak_ptr<ShaderRuntime>& shader)
+  (ShaderRuntime& shader)
   {
-    mShader = shader;
+    mShader = optional<reference_wrapper<ShaderRuntime>>(shader);
   }
 
-  weak_ptr<TextureRuntime>
+  optional<reference_wrapper<TextureRuntime>>
   MaterialRuntime::getAlbedoTexture
   () const
   {
@@ -205,12 +206,12 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setAlbedoTexture
-  (const weak_ptr<TextureRuntime>& t)
+  (TextureRuntime& t)
   {
-    mAlbedoTexture = t;
+    mAlbedoTexture = optional<reference_wrapper<TextureRuntime>>(t);
   }
 
-  weak_ptr<TextureRuntime>
+  optional<reference_wrapper<TextureRuntime>>
   MaterialRuntime::getNormalTexture
   () const
   {
@@ -219,12 +220,12 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setNormalTexture
-  (const weak_ptr<TextureRuntime>& normalTexture)
+  (TextureRuntime& normalTexture)
   {
-    mNormalTexture = normalTexture;
+    mNormalTexture = optional<reference_wrapper<TextureRuntime>>(normalTexture);
   }
 
-  weak_ptr<TextureRuntime>
+  optional<reference_wrapper<TextureRuntime>>
   MaterialRuntime::getMetallicTexture
   () const
   {
@@ -233,12 +234,12 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setMetallicTexture
-  (const weak_ptr<TextureRuntime>& t)
+  (TextureRuntime& t)
   {
-    mMetallicTexture = t;
+    mMetallicTexture = optional<reference_wrapper<TextureRuntime>>(t);
   }
 
-  weak_ptr<TextureRuntime>
+  optional<reference_wrapper<TextureRuntime>>
   MaterialRuntime::getRoughnessTexture
   () const
   {
@@ -247,12 +248,12 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setRoughnessTexture
-  (const weak_ptr<TextureRuntime>& t)
+  (TextureRuntime& t)
   {
-    mRoughnessTexture = t;
+    mRoughnessTexture = optional<reference_wrapper<TextureRuntime>>(t);
   }
 
-  weak_ptr<TextureRuntime>
+  optional<reference_wrapper<TextureRuntime>>
   MaterialRuntime::getAoTexture
   () const
   {
@@ -261,24 +262,19 @@ namespace octronic::dream
 
   void
   MaterialRuntime::setAoTexture
-  (const weak_ptr<TextureRuntime>& t)
+  (TextureRuntime& t)
   {
-    mAoTexture = t;
+    mAoTexture = optional<reference_wrapper<TextureRuntime>>(t);
   }
 
   void
   MaterialRuntime::pushTasks
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& taskQueue = getProjectRuntime().getTaskQueue();
+    if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
     {
-      if (auto taskQueue = prLock->getTaskQueue().lock())
-      {
-        if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-        {
-          taskQueue->pushTask(mLoadFromDefinitionTask);
-        }
-      }
+      taskQueue.pushTask(mLoadFromDefinitionTask);
     }
   }
 }

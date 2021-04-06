@@ -25,267 +25,148 @@
 #include "Entity/EntityRuntime.h"
 #include "Project/ProjectRuntime.h"
 
-using std::make_shared;
-using std::static_pointer_cast;
-
 namespace octronic::dream
 {
-    AudioRuntime::AudioRuntime
-    (const weak_ptr<ProjectRuntime>& project,
-     const weak_ptr<AudioDefinition>& def)
-        : SharedAssetRuntime(project, def),
-          mLooping(false),
-          mStartTime(0),
-          mLastSampleOffset(0),
-          mImpl(nullptr)
+  AudioRuntime::AudioRuntime
+  (ProjectRuntime& project, AudioDefinition& def)
+    : SharedAssetRuntime(project, def),
+      mImpl(nullptr),
+      mLoader(nullptr),
+      mLooping(false)
+  {
+    LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
+  }
+
+  void
+  AudioRuntime::setLooping
+  (bool looping)
+  {
+    LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
+    mLooping = looping;
+  }
+
+  bool
+  AudioRuntime::getLooping
+  ()
+  const
+  {
+    return mLooping;
+  }
+
+
+  bool AudioRuntime::loadFromDefinition()
+  {
+    return mImpl->loadFromDefinition();
+  }
+
+  shared_ptr<AudioLoader>
+  AudioRuntime::getAudioLoader
+  ()
+  const
+  {
+    return mLoader;
+  }
+
+  void
+  AudioRuntime::setAudioLoader
+  (const shared_ptr<AudioLoader>& loader)
+  {
+    mLoader = loader;
+  }
+
+	shared_ptr<AudioRuntimeImplementation>
+  AudioRuntime::getImpl
+  ()
+  const
+  {
+    return mImpl;
+  }
+
+  void
+  AudioRuntime::setImpl
+  (const shared_ptr<AudioRuntimeImplementation>& impl)
+  {
+    mImpl = impl;
+  }
+
+  void AudioRuntime::pushTasks()
+  {
+    auto& taskQueue = getProjectRuntime().getTaskQueue();
+
+    if (!mLoaded && !mLoadError && mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
     {
-        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-        generateEventList();
+      taskQueue.pushTask(mLoadFromDefinitionTask);
     }
-
-    AudioRuntime::~AudioRuntime
-    ()
+    else
     {
-        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-    }
-
-    bool
-    AudioRuntime::init
-    ()
-    {
-        if(!SharedAssetRuntime::init()) return false;
-        mMarkersUpdateTask =
-                make_shared<AudioMarkersUpdateTask>(mProjectRuntime,
-                static_pointer_cast<AudioRuntime>(shared_from_this()));
-        return true;
-    }
-
-    void
-    AudioRuntime::setLooping
-    (bool looping)
-    {
-        LOG_DEBUG("AudioRuntime: {}", __FUNCTION__);
-        mLooping = looping;
-    }
-
-    bool
-    AudioRuntime::isLooping
-    ()
-    const
-    {
-        return mLooping;
-    }
-
-    void
-    AudioRuntime::generateEventList
-    ()
-    {
-        // TODO = Rethink, SharedAssetRuntime has no EntityRuntime to send
-        // Events to :thinking:
-        // --- Iterate through the instances vector...
-
-        /*
-        auto ad = static_cast<AudioDefinition*>(mDefinition);
-        auto nMarkers = ad->countMarkers();
-
-        if (nMarkers == 0)
+      if (!mLoadError)
+      {
+        for(auto& entity : mInstances)
         {
-           return;
+          auto& sr = entity.get().getSceneRuntime();
+          if (sr.hasState(SCENE_STATE_ACTIVE))
+          {
+            // Do entity specific tasks
+          }
         }
-
-        mMarkerEvents.clear();
-
-        for (int markerIndex = 0; markerIndex< nMarkers; markerIndex++)
-        {
-            auto log = getLog();
-            LOG_trace("AudioRuntime: Generating events for marker {}", markerIndex);
-            auto markerStart = ad->getMarkerSampleIndex(markerIndex);
-            auto count = ad->getMarkerRepeat(markerIndex);
-            auto step = ad->getMarkerRepeatPeriod(markerIndex);
-            auto markerName = ad->getMarkerName(markerIndex);
-
-            auto next = markerStart;
-            LOG_trace("AudioRuntime: Marker {}'s is : ", markerIndex, next);
-            Event e(mEntityRuntime,"audio");
-            e.setString("name",markerName);
-            e.setNumber("time",markerStart);
-            mMarkerEvents.push_back(e);
-
-            for (int i=0; i<count; i++)
-            {
-                auto repeatIndex = i+1;
-                auto next = markerStart + (repeatIndex*step);
-                LOG_trace("AudioRuntime: Marker {}'s {}th step is : {}", markerIndex, repeatIndex, next);
-                Event e(mEntityRuntime,"audio");
-                e.setString("name",markerName);
-                e.setNumber("time",next);
-                mMarkerEvents.push_back(e);
-            }
-        }
-
-        std::sort(
-            mMarkerEvents.begin(),
-            mMarkerEvents.end(),
-            [](Event& first, Event& second)
-            {
-                return first.getNumber("time") < second.getNumber("time");
-            }
-        );
-
-        mMarkerEventsCache = mMarkerEvents;
-
-        if (mAudioComponent != nullptr)
-        {
-            mAudioComponent->pushToUpdateQueue(this);
-        }
-        */
+      }
     }
+  }
 
-    void
-    AudioRuntime::updateMarkers
-    ()
-    {
-        /*
-        auto currentSample = mAudioComponent->getSampleOffset(mSource);
-        // has just looped, restore cached events
-        if (mLooping && mLastSampleOffset > currentSample)
-        {
-            LOG_DEBUG("AudioRuntime: Just Looped");
-           mMarkerEvents = mMarkerEventsCache;
-        }
+  // Implementation ============================================================
 
-        for (auto it = mMarkerEvents.begin(); it != mMarkerEvents.end();)
-        {
-            auto time = (*it).getNumber("time");
-            if (currentSample > time)
-            {
-                mEntityRuntime->addEvent((*it));
-                it++;
-                mMarkerEvents.pop_front();
-            }
-            else
-            {
-                break;
-            }
-        }
-        mLastSampleOffset = currentSample;
-        */
-    }
+  void AudioRuntime::play()
+  {
+    mImpl->play();
+  }
 
-    long
-    long AudioRuntime::getStartTime
-    ()
-    const
-    {
-        return mStartTime;
-    }
+  void AudioRuntime::pause()
+  {
+    mImpl->pause();
+  }
 
-    void
-    AudioRuntime::setStartTime
-    (long long startTime)
-    {
-        mStartTime = startTime;
-    }
+  void AudioRuntime::stop()
+  {
+    mImpl->stop();
+  }
 
-    weak_ptr<AudioMarkersUpdateTask>
-    AudioRuntime::getMarkersUpdateTask
-    ()
-    const
-    {
-        return mMarkersUpdateTask;
-    }
+  vec3 AudioRuntime::getSourcePosition() const
+  {
+    return mImpl->getSourcePosition();
+  }
 
-    void AudioRuntime::play()
-    {
-        mImpl->play();
-    }
+  void AudioRuntime::setSourcePosision(vec3 pos)
+  {
+    mImpl->setSourcePosition(pos);
+  }
 
-    void AudioRuntime::pause()
-    {
-        mImpl->pause();
-    }
+  float AudioRuntime::getVolume() const
+  {
+    return mImpl->getVolume();
+  }
 
-    void AudioRuntime::stop()
-    {
-        mImpl->stop();
-    }
+  void AudioRuntime::setVolume(float volume)
+  {
+    mImpl->setVolume(volume);
+  }
 
-    void AudioRuntime::setSourcePosision(vec3 pos)
-    {
-        mImpl->setSourcePosision(pos);
-    }
+  AudioStatus AudioRuntime::getState()
+  {
+    return mImpl->getState();
+  }
 
-    void AudioRuntime::setVolume(float volume)
-    {
-        mImpl->setVolume(volume);
-    }
+  unsigned long AudioRuntime::getSampleOffset() const
+  {
+    return mImpl->getSampleOffset();
+  }
 
-    AudioStatus AudioRuntime::getState()
-    {
-        return mImpl->getState();
-    }
+  void AudioRuntime::setSampleOffset(unsigned long offset)
+  {
+    mImpl->setSampleOffset(offset);
+  }
 
-    unsigned int AudioRuntime::getSampleOffset() const
-    {
-        return mImpl->getSampleOffset();
-    }
-
-    void AudioRuntime::setSampleOffset(unsigned int offset)
-    {
-        mImpl->setSampleOffset(offset);
-    }
-
-    int AudioRuntime::getDurationInSamples()
-    {
-        return mImpl->getDurationInSamples();
-    }
-
-
-    void AudioRuntime::setImplementation
-    (const shared_ptr<AudioRuntimeImplementation>& impl)
-    {
-        mImpl = impl;
-        mImpl->setParent(static_pointer_cast<AudioRuntime>(shared_from_this()));
-    }
-
-    bool
-    AudioRuntime::loadFromDefinition
-    ()
-    {
-        return mImpl->loadFromDefinition(mProjectRuntime,static_pointer_cast<AudioDefinition>(mDefinition.lock()));
-    }
-
-    void AudioRuntime::pushTasks()
-    {
-        if (auto prLock = mProjectRuntime.lock())
-        {
-            if(auto taskQueue = prLock->getTaskQueue().lock())
-            {
-                if (!mLoaded && !mLoadError &&
-                    mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-                {
-                    taskQueue->pushTask(static_pointer_cast<Task>(mLoadFromDefinitionTask));
-                }
-            }
-            else
-            {
-                if (!mLoadError)
-                {
-                    for(auto& entity : mInstances)
-                    {
-                        if (auto entityLock = entity.lock())
-                        {
-                            if (auto srLock = entityLock->getSceneRuntime().lock())
-                            {
-                                if (srLock->hasState(SCENE_STATE_ACTIVE))
-                                {
-                            		// Do entity specific tasks
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+  unsigned long AudioRuntime::getDurationInSamples()
+  {
+    return mImpl->getDurationInSamples();
+  }
 }

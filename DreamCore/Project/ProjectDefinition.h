@@ -12,79 +12,101 @@
 
 #pragma once
 
-#include <memory>
 #include "Base/Definition.h"
+#include "Components/AssetDefinition.h"
+#include "Components/Animation/AnimationDefinition.h"
+#include "Components/Audio/AudioDefinition.h"
+#include "Components/Graphics/Font/FontDefinition.h"
+#include "Components/Graphics/Material/MaterialDefinition.h"
+#include "Components/Graphics/Model/ModelDefinition.h"
+#include "Components/Path/PathDefinition.h"
+#include "Components/Physics/PhysicsObjectDefinition.h"
+#include "Components/Graphics/Shader/ShaderDefinition.h"
+#include "Components/Script/ScriptDefinition.h"
+#include "Components/Graphics/Texture/TextureDefinition.h"
+#include "Scene/SceneDefinition.h"
+#include "Entity/TemplateEntityDefinition.h"
 
-using std::weak_ptr;
-using std::shared_ptr;
+#include <memory>
+#include <vector>
+
 using std::string;
 using std::vector;
+using std::function;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
-    class Project;
-    class SceneDefinition;
-    class AssetDefinition;
+  class ProjectContext;
 
-    class ProjectDefinition : public Definition
-    {
+  class ProjectDefinition : public Definition
+  {
+  public:
+    ProjectDefinition(const string& name);
+    ProjectDefinition(const json& data);
+    ProjectDefinition(ProjectDefinition&&) = default;
+    ProjectDefinition& operator=(ProjectDefinition&&) = default;
 
-    public:
-        ProjectDefinition(const json& data);
-        ~ProjectDefinition() override;
+    // Assets ==============================================================
 
-        UuidType getStartupSceneUuid() const;
-        void setStartupSceneUuid(UuidType sceneUuid);
-        weak_ptr<SceneDefinition> getStartupSceneDefinition() const;
+    AssetDefinition& createNewAssetDefinition(AssetType);
+    size_t countAssetDefinitions(AssetType);
+    optional<reference_wrapper<AssetDefinition>> getAssetDefinitionByPredicate(AssetType, function<bool(AssetDefinition&)> fn);
+    optional<reference_wrapper<AssetDefinition>> getAssetDefinitionByUuid(AssetType, UuidType uuid);
+    optional<reference_wrapper<AssetDefinition>> getAssetDefinitionByName(AssetType, const string& name);
+    optional<reference_wrapper<AssetDefinition>> getAssetDefinitionAtIndex(AssetType, int);
+    vector<string> getAssetNamesVector(AssetType);
+    vector<reference_wrapper<AssetDefinition>> getAssetDefinitionsVector(AssetType);
+    unsigned long getAssetDefinitionIndex(AssetDefinition&);
+    void removeAssetDefinition(AssetDefinition& assetDef);
+    void deleteAllAssetDefinitions();
 
-        void loadChildDefinitions();
+    // Scenes ==============================================================
 
-        size_t countAssetDefinitions() const;
-        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid) const;
-        weak_ptr<AssetDefinition> getAssetDefinitionByName(const string& name) const;
-        void addAssetDefinition(const shared_ptr<AssetDefinition>& def);
+    SceneDefinition& createNewSceneDefinition();
+    UuidType getStartupSceneUuid() const;
+    optional<reference_wrapper<SceneDefinition>> getStartupSceneDefinition();
+    optional<reference_wrapper<SceneDefinition>> getSceneDefinitionByUuid(UuidType uuid);
+    optional<reference_wrapper<SceneDefinition>> getSceneDefinitionByName(const string& name);
+    vector<SceneDefinition>& getSceneDefinitionsVector();
+    SceneDefinition& getSceneDefinitionAtIndex(int index);
+    long getSceneDefinitionIndex(SceneDefinition&) const;
+    size_t countScenesDefinitions() const;
+    void setStartupSceneUuid(UuidType sceneUuid);
+    void removeSceneDefinition(SceneDefinition& sceneDef);
+    void deleteAllSceneDefinitions();
 
-        size_t countScenesDefinitions() const;
-        weak_ptr<SceneDefinition> getSceneDefinitionByUuid(UuidType uuid) const;
-        weak_ptr<SceneDefinition> getSceneDefinitionByName(const string& name) const;
-        vector<weak_ptr<SceneDefinition>> getSceneDefinitionsVector() const;
-        void removeSceneDefinition(const weak_ptr<SceneDefinition>& sceneDef);
+    // Template Entity Management ==========================================
 
-        void removeAssetDefinition(const weak_ptr<AssetDefinition>& assetDef);
-        vector<weak_ptr<AssetDefinition>> getAssetDefinitionsVectorForType() const;
-        vector<weak_ptr<AssetDefinition>> getAssetDefinitionsVectorForType(AssetType type) const;
-        weak_ptr<SceneDefinition> createNewSceneDefinition();
-        weak_ptr<AssetDefinition> createNewAssetDefinition(AssetType type);
-        map<AssetType,vector<weak_ptr<AssetDefinition>>> getAssetDefinitionsMap() const;
+    TemplateEntityDefinition& createTemplateEntityDefinition();
+    optional<reference_wrapper<TemplateEntityDefinition>> getTemplateEntityDefinitionByUuid(UuidType uuid);
+    vector<string>            getTemplateEntityNamesVector();
+    void removeTemplateEntityDefinitionByUuid(UuidType);
+    void removeTemplateEntityDefinition(TemplateEntityDefinition&);
 
-        json toJson() override;
+    json toJson() override;
 
-        void deleteAssetDefinitions();
-        void deleteSceneDefinitions();
+  private:
+    void loadAllSceneDefinitions();
+    void loadAllAssetDefinitions();
+    void loadTemplateEntityDefinitions();
+    void loadSingleAssetDefinition(const json& assetDefinition);
 
-        long getSceneDefinitionIndex(const weak_ptr<SceneDefinition>&) const;
-        weak_ptr<SceneDefinition> getSceneDefinitionAtIndex(int index) const;
-        long getAssetDefinitionIndex(AssetType, const weak_ptr<AssetDefinition>&) const;
-        long getAssetDefinitionIndex(AssetType, UuidType) const;
-        weak_ptr<AssetDefinition> getAssetDefinitionAtIndex(AssetType, int) const;
-
-        vector<string> getAssetNamesVector(AssetType) const;
-
-        map<AssetType, vector<string>> getAssetDefinitionGroups() const;
-        void regroupAssetDefinitions();
-
-    public: // static
-        static shared_ptr<ProjectDefinition> createNewProjectDefinition(const string& name = Constants::PROJECT_DEFAULT_NAME);
-
-    private:
-        void loadSceneDefinitions();
-        void loadAssetDefinitions();
-        void loadSingleAssetDefinition(const json& assetDefinition);
-        void loadSingleSceneDefinition(const json& sceneDefinition);
-        shared_ptr<AssetDefinition> createAssetDefinition(const json& assetDefinitionJs);
-    private:
-        map<AssetType,vector<string>> mAssetDefinitionGroups;
-        vector<shared_ptr<SceneDefinition>> mSceneDefinitions;
-        vector<shared_ptr<AssetDefinition>> mAssetDefinitions;
-    };
+  private:
+    // Scenes
+    vector<SceneDefinition> mSceneDefinitions;
+    // Template Entities
+    vector<TemplateEntityDefinition> mTemplateEntityDefinitions;
+    // Assets
+    vector<AnimationDefinition> mAnimationDefinitions;
+    vector<AudioDefinition> mAudioDefinitions;
+    vector<FontDefinition> mFontDefinitions;
+    vector<MaterialDefinition> mMaterialDefinitions;
+    vector<ModelDefinition> mModelDefinitions;
+    vector<PathDefinition> mPathDefinitions;
+    vector<PhysicsObjectDefinition> mPhysicsObjectDefinitions;
+    vector<ScriptDefinition> mScriptDefinitions;
+    vector<ShaderDefinition> mShaderDefinitions;
+    vector<TextureDefinition> mTextureDefinitions;
+  };
 }

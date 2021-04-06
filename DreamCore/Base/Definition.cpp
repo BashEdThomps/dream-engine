@@ -1,84 +1,109 @@
 #include "Definition.h"
+#include "Common/Constants.h"
 
 namespace octronic::dream
 {
-    // public
-    Definition::Definition(const string& className, const json& data)
-        : mJson(data)
-    {
-        if (mJson[Constants::UUID].is_string())
-        {
-            mJson[Constants::UUID] = Uuid::generateUuid();
-        }
-    }
 
-    // public
-    Definition::~Definition()
-    {}
+  Definition::Definition
+  (const json& data)
+    : mJson(data)
+  {
+  }
 
-    // public
-    json Definition::toJson
-    ()
-    {
-        return mJson;
-    }
+  bool
+  Definition::operator==
+  (const Definition& other) const
+  {
+    return getUuid() == other.getUuid();
+  }
 
-    bool // public
-    Definition::hasName(const string& name)
-    const
-    {
-        string s = mJson[Constants::NAME];
-        return s.compare(name) == 0;
-    }
+  bool
+  Definition::operator!=
+  (const Definition& other) const
+  {
+    return getUuid() != other.getUuid();
+  }
 
-    string  // public
-    Definition::getName()
-    const
-    {
-        if (mJson.find(Constants::NAME) == mJson.end())
-        {
-            return "";
-        }
-        return mJson[Constants::NAME];
-    }
+  bool
+  Definition::operator==
+  (const UuidType& other) const
+  {
+    return getUuid() == other;
+  }
 
-    void // public
-    Definition::setName(const string& name)
-    {
-        mJson[Constants::NAME] = name;
-    }
+  bool
+  Definition::operator!=
+  (const UuidType& other) const
+  {
+    return getUuid() != other;
+  }
 
-    bool // public
-    Definition::hasUuid(UuidType uuid)
-    const
-    {
-        UuidType s = mJson[Constants::UUID];
-        return s == uuid;
-    }
+  void Definition::setJson(const json& js)
+  {
+    mJson = js;
+  }
 
-    UuidType // public
-    Definition::getUuid()
-    const
-    {
-        if (mJson.find(Constants::UUID) == mJson.end())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::UUID];
-    }
+  json
+  Definition::toJson
+  ()
+  {
+    return mJson;
+  }
 
-    void  // public
-    Definition::setUuid(UuidType uuid)
-    {
-        mJson[Constants::UUID] = uuid;
-    }
+  bool
+  Definition::hasName(const string& name)
+  const
+  {
+    return getName().compare(name) == 0;
+  }
 
-    string  // public
-    Definition::getNameAndUuidString()
-    const
+  string
+  Definition::getName()
+  const
+  {
+    if (mJson.find(Constants::NAME) == mJson.end())
     {
-        stringstream ss;
-        ss << "[" << getName() << " : " << getUuid() << "]";
-        return ss.str();
+      return "";
     }
+    return mJson[Constants::NAME];
+  }
+
+  void
+  Definition::setName(const string& name)
+  {
+    mJson[Constants::NAME] = name;
+  }
+
+  bool
+  Definition::hasUuid(UuidType uuid)
+  const
+  {
+    return getUuid() == uuid;
+  }
+
+  UuidType
+  Definition::getUuid()
+  const
+  {
+    if (mJson.find(Constants::UUID) == mJson.end())
+    {
+      return Uuid::INVALID;
+    }
+    return mJson[Constants::UUID];
+  }
+
+  void
+  Definition::setUuid(UuidType uuid)
+  {
+    mJson[Constants::UUID] = uuid;
+  }
+
+  string
+  Definition::getNameAndUuidString()
+  const
+  {
+    stringstream ss;
+    ss << "[" << getName() << " : " << getUuid() << "]";
+    return ss.str();
+  }
 }

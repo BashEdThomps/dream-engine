@@ -22,7 +22,7 @@
 namespace octronic::dream::tool
 {
     Grid::Grid
-    (DreamToolContext* p, AxisPair xp,
+    (DreamToolContext& p, AxisPair xp,
             float majorSpacing,float minorSpacing, float size,
             vec4 majorColour, vec4 minorColour)
         : GLWidget(p,false),

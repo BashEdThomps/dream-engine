@@ -11,8 +11,7 @@ namespace octronic::dream
   // =========================================================================
 
   EntityScriptCreateStateTask::EntityScriptCreateStateTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<EntityRuntime>& rt)
+  (ProjectRuntime& pr,EntityRuntime& rt)
     : Task(pr, "EntityScriptCreateStateTask"),
       mEntity(rt)
   {
@@ -22,27 +21,21 @@ namespace octronic::dream
   {
     LOG_TRACE("EntityScriptCreateStateTask: Executing {}",getID());
 
-    if (auto entityLock = mEntity.lock())
+    auto& sr = mEntity.get().getScriptRuntime();
+    if(sr.createEntityState(mEntity))
     {
-      if (auto sr = entityLock->getScriptRuntime().lock())
-      {
-        if(sr->createEntityState(mEntity))
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_FAILED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 
   // =========================================================================
 
   EntityScriptOnInitTask::EntityScriptOnInitTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<EntityRuntime>& rt)
+  (ProjectRuntime& pr, EntityRuntime& rt)
     : Task(pr, "EntityScriptExecuteOnInitTask"),
       mEntity(rt)
   {
@@ -52,27 +45,21 @@ namespace octronic::dream
   {
     LOG_TRACE("EntityScriptExecuteOnInitTask: Executing {}",getID());
 
-    if (auto entity = mEntity.lock())
+    auto& sr = mEntity.get().getScriptRuntime();
+    if(sr.executeOnInit(mEntity))
     {
-      if (auto sr = entity->getScriptRuntime().lock())
-      {
-        if(sr->executeOnInit(mEntity))
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_FAILED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 
   // =========================================================================
 
   EntityScriptOnUpdateTask::EntityScriptOnUpdateTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<EntityRuntime>& rt)
+  (ProjectRuntime& pr, EntityRuntime& rt)
     : Task(pr, "EntityScriptExecuteOnUpdateTask"),
       mEntity(rt)
   {
@@ -82,27 +69,21 @@ namespace octronic::dream
   {
     LOG_TRACE("EntityScriptOnUpdateTask: Executing {}",getID());
 
-    if (auto entityLock = mEntity.lock())
+    auto& sr = mEntity.get().getScriptRuntime();
+    if(sr.executeOnUpdate(mEntity))
     {
-      if (auto sr = entityLock->getScriptRuntime().lock())
-      {
-        if(sr->executeOnUpdate(mEntity))
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_FAILED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 
   // =========================================================================
 
   EntityScriptOnEventTask::EntityScriptOnEventTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<EntityRuntime>& rt)
+  (ProjectRuntime& pr,EntityRuntime& rt)
     : Task(pr, "EntityScriptOnEventTask"),
       mEntity(rt)
   {
@@ -113,31 +94,24 @@ namespace octronic::dream
   {
     LOG_TRACE("ScriptOnEventTask: Executing {}",getID());
 
-    if (auto entityLock = mEntity.lock())
+    auto& sr = mEntity.get().getScriptRuntime();
+    if(sr.executeOnEvent(mEntity))
     {
-      if (auto sr = entityLock->getScriptRuntime().lock())
-      {
-        if(sr->executeOnEvent(mEntity))
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_FAILED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 
   // =========================================================================
 
   EntityScriptRemoveStateTask::EntityScriptRemoveStateTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   UuidType entityUuid,
-   const weak_ptr<ScriptRuntime>& sr)
+  (ProjectRuntime& pr,UuidType entityUuid, ScriptRuntime& sr)
     : DestructionTask(pr, "EntityScriptRemoveStateTask"),
-      mScript(sr),
-      mEntityUuid(entityUuid)
+      mEntityUuid(entityUuid),
+      mScript(sr)
   {
     LOG_DEBUG("EntityScriptRemoveStateTask: {}", __FUNCTION__);
   }
@@ -146,16 +120,13 @@ namespace octronic::dream
   {
     LOG_TRACE("EntityScriptRemoveStateTask:Executing {}",getID());
 
-    if (auto scriptLock = mScript.lock())
+    if(mScript.get().removeEntityState(mEntityUuid))
     {
-      if(scriptLock->removeEntityState(mEntityUuid))
-      {
-        setState(TASK_STATE_COMPLETED);
-      }
-      else
-      {
-        setState(TASK_STATE_FAILED);
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 }

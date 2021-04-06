@@ -9,7 +9,7 @@ namespace octronic::dream
   class GraphicsTask : public Task
   {
   public:
-    GraphicsTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
+    GraphicsTask(ProjectRuntime& pr, const string& taskName);
   };
 
   // Destruction Task ========================================================
@@ -17,7 +17,7 @@ namespace octronic::dream
   class GraphicsDestructionTask : public DestructionTask
   {
   public:
-    GraphicsDestructionTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
+    GraphicsDestructionTask(ProjectRuntime& pr, const string& taskName);
   };
 
 
@@ -26,7 +26,7 @@ namespace octronic::dream
   class SetupBuffersTask : public GraphicsTask
   {
   public:
-    SetupBuffersTask(const weak_ptr<ProjectRuntime>& pr);
+    SetupBuffersTask(ProjectRuntime& pr);
     void execute() override;
   };
 
@@ -35,7 +35,7 @@ namespace octronic::dream
   class ResizeTask : public GraphicsTask
   {
   public:
-    ResizeTask(const weak_ptr<ProjectRuntime>& pr);
+    ResizeTask(ProjectRuntime& pr);
     void execute() override;
   };
 
@@ -44,7 +44,7 @@ namespace octronic::dream
   class RenderTask : public GraphicsTask
   {
   public:
-    RenderTask(const weak_ptr<ProjectRuntime>& pr);
+    RenderTask(ProjectRuntime& pr);
     void execute() override;
   };
 }

@@ -18,69 +18,71 @@
 
 namespace octronic::dream
 {
-    class PhysicsObjectDefinition : public AssetDefinition
-    {
-    public:
-        PhysicsObjectDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
+  class PhysicsObjectDefinition : public AssetDefinition
+  {
+  public:
+    PhysicsObjectDefinition(ProjectDefinition& pd, const json& js);
 
-        // Physics
-        void  setMass(float mass);
-        float getMass() const;
+    PhysicsObjectDefinition(PhysicsObjectDefinition&&) = default;
+    PhysicsObjectDefinition& operator=(PhysicsObjectDefinition&&) = default;
 
-        void  setMargin(float margin);
-        float getMargin() const;
+    // Physics
+    void  setMass(float mass);
+    float getMass() const;
 
-        void setKinematic(bool kinematic);
-        bool getKinematic() const;
+    void  setMargin(float margin);
+    float getMargin() const;
 
-        void setHalfExtents(const vec3& halfExtent);
-        vec3 getHalfExtents() const;
+    void setKinematic(bool kinematic);
+    bool getKinematic() const;
 
-        void  setNormal(vec3 normal);
-        vec3 getNormal() const;
+    void setHalfExtents(const vec3& halfExtent);
+    vec3 getHalfExtents() const;
 
-        float getRadius() const;
-        void  setRadius(float rad);
+    void  setNormal(vec3 normal);
+    vec3 getNormal() const;
 
-        float getHeight() const;
-        void setHeight(float height);
+    float getRadius() const;
+    void  setRadius(float rad);
 
-        float getConstant() const;
-        void  setConstant(float constant);
+    float getHeight() const;
+    void setHeight(float height);
 
-        bool getControllableCharacter() const;
-        void setControllableCharacter(bool controllable);
+    float getConstant() const;
+    void  setConstant(float constant);
 
-        void setCcdSweptSphereRadius(float rad);
-        float getCcdSweptSphereRadius() const;
+    bool getControllableCharacter() const;
+    void setControllableCharacter(bool controllable);
 
-        void addCompoundChild(const CompoundChildDefinition& child);
-        void removeCompoundChild(const CompoundChildDefinition& def);
-        vector<CompoundChildDefinition> getCompoundChildren();
-        void updateCompoundChildTransform(const CompoundChildDefinition& );
+    void setCcdSweptSphereRadius(float rad);
+    float getCcdSweptSphereRadius() const;
 
-        float getRestitution() const;
-        void setRestitution(float r);
+    void addCompoundChild(const CompoundChildDefinition& child);
+    void removeCompoundChild(const CompoundChildDefinition& def);
+    vector<CompoundChildDefinition> getCompoundChildren();
+    void updateCompoundChildTransform(const CompoundChildDefinition& );
 
-        float getFriction() const;
-        void  setFriction(float r);
+    float getRestitution() const;
+    void setRestitution(float r);
 
-        UuidType getCollisionModel() const;
-        void setCollisionModel(UuidType);
+    float getFriction() const;
+    void  setFriction(float r);
 
-        vec3 getLinearFactor() const;
-        void setLinearFactor(const vec3& lf);
+    UuidType getCollisionModelUuid() const;
+    void setCollisionModelUuid(UuidType);
 
-        vec3 getAngularFactor() const;
-        void setAngularFactor(const vec3& af);
+    vec3 getLinearFactor() const;
+    void setLinearFactor(const vec3& lf);
 
-        vec3 getLinearVelocity() const;
-        void setLinearVelocity(const vec3& lf);
-        vec3 getAngularVelocity() const;
-        void setAngularVelocity(const vec3& af);
+    vec3 getAngularFactor() const;
+    void setAngularFactor(const vec3& af);
 
+    vec3 getLinearVelocity() const;
+    void setLinearVelocity(const vec3& lf);
+    vec3 getAngularVelocity() const;
+    void setAngularVelocity(const vec3& af);
 
-    protected:
-        void makeCompoundChildren();
-    };
+  protected:
+    void makeCompoundChildren();
+  };
 }

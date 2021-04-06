@@ -11,7 +11,7 @@ namespace octronic::dream
   // GraphicsComponentTask ===================================================
 
   GraphicsTask::GraphicsTask
-  (const weak_ptr<ProjectRuntime>& pr, const string& taskName)
+  (ProjectRuntime& pr, const string& taskName)
     : Task(pr, taskName)
   {
 
@@ -20,7 +20,7 @@ namespace octronic::dream
   // GraphicsComponentDestructionTask ========================================
 
   GraphicsDestructionTask::GraphicsDestructionTask
-  (const weak_ptr<ProjectRuntime>& pr, const string& taskName)
+  (ProjectRuntime& pr, const string& taskName)
     : DestructionTask(pr, taskName)
   {
 
@@ -29,81 +29,67 @@ namespace octronic::dream
   // SetupBuffersTask ========================================================
 
   SetupBuffersTask::SetupBuffersTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsTask(pr, "SetupBuffersTask")
   {
   }
 
   void SetupBuffersTask::execute()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& graphicsComponent = getProjectRuntime().getGraphicsComponent();
+    if (graphicsComponent.setupBuffers())
     {
-      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
-      {
-        if (graphicsComponent->setupBuffers())
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_DEFERRED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_DEFERRED);
     }
   }
 
   // ResizeTask ========================================================
 
   ResizeTask::ResizeTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsTask(pr, "ResizeTask")
   {
   }
 
   void ResizeTask::execute()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& graphicsComponent = getProjectRuntime().getGraphicsComponent();
+    if (graphicsComponent.handleResize())
     {
-      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
-      {
-        if (graphicsComponent->handleResize())
-        {
-          setState(TASK_STATE_COMPLETED);
-        }
-        else
-        {
-          setState(TASK_STATE_FAILED);
-        }
-      }
+      setState(TASK_STATE_COMPLETED);
+    }
+    else
+    {
+      setState(TASK_STATE_FAILED);
     }
   }
 
   // RenderTask ==============================================================
 
   RenderTask::RenderTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsTask(pr, "RenderTask")
   {
   }
 
   void RenderTask::execute()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& graphicsComponent = getProjectRuntime().getGraphicsComponent();
+    auto srOpt = getProjectRuntime().getActiveSceneRuntime();
+    if (srOpt)
     {
-      if (auto graphicsComponent = prLock->getGraphicsComponent().lock())
-      {
-        if (auto sr = prLock->getActiveSceneRuntime().lock())
-        {
-          graphicsComponent->clearBuffers(sr);
-          graphicsComponent->renderModels(sr);
-          graphicsComponent->renderEnvironment(sr);
-          //graphicsComponent->renderShadowPass(sr);
-          //graphicsComponent->renderSprites(sr);
-          //graphicsComponent->renderFonts(sr);
-
-        }
-        setState(TASK_STATE_COMPLETED);
-      }
+      auto& sr = srOpt.value();
+      graphicsComponent.clearBuffers(sr);
+      graphicsComponent.renderModels(sr);
+      graphicsComponent.renderEnvironment(sr);
+      //graphicsComponent->renderShadowPass(sr);
+      //graphicsComponent->renderSprites(sr);
+      //graphicsComponent->renderFonts(sr);
     }
+    setState(TASK_STATE_COMPLETED);
   }
 }

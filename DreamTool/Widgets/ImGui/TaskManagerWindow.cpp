@@ -4,38 +4,42 @@
 
 namespace octronic::dream::tool
 {
-    TaskManagerWindow::TaskManagerWindow
-    (DreamToolContext* proj) : ImGuiWidget(proj,false)
+  TaskManagerWindow::TaskManagerWindow
+  (DreamToolContext& proj) : ImGuiWidget(proj,false)
+  {
+  }
+
+  TaskManagerWindow::~TaskManagerWindow
+  ()
+  {
+
+  }
+
+  void
+  TaskManagerWindow::draw
+  ()
+  {
+    ImGui::Begin("Task Manager",&mVisible);
+
+    auto& ctx = getContext();
+    auto& pCtxOpt = ctx.getProjectContext();
+    if (pCtxOpt)
     {
-    }
+      auto& pCtx = pCtxOpt.value();
+      auto& pRuntOpt = pCtx.getProjectRuntime();
 
-    TaskManagerWindow::~TaskManagerWindow
-    ()
+      if (pRuntOpt)
+      {
+      }
+      else
+      {
+        ImGui::Text("No Project Runtime");
+      }
+    }
+    else
     {
-
+      ImGui::Text("No Project");
     }
-
-    void
-    TaskManagerWindow::draw
-    ()
-    {
-        ImGui::Begin("Task Manager",&mVisible);
-
-        if (mContext->getProject())
-        {
-            auto projRunt = mContext->getProject()->getRuntime();
-            if (projRunt)
-            {
-            }
-            else
-            {
-                ImGui::Text("No Project Runtime");
-            }
-        }
-        else
-        {
-                ImGui::Text("No Project");
-        }
-        ImGui::End();
-    }
+    ImGui::End();
+  }
 }

@@ -14,9 +14,11 @@
 
 #include "SceneState.h"
 
+#include "Common/AssetType.h"
 #include "Base/DeferredLoadRuntime.h"
 #include "Math/Transform.h"
 #include "Components/Graphics/CameraRuntime.h"
+#include "Entity/EntityRuntime.h"
 
 #include <memory>
 #include <string>
@@ -24,115 +26,105 @@
 
 using std::string;
 using std::vector;
-using std::shared_ptr;
 
 namespace octronic::dream
 {
-    class AssetDefinition;
-    class SceneDefinition;
+  class AssetDefinition;
+  class SceneDefinition;
+  class AssetRuntime;
+  class ProjectRuntime;
+  class ScriptRuntime;
+  class ShaderRuntime;
+  class TextureRuntime;
 
-    class AssetRuntime;
-    class EntityRuntime;
-    class ProjectRuntime;
-    class ScriptRuntime;
-    class ShaderRuntime;
-    class TextureRuntime;
+  class SceneRuntime : public DeferredLoadRuntime
+  {
+  public:
+    SceneRuntime(ProjectRuntime& parent, SceneDefinition& sd);
 
-    class SceneRuntime : public DeferredLoadRuntime
-    {
-    public:
-        SceneRuntime(const weak_ptr<ProjectRuntime>& parent,
-                     const weak_ptr<SceneDefinition>& sd);
-        ~SceneRuntime() override;
+    SceneRuntime(SceneRuntime&&) = default;
+    SceneRuntime& operator=(SceneRuntime&&) = default;
 
-        weak_ptr<CameraRuntime> getCamera() const;
+    CameraRuntime& getCameraRuntime();
 
-        SceneState getState() const;
-        void setState(SceneState state);
-        bool hasState(SceneState state) const;
+    SceneState getState() const;
+    void setState(SceneState state);
+    bool hasState(SceneState state) const;
 
-        vec3 getGravity() const;
-        void setGravity(const vec3& gravity);
+    vec3 getGravity();
+    void setGravity(const vec3& gravity);
 
-        vec4 getClearColor() const;
-        void setClearColor(const vec4& clear);
+    vec4 getClearColor() const;
+    void setClearColor(const vec4& clear);
 
-        bool loadFromDefinition() override;
-        void destroyRuntime();
+    bool loadFromDefinition() override;
+    void destroyRuntime();
 
-        void createSceneTasks();
+    void createSceneTasks();
 
-        bool hasRootEntityRuntime() const;
-        void setRootEntityRuntime(const shared_ptr<EntityRuntime>& e);
-        weak_ptr<EntityRuntime> getRootEntityRuntime() const;
-        weak_ptr<EntityRuntime> getEntityRuntimeByName(const string& name) const;
-        weak_ptr<EntityRuntime> getEntityRuntimeByUuid(UuidType uuid) const;
+    EntityRuntime& getRootEntityRuntime();
+    EntityRuntime& getEntityRuntimeByName(const string& name);
+    EntityRuntime& getEntityRuntimeByUuid(UuidType uuid);
 
-        int countEntityRuntimes() const;
-        int countChildrenOfEntityRuntime(const weak_ptr<EntityRuntime>&) const;
+    int countEntityRuntimes() const;
+    int countChildrenOfEntityRuntime(const EntityRuntime&) const;
 
-        void setAssetDefinitionUuidLoadQueue(const vector<string>& loadQueue);
+    void showScenegraph() const;
+    void collectGarbage();
 
-        weak_ptr<ProjectRuntime> getProjectRuntime() const;
+    ShaderRuntime& getShadowPassShader();
+    void setShadowPassShader(ShaderRuntime& shadowPassShader);
 
-        void showScenegraph() const;
-        void collectGarbage();
+    ShaderRuntime& getFontShader();
+    void setFontShader(ShaderRuntime& shader);
 
-        weak_ptr<ShaderRuntime> getShadowPassShader() const;
-        void setShadowPassShader(const weak_ptr<ShaderRuntime>& shadowPassShader);
+    ShaderRuntime& getSpriteShader();
+    void setSpriteShader(ShaderRuntime& shader);
 
-        weak_ptr<ShaderRuntime> getFontShader() const;
-        void setFontShader(const weak_ptr<ShaderRuntime>& shader);
+    TextureRuntime& getEnvironmentTexture();
+    void setEnvironmentTexture(TextureRuntime&);
 
-		weak_ptr<ShaderRuntime> getSpriteShader() const;
-        void setSpriteShader(const weak_ptr<ShaderRuntime>& shader);
+    ShaderRuntime& getEnvironmentShader();
+    void setEnvironmentShader(ShaderRuntime&);
 
-        weak_ptr<TextureRuntime> getEnvironmentTexture() const;
-        void setEnvironmentTexture(const weak_ptr<TextureRuntime>& );
+    vector<reference_wrapper<AssetRuntime>>  getAssetRuntimes(AssetType) const;
+    vector<reference_wrapper<EntityRuntime>> getEntitiesWithRuntimeOf(AssetDefinition& def) const;
+    vector<reference_wrapper<EntityRuntime>> getFlatVector() const;
 
-        weak_ptr<ShaderRuntime> getEnvironmentShader() const;
-        void setEnvironmentShader(const weak_ptr<ShaderRuntime>&);
-
-        vector<weak_ptr<AssetRuntime>> getAssetRuntimes(AssetType) const;
-        vector<weak_ptr<EntityRuntime>> getEntitiesWithRuntimeOf(const weak_ptr<AssetDefinition>& def) const;
-        vector<weak_ptr<EntityRuntime>> getFlatVector() const;
-
-        /**
+    /**
          * @return Gets the nearest Entity to the Camera's position excluding
          * the Entity the Camera is focused on.
          */
 
-        unsigned long getSceneCurrentTime() const;
-        void setSceneCurrentTime(unsigned long sceneCurrentTime);
+    unsigned long getSceneCurrentTime() const;
+    void setSceneCurrentTime(unsigned long sceneCurrentTime);
 
-        unsigned long getSceneStartTime() const;
-        void setSceneStartTime(unsigned long sceneStartTime);
+    unsigned long getSceneStartTime() const;
+    void setSceneStartTime(unsigned long sceneStartTime);
 
-        weak_ptr<ScriptRuntime> getInputScript() const;
+    ScriptRuntime& getInputScript();
 
-        void updateFlatVector();
+    void updateFlatVector();
 
-    protected:
-        void updateLifetime();
-        void createAllAssetRuntimes();
-        void setDeleteFlagOnAllEntityRuntimes();
+  protected:
+    void updateLifetime();
+    void createAllAssetRuntimes();
+    void setDeleteFlagOnAllEntityRuntimes();
 
-    private:
-        SceneState mState;
-        vec4 mClearColor;
-        weak_ptr<ProjectRuntime> mProjectRuntime;
-        vector<weak_ptr<EntityRuntime>> mEntityRuntimeCleanUpQueue;
-        shared_ptr<EntityRuntime> mRootEntityRuntime;
-        vector<weak_ptr<EntityRuntime>> mFlatVector;
-        weak_ptr<ShaderRuntime> mShadowPassShader;
-        weak_ptr<ShaderRuntime> mFontShader;
-        weak_ptr<ShaderRuntime> mSpriteShader;
-        weak_ptr<TextureRuntime> mEnvironmentTexture;
-        weak_ptr<ShaderRuntime> mEnvironmentShader;
-        weak_ptr<ScriptRuntime> mInputScript;
-        weak_ptr<EntityRuntime> mCameraEntity;
-        shared_ptr<CameraRuntime> mCamera;
-        unsigned long mSceneStartTime;
-        unsigned long mSceneCurrentTime;
-    };
+  private:
+    SceneState mState;
+    vec4 mClearColor;
+    vector<reference_wrapper<EntityRuntime>> mEntityRuntimeCleanUpQueue;
+    optional<EntityRuntime> mRootEntityRuntime;
+    vector<reference_wrapper<EntityRuntime>> mFlatVector;
+    optional<reference_wrapper<ShaderRuntime>> mShadowPassShader;
+    optional<reference_wrapper<ShaderRuntime>> mFontShader;
+    optional<reference_wrapper<ShaderRuntime>> mSpriteShader;
+    optional<reference_wrapper<TextureRuntime>> mEnvironmentTexture;
+    optional<reference_wrapper<ShaderRuntime>> mEnvironmentShader;
+    optional<reference_wrapper<ScriptRuntime>> mInputScript;
+    CameraRuntime mCameraRuntime;
+    unsigned long mSceneStartTime;
+    unsigned long mSceneCurrentTime;
+  };
 }

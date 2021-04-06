@@ -18,10 +18,10 @@
 #include "AudioStatus.h"
 #include "AudioTasks.h"
 #include "AudioLoader.h"
+#include "AudioRuntimeImplementation.h"
 #include "Components/SharedAssetRuntime.h"
 #include "Components/Event.h"
 #include "Math/Vector.h"
-#include "AudioRuntimeImplementation.h"
 
 #include <deque>
 
@@ -29,56 +29,45 @@ using std::deque;
 
 namespace octronic::dream
 {
-    class AudioDefinition;
-    class AudioComponent;
+  class AudioDefinition;
+  class AudioComponent;
 
-    /**
+  /**
      * @brief AudioRuntime holds data for an Audio Clip.
      */
-    class AudioRuntime : public SharedAssetRuntime
-    {
-    public:
+  class AudioRuntime : public SharedAssetRuntime
+  {
+  public:
+    AudioRuntime(ProjectRuntime& project, AudioDefinition& def);
 
-        AudioRuntime(const weak_ptr<ProjectRuntime>& project,
-                     const weak_ptr<AudioDefinition>& def);
+    shared_ptr<AudioRuntimeImplementation> getImpl() const;
+    void setImpl(const shared_ptr<AudioRuntimeImplementation>& impl);
 
-        ~AudioRuntime() override;
+    shared_ptr<AudioLoader> getAudioLoader() const;
+    void setAudioLoader(const shared_ptr<AudioLoader>& loader);
 
-        bool isLooping() const ;
-        long long getStartTime() const;
-        void setStartTime(long long startTime);
-        void updateMarkers();
-        weak_ptr<AudioMarkersUpdateTask> getMarkersUpdateTask() const;
-        weak_ptr<AudioLoader> getAudioLoader() const;
+    void pushTasks() override;
 
-        void play();
-        void pause();
-        void stop();
-        bool init() override;
-        void setLooping(bool);
-        void setSourcePosision(vec3 pos);
-        void setVolume(float volume);
-        AudioStatus getState();
-        unsigned int getSampleOffset() const;
-        void setSampleOffset(unsigned int offset);
-        int getDurationInSamples();
-        void setImplementation(const shared_ptr<AudioRuntimeImplementation>& impl);
-        bool loadFromDefinition() override;
-        void pushTasks() override;
+    void setLooping(bool);
+    bool getLooping() const;
 
-    protected:
-        void generateEventList();
+    // Implementation
+    void play();
+    void pause();
+    void stop();
+    vec3 getSourcePosition() const;
+    void setSourcePosision(vec3 pos);
+    float getVolume() const;
+    void setVolume(float volume);
+    AudioStatus getState();
+    unsigned long getSampleOffset() const;
+    void setSampleOffset(unsigned long offset);
+    unsigned long getDurationInSamples();
+    bool loadFromDefinition() override;
 
-    protected:
-        /**
-         * @brief mImpl - We take ownership of the Impl
-         */
-        shared_ptr<AudioRuntimeImplementation> mImpl;
-        bool mLooping;
-        long long mStartTime;
-        int mLastSampleOffset;
-        deque<Event> mMarkerEvents;
-        deque<Event> mMarkerEventsCache;
-        shared_ptr<AudioMarkersUpdateTask> mMarkersUpdateTask;
-    };
+  protected:
+    shared_ptr<AudioRuntimeImplementation> mImpl;
+    shared_ptr<AudioLoader> mLoader;
+    bool mLooping;
+  };
 }

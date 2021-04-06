@@ -8,7 +8,7 @@ namespace octronic::dream::tool
             : public ImGuiWidget
     {
     public:
-        RenderingDebugWindow(DreamToolContext* state);
+        RenderingDebugWindow(DreamToolContext& state);
         ~RenderingDebugWindow() override;
 
         void draw() override;

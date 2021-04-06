@@ -31,30 +31,26 @@
 #include "Project/ProjectRuntime.h"
 #include "Components/Cache.h"
 
+using std::make_shared;
+
 namespace octronic::dream
 {
   PhysicsObjectRuntime::PhysicsObjectRuntime
-  (const weak_ptr<ProjectRuntime>& prt,
-   const weak_ptr<PhysicsObjectDefinition>& definition,
-   const weak_ptr<EntityRuntime>& transform)
-    : DiscreteAssetRuntime(prt,definition,transform),
+  (ProjectRuntime& prt,
+   PhysicsObjectDefinition& definition,
+   EntityRuntime& entity)
+    : DiscreteAssetRuntime(prt,definition,entity),
       mCollisionShape(nullptr),
       mMotionState(nullptr),
       mRigidBody(nullptr),
       mRigidBodyConstructionInfo(nullptr),
-      mInPhysicsWorld(false),
-      mAddObjectTask(nullptr)
+      mAddObjectTask(nullptr),
+      mInPhysicsWorld(false)
   {
     LOG_TRACE( "PhysicsObjectRuntime: Constructing" );
   }
 
-  PhysicsObjectRuntime::~PhysicsObjectRuntime
-  ()
-  {
-    LOG_TRACE( "PhysicsObjectRuntime: Destroying" );
-  }
-
-  weak_ptr<btCollisionShape>
+  btCollisionShape*
   PhysicsObjectRuntime::getCollisionShape
   ()
   const
@@ -67,57 +63,53 @@ namespace octronic::dream
   PhysicsObjectRuntime::loadFromDefinition
   ()
   {
-    if (auto defLock = mDefinition.lock())
+    auto& pod = static_cast<PhysicsObjectDefinition&>(getDefinition());
+    mCollisionShape = createCollisionShape(pod);
+
+    if (!mCollisionShape)
     {
-      auto pod = static_pointer_cast<PhysicsObjectDefinition>(defLock);
-      mCollisionShape = createCollisionShape(pod);
-
-      if (!mCollisionShape)
-      {
-        LOG_ERROR( "PhysicsObjectRuntime: Unable to create collision shape" );
-        return false;
-      }
-
-      float mass = pod->getMass();
-      // Transform and CentreOfMass
-      mMotionState = static_pointer_cast<btMotionState>(make_shared<PhysicsMotionState>(mEntityRuntime)); // <-- kinda gross
-      // Mass, MotionState, Shape and LocalInertia
-      btVector3 inertia(0, 0, 0);
-      mCollisionShape->calculateLocalInertia(mass, inertia);
-      mRigidBodyConstructionInfo = make_shared<btRigidBody::btRigidBodyConstructionInfo>(
-            btScalar(mass),mMotionState.get(), mCollisionShape.get(),inertia);
-
-      mRigidBody = make_shared<btRigidBody>(*mRigidBodyConstructionInfo.get());
-
-      vec3 lf, lv, af, av;
-      lf = pod->getLinearFactor();
-      lv = pod->getLinearVelocity();
-      af = pod->getAngularFactor();
-      av = pod->getAngularVelocity();
-
-      setLinearFactor(lf);
-      setLinearVelocity(lv);
-      setAngularFactor(af);
-      setAngularVelocity(av);
-
-      if (pod->getControllableCharacter())
-      {
-        setCameraControllableCharacter();
-      }
-
-      if (pod->getKinematic())
-      {
-        setKinematic(true);
-      }
-
-      setRestitution(pod->getRestitution());
-      setFriction(pod->getFriction());
-      setCcdSweptSphereRadius(pod->getCcdSweptSphereRadius());
-
-      mLoaded = (mRigidBody != nullptr);
-      return mLoaded;
+      LOG_ERROR( "PhysicsObjectRuntime: Unable to create collision shape" );
+      return false;
     }
-    return false;
+
+    float mass = pod.getMass();
+    // Transform and CentreOfMass
+    mMotionState = new PhysicsMotionState(getEntityRuntime());
+    // Mass, MotionState, Shape and LocalInertia
+    btVector3 inertia(0, 0, 0);
+    mCollisionShape->calculateLocalInertia(mass, inertia);
+    mRigidBodyConstructionInfo = new btRigidBody::btRigidBodyConstructionInfo(
+          btScalar(mass),mMotionState, mCollisionShape,inertia);
+
+    mRigidBody = new btRigidBody(*mRigidBodyConstructionInfo);
+
+    vec3 lf, lv, af, av;
+    lf = pod.getLinearFactor();
+    lv = pod.getLinearVelocity();
+    af = pod.getAngularFactor();
+    av = pod.getAngularVelocity();
+
+    setLinearFactor(lf);
+    setLinearVelocity(lv);
+    setAngularFactor(af);
+    setAngularVelocity(av);
+
+    if (pod.getControllableCharacter())
+    {
+      setCameraControllableCharacter();
+    }
+
+    if (pod.getKinematic())
+    {
+      setKinematic(true);
+    }
+
+    setRestitution(pod.getRestitution());
+    setFriction(pod.getFriction());
+    setCcdSweptSphereRadius(pod.getCcdSweptSphereRadius());
+
+    mLoaded = (mRigidBody != nullptr);
+    return mLoaded;
   }
 
   void
@@ -141,180 +133,148 @@ namespace octronic::dream
     }
   }
 
-  weak_ptr<PhysicsAddObjectTask>
-  PhysicsObjectRuntime::getAddObjectTask
-  ()
-  const
-  {
-    return mAddObjectTask;
-  }
-
-  shared_ptr<btCollisionShape>
+  btCollisionShape*
   PhysicsObjectRuntime::createCollisionShape
-  (const weak_ptr<PhysicsObjectDefinition>& pDef)
+  (PhysicsObjectDefinition& pod)
   {
-    if (auto pod = pDef.lock())
+    string format = pod.getFormat();
+    btCollisionShape* collisionShape = nullptr;
+
+    if (format == Constants::COLLISION_SHAPE_SPHERE)
     {
-      string format = pod->getFormat();
-      shared_ptr<btCollisionShape> collisionShape;
+      btScalar radius = pod.getRadius();
+      collisionShape = new btSphereShape(radius);
+    }
+    else if (format == Constants::COLLISION_SHAPE_BOX)
+    {
+      btVector3 box;
+      box = Vector3::toBullet(pod.getHalfExtents());
+      collisionShape = new btBoxShape(box);
+    }
+    else if (format == Constants::COLLISION_SHAPE_CYLINDER)
+    {
+      btVector3 box;
+      box = Vector3::toBullet(pod.getHalfExtents());
+      collisionShape = new btCylinderShape(box);
+    }
+    else if (format == Constants::COLLISION_SHAPE_CAPSULE)
+    {
+      float radius = pod.getRadius();
+      float height = pod.getHeight();
+      collisionShape = new btCapsuleShape(radius,height);
+    }
+    else if (format == Constants::COLLISION_SHAPE_CONE)
+    {
+      //collisionShape = new btConeShape();
+    }
+    else if (format == Constants::COLLISION_SHAPE_MULTI_SPHERE)
+    {
+      //collisionShape = new btMultiSphereShape();
+    }
+    else if (format == Constants::COLLISION_SHAPE_CONVEX_HULL)
+    {
+      //collisionShape = new btConvexHullShape();
+    }
+    else if (format == Constants::COLLISION_SHAPE_CONVEX_TRIANGLE_MESH)
+    {
+      //collisionShape = new btConvexTriangleMeshShape();
+    }
+    else if (format == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
+    {
+      // Load Collision Data
+      auto modelUuid = pod.getCollisionModelUuid();
+      auto& pDef = static_cast<ProjectDefinition&>(getProjectRuntime().getDefinition());
+      auto& modelDef = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_MODEL,modelUuid).value().get();
+      auto& modelCache = getProjectRuntime().getModelCache();
+      auto& model = modelCache.getRuntime(static_cast<ModelDefinition&>(modelDef));
+      collisionShape = createTriangleMeshShape(model);
+    }
+    else if (format == Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN)
+    {
+      // TODO
+    }
+    else if (format == Constants::COLLISION_SHAPE_STATIC_PLANE)
+    {
+      btVector3 planeNormal = Vector3::toBullet(pod.getNormal());
+      float constant = pod.getConstant();
 
-      if (format == Constants::COLLISION_SHAPE_SPHERE)
-      {
-        btScalar radius = pod->getRadius();
-        collisionShape = make_shared<btSphereShape>(radius);
-      }
-      else if (format == Constants::COLLISION_SHAPE_BOX)
-      {
-        btVector3 box;
-        box = Vector3::toBullet(pod->getHalfExtents());
-        collisionShape = make_shared<btBoxShape>(box);
-      }
-      else if (format == Constants::COLLISION_SHAPE_CYLINDER)
-      {
-        btVector3 box;
-        box = Vector3::toBullet(pod->getHalfExtents());
-        collisionShape = make_shared<btCylinderShape>(box);
-      }
-      else if (format == Constants::COLLISION_SHAPE_CAPSULE)
-      {
-        float radius = pod->getRadius();
-        float height = pod->getHeight();
-        collisionShape = make_shared<btCapsuleShape>(radius,height);
-      }
-      else if (format == Constants::COLLISION_SHAPE_CONE)
-      {
-        //collisionShape = new btConeShape();
-      }
-      else if (format == Constants::COLLISION_SHAPE_MULTI_SPHERE)
-      {
-        //collisionShape = new btMultiSphereShape();
-      }
-      else if (format == Constants::COLLISION_SHAPE_CONVEX_HULL)
-      {
-        //collisionShape = new btConvexHullShape();
-      }
-      else if (format == Constants::COLLISION_SHAPE_CONVEX_TRIANGLE_MESH)
-      {
-        //collisionShape = new btConvexTriangleMeshShape();
-      }
-      else if (format == Constants::COLLISION_SHAPE_BVH_TRIANGLE_MESH)
-      {
-        if (auto erLock = mEntityRuntime.lock())
-        {
-          // Load Collision Data
-          if (auto sceneRt = erLock->getSceneRuntime().lock())
-          {
-            if (auto prLock = mProjectRuntime.lock())
-            {
-              auto modelUuid = pod->getCollisionModel();
-              if (auto pDefLock = prLock->getDefinition().lock())
-              {
-                auto pDef = static_pointer_cast<ProjectDefinition>(pDefLock);
-                if (auto modelDef = static_pointer_cast<ModelDefinition>(pDef->getAssetDefinitionByUuid(modelUuid).lock()))
-                {
-                  if (auto modelCache = prLock->getModelCache().lock())
-                  {
-                    if (auto model = modelCache->getRuntime(modelDef).lock())
-                    {
-                      collisionShape = createTriangleMeshShape(model);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      else if (format == Constants::COLLISION_SHAPE_HEIGHTFIELD_TERRAIN)
-      {
-        // TODO
-      }
-      else if (format == Constants::COLLISION_SHAPE_STATIC_PLANE)
-      {
-        btVector3 planeNormal = Vector3::toBullet(pod->getNormal());
-        float constant = pod->getConstant();
+      auto planeConstant = btScalar(constant);
 
-        auto planeConstant = btScalar(constant);
+      collisionShape = new btStaticPlaneShape(planeNormal,planeConstant);
+    }
+    else if (format == Constants::COLLISION_SHAPE_COMPOUND)
+    {
+      /*
+        collisionShape = make_unique<btCompoundShape>();
+        btCompoundShape* compound = static_cast<btCompoundShape*>(collisionShape.get());
 
-        collisionShape = make_shared<btStaticPlaneShape>(planeNormal,planeConstant);
-      }
-      else if (format == Constants::COLLISION_SHAPE_COMPOUND)
-      {
-        collisionShape = make_shared<btCompoundShape>();
-        shared_ptr<btCompoundShape> compound = static_pointer_cast<btCompoundShape>(collisionShape);
-
-        for (CompoundChildDefinition& child : pod->getCompoundChildren())
+        for (CompoundChildDefinition& child : pod.getCompoundChildren())
         {
           auto def = getAssetDefinitionByUuid(child.uuid);
-          shared_ptr<btCollisionShape> shape = createCollisionShape(def);
+          auto shape = createCollisionShape(def);
           if (shape)
           {
             compound->addChildShape(child.transform.getBtTransform(),shape.get());
           }
         }
-      }
-
-      if (collisionShape)
-      {
-        btScalar margin = pod->getMargin();
-        collisionShape->setMargin(margin);
-      }
-
-      return collisionShape;
+        */
     }
-    return nullptr;
-  }
 
-  shared_ptr<btCollisionShape>
-  PhysicsObjectRuntime::createTriangleMeshShape
-  (const weak_ptr<ModelRuntime>& modelWeak)
-  {
-    if (auto model = modelWeak.lock())
+    if (collisionShape)
     {
-      auto triMesh = make_shared<btTriangleMesh>();
-      auto  meshes = model->getMeshes();
-
-      if (meshes.empty())
-      {
-        return nullptr;
-      }
-
-      for (auto meshWeak : meshes)
-      {
-        if (auto mesh = meshWeak.lock())
-        {
-          auto idx = mesh->getIndices();
-          auto verts = mesh->getVertices();
-          for (size_t i=0; i<idx.size(); i+=3)
-          {
-            btVector3 v1,v2,v3;
-
-            auto i1 = verts.at(idx.at(i)).Position;
-            auto i2 = verts.at(idx.at(i+1)).Position;
-            auto i3 = verts.at(idx.at(i+2)).Position;
-
-            v1.setX(i1.x);
-            v1.setY(i1.y);
-            v1.setZ(i1.z);
-
-            v2.setX(i2.x);
-            v2.setY(i2.y);
-            v2.setZ(i2.z);
-
-            v3.setX(i3.x);
-            v3.setY(i3.y);
-            v3.setZ(i3.z);
-
-            triMesh->addTriangle(v1,v2,v3);
-          }
-        }
-        return make_shared<btBvhTriangleMeshShape>(triMesh.get(),true,true);
-      }
+      btScalar margin = pod.getMargin();
+      collisionShape->setMargin(margin);
     }
-    return nullptr;
+
+    return collisionShape;
   }
 
-  weak_ptr<btRigidBody>
+  btCollisionShape*
+  PhysicsObjectRuntime::createTriangleMeshShape
+  (ModelRuntime& model)
+  {
+
+    auto  meshes = model.getMeshes();
+
+    if (meshes.empty())
+    {
+      throw std::exception();
+    }
+
+    btTriangleMesh* triMesh = new btTriangleMesh();
+    for (auto& mesh : meshes)
+    {
+      auto idx = mesh.getIndices();
+      auto verts = mesh.getVertices();
+
+      for (size_t i=0; i<idx.size(); i+=3)
+      {
+        btVector3 v1,v2,v3;
+
+        auto i1 = verts.at(idx.at(i)).Position;
+        auto i2 = verts.at(idx.at(i+1)).Position;
+        auto i3 = verts.at(idx.at(i+2)).Position;
+
+        v1.setX(i1.x);
+        v1.setY(i1.y);
+        v1.setZ(i1.z);
+
+        v2.setX(i2.x);
+        v2.setY(i2.y);
+        v2.setZ(i2.z);
+
+        v3.setX(i3.x);
+        v3.setY(i3.y);
+        v3.setZ(i3.z);
+
+        triMesh->addTriangle(v1,v2,v3);
+      }
+      return new btBvhTriangleMeshShape(triMesh,true,true);
+    }
+    throw std::exception();
+  }
+
+  btRigidBody*
   PhysicsObjectRuntime::getRigidBody
   ()
   const
@@ -329,7 +289,7 @@ namespace octronic::dream
     mMotionState->getWorldTransform(transform);
   }
 
-  weak_ptr<btCollisionObject>
+  btCollisionObject*
   PhysicsObjectRuntime::getCollisionObject
   ()
   const
@@ -439,17 +399,6 @@ namespace octronic::dream
     return Vector3::fromBullet(mRigidBody->getLinearVelocity());
   }
 
-  weak_ptr<PhysicsObjectDefinition>
-  PhysicsObjectRuntime::getAssetDefinitionByUuid
-  (UuidType uuid)
-  {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      return static_pointer_cast<PhysicsObjectDefinition>(prLock->getAssetDefinitionByUuid(uuid).lock());
-    }
-    return weak_ptr<PhysicsObjectDefinition>();
-  }
-
   void
   PhysicsObjectRuntime::setLinearFactor
   (const vec3& lf)
@@ -503,17 +452,12 @@ namespace octronic::dream
   PhysicsObjectRuntime::setMass
   (float mass)
   {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto pc = prLock->getPhysicsComponent().lock())
-      {
-        pc->removeRigidBody(mRigidBody);
-        btVector3 inertia(0.0f,0.0f,0.0f);
-        mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
-        mRigidBody->setMassProps(mass,inertia);
-        pc->addRigidBody(mRigidBody);
-      }
-    }
+    auto& pc = getProjectRuntime().getPhysicsComponent();
+    pc.removeRigidBody(mRigidBody);
+    btVector3 inertia(0.0f,0.0f,0.0f);
+    mRigidBody->getCollisionShape()->calculateLocalInertia(mass,inertia);
+    mRigidBody->setMassProps(mass,inertia);
+    pc.addRigidBody(mRigidBody);
   }
 
   void

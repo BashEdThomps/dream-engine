@@ -11,24 +11,20 @@ using std::string;
 
 namespace octronic::dream::tool
 {
-    class PreferencesModel : public Model
-    {
-    public:
+  class PreferencesModel : public Model
+  {
+  public:
+    PreferencesModel(DreamToolContext& context);
+    string getExternalEditorPath() const;
+    bool hasExternalEditorPath();
+    void setExternalEditorPath(const string& path);
+    bool load();
+    bool save();
 
-        PreferencesModel(DreamToolContext* context);
-        ~PreferencesModel();
-
-        string getExternalEditorPath();
-        bool hasExternalEditorPath();
-        void setExternalEditorPath(const string& path);
-
-        bool load();
-        bool save();
-
-    private: // Variables
-        json mJson;
-    private: // statics
-        const static string PREFS_FILE_NAME;
-        const static string PREFS_EXTERNAL_EDITOR_PATH;
-    };
+  private: // Variables
+    json mJson;
+  private: // statics
+    const static string PREFS_FILE_NAME;
+    const static string PREFS_EXTERNAL_EDITOR_PATH;
+  };
 }

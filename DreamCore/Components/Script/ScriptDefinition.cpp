@@ -17,22 +17,17 @@
 
 namespace octronic::dream
 {
-    ScriptDefinition::ScriptDefinition
-    (const shared_ptr<ProjectDefinition>& pd, const json &js)
-        : AssetDefinition("ScriptDefinition",pd,js)
-    {
+  ScriptDefinition::ScriptDefinition
+  (ProjectDefinition& pd, const json &js)
+    : AssetDefinition(pd,js)
+  {
 
-    }
+  }
 
-    ScriptDefinition::~ScriptDefinition()
-    {
-
-    }
-
-    bool
-    ScriptDefinition::isFormatLua
-    ()
-    {
-        return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
-    }
+  bool
+  ScriptDefinition::isFormatLua
+  ()
+  {
+    return getFormat().compare(Constants::ASSET_FORMAT_SCRIPT_LUA) == 0;
+  }
 }

@@ -22,9 +22,11 @@
 
 namespace octronic::dream
 {
-    class ShaderDefinition : public AssetDefinition
-    {
-    public:
-        ShaderDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
-    };
+  class ShaderDefinition : public AssetDefinition
+  {
+  public:
+    ShaderDefinition(ProjectDefinition& pd, const json& js);
+    ShaderDefinition(ShaderDefinition&&) = default;
+    ShaderDefinition& operator=(ShaderDefinition&&) = default;
+  };
 }

@@ -11,7 +11,7 @@ namespace octronic::dream
   // InputPollDataTask =======================================================
 
   InputPollDataTask::InputPollDataTask
-  (const shared_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : Task(pr, "InputPollDataTask")
   {
   }
@@ -21,21 +21,15 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("InputPollDataTask: Executing {}",getID());
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto inputComp = prLock->getInputComponent().lock())
-      {
-        inputComp->pollData();
-        setState(TaskState::TASK_STATE_COMPLETED);
-      }
-    }
-    setState(TASK_STATE_FAILED);
+    auto& inputComp = getProjectRuntime().getInputComponent();
+    inputComp.pollData();
+    setState(TaskState::TASK_STATE_COMPLETED);
   }
 
   // InputRegisterScriptTask =================================================
 
   InputRegisterScriptTask::InputRegisterScriptTask
-  (const shared_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : Task(pr, "InputRegisterScriptTask")
   {
 
@@ -46,23 +40,18 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("InputRegisterScriptTask: Executing {}",getID());
-    if (auto prLock = mProjectRuntime.lock())
+    auto& inputComp = getProjectRuntime().getInputComponent();
+    if (inputComp.registerInputScript())
     {
-      if (auto inputComp = prLock->getInputComponent().lock())
-      {
-        if (inputComp->registerInputScript())
-        {
-          setState(TaskState::TASK_STATE_COMPLETED);
-        }
-      }
+      setState(TaskState::TASK_STATE_COMPLETED);
+      return;
     }
-    setState(TaskState::TASK_STATE_FAILED);
   }
 
   // InputExecuteScriptTask ==================================================
 
   InputExecuteScriptTask::InputExecuteScriptTask
-  (const shared_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : Task(pr, "InputExecuteScriptTask")
   {
   }
@@ -71,25 +60,20 @@ namespace octronic::dream
   InputExecuteScriptTask::execute
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto inputComp = prLock->getInputComponent().lock())
-      {
-        LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
+    auto& inputComp = getProjectRuntime().getInputComponent();
+    LOG_TRACE("InputExecuteScriptTask: Executing {}",getID());
 
-        if (inputComp->executeInputScript())
-        {
-          setState(TaskState::TASK_STATE_COMPLETED);
-        }
-      }
+    if (inputComp.executeInputScript())
+    {
+      setState(TaskState::TASK_STATE_COMPLETED);
+      return;
     }
-    setState(TaskState::TASK_STATE_FAILED);
   }
 
   // InputRemoveScriptTask ===================================================
 
   InputRemoveScriptTask::InputRemoveScriptTask
-  (const shared_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : DestructionTask(pr, "InputRemoveScriptTask")
   {
 
@@ -100,17 +84,12 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("InputRemoveScriptTask: Executing {}",getID());
-    if (auto prLock = mProjectRuntime.lock())
+    auto& inputComp = getProjectRuntime().getInputComponent();
+    if (inputComp.removeInputScript(mInputScriptUuid))
     {
-      if (auto inputComp = prLock->getInputComponent().lock())
-      {
-        if (inputComp->removeInputScript(mInputScriptUuid))
-        {
-          setState(TaskState::TASK_STATE_COMPLETED);
-        }
-      }
+      setState(TaskState::TASK_STATE_COMPLETED);
+      return;
     }
-    setState(TaskState::TASK_STATE_FAILED);
   }
 
   void InputRemoveScriptTask::setInputScriptUuid(UuidType u)

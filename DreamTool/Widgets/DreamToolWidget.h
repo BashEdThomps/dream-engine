@@ -8,15 +8,19 @@ namespace octronic::dream::tool
     class DreamToolWidget
     {
     public:
-        DreamToolWidget(DreamToolContext* ctx, bool visible = true);
+        DreamToolWidget(DreamToolContext& ctx, bool visible = true);
         virtual ~DreamToolWidget();
+
         virtual void draw() = 0;
 
         bool getVisible() const;
         void setVisible(bool);
 
+        DreamToolContext& getContext() const;
     protected:
-        DreamToolContext* mContext;
         bool mVisible;
+
+    private:
+        reference_wrapper<DreamToolContext> mContext;
     };
 }

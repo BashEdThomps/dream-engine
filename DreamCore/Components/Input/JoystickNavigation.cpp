@@ -3,8 +3,8 @@
 namespace octronic::dream
 {
   JoystickNavigation::JoystickNavigation
-  (const weak_ptr<JoystickState>& state,
-   const weak_ptr<JoystickMapping>& mapping)
+  (JoystickState& state,
+   JoystickMapping& mapping)
     : mJoystickState(state), mJoystickMapping(mapping)
   {
 

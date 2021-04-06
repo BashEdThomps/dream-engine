@@ -24,24 +24,25 @@ namespace octronic::dream
   class FontRuntime : public SharedAssetRuntime
   {
   public:
-    FontRuntime(const weak_ptr<ProjectRuntime>& e,
-                const weak_ptr<FontDefinition>& def);
-    ~FontRuntime();
+    FontRuntime(ProjectRuntime& e, FontDefinition& def);
+    FontRuntime(FontRuntime&&) = default;
+    FontRuntime& operator=(FontRuntime&&) = default;
 
     bool loadFromDefinition() override;
     bool init() override;
     bool loadIntoGL();
     void pushTasks() override;
+    void pushDestructionTask();
 
-    void draw(const weak_ptr<EntityRuntime>& fti);
+    void draw(EntityRuntime& er);
 
     float getWidthOf(string s);
 
     int getSize() const;
     void setSize(int size);
 
-    void setFontFile(const weak_ptr<File>& file);
-    weak_ptr<File> getFontFile() const;
+    void setFontData(const vector<uint8_t>& data);
+    vector<uint8_t> getFontData();
 
     void setVao(GLuint vao);
     void setVbo(GLuint vbo);
@@ -52,9 +53,10 @@ namespace octronic::dream
     GLuint getAtlasTexture() const;
     unsigned int getAtlasWidth() const;
     unsigned int getAtlasHeight() const;
+  	void pushRemoveTask();
 
 
-
+  public: // Static
     static bool InitFreetypeLibrary();
     static void CleanupFreetypeLibrary();
     static FT_Library GetFreeTypeLibrary();
@@ -71,7 +73,7 @@ namespace octronic::dream
     unsigned int mAtlasHeight;
     GLuint mVao;
     GLuint mVbo;
-    weak_ptr<File> mFontFile;
+    vector<uint8_t> mFontData;
     shared_ptr<FontLoadIntoGLTask> mFontLoadIntoGLTask;
     shared_ptr<FontRemoveFromGLTask> mFontRemoveFromGLTask;
   };

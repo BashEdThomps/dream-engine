@@ -19,8 +19,8 @@ namespace octronic::dream
         long getTime() const;
         void setTime(long time);
 
-        Transform getTransform() const;
-        void setTransform(const Transform& transform);
+        float getValue() const;
+        void setValue(float transform);
 
         void fromJson(const json& js);
         json toJson() const ;
@@ -40,7 +40,7 @@ namespace octronic::dream
     private:
         int mID;
         long mTime;
-        Transform mTransform;
+        float mValue;
         AnimationEasing::EasingType mEasingType;
     };
 }

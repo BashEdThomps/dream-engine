@@ -6,10 +6,10 @@
 #include "Components/Cache.h"
 #include "Storage/File.h"
 #include "Storage/StorageManager.h"
-#include "Storage/ProjectDirectory.h"
+#include "Project/ProjectDirectory.h"
 #include "Scene/SceneRuntime.h"
 #include "Entity/EntityRuntime.h"
-#include "Project/Project.h"
+
 #include "Project/ProjectRuntime.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -21,8 +21,8 @@ using std::static_pointer_cast;
 namespace octronic::dream
 {
   TextureRuntime::TextureRuntime
-  (const weak_ptr<ProjectRuntime>& rt,
-   const weak_ptr<TextureDefinition>& def)
+  (ProjectRuntime& rt,
+   TextureDefinition& def)
     : SharedAssetRuntime(rt, def),
       mCubeDebugMode(CUBE_DEBUG_NONE),
       mIsHDR(false),
@@ -30,7 +30,7 @@ namespace octronic::dream
       mWidth(0),
       mHeight(0),
       mChannels(0),
-      mImage(nullptr),
+      mRawImageData(nullptr),
       // FBO/RBO
       mCaptureFBO(0),
       mCaptureRBO(0),
@@ -52,40 +52,24 @@ namespace octronic::dream
 
   }
 
-  TextureRuntime::~TextureRuntime
+  void TextureRuntime::pushDestructionTask
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto gcLock = prLock->getGraphicsComponent().lock())
-      {
-        if (auto gfxDq = gcLock->getDestructionTaskQueue().lock())
-        {
-          gfxDq->pushTask(mRemoveFromGLTask);
-        }
-      }
-    }
-
+    auto& gc = getProjectRuntime().getGraphicsComponent();
+    auto& gfxDq = gc.getDestructionTaskQueue();
+    gfxDq.pushTask(mRemoveFromGLTask);
   }
 
   bool
   TextureRuntime::init
   ()
   {
+    if (!DeferredLoadRuntime::init()) return false;
     // Init Tasks
-    mLoadIntoGLTask = make_shared<TextureLoadIntoGLTask>(mProjectRuntime, static_pointer_cast<TextureRuntime>(shared_from_this()));
-    mRenderCubeMapTask = make_shared<TextureSetupEnvironmentTask>(mProjectRuntime, static_pointer_cast<TextureRuntime>(shared_from_this()));
-    mRemoveFromGLTask = make_shared<TextureRemoveFromGLTask>(mProjectRuntime);
+    mLoadIntoGLTask = make_shared<TextureLoadIntoGLTask>(getProjectRuntime(), *this);
+    mRenderCubeMapTask = make_shared<TextureSetupEnvironmentTask>(getProjectRuntime(), *this);
+    mRemoveFromGLTask = make_shared<TextureRemoveFromGLTask>(getProjectRuntime());
     return true;
-  }
-
-  bool
-  TextureRuntime::operator==
-  (const TextureRuntime& other)
-  {
-    return
-        this->mGLTextureID == other.mGLTextureID &&
-        this->mUuid == other.mUuid;
   }
 
   // Accessors ===============================================================
@@ -136,18 +120,18 @@ namespace octronic::dream
   }
 
   void*
-  TextureRuntime::getImage
+  TextureRuntime::getRawImageData
   ()
   const
   {
-    return mImage;
+    return mRawImageData;
   }
 
   void
-  TextureRuntime::setImage
+  TextureRuntime::setRawImageData
   (void* image)
   {
-    mImage = image;
+    mRawImageData = image;
   }
 
   GLuint
@@ -253,121 +237,122 @@ namespace octronic::dream
   {
     LOG_TRACE("TextureRuntime: {}",__FUNCTION__);
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& pDir = getProjectRuntime().getProjectDirectory();
+    string filename = pDir.getAssetAbsolutePath(static_cast<TextureDefinition&>(getDefinition()));
+
+    auto& storageMan = getProjectRuntime().getStorageManager();
+    auto& txFile = storageMan.openFile(filename);
+    if (!txFile.exists())
     {
-      if (auto pDir = prLock->getProjectDirectory().lock())
+      LOG_ERROR("TextureRuntime: Texture file does not exist: {}",filename);
+      storageMan.closeFile(txFile);
+      mLoadError = true;
+      return false;
+    }
+
+    LOG_DEBUG("TextureRuntime: Loading texture: {}",filename);
+
+    if (!txFile.readBinary())
+    {
+      LOG_ERROR("TextureRuntime: Unable to read file data");
+      storageMan.closeFile(txFile);
+      mLoadError = true;
+      return false;
+    }
+
+    auto& txDef = static_cast<TextureDefinition&>(getDefinition());
+
+    vector<uint8_t> buffer = txFile.getBinaryData();
+    size_t buffer_sz = buffer.size();
+
+    if (txDef.getFlipVertical())
+    {
+      stbi_set_flip_vertically_on_load(true);
+    }
+    else
+    {
+      stbi_set_flip_vertically_on_load(false);
+    }
+
+    if (stbi_is_hdr_from_memory(&buffer[0],buffer_sz))
+    {
+      mIsHDR = true;
+      mRawImageData = (float*)stbi_loadf_from_memory(
+            static_cast<const stbi_uc*>(&buffer[0]),
+          buffer_sz, &mWidth, &mHeight, &mChannels, 0);
+    }
+    else
+    {
+      mRawImageData = (uint8_t*)stbi_load_from_memory(
+            static_cast<const stbi_uc*>(&buffer[0]),
+          buffer_sz, &mWidth, &mHeight, &mChannels, 0);
+    }
+
+    storageMan.closeFile(txFile);
+
+    LOG_DEBUG("TextureRuntime: Loaded texture {} with width {}, height {}, channels {}",
+              filename, mWidth,mHeight,mChannels);
+
+
+    mIsEnvironmentTexture = txDef.getIsEnvironmentTexture();
+
+    if (mIsEnvironmentTexture)
+    {
+      auto& pDef = static_cast<ProjectDefinition&>(getProjectRuntime().getDefinition());
+      auto& shaderCache = getProjectRuntime().getShaderCache();
+      if (txDef.getEquiToCubeMapShader() != Uuid::INVALID)
       {
-        if (auto defLock = mDefinition.lock())
+        auto shaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,txDef.getEquiToCubeMapShader());
+        if (shaderDef)
         {
-
-          string filename = pDir->getAssetAbsolutePath(defLock->getUuid());
-
-          if (auto storageMan = prLock->getStorageManager().lock())
-          {
-            if (auto txFile = storageMan->openFile(filename).lock())
-            {
-              if (!txFile->exists())
-              {
-                LOG_ERROR("TextureRuntime: Texture file does not exist: {}",filename);
-                storageMan->closeFile(txFile);
-                mLoadError = true;
-                return false;
-              }
-
-              LOG_DEBUG("TextureRuntime: Loading texture: {}",filename);
-
-              if (!txFile->readBinary())
-              {
-                LOG_ERROR("TextureRuntime: Unable to read file data");
-                storageMan->closeFile(txFile);
-                mLoadError = true;
-                return false;
-              }
-
-              auto txDef = static_pointer_cast<TextureDefinition>(defLock);
-
-              vector<uint8_t> buffer = txFile->getBinaryData();
-              size_t buffer_sz = buffer.size();
-
-              if (txDef->getFlipVertical())
-              {
-                stbi_set_flip_vertically_on_load(true);
-              }
-              else
-              {
-                stbi_set_flip_vertically_on_load(false);
-              }
-
-              if (stbi_is_hdr_from_memory(&buffer[0],buffer_sz))
-              {
-                mIsHDR = true;
-                mImage = (float*)stbi_loadf_from_memory(
-                      static_cast<const stbi_uc*>(&buffer[0]),
-                    buffer_sz, &mWidth, &mHeight, &mChannels, 0);
-              }
-              else
-              {
-                mImage = (uint8_t*)stbi_load_from_memory(
-                      static_cast<const stbi_uc*>(&buffer[0]),
-                    buffer_sz, &mWidth, &mHeight, &mChannels, 0);
-              }
-
-              storageMan->closeFile(txFile);
-
-              LOG_DEBUG("TextureRuntime: Loaded texture {} with width {}, height {}, channels {}",
-                        filename, mWidth,mHeight,mChannels);
-
-
-              mIsEnvironmentTexture = txDef->getIsEnvironmentTexture();
-
-              if (mIsEnvironmentTexture)
-              {
-                if (auto shaderCache = prLock->getShaderCache().lock())
-                {
-                  if (txDef->getEquiToCubeMapShader() != Uuid::INVALID)
-                  {
-                    mEquiToCubeShader = shaderCache->getRuntime(txDef->getEquiToCubeMapShader());
-                  }
-                  else
-                  {
-                    return false;
-                  }
-
-                  if (txDef->getIrradianceMapShader() != Uuid::INVALID)
-                  {
-                    mIrradianceMapShader = shaderCache->getRuntime(txDef->getIrradianceMapShader());
-                  }
-                  else
-                  {
-                    return false;
-                  }
-
-                  if (txDef->getPreFilterShader() != Uuid::INVALID)
-                  {
-                    mPreFilterShader = shaderCache->getRuntime(txDef->getPreFilterShader());
-                  }
-                  else
-                  {
-                    return false;
-                  }
-
-                  if (txDef->getBrdfLutShader() != Uuid::INVALID)
-                  {
-                    mBrdfLutShader = shaderCache->getRuntime(txDef->getBrdfLutShader());
-                  }
-                  else
-                  {
-                    return false;
-                  }
-                }
-                return true;
-              }
-            }
-          }
+          mEquiToCubeShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shaderDef.value().get()));
         }
       }
+      else
+      {
+        return false;
+      }
+
+      if (txDef.getIrradianceMapShader() != Uuid::INVALID)
+      {
+        auto shaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,txDef.getIrradianceMapShader());
+        if (shaderDef)
+        {
+          mIrradianceMapShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shaderDef.value().get()));
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+      if (txDef.getPreFilterShader() != Uuid::INVALID)
+      {
+        auto shaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,txDef.getPreFilterShader());
+        if (shaderDef)
+        {
+          mPreFilterShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shaderDef.value().get()));
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+      if (txDef.getBrdfLutShader() != Uuid::INVALID)
+      {
+        auto shaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,txDef.getBrdfLutShader());
+        if (shaderDef)
+        {
+          mBrdfLutShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shaderDef.value().get()));
+        }
+      }
+      else
+      {
+        return false;
+      }
     }
-    return false;
+    return true;
   }
 
   bool TextureRuntime::loadTextureIntoGL()
@@ -384,7 +369,7 @@ namespace octronic::dream
 
     if (mIsHDR)
     {
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, getWidth(), getHeight(), 0, GL_RGB, GL_FLOAT, getImage());
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, getWidth(), getHeight(), 0, GL_RGB, GL_FLOAT, getRawImageData());
     }
     else
     {
@@ -392,13 +377,13 @@ namespace octronic::dream
       {
         case 1:
           glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, getWidth(), getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, getImage());
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, getWidth(), getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, getRawImageData());
           break;
         case 3:
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE,getImage());
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE,getRawImageData());
           break;
         case 4:
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getImage());
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, getWidth(), getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,getRawImageData());
           break;
         default:
           glBindTexture(GL_TEXTURE_2D, 0);
@@ -424,8 +409,8 @@ namespace octronic::dream
     glBindTexture(GL_TEXTURE_2D, 0);
     GLCheckError();
 
-    stbi_image_free(mImage);
-    setImage(nullptr);
+    stbi_image_free(mRawImageData);
+    setRawImageData(nullptr);
     mLoaded = true;
 
     mRemoveFromGLTask->setTextureID(mGLTextureID);
@@ -446,9 +431,10 @@ namespace octronic::dream
 
   bool TextureRuntime::renderEquirectangularToCubeMap()
   {
-    if (auto equiShader = mEquiToCubeShader.lock())
+    if (mEquiToCubeShader)
     {
-      if (!equiShader->getLoaded())
+      auto& equitocubeShader = mEquiToCubeShader.value().get();
+      if (!equitocubeShader.getLoaded())
       {
         LOG_WARN("TextureRuntime: CubeMap shader is not loaded");
         return false;
@@ -474,9 +460,9 @@ namespace octronic::dream
 
 
       // convert HDR equirectangular environment map to cubemap equivalent
-      equiShader->use();
-      equiShader->setEquirectangularMapUniform(0);
-      equiShader->setProjectionMatrixUniform(CubeCaptureProjection);
+      equitocubeShader.use();
+      equitocubeShader.setEquirectangularMapUniform(0);
+      equitocubeShader.setProjectionMatrixUniform(CubeCaptureProjection);
 
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, mGLTextureID);
@@ -490,8 +476,8 @@ namespace octronic::dream
 
       for (unsigned int i = 0; i < 6; ++i)
       {
-        equiShader->setViewMatrixUniform(CubeCaptureViews[i]);
-        equiShader->syncUniforms();
+        equitocubeShader.setViewMatrixUniform(CubeCaptureViews[i]);
+        equitocubeShader.syncUniforms();
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -519,16 +505,14 @@ namespace octronic::dream
   TextureRuntime::renderIrradianceCubeMap
   ()
   {
-
-    if (auto irradianceMapShader  = mIrradianceMapShader.lock())
+    if (mIrradianceMapShader)
     {
-
-      if (!irradianceMapShader->getLoaded())
+      auto & irradianceMapShader = mIrradianceMapShader.value().get();
+      if (!irradianceMapShader.getLoaded())
       {
         LOG_WARN("TextureRuntime: Irradiance Map shader is not loaded");
         return false;
       }
-
 
       // pbr: create an irradiance cubemap, and re-scale capture FBO to irradiance scale.
       // --------------------------------------------------------------------------------
@@ -557,9 +541,9 @@ namespace octronic::dream
 
       // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
       // -----------------------------------------------------------------------------
-      irradianceMapShader->use();
-      irradianceMapShader->setEnvironmentMapUniform(0);
-      irradianceMapShader->setProjectionMatrixUniform(CubeCaptureProjection);
+      irradianceMapShader.use();
+      irradianceMapShader.setEnvironmentMapUniform(0);
+      irradianceMapShader.setProjectionMatrixUniform(CubeCaptureProjection);
 
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, mEquiToCubeTexture);
@@ -571,8 +555,8 @@ namespace octronic::dream
 
       for (unsigned int i = 0; i < 6; ++i)
       {
-        irradianceMapShader->setViewMatrixUniform(CubeCaptureViews[i]);
-        irradianceMapShader->syncUniforms();
+        irradianceMapShader.setViewMatrixUniform(CubeCaptureViews[i]);
+        irradianceMapShader.syncUniforms();
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -595,10 +579,10 @@ namespace octronic::dream
 
   bool TextureRuntime::renderPreFilterCubeMap()
   {
-    if (auto preFilterShader = mPreFilterShader.lock())
+    if (mPreFilterShader)
     {
-
-      if (!preFilterShader->getLoaded())
+      auto& prefilterShader = mPreFilterShader.value().get();
+      if (!prefilterShader.getLoaded())
       {
         LOG_WARN("TextureRuntime: PreFilter shader is not loaded");
         return false;
@@ -632,9 +616,9 @@ namespace octronic::dream
 
       // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
       // ----------------------------------------------------------------------------------------------------
-      preFilterShader->use();
-      preFilterShader->setEnvironmentMapUniform(0);
-      preFilterShader->setProjectionMatrixUniform(CubeCaptureProjection);
+      prefilterShader.use();
+      prefilterShader.setEnvironmentMapUniform(0);
+      prefilterShader.setProjectionMatrixUniform(CubeCaptureProjection);
 
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, mEquiToCubeTexture);
@@ -656,11 +640,11 @@ namespace octronic::dream
         GLCheckError();
 
         float roughness = (float)mip / (float)(maxMipLevels - 1);
-        preFilterShader->setRoughnessUniform(roughness);
+        prefilterShader.setRoughnessUniform(roughness);
         for (unsigned int i = 0; i < 6; ++i)
         {
-          preFilterShader->setViewMatrixUniform(CubeCaptureViews[i]);
-          preFilterShader->syncUniforms();
+          prefilterShader.setViewMatrixUniform(CubeCaptureViews[i]);
+          prefilterShader.syncUniforms();
 
           glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                  GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -685,10 +669,10 @@ namespace octronic::dream
 
   bool TextureRuntime::renderBrdfLut()
   {
-
-    if (auto shaderLock = mBrdfLutShader.lock())
+    if (mBrdfLutShader)
     {
-      if (!shaderLock->getLoaded())
+      auto& brdfLutShader = mBrdfLutShader.value().get();
+      if (!brdfLutShader.getLoaded())
       {
         LOG_WARN("TextureRuntime: BRDF_LUT shader is not loaded");
         return false;
@@ -721,8 +705,8 @@ namespace octronic::dream
       glViewport(0, 0, 512, 512);
       GLCheckError();
 
-      shaderLock->use();
-      shaderLock->syncUniforms();
+      brdfLutShader.use();
+      brdfLutShader.syncUniforms();
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       GLCheckError();
@@ -811,87 +795,77 @@ namespace octronic::dream
 
   void TextureRuntime::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& prTaskQueue = getProjectRuntime().getTaskQueue();
+    auto& gc = getProjectRuntime().getGraphicsComponent();
+    auto& gfxQueue = gc.getTaskQueue();
+    auto& gfxDestQueue = gc.getDestructionTaskQueue();
+
+    if (mReloadFlag)
     {
-      if (auto prTaskQueue = prLock->getTaskQueue().lock())
+      if (mRemoveFromGLTask->hasState(TASK_STATE_QUEUED))
       {
-        if (auto gcLock = prLock->getGraphicsComponent().lock())
-        {
-          if (auto gfxQueue = gcLock->getTaskQueue().lock())
-          {
-            if (auto gfxDestQueue = gcLock->getDestructionTaskQueue().lock())
-            {
-              if (mReloadFlag)
-              {
-                if (mRemoveFromGLTask->hasState(TASK_STATE_QUEUED))
-                {
-                  gfxDestQueue->pushTask(mRemoveFromGLTask);
+        gfxDestQueue.pushTask(mRemoveFromGLTask);
 
-                  mLoaded = false;
-                  mLoadError = false;
-                  mIsHDR = false;
-                  mGLTextureID = 0;
-                  mWidth = 0;
-                  mHeight = 0;
-                  mChannels = 0;
-                  mImage = nullptr;
+        mLoaded = false;
+        mLoadError = false;
+        mIsHDR = false;
+        mGLTextureID = 0;
+        mWidth = 0;
+        mHeight = 0;
+        mChannels = 0;
+        mRawImageData = nullptr;
 
-                  // Environment
-                  mCaptureFBO = 0;
-                  mCaptureRBO = 0;
+        // Environment
+        mCaptureFBO = 0;
+        mCaptureRBO = 0;
 
-                  mEquiToCubeTexture = 0;
-                  mEquiToCubeShader.reset();
+        mEquiToCubeTexture = 0;
+        mEquiToCubeShader = optional<reference_wrapper<ShaderRuntime>>();
 
-                  mIrradianceMapTexture = 0;
-                  mIrradianceMapShader.reset();
+        mIrradianceMapTexture = 0;
+        mIrradianceMapShader = optional<reference_wrapper<ShaderRuntime>>();
 
-                  mPreFilterCubeMapTexture = 0;
-                  mPreFilterShader.reset();
+        mPreFilterCubeMapTexture = 0;
+        mPreFilterShader = optional<reference_wrapper<ShaderRuntime>>();
 
-                  mBrdfLutTexture = 0;
-                  mBrdfLutShader.reset();
+        mBrdfLutTexture = 0;
+        mBrdfLutShader = optional<reference_wrapper<ShaderRuntime>>();
 
-                  // Cube
-                  mCubeVAO = 0;
-                  mCubeVBO = 0;
+        // Cube
+        mCubeVAO = 0;
+        mCubeVBO = 0;
 
-                  // Quad
-                  mQuadVAO = 0;
-                  mQuadVBO = 0;
-                }
-                else if (mRemoveFromGLTask->hasState(TASK_STATE_COMPLETED))
-                {
-                  mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
-                  mLoadIntoGLTask->setState(TASK_STATE_QUEUED);
-                  mRenderCubeMapTask->setState(TASK_STATE_QUEUED);
-                  mRemoveFromGLTask->clearVariables();
-                  mRemoveFromGLTask->setState(TASK_STATE_QUEUED);
-                  mReloadFlag = false;
-                }
-              }
-              else if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
-              {
-                prTaskQueue->pushTask(mLoadFromDefinitionTask);
-              }
-              else
-              {
-                if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED) &&
-                    mLoadIntoGLTask->hasState(TASK_STATE_QUEUED))
-                {
-                  gfxQueue->pushTask(mLoadIntoGLTask);
-                }
+        // Quad
+        mQuadVAO = 0;
+        mQuadVBO = 0;
+      }
+      else if (mRemoveFromGLTask->hasState(TASK_STATE_COMPLETED))
+      {
+        mLoadFromDefinitionTask->setState(TASK_STATE_QUEUED);
+        mLoadIntoGLTask->setState(TASK_STATE_QUEUED);
+        mRenderCubeMapTask->setState(TASK_STATE_QUEUED);
+        mRemoveFromGLTask->clearVariables();
+        mRemoveFromGLTask->setState(TASK_STATE_QUEUED);
+        mReloadFlag = false;
+      }
+    }
+    else if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+    {
+      prTaskQueue.pushTask(mLoadFromDefinitionTask);
+    }
+    else
+    {
+      if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED) &&
+          mLoadIntoGLTask->hasState(TASK_STATE_QUEUED))
+      {
+        gfxQueue.pushTask(mLoadIntoGLTask);
+      }
 
-                if (mIsEnvironmentTexture &&
-                    mLoadIntoGLTask->hasState(TASK_STATE_COMPLETED) &&
-                    mRenderCubeMapTask->hasState(TASK_STATE_QUEUED))
-                {
-                  gfxQueue->pushTask(mRenderCubeMapTask);
-                }
-              }
-            }
-          }
-        }
+      if (mIsEnvironmentTexture &&
+          mLoadIntoGLTask->hasState(TASK_STATE_COMPLETED) &&
+          mRenderCubeMapTask->hasState(TASK_STATE_QUEUED))
+      {
+        gfxQueue.pushTask(mRenderCubeMapTask);
       }
     }
   }

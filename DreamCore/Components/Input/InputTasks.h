@@ -13,7 +13,7 @@ namespace octronic::dream
     class InputPollDataTask : public Task
     {
     public:
-        InputPollDataTask(const shared_ptr<ProjectRuntime>& pr);
+        InputPollDataTask(ProjectRuntime& pr);
         void execute() override;
     };
 
@@ -22,7 +22,7 @@ namespace octronic::dream
     class InputRegisterScriptTask : public Task
     {
     public:
-        InputRegisterScriptTask(const shared_ptr<ProjectRuntime>& pr);
+        InputRegisterScriptTask(ProjectRuntime& pr);
         void execute() override;
     };
 
@@ -31,7 +31,7 @@ namespace octronic::dream
     class InputExecuteScriptTask : public Task
     {
     public:
-        InputExecuteScriptTask(const shared_ptr<ProjectRuntime>& pr);
+        InputExecuteScriptTask(ProjectRuntime& pr);
         void execute() override;
     };
 
@@ -41,7 +41,7 @@ namespace octronic::dream
     {
         UuidType mInputScriptUuid;
     public:
-        InputRemoveScriptTask(const shared_ptr<ProjectRuntime>& pr);
+        InputRemoveScriptTask(ProjectRuntime& pr);
         void setInputScriptUuid(UuidType u);
         void execute() override;
     };

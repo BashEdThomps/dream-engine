@@ -12,7 +12,6 @@
 
 #include "SceneDefinition.h"
 #include "SceneDefinition.h"
-#include "Entity/EntityDefinition.h"
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 #include "Common/Uuid.h"
@@ -20,47 +19,28 @@
 #include "Project/ProjectDefinition.h"
 #include "Math/Vector.h"
 
-using std::static_pointer_cast;
-using std::make_shared;
-
 namespace octronic::dream
 {
   SceneDefinition::SceneDefinition
-  (const weak_ptr<ProjectDefinition>& projectDefinition, const json& data)
-    : Definition("SceneDefinition",data),
-      mCameraDefinition(nullptr),
-      mRootEntityDefinition(nullptr),
+  (ProjectDefinition& projectDefinition, const json& data)
+    : Definition(data),
+      mCameraDefinition(json::object()),
       mProjectDefinition(projectDefinition)
   {
     LOG_TRACE( "SceneDefinition: Constructing {}", getNameAndUuidString() );
-  }
-
-  SceneDefinition::~SceneDefinition
-  ()
-  {
-    LOG_TRACE( "SceneDefinition: Destructing {}", getNameAndUuidString() );
-  }
-
-  void
-  SceneDefinition::loadRootEntityDefinition
-  ()
-  {
-    if (mJson.find(Constants::SCENE_ROOT_ENTITY) == mJson.end())
-    {
-      LOG_ERROR( "SceneDefinition: No root Entity found!!" );
-      return;
-    }
-    json rsoJson = mJson[Constants::SCENE_ROOT_ENTITY];
 
     if (mJson.find(Constants::SCENE_CAMERA) != mJson.end())
     {
-      mCameraDefinition = make_shared<CameraDefinition>(mJson[Constants::SCENE_CAMERA]);
+    	mCameraDefinition.setJson(mJson[Constants::SCENE_CAMERA]);
     }
 
-    mRootEntityDefinition = make_shared<EntityDefinition>(
-          weak_ptr<EntityDefinition>(),
-          static_pointer_cast<SceneDefinition>(shared_from_this()), rsoJson );
-    mRootEntityDefinition->loadChildEntityDefinitions();
+    if (mJson.find(Constants::SCENE_ROOT_SCENE_ENTITY) != mJson.end())
+    {
+      mRootSceneEntityDefinition.emplace(
+      	*this,
+      	optional<reference_wrapper<SceneEntityDefinition>>(),
+      	mJson[Constants::SCENE_ROOT_SCENE_ENTITY]);
+    }
   }
 
   // Rendering ===============================================================
@@ -70,7 +50,6 @@ namespace octronic::dream
   ()
   const
   {
-    vec4 color;
     if (mJson.find(Constants::SCENE_CLEAR_COLOR) == mJson.end())
     {
       return vec4(0.f);
@@ -143,17 +122,15 @@ namespace octronic::dream
   }
 
   void
-  SceneDefinition::setCamera
+  SceneDefinition::setCameraDefinitionFromJson
   (const json& cDef)
   {
-    mJson[Constants::SCENE_CAMERA] = cDef;
-    mCameraDefinition = make_shared<CameraDefinition>(cDef);
+    mCameraDefinition.setJson(cDef);
   }
 
-  weak_ptr<CameraDefinition>
-  SceneDefinition::getCamera
+  CameraDefinition&
+  SceneDefinition::getCameraDefinition
   ()
-  const
   {
     return mCameraDefinition;
   }
@@ -224,8 +201,6 @@ namespace octronic::dream
   ()
   const
   {
-    vec3 gravity;
-
     if (mJson.find(Constants::SCENE_GRAVITY) == mJson.end())
     {
       return vec3(0.f);
@@ -243,71 +218,39 @@ namespace octronic::dream
 
   // Entity Management =======================================================
 
-  void
-  SceneDefinition::addTemplate
-  (const shared_ptr<EntityDefinition>& _template)
-  {
-    mTemplates.push_back(_template);
-  }
 
-  weak_ptr<EntityDefinition>
-  SceneDefinition::getTemplateByUuid
-  (UuidType uuid)
-  const
-  {
-    for (auto next : mTemplates)
-    {
-      if (next->getUuid() == uuid)
-      {
-        return next;
-      }
-    }
-    return weak_ptr<EntityDefinition>();
-  }
 
-  weak_ptr<EntityDefinition>
-  SceneDefinition::getRootEntityDefinition
-  ()
-  const
-  {
-    return mRootEntityDefinition;
-  }
-
-  weak_ptr<ProjectDefinition>
+  ProjectDefinition&
   SceneDefinition::getProjectDefinition
   ()
-  const
   {
     return mProjectDefinition;
   }
 
-  void
-  SceneDefinition::createNewRootEntityDefinition
+
+
+  optional<SceneEntityDefinition>&
+  SceneDefinition::getRootSceneEntityDefinition
   ()
   {
-    json rootDefJson;
-    rootDefJson[Constants::NAME] = Constants::ENTITY_ROOT_NAME;
-    rootDefJson[Constants::UUID] = Uuid::generateUuid();
-    rootDefJson[Constants::TRANSFORM] = Transform().toJson();
-    mRootEntityDefinition = make_shared<EntityDefinition>(
-          weak_ptr<EntityDefinition>(),
-          static_pointer_cast<SceneDefinition>(shared_from_this()),
-          rootDefJson);
+    return mRootSceneEntityDefinition;
   }
 
 
-  vector<string>
-  SceneDefinition::getEntityNamesVector
-  ()
-  const
+  optional<reference_wrapper<SceneEntityDefinition>>
+  SceneDefinition::getSceneEntityByUuid(UuidType uuid)
   {
-    vector<string> names;
-    if (mRootEntityDefinition != nullptr)
-    {
-      auto entityNames = mRootEntityDefinition->getChildNamesVector();
-      names.insert(names.end(), entityNames.begin(), entityNames.end());
-    }
-    return names;
+   if (mRootSceneEntityDefinition)
+   {
+     auto& root = mRootSceneEntityDefinition.value();
+
+     if (root.hasUuid(uuid)) return root;
+
+     auto child_result = root.getChildDefinitionByUuid(uuid);
+
+     if (child_result) return child_result;
+   }
+   return std::nullopt;
   }
 
   // Serialisation ===========================================================
@@ -316,11 +259,8 @@ namespace octronic::dream
   SceneDefinition::toJson
   ()
   {
-    mJson[Constants::SCENE_ROOT_ENTITY] = mRootEntityDefinition->toJson();
-    if (mCameraDefinition != nullptr)
-    {
-      mJson[Constants::SCENE_CAMERA] = mCameraDefinition->toJson();
-    }
+    mJson[Constants::SCENE_ROOT_SCENE_ENTITY] = mRootSceneEntityDefinition.value().toJson();
+    mJson[Constants::SCENE_CAMERA] = mCameraDefinition.toJson();
     return mJson;
   }
 }

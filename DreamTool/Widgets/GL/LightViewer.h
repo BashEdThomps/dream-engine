@@ -6,7 +6,7 @@ namespace octronic::dream::tool
     class LightViewer : public GLWidget
     {
     public:
-        LightViewer(DreamToolContext* project);
+        LightViewer(DreamToolContext& project);
         ~LightViewer() override;
         void init() override;
         void draw() override;

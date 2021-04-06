@@ -14,6 +14,7 @@
 
 #include "ScriptRuntime.h"
 #include "ScriptDefinition.h"
+#include "ScriptPrintListener.h"
 
 #include "Components/Event.h"
 #include "Math/Transform.h"
@@ -35,9 +36,9 @@
 
 #include "Entity/EntityRuntime.h"
 #include "Scene/SceneRuntime.h"
-#include "Storage/ProjectDirectory.h"
+#include "Project/ProjectDirectory.h"
 #include "Project/ProjectRuntime.h"
-#include "Project/Project.h"
+
 
 extern "C"
 {
@@ -56,7 +57,6 @@ using std::exception;
 using std::cout;
 using std::cerr;
 using std::string;
-using std::lock_guard;
 
 // Static ======================================================================
 
@@ -71,9 +71,9 @@ _octronic_dream_sol_print(lua_State* L)
   }
 
   string out = stream.str();
-  for (auto listener : octronic::dream::ScriptComponent::PrintListeners)
+  for (auto& listener : octronic::dream::ScriptComponent::PrintListeners)
   {
-    listener->onPrint(out);
+    listener.get().onPrint(out);
   }
   return 0;
 }
@@ -114,8 +114,10 @@ namespace octronic::dream // ===================================================
 
 
   ScriptComponent::ScriptComponent
-  (const weak_ptr<ProjectRuntime>& runtime)
-    : Component(runtime)
+  (ProjectRuntime& runtime)
+    : Component(runtime),
+      mLuaState(nullptr)
+
   {
     LOG_TRACE( "ScriptComponent: Constructing Object" );
   }
@@ -125,10 +127,10 @@ namespace octronic::dream // ===================================================
   ()
   {
     LOG_TRACE("ScriptComponent: Destroying Object");
-    if (LuaState != nullptr)
+    if (mLuaState != nullptr)
     {
-      lua_close(LuaState.get());
-      LuaState = nullptr;
+      lua_close(mLuaState);
+      mLuaState = nullptr;
     }
   }
 
@@ -137,19 +139,19 @@ namespace octronic::dream // ===================================================
   ()
   {
     LOG_DEBUG( "ScriptComponent: Initialising" );
-    LuaState = shared_ptr<lua_State>(luaL_newstate());
-    lua_atpanic(LuaState.get(), sol::c_call<decltype(&_octronic_dream_sol_panic), &_octronic_dream_sol_panic> );
-    sol::state_view sView(LuaState.get());
+    mLuaState = luaL_newstate();
+    lua_atpanic(mLuaState, sol::c_call<decltype(&_octronic_dream_sol_panic), &_octronic_dream_sol_panic> );
+    sol::state_view sView(mLuaState);
     sView.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::string);
     sView.set_exception_handler(_octronic_dream_sol_exception_handler);
-    sol::table comps(LuaState.get(), sol::create);
+    sol::table comps(mLuaState, sol::create);
     sView[LUA_COMPONENTS_TBL] = comps;
 
     // Register print callback
 
-    lua_getglobal(LuaState.get(), "_G");
-    luaL_setfuncs(LuaState.get(), printlib, 0);
-    lua_pop(LuaState.get(), 1);
+    lua_getglobal(mLuaState, "_G");
+    luaL_setfuncs(mLuaState, printlib, 0);
+    lua_pop(mLuaState, 1);
 
     LOG_DEBUG("ScriptComponent: Got a sol state");
     exposeAPI();
@@ -160,226 +162,184 @@ namespace octronic::dream // ===================================================
 
   bool
   ScriptComponent::executeScriptOnUpdate
-  (const weak_ptr<ScriptRuntime>& scriptWeak,
-   const weak_ptr<EntityRuntime>& entityWeak)
+  (ScriptRuntime& script, EntityRuntime& entity)
   {
-    if (auto script = scriptWeak.lock())
+    LOG_DEBUG("ScriptComponent: Calling onUpdate for {}",entity.getNameAndUuidString());
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+    sol::table entityTable = solStateView[entity.getUuid()];
+
+    if (entityTable == sol::lua_nil)
     {
-      if (auto entity = entityWeak.lock())
-      {
-
-        LOG_DEBUG("ScriptComponent: Calling onUpdate for {}",entity->getNameAndUuidString());
-        sol::state_view solStateView(ScriptComponent::LuaState.get());
-        sol::table entityTable = solStateView[entity->getUuid()];
-
-        if (entityTable == sol::lua_nil)
-        {
-          return false;
-        }
-
-        sol::protected_function onUpdateFunction = entityTable[LUA_ON_UPDATE_FUNCTION];
-        auto result = onUpdateFunction(entity);
-        if (!result.valid())
-        {
-          // An error has occured
-          sol::error err = result;
-          string what = err.what();
-          LOG_ERROR("ScriptComponent: {} Could not execute onUpdate in lua script:\n{}",
-                    entity->getNameAndUuidString(),
-                    what);
-          entity->setScriptError(true);
-          return false;
-        }
-        return true;
-      }
+      return false;
     }
-    return false;
+
+    sol::protected_function onUpdateFunction = entityTable[LUA_ON_UPDATE_FUNCTION];
+    auto result = onUpdateFunction(entity);
+    if (!result.valid())
+    {
+      // An error has occured
+      sol::error err = result;
+      string what = err.what();
+      LOG_ERROR("ScriptComponent: {} Could not execute onUpdate in lua script:\n{}",
+                entity.getNameAndUuidString(),
+                what);
+      entity.setScriptError(true);
+      return false;
+    }
+    return true;
   }
 
   bool
   ScriptComponent::executeScriptOnInit
-  (const weak_ptr<ScriptRuntime>& scriptWeak,
-   const weak_ptr<EntityRuntime>& entityWeak)
+  (ScriptRuntime& script,
+   EntityRuntime& entity)
   {
-    if (auto entity = entityWeak.lock())
+    if (entity.getScriptError())
     {
-      if (auto script = scriptWeak.lock())
-      {
-
-        if (entity->getScriptError())
-        {
-          LOG_ERROR("ScriptComponent: Cannot init, script for {} in error state.", entity->getNameAndUuidString());
-          return true;
-        }
-
-        if (!entity->getScriptInitialised())
-        {
-          LOG_TRACE("ScriptComponent: Script {} has not been initialised for {}", script->getNameAndUuidString(), entity->getNameAndUuidString());
-          return true;
-        }
-
-        LOG_DEBUG("ScriptComponent: Calling onInit in {} for {}",  script->getName(), entity->getName());
-
-        sol::state_view solStateView(ScriptComponent::LuaState.get());
-
-        sol::table entityTable = solStateView[entity->getUuid()];
-
-        if (entityTable == sol::lua_nil)
-        {
-          return false;
-        }
-
-        sol::protected_function onInitFunction = entityTable[LUA_ON_INIT_FUNCTION];
-
-        auto initResult = onInitFunction(entity);
-
-        if (!initResult.valid())
-        {
-          // An error has occured
-          sol::error err = initResult;
-          string what = err.what();
-          LOG_ERROR(
-                "ScriptComponent: {}\nCould not execute onInit in lua script:\n{}",
-                entity->getNameAndUuidString(),
-                what
-                );
-          entity->setScriptError(true);
-          return false;
-        }
-        entity->setScriptInitialised(true);
-        return true;
-      }
+      LOG_ERROR("ScriptComponent: Cannot init, script for {} in error state.", entity.getNameAndUuidString());
+      return true;
     }
-    return false;
+
+    if (!entity.getScriptInitialised())
+    {
+      LOG_TRACE("ScriptComponent: Script {} has not been initialised for {}", script.getNameAndUuidString(), entity.getNameAndUuidString());
+      return true;
+    }
+
+    LOG_DEBUG("ScriptComponent: Calling onInit in {} for {}",  script.getName(), entity.getName());
+
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+
+    sol::table entityTable = solStateView[entity.getUuid()];
+
+    if (entityTable == sol::lua_nil)
+    {
+      return false;
+    }
+
+    sol::protected_function onInitFunction = entityTable[LUA_ON_INIT_FUNCTION];
+
+    auto initResult = onInitFunction(entity);
+
+    if (!initResult.valid())
+    {
+      // An error has occured
+      sol::error err = initResult;
+      string what = err.what();
+      LOG_ERROR("ScriptComponent: {}\nCould not execute onInit in lua script:\n{}",
+                entity.getNameAndUuidString(), what);
+      entity.setScriptError(true);
+      return false;
+    }
+    entity.setScriptInitialised(true);
+    return true;
   }
 
   bool
   ScriptComponent::executeScriptOnEvent
-  (const weak_ptr<ScriptRuntime>& scriptWeak,
-   const weak_ptr<EntityRuntime>& entityWeak)
+  (ScriptRuntime& script,
+   EntityRuntime& entity)
   {
-    if (auto entity = entityWeak.lock())
+    if (entity.getScriptError())
     {
-      if (auto script = scriptWeak.lock())
+      LOG_ERROR( "ScriptComponent: Cannot execute {} in error state ",  script.getNameAndUuidString());
+      entity.clearProcessedEvents();
+      return true;
+    }
+
+    if (!entity.hasEvents())
+    {
+      return true;
+    }
+
+
+    LOG_DEBUG( "ScriptComponent: Calling onEvent for {}", entity.getNameAndUuidString());
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+
+    sol::table entityTable = solStateView[entity.getUuid()];
+
+    if (entityTable == sol::lua_nil)
+    {
+      return false;
+    }
+
+    sol::protected_function onEventFunction = entityTable[LUA_ON_EVENT_FUNCTION];
+
+    for (auto e : entity.getEventQueue())
+    {
+      auto result = onEventFunction(entity,e);
+      if (!result.valid())
       {
-        if (entity->getScriptError())
-        {
-          LOG_ERROR( "ScriptComponent: Cannot execute {} in error state ",  script->getNameAndUuidString());
-          entity->clearProcessedEvents();
-          return true;
-        }
-
-        if (!entity->hasEvents())
-        {
-          return true;
-        }
-
-
-        LOG_DEBUG( "ScriptComponent: Calling onEvent for {}", entity->getNameAndUuidString());
-        sol::state_view solStateView(ScriptComponent::LuaState.get());
-
-        sol::table entityTable = solStateView[entity->getUuid()];
-
-        if (entityTable == sol::lua_nil)
-        {
-          return false;
-        }
-
-        sol::protected_function onEventFunction = entityTable[LUA_ON_EVENT_FUNCTION];
-
-        for (auto e : entity->getEventQueue())
-        {
-          auto result = onEventFunction(entity,e);
-          if (!result.valid())
-          {
-            // An error has occured
-            sol::error err = result;
-            string what = err.what();
-            LOG_ERROR("ScriptComponent: {}:\nCould not execute onEvent in lua script:\n{}",
-                      entity->getNameAndUuidString(), what);
-            entity->setScriptError(true);
-            return false;
-          }
-        }
-        entity->clearProcessedEvents();
-        return true;
+        // An error has occured
+        sol::error err = result;
+        string what = err.what();
+        LOG_ERROR("ScriptComponent: {}:\nCould not execute onEvent in lua script:\n{}",
+                  entity.getNameAndUuidString(), what);
+        entity.setScriptError(true);
+        return false;
       }
     }
-    return false;
+    entity.clearProcessedEvents();
+    return true;
   }
 
   bool
   ScriptComponent::executeScriptOnInput
-  (const weak_ptr<ScriptRuntime>& scriptWeak,
-   const weak_ptr<SceneRuntime>& srWeak)
+  (ScriptRuntime& script,
+   SceneRuntime& sr)
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& inputComp = getProjectRuntime().getInputComponent();
+
+    LOG_TRACE("ScriptComponent: Calling onInput function with {}",script.getUuid());
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+    sol::table inputScriptTable = solStateView[script.getUuid()];
+
+    if (inputScriptTable == sol::lua_nil)
     {
-      if (auto script = scriptWeak.lock())
-      {
-        if (auto inputComp = prLock->getInputComponent().lock())
-        {
-          if (auto sr = srWeak.lock())
-          {
-            LOG_TRACE("ScriptComponent: Calling onInput function with {}",script->getUuid());
-            sol::state_view solStateView(ScriptComponent::LuaState.get());
-            sol::table inputScriptTable = solStateView[script->getUuid()];
-
-            if (inputScriptTable == sol::lua_nil)
-            {
-              return false;
-            }
-
-            sol::protected_function onInputFunction = inputScriptTable[LUA_ON_INPUT_FUNCTION];
-            auto result = onInputFunction(inputComp, sr);
-            if (!result.valid())
-            {
-              // An error has occured
-              sol::error err = result;
-              string what = err.what();
-              LOG_ERROR("ScriptComponent: Could not execute onInput in lua script:\n{}",what);
-              return false;
-            }
-            return true;
-          }
-        }
-      }
+      return false;
     }
-    return false;
+
+    sol::protected_function onInputFunction = inputScriptTable[LUA_ON_INPUT_FUNCTION];
+    auto result = onInputFunction(inputComp, sr);
+    if (!result.valid())
+    {
+      // An error has occured
+      sol::error err = result;
+      string what = err.what();
+      LOG_ERROR("ScriptComponent: Could not execute onInput in lua script:\n{}",what);
+      return false;
+    }
+    return true;
   }
 
 
   bool
   ScriptComponent::registerInputScript
-  (const weak_ptr<ScriptRuntime>& scriptWeak)
+  (ScriptRuntime& script)
   {
-    if (auto script = scriptWeak.lock())
+    LOG_TRACE("ScriptComponent: Registering Input Script");
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+    sol::environment environment(ScriptComponent::mLuaState, sol::create, solStateView.globals());
+
+    solStateView[script.getUuid()] = environment;
+
+    auto exec_result = solStateView.safe_script(
+          script.getSource(), environment,
+          [](lua_State*, sol::protected_function_result pfr){
+        return pfr;});
+
+    // it did not work
+    if(!exec_result.valid())
     {
-      LOG_TRACE("ScriptComponent: Registering Input Script");
-      sol::state_view solStateView(ScriptComponent::LuaState.get());
-      sol::environment environment(ScriptComponent::LuaState.get(), sol::create, solStateView.globals());
-
-      solStateView[script->getUuid()] = environment;
-
-      auto exec_result = solStateView.safe_script(
-            script->getSource(), environment,
-            [](lua_State*, sol::protected_function_result pfr){
-          return pfr;});
-
-      // it did not work
-      if(!exec_result.valid())
-      {
-        // An error has occured
-        sol::error err = exec_result;
-        string what = err.what();
-        LOG_ERROR("ScriptComponent: Could not execute lua script:\n{}",what);
-        return false;
-      }
-
-      LOG_DEBUG("ScriptComponent: Loaded Input Script Successfully");
-      return true;
+      // An error has occured
+      sol::error err = exec_result;
+      string what = err.what();
+      LOG_ERROR("ScriptComponent: Could not execute lua script:\n{}",what);
+      return false;
     }
-    return false;
+
+    LOG_DEBUG("ScriptComponent: Loaded Input Script Successfully");
+    return true;
   }
 
   bool
@@ -387,7 +347,7 @@ namespace octronic::dream // ===================================================
   (UuidType script)
   {
     LOG_TRACE("ScriptComponent: Removing Input Script Table");
-    sol::state_view solStateView(ScriptComponent::LuaState.get());
+    sol::state_view solStateView(ScriptComponent::mLuaState);
     if (solStateView[script] != sol::lua_nil)
     {
       solStateView[script] = sol::lua_nil;
@@ -400,49 +360,41 @@ namespace octronic::dream // ===================================================
 
   bool
   ScriptComponent::createEntityState
-  (const weak_ptr<ScriptRuntime>& scriptWeak,
-   const weak_ptr<EntityRuntime>& entityWeak)
+  (ScriptRuntime& script,
+   EntityRuntime& entity)
   {
-    if (auto script = scriptWeak.lock())
+    LOG_DEBUG("ScriptComponent: loadScript called for {}", entity.getNameAndUuidString() );
+    LOG_DEBUG("ScriptComponent: calling scriptLoadFromString in lua for {}" , entity.getNameAndUuidString() );
+
+    sol::state_view solStateView(ScriptComponent::mLuaState);
+
+    // Create an environment for this entity runtime
+    sol::environment environment(ScriptComponent::mLuaState, sol::create, solStateView.globals());
+    solStateView[entity.getUuid()] = environment;
+
+    auto exec_result = solStateView.safe_script(script.getSource(), environment,
+                                                [](lua_State*, sol::protected_function_result pfr)
+    {return pfr;});
+
+    // it did not work
+    if(!exec_result.valid())
     {
-      if (auto entity = entityWeak.lock())
-      {
-        LOG_DEBUG("ScriptComponent: loadScript called for {}", entity->getNameAndUuidString() );
-        LOG_DEBUG("ScriptComponent: calling scriptLoadFromString in lua for {}" , entity->getNameAndUuidString() );
-
-        sol::state_view solStateView(ScriptComponent::LuaState.get());
-
-        // Create an environment for this entity runtime
-        sol::environment environment(ScriptComponent::LuaState.get(), sol::create, solStateView.globals());
-        solStateView[entity->getUuid()] = environment;
-
-        auto exec_result = solStateView.safe_script(
-              script->getSource(), environment,
-              [](lua_State*, sol::protected_function_result pfr)
-        {return pfr;});
-
-        // it did not work
-        if(!exec_result.valid())
-        {
-          // An error has occured
-          sol::error err = exec_result;
-          std::string what = err.what();
-          LOG_ERROR("ScriptComponent: {} Error while executing lua script:\n{}", entity->getUuid(),what);
-          entity->setScriptError(true);
-          return false;
-        }
-        entity->setScriptInitialised(true);
-        return true;
-      }
+      // An error has occured
+      sol::error err = exec_result;
+      std::string what = err.what();
+      LOG_ERROR("ScriptComponent: {} Error while executing lua script:\n{}", entity.getUuid(),what);
+      entity.setScriptError(true);
+      return false;
     }
-    return false;
+    entity.setScriptInitialised(true);
+    return true;
   }
 
   bool
   ScriptComponent::removeEntityState
   (UuidType uuid)
   {
-    sol::state_view stateView(ScriptComponent::LuaState.get());
+    sol::state_view stateView(ScriptComponent::mLuaState);
     stateView[uuid] = sol::lua_nil;
     LOG_DEBUG( "ScriptComponent: Removed script lua table for {}" , uuid);
     return true;
@@ -455,28 +407,8 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("ProjectRuntime");
-    sol::state_view stateView(LuaState.get());
-    stateView.new_usertype<ProjectRuntime>(
-          "ProjectRuntime",
-          "getTime",&ProjectRuntime::getTime,
-          "getAssetDefinition",&ProjectRuntime::getAssetDefinitionByUuid);
-
-    stateView["ProjectRuntime"] = mProjectRuntime;
-  }
-
-  void
-  ScriptComponent::exposeProjectDirectory
-  ()
-  {
-    debugRegisteringClass("ProjectDirectory");
-    sol::state_view stateView(LuaState.get());
-    stateView.new_usertype<ProjectDirectory>(
-          "ProjectDirectory",
-          "getAssetPath",static_cast<string (ProjectDirectory::*)(UuidType) const>(&ProjectDirectory::getAssetAbsolutePath));
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView["Directory"] = prLock->getProjectDirectory();
-    }
+    sol::state_view stateView(mLuaState);
+    stateView.new_usertype<ProjectRuntime>("ProjectRuntime");
   }
 
   void
@@ -484,7 +416,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("Camera");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<CameraRuntime>(
           "Camera",
           "setTransform",&CameraRuntime::setTransform,
@@ -511,7 +443,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("PathRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<PathRuntime>(
           "PathRuntime",
           "generate",&PathRuntime::generate,
@@ -527,12 +459,8 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("GraphicsComponent");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<GraphicsComponent>("GraphicsComponent");
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView[LUA_COMPONENTS_TBL]["Graphics"] = prLock->getGraphicsComponent();
-    }
   }
 
   void
@@ -540,7 +468,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("ShaderRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<ShaderRuntime>(
           "ShaderRuntime",
           "getUuid", &ShaderRuntime::getUuid);
@@ -551,14 +479,9 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("PhysicsComponent");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<PhysicsComponent>(
           "PhysicsComponent");
-
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView[LUA_COMPONENTS_TBL]["Physics"] = prLock->getPhysicsComponent();
-    }
   }
 
   void
@@ -566,7 +489,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("PhysicsObjectRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<PhysicsObjectRuntime>(
           "PhysicsObjectRuntime",
           "getUuid", &PhysicsObjectRuntime::getUuid,
@@ -596,7 +519,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("EntityRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<EntityRuntime>(
           "EntityRuntime",
           sol::base_classes, sol::bases<Runtime>(),
@@ -620,9 +543,7 @@ namespace octronic::dream // ===================================================
           "getDeleted",&EntityRuntime::getDeleted,
           "setDeleted",&EntityRuntime::setDeleted,
           "addEvent",&EntityRuntime::addEvent,
-          "replaceAssetUuid",&EntityRuntime::replaceAssetUuid,
-          "containedInFrustum",&EntityRuntime::containedInFrustum,
-          "addChildFromTemplateUuid",&EntityRuntime::addChildFromTemplateUuid);
+          "containedInFrustum",&EntityRuntime::containedInFrustum);
   }
 
   void
@@ -630,7 +551,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("Transform");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Transform>(
           "Transform",
           "translate",&Transform::translate,
@@ -651,7 +572,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("Time");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Time>(
           "Time",
           "getCurrentFrameTime",&Time::getCurrentFrameTime,
@@ -659,10 +580,8 @@ namespace octronic::dream // ===================================================
           "getFrameTimeDelta",&Time::getFrameTimeDelta,
           "perSecond",&Time::perSecond);
 
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView["Time"] = prLock->getTime();
-    }
+    auto& time = getProjectRuntime().getTime();
+    stateView["Time"] = std::ref(time);
   }
 
   void
@@ -670,7 +589,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("ModelRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<ModelRuntime>("ModelRuntime");
   }
 
@@ -679,7 +598,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("Event");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Event>(
           "Event",
           "getAttribute",&Event::getAttribute,
@@ -693,15 +612,11 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("WindowComponent");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<WindowComponent>(
           "WindowComponent",
           "getWidth",&WindowComponent::getWidth,
           "getHeight",&WindowComponent::getHeight);
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView[LUA_COMPONENTS_TBL]["Window"] = prLock->getWindowComponent();
-    }
   }
 
   void
@@ -709,7 +624,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("InputComponent");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<InputComponent>(
           "InputComponent",
           sol::base_classes, sol::bases<Component>(),
@@ -898,11 +813,6 @@ namespace octronic::dream // ===================================================
           "KEY_RIGHT_ALT",  346,
           "KEY_RIGHT_SUPER",  347,
           "KEY_MENU",  348);
-
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView[LUA_COMPONENTS_TBL]["Input"] = prLock->getInputComponent();
-    }
   }
 
   void
@@ -910,12 +820,8 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("AudioComponent");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<AudioComponent>("AudioComponent");
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      stateView[LUA_COMPONENTS_TBL]["Audio"] = prLock->getAudioComponent();
-    }
   }
 
   void
@@ -930,7 +836,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("AudioRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<AudioRuntime>(
           "AudioRuntime",
           "getState",&AudioRuntime::getState,
@@ -950,11 +856,11 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("SceneRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<SceneRuntime>(
           "SceneRuntime",
           sol::base_classes, sol::bases<Runtime>(),
-          "getCamera",&SceneRuntime::getCamera,
+          "getCamera",&SceneRuntime::getCameraRuntime,
           "getProjectRuntime", &SceneRuntime::getProjectRuntime,
           "getEntityRuntimeByUuid",&SceneRuntime::getEntityRuntimeByUuid);
   }
@@ -964,7 +870,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("GLM");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
 
     stateView.new_usertype<vec3>(
           "vec3",
@@ -1027,7 +933,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("Definition");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Definition>("Definition");
   }
 
@@ -1036,7 +942,7 @@ namespace octronic::dream // ===================================================
   ()
   {
     debugRegisteringClass("AnimationRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<AnimationRuntime>(
           "AnimationRuntime",
           "run",&AnimationRuntime::run,
@@ -1048,7 +954,7 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeRuntime()
   {
     debugRegisteringClass("Runtime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Runtime>("Runtime");
   }
 
@@ -1056,7 +962,7 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeComponent()
   {
     debugRegisteringClass("Component");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<Component>("Component");
   }
 
@@ -1064,7 +970,7 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeAssetRuntime()
   {
     debugRegisteringClass("AssetRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<AssetRuntime>(
           "AssetRuntime",
           sol::base_classes, sol::bases<Runtime>());
@@ -1074,7 +980,7 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeSharedAssetRuntime()
   {
     debugRegisteringClass("SharedAssetRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<SharedAssetRuntime>(
           "SharedAssetRuntime",
           sol::base_classes, sol::bases<AssetRuntime>());
@@ -1084,7 +990,7 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeDiscreteAssetRuntime()
   {
     debugRegisteringClass("DiscreteAssetRuntime");
-    sol::state_view stateView(LuaState.get());
+    sol::state_view stateView(mLuaState);
     stateView.new_usertype<DiscreteAssetRuntime>(
           "DiscreteAssetRuntime",
           sol::base_classes, sol::bases<AssetRuntime>());
@@ -1129,7 +1035,6 @@ namespace octronic::dream // ===================================================
     exposeWindowComponent();
 
     // Misc
-    exposeProjectDirectory();
     exposeCamera();
     exposeEvent();
     exposeTime();
@@ -1137,36 +1042,32 @@ namespace octronic::dream // ===================================================
     exposeGLM();
   }
 
+
+  lua_State*
+  ScriptComponent::getLuaState
+  ()
+  const
+  {
+    return mLuaState;
+  }
+
   void ScriptComponent::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& scriptCache = getProjectRuntime().getScriptCache();
+    for (auto& scriptRuntime : scriptCache.getRuntimeVector())
     {
-      if (auto scriptCache = prLock->getScriptCache().lock())
-      {
-        for (auto scriptRuntimeWeak : scriptCache->getRuntimeVector())
-        {
-          if (auto scriptRuntime = scriptRuntimeWeak.lock())
-          {
-            scriptRuntime->pushTasks();
-          }
-        }
-      }
+      scriptRuntime.pushTasks();
     }
   }
 
   // Static ==================================================================
 
-  vector<shared_ptr<ScriptPrintListener>> ScriptComponent::PrintListeners;
+  vector<reference_wrapper<ScriptPrintListener>> ScriptComponent::PrintListeners;
 
   void
   ScriptComponent::AddPrintListener
-  (const shared_ptr<ScriptPrintListener>& listener)
+  (ScriptPrintListener& listener)
   {
     PrintListeners.push_back(listener);
   }
-
-  ScriptPrintListener::~ScriptPrintListener()
-  {}
-
-  shared_ptr<lua_State> ScriptComponent::LuaState;
 }

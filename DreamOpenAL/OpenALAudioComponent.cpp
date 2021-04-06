@@ -15,7 +15,6 @@
 #include "OpenALAudioComponent.h"
 #include "OpenALImplementation.h"
 
-
 #include <iostream>
 
 using octronic::dream::OggLoader;
@@ -88,39 +87,34 @@ namespace octronic::dream::open_al
     return vol;
   }
 
-  weak_ptr<AudioRuntime>
+  AudioRuntime&
   OpenALAudioComponent::getAudioRuntime
-  (const weak_ptr<AudioDefinition>& defWeak)
+  (AudioDefinition& def)
   {
-    if (auto def = defWeak.lock())
+    auto& audioCache = getProjectRuntime().getAudioCache();
+    auto& aRunt = audioCache.getRuntime(def);
+
+    if (!aRunt.getLoaded())
     {
-      if (auto prLock = mProjectRuntime.lock())
+      shared_ptr<AudioLoader> loader;
+
+      if (def.getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
       {
-        if (auto audioCache = prLock->getAudioCache().lock())
-        {
-          if (auto aRunt = audioCache->getRuntime(def).lock())
-          {
-            if (!aRunt->getLoaded())
-            {
-              shared_ptr<AudioLoader> loader;
-
-              if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_OGG) == 0)
-              {
-                loader = make_shared<OggLoader>();
-              }
-              else if (def->getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
-              {
-                loader = make_shared<WavLoader>();
-              }
-
-              auto aImpl = make_shared<OpenALImplementation>(loader);
-              aRunt->setImplementation(aImpl);
-            }
-            return aRunt;
-          }
-        }
+        loader = make_shared<OggLoader>();
       }
+      else if (def.getFormat().compare(Constants::ASSET_FORMAT_AUDIO_WAV) == 0)
+      {
+        loader = make_shared<WavLoader>();
+      }
+      else
+      {
+        throw std::exception();
+      }
+
+      auto aImpl = make_shared<OpenALImplementation>(aRunt);
+      aRunt.setImpl(aImpl);
+      aRunt.setAudioLoader(loader);
     }
-    return weak_ptr<AudioRuntime>();
+    return aRunt;
   }
 }

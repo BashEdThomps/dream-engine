@@ -23,43 +23,40 @@ extern "C"
 #include "Components/Component.h"
 #include <memory>
 
-using std::shared_ptr;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
   class SceneRuntime;
   class EntityRuntime;
   class Event;
-
-  class ScriptPrintListener
-  {
-  public:
-    virtual ~ScriptPrintListener();
-    virtual void onPrint(const string&) = 0;
-  };
+  class ScriptPrintListener;
 
   class ScriptComponent : public Component
   {
-  public:
-    static vector<shared_ptr<ScriptPrintListener>> PrintListeners;
-    static void AddPrintListener(const shared_ptr<ScriptPrintListener>& listener);
-    static shared_ptr<lua_State> LuaState;
+  public: // Static
+    static vector<reference_wrapper<ScriptPrintListener>> PrintListeners;
+    static void AddPrintListener(ScriptPrintListener& listener);
 
-    ScriptComponent(const weak_ptr<ProjectRuntime>& runtime);
-    ~ScriptComponent() override;
+  public:
+    ScriptComponent(ProjectRuntime& runtime);
+    ScriptComponent(ScriptComponent&&) = default;
+    ScriptComponent& operator=(ScriptComponent&&) = default;
+    ~ScriptComponent();
 
     bool init() override;
 
-    bool executeScriptOnUpdate(const weak_ptr<ScriptRuntime>& script, const weak_ptr<EntityRuntime>& entity);
-    bool executeScriptOnInit(const weak_ptr<ScriptRuntime>& script, const weak_ptr<EntityRuntime>& entity);
-    bool executeScriptOnEvent(const weak_ptr<ScriptRuntime>& script, const weak_ptr<EntityRuntime>& entity);
-    bool executeScriptOnInput(const weak_ptr<ScriptRuntime>& script, const weak_ptr<SceneRuntime>& sr);
-    bool registerInputScript(const weak_ptr<ScriptRuntime>& script);
+    bool executeScriptOnUpdate(ScriptRuntime& script, EntityRuntime& entity);
+    bool executeScriptOnInit(ScriptRuntime& script, EntityRuntime& entity);
+    bool executeScriptOnEvent(ScriptRuntime& script, EntityRuntime& entity);
+    bool executeScriptOnInput(ScriptRuntime& script, SceneRuntime& sr);
+    bool registerInputScript(ScriptRuntime& script);
     bool removeInputScript(UuidType script);
-    bool createEntityState(const weak_ptr<ScriptRuntime>& script, const weak_ptr<EntityRuntime>& entity);
+    bool createEntityState(ScriptRuntime& script, EntityRuntime& entity);
     bool removeEntityState(UuidType uuid);
 
     void pushTasks() override;
+    lua_State* getLuaState() const;
 
 
   private:
@@ -102,11 +99,12 @@ namespace octronic::dream
     void exposeWindowComponent();
 
     // Misc
-    void exposeProjectDirectory();
     void exposeCamera();
     void exposeEvent();
     void exposeTime();
     void exposeTransform();
     void exposeGLM();
+  private:
+    lua_State* mLuaState;
   };
 }

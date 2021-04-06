@@ -5,41 +5,55 @@
 
 namespace octronic::dream
 {
-    class ShaderRuntime;
+  class ShaderRuntime;
 
-    class ShaderCompileFragmentTask : public GraphicsTask
-    {
-        weak_ptr<ShaderRuntime> mShaderRuntime;
-    public:
-        ShaderCompileFragmentTask(const weak_ptr<ProjectRuntime>& prt,
-                                  const weak_ptr<ShaderRuntime>& rt);
-        void execute();
-    };
+  // ShaderRuntimeTask =========================================================
 
-    class ShaderCompileVertexTask : public GraphicsTask
-    {
-        const weak_ptr<ShaderRuntime>& mShaderRuntime;
-    public:
-        ShaderCompileVertexTask(const weak_ptr<ProjectRuntime>& prt,
-                                const weak_ptr<ShaderRuntime>& rt);
-        void execute();
-    };
+  class ShaderRuntimeTask : public GraphicsTask
+  {
+  public:
+    ShaderRuntimeTask(ProjectRuntime&, ShaderRuntime&, const string&);
+  protected:
+    ShaderRuntime& getShaderRuntime() const;
+  private:
+    reference_wrapper<ShaderRuntime> mShaderRuntime;
+  };
 
-    class ShaderLinkTask : public GraphicsTask
-    {
-        weak_ptr<ShaderRuntime> mShaderRuntime;
-    public:
-        ShaderLinkTask(const weak_ptr<ProjectRuntime>& prt,
-                       const weak_ptr<ShaderRuntime>& rt);
-        void execute();
-    };
+  // ShaderCompileFragmentTask =================================================
 
-    class ShaderFreeTask : public GraphicsDestructionTask
-    {
-        GLuint mShaderProgram;
-    public:
-        ShaderFreeTask(const weak_ptr<ProjectRuntime>& prt);
-        void setShaderProgram(GLuint rt);
-        void execute() override;
-    };
+  class ShaderCompileFragmentTask : public ShaderRuntimeTask
+  {
+  public:
+    ShaderCompileFragmentTask(ProjectRuntime& prt,ShaderRuntime& rt);
+    void execute();
+  };
+
+  // ShaderCompileVertexTask ===================================================
+
+  class ShaderCompileVertexTask : public ShaderRuntimeTask
+  {
+  public:
+    ShaderCompileVertexTask(ProjectRuntime& prt,ShaderRuntime& rt);
+    void execute();
+  };
+
+  // ShaderLinkTask ============================================================
+
+  class ShaderLinkTask : public ShaderRuntimeTask
+  {
+  public:
+    ShaderLinkTask(ProjectRuntime& prt,ShaderRuntime& rt);
+    void execute();
+  };
+
+  // ShaderFreeTask ============================================================
+
+  class ShaderFreeTask : public GraphicsDestructionTask
+  {
+    GLuint mShaderProgram;
+  public:
+    ShaderFreeTask(ProjectRuntime& prt);
+    void setShaderProgram(GLuint rt);
+    void execute() override;
+  };
 }

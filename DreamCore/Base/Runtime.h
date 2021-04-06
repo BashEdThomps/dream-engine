@@ -19,26 +19,32 @@
 #include "RuntimeTasks.h"
 
 using std::string;
-using std::weak_ptr;
-using std::shared_ptr;
-using std::enable_shared_from_this;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
     class Definition;
-
     /**
      * @brief Abstract class that contains Runtime data for DreamObjects that
      * are used to implement a Project.
      */
-    class Runtime : public enable_shared_from_this<Runtime>
+    class Runtime
     {
     public:
         /**
          * @brief Default Constructor
          * @param def Definition from which the Runtime was instanciated.
          */
-        Runtime(const weak_ptr<Definition>& def);
+        Runtime(Definition& def);
+
+        Runtime(Runtime&&) = default;
+        Runtime& operator=(Runtime&&) = default;
+
+        Runtime(const Runtime&) = delete;
+        Runtime& operator=(const Runtime&) = delete;
+
+        // Comparison Operator
+        bool operator==(const Runtime& other);
 
         /**
          * @brief Default destructor.
@@ -81,14 +87,9 @@ namespace octronic::dream
         /**
          * @return The Definition from which this Runtime was Instanciated.
          */
-        weak_ptr<Definition> getDefinition() const;
-
-
+        Definition& getDefinition() const;
     protected:
-        /**
-         * @brief Definition from which this runtime was instanciated.
-         */
-        weak_ptr<Definition> mDefinition;
+
         /**
          * @brief UUID of this Runtime, given by it's Definition.
          */
@@ -97,5 +98,13 @@ namespace octronic::dream
          * @brief Name of this Runtime, given by it's Definition.
          */
         string mName;
+
+    private:
+        /**
+         * @brief Definition from which this runtime was instanciated. Owned by
+         * ProejctRuntime. This type is reference_wrapper<> to satisfy
+         * Cpp17MoveInsertable.
+         */
+        reference_wrapper<Definition> mDefinition;
     };
 }

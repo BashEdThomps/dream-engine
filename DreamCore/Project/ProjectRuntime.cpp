@@ -12,9 +12,8 @@
 
 #include "ProjectRuntime.h"
 
-#include "Project.h"
 #include "ProjectDefinition.h"
-#include "Storage/ProjectDirectory.h"
+#include "ProjectDirectory.h"
 
 #include "Common/Logger.h"
 
@@ -40,30 +39,35 @@ using std::static_pointer_cast;
 namespace octronic::dream
 {
   ProjectRuntime::ProjectRuntime
-  (const weak_ptr<ProjectDefinition>& project,
-   const weak_ptr<ProjectDirectory>& directory,
-   const shared_ptr<WindowComponent>& windowComponent,
-   const shared_ptr<AudioComponent>& ac,
-   const shared_ptr<StorageManager>& fm)
+  (ProjectDefinition& project,
+   ProjectDirectory& directory,
+   StorageManager& sm,
+   WindowComponent& windowComponent,
+   AudioComponent& ac)
     : Runtime(project),
-      mProjectDirectory(directory),
       mDone(false),
+      mProjectDirectory(directory),
       mAudioComponent(ac),
       mWindowComponent(windowComponent),
-      mStorageManager(fm),
-      mTime(make_shared<Time>()),
-      mTaskQueue(make_shared<TaskQueue<Task>>("ProjectTaskQueue")),
-      mDestructionTaskQueue(make_shared<TaskQueue<DestructionTask>>("ProjectDestructionTaskQueue"))
+      mStorageManager(sm),
+      mInputComponent(*this),
+      mGraphicsComponent(*this),
+      mPhysicsComponent(*this),
+      mScriptComponent(*this),
+      mAudioCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mFontCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mMaterialCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mModelCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mScriptCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mShaderCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mTextureCache(*this, static_cast<ProjectDefinition&>(getDefinition()),mProjectDirectory),
+      mTaskQueue("ProjectTaskQueue"),
+      mDestructionTaskQueue("ProjectDestructionTaskQueue")
   {
     LOG_DEBUG( "ProjectRuntime: Constructing" );
     mFrameDurationHistory.resize(MaxFrameCount);
   }
 
-  ProjectRuntime::~ProjectRuntime
-  ()
-  {
-    LOG_DEBUG( "ProjectRuntime: Destructing" );
-  }
 
   // Init ====================================================================
 
@@ -119,13 +123,10 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    if (!mWindowComponent)
-    {
-      LOG_CRITICAL("ProjectRuntime: Window component is null");
-      return false;
-    }
-    auto projDef = static_pointer_cast<ProjectDefinition>(mDefinition.lock());
-    mWindowComponent->setName(projDef->getName());
+    auto& projDef = static_cast<ProjectDefinition&>(getDefinition());
+    auto& wComp = mWindowComponent.get();
+    wComp.setProjectRuntime(*this);
+    wComp.setName(projDef.getName());
     return true;
   }
 
@@ -134,13 +135,7 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    // Audio component must be initialised outside of dream
-    if(mAudioComponent == nullptr)
-    {
-      LOG_ERROR("ProjectRuntime: AudioComponent is null");
-      return false;
-    }
-    mAudioComponent->setProjectRuntime(static_pointer_cast<ProjectRuntime>(shared_from_this()));
+    mAudioComponent.get().setProjectRuntime(*this);
     return true;
   }
 
@@ -148,8 +143,7 @@ namespace octronic::dream
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
 
-    mInputComponent = make_shared<InputComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    if (!mInputComponent->init())
+    if (!mInputComponent.init())
     {
       LOG_ERROR( "ProjectRuntime: Unable to initialise InputComponent." );
       return false;
@@ -162,9 +156,8 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    mPhysicsComponent = make_shared<PhysicsComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
 
-    if (!mPhysicsComponent->init())
+    if (!mPhysicsComponent.init())
     {
       LOG_ERROR( "ProjectRuntime: Unable to initialise PhysicsComponent." );
       return false;
@@ -178,8 +171,7 @@ namespace octronic::dream
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
 
-    mGraphicsComponent = make_shared<GraphicsComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    if (!mGraphicsComponent->init())
+    if (!mGraphicsComponent.init())
     {
       LOG_ERROR( "ProjectRuntime: Unable to initialise Graphics Component." );
       return false;
@@ -193,32 +185,12 @@ namespace octronic::dream
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
 
-    mScriptComponent = make_shared<ScriptComponent>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    if(!mScriptComponent->init())
+    if(!mScriptComponent.init())
     {
       LOG_ERROR( "ProjectRuntime: Unable to initialise Script Engine." );
       return false;
     }
     return true;
-  }
-
-  bool
-  ProjectRuntime::constructSceneRuntime
-  (const weak_ptr<SceneRuntime>& rt)
-  {
-    LOG_DEBUG("ProjectRuntime: Constructing Scene Runtime");
-    if (auto srLock = rt.lock())
-    {
-      if (auto task = srLock->getLoadFromDefinitionTask().lock())
-      {
-        if (task->hasState(TASK_STATE_QUEUED))
-        {
-          mTaskQueue->pushTask(task);
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   bool
@@ -242,29 +214,7 @@ namespace octronic::dream
 
   bool ProjectRuntime::initCaches()
   {
-    mAudioCache    =  make_shared<AudioCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mTextureCache  =  make_shared<TextureCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mMaterialCache =  make_shared<MaterialCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mModelCache    =  make_shared<ModelCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mShaderCache   =  make_shared<ShaderCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mScriptCache   =  make_shared<ScriptCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
-    mFontCache     =  make_shared<FontCache>(static_pointer_cast<ProjectRuntime>(shared_from_this()));
     return true;
-  }
-
-  void
-  ProjectRuntime::destructSceneRuntime
-  (const weak_ptr<SceneRuntime>& rt)
-  {
-    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    if (auto srLock = rt.lock())
-    {
-      srLock->destroyRuntime();
-      if (mActiveSceneRuntime.lock().get() == srLock.get())
-      {
-        mActiveSceneRuntime = weak_ptr<SceneRuntime>();
-      }
-    }
   }
 
   // Running =================================================================
@@ -277,26 +227,17 @@ namespace octronic::dream
         "=======================================================================\n"
         "CollectGarbage Called @ {}\n"
         "=======================================================================",
-              mTime->getAbsoluteTime());
+              mTime.getAbsoluteTime());
 
-    mDestructionTaskQueue->executeQueue();
-    if (auto gfxDestQueue = mGraphicsComponent->getDestructionTaskQueue().lock())
-    {
-      gfxDestQueue->executeQueue();
-    }
+    mDestructionTaskQueue.executeQueue();
+    auto& gfxDestQueue = mGraphicsComponent.getDestructionTaskQueue();
+    gfxDestQueue.executeQueue();
 
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    for (auto sceneRuntimeWeak : mSceneRuntimesToRemove)
+    for (auto& sceneRuntime : mSceneRuntimesToRemove)
     {
-      if (auto srLock = sceneRuntimeWeak.lock())
-      {
-        srLock->collectGarbage();
-        auto itr = find(mSceneRuntimeVector.begin(),mSceneRuntimeVector.end(),srLock);
-        if (itr != mSceneRuntimeVector.end())
-        {
-          mSceneRuntimeVector.erase(itr);
-        }
-      }
+      sceneRuntime.get().collectGarbage();
+      removeSceneRuntime(sceneRuntime);
     }
     mSceneRuntimesToRemove.clear();
   }
@@ -304,12 +245,12 @@ namespace octronic::dream
   void ProjectRuntime::pushComponentTasks()
   {
     // Maintain this order
-    mWindowComponent->pushTasks();
-    mInputComponent->pushTasks();
-    mAudioComponent->pushTasks();
-    mPhysicsComponent->pushTasks();
-    mScriptComponent->pushTasks();
-    mGraphicsComponent->pushTasks();
+    mWindowComponent.get().pushTasks();
+    mInputComponent.pushTasks();
+    mAudioComponent.get().pushTasks();
+    mPhysicsComponent.pushTasks();
+    mScriptComponent.pushTasks();
+    mGraphicsComponent.pushTasks();
   }
 
   void
@@ -320,46 +261,62 @@ namespace octronic::dream
 
     pushComponentTasks();
 
-    for (auto rt : mSceneRuntimeVector)
+    for (auto& rt : mSceneRuntimeVector)
     {
-      switch (rt->getState())
+      switch (rt.getState())
       {
         case SceneState::SCENE_STATE_TO_LOAD:
-          constructSceneRuntime(rt);
+        {
+          if (auto task = rt.getLoadFromDefinitionTask())
+          {
+            if (task->hasState(TASK_STATE_QUEUED))
+            {
+              mTaskQueue.pushTask(task);
+            }
+          }
           break;
+        }
         case SceneState::SCENE_STATE_LOADED:
+        {
           break;
+        }
         case SceneState::SCENE_STATE_ACTIVE:
-          mTime->updateFrameTime();
-          mFrameDurationHistory.push_back(1000.0f/mTime->getFrameTimeDelta());
+        {
+          mTime.updateFrameTime();
+          mFrameDurationHistory.push_back(1000.0f/mTime.getFrameTimeDelta());
           if (mFrameDurationHistory.size() > MaxFrameCount) mFrameDurationHistory.pop_front();
 
-          if (auto camera = rt->getCamera().lock())
-          {
-            camera->update();
-          }
-          rt->updateFlatVector();
-          rt->createSceneTasks();
+          auto& camera = rt.getCameraRuntime();
+          camera.update();
+          rt.updateFlatVector();
+          rt.createSceneTasks();
 
-          rt->collectGarbage();
+          rt.collectGarbage();
           break;
+        }
         case SceneState::SCENE_STATE_TO_DESTROY:
-          destructSceneRuntime(rt);
+        {
+          rt.destroyRuntime();
+          if (mActiveSceneRuntime.value().get() == rt)
+          {
+            mActiveSceneRuntime.reset();
+          }
           break;
+        }
         case SceneState::SCENE_STATE_DESTROYED:
+        {
           mSceneRuntimesToRemove.push_back(rt);
           break;
+        }
       }
     }
 
     ModelMesh::ClearCounters();
     ShaderRuntime::InvalidateState();
-    mTaskQueue->executeQueue();
-    if (auto gfxQueue = mGraphicsComponent->getTaskQueue().lock())
-    {
-      gfxQueue->executeQueue();
-    }
 
+    mTaskQueue.executeQueue();
+    auto& gfxQueue = mGraphicsComponent.getTaskQueue();
+    gfxQueue.executeQueue();
     collectGarbage();
 
     LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
@@ -371,97 +328,76 @@ namespace octronic::dream
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
 
-    mDestructionTaskQueue->executeQueue();
-    if (auto gfxDestQueue = mGraphicsComponent->getDestructionTaskQueue().lock())
-    {
-      gfxDestQueue->executeQueue();
-    }
+    mDestructionTaskQueue.executeQueue();
+    auto& gfxDestQueue = mGraphicsComponent.getDestructionTaskQueue();
+    gfxDestQueue.executeQueue();
 
-    mAudioCache->clear();
-    mModelCache->clear();
-    mShaderCache->clear();
-    mMaterialCache->clear();
-    mTextureCache->clear();
-    mScriptCache->clear();
-    mFontCache->clear();
+    mAudioCache.clear();
+    mModelCache.clear();
+    mShaderCache.clear();
+    mMaterialCache.clear();
+    mTextureCache.clear();
+    mScriptCache.clear();
+    mFontCache.clear();
   }
 
   // Accessors  ==============================================================
 
-  weak_ptr<AudioCache>
+  AudioCache&
   ProjectRuntime::getAudioCache
   ()
-  const
   {
     return mAudioCache;
   }
 
-  weak_ptr<ShaderCache>
+  ShaderCache&
   ProjectRuntime::getShaderCache
   ()
-  const
   {
     return mShaderCache;
   }
 
-  weak_ptr<MaterialCache>
+  MaterialCache&
   ProjectRuntime::getMaterialCache
   ()
-  const
   {
     return mMaterialCache;
   }
 
-  weak_ptr<ModelCache>
+  ModelCache&
   ProjectRuntime::getModelCache
   ()
-  const
   {
     return mModelCache;
   }
 
-  weak_ptr<TextureCache>
+  TextureCache&
   ProjectRuntime::getTextureCache
   ()
-  const
   {
     return mTextureCache;
   }
 
-  weak_ptr<ScriptCache>
+  ScriptCache&
   ProjectRuntime::getScriptCache
   ()
-  const
   {
     return mScriptCache;
   }
 
-  weak_ptr<FontCache>
+  FontCache&
   ProjectRuntime::getFontCache
   ()
-  const
   {
     return mFontCache;
   }
 
-  weak_ptr<AssetDefinition>
-  ProjectRuntime::getAssetDefinitionByUuid
-  (UuidType uuid)
-  const
-  {
-    if (auto pdLock = static_pointer_cast<ProjectDefinition>(mDefinition.lock()))
-    {
-      return pdLock->getAssetDefinitionByUuid(uuid);
-    }
-    return weak_ptr<AssetDefinition>();
-  }
-
   bool
-  ProjectRuntime::hasActiveScene
+  ProjectRuntime::hasActiveSceneRuntime
   ()
   const
   {
-    return mActiveSceneRuntime.expired();
+    return mActiveSceneRuntime.has_value();
   }
 
   bool
@@ -469,10 +405,10 @@ namespace octronic::dream
   ()
   const
   {
-    for (auto srt : mSceneRuntimeVector)
+    for (auto& srt : mSceneRuntimeVector)
     {
-      if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
-          srt->getState() < SceneState::SCENE_STATE_DESTROYED)
+      if (srt.getState() >= SceneState::SCENE_STATE_LOADED &&
+          srt.getState() < SceneState::SCENE_STATE_DESTROYED)
       {
         return true;
       }
@@ -480,31 +416,28 @@ namespace octronic::dream
     return false;
   }
 
-
   bool
   ProjectRuntime::hasSceneRuntime
   (UuidType uuid)
   const
   {
-    bool result = false;
-    for (auto srt : mSceneRuntimeVector)
+    for (auto& srt : mSceneRuntimeVector)
     {
-      if (srt->getUuid() == uuid)
-      {
-        result = true;
-      }
-
-      if (result) break;
+      if (srt.getUuid() == uuid) return true;
     }
-    return result;
+    return false;
   }
 
-  deque<float> ProjectRuntime::getFrameDurationHistory() const
+  deque<float>
+  ProjectRuntime::getFrameDurationHistory
+  () const
   {
     return mFrameDurationHistory;
   }
 
-  float ProjectRuntime::getAverageFramerate()
+  float
+  ProjectRuntime::getAverageFramerate
+  ()
   {
     float f = 0.0;
     for (const auto& dur : mFrameDurationHistory)
@@ -514,26 +447,23 @@ namespace octronic::dream
     return f/MaxFrameCount;
   }
 
-  weak_ptr<TaskQueue<Task>>
+  TaskQueue<Task>&
   ProjectRuntime::getTaskQueue
   ()
-  const
   {
     return mTaskQueue;
   }
 
-  weak_ptr<TaskQueue<DestructionTask>>
+  TaskQueue<DestructionTask>&
   ProjectRuntime::getDestructionTaskQueue
   ()
-  const
   {
     return mDestructionTaskQueue;
   }
 
-  weak_ptr<WindowComponent>
+  WindowComponent&
   ProjectRuntime::getWindowComponent
   ()
-  const
   {
     return mWindowComponent;
   }
@@ -545,10 +475,9 @@ namespace octronic::dream
     mDone = done;
   }
 
-  weak_ptr<Time>
+  Time&
   ProjectRuntime::getTime
   ()
-  const
   {
     return mTime;
   }
@@ -561,69 +490,77 @@ namespace octronic::dream
     return mDone;
   }
 
-  weak_ptr<AudioComponent>
+  AudioComponent&
   ProjectRuntime::getAudioComponent
   ()
-  const
   {
     return mAudioComponent;
   }
 
-  weak_ptr<PhysicsComponent>
+  PhysicsComponent&
   ProjectRuntime::getPhysicsComponent
   ()
-  const
   {
     return mPhysicsComponent;
   }
 
-  weak_ptr<GraphicsComponent>
+  GraphicsComponent&
   ProjectRuntime::getGraphicsComponent
   ()
-  const
   {
     return mGraphicsComponent;
   }
 
-  weak_ptr<ScriptComponent>
+  ScriptComponent&
   ProjectRuntime::getScriptComponent
   ()
-  const
   {
     return mScriptComponent;
   }
 
-  weak_ptr<StorageManager>
+  StorageManager&
   ProjectRuntime::getStorageManager
   ()
-  const
   {
     return mStorageManager;
   }
 
-  weak_ptr<SceneRuntime>
+  InputComponent&
+  ProjectRuntime::getInputComponent
+  ()
+  {
+    return mInputComponent;
+  }
+
+  // Scene =====================================================================
+
+  SceneRuntime&
+  ProjectRuntime::createSceneRuntime(SceneDefinition& sd)
+  {
+    return mSceneRuntimeVector.emplace_back(*this, sd);
+  }
+
+  optional<reference_wrapper<SceneRuntime>>
   ProjectRuntime::getActiveSceneRuntime
   ()
   const
   {
-    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
     return mActiveSceneRuntime;
   }
 
-  weak_ptr<SceneRuntime>
+  SceneRuntime&
   ProjectRuntime::getSceneRuntimeByUuid
   (UuidType uuid)
-  const
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    for (auto sr : mSceneRuntimeVector)
+    for (auto& sr : mSceneRuntimeVector)
     {
-      if (sr->getUuid() == uuid)
+      if (sr.getUuid() == uuid)
       {
         return sr;
       }
     }
-    return weak_ptr<SceneRuntime>();
+    throw std::exception();
   }
 
   void
@@ -632,62 +569,38 @@ namespace octronic::dream
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
     mActiveSceneRuntime = getSceneRuntimeByUuid(uuid);
-    if (auto asrLock = mActiveSceneRuntime.lock())
+    if (mActiveSceneRuntime)
     {
-      asrLock->setState(SCENE_STATE_ACTIVE);
+      mActiveSceneRuntime.value().get().setState(SCENE_STATE_ACTIVE);
     }
   }
 
-  vector<weak_ptr<SceneRuntime>>
+  vector<reference_wrapper<SceneRuntime>>
   ProjectRuntime::getSceneRuntimeVector
   ()
-  const
   {
-    vector<weak_ptr<SceneRuntime>> ret;
-    ret.insert(ret.end(), mSceneRuntimeVector.begin(), mSceneRuntimeVector.end());
+    vector<reference_wrapper<SceneRuntime>> ret;
+    for(auto& sr : mSceneRuntimeVector)
+    {
+      ret.push_back(sr);
+    }
     return ret;
   }
 
   void
-  ProjectRuntime::addSceneRuntime
-  (const shared_ptr<SceneRuntime>& rt)
-  {
-    auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rt);
-    if (itr == mSceneRuntimeVector.end())
-    {
-      LOG_TRACE("ProjectRuntime: Adding SceneRuntime {}",rt->getNameAndUuidString());
-      mSceneRuntimeVector.push_back(rt);
-    }
-  }
-
-  void
   ProjectRuntime::removeSceneRuntime
-  (const weak_ptr<SceneRuntime>& rt)
+  (const SceneRuntime& rt)
   {
-    if (auto rtLock = rt.lock())
-    {
-    auto itr = find(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(), rtLock);
-    if (itr != mSceneRuntimeVector.end())
-    {
-      mSceneRuntimeVector.erase(itr);
-    }
-    }
+    std::remove_if(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(),
+		[&](const SceneRuntime& next)
+		{ return next.getUuid() == rt.getUuid();});
   }
 
-  weak_ptr<InputComponent>
-  ProjectRuntime::getInputComponent
-  ()
-  const
-  {
-    return mInputComponent;
-  }
-
-  weak_ptr<ProjectDirectory>
+  ProjectDirectory&
   ProjectRuntime::getProjectDirectory()
-  const
   {
     return mProjectDirectory;
   }
 
-  int ProjectRuntime::MaxFrameCount = 100;
+  unsigned int ProjectRuntime::MaxFrameCount = 100;
 }

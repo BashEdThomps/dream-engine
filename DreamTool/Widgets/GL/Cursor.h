@@ -18,7 +18,7 @@ namespace octronic::dream::tool
     {
 
     public:
-        Cursor(DreamToolContext* st);
+        Cursor(DreamToolContext& st);
         ~Cursor() override;
         void init() override;
         void onAction(CursorAction a);

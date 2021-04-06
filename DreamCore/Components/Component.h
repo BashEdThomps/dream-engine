@@ -12,42 +12,41 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #pragma once
 
 #include <memory>
+#include <optional>
 
-using std::weak_ptr;
-using std::shared_ptr;
-using std::enable_shared_from_this;
+using std::optional;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
-    class Time;
     class SceneRuntime;
     class EntityRuntime;
     class ProjectRuntime;
-
     /**
-     * @brief Component is the base class for Component classes.
-     * Providing access to octronic::dream::Time and octronic::dream::ProjectRuntime
-     * and Enabled status flag;
-     * Component publically inherits from octronic::dream::LockableObject, which
-     * provide the means to build thread safety into the Component.
+     * @brief Base class for Component classes.
      */
-    class Component : public enable_shared_from_this<Component>
+    class Component
     {
-
     public:
-        Component(const weak_ptr<ProjectRuntime>& pr);
+        Component();
+        Component(ProjectRuntime& pr);
+
+        Component(Component&&) = default;
+        Component& operator=(Component&&) = default;
+
+        Component(const Component&) = delete;
+        Component& operator=(const Component&) = delete;
+
         virtual ~Component();
+
         virtual bool init() = 0;
-
-        void setProjectRuntime(const weak_ptr<ProjectRuntime>& pr);
-
         virtual void pushTasks() = 0;
-
+        void setProjectRuntime(ProjectRuntime& pr);
+        ProjectRuntime& getProjectRuntime();
     protected:
-         weak_ptr<ProjectRuntime> mProjectRuntime;
+         optional<reference_wrapper<ProjectRuntime>> mProjectRuntime;
     };
 }

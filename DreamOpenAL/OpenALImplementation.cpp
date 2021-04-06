@@ -18,8 +18,8 @@
 namespace octronic::dream::open_al
 {
   OpenALImplementation::OpenALImplementation
-  (const shared_ptr<AudioLoader>& loader)
-    : AudioRuntimeImplementation(loader),
+  (AudioRuntime& parent)
+    : AudioRuntimeImplementation(parent),
       mALFormat(0),
       mALSource(0),
       mALBuffer(0),
@@ -38,11 +38,15 @@ namespace octronic::dream::open_al
 
   bool
   OpenALImplementation::loadFromDefinition
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<AudioDefinition>& ad)
+  ()
   {
+    auto& parent = mParent.get();
+    auto& pr = parent.getProjectRuntime();
+    auto& ad = static_cast<AudioDefinition&>(parent.getDefinition());
+    auto loader = parent.getAudioLoader();
+
     LOG_DEBUG("OpenALImplementation: {}", __FUNCTION__);
-    if (!mLoader->loadIntoBuffer(ad, pr)) return false;
+    if (!loader->loadIntoBuffer(pr, ad)) return false;
     if (!loadIntoAL()) return false;
     return true;
   }
@@ -111,12 +115,27 @@ namespace octronic::dream::open_al
   }
 
   void
-  OpenALImplementation::setSourcePosision
+  OpenALImplementation::setSourcePosition
   (const vec3& pos)
   {
     LOG_DEBUG(  "OpenALImplementation: SetSource Position {} {},{},{}" ,
                 mALSource, pos.x,pos.y,pos.z);
     alSource3f(mALSource, AL_POSITION, pos.x, pos.y, pos.z);
+  }
+
+  vec3
+  OpenALImplementation::getSourcePosition
+  ()
+  const
+  {
+    LOG_DEBUG("OpenALImplementation: getSourcePosition");
+    vec3 pos;
+
+    alGetSource3f(mALSource, AL_POSITION,
+                  &glm::value_ptr(pos)[0],
+        &glm::value_ptr(pos)[1],
+        &glm::value_ptr(pos)[2]);
+    return pos;
   }
 
   void
@@ -125,6 +144,16 @@ namespace octronic::dream::open_al
   {
     LOG_DEBUG(  "OpenALImplementation: SetVolume src:{} vol:{},{},{}" , mALSource, volume);
     alSourcef(mALSource, AL_GAIN,volume);
+  }
+
+  float
+  OpenALImplementation::getVolume
+  ()
+  const
+  {
+    float vol;
+    alGetSourcef(mALSource, AL_GAIN, &vol);
+    return vol;
   }
 
   AudioStatus
@@ -221,51 +250,50 @@ namespace octronic::dream::open_al
   OpenALImplementation::loadIntoAL
   ()
   {
-    if (auto parent = mParent.lock())
+    auto& parent = mParent.get();
+    auto loader = parent.getAudioLoader();
+
+    LOG_DEBUG("OpenALImplementation: Loading Into AL {}",parent.getNameAndUuidString());
+
+    if (mALSource == 0 && mALBuffer == 0)
     {
-      LOG_DEBUG("OpenALImplementation: Loading Into AL {}",parent->getNameAndUuidString());
+      generateBuffer();
+      generateSource();
 
-      if (mALSource == 0 && mALBuffer == 0)
+      if (loader->getAudioBuffer().empty())
       {
-        generateBuffer();
-        generateSource();
-
-        if (mLoader->getAudioBuffer().empty())
-        {
-          LOG_ERROR("OpenALImplementation: Unable to load audio data: Empty Buffer");
-          parent->setLoadError(true);
-          return false;
-        }
-
-        switch(mLoader->getChannels())
-        {
-          case 1:
-            mALFormat = AL_FORMAT_MONO16;
-            break;
-          case 2:
-          default:
-            mALFormat = AL_FORMAT_STEREO16;
-            break;
-        }
-
-        alBufferData(mALBuffer, mALFormat, &mLoader->getAudioBuffer()[0],
-            static_cast<ALsizei>(mLoader->getAudioBuffer().size()),
-            mLoader->getSampleRate());
-
-        alSourcei(mALSource, AL_BUFFER, static_cast<ALint>(mALBuffer));
-        alSourcei(mALSource, AL_LOOPING, parent->isLooping() ? 1 : 0 );
-      }
-      else
-      {
-        LOG_ERROR("OpenALImplementation: Unable to load audio, source or buffer is empty");
-        parent->setLoadError(true);
+        LOG_ERROR("OpenALImplementation: Unable to load audio data: Empty Buffer");
+        parent.setLoadError(true);
         return false;
       }
 
-      LOG_DEBUG("OpenALImplementation: Pushed audio asset to play queue");
-      parent->setLoaded(true);
-      return true;
+      switch(loader->getChannels())
+      {
+        case 1:
+          mALFormat = AL_FORMAT_MONO16;
+          break;
+        case 2:
+        default:
+          mALFormat = AL_FORMAT_STEREO16;
+          break;
+      }
+
+      alBufferData(mALBuffer, mALFormat, &loader->getAudioBuffer()[0],
+          static_cast<ALsizei>(loader->getAudioBuffer().size()),
+          loader->getSampleRate());
+
+      alSourcei(mALSource, AL_BUFFER, static_cast<ALint>(mALBuffer));
+      alSourcei(mALSource, AL_LOOPING, parent.getLooping() ? 1 : 0 );
     }
-    return false;
+    else
+    {
+      LOG_ERROR("OpenALImplementation: Unable to load audio, source or buffer is empty");
+      parent.setLoadError(true);
+      return false;
+    }
+
+    LOG_DEBUG("OpenALImplementation: Pushed audio asset to play queue");
+    parent.setLoaded(true);
+    return true;
   }
 }

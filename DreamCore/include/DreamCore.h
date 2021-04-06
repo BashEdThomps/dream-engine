@@ -39,7 +39,6 @@
 #include "Components/Graphics/Font/FontRuntime.h"
 
 // Storage
-#include "Storage/ProjectDirectory.h"
 #include "Storage/Directory.h"
 #include "Storage/File.h"
 #include "Storage/StorageManager.h"
@@ -59,6 +58,7 @@
 // Script
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Script/ScriptComponent.h"
+#include "Components/Script/ScriptPrintListener.h"
 
 // Window
 #include "Components/Window/WindowComponent.h"
@@ -66,13 +66,15 @@
 // Scene
 #include "Scene/SceneDefinition.h"
 #include "Scene/SceneRuntime.h"
-#include "Entity/EntityDefinition.h"
+#include "Entity/TemplateEntityDefinition.h"
+#include "Entity/SceneEntityDefinition.h"
 #include "Entity/EntityRuntime.h"
 
 // Project
+#include "Project/ProjectDirectory.h"
 #include "Project/ProjectDefinition.h"
 #include "Project/ProjectRuntime.h"
-#include "Project/Project.h"
+#include "Project/ProjectContext.h"
 
 // Task Manager
 #include "Task/Task.h"

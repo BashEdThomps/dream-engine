@@ -7,37 +7,38 @@ include_directories(${DreamOpenAL_SOURCE_DIR})
 # Targets #####################################################################
 
 add_executable (
-    ${PROJECT_NAME}
-	GLFWWindowComponent.cpp
-	Main.cpp
-)
+  ${PROJECT_NAME}
+  DefaultPrintListener.cpp
+  GLFWWindowComponent.cpp
+  Main.cpp
+  )
 
 if (WIN32)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        DreamCore
-		DreamOpenAL
+  target_link_libraries(
+    ${PROJECT_NAME}
+    DreamCore
+    DreamOpenAL
     )
 elseif(UNIX AND NOT APPLE) # Linux
-    target_link_libraries(
-        ${PROJECT_NAME}
-        DreamCore
-		DreamOpenAL
-        -lpthread
-        -ldl
+  target_link_libraries(
+    ${PROJECT_NAME}
+    DreamCore
+    DreamOpenAL
+    -lpthread
+    -ldl
     )
 elseif(APPLE)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        DreamCore
-		DreamOpenAL
-		glfw
-        -lpthread
-        -ldl
-        "-framework IOKit"
-	"-framework AppKit"
-	"-framework OpenGL"
-	"-framework CoreFoundation"
-	"-framework Carbon"
+  target_link_libraries(
+    ${PROJECT_NAME}
+    DreamCore
+    DreamOpenAL
+    glfw
+    -lpthread
+    -ldl
+    "-framework IOKit"
+    "-framework AppKit"
+    "-framework OpenGL"
+    "-framework CoreFoundation"
+    "-framework Carbon"
     )
 endif()

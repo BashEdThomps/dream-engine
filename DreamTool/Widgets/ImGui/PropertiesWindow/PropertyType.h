@@ -7,7 +7,8 @@ namespace octronic::dream::tool
         PropertyType_None,
         PropertyType_Project,
         PropertyType_Scene,
-        PropertyType_Entity,
+        PropertyType_SceneEntity,
+        PropertyType_TemplateEntity,
         PropertyType_Asset
     };
 }

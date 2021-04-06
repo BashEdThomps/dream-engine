@@ -32,23 +32,21 @@ using std::vector;
 using std::shared_ptr;
 
 #define GC_LIGHT_COUNT 4
+#define SHADOW_SIZE  1024
 
 namespace octronic::dream
 {
-    class WindowComponent;
-    class ModelRuntime;
-    class ShaderRuntime;
-    class SceneRuntime;
-    class EntityRuntime;
-    class ModelMesh;
-    class MaterialRuntime;
-    class ShaderRuntime;
+  class WindowComponent;
+  class ModelRuntime;
+  class ShaderRuntime;
+  class SceneRuntime;
+  class EntityRuntime;
+  class MaterialRuntime;
+  class ShaderRuntime;
 
-    typedef TaskQueue<GraphicsTask> GraphicsTaskQueue;
-    typedef TaskQueue<GraphicsDestructionTask> GraphicsDestructionTaskQueue;
-
-
-    /**
+  typedef TaskQueue<GraphicsTask> GraphicsTaskQueue;
+  typedef TaskQueue<GraphicsDestructionTask> GraphicsDestructionTaskQueue;
+  /**
      * @brief GraphicsComponent is responsible for managing Dream's graphics pipeline.
      *
      * Dream implements a multistage rendering pipline. Each stage renders to it's
@@ -83,69 +81,71 @@ namespace octronic::dream
      *        drawn on top. The FontRuntime cache is iterated and all instances of
      *        text are drawn to the screen in screen-space.
      */
-    class GraphicsComponent : public Component
-    {
-    public:
-        GraphicsComponent(const weak_ptr<ProjectRuntime>& pr);
-        ~GraphicsComponent() override;
+  class GraphicsComponent : public Component
+  {
+  public:
+    GraphicsComponent(ProjectRuntime& pr);
 
-        void clearBuffers(const weak_ptr<SceneRuntime>& sr);
-        // Geometry ============================================================
-        void renderModels(const weak_ptr<SceneRuntime>&);
-        // Environment =========================================================
-        void renderEnvironment(const weak_ptr<SceneRuntime>&);
-        // Shadow ==============================================================
-        bool setupShadowBuffers();
-        void freeShadowBuffers();
-        void renderShadowPass(const weak_ptr<SceneRuntime>&);
-	    GLuint getShadowPassDepthBuffer() const;
-        // Sprite ===============================================================
-        void renderSprites(const weak_ptr<SceneRuntime>& sceneRuntime);
-        bool setupSpriteQuad();
-        void freeSpriteQuad();
-        // Font ================================================================
-        void renderFonts(const weak_ptr<SceneRuntime>& sceneRuntime);
-        // Task ================================================================
-        weak_ptr<GraphicsTaskQueue> getTaskQueue() const;
-        weak_ptr<GraphicsDestructionTaskQueue> getDestructionTaskQueue() const;
-        // Lights ==============================================================
-        vec3 getLightPosition(size_t index) const;
-        void setLightPosition(size_t index, const vec3& p);
-        vec3 getLightColor(size_t index) const;
-        void setLightColor(size_t index, const vec3& p);
-        size_t getLightCount() const;
-        // Misc ================================================================
-        bool init() override;
-        bool setupBuffers();
-        bool handleResize();
-        void pushTasks() override;
-    	void logShaders();
+    GraphicsComponent(GraphicsComponent&&) = default;
+    GraphicsComponent& operator=(GraphicsComponent&&) = default;
 
-    protected:
-        void checkFrameBufferDimensions();
+    ~GraphicsComponent();
 
-    private:
-        // Shadow ==============================================================
-        weak_ptr<EntityRuntime> mShadowLight;
-        GLuint mShadowPassFB;
-        GLuint mShadowPassDepthBuffer;
-        mat4 mShadowMatrix;
-        const int SHADOW_SIZE = 1024;
-        // Font & Sprite =======================================================
-        mat4 mScreenSpaceProjectionMatrix;
-        GLuint mSpriteQuadVAO;
-        GLuint mSpriteQuadVBO;
-        // Task ================================================================
-        shared_ptr<GraphicsTaskQueue> mTaskQueue;
-        shared_ptr<GraphicsDestructionTaskQueue> mDestructionTaskQueue;
-        // Tasks
-        shared_ptr<SetupBuffersTask> mSetupBuffersTask;
-        shared_ptr<ResizeTask> mResizeTask;
-        shared_ptr<RenderTask> mRenderTask;
-        // Misc ================================================================
-        GLint mMaxFrameBufferSize;
-        // Lighting ============================================================
-        vec3 mLightPositions[GC_LIGHT_COUNT];
-        vec3 mLightColors[GC_LIGHT_COUNT];
-    };
+    void clearBuffers(SceneRuntime& sr);
+    // Geometry ============================================================
+    void renderModels(SceneRuntime&);
+    // Environment =========================================================
+    void renderEnvironment(SceneRuntime&);
+    // Shadow ==============================================================
+    bool setupShadowBuffers();
+    void freeShadowBuffers();
+    void renderShadowPass(SceneRuntime&);
+    GLuint getShadowPassDepthBuffer() const;
+    // Sprite ===============================================================
+    void renderSprites(SceneRuntime& sceneRuntime);
+    bool setupSpriteQuad();
+    void freeSpriteQuad();
+    // Font ================================================================
+    void renderFonts(SceneRuntime& sceneRuntime);
+    // Task ================================================================
+    GraphicsTaskQueue& getTaskQueue();
+    GraphicsDestructionTaskQueue& getDestructionTaskQueue();
+    // Lights ==============================================================
+    vec3 getLightPosition(size_t index) const;
+    void setLightPosition(size_t index, const vec3& p);
+    vec3 getLightColor(size_t index) const;
+    void setLightColor(size_t index, const vec3& p);
+    size_t getLightCount() const;
+    // Misc ================================================================
+    bool init() override;
+    bool setupBuffers();
+    bool handleResize();
+    void pushTasks() override;
+
+  protected:
+    void checkFrameBufferDimensions();
+
+  private:
+    // Shadow ==============================================================
+    optional<reference_wrapper<EntityRuntime>> mShadowLight;
+    GLuint mShadowPassFB;
+    GLuint mShadowPassDepthBuffer;
+    mat4 mShadowMatrix;
+    // Font & Sprite =======================================================
+    mat4 mScreenSpaceProjectionMatrix;
+    GLuint mSpriteQuadVAO;
+    GLuint mSpriteQuadVBO;
+    // Task ================================================================
+    GraphicsTaskQueue mTaskQueue;
+    GraphicsDestructionTaskQueue mDestructionTaskQueue;
+    // Tasks
+    shared_ptr<SetupBuffersTask> mSetupBuffersTask;
+    shared_ptr<ResizeTask> mResizeTask;
+    shared_ptr<RenderTask> mRenderTask;
+    // Misc ================================================================
+    GLint mMaxFrameBufferSize;
+    // Lighting ============================================================
+    vec3 mLightPositions[GC_LIGHT_COUNT];
+    vec3 mLightColors[GC_LIGHT_COUNT];
+  };
 }

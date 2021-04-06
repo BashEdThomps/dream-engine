@@ -17,75 +17,77 @@
 #pragma once
 
 #include "Components/SharedAssetRuntime.h"
+#include "Components/Graphics/Model/ModelMesh.h"
 
+#include <optional>
 #include <vector>
 #include <glm/vec3.hpp>
 
+using std::optional;
+using std::reference_wrapper;
 using std::vector;
 using glm::vec3;
 
 namespace octronic::dream
 {
-    class ModelMesh;
-    class ShaderRuntime;
-    class MaterialDefinition;
-    class TextureRuntime;
-    class CameraRuntime;
+  class ShaderRuntime;
+  class MaterialDefinition;
+  class TextureRuntime;
+  class CameraRuntime;
 
-    class MaterialRuntime : public SharedAssetRuntime
-    {
-    public:
-        MaterialRuntime
-        (const weak_ptr<ProjectRuntime>& rt,
-         const weak_ptr<MaterialDefinition>& def);
-        ~MaterialRuntime() override;
+  class MaterialRuntime : public SharedAssetRuntime
+  {
+  public:
+    MaterialRuntime(ProjectRuntime& rt, MaterialDefinition& def);
+    MaterialRuntime(MaterialRuntime&&) = default;
+    MaterialRuntime& operator=(MaterialRuntime&&) = default;
 
-        void addMesh(const weak_ptr<ModelMesh>& mesh);
-        void removeMesh(const weak_ptr<ModelMesh>& mesh);
-        void clearMeshes();
-        size_t countMeshes();
 
-        bool operator==(MaterialRuntime& other);
+    void addMesh(ModelMesh& mesh);
+    void removeMesh(ModelMesh& mesh);
+    void clearMeshes();
+    size_t countMeshes();
 
-        void debug();
-        void logMeshes();
+    bool operator==(MaterialRuntime& other);
 
-        void drawShadowPass(const weak_ptr<ShaderRuntime>& shader);
+    void debug();
+    void logMeshes();
 
-        bool loadFromDefinition() override;
+    void drawShadowPass(ShaderRuntime& shader);
 
-        weak_ptr<TextureRuntime> getAlbedoTexture() const;
-        void setAlbedoTexture(const weak_ptr<TextureRuntime>& texture);
+    bool loadFromDefinition() override;
 
-        weak_ptr<TextureRuntime> getNormalTexture() const;
-        void setNormalTexture(const weak_ptr<TextureRuntime>& texture);
+    optional<reference_wrapper<TextureRuntime>> getAlbedoTexture() const;
+    void setAlbedoTexture(TextureRuntime& texture);
 
-        weak_ptr<TextureRuntime> getMetallicTexture() const;
-        void setMetallicTexture(const weak_ptr<TextureRuntime>& texture);
+    optional<reference_wrapper<TextureRuntime>> getNormalTexture() const;
+    void setNormalTexture(TextureRuntime& texture);
 
-        weak_ptr<TextureRuntime> getRoughnessTexture() const;
-        void setRoughnessTexture(const weak_ptr<TextureRuntime>& texture);
+    optional<reference_wrapper<TextureRuntime>> getMetallicTexture() const;
+    void setMetallicTexture(TextureRuntime& texture);
 
-        weak_ptr<TextureRuntime> getAoTexture() const;
-        void setAoTexture(const weak_ptr<TextureRuntime>& texture);
+    optional<reference_wrapper<TextureRuntime>> getRoughnessTexture() const;
+    void setRoughnessTexture(TextureRuntime& texture);
 
-        weak_ptr<ShaderRuntime> getShader() const;
-        void setShader(const weak_ptr<ShaderRuntime>& shader);
+    optional<reference_wrapper<TextureRuntime>> getAoTexture() const;
+    void setAoTexture(TextureRuntime& texture);
 
-        void pushTasks() override;
+    optional<reference_wrapper<ShaderRuntime>> getShader() const;
+    void setShader(ShaderRuntime& shader);
 
-        // Used because InstanceVector is of type Entity*
-        vector<weak_ptr<ModelMesh>> getUsedByVector() const;
+    void pushTasks() override;
 
-    protected:
-        weak_ptr<TextureRuntime> mAlbedoTexture;
-        weak_ptr<TextureRuntime> mNormalTexture;
-        weak_ptr<TextureRuntime> mMetallicTexture;
-        weak_ptr<TextureRuntime> mRoughnessTexture;
-        weak_ptr<TextureRuntime> mAoTexture;
-        weak_ptr<ShaderRuntime>  mShader;
+    // Used because InstanceVector is of type Entity*
+    vector<reference_wrapper<ModelMesh>> getUsedByVector() const;
 
-        // Used as InstanceVector is Entity*
-        vector<weak_ptr<ModelMesh>> mUsedBy;
-    };
+  protected:
+    optional<reference_wrapper<TextureRuntime>> mAlbedoTexture;
+    optional<reference_wrapper<TextureRuntime>> mNormalTexture;
+    optional<reference_wrapper<TextureRuntime>> mMetallicTexture;
+    optional<reference_wrapper<TextureRuntime>> mRoughnessTexture;
+    optional<reference_wrapper<TextureRuntime>> mAoTexture;
+    optional<reference_wrapper<ShaderRuntime>>  mShader;
+    // Used as InstanceVector is Entity*
+    vector<reference_wrapper<ModelMesh>> mUsedBy;
+  };
 }

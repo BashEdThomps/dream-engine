@@ -28,13 +28,13 @@
 #include <btBulletDynamicsCommon.h>
 #include <iostream>
 
+using std::make_unique;
 using std::make_shared;
-using std::static_pointer_cast;
 
 namespace octronic::dream
 {
   PhysicsComponent::PhysicsComponent
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : Component(pr)
   {
   }
@@ -87,19 +87,17 @@ namespace octronic::dream
   PhysicsComponent::stepSimulation
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    if (mProjectRuntime)
     {
-      if (auto time = prLock->getTime().lock())
+      auto& time = getProjectRuntime().getTime();
+      double time_delta = time.getFrameTimeDelta()/1000.0;
+
+      LOG_TRACE("PhysicsComponent: {}", __FUNCTION__, time_delta);
+
+      if (time_delta > 0.0)
       {
-        double time_delta = time->getFrameTimeDelta()/1000.0;
-
-        LOG_TRACE("PhysicsComponent: {}", __FUNCTION__, time_delta);
-
-        if (time_delta > 0.0)
-        {
-          mDynamicsWorld->stepSimulation(time_delta);
-          checkContactManifolds();
-        }
+        mDynamicsWorld->stepSimulation(time_delta);
+        checkContactManifolds();
       }
     }
   }
@@ -134,12 +132,12 @@ namespace octronic::dream
   {
     LOG_DEBUG( "PhysicsComponent: Initialising Component");
 
-    mUpdateWorldTask = make_shared<PhysicsUpdateWorldTask>(mProjectRuntime,static_pointer_cast<PhysicsComponent>(shared_from_this()));
-    mBroadphase = make_shared<btDbvtBroadphase>();
-    mCollisionConfiguration = make_shared<btDefaultCollisionConfiguration>();
-    mDispatcher = make_shared<btCollisionDispatcher>(mCollisionConfiguration.get());
-    mSolver = make_shared<btSequentialImpulseConstraintSolver>();
-    mDynamicsWorld = make_shared<btDiscreteDynamicsWorld>(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfiguration.get());
+    mUpdateWorldTask = make_shared<PhysicsUpdateWorldTask>(getProjectRuntime());
+    mBroadphase = new btDbvtBroadphase();
+    mCollisionConfiguration = new btDefaultCollisionConfiguration();
+    mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
+    mSolver = new btSequentialImpulseConstraintSolver();
+    mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
 
     LOG_DEBUG("PhysicsComponent: Finished initialising PhysicsComponent");
     return true;
@@ -147,12 +145,12 @@ namespace octronic::dream
 
   void
   PhysicsComponent::addRigidBody
-  (const weak_ptr<btRigidBody>& rigidBody)
+  (btRigidBody* rigidBody)
   {
     LOG_DEBUG( "PhysicsComponent: Adding Rigid Body to Dynamics World" );
-    if (auto rbLock = rigidBody.lock())
+    if (rigidBody)
     {
-      mDynamicsWorld->addRigidBody(rbLock.get());
+      mDynamicsWorld->addRigidBody(rigidBody);
     }
     else
     {
@@ -163,22 +161,19 @@ namespace octronic::dream
 
   void
   PhysicsComponent::removePhysicsObjectRuntime
-  (const weak_ptr<PhysicsObjectRuntime>& obj)
+  (PhysicsObjectRuntime& obj)
   {
-    if (auto objLock = obj.lock())
-    {
-      removeRigidBody(objLock->getRigidBody());
-    }
+    removeRigidBody(obj.getRigidBody());
   }
 
   void
   PhysicsComponent::removeRigidBody
-  (const weak_ptr<btRigidBody>& rigidBody)
+  (btRigidBody* rigidBody)
   {
     LOG_DEBUG( "PhysicsComponent: Removing Rigid Body from Dynamics World" );
-    if (auto rbLock = rigidBody.lock())
+    if (rigidBody)
     {
-      mDynamicsWorld->removeRigidBody(rbLock.get());
+      mDynamicsWorld->removeRigidBody(rigidBody);
     }
     else
     {
@@ -188,12 +183,9 @@ namespace octronic::dream
 
   void
   PhysicsComponent::addPhysicsObjectRuntime
-  (const weak_ptr<PhysicsObjectRuntime>& physicsObjejct)
+  (PhysicsObjectRuntime& physicsObjejct)
   {
-    if (auto poLock = physicsObjejct.lock())
-    {
-      addRigidBody(poLock->getRigidBody());
-    }
+    addRigidBody(physicsObjejct.getRigidBody());
   }
 
   void
@@ -201,123 +193,97 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("PhysicsComponent: Checking contact manifolds");
-    if (auto prLock = mProjectRuntime.lock())
+    auto sceneOpt = getProjectRuntime().getActiveSceneRuntime();
+    if (sceneOpt)
     {
-      if (auto scene = prLock->getActiveSceneRuntime().lock())
+      auto& scene = sceneOpt.value().get();
+      int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
+      for (int i=0;i<numManifolds;i++)
       {
-        int numManifolds = mDynamicsWorld->getDispatcher()->getNumManifolds();
-        for (int i=0;i<numManifolds;i++)
+        LOG_TRACE("PhysicsComponent: Checking manifold {}",i);
+        btPersistentManifold* contactManifold = mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+
+        auto objA = contactManifold->getBody0();
+        auto objB = contactManifold->getBody1();
+
+        if (objA != nullptr && objB != nullptr)
         {
-          LOG_TRACE("PhysicsComponent: Checking manifold {}",i);
-          btPersistentManifold* contactManifold = mDynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+          auto& sObjA = getEntityRuntimeForCollisionObject(scene, objA);
+          auto& sObjB = getEntityRuntimeForCollisionObject(scene, objB);
 
-          auto objA = contactManifold->getBody0();
-          auto objB = contactManifold->getBody1();
+          LOG_DEBUG("PhysicsComponent: Contact Manifold Found. Sending Event");
 
-          if (objA != nullptr && objB != nullptr)
+          Event aHitsB(sObjA.getAttributesMap());
+          Event bHitsA(sObjB.getAttributesMap());
+
+          int numContacts = contactManifold->getNumContacts();
+          for (int j=0;j<numContacts;j++)
           {
-            auto entityWeakA = getEntityRuntimeForCollisionObject(scene, objA);
-            auto entityWeakB = getEntityRuntimeForCollisionObject(scene, objB);
-
-            if (auto sObjA = entityWeakA.lock())
+            btManifoldPoint& pt = contactManifold->getContactPoint(j);
+            if (pt.getDistance()>0.f)
             {
-              if (auto sObjB = entityWeakB.lock())
-              {
-                LOG_DEBUG("PhysicsComponent: Contact Manifold Found. Sending Event");
-
-                Event aHitsB(sObjA->getAttributesMap());
-                Event bHitsA(sObjB->getAttributesMap());
-
-                int numContacts = contactManifold->getNumContacts();
-                for (int j=0;j<numContacts;j++)
-                {
-                  btManifoldPoint& pt = contactManifold->getContactPoint(j);
-                  if (pt.getDistance()>0.f)
-                  {
-                    continue;
-                  }
-
-                  auto ptA = pt.getPositionWorldOnA();
-                  auto ptB = pt.getPositionWorldOnB();
-                  auto impulse = pt.getAppliedImpulse();
-
-                  aHitsB.setAttribute("collision","true");
-                  aHitsB.setAttribute("collision.impulse",std::to_string(impulse));
-                  aHitsB.setAttribute("collision.pos.x",std::to_string(ptB.x()));
-                  aHitsB.setAttribute("collision.pos.y",std::to_string(ptB.y()));
-                  aHitsB.setAttribute("collision.pos.z",std::to_string(ptB.z()));
-
-                  bHitsA.setAttribute("collision","true");
-                  bHitsA.setAttribute("collision.impulse",std::to_string(impulse));
-                  bHitsA.setAttribute("collision.pos.x",std::to_string(ptA.x()));
-                  bHitsA.setAttribute("collision.pos.y",std::to_string(ptA.y()));
-                  bHitsA.setAttribute("collision.pos.z",std::to_string(ptA.z()));
-
-                }
-                sObjB->addEvent(aHitsB);
-                sObjA->addEvent(bHitsA);
-              }
+              continue;
             }
+
+            auto ptA = pt.getPositionWorldOnA();
+            auto ptB = pt.getPositionWorldOnB();
+            auto impulse = pt.getAppliedImpulse();
+
+            aHitsB.setAttribute("collision","true");
+            aHitsB.setAttribute("collision.impulse",std::to_string(impulse));
+            aHitsB.setAttribute("collision.pos.x",std::to_string(ptB.x()));
+            aHitsB.setAttribute("collision.pos.y",std::to_string(ptB.y()));
+            aHitsB.setAttribute("collision.pos.z",std::to_string(ptB.z()));
+
+            bHitsA.setAttribute("collision","true");
+            bHitsA.setAttribute("collision.impulse",std::to_string(impulse));
+            bHitsA.setAttribute("collision.pos.x",std::to_string(ptA.x()));
+            bHitsA.setAttribute("collision.pos.y",std::to_string(ptA.y()));
+            bHitsA.setAttribute("collision.pos.z",std::to_string(ptA.z()));
+
           }
+          sObjB.addEvent(aHitsB);
+          sObjA.addEvent(bHitsA);
         }
       }
     }
   }
 
-  weak_ptr<EntityRuntime>
+  EntityRuntime&
   PhysicsComponent::getEntityRuntimeForCollisionObject
-  (const weak_ptr<SceneRuntime>& scene,
+  (SceneRuntime& scene,
    const btCollisionObject* collObj)
   {
-    if (auto sceneLock = scene.lock())
-    {
-      auto flatVector = sceneLock->getFlatVector();
+    auto flatVector = scene.getFlatVector();
 
-      for (auto next : flatVector)
+    for (auto& next : flatVector)
+    {
+      auto& er = next.get();
+      if (er.hasPhysicsObjectRuntime())
       {
-        if (auto erLock = next.lock())
+        auto& nextPO = er.getPhysicsObjectRuntime();
+        if (nextPO.getCollisionObject() == collObj)
         {
-          if (erLock->hasPhysicsObjectRuntime())
-          {
-            if (auto nextPO = erLock->getPhysicsObjectRuntime().lock())
-            {
-              if (nextPO->getCollisionObject().lock().get() == collObj)
-              {
-                return next;
-              }
-            }
-          }
+          return next;
         }
       }
     }
-    return weak_ptr<EntityRuntime>();
-  }
-
-  weak_ptr<PhysicsUpdateWorldTask>
-  PhysicsComponent::getUpdateWorldTask
-  ()
-  {
-    return mUpdateWorldTask;
+    throw std::exception();
   }
 
   void
   PhysicsComponent::setDebugDrawer
-  (const weak_ptr<btIDebugDraw>& dd)
+  (btIDebugDraw* dd)
   {
-    if (auto drawer = dd.lock())
+    if (auto drawer = dd)
     {
-      mDynamicsWorld->setDebugDrawer(drawer.get());
+      mDynamicsWorld->setDebugDrawer(drawer);
     }
   }
 
   void PhysicsComponent::pushTasks()
   {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto taskQueue = prLock->getTaskQueue().lock())
-      {
-        taskQueue->pushTask(mUpdateWorldTask);
-      }
-    }
+    auto& taskQueue = getProjectRuntime().getTaskQueue();
+    taskQueue.pushTask(mUpdateWorldTask);
   }
 }

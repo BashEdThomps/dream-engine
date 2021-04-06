@@ -1,101 +1,98 @@
 #include "Runtime.h"
 #include "Project/ProjectRuntime.h"
 
-using std::make_shared;
-
 namespace octronic::dream
 {
-    Runtime::Runtime
-    (const weak_ptr<Definition>& def)
-        : mDefinition(def)
-	{
-        if (auto defLock = mDefinition.lock())
-        {
-			mUuid = defLock->getUuid();
-			mName = defLock->getName();
-        }
-        else
-        {
-            mUuid = Uuid::INVALID;
-			mName = "";
-        }
-    }
+  Runtime::Runtime
+  (Definition& def)
+    : mDefinition(def)
+  {
+    mUuid = def.getUuid();
+    mName = def.getName();
+  }
 
-    Runtime::~Runtime
-    ()
-    {
 
-    }
+  Runtime::~Runtime
+  ()
+  {
 
-    UuidType
-    Runtime::getUuid
-    ()
-    const
-    {
-        return mUuid;
-    }
+  }
 
-    string
-    Runtime::getUuidString
-    ()
-    const
-    {
-        return std::to_string(mUuid);
-    }
 
-    void
-    Runtime::setUuid
-    (UuidType uuid)
-    {
-        mUuid = uuid;
-    }
+  bool Runtime::operator==(const Runtime &other)
+  {
+    return mUuid == other.mUuid;
+  }
 
-    bool
-    Runtime::hasUuid
-    (UuidType uuid)
-    const
-    {
-        return mUuid == uuid;
-    }
+  UuidType
+  Runtime::getUuid
+  ()
+  const
+  {
+    return mUuid;
+  }
 
-    string
-    Runtime::getName
-    ()
-    const
-    {
-        return mName;
-    }
+  string
+  Runtime::getUuidString
+  ()
+  const
+  {
+    return std::to_string(mUuid);
+  }
 
-    void
-    Runtime::setName
-    (const string& name)
-    {
-        mName = name;
-    }
+  void
+  Runtime::setUuid
+  (UuidType uuid)
+  {
+    mUuid = uuid;
+  }
 
-    bool
-    Runtime::hasName
-    (const string& name)
-    const
-    {
-        return getName().compare(name) == 0;
-    }
+  bool
+  Runtime::hasUuid
+  (UuidType uuid)
+  const
+  {
+    return mUuid == uuid;
+  }
 
-    string
-    Runtime::getNameAndUuidString
-    ()
-    const
-    {
-        stringstream ss;
-        ss << "[" << getName() << " : " << getUuid() << "]";
-        return ss.str();
-    }
+  string
+  Runtime::getName
+  ()
+  const
+  {
+    return mName;
+  }
 
-    weak_ptr<Definition>
-    Runtime::getDefinition
-    ()
-    const
-    {
-        return mDefinition;
-    }
+  void
+  Runtime::setName
+  (const string& name)
+  {
+    mName = name;
+  }
+
+  bool
+  Runtime::hasName
+  (const string& name)
+  const
+  {
+    return getName().compare(name) == 0;
+  }
+
+  string
+  Runtime::getNameAndUuidString
+  ()
+  const
+  {
+    stringstream ss;
+    ss << "[" << getName() << " : " << getUuid() << "]";
+    return ss.str();
+  }
+
+  Definition&
+  Runtime::getDefinition
+  ()
+  const
+  {
+    return mDefinition.get();
+  }
 }

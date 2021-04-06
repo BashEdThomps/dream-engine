@@ -43,159 +43,130 @@
 // Task
 #include "Task/Task.h"
 #include "Task/TaskQueue.h"
+// Cache
+#include "Components/Cache.h"
 // STD
 #include <string>
 #include <vector>
 #include <deque>
 #include <memory>
-
 // Using
 using std::string;
 using std::vector;
 using std::deque;
-using std::unique_ptr;
 
 namespace octronic::dream
 {
-    // Typedef
-    template <typename DefinitionType, typename RuntimeType> class Cache;
- 	typedef Cache<AudioDefinition,AudioRuntime>       AudioCache;
-	typedef Cache<FontDefinition,FontRuntime>         FontCache;
-	typedef Cache<MaterialDefinition,MaterialRuntime> MaterialCache;
-	typedef Cache<ModelDefinition,ModelRuntime>       ModelCache;
-	typedef Cache<ScriptDefinition,ScriptRuntime>     ScriptCache;
-	typedef Cache<ShaderDefinition,ShaderRuntime>     ShaderCache;
-	typedef Cache<TextureDefinition,TextureRuntime>   TextureCache;
+  // Typedef
+  typedef Cache<AudioDefinition,AudioRuntime>       AudioCache;
+  typedef Cache<FontDefinition,FontRuntime>         FontCache;
+  typedef Cache<MaterialDefinition,MaterialRuntime> MaterialCache;
+  typedef Cache<ModelDefinition,ModelRuntime>       ModelCache;
+  typedef Cache<ScriptDefinition,ScriptRuntime>     ScriptCache;
+  typedef Cache<ShaderDefinition,ShaderRuntime>     ShaderCache;
+  typedef Cache<TextureDefinition,TextureRuntime>   TextureCache;
+  // Forward Declarations
+  class ProjectDirectory;
+  class AssetDefinition;
+  class WindowComponent;
+  class StorageManager;
+  class SceneRuntime;
+  class EntityRuntime;
+  class SceneDefinition;
 
-    // Forward Declarations
-    class ProjectDirectory;
-    class AssetDefinition;
-    class WindowComponent;
-    class StorageManager;
-    class SceneRuntime;
-    class EntityRuntime;
-    class SceneDefinition;
+  // Class Declaration
+  class ProjectRuntime : public Runtime
+  {
+  public: // Public Variables
+    static unsigned int MaxFrameCount;
+  public: // Public Functions
+    ProjectRuntime(ProjectDefinition& definition, ProjectDirectory& directory,
+                   StorageManager& sm, WindowComponent& wc, AudioComponent& ac);
 
-    // Class Declaration
-    class ProjectRuntime : public Runtime
-    {
-    public: // Public Variables
-        static int MaxFrameCount;
-
-    public: // Public Functions
-
-        ProjectRuntime(const weak_ptr<ProjectDefinition>& parentProject,
-                       const weak_ptr<ProjectDirectory>& directory,
-                       const shared_ptr<WindowComponent>& wc,
-                       const shared_ptr<AudioComponent>& ac,
-                       const shared_ptr<StorageManager>& fm);
-
-        ~ProjectRuntime() override;
-
-        void setDone(bool);
-        bool isDone() const;
-
-        weak_ptr<ProjectDirectory> getProjectDirectory() const;
-
-        // Components ==========================================================
-
-        bool initComponents();
-        weak_ptr<Time>              getTime() const;
-        weak_ptr<AudioComponent>    getAudioComponent() const;
-        weak_ptr<PhysicsComponent>  getPhysicsComponent() const;
-        weak_ptr<GraphicsComponent> getGraphicsComponent() const;
-        weak_ptr<WindowComponent>   getWindowComponent() const;
-        weak_ptr<ScriptComponent>   getScriptComponent() const;
-        weak_ptr<InputComponent>    getInputComponent() const;
-        weak_ptr<StorageManager>    getStorageManager() const;
-        weak_ptr<TaskQueue<Task>>   getTaskQueue() const;
-        weak_ptr<TaskQueue<DestructionTask>> getDestructionTaskQueue() const;
-
-        // Running =============================================================
-
-        bool loadFromDefinition() override;
-        void collectGarbage();
-        void step();
+    ProjectRuntime(ProjectRuntime&&) = default;
+    ProjectRuntime& operator=(ProjectRuntime&&)= default;
 
 
-        // Caches ==============================================================
+    void setDone(bool);
+    bool isDone() const;
 
-        weak_ptr<AudioCache>    getAudioCache() const;
-        weak_ptr<ShaderCache>   getShaderCache() const;
-        weak_ptr<MaterialCache> getMaterialCache() const;
-        weak_ptr<ModelCache>    getModelCache() const;
-        weak_ptr<TextureCache>  getTextureCache() const;
-        weak_ptr<ScriptCache>   getScriptCache() const;
-        weak_ptr<FontCache>     getFontCache() const;
-        bool initCaches();
-        void clearAllCaches();
+    ProjectDirectory& getProjectDirectory();
+    // Components ==========================================================
+    bool initComponents();
+    Time&              getTime();
+    AudioComponent&    getAudioComponent();
+    PhysicsComponent&  getPhysicsComponent();
+    GraphicsComponent& getGraphicsComponent();
+    WindowComponent&   getWindowComponent();
+    ScriptComponent&   getScriptComponent();
+    InputComponent&    getInputComponent();
+    StorageManager&    getStorageManager();
+    TaskQueue<Task>&   getTaskQueue();
+    TaskQueue<DestructionTask>& getDestructionTaskQueue();
+    // Running =============================================================
+    bool loadFromDefinition() override;
+    void collectGarbage();
+    void step();
+    // Caches ==============================================================
+    AudioCache&    getAudioCache();
+    FontCache&     getFontCache();
+    MaterialCache& getMaterialCache();
+    ModelCache&    getModelCache();
+    ScriptCache&   getScriptCache();
+    ShaderCache&   getShaderCache();
+    TextureCache&  getTextureCache();
+    bool initCaches();
+    void clearAllCaches();
+    // Scenes ==============================================================
+    SceneRuntime& createSceneRuntime(SceneDefinition&);
+    optional<reference_wrapper<SceneRuntime>> getActiveSceneRuntime() const;
+    SceneRuntime& getSceneRuntimeByUuid(UuidType uuid);
+    bool hasActiveSceneRuntime() const;
+    void removeSceneRuntime(const SceneRuntime&);
+    void setActiveSceneRuntime(UuidType uuid);
+    vector<reference_wrapper<SceneRuntime>> getSceneRuntimeVector();
+    bool hasSceneRuntime(UuidType uuid) const;
+    bool hasLoadedScenes() const;
+    // Frames ==============================================================
+    deque<float> getFrameDurationHistory() const;
+    float getAverageFramerate();
 
-        // Scenes ==============================================================
-
-        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid) const;
-        weak_ptr<SceneRuntime> getActiveSceneRuntime() const;
-        weak_ptr<SceneRuntime> getSceneRuntimeByUuid(UuidType uuid) const;
-        bool constructSceneRuntime(const weak_ptr<SceneRuntime>& rt);
-        void destructSceneRuntime(const weak_ptr<SceneRuntime>& rt);
-
-        bool hasActiveScene() const;
-        void addSceneRuntime(const shared_ptr<SceneRuntime>&);
-        void removeSceneRuntime(const weak_ptr<SceneRuntime>&);
-        void setActiveSceneRuntime(UuidType uuid);
-        vector<weak_ptr<SceneRuntime>> getSceneRuntimeVector() const;
-        bool hasSceneRuntime(UuidType uuid) const;
-        bool hasLoadedScenes() const;
-
-        // Frames ==============================================================
-
-        deque<float> getFrameDurationHistory() const;
-        float getAverageFramerate();
-
-    private: // Member Functions
-        bool initAudioComponent();
-        bool initInputComponent();
-        bool initPhysicsComponent();
-        bool initGraphicsComponent();
-        bool initWindowComponent();
-        bool initScriptComponent();
-
-		void pushComponentTasks();
-
-    private: // Member Variables
-        bool mDone;
-        weak_ptr<ProjectDirectory> mProjectDirectory;
-
-        // Passed in Components, we take ownership
-        shared_ptr<AudioComponent>  mAudioComponent;
-        shared_ptr<WindowComponent> mWindowComponent;
-        shared_ptr<StorageManager>  mStorageManager;
-
-        // Project created Components
-        shared_ptr<Time> mTime;
-        shared_ptr<InputComponent>    mInputComponent;
-        shared_ptr<GraphicsComponent> mGraphicsComponent;
-        shared_ptr<PhysicsComponent>  mPhysicsComponent;
-        shared_ptr<ScriptComponent>   mScriptComponent;
-
-        // Caches, Project owns those too
-        shared_ptr<AudioCache>     mAudioCache;
-        shared_ptr<FontCache>      mFontCache;
-        shared_ptr<MaterialCache>  mMaterialCache;
-        shared_ptr<ModelCache>     mModelCache;
-        shared_ptr<ScriptCache>    mScriptCache;
-        shared_ptr<ShaderCache>    mShaderCache;
-        shared_ptr<TextureCache>   mTextureCache;
-
-        // SceneRuntime
-        weak_ptr<SceneRuntime> mActiveSceneRuntime;
-        vector<shared_ptr<SceneRuntime>> mSceneRuntimeVector;
-        vector<weak_ptr<SceneRuntime>> mSceneRuntimesToRemove;
-
-        // Tasking
-        shared_ptr<TaskQueue<Task>> mTaskQueue;
-        shared_ptr<TaskQueue<DestructionTask>> mDestructionTaskQueue;
-
-        // Frames
-        deque<float> mFrameDurationHistory;
-    };
+  private: // Member Functions
+    bool initAudioComponent();
+    bool initInputComponent();
+    bool initPhysicsComponent();
+    bool initGraphicsComponent();
+    bool initWindowComponent();
+    bool initScriptComponent();
+    void pushComponentTasks();
+  private: // Member Variables
+    bool mDone;
+    reference_wrapper<ProjectDirectory> mProjectDirectory;
+    reference_wrapper<AudioComponent>  mAudioComponent;
+    reference_wrapper<WindowComponent> mWindowComponent;
+    reference_wrapper<StorageManager> mStorageManager;
+    // Project created Components
+    Time              mTime;
+    InputComponent    mInputComponent;
+    GraphicsComponent mGraphicsComponent;
+    PhysicsComponent  mPhysicsComponent;
+    ScriptComponent   mScriptComponent;
+    // Caches, Project owns those too
+    AudioCache    mAudioCache;
+    FontCache     mFontCache;
+    MaterialCache mMaterialCache;
+    ModelCache    mModelCache;
+    ScriptCache   mScriptCache;
+    ShaderCache   mShaderCache;
+    TextureCache  mTextureCache;
+    // SceneRuntime
+    vector<SceneRuntime> mSceneRuntimeVector;
+    vector<reference_wrapper<SceneRuntime>> mSceneRuntimesToRemove;
+    optional<reference_wrapper<SceneRuntime>> mActiveSceneRuntime;
+    // Tasking
+    TaskQueue<Task>            mTaskQueue;
+    TaskQueue<DestructionTask> mDestructionTaskQueue;
+    // Frames
+    deque<float> mFrameDurationHistory;
+  };
 }

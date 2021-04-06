@@ -16,14 +16,13 @@
 #pragma once
 
 #include "PhysicsTasks.h"
-#include "Math/Vector.h"
 #include "Components/Component.h"
-
-#include <LinearMath/btVector3.h>
 #include <glm/matrix.hpp>
+#include <glm/vec3.hpp>
 
 #include <memory>
 
+using glm::vec3;
 using glm::mat4;
 using std::shared_ptr;
 
@@ -48,32 +47,35 @@ namespace octronic::dream
     {
 
     public:
-        PhysicsComponent(const weak_ptr<ProjectRuntime>& pr);
-        ~PhysicsComponent() override;
+        PhysicsComponent(ProjectRuntime& pr);
+
+        PhysicsComponent(PhysicsComponent&&) = default;
+        PhysicsComponent& operator=(PhysicsComponent&&) = default;
+
+        ~PhysicsComponent();
+
         void setGravity(const vec3&);
         vec3 getGravity() const;
         bool init() override;
-        void addPhysicsObjectRuntime(const weak_ptr<PhysicsObjectRuntime>&);
-        void addRigidBody(const weak_ptr<btRigidBody>&);
-        void removeRigidBody(const weak_ptr<btRigidBody>&);
-        void removePhysicsObjectRuntime(const weak_ptr<PhysicsObjectRuntime>&);
+        void addPhysicsObjectRuntime(PhysicsObjectRuntime&);
+        void removePhysicsObjectRuntime(PhysicsObjectRuntime&);
+        void addRigidBody(btRigidBody*);
+        void removeRigidBody(btRigidBody*);
         void checkContactManifolds();
 
-        weak_ptr<EntityRuntime>getEntityRuntimeForCollisionObject
-        (const weak_ptr<SceneRuntime>& scene, const btCollisionObject*);
+        EntityRuntime& getEntityRuntimeForCollisionObject(SceneRuntime& scene, const btCollisionObject*);
 
         void stepSimulation();
-        weak_ptr<PhysicsUpdateWorldTask> getUpdateWorldTask();
         void pushTasks() override;
-        void setDebugDrawer(const weak_ptr<btIDebugDraw>& dd);
+        void setDebugDrawer(btIDebugDraw* dd);
     private:
         bool needsCollision(const btCollisionObject* body0, const btCollisionObject* body1);
     private:
-        shared_ptr<btDynamicsWorld> mDynamicsWorld;
-        shared_ptr<btBroadphaseInterface> mBroadphase;
-        shared_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
-        shared_ptr<btCollisionDispatcher> mDispatcher;
-        shared_ptr<btSequentialImpulseConstraintSolver> mSolver;
+        btDynamicsWorld* mDynamicsWorld;
+        btBroadphaseInterface* mBroadphase;
+        btDefaultCollisionConfiguration* mCollisionConfiguration;
+        btCollisionDispatcher* mDispatcher;
+        btSequentialImpulseConstraintSolver* mSolver;
         shared_ptr<PhysicsUpdateWorldTask> mUpdateWorldTask;
     };
 }

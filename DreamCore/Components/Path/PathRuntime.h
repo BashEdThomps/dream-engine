@@ -33,17 +33,17 @@ namespace octronic::dream
         const static int SPLINE_DIMENSIONS;
         const static int SPLINE_DEGREES;
     public:
-        PathRuntime(const weak_ptr<ProjectRuntime>&,
-                    const weak_ptr<PathDefinition>&,
-                    const weak_ptr<EntityRuntime>&);
-        ~PathRuntime() override;
+        PathRuntime(ProjectRuntime&,PathDefinition&, EntityRuntime&);
+        PathRuntime(PathRuntime&&) = default;
+        PathRuntime& operator=(PathRuntime&&) = default;
+
         bool loadFromDefinition() override;
 
         double getUStep() const;
         void setUStep(double uStep);
         vector<vec3> getSplinePoints() const;
         vector<mat4> getSplineTangents() const;
-        vec3 getSplinePoint(int) const;
+        vec3 getSplinePoint(unsigned int) const;
         void update();
 
         void generate();
@@ -58,7 +58,7 @@ namespace octronic::dream
         void setWrapPath(bool wrapPath);
         mat4 getHeading(const vec3& point, const vec3& v1, const vec3& v2) const;
 
-        vector<pair<vec3,vec3> > getSplineDerivatives() const;
+        vector<pair<vec3,vec3>> getSplineDerivatives() const;
         void setToCurrentPoint();
         void nextPoint();
 

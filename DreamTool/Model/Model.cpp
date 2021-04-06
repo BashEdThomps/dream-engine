@@ -4,9 +4,14 @@
 
 namespace octronic::dream::tool
 {
-	Model::Model(DreamToolContext* ctx)
-        : mContext(ctx)
-	{
-        LOG_TRACE("Model: {}",__FUNCTION__);
-	}
+  Model::Model(DreamToolContext& ctx)
+    : mContext(ctx)
+  {
+  }
+
+  DreamToolContext&
+  Model::getContext()
+  {
+    return mContext.get();
+  }
 }

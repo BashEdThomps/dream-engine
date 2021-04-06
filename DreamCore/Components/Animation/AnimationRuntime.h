@@ -23,70 +23,49 @@
 #include <tweeny.h>
 
 using tweeny::tween;
-using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
-    class AnimationRuntime : public DiscreteAssetRuntime
-    {
-    public:
-        AnimationRuntime(
-                const weak_ptr<ProjectRuntime>& pr,
-                const weak_ptr<AnimationDefinition>&,
-                const weak_ptr<EntityRuntime>&);
+  class AnimationRuntime : public DiscreteAssetRuntime
+  {
+  public:
+    AnimationRuntime(ProjectRuntime& pr, AnimationDefinition&, EntityRuntime&);
 
-        ~AnimationRuntime() override;
-        bool loadFromDefinition() override;
-        bool init() override;
+    bool loadFromDefinition() override;
+    bool init() override;
 
-        void createTweens();
-        void run();
-        void pause();
-        void reset();
-        void update();
-        void stepAnimation(double time);
-        void orderByTime();
-        void seekAll(unsigned int pos);
+    void createTweens();
+    void run();
+    void pause();
+    void reset();
+    void update();
+    void stepAnimation(double time);
+    void orderByTime();
+    void seekAll(unsigned int pos);
 
-        long getDuration() const;
+    long getDuration() const;
 
-        void setAnimationSeekTime(long currentTime);
-        long getAnimationSeekTime() const;
+    void setAnimationSeekTime(long currentTime);
+    long getAnimationSeekTime() const;
 
-        bool getRunning() const;
-        void setRunning(bool running);
+    bool getRunning() const;
+    void setRunning(bool running);
 
-        weak_ptr<AnimationUpdateTask> getUpdateTask() const;
+    void pushTasks() override;
 
-        void pushTasks() override;
+  private:
+    void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
 
-    private:
-        void applyEasing(tweeny::tween<float>& twn, AnimationEasing::EasingType easing);
+  private:
+    shared_ptr<AnimationUpdateTask> mUpdateTask;
+    vector<AnimationKeyframe> mKeyframes;
+    bool mRunning;
+    long mAnimationSeekTime;
+    long mDuration;
 
-    private:
-        shared_ptr<AnimationUpdateTask> mUpdateTask;
-        vector<AnimationKeyframe> mKeyframes;
-        bool mRunning;
-        long mAnimationSeekTime;
-        long mDuration;
-
-        bool mRelative;
-        Transform mOriginalTransform;
-
-        tween<float> mTweenTranslationX;
-        tween<float> mTweenTranslationY;
-        tween<float> mTweenTranslationZ;
-
-        tween<float> mTweenOrientation;
-        /*
-        tween<float> mTweenOrientationX;
-        tween<float> mTweenOrientationY;
-        tween<float> mTweenOrientationZ;
-        tween<float> mTweenOrientationW;
-        */
-
-        tween<float> mTweenScaleX;
-        tween<float> mTweenScaleY;
-        tween<float> mTweenScaleZ;
-    };
+    bool mRelative;
+    float mOriginalValue;
+    float mCurrentValue;
+    tween<float> mTweenValue;
+  };
 }

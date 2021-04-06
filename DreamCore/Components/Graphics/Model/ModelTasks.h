@@ -5,27 +5,33 @@
 
 namespace octronic::dream
 {
-    class ModelMesh;
-    class MaterialRuntime;
+  class ModelMesh;
+  class MaterialRuntime;
 
-    class ModelInitMeshTask : public GraphicsTask
-    {
-        weak_ptr<ModelMesh> mMesh;
-    public:
-        ModelInitMeshTask(
-            const weak_ptr<ProjectRuntime>& pr,
-            const weak_ptr<ModelMesh>& mesh);
-        void execute() override;
-    };
+  // ModelInitMeshTask =========================================================
 
-    class ModelFreeMeshTask : public GraphicsDestructionTask
-    {
-        GLuint mVAO;
-        GLuint mVBO;
-        GLuint mIBO;
-    public:
-       ModelFreeMeshTask(const weak_ptr<ProjectRuntime>& pr);
-       void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
-       void execute() override;
-    };
+  class ModelInitMeshTask : public GraphicsTask
+  {
+  public:
+    ModelInitMeshTask(ProjectRuntime& pr, ModelMesh& mesh);
+    void execute() override;
+  private:
+    reference_wrapper<ModelMesh> mMesh;
+    ModelMesh& getMesh() const;
+  };
+
+  // ModelFreeMeshTask =========================================================
+
+  class ModelFreeMeshTask : public GraphicsDestructionTask
+  {
+
+  public:
+    ModelFreeMeshTask(ProjectRuntime& pr);
+    void setBuffers(GLuint vao, GLuint vbo, GLuint ibo);
+    void execute() override;
+  private:
+    GLuint mVAO;
+    GLuint mVBO;
+    GLuint mIBO;
+  };
 }

@@ -33,7 +33,7 @@
 #include "Components/Window/WindowComponent.h"
 
 #include "Scene/SceneRuntime.h"
-#include "Entity/EntityDefinition.h"
+#include "Entity/TemplateEntityDefinition.h"
 #include "Entity/EntityRuntime.h"
 
 #include "Project/ProjectRuntime.h"
@@ -52,14 +52,13 @@ using glm::vec2;
 using glm::vec3;
 using glm::ortho;
 using std::make_shared;
-using std::static_pointer_cast;
+using std::make_unique;
 
 namespace octronic::dream
 {
   GraphicsComponent::GraphicsComponent
-  (const weak_ptr<ProjectRuntime>& pr)
-    : Component(pr),
-      mMaxFrameBufferSize(0),
+  (ProjectRuntime& pr)
+    : Component(),
       // Shadow Pass Vars
       mShadowPassFB(0),
       mShadowPassDepthBuffer(0),
@@ -68,11 +67,9 @@ namespace octronic::dream
       mSpriteQuadVAO(0),
       mSpriteQuadVBO(0),
       // Tasks
-      mTaskQueue(make_shared<GraphicsTaskQueue>("GraphicsTaskQueue")),
-      mDestructionTaskQueue(make_shared<GraphicsDestructionTaskQueue>("GraphicsDestructionTaskQueue")),
-      mSetupBuffersTask(make_shared<SetupBuffersTask>(pr)),
-      mResizeTask(make_shared<ResizeTask>(pr)),
-      mRenderTask(make_shared<RenderTask>(pr)),
+      mTaskQueue("GraphicsTaskQueue"),
+      mDestructionTaskQueue("GraphicsDestructionTaskQueue"),
+      mMaxFrameBufferSize(0),
       mLightPositions{
   {-20.0f,  20.0f, 20.0f},
   { 20.0f,  20.0f, 20.0f},
@@ -86,6 +83,7 @@ namespace octronic::dream
   {300.0f, 300.0f, 300.0f}
 }
   {
+    setProjectRuntime(pr);
     LOG_TRACE("GraphicsComponent: Constructing");
   }
 
@@ -102,6 +100,9 @@ namespace octronic::dream
   GraphicsComponent::init
   ()
   {
+    mSetupBuffersTask = make_shared<SetupBuffersTask>(mProjectRuntime.value());
+    mResizeTask = make_shared<ResizeTask>(mProjectRuntime.value());
+    mRenderTask = make_shared<RenderTask>(mProjectRuntime.value());
     return true;
   }
 
@@ -111,52 +112,46 @@ namespace octronic::dream
   {
     LOG_DEBUG("GraphicsComponent: setupBuffers");
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& wc = mProjectRuntime.value().get().getWindowComponent();
+    // Define the viewport dimensions
+    int windowWidth  = wc.getWidth();
+    int windowHeight = wc.getHeight();
+
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&mMaxFrameBufferSize);
+
+    LOG_DEBUG("GraphicsComponent: Max FB size = {}x{}",mMaxFrameBufferSize,mMaxFrameBufferSize);
+
+    if (windowWidth > mMaxFrameBufferSize || windowHeight > mMaxFrameBufferSize)
     {
-      if (auto wcLock = prLock->getWindowComponent().lock())
-      {
-        // Define the viewport dimensions
-        int windowWidth  = wcLock->getWidth();
-        int windowHeight = wcLock->getHeight();
-
-        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&mMaxFrameBufferSize);
-
-        LOG_DEBUG("GraphicsComponent: Max FB size = {}x{}",mMaxFrameBufferSize,mMaxFrameBufferSize);
-
-        if (windowWidth > mMaxFrameBufferSize || windowHeight > mMaxFrameBufferSize)
-        {
-          LOG_ERROR("GraphicsComponent: Requested framebuffer larger than max "
+      LOG_ERROR("GraphicsComponent: Requested framebuffer larger than max "
                       "supported size {}x{} > {}x{}",
-                    windowWidth, windowHeight, mMaxFrameBufferSize, mMaxFrameBufferSize);
-          return false;
-        }
-
-        if (windowWidth == 0 || windowHeight == 0)
-        {
-          LOG_DEBUG("GraphicsComponent: Window size not available");
-          return false;
-        }
-
-        freeShadowBuffers();
-        if (!setupShadowBuffers())
-        {
-          LOG_ERROR("GraphicsComponent: Unable to create shadow pass buffers");
-          return false;
-        }
-
-        freeSpriteQuad();
-        if (!setupSpriteQuad())
-        {
-          LOG_ERROR("GraphicsComponent: Unable to create screen quad");
-          return false;
-        }
-
-        LOG_DEBUG("GraphicsComponent: Initialisation Done.");
-
-        return true;
-      }
+                windowWidth, windowHeight, mMaxFrameBufferSize, mMaxFrameBufferSize);
+      return false;
     }
-    return false;
+
+    if (windowWidth == 0 || windowHeight == 0)
+    {
+      LOG_DEBUG("GraphicsComponent: Window size not available");
+      return false;
+    }
+
+    freeShadowBuffers();
+    if (!setupShadowBuffers())
+    {
+      LOG_ERROR("GraphicsComponent: Unable to create shadow pass buffers");
+      return false;
+    }
+
+    freeSpriteQuad();
+    if (!setupSpriteQuad())
+    {
+      LOG_ERROR("GraphicsComponent: Unable to create screen quad");
+      return false;
+    }
+
+    LOG_DEBUG("GraphicsComponent: Initialisation Done.");
+
+    return true;
   }
 
   bool
@@ -164,204 +159,152 @@ namespace octronic::dream
   ()
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-    if (auto prLock = mProjectRuntime.lock())
+    auto& wc = mProjectRuntime.value().get().getWindowComponent();
+    if (wc.getWindowSizeChangedFlag())
     {
-      if (auto wcLock = prLock->getWindowComponent().lock())
+      LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
+      // Define the viewport dimensions
+      int windowWidth  = wc.getWidth();
+      int windowHeight = wc.getHeight();
+
+      if (windowWidth == 0 || windowHeight == 0)
       {
-        if (wcLock->getWindowSizeChangedFlag())
-        {
-          LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
-          // Define the viewport dimensions
-          int windowWidth  = wcLock->getWidth();
-          int windowHeight = wcLock->getHeight();
-
-          if (windowWidth == 0 || windowHeight == 0)
-          {
-            LOG_ERROR("GraphicsComponent: Cannot setup buffers with 0,0 viewport");
-            return false;
-          }
-
-          // Setup Screen Space
-          glViewport(0, 0, windowWidth, windowHeight);
-          mScreenSpaceProjectionMatrix = ortho(
-                0.f, (float)windowWidth,
-                0.f, (float)windowHeight,
-                -1.f, 1.f);
-
-          GLCheckError();
-
-          LOG_DEBUG("GraphicsComponent: Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
-          wcLock->setWindowSizeChangedFlag(false);
-        }
-        return true;
+        LOG_ERROR("GraphicsComponent: Cannot setup buffers with 0,0 viewport");
+        return false;
       }
+
+      // Setup Screen Space
+      glViewport(0, 0, windowWidth, windowHeight);
+      mScreenSpaceProjectionMatrix = ortho(
+            0.f, (float)windowWidth,
+            0.f, (float)windowHeight,
+            -1.f, 1.f);
+
+      GLCheckError();
+
+      LOG_DEBUG("GraphicsComponent: Window dimensions changed: width: {}, height: {}",windowWidth, windowHeight);
+      wc.setWindowSizeChangedFlag(false);
     }
-    return false;
+    return true;
   }
 
   void
   GraphicsComponent::clearBuffers
-  (const weak_ptr<SceneRuntime>& sr)
+  (SceneRuntime& sr)
   {
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto wcLock = prLock->getWindowComponent().lock())
-      {
-        if (auto srLock = sr.lock())
-        {
-          auto clear = srLock->getClearColor();
+    auto& wc = mProjectRuntime.value().get().getWindowComponent();
+    auto clear = sr.getClearColor();
 
-          glBindFramebuffer(GL_FRAMEBUFFER,wcLock->getFrameBuffer());
-          GLCheckError();
+    glBindFramebuffer(GL_FRAMEBUFFER,wc.getFrameBuffer());
+    GLCheckError();
 
-          glClearColor(clear.r,clear.g,clear.b,clear.a);
-          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(clear.r,clear.g,clear.b,clear.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-          glEnable(GL_DEPTH_TEST);
-          glDepthFunc(GL_LEQUAL);
-        }
-      }
-    }
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
   }
 
   // Environment =============================================================
 
   void
   GraphicsComponent::renderEnvironment
-  (const weak_ptr<SceneRuntime>& sr)
+  (SceneRuntime& sr)
   {
+    auto& envShader = sr.getEnvironmentShader();
+    if (!envShader.getLoaded()) return;
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& envTexture = sr.getEnvironmentTexture();
+    if (!envTexture.getLoaded()) return;
+
+    auto& wc = mProjectRuntime.value().get().getWindowComponent();
+    wc.bindFrameBuffer();
+    GLCheckError();
+
+    // set depth function to less than AND equal for skybox depth trick.
+    // enable seamless cubemap sampling for lower mip levels in the pre-filter map.
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_CULL_FACE);
+
+    auto& camera = sr.getCameraRuntime();
+    envShader.use();
+    envShader.setViewMatrixUniform(camera.getViewMatrix());
+    envShader.setProjectionMatrixUniform(camera.getProjectionMatrix());
+
+    GLuint envTextureId = 0;
+
+    if (envTexture.getCubeDebugMode() == CUBE_DEBUG_NONE)
     {
-      if (auto srLock = sr.lock())
-      {
-        if (auto envShader = srLock->getEnvironmentShader().lock())
-        {
-          if (!envShader->getLoaded()) return;
-
-          if (auto envTexture = srLock->getEnvironmentTexture().lock())
-          {
-            if (!envTexture->getLoaded()) return;
-
-            if (auto wcLock = prLock->getWindowComponent().lock())
-            {
-              wcLock->bindFrameBuffer();
-              GLCheckError();
-
-              // set depth function to less than AND equal for skybox depth trick.
-              // enable seamless cubemap sampling for lower mip levels in the pre-filter map.
-              glEnable(GL_DEPTH_TEST);
-              glDepthFunc(GL_LEQUAL);
-              glDisable(GL_CULL_FACE);
-
-              if (auto camera = srLock->getCamera().lock())
-              {
-                envShader->use();
-                envShader->setViewMatrixUniform(camera->getViewMatrix());
-                envShader->setProjectionMatrixUniform(camera->getProjectionMatrix());
-
-                GLuint envTextureId = 0;
-
-                if (envTexture->getCubeDebugMode() == CUBE_DEBUG_NONE)
-                {
-                  envTextureId = envTexture->getCubeMapTextureID();
-                }
-                else
-                {
-                  envTextureId = envTexture->getCubeDebugTexture();
-                }
-                envShader->setTexture(GL_TEXTURE0, GL_TEXTURE_CUBE_MAP, envTextureId);
-                envShader->syncUniforms();
-                envTexture->renderCube();
-              }
-            }
-          }
-        }
-      }
+      envTextureId = envTexture.getCubeMapTextureID();
     }
-
-
+    else
+    {
+      envTextureId = envTexture.getCubeDebugTexture();
+    }
+    envShader.setTexture(GL_TEXTURE0, GL_TEXTURE_CUBE_MAP, envTextureId);
+    envShader.syncUniforms();
+    envTexture.renderCube();
   }
 
   // Geometry Pass ============================================================
 
   void
   GraphicsComponent::renderModels
-  (const weak_ptr<SceneRuntime>& sr)
+  (SceneRuntime& sr)
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& camera = sr.getCameraRuntime();
+    auto& shaderCache = mProjectRuntime.value().get().getShaderCache();
+    auto& windowComp = mProjectRuntime.value().get().getWindowComponent();
+    checkFrameBufferDimensions();
+
+    LOG_DEBUG("GraphicsComponent: ==> Running Model Render Pass");
+
+    glBindFramebuffer(GL_FRAMEBUFFER,windowComp.getFrameBuffer());
+    GLCheckError();
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    auto& envTexture = sr.getEnvironmentTexture();
+    for (auto& shader : shaderCache.getRuntimeVector())
     {
-      if (auto srLock = sr.lock())
+      LOG_DEBUG("GraphicsComponent: Rending shader {}",shader.getNameAndUuidString());
+
+      if (shader.countMaterials() == 0)
       {
-        if (auto camera = srLock->getCamera().lock())
+        LOG_DEBUG("GraphicsComponent: Shader {} has no materials",shader.getNameAndUuidString());
+        continue;
+      }
+
+      if(shader.use())
+      {
+        LOG_INFO("GraphicsComponent: Shader {} all good, rendering geometry pass",shader.getNameAndUuidString());
+        shader.setViewMatrixUniform(camera.getViewMatrix());
+        shader.setProjectionMatrixUniform(camera.getProjectionMatrix());
+        shader.setCameraPositionUniform(camera.getTransform().getTranslation());
+
+        shader.setIrradianceTextureUniform(envTexture.getIrradianceTextureID());
+        shader.setPreFilterTextureUniform(envTexture.getPreFilterTextureID());
+        shader.setBrdfLutTextureUniform(envTexture.getBrdfLutTextureID());
+        shader.setLightPositionsUniform(&mLightPositions[0], 4);
+        shader.setLightColorsUniform(&mLightColors[0], 4);
+
+        for (auto& materialWrap : shader.getMaterialsVector())
         {
-          if (auto shaderCache = prLock->getShaderCache().lock())
+          auto& material = materialWrap.get();
+          if (material.getUsedByVector().size() == 0) continue;
+
+          shader.bindMaterial(material);
+          for (auto& modelMeshWrap : material.getUsedByVector())
           {
-            if (auto windowComp = prLock->getWindowComponent().lock())
+            auto& modelMesh = modelMeshWrap.get();
+
+            if (modelMesh.getLoaded())
             {
-              checkFrameBufferDimensions();
-
-              LOG_DEBUG("GraphicsComponent: ==> Running Model Render Pass");
-
-              glBindFramebuffer(GL_FRAMEBUFFER,windowComp->getFrameBuffer());
-              GLCheckError();
-
-              glEnable(GL_CULL_FACE);
-              glCullFace(GL_BACK);
-
-              if (auto envTexture = srLock->getEnvironmentTexture().lock())
-              {
-                for (auto runtime : shaderCache->getRuntimeVector())
-                {
-                  if (auto shader = runtime.lock())
-                  {
-
-                    LOG_DEBUG("GraphicsComponent: Rending shader {}",shader->getNameAndUuidString());
-
-                    if (shader->countMaterials() == 0)
-                    {
-                      LOG_DEBUG("GraphicsComponent: Shader {} has no materials",shader->getNameAndUuidString());
-                      continue;
-                    }
-
-                    if(shader->use())
-                    {
-                      LOG_INFO("GraphicsComponent: Shader {} all good, rendering geometry pass",shader->getNameAndUuidString());
-                      shader->setViewMatrixUniform(camera->getViewMatrix());
-                      shader->setProjectionMatrixUniform(camera->getProjectionMatrix());
-                      shader->setCameraPositionUniform(camera->getTransform().getTranslation());
-
-                      shader->setIrradianceTextureUniform(envTexture->getIrradianceTextureID());
-                      shader->setPreFilterTextureUniform(envTexture->getPreFilterTextureID());
-                      shader->setBrdfLutTextureUniform(envTexture->getBrdfLutTextureID());
-                      shader->setLightPositionsUniform(&mLightPositions[0], 4);
-                      shader->setLightColorsUniform(&mLightColors[0], 4);
-
-                      for (auto material : shader->getMaterialsVector())
-                      {
-                        if (auto matLock = material.lock())
-                        {
-                          if (matLock->getUsedByVector().size() == 0) continue;
-
-                          shader->bindMaterial(material);
-                          for (auto modelMesh : matLock->getUsedByVector())
-                          {
-                            if (auto modelLock = modelMesh.lock())
-                            {
-                              if (modelLock->getLoaded())
-                              {
-                                modelLock->drawModelRuntimes(camera,shader);
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              modelMesh.drawModelRuntimes(camera,shader);
             }
           }
         }
@@ -441,71 +384,57 @@ namespace octronic::dream
 
   void
   GraphicsComponent::renderShadowPass
-  (const weak_ptr<SceneRuntime>& sr)
+  (SceneRuntime& sr)
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& shadowPassShader = sr.getShadowPassShader();
+    if (!shadowPassShader.getLoaded()) return;
+
+    auto& shaderCache = mProjectRuntime.value().get().getShaderCache();
+    LOG_DEBUG("==> Running Shadow Render Pass");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
+    GLCheckError();
+
+    glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
+    GLCheckError();
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    GLCheckError();
+
+    // Setup Uniforms
+    static float near_plane = 1.0f;
+    static float far_plane = 300.0f;
+    static float sz = 100.f;
+
+    static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
+
+    if (mShadowLight)
     {
-      if (auto srLock = sr.lock())
+
+      mat4 lightMat = mShadowLight.value().get().getTransform().getMatrix();
+      // TODO - could this just be the light transform matrix?
+      mat4 lightView = glm::lookAt(
+            mShadowLight.value().get().getTransform().getTranslation(),
+            vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),
+          vec3(0.0f,1.0f,0.0f)); // Up
+
+      //DirLight dir = mShadowLight.value().getLightRuntime().value().getDirectionalLightData();
+      //vec3 dirVec = dir.direction.toGLM();
+      //mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
+      mShadowMatrix = lightProjection*lightView;
+
+      glDisable(GL_CULL_FACE);
+      GLCheckError();
+
+      if(shadowPassShader.use())
       {
-        if (auto shadowPassShader = srLock->getShadowPassShader().lock())
+        //shadowPassShader.value().get().setLightSpaceMatrixUniform(lightMat);
+
+        for (auto& nextShader : shaderCache.getRuntimeVector())
         {
-          if (!shadowPassShader->getLoaded()) return;
-
-          if (auto shaderCache = prLock->getShaderCache().lock())
-          {
-            LOG_DEBUG("==> Running Shadow Render Pass");
-
-            glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
-            GLCheckError();
-
-            glViewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
-            GLCheckError();
-
-            glClear(GL_DEPTH_BUFFER_BIT);
-            GLCheckError();
-
-            // Setup Uniforms
-            static float near_plane = 1.0f;
-            static float far_plane = 300.0f;
-            static float sz = 100.f;
-
-            static glm::mat4 lightProjection = glm::ortho(-sz, sz, -sz, sz, near_plane, far_plane);
-
-            if (auto shadowLight = mShadowLight.lock())
-            {
-
-              mat4 lightMat = shadowLight->getTransform().getMatrix();
-              // TODO - could this just be the light transform matrix?
-              mat4 lightView = glm::lookAt(
-                    shadowLight->getTransform().getTranslation(), // Light Pos
-                    vec3(glm::translate(lightMat,vec3(0,0,-far_plane))[3]),//vec3(0.0f),  // target
-                  vec3(0.0f,1.0f,0.0f) // Up
-                  );
-
-              //DirLight dir = mShadowLight->getLightRuntime()->getDirectionalLightData();
-              //vec3 dirVec = dir.direction.toGLM();
-              //mat4 lightView = eulerAngleYXZ(dirVec.y,dirVec.x,dirVec.z);
-              mShadowMatrix = lightProjection*lightView;
-
-              glDisable(GL_CULL_FACE);
-              GLCheckError();
-
-              if(shadowPassShader->use())
-              {
-                //shadowPassShader->setLightSpaceMatrixUniform(lightMat);
-
-                for (auto runtime : shaderCache->getRuntimeVector())
-                {
-                  if (auto nextShader = runtime.lock())
-                  {
-                    nextShader->drawShadowPass(shadowPassShader);
-                  }
-                }
-              }
-            }
-          }
+          nextShader.drawShadowPass(shadowPassShader);
         }
       }
     }
@@ -531,64 +460,48 @@ namespace octronic::dream
 
   void
   GraphicsComponent::renderFonts
-  (const weak_ptr<SceneRuntime>& sceneRuntime)
+  (SceneRuntime& sceneRuntime)
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
     LOG_DEBUG("==> Running Font Pass");
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& fontShader = sceneRuntime.getFontShader();
+    if (fontShader.getLoaded())
     {
-      if (auto srLock = sceneRuntime.lock())
+      LOG_ERROR("GraphicsComponent: Font shader not found");
+      return;
+    }
+
+    auto& wc = mProjectRuntime.value().get().getWindowComponent();
+    {
+      wc.bindFrameBuffer();
+
+      glEnable(GL_BLEND);
+      GLCheckError();
+      glDisable(GL_DEPTH_TEST);
+      GLCheckError();
+
+      auto& fontCache = mProjectRuntime.value().get().getFontCache();
+
+      if (fontCache.runtimeCount() == 0) return;
+
+      // Activate the Font Shader
+      fontShader.use();
+
+      fontShader.setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
+
+      // Iterate through FontRuntimes
+      for (auto& fontRuntime : fontCache.getRuntimeVector())
       {
-        if (auto fontShader = srLock->getFontShader().lock())
+        // Iterate through FontTextInstances
+        for (auto& entity : fontRuntime.getInstanceVector())
         {
-          if (fontShader->getLoaded())
-          {
-            LOG_ERROR("GraphicsComponent: Font shader not found");
-            return;
-          }
-
-          if (auto wcLock = prLock->getWindowComponent().lock())
-          {
-            wcLock->bindFrameBuffer();
-
-            glEnable(GL_BLEND);
-            GLCheckError();
-            glDisable(GL_DEPTH_TEST);
-            GLCheckError();
-
-            if (auto fontCache = prLock->getFontCache().lock())
-            {
-
-              if (fontCache->runtimeCount() == 0) return;
-
-              // Activate the Font Shader
-              fontShader->use();
-
-              fontShader->setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
-
-              // Iterate through FontRuntimes
-              for (auto saRuntime : fontCache->getRuntimeVector())
-              {
-                if (auto fontRuntime = saRuntime.lock())
-                {
-                  // Iterate through FontTextInstances
-                  for (auto entityWeak : fontRuntime->getInstanceVector())
-                  {
-                    if (auto entity = entityWeak.lock())
-                    {
-                      fontShader->setModelMatrixUniform(entity->getTransform().getMatrix());
-                      GLCheckError();
-                      fontShader->setColorUniform(entity->getFontColor());
-                      fontShader->syncUniforms();
-                      GLCheckError();
-                      fontRuntime->draw(entity);
-                    }
-                  }
-                }
-              }
-            }
-          }
+          fontShader.setModelMatrixUniform(entity.get().getTransform().getMatrix());
+          GLCheckError();
+          fontShader.setColorUniform(entity.get().getFontColor());
+          fontShader.syncUniforms();
+          GLCheckError();
+          fontRuntime.draw(entity.get());
         }
       }
     }
@@ -641,72 +554,48 @@ namespace octronic::dream
 
   void
   GraphicsComponent::renderSprites
-  (const weak_ptr<SceneRuntime>& sceneRuntime)
+  (SceneRuntime& sceneRuntime)
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
     LOG_DEBUG("==> Running Sprite Pass");
 
-    if (auto prLock = mProjectRuntime.lock())
+    auto& shader = sceneRuntime.getSpriteShader();
+    if (!shader.getLoaded()) return;
+
+    auto& pr = mProjectRuntime.value().get();
+    auto& windowComp = pr.getWindowComponent();
+    windowComp.bindFrameBuffer();
+
+    glEnable(GL_BLEND);
+    GLCheckError();
+
+    glDisable(GL_DEPTH_TEST);
+    GLCheckError();
+
+    auto& textureCache = pr.getTextureCache();
+    if (textureCache.runtimeCount() == 0) return;
+
+    // Activate the Shader
+    shader.use();
+    shader.setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
+    shader.bindVertexArray(mSpriteQuadVAO);
+
+    // Iterate through Textureuntimes
+    for (auto& textureRuntime : textureCache.getRuntimeVector())
     {
-      if (auto srLock = sceneRuntime.lock())
+      // None
+      if (textureRuntime.getInstanceVector().empty()) continue;
+
+      glBindTexture(GL_TEXTURE_2D, textureRuntime.getTextureID());
+      GLCheckError();
+
+      // Iterate through SpriteRuntimes
+      for (auto& erWrapper : textureRuntime.getInstanceVector())
       {
-        if (auto shader = srLock->getSpriteShader().lock())
-        {
-          if (auto wcLock = prLock->getWindowComponent().lock())
-          {
-            wcLock->bindFrameBuffer();
-
-            glEnable(GL_BLEND);
-            GLCheckError();
-
-            glDisable(GL_DEPTH_TEST);
-            GLCheckError();
-
-            if (auto textureCache = prLock->getTextureCache().lock())
-            {
-
-              if (textureCache->runtimeCount() == 0) return;
-
-              if (shader == nullptr)
-              {
-                LOG_ERROR("GraphicsComponent: Sprite shader not found");
-                return;
-              }
-
-              if (!shader->getLoaded()) return;
-
-              // Activate the Shader
-              shader->use();
-              shader->setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
-              shader->bindVertexArray(mSpriteQuadVAO);
-
-              // Iterate through Textureuntimes
-              for (auto textureRuntime : textureCache->getRuntimeVector())
-              {
-                if (auto trLock = textureRuntime.lock())
-                {
-
-                  // None
-                  if (trLock->getInstanceVector().empty()) continue;
-
-                  glBindTexture(GL_TEXTURE_2D, trLock->getTextureID());
-                  GLCheckError();
-
-                  // Iterate through SpriteRuntimes
-                  for (auto entityRuntime : trLock->getInstanceVector())
-                  {
-                    if (auto erLock = entityRuntime.lock())
-                    {
-                      shader->setModelMatrixUniform(erLock->getTransform().getMatrix());
-                      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-                      GLCheckError();
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        auto& er = erWrapper.get();
+        shader.setModelMatrixUniform(er.getTransform().getMatrix());
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        GLCheckError();
       }
     }
   }
@@ -767,133 +656,79 @@ namespace octronic::dream
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&mMaxFrameBufferSize);
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto wcLock = prLock->getWindowComponent().lock())
-      {
-        int width = wcLock->getWidth();
-        int height = wcLock->getHeight();
-        assert(mMaxFrameBufferSize > 0);
-        assert(width > 0 && width < mMaxFrameBufferSize && height > 0 && height < mMaxFrameBufferSize);
-      }
-    }
-  }
-
-  void
-  GraphicsComponent::logShaders
-  ()
-  {
-    LOG_DEBUG("GraphicsComponent: Contents of shader cache");
-    if (auto prLock = mProjectRuntime.lock())
-    {
-      if (auto scLock = prLock->getShaderCache().lock())
-      {
-        for (auto runtime : scLock->getRuntimeVector())
-        {
-          if (auto shader = runtime.lock())
-          {
-            LOG_DEBUG("GraphicsComponent: {}",shader->getNameAndUuidString());
-            shader->logMaterials();
-          }
-        }
-      }
-    }
+    auto& pr = mProjectRuntime.value().get();
+    auto& windowComponent = pr.getWindowComponent();
+    int width = windowComponent.getWidth();
+    int height = windowComponent.getHeight();
+    assert(mMaxFrameBufferSize > 0);
+    assert(width > 0 && width < mMaxFrameBufferSize && height > 0 && height < mMaxFrameBufferSize);
   }
 
   void
   GraphicsComponent::pushTasks
   ()
   {
-    if (auto prLock = mProjectRuntime.lock())
+    auto& pr = mProjectRuntime.value().get();
+    // Materials
+    MaterialCache& materialCache = pr.getMaterialCache();
+    for (auto& material : materialCache.getRuntimeVector())
     {
-      // Materials
-      if (auto materialCache = prLock->getMaterialCache().lock())
-      {
-        for (auto material : materialCache->getRuntimeVector())
-        {
-          if (auto matLock = material.lock())
-          {
-            matLock->pushTasks();
-          }
-        }
-      }
+      material.pushTasks();
+    }
 
-      // Models
-      if (auto modelCache = prLock->getModelCache().lock())
-      {
-        for (auto model : modelCache->getRuntimeVector())
-        {
-          if (auto mLock = model.lock())
-          {
-            mLock->pushTasks();
-          }
-        }
-      }
+    // Models
+    ModelCache& modelCache = pr.getModelCache();
+    for (auto& model : modelCache.getRuntimeVector())
+    {
+      model.pushTasks();
+    }
 
-      // Shaders
-      if (auto shaderCache = prLock->getShaderCache().lock())
-      {
-        for (auto shader : shaderCache->getRuntimeVector())
-        {
-          if (auto sLock = shader.lock())
-          {
-            sLock->pushTasks();
-          }
-        }
-      }
+    // Shaders
+    ShaderCache& shaderCache = pr.getShaderCache();
+    for (auto& shader : shaderCache.getRuntimeVector())
+    {
+      shader.pushTasks();
+    }
 
-      // Textures
-      if (auto textureCache = prLock->getTextureCache().lock())
-      {
-        for (auto texture : textureCache->getRuntimeVector())
-        {
-          if (auto txLock = texture.lock())
-          {
-            txLock->pushTasks();
-          }
-        }
-      }
+    // Textures
+    TextureCache& textureCache = pr.getTextureCache();
+    for (auto& texture : textureCache.getRuntimeVector())
+    {
+      texture.pushTasks();
+    }
 
-      // Fonts
-      if (auto fontCache = prLock->getFontCache().lock())
-      {
-        for (auto font : fontCache->getRuntimeVector())
-        {
-          if (auto fLock = font.lock())
-          {
-            fLock->pushTasks();
-          }
-        }
-      }
+    // Fonts
+    FontCache& fontCache = pr.getFontCache();
+    for (auto& font : fontCache.getRuntimeVector())
+    {
+      font.pushTasks();
+    }
 
-      // This
+    // This
 
-      mTaskQueue->pushTask(mResizeTask);
+    mTaskQueue.pushTask(mResizeTask);
 
-      if (mSetupBuffersTask->hasState(TASK_STATE_QUEUED))
-      {
-        mTaskQueue->pushTask(mSetupBuffersTask);
-      }
+    if (mSetupBuffersTask->hasState(TASK_STATE_QUEUED))
+    {
+      mTaskQueue.pushTask(mSetupBuffersTask);
+    }
 
-      if (mSetupBuffersTask->hasState(TASK_STATE_COMPLETED))
-      {
-        mTaskQueue->pushTask(mRenderTask);
-      }
+    if (mSetupBuffersTask->hasState(TASK_STATE_COMPLETED))
+    {
+      mTaskQueue.pushTask(mRenderTask);
     }
   }
 
-  weak_ptr<GraphicsTaskQueue>
+  GraphicsTaskQueue&
   GraphicsComponent::getTaskQueue
   ()
-  const
   {
     return mTaskQueue;
   }
 
-  weak_ptr<GraphicsDestructionTaskQueue>
+  GraphicsDestructionTaskQueue&
   GraphicsComponent::getDestructionTaskQueue
   ()
-  const
   {
     return mDestructionTaskQueue;
   }

@@ -5,16 +5,22 @@
 
 namespace octronic::dream
 {
-    PathUpdateTask::PathUpdateTask(const shared_ptr<ProjectRuntime>& pr, PathRuntime* rt)
-        : Task(pr, "PathUpdateTask"),
-          mPathRuntime(rt)
-    {
-    }
+  PathUpdateTask::PathUpdateTask
+  (ProjectRuntime& pr, PathRuntime& rt)
+    : Task(pr, "PathUpdateTask"),
+      mPathRuntime(rt)
+  {
+  }
 
-    void PathUpdateTask::execute()
-    {
-        LOG_CRITICAL("PathUpdateTask: Executing {}",getID());
-		mPathRuntime->update();
-		setState(TaskState::TASK_STATE_COMPLETED);
-    }
+  PathRuntime& PathUpdateTask::getPathRuntime() const
+  {
+    return mPathRuntime.get();
+  }
+
+  void PathUpdateTask::execute()
+  {
+    LOG_CRITICAL("PathUpdateTask: Executing {}",getID());
+    getPathRuntime().update();
+    setState(TaskState::TASK_STATE_COMPLETED);
+  }
 }

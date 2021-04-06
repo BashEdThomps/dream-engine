@@ -8,7 +8,7 @@ namespace octronic::dream::tool
     class ToolPropertiesWindow : public ImGuiWidget
     {
     public:
-        ToolPropertiesWindow(DreamToolContext* p);
+        ToolPropertiesWindow(DreamToolContext& p);
         ~ToolPropertiesWindow() override;
         void draw() override;
     protected:

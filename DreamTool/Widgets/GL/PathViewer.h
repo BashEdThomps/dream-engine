@@ -28,10 +28,10 @@ namespace octronic::dream::tool
     class PathViewer : public GLWidget
     {
     public:
-        PathViewer(DreamToolContext* state, bool visible = false);
+        PathViewer(DreamToolContext& state, bool visible = false);
         ~PathViewer() override;
 
-        void setPathDefinition(const shared_ptr<PathDefinition>& object);
+        void setPathDefinition(PathDefinition& object);
         void init() override;
 
         vector<vec3> generateSplines();
@@ -54,8 +54,8 @@ namespace octronic::dream::tool
         void regenerate();
 
     private:
-        shared_ptr<PathDefinition> mPathDefinition;
-        shared_ptr<PathRuntime> mPathRuntime;
+        optional<reference_wrapper<PathDefinition>> mPathDefinition;
+        optional<reference_wrapper<PathRuntime>> mPathRuntime;
         vec4 mSelectedColour;
         vec4 mUnselectedColour;
         vec4 mCurveColour;

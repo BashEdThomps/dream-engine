@@ -4,110 +4,117 @@
 #include "Directory.h"
 #include "Common/Logger.h"
 
+#include <sstream>
 #include <memory>
 
-using std::make_shared;
+using std::stringstream;
+using std::runtime_error;
 
 namespace octronic::dream
 {
-    StorageManager::StorageManager
-    ()
+  StorageManager::StorageManager
+  ()
+  {
+    LOG_TRACE("StorageManager: {}", __FUNCTION__);
+  }
+
+  File&
+  StorageManager::openFile
+  (const string& file_path)
+  {
+    if (file_path.empty()) throw runtime_error("StorageManager: Cannot open File with empty path");
+
+    LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
+
+    auto file_itr = std::find_if(mOpenFiles.begin(),mOpenFiles.end(),
+                                 [&](const File& next_file)
+    { return next_file.getPath().compare(file_path) == 0; });
+
+    if (file_itr != mOpenFiles.end())
     {
-        LOG_TRACE("StorageManager: {}", __FUNCTION__);
+      (*file_itr).incrementUseCount();
+      return (*file_itr);
+    }
+    auto& ret = mOpenFiles.emplace_back(file_path);
+    ret.incrementUseCount();
+    return ret;
+  }
+
+  void
+  StorageManager::closeFile
+  (const File& file)
+  {
+    LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file.getPath());
+
+    auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
+                                 [&](const File& next_file)
+    { return next_file.getPath().compare(file.getPath()) == 0; });
+
+    if (file_itr != mOpenFiles.end())
+    {
+      (*file_itr).decrementUseCount();
+      if ((*file_itr).hasNoUsers())
+      {
+        mOpenFiles.erase(file_itr);
+        LOG_DEBUG("StorageManager: Closed File {}",file.getPath());
+      }
+    }
+    else
+    {
+      LOG_ERROR("StorageManager: FATAL - Attempted to close File not opened by StorageManager");
+      stringstream ss;
+      ss << "Attempted to close unmanaged file: \"" << file.getPath() << "\"";
+      throw std::runtime_error(ss.str());
+    }
+  }
+
+  Directory&
+  StorageManager::openDirectory
+  (const string& path)
+  {
+    if (path.size() == 0) throw runtime_error("StorageManager: Cannot open Directory with empty path");
+
+    LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
+
+    auto dir_itr = find_if(mOpenDirectories.begin(), mOpenDirectories.end(),
+          [&](const Directory& next_dir)
+    { return next_dir.getPath().compare(path) == 0; });
+
+    if (dir_itr != mOpenDirectories.end())
+    {
+      (*dir_itr).incrementUseCount();
+      return (*dir_itr);
     }
 
-    StorageManager::~StorageManager
-    ()
+    auto& ret = mOpenDirectories.emplace_back(*this, path);
+    ret.incrementUseCount();
+    return ret;
+  }
+
+  void
+  StorageManager::closeDirectory
+  (const Directory& d)
+  {
+    LOG_TRACE("StorageManager: {} {}", __FUNCTION__, d.getPath());
+    auto dir_itr = std::find_if( mOpenDirectories.begin(), mOpenDirectories.end(),
+                                 [&](const Directory& next_dir)
+    { return next_dir.getPath().compare(d.getPath()) == 0; });
+
+    if (dir_itr != mOpenDirectories.end())
     {
+      (*dir_itr).decrementUseCount();
+      if ((*dir_itr).hasNoUsers())
+      {
+        mOpenDirectories.erase(dir_itr);
+        LOG_DEBUG("StorageManager: Closed Directory {}",d.getPath());
+      }
     }
-
-    weak_ptr<File>
-    StorageManager::openFile
-    (const string& file_path)
+    else
     {
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
-
-        auto file_itr = std::find_if(
-                    mOpenFiles.begin(),
-                    mOpenFiles.end(),
-                    [&](shared_ptr<File>& next_file)
-        			{return next_file->getPath().compare(file_path) == 0;});
-
-        if (file_itr != mOpenFiles.end())
-        {
-            return (*file_itr);
-        }
-        else
-        {
-            shared_ptr<File> f = make_shared<File>(file_path);
-            mOpenFiles.push_back(f);
-            return f;
-        }
+      LOG_ERROR("StorageManager: FATAL - Attempted to close Directory not managed by StorageManager");
+      stringstream ss;
+      ss << "Attempted to close unmanaged Directory: \"" << d.getPath() << "\"";
+      throw std::runtime_error(ss.str());
     }
-
-    void
-    StorageManager::closeFile
-    (const weak_ptr<File>& file)
-    {
-        auto fileLock = file.lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, fileLock->getPath());
-        auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
-        	[&](const shared_ptr<File>& next_file)
-        	{ return next_file->getPath().compare(fileLock->getPath()) == 0; });
-
-        if (file_itr != mOpenFiles.end())
-        {
-            mOpenFiles.erase(file_itr);
-        }
-        else
-        {
-            LOG_ERROR("StorageManager: FATAL - Attempted to close File not opened by StorageManager");
-            assert(false);
-        }
-    }
-
-    weak_ptr<Directory>
-    StorageManager::openDirectory
-    (const string& path)
-    {
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
-
-        auto dir_itr = std::find_if(
-                    mOpenDirectories.begin(),
-                    mOpenDirectories.end(),
-                    [&](const shared_ptr<Directory>& next_dir)
-        { return next_dir->getPath().compare(path) == 0; });
-
-        if (dir_itr != mOpenDirectories.end())
-        {
-            return (*dir_itr);
-        }
-        else
-        {
-            shared_ptr<Directory> d = make_shared<Directory>(shared_from_this(), path);
-            mOpenDirectories.push_back(d);
-            return d;
-        }
-    }
-
-    void
-    StorageManager::closeDirectory
-    (const weak_ptr<Directory>& d)
-    {
-        auto dirLock = d.lock();
-        LOG_TRACE("StorageManager: {} {}", __FUNCTION__, dirLock->getPath());
-        auto dir_itr = std::find_if( mOpenDirectories.begin(), mOpenDirectories.end(),
-            [&](const shared_ptr<Directory>& next_dir)
-        	{ return next_dir->getPath().compare(dirLock->getPath()) == 0; });
-
-        if (dir_itr != mOpenDirectories.end())
-        {
-            mOpenDirectories.erase(dir_itr);
-        }
-        else
-        {
-            LOG_ERROR("StorageManager: FATAL - Attempted to close Directory not opened by StorageManager");
-            assert(false);
-        }
-    }
+  }
 }

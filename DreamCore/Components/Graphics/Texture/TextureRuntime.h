@@ -20,6 +20,8 @@
 #include "Components/Graphics/GraphicsComponentTasks.h"
 #include "TextureTasks.h"
 
+using std::optional;
+using std::reference_wrapper;
 using std::vector;
 using std::string;
 using std::shared_ptr;
@@ -43,12 +45,12 @@ namespace octronic::dream
   class TextureRuntime : public SharedAssetRuntime
   {
   public:
-    TextureRuntime(
-        const weak_ptr<ProjectRuntime>& pr,
-        const weak_ptr<TextureDefinition>& def);
-    ~TextureRuntime() override;
+    TextureRuntime(ProjectRuntime& pr,TextureDefinition& def);
+    TextureRuntime(TextureRuntime&&) = default;
+    TextureRuntime& operator=(TextureRuntime&&) = default;
 
-    bool operator==(const TextureRuntime& other);
+    void pushDestructionTask();
+
 
     bool loadFromDefinition() override;
     bool init() override;
@@ -73,8 +75,8 @@ namespace octronic::dream
     int getChannels() const;
     void setChannels(int channels);
 
-    void* getImage() const;
-    void setImage(void* image);
+    void* getRawImageData() const;
+    void  setRawImageData(void* image);
 
     void pushTasks() override;
 
@@ -104,21 +106,21 @@ namespace octronic::dream
     int mHeight;
     int mChannels;
     bool mIsEnvironmentTexture;
-    void* mImage;
+    void* mRawImageData;
     GLuint mCaptureFBO;
     GLuint mCaptureRBO;
     // Equirectangular to Cube Map
     GLuint mEquiToCubeTexture;
-    weak_ptr<ShaderRuntime> mEquiToCubeShader;
+    optional<reference_wrapper<ShaderRuntime>> mEquiToCubeShader;
     // Irradiance Map
     GLuint mIrradianceMapTexture;
-    weak_ptr<ShaderRuntime> mIrradianceMapShader;
+    optional<reference_wrapper<ShaderRuntime>> mIrradianceMapShader;
     // Pre Filter
     GLuint mPreFilterCubeMapTexture;
-    weak_ptr<ShaderRuntime> mPreFilterShader;
+    optional<reference_wrapper<ShaderRuntime>> mPreFilterShader;
     // BRDF LUT
     GLuint mBrdfLutTexture;
-    weak_ptr<ShaderRuntime> mBrdfLutShader;
+    optional<reference_wrapper<ShaderRuntime>> mBrdfLutShader;
     // Cube
     GLuint mCubeVAO;
     GLuint mCubeVBO;

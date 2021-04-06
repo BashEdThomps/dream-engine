@@ -34,18 +34,16 @@ namespace octronic::dream
     Transform::Transform
     ()
         : mTranslation(0.0f),
-          mYaw(0.f),
+          mScale(1.0f),
           mPitch(0.f),
-          mRoll(0.f),
-          mScale(1.0f)
+          mYaw(0.f),
+          mRoll(0.f)
     {
-        LOG_TRACE("Transform: Constructing");
     }
 
     Transform::Transform
     (const Transform& other)
     {
-        LOG_TRACE("Transform: Constructing Copy");
         mTranslation = other.mTranslation;
         mYaw = other.mYaw;
         mPitch = other.mPitch;
@@ -56,7 +54,6 @@ namespace octronic::dream
     Transform::Transform
     (const json& jsonTransform)
     {
-        LOG_TRACE("Transform: Constructing from json");
         fromJson(jsonTransform);
     }
 

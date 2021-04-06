@@ -6,7 +6,7 @@ using glm::radians;
 
 namespace octronic::dream::tool
 {
-    Cursor::Cursor(DreamToolContext* state)
+    Cursor::Cursor(DreamToolContext& state)
         : GLWidget(state,false),
           mStepMajor(false),
           mOutlineColor(0.f,0.f,0.f,1.f)
@@ -46,9 +46,9 @@ namespace octronic::dream::tool
     Cursor::onAction
     (CursorAction a)
     {
-        Grid* grid = mContext->getGrid();
+        Grid& grid = getContext().getGrid();
         vec3 txDelta(0.0f);
-        float step = mStepMajor ? grid->getMajorSpacing() : grid->getMinorSpacing();
+        float step = mStepMajor ? grid.getMajorSpacing() : grid.getMinorSpacing();
 
         // Make a move
         switch(a)
@@ -74,7 +74,7 @@ namespace octronic::dream::tool
         }
 
         // Cancel unused axis
-        switch (grid->getAxisPair())
+        switch (grid.getAxisPair())
         {
             case Grid::XY:
                 txDelta.z = 0.0f;
@@ -95,16 +95,16 @@ namespace octronic::dream::tool
     Cursor::setPosition
     (vec3 pos, bool snap)
     {
-        Grid* grid = mContext->getGrid();
+        Grid& grid = getContext().getGrid();
         if (snap)
         {
-            float minor = grid->getMinorSpacing();
+            float minor = grid.getMinorSpacing();
             pos.x = pos.x-fmod(pos.x,minor);
             pos.y = pos.y-fmod(pos.y,minor);
             pos.z = pos.z-fmod(pos.z,minor);
         }
 
-        switch (grid->getAxisPair())
+        switch (grid.getAxisPair())
         {
             case Grid::XY:
                 pos.z = 0.0f;

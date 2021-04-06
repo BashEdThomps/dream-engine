@@ -26,16 +26,15 @@
 #include "Project/ProjectRuntime.h"
 
 using std::make_shared;
-using std::static_pointer_cast;
 
 namespace octronic::dream
 {
   ModelMesh::ModelMesh
-  (const weak_ptr<ModelRuntime>& parent,
+  (ModelRuntime& parent,
    const string& name,
    const vector<Vertex>& vertices,
    const vector<GLuint>& indices,
-   const weak_ptr<MaterialRuntime>& material,
+   MaterialRuntime& material,
    const BoundingBox& bb)
     : mParent(parent),
       mMaterial(material),
@@ -43,55 +42,40 @@ namespace octronic::dream
       mVAO(0),
       mVBO(0),
       mIBO(0),
-      mLoaded(false),
       mVertices(vertices),
       mIndices(indices),
       mVerticesCount(vertices.size()),
       mIndicesCount(indices.size()),
-      mBoundingBox(bb)
-    {
-    if (auto parentLock = mParent.lock())
-    {
-      LOG_TRACE("ModelMesh: Constructing Mesh for {}", parentLock->getName());
-    }
+      mBoundingBox(bb),
+      mLoaded(false)
+  {
+    LOG_TRACE("ModelMesh: Constructing Mesh for {}", getParent().getName());
   }
 
   void
   ModelMesh::initTasks
   ()
   {
-    if (auto parentLock = mParent.lock())
-    {
-      mInitMeshTask = make_shared<ModelInitMeshTask>(parentLock->getProjectRuntime(), shared_from_this());
-      mFreeMeshTask = make_shared<ModelFreeMeshTask>(parentLock->getProjectRuntime());
-    }
+    mInitMeshTask = make_shared<ModelInitMeshTask>(getParent().getProjectRuntime(), *this);
+    mFreeMeshTask = make_shared<ModelFreeMeshTask>(getParent().getProjectRuntime());
   }
 
   ModelMesh::~ModelMesh
   ()
   {
-    if (auto parentLock = mParent.lock())
+    LOG_TRACE("ModelMesh: Destroying Mesh for {}",getParent().getNameAndUuidString());
+
+    if (mMaterial)
     {
-      LOG_TRACE("ModelMesh: Destroying Mesh for {}",parentLock->getNameAndUuidString());
-
-      if (!mMaterial.expired())
-      {
-        mMaterial.lock()->removeMesh(shared_from_this());
-      }
-
-      mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
-
-      if (auto prLock = parentLock->getProjectRuntime().lock())
-      {
-        if (auto gfxComp = prLock->getGraphicsComponent().lock())
-        {
-          if (auto gfxDestQueue = gfxComp->getDestructionTaskQueue().lock())
-          {
-            gfxDestQueue->pushTask(mFreeMeshTask);
-          }
-        }
-      }
+      mMaterial.value().get().removeMesh(*this);
     }
+
+    mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
+
+    auto& pr = getParent().getProjectRuntime();
+    auto& gfxComp = pr.getGraphicsComponent();
+    auto& gfxDestQueue = gfxComp.getDestructionTaskQueue();
+    gfxDestQueue.pushTask(mFreeMeshTask);
   }
 
   string
@@ -126,22 +110,15 @@ namespace octronic::dream
   ModelMesh::logRuntimes
   ()
   {
-    if (auto parentLock = mParent.lock())
+    for (auto& runtime : getParent().getInstanceVector())
     {
-      for (auto runtime : parentLock->getInstanceVector())
-      {
-        if (auto runtimeLock = runtime.lock())
-        {
-          LOG_DEBUG("\t\t\tRuntime for {}", runtimeLock->getNameAndUuidString());
-        }
-      }
+      LOG_DEBUG("\t\t\tRuntime for {}", runtime.get().getNameAndUuidString());
     }
   }
 
-  weak_ptr<MaterialRuntime>
+  optional<reference_wrapper<MaterialRuntime>>
   ModelMesh::getMaterial
   ()
-  const
   {
     return mMaterial;
   }
@@ -156,113 +133,93 @@ namespace octronic::dream
 
   void
   ModelMesh::drawModelRuntimes
-  (const weak_ptr<CameraRuntime>& camera,
-   const weak_ptr<ShaderRuntime>& shader)
+  (CameraRuntime& camera, ShaderRuntime& shader)
   {
-    if (auto parentLock = mParent.lock())
+    // TODO - Move this to grpahics component
+    mRuntimesInFrustum.clear();
+    auto& runtimes = getParent().getInstanceVector();
+
+    for (auto entityWrap : runtimes)
     {
-      if (auto cameraLock = camera.lock())
+      auto& entity = entityWrap.get();
+      // TODO -- Per mesh Culling
+      if(camera.visibleInFrustum(mBoundingBox, entity.getTransform().getMatrix()))
       {
-        // TODO - Move this to grpahics component
-        mRuntimesInFrustum.clear();
-        auto runtimes = parentLock->getInstanceVector();
-
-        for (auto entity : runtimes)
-        {
-          if (auto entityLock = entity.lock())
-          {
-            // TODO -- Per mesh Culling
-            if(cameraLock->visibleInFrustum(mBoundingBox, entityLock->getTransform().getMatrix()))
-            {
-              mRuntimesInFrustum.push_back(entity);
-            }
-          }
-        }
-
-        if (mRuntimesInFrustum.empty())
-        {
-          LOG_DEBUG("ModelMesh: (Geometry) No Runtimes of {} in Frustum", getName());
-          return;
-        }
-
-        if (auto shaderLock = shader.lock())
-        {
-          LOG_TRACE("ModelMesh: (Geometry) Drawing {} Runtimes of mesh {} for Geometry pass",
-                    runtimes.size(),
-                    getName());
-          shaderLock->bindVertexArray(mVAO);
-          shaderLock->bindRuntimes(mRuntimesInFrustum);
-          shaderLock->syncUniforms();
-          GLCheckError();
-
-          size_t size = mRuntimesInFrustum.size();
-          if (size == 0)
-          {
-            LOG_TRACE("ModelMesh: No runtimes to draw");
-            return;
-          }
-          if (size > ShaderRuntime::MAX_RUNTIMES)
-          {
-            LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
-            size = ShaderRuntime::MAX_RUNTIMES;
-          }
-
-          size_t indices = mIndicesCount;
-          if (indices == 0) return;
-
-          size_t tris = indices/3;
-          MeshesDrawn += size;
-          TrianglesDrawn += tris*size;
-          glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
-          //renderDebugSphere(shader);
-          GLCheckError();
-          DrawCalls++;
-        }
+        mRuntimesInFrustum.push_back(entity);
       }
     }
 
+    if (mRuntimesInFrustum.empty())
+    {
+      LOG_DEBUG("ModelMesh: (Geometry) No Runtimes of {} in Frustum", getName());
+      return;
+    }
+
+    LOG_TRACE("ModelMesh: (Geometry) Drawing {} Runtimes of mesh {} for Geometry pass",
+              runtimes.size(),
+              getName());
+    shader.bindVertexArray(mVAO);
+    shader.bindRuntimes(mRuntimesInFrustum);
+    shader.syncUniforms();
+    GLCheckError();
+
+    size_t size = mRuntimesInFrustum.size();
+    if (size == 0)
+    {
+      LOG_TRACE("ModelMesh: No runtimes to draw");
+      return;
+    }
+    if (size > ShaderRuntime::MAX_RUNTIMES)
+    {
+      LOG_TRACE("ModelMesh: (Geometry) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+      size = ShaderRuntime::MAX_RUNTIMES;
+    }
+
+    size_t indices = mIndicesCount;
+    if (indices == 0) return;
+
+    size_t tris = indices/3;
+    MeshesDrawn += size;
+    TrianglesDrawn += tris*size;
+    glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
+    //renderDebugSphere(shader);
+    GLCheckError();
+    DrawCalls++;
   }
 
   void
   ModelMesh::drawShadowPassRuntimes
-  (const weak_ptr<ShaderRuntime>& shader, bool inFrustumOnly)
+  (ShaderRuntime& shader, bool inFrustumOnly)
   {
-    if (auto parentLock = mParent.lock())
+    auto& runtimes = getParent().getInstanceVector();
+
+    if (runtimes.empty())
     {
-
-      auto runtimes = parentLock->getInstanceVector();
-
-      if (runtimes.empty())
-      {
-        LOG_DEBUG("ModelMesh: (Shadow) No Runtimes of {} in Frustum", getName());
-        return;
-      }
-
-      LOG_TRACE("ModelMesh: (Shadow) Drawing {} Runtimes of mesh {}", runtimes.size(), getName());
-
-      if (auto shaderLock = shader.lock())
-      {
-
-        shaderLock->bindVertexArray(mVAO);
-        shaderLock->bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : runtimes);
-        shaderLock->syncUniforms();
-
-        size_t size = (inFrustumOnly ? mRuntimesInFrustum.size() : runtimes.size());
-
-        if (size > ShaderRuntime::MAX_RUNTIMES)
-        {
-          size = ShaderRuntime::MAX_RUNTIMES;
-          LOG_TRACE("ModelMesh: (Shadow) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
-        }
-
-        size_t indices = mIndicesCount;
-        size_t tris = indices/3;
-        ShadowMeshesDrawn += size;
-        ShadowTrianglesDrawn += tris*size;
-        glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
-        ShadowDrawCalls++;
-      }
+      LOG_DEBUG("ModelMesh: (Shadow) No Runtimes of {} in Frustum", getName());
+      return;
     }
+
+    LOG_TRACE("ModelMesh: (Shadow) Drawing {} Runtimes of mesh {}", runtimes.size(), getName());
+
+
+    shader.bindVertexArray(mVAO);
+    shader.bindRuntimes(inFrustumOnly ? mRuntimesInFrustum : runtimes);
+    shader.syncUniforms();
+
+    size_t size = (inFrustumOnly ? mRuntimesInFrustum.size() : runtimes.size());
+
+    if (size > ShaderRuntime::MAX_RUNTIMES)
+    {
+      size = ShaderRuntime::MAX_RUNTIMES;
+      LOG_TRACE("ModelMesh: (Shadow) Limiting to {}", ShaderRuntime::MAX_RUNTIMES);
+    }
+
+    size_t indices = mIndicesCount;
+    size_t tris = indices/3;
+    ShadowMeshesDrawn += size;
+    ShadowTrianglesDrawn += tris*size;
+    glDrawElementsInstanced(GL_TRIANGLES, indices, GL_UNSIGNED_INT, nullptr,size);
+    ShadowDrawCalls++;
   }
 
   void
@@ -386,7 +343,7 @@ namespace octronic::dream
   // -------------------------------------------------
   void
   ModelMesh::renderDebugSphere
-  (const weak_ptr<ShaderRuntime>& shader)
+  (ShaderRuntime& shader)
   {
     static unsigned int sphereVAO = 0;
     static unsigned int indexCount;
@@ -486,10 +443,7 @@ namespace octronic::dream
     }
 
 
-    if (auto sLock = shader.lock())
-    {
-    	sLock->syncUniforms();
-    }
+    shader.syncUniforms();
     glBindVertexArray(sphereVAO);
     glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, nullptr,size);
     //glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
@@ -504,22 +458,19 @@ namespace octronic::dream
 
   void ModelMesh::pushTasks()
   {
-    if (auto parentLock = mParent.lock())
+    auto& pr = getParent().getProjectRuntime();
+    auto& gfxComp = pr.getGraphicsComponent();
+    auto& gfxQueue = gfxComp.getTaskQueue();
+    if (mInitMeshTask->hasState(TASK_STATE_QUEUED))
     {
-      if (auto prLock = parentLock->getProjectRuntime().lock())
-      {
-        if (auto gfxComp = prLock->getGraphicsComponent().lock())
-        {
-          if (auto gfxQueue = gfxComp->getTaskQueue().lock())
-          {
-            if (mInitMeshTask->hasState(TASK_STATE_QUEUED))
-            {
-              gfxQueue->pushTask(mInitMeshTask);
-            }
-          }
-        }
-      }
+      gfxQueue.pushTask(mInitMeshTask);
     }
+  }
+
+  ModelRuntime&
+  ModelMesh::getParent()
+  {
+    return mParent.get();
   }
 
   // Statics =================================================================
@@ -530,6 +481,4 @@ namespace octronic::dream
   long ModelMesh::ShadowDrawCalls = 0;
   long ModelMesh::ShadowMeshesDrawn = 0;
   long ModelMesh::ShadowTrianglesDrawn = 0;
-
-
 }

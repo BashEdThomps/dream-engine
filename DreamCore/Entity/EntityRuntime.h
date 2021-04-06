@@ -12,227 +12,223 @@
 
 #pragma once
 
+#include "Common/AssetType.h"
 #include "EntityTasks.h"
 #include "BoundingBox.h"
 #include "Base/Runtime.h"
 #include "Components/Graphics/Frustum.h"
 #include "Math/Transform.h"
 
+// Runtime Types
+#include "Components/Animation/AnimationRuntime.h"
+#include "Components/Audio/AudioRuntime.h"
+#include "Components/Graphics/Font/FontRuntime.h"
+#include "Components/Graphics/Model/ModelRuntime.h"
+#include "Components/Path/PathRuntime.h"
+#include "Components/Physics/PhysicsObjectRuntime.h"
+#include "Components/Script/ScriptRuntime.h"
+#include "Components/Graphics/Texture/TextureRuntime.h"
+
+#include <optional>
 #include <vector>
 #include <memory>
+#include <map>
 
 using std::vector;
 using std::function;
 using std::shared_ptr;
-using std::weak_ptr;
+using std::map;
 using nlohmann::json;
+using std::reference_wrapper;
+using std::optional;
 
 namespace octronic::dream
 {
-    class Event;
-    class EntityDefinition;
-    class SceneRuntime;
+  class Event;
+  class SceneEntityDefinition;
+  class TemplateEntityDefinition;
+  class SceneRuntime;
 
-    class AssetDefinition;
-    class AssetRuntime;
+  class AssetDefinition;
+  class AnimationDefinition;
+  class AudioDefinition;
+  class FontDefinition;
+  class ModelDefinition;
+  class PathDefinition;
+  class PhysicsObjectDefinition;
+  class ScriptDefinition;
+  class TextureDefinition;
 
-    class AnimationRuntime;
-    class AnimationDefinition;
+  class EntityRuntime : public Runtime
+  {
+  public:
+    EntityRuntime(ProjectRuntime&,
+                  SceneRuntime&,
+                  SceneEntityDefinition&,
+                  TemplateEntityDefinition&);
 
-    class AudioDefinition;
-    class AudioRuntime;
+    EntityRuntime(EntityRuntime&&) = default;
+    EntityRuntime& operator=(EntityRuntime&&) = default;
 
-    class FontDefinition;
-    class FontRuntime;
+    void collectGarbage();
 
-    class ModelDefinition;
-    class ModelRuntime;
+    SceneRuntime& getSceneRuntime();
+    SceneEntityDefinition& getSceneEntityDefinition();
+    TemplateEntityDefinition& getTemplateEntityDefinition();
 
-    class PathDefinition;
-    class PathRuntime;
+    bool createAssetRuntimes(map<AssetType,UuidType>);
+    bool createAnimationRuntime(AnimationDefinition&);
+    bool createPathRuntime(PathDefinition&);
+    bool createAudioRuntime(AudioDefinition&);
+    bool createModelRuntime(ModelDefinition&);
+    bool createScriptRuntime(ScriptDefinition&);
+    bool createPhysicsObjectRuntime(PhysicsObjectDefinition&);
+    bool createFontRuntime(FontDefinition&);
+    bool createTextureRuntime(TextureDefinition&);
 
-    class PhysicsObjectDefinition;
-    class PhysicsObjectRuntime;
+    AssetRuntime& getAssetRuntime(AssetType type);
+    // Discrete Assets
+    AnimationRuntime& getAnimationRuntime();
+    PathRuntime&  getPathRuntime();
+    PhysicsObjectRuntime& getPhysicsObjectRuntime();
+    // Shared Assets
+    FontRuntime& getFontRuntime() const;
+    AudioRuntime& getAudioRuntime() const;
+    ModelRuntime& getModelRuntime() const;
+    ScriptRuntime& getScriptRuntime() const;
+    TextureRuntime& getTextureRuntime() const;
 
-    class ScriptDefinition;
-    class ScriptRuntime;
+    bool hasAnimationRuntime() const;
+    bool hasPathRuntime() const;
+    bool hasAudioRuntime() const;
+    bool hasModelRuntime() const;
+    bool hasScriptRuntime() const;
+    bool hasPhysicsObjectRuntime() const;
+    bool hasFontRuntime() const;
+    bool hasTextureRuntime() const;
 
-    class TextureDefinition;
-    class TextureRuntime;
+    Transform getTransform() const;
+    Transform getInitialTransform() const;
+    void setTransform(const Transform& transform);
 
-    class EntityRuntime : public Runtime
-    {
-    public:
-        EntityRuntime(
-                const weak_ptr<ProjectRuntime>& pr,
-                const weak_ptr<SceneRuntime>& sceneRuntime,
-                const weak_ptr<EntityDefinition>& ed,
-                bool randomUuid = false);
-        ~EntityRuntime() override;
+    bool hasEvents() const;
+    void addEvent(const Event& event);
+    vector<Event> getEventQueue();
+    void clearProcessedEvents();
 
-        void collectGarbage();
+    EntityRuntime& getChildRuntimeByUuid(UuidType uuid);
+    int countAllChildren() const;
+    size_t countChildren() const;
+    void removeChildRuntime(EntityRuntime&);
+    EntityRuntime& createChildRuntime(SceneEntityDefinition&);
+    vector<EntityRuntime>& getChildRuntimes();
+    bool isChildOf(EntityRuntime&) const;
 
-        weak_ptr<SceneRuntime> getSceneRuntime() const;
-        weak_ptr<EntityDefinition> getEntityDefinition() const;
+    void setScriptInitialised(bool i);
+    bool getScriptInitialised() const;
 
-        bool createAssetRuntimes();
-        bool createAnimationRuntime(const weak_ptr<AnimationDefinition>&);
-        bool createPathRuntime(const weak_ptr<PathDefinition>&);
-        bool createAudioRuntime(const weak_ptr<AudioDefinition>&);
-        bool createModelRuntime(const weak_ptr<ModelDefinition>&);
-        bool createScriptRuntime(const weak_ptr<ScriptDefinition>&);
-        bool createPhysicsObjectRuntime(const weak_ptr<PhysicsObjectDefinition>&);
-        bool createFontRuntime(const weak_ptr<FontDefinition>&);
-        bool createTextureRuntime(const weak_ptr<TextureDefinition>&);
+    void setScriptError(bool i);
+    bool getScriptError() const;
 
-        weak_ptr<FontRuntime> getFontRuntime() const;
-        weak_ptr<AnimationRuntime> getAnimationRuntime() const;
-        weak_ptr<PathRuntime>  getPathRuntime() const;
-        weak_ptr<AudioRuntime> getAudioRuntime() const;
-        weak_ptr<ModelRuntime> getModelRuntime() const;
-        weak_ptr<ScriptRuntime> getScriptRuntime() const;
-        weak_ptr<PhysicsObjectRuntime> getPhysicsObjectRuntime() const;
-        weak_ptr<AssetRuntime> getAssetRuntime(AssetType) const;
-        weak_ptr<TextureRuntime> getTextureRuntime() const;
+    bool isParentOf(EntityRuntime& child) const;
+    void setParentEntityRuntime(EntityRuntime& parent);
+    EntityRuntime& getParentEntityRuntime();
+    vector<reference_wrapper<EntityRuntime>> generateFlatVector();
 
-        bool hasAnimationRuntime() const;
-        bool hasPathRuntime() const;
-        bool hasAudioRuntime() const;
-        bool hasModelRuntime() const;
-        bool hasScriptRuntime() const;
-        bool hasPhysicsObjectRuntime() const;
-        bool hasFontRuntime() const;
-        bool hasTextureRuntime() const;
+    bool loadFromDefinition() override;
 
-        Transform getTransform() const;
-        Transform getInitialTransform() const;
-        void setTransform(const Transform& transform);
+    bool getDeleted() const;
+    void setDeleted(bool deleted);
 
-        bool hasEvents() const;
-        void addEvent(const Event& event);
-        vector<Event> getEventQueue();
-        void clearProcessedEvents();
+    void removeAnimationRuntime();
+    void removeAudioRuntime();
+    void removePathRuntime();
+    void removeModelRuntime();
+    void removeScriptRuntime();
+    void removePhysicsObjectRuntime();
+    void removeFontRuntime();
+    void removeTextureRuntime();
 
-        weak_ptr<EntityRuntime> getChildRuntimeByUuid(UuidType uuid);
-        weak_ptr<EntityRuntime> addChildFromTemplateUuid(UuidType uuid);
-        int countAllChildren() const;
-        size_t countChildren() const;
-        void addChildRuntime(const shared_ptr<EntityRuntime>&);
-        void removeChildRuntime(const weak_ptr<EntityRuntime>&);
-        weak_ptr<EntityRuntime> createAndAddChildRuntime(const weak_ptr<EntityDefinition>&);
-        vector<weak_ptr<EntityRuntime>> getChildRuntimes() const;
-        bool isChildOf(const weak_ptr<EntityRuntime>&) const;
+    BoundingBox getBoundingBox() const;
+    void setBoundingBox(const BoundingBox& boundingBox);
 
-        void setScriptInitialised(bool i);
-        bool getScriptInitialised() const;
+    float distanceFrom(EntityRuntime& other) const;
+    float distanceFrom(const vec3& other) const;
+    bool visibleInFrustum();
+    bool containedInFrustum();
 
-        void setScriptError(bool i);
-        bool getScriptError() const;
+    void initTransform();
 
-        bool isParentOf(const weak_ptr<EntityRuntime>& child) const;
-        void setParentEntityRuntime(const weak_ptr<EntityRuntime>& parent);
-        weak_ptr<EntityRuntime> getParentEntityRuntime() const;
-        vector<weak_ptr<EntityRuntime>> generateFlatVector();
+    shared_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask() const;
+    shared_ptr<EntityScriptOnInitTask> getScriptOnInitTask() const;
+    shared_ptr<EntityScriptOnEventTask> getScriptOnEventTask() const;
+    shared_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask() const;
 
-        bool loadFromDefinition() override;
+    string getAttribute(const string& key) const;
+    void setAttribute(const string& key, const string& value);
+    const map<string,string>& getAttributesMap() const;
 
-        bool getDeleted() const;
-        void setDeleted(bool deleted);
+    string getFontText() const;
+    void setFontText(const string& fontText);
 
-        void removeAnimationRuntime();
-        void removeAudioRuntime();
-        void removePathRuntime();
-        void removeModelRuntime();
-        void removeScriptRuntime();
-        void removePhysicsObjectRuntime();
-        void removeFontRuntime();
-        void removeTextureRuntime();
+    vec4 getFontColor() const;
+    void setFontColor(const vec4& fontColor);
 
-        bool replaceAssetUuid(AssetType type, UuidType uuid);
-        weak_ptr<AssetDefinition> getAssetDefinitionByUuid(UuidType uuid);
-        void setAssetDefinitionsMap(const map<AssetType, UuidType> &loadQueue);
-        map<AssetType, UuidType> getAssetDefinitionsMap() const;
+    float getFontScale() const;
+    void setFontScale(float fontScale);
 
-        BoundingBox getBoundingBox() const;
-        void setBoundingBox(const BoundingBox& boundingBox);
+    void pushTasks();
+    bool allRuntimesLoaded() const;
+    ProjectRuntime& getProjectRuntime() const;
 
-        float distanceFrom(const weak_ptr<EntityRuntime>& other) const;
-        float distanceFrom(const vec3& other) const;
-        bool visibleInFrustum();
-        bool containedInFrustum();
+  protected:
+    reference_wrapper<ProjectRuntime> mProjectRuntime;
+    reference_wrapper<SceneRuntime> mSceneRuntime;
+    reference_wrapper<TemplateEntityDefinition> mTemplateEntityDefinition;
+    optional<reference_wrapper<EntityRuntime>> mParentEntityRuntime;
+    vector<EntityRuntime> mChildRuntimes;
 
-        void initTransform();
+    // Discrete Assets =====================================================
+    optional<AnimationRuntime> mAnimationRuntime;
+    optional<PathRuntime> mPathRuntime;
+    optional<PhysicsObjectRuntime> mPhysicsObjectRuntime;
 
-        bool loadChildrenFromDefinition(const weak_ptr<EntityDefinition>& definition);
+    // Shared Runtimes =====================================================
+    // Audio
+    optional<reference_wrapper<AudioRuntime>> mAudioRuntime;
 
-        weak_ptr<EntityScriptCreateStateTask> getScriptCreateStateTask() const;
-        weak_ptr<EntityScriptOnInitTask> getScriptOnInitTask() const;
-        weak_ptr<EntityScriptOnEventTask> getScriptOnEventTask() const;
-        weak_ptr<EntityScriptOnUpdateTask> getScriptOnUpdateTask() const;
+    // Font
+    optional<reference_wrapper<FontRuntime>> mFontRuntime;
+    string mFontText;
+    vec4 mFontColor;
+    float mFontScale;
 
-        string getAttribute(const string& key) const;
-        void setAttribute(const string& key, const string& value);
-        const map<string,string>& getAttributesMap() const;
+    // Model
+    optional<reference_wrapper<ModelRuntime>> mModelRuntime;
 
-        string getFontText() const;
-        void setFontText(const string& fontText);
+    // Script
+    optional<reference_wrapper<ScriptRuntime>> mScriptRuntime;
+    bool mScriptError;
+    bool mScriptInitialised;
+    shared_ptr<EntityScriptCreateStateTask> mScriptCreateStateTask;
+    shared_ptr<EntityScriptOnInitTask> mScriptOnInitTask;
+    shared_ptr<EntityScriptOnUpdateTask> mScriptOnUpdateTask;
+    shared_ptr<EntityScriptOnEventTask> mScriptOnEventTask;
+    shared_ptr<EntityScriptRemoveStateTask> mScriptRemoveStateTask;
 
-        vec4 getFontColor() const;
-        void setFontColor(const vec4& fontColor);
+    // Sprite Texture
+    optional<reference_wrapper<TextureRuntime>> mTextureRuntime;
 
-        float getFontScale() const;
-        void setFontScale(float fontScale);
 
-        void pushTasks();
-        bool allRuntimesLoaded() const;
 
-    protected:
-        weak_ptr<ProjectRuntime> mProjectRuntime;
-        weak_ptr<SceneRuntime> mSceneRuntime;
-        weak_ptr<EntityRuntime> mParentEntityRuntime;
-        vector<shared_ptr<EntityRuntime>> mChildRuntimes;
+    // Transform
+    Transform mInitialTransform;
+    Transform mCurrentTransform;
+    BoundingBox mBoundingBox;
 
-        // Discrete Assets =====================================================
-        shared_ptr<AnimationRuntime> mAnimationRuntime;
-        shared_ptr<PathRuntime> mPathRuntime;
-        shared_ptr<PhysicsObjectRuntime> mPhysicsObjectRuntime;
-
-        // Shared Runtimes =====================================================
-        // Audio
-        weak_ptr<AudioRuntime> mAudioRuntime;
-
-        // Font
-        weak_ptr<FontRuntime> mFontRuntime;
-        string mFontText;
-        vec4 mFontColor;
-		float mFontScale;
-
-        // Model
-        weak_ptr<ModelRuntime> mModelRuntime;
-
-        // Script
-        weak_ptr<ScriptRuntime> mScriptRuntime;
-        bool mScriptError;
-        bool mScriptInitialised;
-        shared_ptr<EntityScriptCreateStateTask> mScriptCreateStateTask;
-        shared_ptr<EntityScriptOnInitTask> mScriptOnInitTask;
-        shared_ptr<EntityScriptOnUpdateTask> mScriptOnUpdateTask;
-        shared_ptr<EntityScriptOnEventTask> mScriptOnEventTask;
-        shared_ptr<EntityScriptRemoveStateTask> mScriptRemoveStateTask;
-
-        // Sprite Texture
-        weak_ptr<TextureRuntime> mTextureRuntime;
-
-        // Transform
-        Transform mInitialTransform;
-        Transform mCurrentTransform;
-        BoundingBox mBoundingBox;
-
-        // Flags
-        bool mDeleted;
-        bool mRandomUuid;
-        map<string,string> mAttributes;
-        vector<Event> mEventQueue;
-        map<AssetType,UuidType> mAssetDefinitions;
-    };
+    // Flags
+    bool mDeleted;
+    vector<Event> mEventQueue;
+    map<string,string> mAttributes;
+  };
 }

@@ -17,14 +17,14 @@ namespace octronic::dream::tool
     class TemplatesModel : public Model
     {
     public:
-        TemplatesModel(DreamToolContext* context);
-        ~TemplatesModel();
+        TemplatesModel(DreamToolContext& context);
 
         vector<string> getTemplateNames(AssetType t);
         string getTemplate(AssetType t, string templateName, string format);
     protected:
         string getTemplatesDirectory(AssetType t);
     private:
+        const static string TEMPLATES_BASE_DIR;
         string mBaseDir;
     };
 }

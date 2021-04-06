@@ -39,10 +39,10 @@ namespace octronic::dream
     ShaderUniform::ShaderUniform(UniformType type, string name, size_t count, void* data)
         : mType(type),
           mName(name),
-          mCount(count),
-          mLocation(0),
           mData(nullptr),
           mDataSize(0),
+          mCount(count),
+          mLocation(0),
           mNeedsUpdate(true)
     {
 

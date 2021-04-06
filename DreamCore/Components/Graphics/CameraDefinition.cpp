@@ -1,145 +1,148 @@
 #include "CameraDefinition.h"
+#include "Common/Constants.h"
 
 namespace octronic::dream
 {
-	CameraDefinition::CameraDefinition(const json& js)
-        : Definition("Camera", js)
-	{
-		if (mJson[Constants::UUID].is_null())
-        {
-            setUuid(Uuid::generateUuid());
-        }
-	}
-
-    CameraDefinition::~CameraDefinition()
+  CameraDefinition::CameraDefinition(const json& js)
+    : Definition(js)
+  {
+    if (mJson.find(Constants::UUID) == mJson.end())
     {
-
+      setUuid(Uuid::generateUuid());
     }
+  }
 
-    float
-    CameraDefinition::getFieldOfView
-    ()
+  float
+  CameraDefinition::getFieldOfView
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_FOV) == mJson.end())
     {
-        if (mJson.find(Constants::CAMERA_FOV) == mJson.end())
-        {
-            mJson[Constants::CAMERA_FOV] = 90.f;
-        }
-        return mJson[Constants::CAMERA_FOV];
+      return 90.f;
     }
+    return mJson[Constants::CAMERA_FOV];
+  }
 
-    void
-    CameraDefinition::setFieldOfView
-    (float v)
+  void
+  CameraDefinition::setFieldOfView
+  (float v)
+  {
+    mJson[Constants::CAMERA_FOV] = v;
+  }
+
+
+  UuidType
+  CameraDefinition::getCameraEntityUuid
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_ENTITY_UUID) == mJson.end())
     {
-        mJson[Constants::CAMERA_FOV] = v;
+      return Uuid::INVALID;
     }
+    return mJson[Constants::CAMERA_ENTITY_UUID];
+  }
 
+  void
+  CameraDefinition::setCameraEntityUuid
+  (UuidType u)
+  {
+    mJson[Constants::CAMERA_ENTITY_UUID] = u;
+  }
 
-    UuidType
-    CameraDefinition::getCameraEntityUuid
-    ()
+  void
+  CameraDefinition::setFreeTransform
+  (const Transform& t)
+  {
+    mJson[Constants::CAMERA_FREE_TRANSFORM] = t.toJson();
+  }
+
+  Transform
+  CameraDefinition::getFreeTransform
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_FREE_TRANSFORM) == mJson.end())
     {
-        if (mJson.find(Constants::CAMERA_ENTITY_UUID) == mJson.end())
-        {
-			mJson[Constants::CAMERA_ENTITY_UUID] = Uuid::INVALID;
-        }
-        return mJson[Constants::CAMERA_ENTITY_UUID];
+      return Transform();
     }
+    return Transform(mJson[Constants::CAMERA_FREE_TRANSFORM]);
+  }
 
-    void
-    CameraDefinition::setCameraEntityUuid
-    (UuidType u)
-    {
-        mJson[Constants::CAMERA_ENTITY_UUID] = u;
-    }
+  void
+  CameraDefinition::setMeshCullDistance
+  (float mcd)
+  {
+    mJson[Constants::CAMERA_MESH_CULL_DISTANCE] = mcd;
+  }
 
-    void
-    CameraDefinition::setFreeTransform
-    (const Transform& t)
+  float
+  CameraDefinition::getMeshCullDistance
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_MESH_CULL_DISTANCE) == mJson.end())
     {
-        mJson[Constants::CAMERA_FREE_TRANSFORM] = t.toJson();
+      return 100.f;
     }
+    return mJson[Constants::CAMERA_MESH_CULL_DISTANCE];
+  }
 
-    Transform
-    CameraDefinition::getFreeTransform
-    ()
-    {
-        if (mJson.find(Constants::CAMERA_FREE_TRANSFORM) == mJson.end())
-        {
-            mJson[Constants::CAMERA_FREE_TRANSFORM] = Transform().toJson();
-        }
-        return Transform(mJson[Constants::CAMERA_FREE_TRANSFORM]);
-    }
+  void
+  CameraDefinition::setMinDrawDistance
+  (float f)
+  {
+    mJson[Constants::CAMERA_MIN_DRAW_DISTANCE] = f;
+  }
 
-    void
-    CameraDefinition::setMeshCullDistance
-    (float mcd)
+  float
+  CameraDefinition::getMinDrawDistance
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_MIN_DRAW_DISTANCE) == mJson.end())
     {
-        mJson[Constants::CAMERA_MESH_CULL_DISTANCE] = mcd;
+      return .1f;
     }
+    return mJson[Constants::CAMERA_MIN_DRAW_DISTANCE];
+  }
 
-    float
-    CameraDefinition::getMeshCullDistance
-    ()
+  float
+  CameraDefinition::getMaxDrawDistance
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_MAX_DRAW_DISTANCE) == mJson.end())
     {
-        if (mJson.find(Constants::CAMERA_MESH_CULL_DISTANCE) == mJson.end())
-        {
-            mJson[Constants::CAMERA_MESH_CULL_DISTANCE] = 100.f;
-        }
-        return mJson[Constants::CAMERA_MESH_CULL_DISTANCE];
+      return 100.f;
     }
+    return mJson[Constants::CAMERA_MAX_DRAW_DISTANCE];
+  }
 
-    void
-    CameraDefinition::setMinDrawDistance
-    (float f)
-    {
-        mJson[Constants::CAMERA_MIN_DRAW_DISTANCE] = f;
-    }
+  void
+  CameraDefinition::setMaxDrawDistance
+  (float mdd)
+  {
+    mJson[Constants::CAMERA_MAX_DRAW_DISTANCE] = mdd;
+  }
 
-    float
-    CameraDefinition::getMinDrawDistance
-    ()
-    {
-       if (mJson.find(Constants::CAMERA_MIN_DRAW_DISTANCE) == mJson.end())
-       {
-            mJson[Constants::CAMERA_MIN_DRAW_DISTANCE] = .1f;
-       }
-       return mJson[Constants::CAMERA_MIN_DRAW_DISTANCE];
-    }
+  void
+  CameraDefinition::setUseEntity
+  (bool ue)
+  {
+    mJson[Constants::CAMERA_USE_ENTITY] = ue;
+  }
 
-    float
-    CameraDefinition::getMaxDrawDistance
-    ()
+  bool
+  CameraDefinition::getUseEntity
+  ()
+  const
+  {
+    if (mJson.find(Constants::CAMERA_USE_ENTITY) == mJson.end())
     {
-        if (mJson.find(Constants::CAMERA_MAX_DRAW_DISTANCE) == mJson.end())
-        {
-            mJson[Constants::CAMERA_MAX_DRAW_DISTANCE] = 100.f;
-        }
-        return mJson[Constants::CAMERA_MAX_DRAW_DISTANCE];
+      return false;
     }
-
-    void
-    CameraDefinition::setMaxDrawDistance
-    (float mdd)
-    {
-        mJson[Constants::CAMERA_MAX_DRAW_DISTANCE] = mdd;
-    }
-
-    void
-    CameraDefinition::setUseEntity
-    (bool ue)
-    {
-        mJson[Constants::CAMERA_USE_ENTITY] = ue;
-    }
-
-    bool
-    CameraDefinition::getUseEntity
-    ()
-    {
-        if (mJson.find(Constants::CAMERA_USE_ENTITY) == mJson.end())
-        {
-           mJson[Constants::CAMERA_USE_ENTITY] = false;
-        }
-        return mJson[Constants::CAMERA_USE_ENTITY];
-    }
+    return mJson[Constants::CAMERA_USE_ENTITY];
+  }
 }

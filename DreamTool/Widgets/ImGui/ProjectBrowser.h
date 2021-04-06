@@ -2,9 +2,12 @@
 
 #include "ImGuiWidget.h"
 
+using std::optional;
+using std::reference_wrapper;
+
 namespace octronic::dream
 {
-    class EntityDefinition;
+    class TemplateEntityDefinition;
     class Definition;
 }
 
@@ -12,25 +15,25 @@ namespace octronic::dream
 
 namespace octronic::dream::tool
 {
-    struct EntityDragSource
+    struct SceneEntityDragDropSource
     {
-       shared_ptr<EntityDefinition> parentDef;
-       shared_ptr<EntityDefinition> objectDef;
+       optional<reference_wrapper<SceneEntityDefinition>> parentDefinition;
+       optional<reference_wrapper<SceneEntityDefinition>> selfDefinition;
     };
 
 
     class ProjectBrowser : public ImGuiWidget
     {
     public:
-        ProjectBrowser(DreamToolContext* proj);
+        ProjectBrowser(DreamToolContext& proj);
         ~ProjectBrowser() override;
         void draw() override;
 
     private:
-        void addEntity(const shared_ptr<EntityDefinition>& def);
+        void addEntityNode(SceneEntityDefinition& def);
         const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
         const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
-        vector<shared_ptr<Definition>> mSelectedNodes;
-        EntityDragSource mDragDropSource;
+        vector<reference_wrapper<Definition>> mSelectedNodes;
+        SceneEntityDragDropSource mDragDropSource;
     };
 }

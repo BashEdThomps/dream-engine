@@ -26,7 +26,7 @@ using glm::vec3;
 namespace octronic::dream::tool
 {
     PathViewer::PathViewer
-    (DreamToolContext* state, bool visible)
+    (DreamToolContext& state, bool visible)
         : GLWidget(state, visible),
           mSelectedColour(0.0f, 1.0f, 0.0f,1.f),
           mUnselectedColour(0.75f, 0.75f, 0.0f,1.f),
@@ -57,7 +57,7 @@ namespace octronic::dream::tool
 
     void
     PathViewer::setPathDefinition
-    (const shared_ptr<PathDefinition>& selected)
+    (PathDefinition& selected)
     {
         bool regen = (selected != mPathDefinition);
         mPathDefinition = selected;
@@ -86,7 +86,7 @@ namespace octronic::dream::tool
     PathViewer::clearRuntime
     ()
     {
-        mPathRuntime = nullptr;
+        mPathRuntime.reset();
     }
 
     void
@@ -145,13 +145,13 @@ namespace octronic::dream::tool
     PathViewer::regenerate
     ()
     {
-        if (mPathDefinition == nullptr)
+        if (!mPathDefinition.has_value())
         {
             LOG_DEBUG("PathViewer: No object selected");
             return;
         }
 
-        auto controls = mPathDefinition->getControlPoints();
+        auto controls = mPathDefinition.value().get().getControlPoints();
 
         clearLineVertexBuffer();
         clearPointVertexBuffer();
@@ -179,7 +179,7 @@ namespace octronic::dream::tool
             return;
         }
 
-       vector<vec3> splines = mPathRuntime->getSplinePoints();
+       vector<vec3> splines = mPathRuntime.value().get().getSplinePoints();
 
        for (size_t i=1; i < splines.size(); i++)
        {
@@ -195,7 +195,7 @@ namespace octronic::dream::tool
            addLineVertex(v2);
        }
 
-       auto tans = mPathRuntime->getSplineDerivatives();
+       auto tans = mPathRuntime.value().get().getSplineDerivatives();
 
        if (mDrawTangent && mTangentIndex > 0 && mTangentIndex < tans.size())
        {
@@ -215,7 +215,7 @@ namespace octronic::dream::tool
     (const PathControlPoint& cp)
     {
         vec3 pos = cp.position;
-        int index = cp.index;
+        size_t index = cp.index;
 
         LOG_TRACE("PathViewer: Generating node cube for {} at ({},{},{})",index,pos.x,pos.y,pos.z);
 

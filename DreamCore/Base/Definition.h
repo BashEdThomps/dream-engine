@@ -12,9 +12,6 @@
 
 #pragma once
 
-
-
-#include "Common/Constants.h"
 #include "Math/Transform.h"
 #include "Common/Uuid.h"
 
@@ -22,10 +19,9 @@
 #include <json.hpp>
 #include <memory>
 
+using std::string;
 using nlohmann::json;
 using std::stringstream;
-using std::weak_ptr;
-using std::enable_shared_from_this;
 
 namespace octronic::dream
 {
@@ -33,7 +29,7 @@ namespace octronic::dream
      * @brief Definition is an abstract class that provides Name, ID and
      * JSON serialization functions.
      */
-    class Definition : public enable_shared_from_this<Definition>
+    class Definition
     {
     public:
         /**
@@ -41,14 +37,27 @@ namespace octronic::dream
          * @param data Set the internal mJson variable to this data.
          * @param className name of the class
          */
-        Definition(const string& className, const json& data);
-        virtual  ~Definition();
+        Definition(const json& data) ;
+
+
+        Definition(const Definition&) = delete;
+        Definition& operator=(const Definition&) = delete;
+
+        Definition(Definition&&) = default;
+        Definition& operator=(Definition&&) = default;
+
+        bool operator==(const Definition& other) const;
+        bool operator!=(const Definition& other) const;
+
+        bool operator==(const UuidType& uuid) const;
+        bool operator!=(const UuidType& uuid) const;
 
         /**
          * @brief Get the current json object describing this object
          * @return JSON data object.
          */
         virtual json toJson();
+        void setJson(const json&);
 
         /**
          * @param name Name to compare.
@@ -87,6 +96,7 @@ namespace octronic::dream
          * "[ NAME : UUID ]"
          */
         string getNameAndUuidString() const;
+
 
     protected:
         /**

@@ -19,27 +19,25 @@
 
 namespace octronic::dream
 {
-    class AssetDefinition;
-    class ProjectRuntime;
+  class AssetDefinition;
+  class ProjectRuntime;
 
+  /**
+   * @brief Holds runtime data for an Asset.
+   */
+  class AssetRuntime : public DeferredLoadRuntime
+  {
+  public:
     /**
-     * @brief Holds runtime data for an Asset.
+     * @brief Default Constructor
+     * @param asset AssetDefinition to construct runtime from
      */
-    class AssetRuntime : public DeferredLoadRuntime
-    {
-    public:
-        /**
-         * @brief Default Constructor
-         * @param asset AssetDefinition to construct runtime from
-         */
-        AssetRuntime(
-                const weak_ptr<ProjectRuntime>& pr,
-                const weak_ptr<AssetDefinition>& assetDef);
+    AssetRuntime(ProjectRuntime& pr, AssetDefinition& assetDef);
+    AssetRuntime(AssetRuntime&&) = default;
+    AssetRuntime& operator=(AssetRuntime&&) = default;
 
-        virtual ~AssetRuntime();
+    virtual ~AssetRuntime();
 
-        virtual string getAssetFilePath(const string& fmt = "");
-        virtual string getAssetDirectoryPath();
-        virtual void pushTasks() = 0;
-    };
+    virtual void pushTasks() = 0;
+  };
 }

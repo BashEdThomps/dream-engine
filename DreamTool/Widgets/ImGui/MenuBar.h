@@ -19,7 +19,7 @@ namespace octronic::dream::tool
     class MenuBar : public ImGuiWidget
     {
     public:
-        MenuBar(DreamToolContext*);
+        MenuBar(DreamToolContext&);
         ~MenuBar() override;
         void draw() override;
 

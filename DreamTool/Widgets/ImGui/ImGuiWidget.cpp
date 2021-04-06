@@ -1,43 +1,41 @@
-//
-//  ImGuiWidget.cpp
-//  DreamToolImGui
-//
-//  Created by Ashley Thompson on 24/10/2018.
-//
-
 #include "ImGuiWidget.h"
 
 namespace octronic::dream::tool
 {
-    ImGuiWidget::ImGuiWidget
-    (DreamToolContext* project, bool visible)
-        : DreamToolWidget(project, visible)
-    {
-    }
+  ImGuiWidget::ImGuiWidget
+  (DreamToolContext& project, bool visible)
+    : DreamToolWidget(project, visible)
+  {
+  }
 
-    ImGuiWidget::~ImGuiWidget() {}
+  ImGuiWidget::~ImGuiWidget() {}
 
-    bool
-    ImGuiWidget::StringCombo
-    (
-        const char* label, int* current_item,
-        const vector<string>& items,
-        size_t items_count, int height_in_items
-    )
+  bool
+  ImGuiWidget::StringCombo
+  (const char* label, int* current_item,
+   const vector<string>& items, int height_in_items)
+  {
+    return ImGui::Combo
+        (label, current_item,
+         [](void* data, int idx, const char** out_text)
+    { auto _data = ((const vector<string>*)data);
+      *out_text = (*_data)[idx].c_str();
+      return true; },
+    (void*)&items, items.size(), height_in_items);
+  }
+
+  int
+  ImGuiWidget::GetStringIndexInVector
+  (const string& str, const vector<string>& vec)
+  {
+    size_t sz = vec.size();
+    for (int i=0; i<sz; i++)
     {
-        return ImGui::Combo
-        (
-            label,
-            current_item,
-            [](void* data, int idx, const char** out_text)
-            {
-                auto _data = ((const vector<string>*)data);
-                *out_text = (*_data)[idx].c_str();
-                return true;
-            },
-            (void*)&items,
-            items_count,
-            height_in_items
-            );
+      if (vec.at(i).compare(str) == 0)
+      {
+        return i;
+      }
     }
+    return -1;
+  }
 }

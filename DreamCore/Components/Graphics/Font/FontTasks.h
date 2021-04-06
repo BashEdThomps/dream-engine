@@ -7,27 +7,30 @@
 
 namespace octronic::dream
 {
-    class FontRuntime;
+  class FontRuntime;
 
-    class FontLoadIntoGLTask : public GraphicsTask
-    {
-        weak_ptr<FontRuntime> mFontRuntime;
-    public:
-        FontLoadIntoGLTask(const weak_ptr<ProjectRuntime>& pr,
-                           const weak_ptr<FontRuntime>& rt);
-        void execute();
-    };
+  class FontLoadIntoGLTask : public GraphicsTask
+  {
+  public:
+    FontLoadIntoGLTask(ProjectRuntime& pr, FontRuntime& rt);
+    void execute();
+  private:
+    FontRuntime& getFontRuntime() const;
+    reference_wrapper<FontRuntime> mFontRuntime;
+  };
 
-    class FontRemoveFromGLTask : public GraphicsDestructionTask
-    {
-        GLuint mFontAtlasTexture;
-        GLuint mFontVao;
-        GLuint mFontVbo;
-    public:
-        FontRemoveFromGLTask(const weak_ptr<ProjectRuntime>& pr);
-        void setFontAtlasTexture(GLuint id);
-        void setFontVao(GLuint id);
-        void setFontVbo(GLuint id);
-        void execute() override;
-    };
+  class FontRemoveFromGLTask : public GraphicsDestructionTask
+  {
+
+  public:
+    FontRemoveFromGLTask(ProjectRuntime& pr);
+    void setFontAtlasTexture(GLuint id);
+    void setFontVao(GLuint id);
+    void setFontVbo(GLuint id);
+    void execute() override;
+  private:
+    GLuint mFontAtlasTexture;
+    GLuint mFontVao;
+    GLuint mFontVbo;
+  };
 }

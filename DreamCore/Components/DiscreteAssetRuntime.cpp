@@ -19,37 +19,26 @@
 
 #include "Cache.h"
 #include "Common/Logger.h"
-#include "Project/Project.h"
 #include "Project/ProjectRuntime.h"
-#include "Storage/ProjectDirectory.h"
+#include "Project/ProjectDirectory.h"
 #include "Entity/EntityRuntime.h"
 #include "Scene/SceneRuntime.h"
 #include "Task/Task.h"
 
-using std::dynamic_pointer_cast;
-
 namespace octronic::dream
 {
-    DiscreteAssetRuntime::DiscreteAssetRuntime
-    (const weak_ptr<ProjectRuntime>& prt,
-     const weak_ptr<AssetDefinition>& def,
-     const weak_ptr<EntityRuntime>& runtime)
-        : AssetRuntime (prt, def),
-          mEntityRuntime(runtime)
-    {
-    }
+  DiscreteAssetRuntime::DiscreteAssetRuntime
+  (ProjectRuntime& prt, AssetDefinition& def, EntityRuntime& runtime)
+    : AssetRuntime (prt, def),
+      mEntityRuntime(runtime)
+  {
+  }
 
-    DiscreteAssetRuntime::~DiscreteAssetRuntime()
-    {
-    }
-
-
-
-    weak_ptr<EntityRuntime>
-    DiscreteAssetRuntime::getEntityRuntime
-    ()
-    const
-    {
-        return mEntityRuntime;
-    }
+  EntityRuntime&
+  DiscreteAssetRuntime::getEntityRuntime
+  ()
+  const
+  {
+    return mEntityRuntime.get();
+  }
 }

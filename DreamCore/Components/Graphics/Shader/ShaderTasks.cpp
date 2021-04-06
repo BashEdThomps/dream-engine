@@ -4,11 +4,28 @@
 
 namespace octronic::dream
 {
+  // ShaderRuntimeTask =========================================================
+  ShaderRuntimeTask::ShaderRuntimeTask
+  (ProjectRuntime& pr, ShaderRuntime& sr, const string& name)
+    : GraphicsTask(pr,name),
+      mShaderRuntime(sr)
+  {
+
+  }
+
+  ShaderRuntime&
+  ShaderRuntimeTask::getShaderRuntime
+  ()
+  const
+  {
+    return mShaderRuntime.get();
+  }
+
+  // ShaderCompileFragmentTask =================================================
+
   ShaderCompileFragmentTask::ShaderCompileFragmentTask
-  (const weak_ptr<ProjectRuntime>& prt,
-   const weak_ptr<ShaderRuntime>& rt)
-    : GraphicsTask(prt,"ShaderCompileFragmentTask"),
-      mShaderRuntime(rt)
+  (ProjectRuntime& prt, ShaderRuntime& rt)
+    : ShaderRuntimeTask(prt,rt,"ShaderCompileFragmentTask")
   {
   }
 
@@ -16,25 +33,22 @@ namespace octronic::dream
   ShaderCompileFragmentTask::execute
   ()
   {
-    if (auto shLock = mShaderRuntime.lock())
+    LOG_TRACE("ShaderCompileFragmentTask: {} Executing on Graphics thread",getShaderRuntime().getName());
+    if (!getShaderRuntime().performFragmentCompilation())
     {
-      LOG_TRACE("ShaderCompileFragmentTask: {} Executing on Graphics thread",shLock->getName());
-      if (!shLock->performFragmentCompilation())
-      {
-        setState(TASK_STATE_DEFERRED);
-      }
-      else
-      {
-        setState(TASK_STATE_COMPLETED);
-      }
+      setState(TASK_STATE_DEFERRED);
+    }
+    else
+    {
+      setState(TASK_STATE_COMPLETED);
     }
   }
 
+  // ShaderCompileVertexTask ===================================================
+
   ShaderCompileVertexTask::ShaderCompileVertexTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<ShaderRuntime>& rt)
-    : GraphicsTask(pr, "ShaderCompileVertexTask"),
-      mShaderRuntime(rt)
+  (ProjectRuntime& pr, ShaderRuntime& rt)
+    : ShaderRuntimeTask(pr,rt, "ShaderCompileVertexTask")
   {
   }
 
@@ -42,25 +56,22 @@ namespace octronic::dream
   ShaderCompileVertexTask::execute
   ()
   {
-    if (auto shLock = mShaderRuntime.lock())
+    LOG_TRACE("ShaderCompileVertexTask: {} Executing on Graphics thread",getShaderRuntime().getName());
+    if (!getShaderRuntime().performVertexCompilation())
     {
-      LOG_TRACE("ShaderCompileVertexTask: {} Executing on Graphics thread",shLock->getName());
-      if (!shLock->performVertexCompilation())
-      {
-        setState(TASK_STATE_DEFERRED);
-      }
-      else
-      {
-        setState(TASK_STATE_COMPLETED);
-      }
+      setState(TASK_STATE_DEFERRED);
+    }
+    else
+    {
+      setState(TASK_STATE_COMPLETED);
     }
   }
 
+  // ShaderLinkTask ============================================================
+
   ShaderLinkTask::ShaderLinkTask
-  (const weak_ptr<ProjectRuntime>& pr,
-   const weak_ptr<ShaderRuntime>& rt)
-    : GraphicsTask(pr, "ShaderLinkTask"),
-      mShaderRuntime(rt)
+  (ProjectRuntime& pr,ShaderRuntime& rt)
+    : ShaderRuntimeTask(pr, rt,"ShaderLinkTask")
   {
   }
 
@@ -68,23 +79,22 @@ namespace octronic::dream
   ShaderLinkTask::execute
   ()
   {
-    if (auto shLock = mShaderRuntime.lock())
-    {
-      LOG_TRACE("ShaderLinkTask: Linking Shader [{}] on Graphics thread",shLock->getName());
+    LOG_TRACE("ShaderLinkTask: Linking Shader [{}] on Graphics thread",getShaderRuntime().getName());
 
-      if (!shLock->performLinking())
-      {
-        setState(TASK_STATE_DEFERRED);
-      }
-      else
-      {
-        setState(TASK_STATE_COMPLETED);
-      }
+    if (!getShaderRuntime().performLinking())
+    {
+      setState(TASK_STATE_DEFERRED);
+    }
+    else
+    {
+      setState(TASK_STATE_COMPLETED);
     }
   }
 
+  // ShaderFreeTask ============================================================
+
   ShaderFreeTask::ShaderFreeTask
-  (const weak_ptr<ProjectRuntime>& pr)
+  (ProjectRuntime& pr)
     : GraphicsDestructionTask(pr, "ShaderFreeTask"),
       mShaderProgram(0)
   {

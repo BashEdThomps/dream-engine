@@ -18,27 +18,30 @@
 
 namespace octronic::dream
 {
-    class EntityRuntime;
+  class EntityRuntime;
 
-    /**
+  /**
      * @brief A DiscreteAssetRuntime is a Runtime that is unique to a single
      * EntityRuntime.
+     *
+     * DiscreteAssetRuntimes should be stored by their owners as
+     * DiscreteAssetRuntime*
      */
-    class DiscreteAssetRuntime : public AssetRuntime
-    {
-    public:
-        /**
+  class DiscreteAssetRuntime : public AssetRuntime
+  {
+  public:
+    /**
          * @param def Definition from which to create Runtime.
          * @param runtime Owner of this AssetRuntime.
          */
-        DiscreteAssetRuntime(const weak_ptr<ProjectRuntime>& prt,
-                             const weak_ptr<AssetDefinition>& def,
-                             const weak_ptr<EntityRuntime>& runtime);
-        ~DiscreteAssetRuntime() override;
+    DiscreteAssetRuntime(ProjectRuntime& prt, AssetDefinition& def, EntityRuntime& runtime);
 
-        weak_ptr<EntityRuntime> getEntityRuntime() const;
+    DiscreteAssetRuntime(DiscreteAssetRuntime&&) = default;
+    DiscreteAssetRuntime& operator=(DiscreteAssetRuntime&&) = default;
 
-    protected:
-        weak_ptr<EntityRuntime> mEntityRuntime;
-    };
+  protected:
+    EntityRuntime& getEntityRuntime() const;
+  private:
+    reference_wrapper<EntityRuntime> mEntityRuntime;
+  };
 }

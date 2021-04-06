@@ -9,7 +9,7 @@
 // ImGui Widgets
 #include "Widgets/ImGui/ProjectBrowser.h"
 #include "Widgets/ImGui/AssetBrowser.h"
-#include "Widgets/ImGui/PropertiesWindow.h"
+#include "Widgets/ImGui/PropertiesWindow/PropertiesWindow.h"
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/ScriptDebugWindow.h"
 #include "Widgets/ImGui/SceneStateWindow.h"
@@ -26,15 +26,13 @@
 #include "Widgets/GL/SelectionHighlighter.h"
 #include "Widgets/GL/Cursor.h"
 #include "Widgets/GL/PathViewer.h"
-#include "Widgets/GL/AnimationViewer.h"
 #include "Widgets/GL/PhysicsDebugDrawer.h"
 
 // Models
 #include "Model/TemplatesModel.h"
 #include "Model/PreferencesModel.h"
-#include "Model/ModelDefinitionBatchImporter.h"
 
-using octronic::dream::Project;
+using octronic::dream::ProjectContext;
 using octronic::dream::ProjectRuntime;
 using octronic::dream::SceneRuntime;
 using octronic::dream::StorageManager;
@@ -50,43 +48,41 @@ namespace octronic::dream::tool
 
         bool init();
         void run();
-        void handleEditorInput(const shared_ptr<SceneRuntime>&);
-        void handleSceneInput(const shared_ptr<SceneRuntime>&);
+        void handleEditorInput();
+        void handleSceneInput();
         void closeProject();
         bool openProject(const string&);
         bool newProject(const string& dir);
-        bool openInExternalEditor(const shared_ptr<AssetDefinition>& definition, const string& format = "");
+        bool openInExternalEditor(AssetDefinition& definition, const string& format = "");
+        optional<ProjectContext>& getProjectContext();
 
         // ImGui Widgets
-        DreamToolWindow*          getWindow();
-        shared_ptr<Project>       getProject() const;
-        PropertiesWindow*         getPropertiesWindow();
-        ProjectBrowser*           getProjectBrowser();
-        AssetBrowser*             getAssetBrowser();
-        SceneStateWindow*         getSceneStateWindow();
-        ToolPropertiesWindow*     getToolPropertiesWindow();
-        MenuBar*                  getMenuBar();
-        RenderingDebugWindow*     getRenderPipelineWindow();
-        GamepadStateWindow*       getGamepadStateWindow();
-        CacheContentWindow*       getCacheContentWindow();
-        TaskManagerWindow*        getTaskManagerWindow();
-        shared_ptr<ScriptDebugWindow> getScriptDebugWindow() const;
-        shared_ptr<GLPreviewWindowComponent> getGlPreviewWindowComponent() const;
+        DreamToolWindow&          getWindow();
+        PropertiesWindow&         getPropertiesWindow();
+        ProjectBrowser&           getProjectBrowser();
+        AssetBrowser&             getAssetBrowser();
+        SceneStateWindow&         getSceneStateWindow();
+        ToolPropertiesWindow&     getToolPropertiesWindow();
+        MenuBar&                  getMenuBar();
+        RenderingDebugWindow&     getRenderPipelineWindow();
+        GamepadStateWindow&       getGamepadStateWindow();
+        CacheContentWindow&       getCacheContentWindow();
+        TaskManagerWindow&        getTaskManagerWindow();
+        ScriptDebugWindow&        getScriptDebugWindow();
+        GLPreviewWindowComponent& getGlPreviewWindowComponent();
+        OpenALAudioComponent&     getAudioComponent();
 
         // GL Widgets
-        Grid*                 getGrid();
-        LightViewer*          getLightViewer();
-        SelectionHighlighter* getSelectionHighlighter();
-        Cursor*               getCursor();
-        PathViewer*           getPathViewer();
-        AnimationViewer*      getAnimationViewer();
+        Grid&                 getGrid();
+        LightViewer&          getLightViewer();
+        SelectionHighlighter& getSelectionHighlighter();
+        Cursor&               getCursor();
+        PathViewer&           getPathViewer();
 
         // Data Models
-        TemplatesModel*               getTemplatesModel();
-        PreferencesModel*             getPreferencesModel();
-        ModelDefinitionBatchImporter* getModelDefinitionBatchImporter();
-        shared_ptr<ProjectDirectory>  getProjectDirectory() const;
-        shared_ptr<StorageManager>    getStorageManager() const;
+        TemplatesModel&               getTemplatesModel();
+        PreferencesModel&             getPreferencesModel();
+        StorageManager&               getStorageManager();
 
         int         getCommandArgumentsCount();
         char**      getCommandArgumentsVector();
@@ -98,7 +94,7 @@ namespace octronic::dream::tool
         void        setLastDirectory(const string& lastDir);
 
     private:
-        shared_ptr<Project> mProject;
+        optional<ProjectContext> mProjectContext;
 
         // ImGui Widgets
         DreamToolWindow mWindow;
@@ -112,9 +108,8 @@ namespace octronic::dream::tool
         GamepadStateWindow mGamepadStateWindow;
         CacheContentWindow mCacheContentWindow;
         TaskManagerWindow mTaskManagerWindow;
-
-        shared_ptr<ScriptDebugWindow> mScriptDebugWindow;
-        shared_ptr<GLPreviewWindowComponent> mGlPreviewWindowComponent;
+        ScriptDebugWindow mScriptDebugWindow;
+        GLPreviewWindowComponent mGlPreviewWindowComponent;
 
         // GL Widgets
         Grid mGrid;
@@ -122,22 +117,18 @@ namespace octronic::dream::tool
         SelectionHighlighter mSelectionHighlighter;
         Cursor mCursor;
         PathViewer mPathViewer;
-        AnimationViewer mAnimationViewer;
-        shared_ptr<PhysicsDebugDrawer> mPhysicsDebugDrawer;
+        PhysicsDebugDrawer mPhysicsDebugDrawer;
 
         // Data Models
         TemplatesModel mTemplatesModel;
         PreferencesModel mPreferencesModel;
-        ModelDefinitionBatchImporter mModelDefinitionBatchImporter;
-        shared_ptr<ProjectDirectory> mProjectDirectory;
-        shared_ptr<StorageManager> mStorageManager;
-        shared_ptr<OpenALAudioComponent> mAudioComponent;
+        StorageManager mStorageManager;
+        OpenALAudioComponent mAudioComponent;
 
         int mCommandArgumentsCount;
         char** mCommandArgumentsVector;
         bool mMainLoopDone;
         InputTarget mInputTarget;
         string mLastDirectory;
-        shared_ptr<Directory> mProjectBaseDirectory;
     };
 }

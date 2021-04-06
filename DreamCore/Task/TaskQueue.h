@@ -6,11 +6,11 @@
 
 using std::string;
 using std::vector;
-using std::weak_ptr;
+using std::shared_ptr;
 
 namespace octronic::dream
 {
-    /**
+  /**
      * @brief The TaskQueue class is responsible for scheduling and executing
      * Tasks that are used to implement a Project's runtime logic.
      *
@@ -38,20 +38,21 @@ namespace octronic::dream
      *
      */
 
-	template <typename TaskType>
-	class TaskQueue
-	{
-	public:
-		TaskQueue(const string& className);
-		void pushTask(const weak_ptr<TaskType>& t);
-		void executeQueue();
-		bool hasTask(const weak_ptr<TaskType>& t) const;
-		vector<weak_ptr<TaskType>> getTaskQueue() const;
-		size_t getTaskCount() const;
-	private:
-		vector<weak_ptr<TaskType>> mQueue;
-        string mClassName;
-	};
+  template <typename TaskType>
+  class TaskQueue
+  {
+  public:
+    TaskQueue(const string& className);
+
+    void executeQueue();
+    void pushTask(const shared_ptr<TaskType>& t);
+    bool hasTask(const shared_ptr<TaskType>& t) const;
+    vector<shared_ptr<TaskType>> getTaskQueue() const;
+    size_t getTaskCount() const;
+  private:
+    vector<shared_ptr<TaskType>> mQueue;
+    string mClassName;
+  };
 }
 
 // Template Implementation

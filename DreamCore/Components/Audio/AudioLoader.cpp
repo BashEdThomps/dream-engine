@@ -8,9 +8,8 @@ namespace octronic::dream
 {
 
     AudioLoader::AudioLoader
-    ()
-        : mChannels(0),
-          mSampleRate(0)
+    (): mChannels(0),
+        mSampleRate(0)
     {
 
     }

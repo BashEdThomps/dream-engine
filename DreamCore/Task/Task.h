@@ -4,21 +4,16 @@
 
 #include <string>
 #include <vector>
-#include <map>
-#include <memory>
 
-using std::shared_ptr;
-using std::weak_ptr;
-using std::enable_shared_from_this;
-using std::map;
 using std::vector;
 using std::string;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
-	class ProjectRuntime;
+  class ProjectRuntime;
 
-    /**
+  /**
      * @brief Task is the base class of any Runtime Logic task, allowing
      * logic blocks to be dispatched to the TaskManager.
      *
@@ -27,42 +22,47 @@ namespace octronic::dream
      * *** A DestructionTask MAY implement some logic, as the parent
      *     object may have been destroyed.
      */
-    class Task : public enable_shared_from_this<Task>
-    {
-    public:
-        static int TaskIDGenerator;
-        const static int INVALID_THREAD_ID;
-        const static int INVALID_TASK_ID;
+  class Task
+  {
+  public:
+    static int TaskIDGenerator;
+    const static int INVALID_THREAD_ID;
+    const static int INVALID_TASK_ID;
 
-        Task(const weak_ptr<ProjectRuntime>& pr,  const string& taskName);
-        virtual ~Task();
+    Task(ProjectRuntime& pr,  const string& taskName);
 
-        virtual void execute() = 0;
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
 
-        int getID() const;
-        string getName() const;
-        virtual string getNameAndIDString() const;
+    Task(Task&&) = default;
+    Task& operator=(Task&&) = default;
 
-        void clearState();
-        void setState(const TaskState& s);
-        TaskState getState() const;
-        bool hasState(const TaskState& s) const;
+    virtual void execute() = 0;
 
-        bool operator==(Task& other) const;
+    int getID() const;
+    string getName() const;
+    virtual string getNameAndIDString() const;
 
-    public: // Statics
-        static int taskIDGenerator();
+    void setState(const TaskState& s);
+    TaskState getState() const;
+    bool hasState(const TaskState& s) const;
 
-    protected:
-		weak_ptr<ProjectRuntime> mProjectRuntime;
+    bool operator==(Task& other) const;
 
-    private:
-        int mID;
-        string mName;
-        TaskState mState;
-    };
+  public: // Statics
+    static int taskIDGenerator();
 
-    /**
+  protected:
+    ProjectRuntime& getProjectRuntime() const;
+  private:
+    reference_wrapper<ProjectRuntime> mProjectRuntime;
+
+    int mID;
+    string mName;
+    TaskState mState;
+  };
+
+  /**
      * @brief The DestructionTask class is used for tasks that need to exist beyond
      * their owner's scope. These tasks are copied into the TaskThread's Execution
      * Queue instead of being called by pointer. They will typically be used for
@@ -71,9 +71,9 @@ namespace octronic::dream
      *
      * Must be instanciated on stack as shared pointers
      */
-    class DestructionTask : public Task
-    {
-    public:
-        DestructionTask(const weak_ptr<ProjectRuntime>& pr, const string& taskName);
-    };
+  class DestructionTask : public Task
+  {
+  public:
+    DestructionTask(ProjectRuntime& pr, const string& taskName);
+  };
 }

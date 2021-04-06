@@ -6,6 +6,7 @@
 #include <glm/matrix.hpp>
 
 using glm::mat4;
+using std::reference_wrapper;
 
 namespace octronic::dream
 {
@@ -30,7 +31,7 @@ namespace octronic::dream
             TEST_INSIDE
         };
 
-        Frustum(CameraRuntime* cam);
+        Frustum(CameraRuntime& cam);
         ~Frustum();
         void updatePlanes();
         Frustum::TestResult testIntersection(const mat4& modelMatrix, const BoundingBox& box) const;
@@ -38,6 +39,6 @@ namespace octronic::dream
 
     protected:
         vec4 mPlanes[6];
-        CameraRuntime* mCamera;
+        reference_wrapper<CameraRuntime> mCamera;
     };
 }

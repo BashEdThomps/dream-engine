@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+
+using std::reference_wrapper;
+
 namespace octronic::dream::tool
 {
 	class DreamToolContext;
@@ -7,9 +11,10 @@ namespace octronic::dream::tool
 	class Model
 	{
 	public:
-		Model(DreamToolContext* context);
+		Model(DreamToolContext& context);
+    DreamToolContext& getContext();
 	protected:
-		DreamToolContext* mContext;
+		reference_wrapper<DreamToolContext> mContext;
 	};
 }
 

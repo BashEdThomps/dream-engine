@@ -12,15 +12,12 @@
 
 namespace octronic::dream::tool
 {
-    class ImGuiWidget : public DreamToolWidget
-    {
-    public:
-        ImGuiWidget(DreamToolContext* project,bool visible = true);
-        ~ImGuiWidget() override;
-        bool StringCombo(const char* label,
-                         int* current_item,
-                         const vector<string>& items,
-                         size_t items_count,
-                         int height_in_items = -1);
-    };
+  class ImGuiWidget : public DreamToolWidget
+  {
+  public:
+    ImGuiWidget(DreamToolContext& project,bool visible = true);
+    ~ImGuiWidget() override;
+    static bool StringCombo(const char* label, int* current_item,const vector<string>& items,int height_in_items = -1);
+    static int GetStringIndexInVector(const string& str, const vector<string>& vec);
+  };
 }

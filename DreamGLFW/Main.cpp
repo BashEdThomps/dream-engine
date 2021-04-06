@@ -15,57 +15,46 @@
 #include <sstream>
 
 #include <DreamCore.h>
+
 #include <OpenALAudioComponent.h>
 #include "GLFWWindowComponent.h"
+#include "DefaultPrintListener.h"
 
 #define MINIMUM_ARGUMENTS 3
 
-using std::shared_ptr;
-using std::weak_ptr;
-using octronic::dream::Project;
+// Using
+
+using std::stoi;
+using octronic::dream::ProjectContext;
 using octronic::dream::WindowComponent;
-using octronic::dream::ProjectDirectory;
-using octronic::dream::ProjectDefinition;
-using octronic::dream::ProjectRuntime;
-using octronic::dream::ScriptComponent;
-using octronic::dream::SceneDefinition;
-using octronic::dream::SceneRuntime;
 using octronic::dream::MouseState;
 using octronic::dream::KeyboardState;
 using octronic::dream::JoystickState;
-using octronic::dream::GraphicsComponent;
-using octronic::dream::glfw::GLFWWindowComponent;
 using octronic::dream::StorageManager;
-using octronic::dream::Directory;
 using octronic::dream::open_al::OpenALAudioComponent;
-using octronic::dream::ScriptPrintListener;
-using octronic::dream::FontRuntime;
-using octronic::dream::SceneState;
-using std::stoi;
+using octronic::dream::glfw::GLFWWindowComponent;
+using octronic::dream::glfw::DefaultPrintListener;
 
-class DefaultPrintListener : public ScriptPrintListener
+// Global variables
+
+string _option_project_dir;
+string _option_logLevel = "off";
+int    _option_width = 0;
+int    _option_height = 0;
+
+// Global Functions
+
+void parseArguments(int argc, char** argv)
 {
-public:
-  DefaultPrintListener() {}
-  ~DefaultPrintListener() {}
-
-  void onPrint(const string& str) override
+  if(argc < 2)
   {
-    LOG_ERROR("LUA PrintListener: {}", str);
+    for (int i = 0; i < argc; i++)
+    {
+      LOG_ERROR("DreamGLFW: Arg {}: {}", i, argv[i]);
+    }
+    LOG_ERROR("DreamGLFW: No Project Argument.");
+    exit(1);
   }
-
-};
-
-
-void run(int,char**);
-void handleSceneInput(const shared_ptr<Project>&);
-
-int main(int argc,char** argv)
-{
-  string dir;
-  string logLevel = "off";
-  int width = 0;
-  int height = 0;
 
   for (int i=0; i<argc; i++)
   {
@@ -73,7 +62,7 @@ int main(int argc,char** argv)
     {
       if (argc >= i+1)
       {
-        logLevel = string(argv[i+1]);
+        _option_logLevel = string(argv[i+1]);
       }
       else
       {
@@ -85,7 +74,7 @@ int main(int argc,char** argv)
     {
       if (argc >= i+1)
       {
-        dir = string(argv[i+1]);
+        _option_project_dir = string(argv[i+1]);
       }
       else
       {
@@ -96,7 +85,7 @@ int main(int argc,char** argv)
     {
       if (argc >= i+1)
       {
-        width = stoi(argv[i+1]);
+        _option_width = stoi(argv[i+1]);
       }
       else
       {
@@ -107,7 +96,7 @@ int main(int argc,char** argv)
     {
       if (argc >= i+1)
       {
-        height = stoi(argv[i+1]);
+        _option_height = stoi(argv[i+1]);
       }
       else
       {
@@ -115,174 +104,108 @@ int main(int argc,char** argv)
       }
     }
   }
+}
 
-  LOG_LEVEL(spdlog::level::from_str(logLevel));
-  LOG_ERROR("Main: Using log level {}", logLevel);
+void setupLogger()
+{
+  LOG_LEVEL(spdlog::level::from_str(_option_logLevel));
+  LOG_ERROR("Main: Using log level {}", _option_logLevel);
   LOG_PATTERN("[%H:%M:%S]%l: %v");
+}
 
-  if(argc < 2)
+void handleInput(ProjectContext(& context))
+{
+  auto& projectRuntimeOpt = context.getProjectRuntime();
+  if (projectRuntimeOpt)
   {
-    for (int i = 0; i < argc; i++)
-    {
-      LOG_ERROR("DreamGLFW: Arg {}: {}", i, argv[i]);
-    }
-    LOG_ERROR("DreamGLFW: No Project Argument.");
-    exit(1);
-  }
+    auto& projectRuntime = projectRuntimeOpt.value();
+    auto& inputComp = projectRuntime.getInputComponent();
+    // Keyboard
+    auto& ks = inputComp.getKeyboardState();
+    ks.setKeysPressed(GLFWWindowComponent::KeysDown, 512);
+    inputComp.setKeyboardState(ks);
 
-  bool MainLoopDone = false;
+    // Mouse
+    auto& ms = inputComp.getMouseState();
+    ms.setButtonsPressed(GLFWWindowComponent::MouseButtonsDown, 5);
+    ms.setPosX(GLFWWindowComponent::MousePosX);
+    ms.setPosY( GLFWWindowComponent::MousePosY);
+    ms.setScrollX( GLFWWindowComponent::MouseWheelH);
+    ms.setScrollY(GLFWWindowComponent::MouseWheel);
+    inputComp.setMouseState(ms);
+
+    // Joystick
+    auto& js = inputComp.getJoystickState();
+    int joystickCount = 0;
+    for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
+    {
+      if (glfwJoystickPresent(id))
+      {
+        joystickCount++;
+        js.setName(glfwGetJoystickName(id));
+        int numAxis, numButtons;
+        const float* axisData = glfwGetJoystickAxes(id,&numAxis);
+        const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
+        if (axisData != nullptr)
+        {
+          js.setAxisCount(numAxis);
+          memcpy((void*)js.getAxisDataPointer(),axisData,sizeof(float)*numAxis);
+        }
+        else
+        {
+          js.setAxisCount(0);
+        }
+        if (buttonData != nullptr)
+        {
+          js.setButtonCount(numButtons);
+          memcpy((void*)js.getButtonDataPointer(),buttonData,sizeof(unsigned char)*numButtons);
+        }
+        else
+        {
+          js.setButtonCount(0);
+        }
+      }
+    }
+    inputComp.setJoystickState(js);
+    inputComp.setJoystickCount(joystickCount);
+  }
+}
+
+// Entry Point
+
+int main(int argc,char** argv)
+{
+  parseArguments(argc, argv);
+  setupLogger();
 
   LOG_INFO("DreamGLFW: Starting...");
 
-  auto audioComponent = make_shared<OpenALAudioComponent>();
-  if (!audioComponent->init())
+  StorageManager storageMan;
+
+  OpenALAudioComponent audioComp;
+  if(!audioComp.init()) return 1;
+
+  GLFWWindowComponent windowComp;
+  windowComp.setWidth(_option_width);
+  windowComp.setHeight(_option_height);
+  if(!windowComp.init()) return 2;
+  DefaultPrintListener pl;
+
+  ProjectContext context(windowComp,audioComp,storageMan,_option_project_dir);
+  context.addPrintListener(pl);
+
+  if (context.openFromPath())
   {
-    LOG_ERROR("DreamGLFW: Unable to init audio component");
-    exit(1);
-  }
-
-  auto  windowComponent = make_shared<GLFWWindowComponent>();
-  windowComponent->setWidth(width);
-  windowComponent->setHeight(height);
-  if(!windowComponent->init())
-  {
-    LOG_ERROR("DreamGLFW: Could not initialise window component");
-    exit(1);
-  }
-
-  auto lua_pl = make_shared<DefaultPrintListener>();
-  auto fileManager = make_shared<StorageManager>();
-  shared_ptr<Project> project;
-  auto  projectDirectory = make_shared<ProjectDirectory>(fileManager);
-  ScriptComponent::AddPrintListener(lua_pl);
-  FontRuntime::InitFreetypeLibrary();
-  auto d = fileManager->openDirectory(dir);
-
-  LOG_DEBUG("DreamGLFW: Opening project {}",dir);
-  project = projectDirectory->openFromDirectory(d);
-
-  if(!project)
-  {
-    LOG_ERROR("DreamGLFW: ");
-    exit(1);
-  }
-
-  project->setAudioComponent(audioComponent);
-  project->setWindowComponent(windowComponent);
-  project->createProjectRuntime();
-
-  auto projectRuntime = project->getRuntime().lock();
-  auto projectDefinition = project->getDefinition().lock();
-
-  if (!projectDefinition)
-  {
-    LOG_ERROR("DreamGLFW: ");
-    exit(1);
-  }
-
-  auto startupSceneDefinition = projectDefinition->getStartupSceneDefinition().lock();
-  shared_ptr<SceneRuntime> startupSceneRuntime;
-
-  if (projectRuntime && startupSceneDefinition)
-  {
-    startupSceneRuntime = make_shared<SceneRuntime>(projectRuntime, startupSceneDefinition);
-    if(startupSceneRuntime->init())
+    auto& wc = context.getWindowComponent();
+    while (!wc.shouldClose())
     {
-      projectRuntime->addSceneRuntime(startupSceneRuntime);
-    }
-  }
-
-  // Run the project
-  while (!MainLoopDone)
-  {
-    windowComponent->updateWindow();
-
-    if (windowComponent->shouldClose())
-    {
-      MainLoopDone = true;
-    }
-
-    if (project == nullptr) continue;
-    if (projectRuntime == nullptr) continue;
-
-    projectRuntime->step();
-
-    handleSceneInput(project);
-
-    if (startupSceneRuntime && startupSceneRuntime->hasState(SceneState::SCENE_STATE_LOADED))
-    {
-      projectRuntime->setActiveSceneRuntime(startupSceneRuntime->getUuid());
-      startupSceneRuntime->setState(SceneState::SCENE_STATE_ACTIVE);
-    }
-    windowComponent->swapBuffers();
-  }
-
-  LOG_INFO("DreamGLFW: Run is done. Cleaning up");
-
-  if (startupSceneRuntime)
-  {
-    projectRuntime->destructSceneRuntime(startupSceneRuntime);
-  }
-  FontRuntime::CleanupFreetypeLibrary();
-}
-
-void handleSceneInput(const shared_ptr<Project>& project)
-{
-  auto pRunt = project->getRuntime().lock();
-
-  if (pRunt)
-  {
-    auto inputComp = pRunt->getInputComponent().lock();
-    if (inputComp)
-    {
-      // Keyboard
-      auto ks = inputComp->getKeyboardState();
-      ks->setKeysPressed(GLFWWindowComponent::KeysDown, 512);
-      inputComp->setKeyboardState(ks);
-
-      // Mouse
-      auto ms = inputComp->getMouseState();
-      ms->setButtonsPressed(GLFWWindowComponent::MouseButtonsDown, 5);
-      ms->setPosX(GLFWWindowComponent::MousePosX);
-      ms->setPosY( GLFWWindowComponent::MousePosY);
-      ms->setScrollX( GLFWWindowComponent::MouseWheelH);
-      ms->setScrollY(GLFWWindowComponent::MouseWheel);
-      inputComp->setMouseState(ms);
-
-      // Joystick
-      auto js = inputComp->getJoystickState();
-      int joystickCount = 0;
-      for (int id=GLFW_JOYSTICK_1; id < GLFW_JOYSTICK_LAST; id++)
-      {
-        if (glfwJoystickPresent(id))
-        {
-          joystickCount++;
-          js->setName(glfwGetJoystickName(id));
-          int numAxis, numButtons;
-          const float* axisData = glfwGetJoystickAxes(id,&numAxis);
-          const unsigned char* buttonData = glfwGetJoystickButtons(id, &numButtons);
-          if (axisData != nullptr)
-          {
-            js->setAxisCount(numAxis);
-            memcpy((void*)js->getAxisDataPointer(),axisData,sizeof(float)*numAxis);
-          }
-          else
-          {
-            js->setAxisCount(0);
-          }
-          if (buttonData != nullptr)
-          {
-            js->setButtonCount(numButtons);
-            memcpy((void*)js->getButtonDataPointer(),buttonData,sizeof(unsigned char)*numButtons);
-          }
-          else
-          {
-            js->setButtonCount(0);
-          }
-        }
-      }
-      inputComp->setJoystickState(js);
-      inputComp->setJoystickCount(joystickCount);
+      wc.updateWindow();
+      handleInput(context);
+      context.step();
+      wc.swapBuffers();
     }
   }
 }
+
+
+

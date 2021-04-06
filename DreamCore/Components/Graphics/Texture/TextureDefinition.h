@@ -24,8 +24,10 @@ namespace octronic::dream
     class TextureDefinition : public AssetDefinition
     {
     public:
-        TextureDefinition(const shared_ptr<ProjectDefinition>& pd, const json& js);
-        ~TextureDefinition() override;
+        TextureDefinition(ProjectDefinition& pd, const json& js);
+
+        TextureDefinition(TextureDefinition&&) = default;
+        TextureDefinition& operator=(TextureDefinition&&) = default;
 
         bool getIsEnvironmentTexture() const;
         void setIsEnvironmentTexture(bool b);

@@ -25,142 +25,137 @@
 
 namespace octronic::dream
 {
-    MaterialDefinition::MaterialDefinition
-    (const shared_ptr<ProjectDefinition>& pd, const json &js)
-        : AssetDefinition("MaterialDefinition",pd,js)
+  MaterialDefinition::MaterialDefinition
+  (ProjectDefinition& pd, const json &js)
+    : AssetDefinition(pd,js)
+  {
+    LOG_TRACE("MaterialDefinition: Constructing");
+  }
+
+  // Shader ==================================================================
+
+  UuidType
+  MaterialDefinition::getShaderUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
     {
-        LOG_TRACE("MaterialDefinition: Constructing");
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
+  }
 
-    MaterialDefinition::~MaterialDefinition()
+  void
+  MaterialDefinition::setShaderUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
+  }
+
+  // Albedo ==================================================================
+
+  UuidType
+  MaterialDefinition::getAlbedoTextureUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO].is_number())
     {
-        LOG_TRACE("MaterialDefinition: Destructing");
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO];
+  }
 
-    // Shader ==================================================================
+  void
+  MaterialDefinition::setAlbedoTextureUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO]  = val;
+  }
 
-    UuidType
-    MaterialDefinition::getShader
-    ()
-    const
+  // Normal ==================================================================
+
+  UuidType
+  MaterialDefinition::getNormalTextureUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL].is_number())
     {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_SHADER];
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL];
+  }
 
-    void
-    MaterialDefinition::setShader
-    (UuidType val)
+  void
+  MaterialDefinition::setNormalTextureUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL]  = val;
+  }
+
+  // Metallic ================================================================
+
+  UuidType
+  MaterialDefinition::getMetallicTextureUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC].is_number())
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_SHADER] = val;
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC];
+  }
 
-    // Albedo ==================================================================
+  void
+  MaterialDefinition::setMetallicTextureUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC] = val;
+  }
 
-    UuidType
-    MaterialDefinition::getAlbedoTexture
-    ()
-    const
+  // Roughness ===============================================================
+
+  UuidType
+  MaterialDefinition::getRoughnessTextureUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS].is_number())
     {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO];
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS];
+  }
 
-    void
-    MaterialDefinition::setAlbedoTexture
-    (UuidType val)
+  void
+  MaterialDefinition::setRoughnessTextureUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS] = val;
+  }
+
+  // Ao ======================================================================
+
+  UuidType
+  MaterialDefinition::getAoTextureUuid
+  ()
+  const
+  {
+    if(!mJson[Constants::ASSET_ATTR_MATERIAL_AO].is_number())
     {
-        mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO]  = val;
+      return Uuid::INVALID;
     }
+    return mJson[Constants::ASSET_ATTR_MATERIAL_AO];
+  }
 
-    // Normal ==================================================================
-
-    UuidType
-    MaterialDefinition::getNormalTexture
-    ()
-    const
-    {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL];
-    }
-
-    void
-    MaterialDefinition::setNormalTexture
-    (UuidType val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL]  = val;
-    }
-
-    // Metallic ================================================================
-
-    UuidType
-    MaterialDefinition::getMetallicTexture
-    ()
-    const
-    {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC];
-    }
-
-    void
-    MaterialDefinition::setMetallicTexture
-    (UuidType val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC] = val;
-    }
-
-    // Roughness ===============================================================
-
-    UuidType
-    MaterialDefinition::getRoughnessTexture
-    ()
-    const
-    {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS];
-    }
-
-    void
-    MaterialDefinition::setRoughnessTexture
-    (UuidType val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS] = val;
-    }
-
-    // Ao ======================================================================
-
-    UuidType
-    MaterialDefinition::getAoTexture
-    ()
-    const
-    {
-        if(!mJson[Constants::ASSET_ATTR_MATERIAL_AO].is_number())
-        {
-            return Uuid::INVALID;
-        }
-        return mJson[Constants::ASSET_ATTR_MATERIAL_AO];
-    }
-
-    void
-    MaterialDefinition::setAoTexture
-    (UuidType val)
-    {
-        mJson[Constants::ASSET_ATTR_MATERIAL_AO]  = val;
-    }
+  void
+  MaterialDefinition::setAoTextureUuid
+  (UuidType val)
+  {
+    mJson[Constants::ASSET_ATTR_MATERIAL_AO]  = val;
+  }
 }
 

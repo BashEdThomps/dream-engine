@@ -83,11 +83,10 @@ namespace octronic::dream
         static void InvalidateState();
 
     public: // Class ===========================================================
-        ShaderRuntime
-        (const weak_ptr<ProjectRuntime>&,
-         const weak_ptr<ShaderDefinition>&);
+        ShaderRuntime(ProjectRuntime&,ShaderDefinition&);
 
-        ~ShaderRuntime() override;
+        ShaderRuntime(ShaderRuntime&&) = default;
+        ShaderRuntime& operator=(ShaderRuntime&&) = default;
 
         bool loadFromDefinition() override;
         bool init() override;
@@ -98,6 +97,7 @@ namespace octronic::dream
 
         GLuint getShaderProgram() const;
         void setShaderProgram(GLuint sp);
+        void pushDestructionTask();
 
         // Uniform Setters =====================================================
         void setModelMatrixUniform(mat4);
@@ -120,24 +120,24 @@ namespace octronic::dream
 
         void syncUniforms();
 
-    		bool checkUniformValue(ShaderUniform* uf);
-        vector<weak_ptr<ShaderUniform>> getUniformsVector() const;
+    		bool checkUniformValue(ShaderUniform& uf);
+        vector<ShaderUniform>& getUniformsVector();
 
         // Material ============================================================
-        void bindMaterial(const weak_ptr<MaterialRuntime>& material);
-        void addMaterial(const weak_ptr<MaterialRuntime>& material);
+        void bindMaterial(MaterialRuntime& material);
+        void addMaterial(MaterialRuntime& material);
         void logMaterials() const;
         size_t countMaterials() const;
-        vector<weak_ptr<MaterialRuntime>> getMaterialsVector() const;
+        vector<reference_wrapper<MaterialRuntime>> getMaterialsVector() const;
 
-        void bindRuntimes(const vector<weak_ptr<EntityRuntime>>& runtimes);
+        void bindRuntimes(const vector<reference_wrapper<EntityRuntime>>& runtimes);
 
         // VAO =================================================================
         void bindVertexArray(GLuint);
         void unbindVertexArray();
 
         // Draw ================================================================
-        void drawShadowPass(const weak_ptr<ShaderRuntime>& shadowPassShader);
+        void drawShadowPass(ShaderRuntime& shadowPassShader);
 
         // Sources =============================================================
 
@@ -183,8 +183,8 @@ namespace octronic::dream
         bool mFragmentCompilationFailed;
         bool mLinkingFailed;
 
-        vector<shared_ptr<ShaderUniform>> mUniformVector;
-        vector<weak_ptr<MaterialRuntime>> mMaterials;
+        vector<ShaderUniform> mUniformVector;
+        vector<reference_wrapper<MaterialRuntime>> mMaterials;
         vector<mat4> mRuntimeMatricies;
         map<string,GLint> mUniformLocationCache;
         shared_ptr<ShaderCompileFragmentTask> mCompileFragmentTask;

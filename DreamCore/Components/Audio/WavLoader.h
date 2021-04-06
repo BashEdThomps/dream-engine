@@ -22,14 +22,13 @@
 
 namespace octronic::dream
 {
-    class WavLoader : public AudioLoader
-    {
-    public:
-        WavLoader();
-		~WavLoader();
-		bool loadIntoBuffer(const weak_ptr<AudioDefinition>& definition,
-                            const weak_ptr<ProjectRuntime>& project) override;
-    private:
-        WavHeader mWavHeader;
-    };
+  class WavLoader : public AudioLoader
+  {
+  public:
+    WavLoader();
+    ~WavLoader();
+    bool loadIntoBuffer(ProjectRuntime& project, AudioDefinition& definition) override;
+  private:
+    WavHeader mWavHeader;
+  };
 }

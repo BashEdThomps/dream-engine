@@ -20,24 +20,18 @@
 using std::regex;
 using std::stringstream;
 using std::cmatch;
-
+using std::runtime_error;
 
 namespace octronic::dream
 {
 
   Directory::Directory(
-      const weak_ptr<StorageManager>& fileManager,
+      StorageManager& storageManager,
       const string& dir)
-    : mStorageManager(fileManager),
+    : mStorageManager(storageManager),
       mPath(dir)
   {
-    LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
-  }
-
-  Directory::~Directory
-  ()
-  {
-    LOG_TRACE("Directory: {} {}", __FUNCTION__, mPath);
+    LOG_TRACE("Directory: Constructor {}", mPath);
   }
 
   vector<string>
@@ -101,33 +95,29 @@ namespace octronic::dream
         string fileName(ent->d_name);
         if (fileName[0] == '.') continue;
         stringstream abs;
-        abs << mPath << Constants::DIR_PATH_SEP << fileName;
+        abs << mPath << Constants::DIRECTORY_PATH_SEP << fileName;
         string absPath = abs.str();
 
-        if (auto smLock = mStorageManager.lock())
+        auto& sm = getStorageManager();
+        auto& subDir = sm.openDirectory(absPath);
+        if (!subDir.isDirectory())
         {
-          if (auto subDir = smLock->openDirectory(absPath).lock())
-          {
-            if (!subDir->isDirectory())
-            {
-              smLock->closeDirectory(subDir);
-              continue;
-            }
+          sm.closeDirectory(subDir);
+          continue;
+        }
 
-            if (usingRegex)
-            {
-              if (regex_search(fileName.c_str(),match,fileRegex))
-              {
-                directoryContents.push_back(absPath);
-              }
-            }
-            else
-            {
-              directoryContents.push_back(absPath);
-            }
-            smLock->closeDirectory(subDir);
+        if (usingRegex)
+        {
+          if (regex_search(fileName.c_str(),match,fileRegex))
+          {
+            directoryContents.push_back(absPath);
           }
         }
+        else
+        {
+          directoryContents.push_back(absPath);
+        }
+        sm.closeDirectory(subDir);
       }
       closedir(dir);
     }
@@ -158,12 +148,10 @@ namespace octronic::dream
   ()
   const
   {
-    auto nameStart = mPath.find_last_of(Constants::DIR_PATH_SEP);
+    auto nameStart = mPath.find_last_of(Constants::DIRECTORY_PATH_SEP);
+    if (nameStart != string::npos)
     {
-      if (nameStart != string::npos)
-      {
-        return mPath.substr(nameStart+1);
-      }
+      return mPath.substr(nameStart+1);
     }
     return "";
   }
@@ -186,10 +174,28 @@ namespace octronic::dream
   Directory::create
   ()
   {
+    if (mPath.size() == 0)
+    {
+      throw runtime_error("Directory: Cannot create directory, path is empty");
+    }
+
 #ifdef WIN32
-    return mkdir(mPath.c_str()) == 0;
+    auto ret =  mkdir(mPath.c_str());
 #else
-    return mkdir(mPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+    auto ret = mkdir(mPath.c_str(),
+                     S_IRWXU | S_IRWXG | // Read/Write/Search for Group
+                     S_IROTH | S_IXOTH);   // Read/Search for Other
+
+    if (ret != 0)
+    {
+      stringstream ss;
+      ss << "Error creating directory " ;
+      ss << mPath;
+      ss << "errno: ";
+      ss << errno;
+      throw runtime_error(ss.str());
+    }
+    return true;
 #endif
   }
 
@@ -199,34 +205,29 @@ namespace octronic::dream
   {
     LOG_DEBUG("Directory: Deleting directory {}",mPath);
     auto files = list();
+    auto& sm = getStorageManager();
     for (auto& file : files)
     {
       if (file.compare(".") == 0) continue;
       if (file.compare("..") == 0) continue;
 
-      string absPath = mPath+Constants::DIR_PATH_SEP+file;
-      if (auto smLock = mStorageManager.lock())
+      stringstream absPath;
+      absPath << mPath << Constants::DIRECTORY_PATH_SEP << file;
+      auto& d = sm.openDirectory(absPath.str());
+      if (d.isDirectory())
       {
-        if (auto d = smLock->openDirectory(absPath).lock())
-        {
-          if (d->isDirectory())
-          {
-            d->deleteDirectory();
-          }
-          else
-          {
-            if (auto f = smLock->openFile(absPath).lock())
-            {
-              if (f->exists())
-              {
-                f->deleteFile();
-              }
-              smLock->closeFile(f);
-            }
-          }
-          smLock->closeDirectory(d);
-        }
+        d.deleteDirectory();
       }
+      else
+      {
+        auto& f = sm.openFile(absPath.str());
+        if (f.exists())
+        {
+          f.deleteFile();
+        }
+        sm.closeFile(f);
+      }
+      sm.closeDirectory(d);
     }
 
     if (rmdir(mPath.c_str()) == 0)
@@ -237,17 +238,13 @@ namespace octronic::dream
     return false;
   }
 
-  weak_ptr<File>
+  File&
   Directory::file
   (const string& fileName)
   {
-    if (auto smLock = mStorageManager.lock())
-    {
-      stringstream ss;
-      ss << mPath << Constants::DIR_PATH_SEP << fileName;
-      return smLock->openFile(ss.str());
-    }
-    return weak_ptr<File>();
+    stringstream ss;
+    ss << mPath << Constants::DIRECTORY_PATH_SEP << fileName;
+    return getStorageManager().openFile(ss.str());
   }
 
   bool
@@ -263,5 +260,14 @@ namespace octronic::dream
     }
     LOG_DEBUG("Directory: {} Directory {}",result? "Is a" : "Not a", mPath );
     return result;
+  }
+
+
+  StorageManager&
+  Directory::getStorageManager
+  ()
+  const
+  {
+    return mStorageManager.get();
   }
 }
