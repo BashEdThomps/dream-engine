@@ -97,7 +97,7 @@ namespace octronic::dream
     auto& sm = mStorageManager.get();
     auto& dir = sm.openDirectory(dataPath);
 
-    if (dir.exists())
+    if (!dir.exists())
     {
       if (!assetTypeDirectoryExists(assetTypeEnum))
       {
@@ -107,6 +107,7 @@ namespace octronic::dream
           return false;
         }
       }
+
       if(!dir.create())
       {
         LOG_ERROR("ProjectDirectory: Unable to create asset path {}",dataPath);
@@ -359,7 +360,7 @@ namespace octronic::dream
     return false;
   }
 
-  ProjectDefinition
+  json
   ProjectDirectory::readProjectDefinition
   ()
   const
@@ -384,7 +385,7 @@ namespace octronic::dream
         {
           json projectJson = json::parse(projectJsonStr);
           LOG_DEBUG("ProjectDirectory: Project path is: \"{}\"", mBasePath);
-          return ProjectDefinition(projectJson);
+          return projectJson;
         }
         catch (const json::parse_error& ex)
         {
@@ -400,7 +401,7 @@ namespace octronic::dream
     throw std::exception();
   }
 
-  ProjectDefinition
+  json
   ProjectDirectory::createProjectDefinition
   ()
   const
@@ -412,7 +413,24 @@ namespace octronic::dream
       throw std::runtime_error(ss.str());
     }
 
-    auto pDef = ProjectDefinition(Constants::PROJECT_DEFAULT_NAME);
+    json js;
+    js[Constants::NAME] = Constants::PROJECT_DEFAULT_NAME;
+    js[Constants::UUID] = Uuid::generateUuid();
+    js[Constants::PROJECT_STARTUP_SCENE] = Uuid::INVALID;
+    js[Constants::PROJECT_ANIMATION_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_AUDIO_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_FONT_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_MATERIAL_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_MODEL_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_PATH_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_PHYSICS_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_SCRIPT_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_SHADER_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_TEXTURE_ASSET_ARRAY] = json::array();
+    js[Constants::PROJECT_SCENE_ARRAY] = json::array();
+    js[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY] = json::array();
+
+    ProjectDefinition pTemp(js);
 
     if(!baseDirectoryExists())
     {
@@ -421,9 +439,9 @@ namespace octronic::dream
 
     createAllAssetDirectories();
 
-    saveProject(pDef);
+    saveProject(pTemp);
 
-    return pDef;
+    return js;
 
   }
 

@@ -227,8 +227,6 @@ namespace octronic::dream
     return mProjectDefinition;
   }
 
-
-
   optional<SceneEntityDefinition>&
   SceneDefinition::getRootSceneEntityDefinition
   ()

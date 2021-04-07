@@ -25,7 +25,7 @@
 #include "Components/Graphics/Font/FontRuntime.h"
 #include "Components/Graphics/Model/ModelRuntime.h"
 #include "Components/Path/PathRuntime.h"
-#include "Components/Physics/PhysicsObjectRuntime.h"
+#include "Components/Physics/PhysicsRuntime.h"
 #include "Components/Script/ScriptRuntime.h"
 #include "Components/Graphics/Texture/TextureRuntime.h"
 
@@ -37,6 +37,7 @@
 using std::vector;
 using std::function;
 using std::shared_ptr;
+using std::unique_ptr;
 using std::map;
 using nlohmann::json;
 using std::reference_wrapper;
@@ -55,7 +56,7 @@ namespace octronic::dream
   class FontDefinition;
   class ModelDefinition;
   class PathDefinition;
-  class PhysicsObjectDefinition;
+  class PhysicsDefinition;
   class ScriptDefinition;
   class TextureDefinition;
 
@@ -82,7 +83,7 @@ namespace octronic::dream
     bool createAudioRuntime(AudioDefinition&);
     bool createModelRuntime(ModelDefinition&);
     bool createScriptRuntime(ScriptDefinition&);
-    bool createPhysicsObjectRuntime(PhysicsObjectDefinition&);
+    bool createPhysicsRuntime(PhysicsDefinition&);
     bool createFontRuntime(FontDefinition&);
     bool createTextureRuntime(TextureDefinition&);
 
@@ -90,7 +91,7 @@ namespace octronic::dream
     // Discrete Assets
     AnimationRuntime& getAnimationRuntime();
     PathRuntime&  getPathRuntime();
-    PhysicsObjectRuntime& getPhysicsObjectRuntime();
+    PhysicsRuntime& getPhysicsRuntime();
     // Shared Assets
     FontRuntime& getFontRuntime() const;
     AudioRuntime& getAudioRuntime() const;
@@ -103,7 +104,7 @@ namespace octronic::dream
     bool hasAudioRuntime() const;
     bool hasModelRuntime() const;
     bool hasScriptRuntime() const;
-    bool hasPhysicsObjectRuntime() const;
+    bool hasPhysicsRuntime() const;
     bool hasFontRuntime() const;
     bool hasTextureRuntime() const;
 
@@ -121,7 +122,7 @@ namespace octronic::dream
     size_t countChildren() const;
     void removeChildRuntime(EntityRuntime&);
     EntityRuntime& createChildRuntime(SceneEntityDefinition&);
-    vector<EntityRuntime>& getChildRuntimes();
+    vector<reference_wrapper<EntityRuntime>> getChildRuntimes() const;
     bool isChildOf(EntityRuntime&) const;
 
     void setScriptInitialised(bool i);
@@ -145,7 +146,7 @@ namespace octronic::dream
     void removePathRuntime();
     void removeModelRuntime();
     void removeScriptRuntime();
-    void removePhysicsObjectRuntime();
+    void removePhysicsRuntime();
     void removeFontRuntime();
     void removeTextureRuntime();
 
@@ -186,12 +187,12 @@ namespace octronic::dream
     reference_wrapper<SceneRuntime> mSceneRuntime;
     reference_wrapper<TemplateEntityDefinition> mTemplateEntityDefinition;
     optional<reference_wrapper<EntityRuntime>> mParentEntityRuntime;
-    vector<EntityRuntime> mChildRuntimes;
+    vector<unique_ptr<EntityRuntime>> mChildRuntimes;
 
     // Discrete Assets =====================================================
     optional<AnimationRuntime> mAnimationRuntime;
     optional<PathRuntime> mPathRuntime;
-    optional<PhysicsObjectRuntime> mPhysicsObjectRuntime;
+    optional<PhysicsRuntime> mPhysicsRuntime;
 
     // Shared Runtimes =====================================================
     // Audio

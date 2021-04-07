@@ -83,7 +83,7 @@ namespace octronic::dream
         bool isTypeScript() const;
         bool isTypeShader() const;
         bool isTypePath() const;
-        bool isTypePhysicsObject() const;
+        bool isTypePhysics() const;
         bool isTypeTexture() const;
 
     protected:

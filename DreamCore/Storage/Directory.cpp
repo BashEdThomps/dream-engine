@@ -161,7 +161,8 @@ namespace octronic::dream
   ()
   const
   {
-    DIR* dir = opendir(mPath.c_str());
+    string tmp = mPath;
+    DIR* dir = opendir(tmp.c_str());
     if (dir)
     {
       closedir(dir);

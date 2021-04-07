@@ -49,7 +49,7 @@
 
 // Physics
 #include "Components/Physics/PhysicsComponent.h"
-#include "Components/Physics/PhysicsObjectDefinition.h"
+#include "Components/Physics/PhysicsDefinition.h"
 
 // Path
 #include "Components/Path/PathDefinition.h"

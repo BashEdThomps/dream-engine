@@ -121,7 +121,7 @@ namespace octronic::dream::tool
 
       ImGui::Separator();
 
-      if (ImGui::Button("Nice",ImVec2(-1,0)))
+      if (ImGui::Button("OK",ImVec2(-1,0)))
       {
         mSaveProjectSuccess = false;
         ImGui::CloseCurrentPopup();
@@ -595,9 +595,10 @@ namespace octronic::dream::tool
 
           // Definitions Names Vector
           vector<string> sceneDefNames;
-          auto& scenesVector = pDef.getSceneDefinitionsVector();
-          for (auto& scene : scenesVector)
+          auto scenesVector = pDef.getSceneDefinitionsVector();
+          for (auto& sceneWrap : scenesVector)
           {
+            auto& scene = sceneWrap.get();
             sceneDefNames.push_back(scene.getName());
           }
 

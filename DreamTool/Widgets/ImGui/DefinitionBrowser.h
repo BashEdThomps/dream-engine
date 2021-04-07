@@ -12,14 +12,15 @@ namespace octronic::dream
 
 namespace octronic::dream::tool
 {
-  class AssetBrowser : public ImGuiWidget
+  class DefinitionBrowser : public ImGuiWidget
   {
   public:
-    AssetBrowser(DreamToolContext& proj);
-    ~AssetBrowser() override;
+    DefinitionBrowser(DreamToolContext& proj);
+    ~DefinitionBrowser() override;
     void draw() override;
 
   private:
+    string mCurrentOpenHeader;
     const ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
     const ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
     vector<reference_wrapper<Definition>> mSelectedNodes;

@@ -3,7 +3,7 @@
 #include "Common/Logger.h"
 #include "Project/ProjectRuntime.h"
 
-#include "PhysicsObjectRuntime.h"
+#include "PhysicsRuntime.h"
 #include "PhysicsComponent.h"
 
 namespace octronic::dream
@@ -11,7 +11,7 @@ namespace octronic::dream
   // PhysicsAddObjectTask ======================================================
 
   PhysicsAddObjectTask::PhysicsAddObjectTask
-  (ProjectRuntime& pr, PhysicsObjectRuntime& rt)
+  (ProjectRuntime& pr, PhysicsRuntime& rt)
     : Task(pr, "PhysicsAddObjectTask"),
       mRuntime(rt)
   {
@@ -24,12 +24,12 @@ namespace octronic::dream
   {
     auto& pComp = getProjectRuntime().getPhysicsComponent();
     LOG_TRACE("PhysicsAddObjectTask: Executing {}",getID());
-    pComp.addPhysicsObjectRuntime(mRuntime);
+    pComp.addPhysicsRuntime(mRuntime);
     getPoRuntime().setInPhysicsWorld(true);
     setState(TaskState::TASK_STATE_COMPLETED);
   }
 
-  PhysicsObjectRuntime& PhysicsAddObjectTask::getPoRuntime() const
+  PhysicsRuntime& PhysicsAddObjectTask::getPoRuntime() const
   {
     return mRuntime.get();
   }

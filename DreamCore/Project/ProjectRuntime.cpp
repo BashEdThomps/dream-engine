@@ -261,8 +261,9 @@ namespace octronic::dream
 
     pushComponentTasks();
 
-    for (auto& rt : mSceneRuntimeVector)
+    for (auto& rt_ptr : mSceneRuntimeVector)
     {
+      auto& rt = *rt_ptr;
       switch (rt.getState())
       {
         case SceneState::SCENE_STATE_TO_LOAD:
@@ -407,8 +408,8 @@ namespace octronic::dream
   {
     for (auto& srt : mSceneRuntimeVector)
     {
-      if (srt.getState() >= SceneState::SCENE_STATE_LOADED &&
-          srt.getState() < SceneState::SCENE_STATE_DESTROYED)
+      if (srt->getState() >= SceneState::SCENE_STATE_LOADED &&
+          srt->getState() < SceneState::SCENE_STATE_DESTROYED)
       {
         return true;
       }
@@ -423,7 +424,7 @@ namespace octronic::dream
   {
     for (auto& srt : mSceneRuntimeVector)
     {
-      if (srt.getUuid() == uuid) return true;
+      if (srt->getUuid() == uuid) return true;
     }
     return false;
   }
@@ -537,7 +538,7 @@ namespace octronic::dream
   SceneRuntime&
   ProjectRuntime::createSceneRuntime(SceneDefinition& sd)
   {
-    return mSceneRuntimeVector.emplace_back(*this, sd);
+    return *mSceneRuntimeVector.emplace_back(make_unique<SceneRuntime>(*this, sd));
   }
 
   optional<reference_wrapper<SceneRuntime>>
@@ -555,9 +556,9 @@ namespace octronic::dream
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
     for (auto& sr : mSceneRuntimeVector)
     {
-      if (sr.getUuid() == uuid)
+      if (sr->getUuid() == uuid)
       {
-        return sr;
+        return *sr;
       }
     }
     throw std::exception();
@@ -582,7 +583,7 @@ namespace octronic::dream
     vector<reference_wrapper<SceneRuntime>> ret;
     for(auto& sr : mSceneRuntimeVector)
     {
-      ret.push_back(sr);
+      ret.push_back(*sr);
     }
     return ret;
   }
@@ -592,8 +593,8 @@ namespace octronic::dream
   (const SceneRuntime& rt)
   {
     std::remove_if(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(),
-		[&](const SceneRuntime& next)
-		{ return next.getUuid() == rt.getUuid();});
+		[&](unique_ptr<SceneRuntime>& next)
+		{ return next->getUuid() == rt.getUuid();});
   }
 
   ProjectDirectory&

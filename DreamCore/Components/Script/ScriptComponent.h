@@ -73,7 +73,6 @@ namespace octronic::dream
 
     // Base Classes
     void exposeRuntime();
-    void exposeComponent();
     void exposeDefinition();
     void exposeAssetRuntime();
     void exposeSharedAssetRuntime();
@@ -85,7 +84,7 @@ namespace octronic::dream
     void exposeEntityRuntime();
     void exposeModelRuntime();
     void exposePathRuntime();
-    void exposePhysicsObjectRuntime();
+    void exposePhysicsRuntime();
     void exposeProjectRuntime();
     void exposeSceneRuntime();
     void exposeScriptRuntime();

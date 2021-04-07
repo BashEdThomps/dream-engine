@@ -55,7 +55,7 @@ namespace octronic::dream
     const static string PROJECT_MATERIAL_ASSET_ARRAY;
     const static string PROJECT_MODEL_ASSET_ARRAY;
     const static string PROJECT_PATH_ASSET_ARRAY;
-    const static string PROJECT_PHYSICS_OBJECT_ASSET_ARRAY;
+    const static string PROJECT_PHYSICS_ASSET_ARRAY;
     const static string PROJECT_SCRIPT_ASSET_ARRAY;
     const static string PROJECT_SHADER_ASSET_ARRAY;
     const static string PROJECT_TEXTURE_ASSET_ARRAY;
@@ -72,7 +72,7 @@ namespace octronic::dream
     const static string ASSET_TYPE_FONT;
     const static string ASSET_TYPE_MODEL;
     const static string ASSET_TYPE_PATH;
-    const static string ASSET_TYPE_PHYSICS_OBJECT;
+    const static string ASSET_TYPE_PHYSICS;
     const static string ASSET_TYPE_SCRIPT;
     const static string ASSET_TYPE_SHADER;
     const static string ASSET_TYPE_TEXTURE;
@@ -102,7 +102,7 @@ namespace octronic::dream
     const static string ASSET_TYPE_AUDIO_READABLE;
     const static string ASSET_TYPE_FONT_READABLE;
     const static string ASSET_TYPE_MODEL_READABLE;
-    const static string ASSET_TYPE_PHYSICS_OBJECT_READABLE;
+    const static string ASSET_TYPE_PHYSICS_READABLE;
     const static string ASSET_TYPE_SCRIPT_READABLE;
     const static string ASSET_TYPE_SHADER_READABLE;
     const static string ASSET_TYPE_TEXTURE_READABLE;

@@ -31,7 +31,7 @@
 #include "Components/Animation/AnimationRuntime.h"
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Audio/AudioRuntime.h"
-#include "Components/Physics/PhysicsObjectRuntime.h"
+#include "Components/Physics/PhysicsRuntime.h"
 #include "Components/Path/PathRuntime.h"
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Script/ScriptRuntime.h"

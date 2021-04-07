@@ -29,19 +29,19 @@
 namespace octronic::dream
 {
     class PhysicsMotionState;
-    class PhysicsObjectDefinition;
+    class PhysicsDefinition;
     class PhysicsComponent;
     class ModelRuntime;
     class EntityRuntime;
 
-    class PhysicsObjectRuntime : public DiscreteAssetRuntime
+    class PhysicsRuntime : public DiscreteAssetRuntime
     {
     public:
-        PhysicsObjectRuntime(ProjectRuntime&, PhysicsObjectDefinition&, EntityRuntime&);
+        PhysicsRuntime(ProjectRuntime&, PhysicsDefinition&, EntityRuntime&);
 
         bool loadFromDefinition() override;
 
-        btCollisionShape* createCollisionShape(PhysicsObjectDefinition&);
+        btCollisionShape* createCollisionShape(PhysicsDefinition&);
         btCollisionShape* getCollisionShape() const;
         btRigidBody* getRigidBody() const;
         void getWorldTransform(btTransform&);

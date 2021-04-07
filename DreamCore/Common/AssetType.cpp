@@ -7,7 +7,7 @@
 #include "Components/Graphics/Material/MaterialDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
 #include "Components/Path/PathDefinition.h"
-#include "Components/Physics/PhysicsObjectDefinition.h"
+#include "Components/Physics/PhysicsDefinition.h"
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Graphics/Shader/ShaderDefinition.h"
 #include "Components/Graphics/Texture/TextureDefinition.h"
@@ -24,7 +24,7 @@ namespace octronic::dream
     {ASSET_TYPE_ENUM_MATERIAL,         Constants::ASSET_TYPE_MATERIAL},
     {ASSET_TYPE_ENUM_MODEL,            Constants::ASSET_TYPE_MODEL},
     {ASSET_TYPE_ENUM_PATH,             Constants::ASSET_TYPE_PATH},
-    {ASSET_TYPE_ENUM_PHYSICS_OBJECT,   Constants::ASSET_TYPE_PHYSICS_OBJECT},
+    {ASSET_TYPE_ENUM_PHYSICS,   Constants::ASSET_TYPE_PHYSICS},
     {ASSET_TYPE_ENUM_SCRIPT,           Constants::ASSET_TYPE_SCRIPT},
     {ASSET_TYPE_ENUM_SHADER,           Constants::ASSET_TYPE_SHADER},
     {ASSET_TYPE_ENUM_TEXTURE,          Constants::ASSET_TYPE_TEXTURE}
@@ -38,7 +38,7 @@ namespace octronic::dream
     {ASSET_TYPE_ENUM_MATERIAL,         Constants::ASSET_TYPE_MATERIAL_READABLE},
     {ASSET_TYPE_ENUM_MODEL,            Constants::ASSET_TYPE_MODEL_READABLE},
     {ASSET_TYPE_ENUM_PATH,             Constants::ASSET_TYPE_PATH_READABLE},
-    {ASSET_TYPE_ENUM_PHYSICS_OBJECT,   Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE},
+    {ASSET_TYPE_ENUM_PHYSICS,   Constants::ASSET_TYPE_PHYSICS_READABLE},
     {ASSET_TYPE_ENUM_SCRIPT,           Constants::ASSET_TYPE_SCRIPT_READABLE},
     {ASSET_TYPE_ENUM_SHADER,           Constants::ASSET_TYPE_SHADER_READABLE},
     {ASSET_TYPE_ENUM_TEXTURE,          Constants::ASSET_TYPE_TEXTURE_READABLE}
@@ -56,7 +56,7 @@ namespace octronic::dream
       case ASSET_TYPE_ENUM_FONT:           return Constants::ASSET_TYPE_FONT;
       case ASSET_TYPE_ENUM_MATERIAL:       return Constants::ASSET_TYPE_MATERIAL;
       case ASSET_TYPE_ENUM_MODEL:          return Constants::ASSET_TYPE_MODEL;
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT: return Constants::ASSET_TYPE_PHYSICS_OBJECT;
+      case ASSET_TYPE_ENUM_PHYSICS: return Constants::ASSET_TYPE_PHYSICS;
       case ASSET_TYPE_ENUM_SCRIPT:         return Constants::ASSET_TYPE_SCRIPT;
       case ASSET_TYPE_ENUM_SHADER:         return Constants::ASSET_TYPE_SHADER;
       case ASSET_TYPE_ENUM_TEXTURE:        return Constants::ASSET_TYPE_TEXTURE;
@@ -82,8 +82,8 @@ namespace octronic::dream
       return ASSET_TYPE_ENUM_MODEL;
     else if (type == Constants::ASSET_TYPE_PATH || type == Constants::ASSET_TYPE_PATH_READABLE)
       return ASSET_TYPE_ENUM_PATH;
-    else if (type == Constants::ASSET_TYPE_PHYSICS_OBJECT || type == Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE)
-      return ASSET_TYPE_ENUM_PHYSICS_OBJECT;
+    else if (type == Constants::ASSET_TYPE_PHYSICS || type == Constants::ASSET_TYPE_PHYSICS_READABLE)
+      return ASSET_TYPE_ENUM_PHYSICS;
     else if (type == Constants::ASSET_TYPE_SCRIPT || type == Constants::ASSET_TYPE_SCRIPT_READABLE)
       return ASSET_TYPE_ENUM_SCRIPT;
     else if (type == Constants::ASSET_TYPE_SHADER || type == Constants::ASSET_TYPE_SHADER_READABLE)
@@ -110,8 +110,8 @@ namespace octronic::dream
       return Constants::ASSET_TYPE_MODEL_READABLE;
     else if (type == Constants::ASSET_TYPE_PATH)
       return Constants::ASSET_TYPE_PATH_READABLE;
-    else if (type == Constants::ASSET_TYPE_PHYSICS_OBJECT)
-      return Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE;
+    else if (type == Constants::ASSET_TYPE_PHYSICS)
+      return Constants::ASSET_TYPE_PHYSICS_READABLE;
     else if (type == Constants::ASSET_TYPE_SCRIPT)
       return Constants::ASSET_TYPE_SCRIPT_READABLE;
     else if (type == Constants::ASSET_TYPE_SHADER)

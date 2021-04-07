@@ -48,7 +48,7 @@ namespace octronic::dream::tool
           mScenePropertiesPanel.draw();
           break;
         case PropertyType_SceneEntity:
-          mTemplateEntityPropertiesPanel.draw();
+          mSceneEntityPropertiesPanel.draw();
           break;
         case PropertyType_TemplateEntity:
           mTemplateEntityPropertiesPanel.draw();

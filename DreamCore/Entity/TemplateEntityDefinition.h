@@ -45,7 +45,7 @@ namespace octronic::dream
 
     TemplateEntityDefinition& duplicateDefinition();
 
-    unsigned long getSelectedAssetDefinitionIndex(AssetType) const;
+    int getSelectedAssetDefinitionIndex(AssetType) const;
     void setSelectedAssetDefinitionIndex(AssetType, unsigned long index);
     UuidType getAssetDefinition(AssetType) const;
     void setAssetDefinition(AssetType, UuidType uuid);

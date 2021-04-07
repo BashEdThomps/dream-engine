@@ -17,31 +17,10 @@
 #include "Common/Logger.h"
 #include "Common/Constants.h"
 
+using std::make_unique;
+
 namespace octronic::dream
 {
-  // Static ====================================================================
-
-  ProjectDefinition::ProjectDefinition
-  (const string &name)
-    : Definition(json::object())
-  {
-    LOG_TRACE("ProjectDefinition: Constructing New ProjectDefinition");
-    mJson[Constants::NAME] = name;
-    mJson[Constants::UUID] = Uuid::generateUuid();
-    mJson[Constants::PROJECT_STARTUP_SCENE] = Uuid::INVALID;
-    mJson[Constants::PROJECT_ANIMATION_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_AUDIO_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_FONT_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_MATERIAL_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_MODEL_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_PATH_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_SCRIPT_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_SHADER_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_TEXTURE_ASSET_ARRAY] = json::array();
-    mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
-    mJson[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY] = json::array();
-  }
 
   ProjectDefinition::ProjectDefinition
   (const json& data)
@@ -60,73 +39,73 @@ namespace octronic::dream
     mJson[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY] = json::array();
     for (auto& ed : mTemplateEntityDefinitions)
     {
-      mJson[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY].push_back(ed.toJson());
+      mJson[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY].push_back(ed->toJson());
     }
 
     mJson[Constants::PROJECT_ANIMATION_ASSET_ARRAY] = json::array();
     for (auto& ad : mAnimationDefinitions)
     {
-      mJson[Constants::PROJECT_ANIMATION_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_ANIMATION_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_AUDIO_ASSET_ARRAY] = json::array();
     for (auto& ad : mAudioDefinitions)
     {
-      mJson[Constants::PROJECT_AUDIO_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_AUDIO_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_FONT_ASSET_ARRAY] = json::array();
     for (auto& ad : mFontDefinitions)
     {
-      mJson[Constants::PROJECT_FONT_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_FONT_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_MATERIAL_ASSET_ARRAY] = json::array();
     for (auto& ad : mMaterialDefinitions)
     {
-      mJson[Constants::PROJECT_MATERIAL_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_MATERIAL_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_MODEL_ASSET_ARRAY] = json::array();
     for (auto& ad : mModelDefinitions)
     {
-      mJson[Constants::PROJECT_MODEL_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_MODEL_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_PATH_ASSET_ARRAY] = json::array();
     for (auto& ad : mPathDefinitions)
     {
-      mJson[Constants::PROJECT_PATH_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_PATH_ASSET_ARRAY].push_back(ad->toJson());
     }
 
-    mJson[Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY] = json::array();
-    for (auto& ad : mPhysicsObjectDefinitions)
+    mJson[Constants::PROJECT_PHYSICS_ASSET_ARRAY] = json::array();
+    for (auto& ad : mPhysicsDefinitions)
     {
-      mJson[Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_PHYSICS_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_SCRIPT_ASSET_ARRAY] = json::array();
     for (auto& ad : mScriptDefinitions)
     {
-      mJson[Constants::PROJECT_SCRIPT_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_SCRIPT_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_SHADER_ASSET_ARRAY] = json::array();
     for (auto& ad : mShaderDefinitions)
     {
-      mJson[Constants::PROJECT_SHADER_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_SHADER_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_TEXTURE_ASSET_ARRAY] = json::array();
     for (auto& ad : mTextureDefinitions)
     {
-      mJson[Constants::PROJECT_TEXTURE_ASSET_ARRAY].push_back(ad.toJson());
+      mJson[Constants::PROJECT_TEXTURE_ASSET_ARRAY].push_back(ad->toJson());
     }
 
     mJson[Constants::PROJECT_SCENE_ARRAY] = json::array();
     for (auto& sd : mSceneDefinitions)
     {
-      mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd.toJson());
+      mJson[Constants::PROJECT_SCENE_ARRAY].push_back(sd->toJson());
     }
 
     return mJson;
@@ -138,67 +117,75 @@ namespace octronic::dream
   ProjectDefinition::removeAssetDefinition
   (AssetDefinition& ad)
   {
-    static auto byUuid = [&](AssetDefinition& next) {return next.getUuid() == ad.getUuid();};
-
     switch(ad.getAssetType())
     {
       case ASSET_TYPE_ENUM_ANIMATION:
       {
-        auto itr = find_if(mAnimationDefinitions.begin(), mAnimationDefinitions.end(), byUuid);
+        auto itr = find_if(mAnimationDefinitions.begin(), mAnimationDefinitions.end(),
+                           [&](unique_ptr<AnimationDefinition>& next) {return next->getUuid() == ad.getUuid();});
         if (itr!=mAnimationDefinitions.end()) mAnimationDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_AUDIO:
       {
-        auto itr = find_if(mAudioDefinitions.begin(), mAudioDefinitions.end(), byUuid);
+        auto itr = find_if(mAudioDefinitions.begin(), mAudioDefinitions.end(),
+                           [&](unique_ptr<AudioDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mAudioDefinitions.end()) mAudioDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_FONT:
       {
-        auto itr = find_if(mFontDefinitions.begin(), mFontDefinitions.end(), byUuid);
+        auto itr = find_if(mFontDefinitions.begin(), mFontDefinitions.end(),
+                           [&](unique_ptr<FontDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mFontDefinitions.end()) mFontDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_MATERIAL:
       {
-        auto itr = find_if(mMaterialDefinitions.begin(), mMaterialDefinitions.end(), byUuid);
+        auto itr = find_if(mMaterialDefinitions.begin(), mMaterialDefinitions.end(),
+                           [&](unique_ptr<MaterialDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mMaterialDefinitions.end()) mMaterialDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_MODEL:
       {
-        auto itr = find_if(mModelDefinitions.begin(), mModelDefinitions.end(), byUuid);
+        auto itr = find_if(mModelDefinitions.begin(), mModelDefinitions.end(),
+                           [&](unique_ptr<ModelDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mModelDefinitions.end()) mModelDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_PATH:
       {
-        auto itr = find_if(mPathDefinitions.begin(), mPathDefinitions.end(), byUuid);
+        auto itr = find_if(mPathDefinitions.begin(), mPathDefinitions.end(),
+                           [&](unique_ptr<PathDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mPathDefinitions.end()) mPathDefinitions.erase(itr);
         break;
       }
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+      case ASSET_TYPE_ENUM_PHYSICS:
       {
-        auto itr = find_if(mPhysicsObjectDefinitions.begin(), mPhysicsObjectDefinitions.end(), byUuid);
-        if (itr!=mPhysicsObjectDefinitions.end()) mPhysicsObjectDefinitions.erase(itr);
+        auto itr = find_if(mPhysicsDefinitions.begin(), mPhysicsDefinitions.end(),
+                           [&](unique_ptr<PhysicsDefinition>& next) {return next->getUuid() == ad.getUuid();});
+        if (itr!=mPhysicsDefinitions.end()) mPhysicsDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_SCRIPT:
       {
-        auto itr = find_if(mScriptDefinitions.begin(), mScriptDefinitions.end(), byUuid);
+        auto itr = find_if(mScriptDefinitions.begin(), mScriptDefinitions.end(),
+                           [&](unique_ptr<ScriptDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mScriptDefinitions.end()) mScriptDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_SHADER:
       {
-        auto itr = find_if(mShaderDefinitions.begin(), mShaderDefinitions.end(), byUuid);
+        auto itr = find_if(mShaderDefinitions.begin(), mShaderDefinitions.end(),
+                           [&](unique_ptr<ShaderDefinition>& next) {return next->getUuid() == ad.getUuid();} );
         if (itr!=mShaderDefinitions.end()) mShaderDefinitions.erase(itr);
         break;
       }
       case ASSET_TYPE_ENUM_TEXTURE:
       {
-        auto itr = find_if(mTextureDefinitions.begin(), mTextureDefinitions.end(), byUuid);
+        auto itr = find_if(mTextureDefinitions.begin(), mTextureDefinitions.end(),
+                           [&](unique_ptr<TextureDefinition>& next) {return next->getUuid() == ad.getUuid();});
         if (itr!=mTextureDefinitions.end()) mTextureDefinitions.erase(itr);
         break;
       }
@@ -215,29 +202,187 @@ namespace octronic::dream
   }
 
   optional<reference_wrapper<AssetDefinition>>
-  ProjectDefinition::getAssetDefinitionByPredicate
-  (AssetType type, std::function<bool(AssetDefinition&)> fn)
-  {
-    auto v = getAssetDefinitionsVector(type);
-    auto itr = find_if(v.begin(), v.end(), fn);
-    if (itr != v.end()) return (*itr).get();
-    return std::nullopt;
-  }
-
-  optional<reference_wrapper<AssetDefinition>>
   ProjectDefinition::getAssetDefinitionByName
   (AssetType type, const string& name)
   {
-    auto predicate = [&](AssetDefinition& ad) { return ad.getName() == name; };
-    return getAssetDefinitionByPredicate(type, predicate);
+    switch(type)
+    {
+      case ASSET_TYPE_ENUM_ANIMATION:
+      {
+        auto itr = find_if(
+              mAnimationDefinitions.begin(), mAnimationDefinitions.end(),
+              [&](unique_ptr<AnimationDefinition>& next) {return next->getName().compare(name) == 0;});
+        if (itr!=mAnimationDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_AUDIO:
+      {
+        auto itr = find_if(
+              mAudioDefinitions.begin(), mAudioDefinitions.end(),
+              [&](unique_ptr<AudioDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mAudioDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_FONT:
+      {
+        auto itr = find_if(
+              mFontDefinitions.begin(), mFontDefinitions.end(),
+              [&](unique_ptr<FontDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mFontDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_MATERIAL:
+      {
+        auto itr = find_if
+            (mMaterialDefinitions.begin(), mMaterialDefinitions.end(),
+             [&](unique_ptr<MaterialDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mMaterialDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_MODEL:
+      {
+        auto itr = find_if(
+              mModelDefinitions.begin(), mModelDefinitions.end(),
+              [&](unique_ptr<ModelDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mModelDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_PATH:
+      {
+        auto itr = find_if(
+              mPathDefinitions.begin(), mPathDefinitions.end(),
+              [&](unique_ptr<PathDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mPathDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_PHYSICS:
+      {
+        auto itr = find_if(
+              mPhysicsDefinitions.begin(), mPhysicsDefinitions.end(),
+              [&](unique_ptr<PhysicsDefinition>& next) {return next->getName().compare(name) == 0;});
+        if (itr!=mPhysicsDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_SCRIPT:
+      {
+        auto itr = find_if(
+              mScriptDefinitions.begin(), mScriptDefinitions.end(),
+              [&](unique_ptr<ScriptDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mScriptDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_SHADER:
+      {
+        auto itr = find_if(
+              mShaderDefinitions.begin(), mShaderDefinitions.end(),
+              [&](unique_ptr<ShaderDefinition>& next) {return next->getName().compare(name) == 0;} );
+        if (itr!=mShaderDefinitions.end())return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_TEXTURE:
+      {
+        auto itr = find_if(
+              mTextureDefinitions.begin(), mTextureDefinitions.end(),
+              [&](unique_ptr<TextureDefinition>& next) {return next->getName().compare(name) == 0;});
+        if (itr!=mTextureDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_NONE:
+        break;
+    }
+    throw std::exception();
   }
 
   optional<reference_wrapper<AssetDefinition>>
   ProjectDefinition::getAssetDefinitionByUuid
   (AssetType type, UuidType id)
   {
-    auto predicate = [&](AssetDefinition& ad) { return ad.getUuid() == id; };
-    return getAssetDefinitionByPredicate(type, predicate);
+    switch(type)
+    {
+      case ASSET_TYPE_ENUM_ANIMATION:
+      {
+        auto itr = find_if(
+              mAnimationDefinitions.begin(), mAnimationDefinitions.end(),
+              [&](unique_ptr<AnimationDefinition>& next) {return next->getUuid() == id;});
+        if (itr!=mAnimationDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_AUDIO:
+      {
+        auto itr = find_if(
+              mAudioDefinitions.begin(), mAudioDefinitions.end(),
+              [&](unique_ptr<AudioDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mAudioDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_FONT:
+      {
+        auto itr = find_if(
+              mFontDefinitions.begin(), mFontDefinitions.end(),
+              [&](unique_ptr<FontDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mFontDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_MATERIAL:
+      {
+        auto itr = find_if
+            (mMaterialDefinitions.begin(), mMaterialDefinitions.end(),
+             [&](unique_ptr<MaterialDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mMaterialDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_MODEL:
+      {
+        auto itr = find_if(
+              mModelDefinitions.begin(), mModelDefinitions.end(),
+              [&](unique_ptr<ModelDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mModelDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_PATH:
+      {
+        auto itr = find_if(
+              mPathDefinitions.begin(), mPathDefinitions.end(),
+              [&](unique_ptr<PathDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mPathDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_PHYSICS:
+      {
+        auto itr = find_if(
+              mPhysicsDefinitions.begin(), mPhysicsDefinitions.end(),
+              [&](unique_ptr<PhysicsDefinition>& next) {return next->getUuid() == id;});
+        if (itr!=mPhysicsDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_SCRIPT:
+      {
+        auto itr = find_if(
+              mScriptDefinitions.begin(), mScriptDefinitions.end(),
+              [&](unique_ptr<ScriptDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mScriptDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_SHADER:
+      {
+        auto itr = find_if(
+              mShaderDefinitions.begin(), mShaderDefinitions.end(),
+              [&](unique_ptr<ShaderDefinition>& next) {return next->getUuid() == id;} );
+        if (itr!=mShaderDefinitions.end())return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_TEXTURE:
+      {
+        auto itr = find_if(
+              mTextureDefinitions.begin(), mTextureDefinitions.end(),
+              [&](unique_ptr<TextureDefinition>& next) {return next->getUuid() == id;});
+        if (itr!=mTextureDefinitions.end()) return *(*itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_NONE:
+        break;
+    }
+    throw std::exception();
   }
 
   vector<reference_wrapper<AssetDefinition>>
@@ -249,64 +394,34 @@ namespace octronic::dream
     switch(type)
     {
       case ASSET_TYPE_ENUM_ANIMATION:
-        for (auto& def : mAnimationDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mAnimationDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*(def.get())));
         break;
       case ASSET_TYPE_ENUM_AUDIO:
-        for (auto& def : mAudioDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mAudioDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_FONT:
-        for (auto& def : mFontDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
-      break;
+        for (auto& def : mFontDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
+        break;
       case ASSET_TYPE_ENUM_MATERIAL:
-        for (auto& def : mMaterialDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mMaterialDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_MODEL:
-        for (auto& def : mModelDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mModelDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_PATH:
-        for (auto& def : mPathDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mPathDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-        for (auto& def : mPhysicsObjectDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+      case ASSET_TYPE_ENUM_PHYSICS:
+        for (auto& def : mPhysicsDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_SCRIPT:
-        for (auto& def : mScriptDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mScriptDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_SHADER:
-        for (auto& def : mShaderDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mShaderDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_TEXTURE:
-        for (auto& def : mTextureDefinitions)
-        {
-          defs.push_back(reference_wrapper<AssetDefinition>(def));
-        }
+        for (auto& def : mTextureDefinitions) defs.push_back(reference_wrapper<AssetDefinition>(*def.get()));
         break;
       case ASSET_TYPE_ENUM_NONE:
         break;
@@ -315,7 +430,7 @@ namespace octronic::dream
   }
 
   AssetDefinition&
-  ProjectDefinition::createNewAssetDefinition
+  ProjectDefinition::createAssetDefinition
   (AssetType type)
   {
     json assetDefinitionJs;
@@ -330,25 +445,25 @@ namespace octronic::dream
     switch(type)
     {
       case ASSET_TYPE_ENUM_ANIMATION:
-        return mAnimationDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mAnimationDefinitions.emplace_back(make_unique<AnimationDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_AUDIO:
-        return mAudioDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mAudioDefinitions.emplace_back(make_unique<AudioDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_FONT:
-        return mFontDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mFontDefinitions.emplace_back(make_unique<FontDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_MATERIAL:
-        return mMaterialDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mMaterialDefinitions.emplace_back(make_unique<MaterialDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_MODEL:
-        return mModelDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mModelDefinitions.emplace_back(make_unique<ModelDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_PATH:
-        return mPathDefinitions.emplace_back(*this, assetDefinitionJs);
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-        return mPhysicsObjectDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mPathDefinitions.emplace_back(make_unique<PathDefinition>(*this, assetDefinitionJs));
+      case ASSET_TYPE_ENUM_PHYSICS:
+        return *mPhysicsDefinitions.emplace_back(make_unique<PhysicsDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_SCRIPT:
-        return mScriptDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mScriptDefinitions.emplace_back(make_unique<ScriptDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_SHADER:
-        return mShaderDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mShaderDefinitions.emplace_back(make_unique<ShaderDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_TEXTURE:
-        return mTextureDefinitions.emplace_back(*this, assetDefinitionJs);
+        return *mTextureDefinitions.emplace_back(make_unique<TextureDefinition>(*this, assetDefinitionJs));
       case ASSET_TYPE_ENUM_NONE:
         break;
     }
@@ -365,28 +480,123 @@ namespace octronic::dream
     mMaterialDefinitions.clear();
     mModelDefinitions.clear();
     mPathDefinitions.clear();
-    mPhysicsObjectDefinitions.clear();
+    mPhysicsDefinitions.clear();
     mScriptDefinitions.clear();
     mShaderDefinitions.clear();
     mTextureDefinitions.clear();
   }
 
-  unsigned long
+  int
   ProjectDefinition::getAssetDefinitionIndex
   (AssetDefinition& def)
   {
-    auto defs = getAssetDefinitionsVector(def.getAssetType());
-    auto it = std::find_if(defs.begin(), defs.end(),
-                           [&](AssetDefinition& ad) { return ad.getUuid() == def.getUuid(); } );
+    auto id = def.getUuid();
 
-    if (it == defs.end())
+    switch(def.getAssetType())
     {
-      return -1;
+      case ASSET_TYPE_ENUM_ANIMATION:
+      {
+        auto itr = find_if(
+              mAnimationDefinitions.begin(), mAnimationDefinitions.end(),
+              [&](unique_ptr<AnimationDefinition>& next) {return next->getUuid() == id;});
+        if (itr == mAnimationDefinitions.end()) return -1;
+        else return std::distance(mAnimationDefinitions.begin(), itr);
+        break;
+      }
+      case ASSET_TYPE_ENUM_AUDIO:
+      {
+        auto itr = find_if(
+              mAudioDefinitions.begin(), mAudioDefinitions.end(),
+              [&](unique_ptr<AudioDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mAudioDefinitions.end()) return -1;
+        else return std::distance(mAudioDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_FONT:
+      {
+        auto itr = find_if(
+              mFontDefinitions.begin(), mFontDefinitions.end(),
+              [&](unique_ptr<FontDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mFontDefinitions.end()) return -1;
+        else return std::distance(mFontDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_MATERIAL:
+      {
+        auto itr = find_if
+            (mMaterialDefinitions.begin(), mMaterialDefinitions.end(),
+             [&](unique_ptr<MaterialDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mMaterialDefinitions.end()) return -1;
+        else return std::distance(mMaterialDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_MODEL:
+      {
+        auto itr = find_if(
+              mModelDefinitions.begin(), mModelDefinitions.end(),
+              [&](unique_ptr<ModelDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mModelDefinitions.end()) return -1;
+        else return std::distance(mModelDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_PATH:
+      {
+        auto itr = find_if(
+              mPathDefinitions.begin(), mPathDefinitions.end(),
+              [&](unique_ptr<PathDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mPathDefinitions.end()) return -1;
+        else return std::distance(mPathDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_PHYSICS:
+      {
+        auto itr = find_if(
+              mPhysicsDefinitions.begin(), mPhysicsDefinitions.end(),
+              [&](unique_ptr<PhysicsDefinition>& next) {return next->getUuid() == id;});
+        if (itr == mPhysicsDefinitions.end()) return -1;
+        else return std::distance(mPhysicsDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_SCRIPT:
+      {
+        auto itr = find_if(
+              mScriptDefinitions.begin(), mScriptDefinitions.end(),
+              [&](unique_ptr<ScriptDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mScriptDefinitions.end()) return -1;
+        else return std::distance(mScriptDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_SHADER:
+      {
+        auto itr = find_if(
+              mShaderDefinitions.begin(), mShaderDefinitions.end(),
+              [&](unique_ptr<ShaderDefinition>& next) {return next->getUuid() == id;} );
+        if (itr == mShaderDefinitions.end()) return -1;
+        else return std::distance(mShaderDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_TEXTURE:
+      {
+        auto itr = find_if(
+              mTextureDefinitions.begin(), mTextureDefinitions.end(),
+              [&](unique_ptr<TextureDefinition>& next) {return next->getUuid() == id;});
+        if (itr == mTextureDefinitions.end()) return -1;
+        else return std::distance(mTextureDefinitions.begin(), itr);
+
+        break;
+      }
+      case ASSET_TYPE_ENUM_NONE:
+        break;
     }
-    else
-    {
-      return std::distance(defs.begin(), it);
-    }
+    return -1;
   }
 
   optional<reference_wrapper<AssetDefinition>>
@@ -460,9 +670,9 @@ namespace octronic::dream
       }
     }
 
-    if (mJson.find(Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY) != mJson.end())
+    if (mJson.find(Constants::PROJECT_PHYSICS_ASSET_ARRAY) != mJson.end())
     {
-      for (const json& it : mJson[Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY])
+      for (const json& it : mJson[Constants::PROJECT_PHYSICS_ASSET_ARRAY])
       {
         loadSingleAssetDefinition(it);
       }
@@ -503,34 +713,34 @@ namespace octronic::dream
     switch(type)
     {
       case ASSET_TYPE_ENUM_ANIMATION:
-        mAnimationDefinitions.emplace_back(*this, assetDefinitionJs);
+        mAnimationDefinitions.emplace_back(make_unique<AnimationDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_AUDIO:
-        mAudioDefinitions.emplace_back(*this, assetDefinitionJs);
+        mAudioDefinitions.emplace_back(make_unique<AudioDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_FONT:
-        mFontDefinitions.emplace_back(*this, assetDefinitionJs);
+        mFontDefinitions.emplace_back(make_unique<FontDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_MATERIAL:
-        mMaterialDefinitions.emplace_back(*this, assetDefinitionJs);
+        mMaterialDefinitions.emplace_back(make_unique<MaterialDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_MODEL:
-        mModelDefinitions.emplace_back(*this, assetDefinitionJs);
+        mModelDefinitions.emplace_back(make_unique<ModelDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_PATH:
-        mPathDefinitions.emplace_back(*this, assetDefinitionJs);
+        mPathDefinitions.emplace_back(make_unique<PathDefinition>(*this, assetDefinitionJs));
         break;
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-        mPhysicsObjectDefinitions.emplace_back(*this, assetDefinitionJs);
+      case ASSET_TYPE_ENUM_PHYSICS:
+        mPhysicsDefinitions.emplace_back(make_unique<PhysicsDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_SCRIPT:
-        mScriptDefinitions.emplace_back(*this, assetDefinitionJs);
+        mScriptDefinitions.emplace_back(make_unique<ScriptDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_SHADER:
-        mShaderDefinitions.emplace_back(*this, assetDefinitionJs);
+        mShaderDefinitions.emplace_back(make_unique<ShaderDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_TEXTURE:
-        mTextureDefinitions.emplace_back(*this, assetDefinitionJs);
+        mTextureDefinitions.emplace_back(make_unique<TextureDefinition>(*this, assetDefinitionJs));
         break;
       case ASSET_TYPE_ENUM_NONE:
         break;
@@ -549,7 +759,7 @@ namespace octronic::dream
     {
       for (auto& js : mJson[Constants::PROJECT_SCENE_ARRAY])
       {
-        mSceneDefinitions.emplace_back(*this, js);
+        mSceneDefinitions.emplace_back(make_unique<SceneDefinition>(*this, js));
       }
     }
   }
@@ -561,18 +771,14 @@ namespace octronic::dream
     mSceneDefinitions.clear();
   }
 
-  long
+  int
   ProjectDefinition::getSceneDefinitionIndex
   (SceneDefinition& sDef)
   const
   {
     auto it = std::find_if(mSceneDefinitions.begin(), mSceneDefinitions.end(),
-                           [&](const SceneDefinition& next){return next == sDef;});
-    if (it == mSceneDefinitions.end())
-    {
-      return -1;
-    }
-    else
+                           [&](const unique_ptr<SceneDefinition>& next){return *next == sDef;});
+    if (it != mSceneDefinitions.end())
     {
       return std::distance(mSceneDefinitions.begin(), it);
     }
@@ -583,7 +789,7 @@ namespace octronic::dream
   ProjectDefinition::getSceneDefinitionAtIndex
   (int index)
   {
-    return mSceneDefinitions.at(index);
+    return *mSceneDefinitions.at(index);
   }
   void
   ProjectDefinition::setStartupSceneUuid
@@ -618,9 +824,9 @@ namespace octronic::dream
   {
     for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
     {
-      if ((*it).hasName(name))
+      if ((*it)->hasName(name))
       {
-        return (*it);
+        return *(*it);
       }
     }
     return std::nullopt;
@@ -632,19 +838,25 @@ namespace octronic::dream
   {
     for (auto it = begin(mSceneDefinitions); it != end(mSceneDefinitions); it++)
     {
-      if ((*it).hasUuid(uuid))
+      if ((*it)->hasUuid(uuid))
       {
-        return (*it);
+        return *(*it);
       }
     }
     return std::nullopt;
   }
 
-  vector<SceneDefinition>&
+  vector<reference_wrapper<SceneDefinition>>
   ProjectDefinition::getSceneDefinitionsVector
   ()
+  const
   {
-    return mSceneDefinitions;
+    vector<reference_wrapper<SceneDefinition>> ret;
+    for (auto& scene : mSceneDefinitions)
+    {
+      ret.push_back(*scene);
+    }
+    return ret;
   }
 
   void
@@ -654,22 +866,20 @@ namespace octronic::dream
     LOG_DEBUG("ProjectDefinition: Removing SceneDefinition {} from {}",
               sceneDef.getNameAndUuidString(), getNameAndUuidString());
 
-    auto itr = find(mSceneDefinitions.begin(), mSceneDefinitions.end(), sceneDef);
-    if (itr != mSceneDefinitions.end())
-    {
-      mSceneDefinitions.erase(itr);
-    }
+    remove_if(mSceneDefinitions.begin(), mSceneDefinitions.end(),
+              [&](unique_ptr<SceneDefinition>& next)
+    { return next->getUuid() == sceneDef.getUuid(); });
   }
 
   SceneDefinition&
-  ProjectDefinition::createNewSceneDefinition
+  ProjectDefinition::createSceneDefinition
   ()
   {
     json scene;
     scene[Constants::UUID] = Uuid::generateUuid();
     scene[Constants::NAME] = Constants::SCENE_DEFAULT_NAME;
     scene[Constants::SCENE_ROOT_SCENE_ENTITY] = json::object();
-    return mSceneDefinitions.emplace_back(*this, scene);
+    return *mSceneDefinitions.emplace_back(make_unique<SceneDefinition>(*this, scene));
   }
 
   optional<reference_wrapper<SceneDefinition>>
@@ -688,7 +898,7 @@ namespace octronic::dream
     json defJson;
     defJson[Constants::NAME] = Constants::TEMPLATE_ENTITY_DEFAULT_NAME;
     defJson[Constants::UUID] = Uuid::generateUuid();
-    return mTemplateEntityDefinitions.emplace_back(*this,defJson);
+    return *mTemplateEntityDefinitions.emplace_back(make_unique<TemplateEntityDefinition>(*this,defJson));
   }
 
   vector<string>
@@ -698,9 +908,23 @@ namespace octronic::dream
     vector<string> names;
     for (auto& entity : mTemplateEntityDefinitions)
     {
-      names.push_back(entity.getName());
+      names.push_back(entity->getName());
     }
     return names;
+  }
+
+
+  vector<reference_wrapper<TemplateEntityDefinition>>
+  ProjectDefinition::getTemplateEntitiesVector
+  ()
+  const
+  {
+    vector<reference_wrapper<TemplateEntityDefinition>> ret;
+    for (auto& tmpl : mTemplateEntityDefinitions)
+    {
+      ret.push_back(*tmpl);
+    }
+    return ret;
   }
 
   void
@@ -715,7 +939,7 @@ namespace octronic::dream
 
     for (auto& entityJs : mJson[Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY])
     {
-      mTemplateEntityDefinitions.emplace_back(*this, entityJs);
+      mTemplateEntityDefinitions.emplace_back(make_unique<TemplateEntityDefinition>(*this, entityJs));
     }
   }
 
@@ -725,10 +949,10 @@ namespace octronic::dream
   {
     auto itr = find_if(mTemplateEntityDefinitions.begin(),
                        mTemplateEntityDefinitions.end(),
-                       [&](const TemplateEntityDefinition& next)
-    { return next.getUuid() == uuid; });
+                       [&](unique_ptr<TemplateEntityDefinition>& next)
+    { return next->getUuid() == uuid; });
 
-    if (itr != mTemplateEntityDefinitions.end()) return (*itr);
+    if (itr != mTemplateEntityDefinitions.end()) return *(*itr);
 
     return std::nullopt;
   }
@@ -738,9 +962,9 @@ namespace octronic::dream
   (UuidType id)
   {
     remove_if(mTemplateEntityDefinitions.begin(),
-                       mTemplateEntityDefinitions.end(),
-                       [&](const TemplateEntityDefinition& next)
-    { return next.getUuid() == id; });
+              mTemplateEntityDefinitions.end(),
+              [&](unique_ptr<TemplateEntityDefinition>& next)
+    { return next->getUuid() == id; });
 
   }
 
@@ -748,7 +972,7 @@ namespace octronic::dream
   ProjectDefinition::removeTemplateEntityDefinition
   (TemplateEntityDefinition& def)
   {
- 		removeTemplateEntityDefinitionByUuid(def.getUuid());
+    removeTemplateEntityDefinitionByUuid(def.getUuid());
   }
 
 }

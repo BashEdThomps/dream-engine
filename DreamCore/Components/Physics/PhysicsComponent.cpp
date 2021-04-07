@@ -14,7 +14,7 @@
 */
 
 #include "PhysicsComponent.h"
-#include "PhysicsObjectRuntime.h"
+#include "PhysicsRuntime.h"
 #include "PhysicsTasks.h"
 #include "Common/Logger.h"
 #include "Components/Component.h"
@@ -160,8 +160,8 @@ namespace octronic::dream
   }
 
   void
-  PhysicsComponent::removePhysicsObjectRuntime
-  (PhysicsObjectRuntime& obj)
+  PhysicsComponent::removePhysicsRuntime
+  (PhysicsRuntime& obj)
   {
     removeRigidBody(obj.getRigidBody());
   }
@@ -182,8 +182,8 @@ namespace octronic::dream
   }
 
   void
-  PhysicsComponent::addPhysicsObjectRuntime
-  (PhysicsObjectRuntime& physicsObjejct)
+  PhysicsComponent::addPhysicsRuntime
+  (PhysicsRuntime& physicsObjejct)
   {
     addRigidBody(physicsObjejct.getRigidBody());
   }
@@ -259,9 +259,9 @@ namespace octronic::dream
     for (auto& next : flatVector)
     {
       auto& er = next.get();
-      if (er.hasPhysicsObjectRuntime())
+      if (er.hasPhysicsRuntime())
       {
-        auto& nextPO = er.getPhysicsObjectRuntime();
+        auto& nextPO = er.getPhysicsRuntime();
         if (nextPO.getCollisionObject() == collObj)
         {
           return next;

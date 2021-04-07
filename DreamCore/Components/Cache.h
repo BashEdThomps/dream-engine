@@ -10,6 +10,7 @@
 using std::vector;
 using std::string;
 using std::reference_wrapper;
+using std::unique_ptr;
 
 namespace octronic::dream
 {
@@ -57,7 +58,7 @@ namespace octronic::dream
          * @return Reference to the vector of SharedAssetRuntimes managed by
          * this Cache.
          */
-    vector<RuntimeType>& getRuntimeVector();
+    vector<reference_wrapper<RuntimeType>> getRuntimeVector() const;
 
     /**
          * @brief removeRuntime remove a runtime from the cache based on definition
@@ -101,7 +102,7 @@ namespace octronic::dream
     /**
      * @brief Vector of SharedAssetRuntimes managed by this Cache.
      */
-    vector<RuntimeType> mRuntimes;
+    vector<unique_ptr<RuntimeType>> mRuntimes;
 
     /**
      * @brief Pointer to the ProjectRuntime that instanciated this Cache.

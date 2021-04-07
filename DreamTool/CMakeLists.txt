@@ -28,7 +28,7 @@ add_executable (
 	Widgets/ImGui/ImGuiPanel.cpp
 	Widgets/ImGui/SceneStateWindow.cpp
 	Widgets/ImGui/ProjectBrowser.cpp
-	Widgets/ImGui/AssetBrowser.cpp
+	Widgets/ImGui/DefinitionBrowser.cpp
 	Widgets/ImGui/ScriptDebugWindow.cpp
 	Widgets/ImGui/MenuBar.cpp
 	Widgets/ImGui/ImGuiWidget.cpp

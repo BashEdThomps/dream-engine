@@ -9,6 +9,7 @@
 
 using std::stringstream;
 using std::runtime_error;
+using std::make_unique;
 
 namespace octronic::dream
 {
@@ -27,17 +28,17 @@ namespace octronic::dream
     LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file_path);
 
     auto file_itr = std::find_if(mOpenFiles.begin(),mOpenFiles.end(),
-                                 [&](const File& next_file)
-    { return next_file.getPath().compare(file_path) == 0; });
+                                 [&](unique_ptr<File>& next_file)
+    { return next_file->getPath().compare(file_path) == 0; });
 
     if (file_itr != mOpenFiles.end())
     {
-      (*file_itr).incrementUseCount();
-      return (*file_itr);
+      (*file_itr)->incrementUseCount();
+      return *(*file_itr);
     }
-    auto& ret = mOpenFiles.emplace_back(file_path);
-    ret.incrementUseCount();
-    return ret;
+    auto& ret = mOpenFiles.emplace_back(make_unique<File>(file_path));
+    ret->incrementUseCount();
+    return *ret;
   }
 
   void
@@ -47,13 +48,13 @@ namespace octronic::dream
     LOG_TRACE("StorageManager: {} {}", __FUNCTION__, file.getPath());
 
     auto file_itr = std::find_if(mOpenFiles.begin(), mOpenFiles.end(),
-                                 [&](const File& next_file)
-    { return next_file.getPath().compare(file.getPath()) == 0; });
+                                 [&](unique_ptr<File>& next_file)
+    { return next_file->getPath().compare(file.getPath()) == 0; });
 
     if (file_itr != mOpenFiles.end())
     {
-      (*file_itr).decrementUseCount();
-      if ((*file_itr).hasNoUsers())
+      (*file_itr)->decrementUseCount();
+      if ((*file_itr)->hasNoUsers())
       {
         mOpenFiles.erase(file_itr);
         LOG_DEBUG("StorageManager: Closed File {}",file.getPath());
@@ -77,18 +78,18 @@ namespace octronic::dream
     LOG_TRACE("StorageManager: {} {}", __FUNCTION__, path);
 
     auto dir_itr = find_if(mOpenDirectories.begin(), mOpenDirectories.end(),
-          [&](const Directory& next_dir)
-    { return next_dir.getPath().compare(path) == 0; });
+          [&](unique_ptr<Directory>& next_dir)
+    { return next_dir->getPath().compare(path) == 0; });
 
     if (dir_itr != mOpenDirectories.end())
     {
-      (*dir_itr).incrementUseCount();
-      return (*dir_itr);
+      (*dir_itr)->incrementUseCount();
+      return *(*dir_itr);
     }
 
-    auto& ret = mOpenDirectories.emplace_back(*this, path);
-    ret.incrementUseCount();
-    return ret;
+    auto& ret = mOpenDirectories.emplace_back(make_unique<Directory>(*this, path));
+    ret->incrementUseCount();
+    return *ret;
   }
 
   void
@@ -97,13 +98,13 @@ namespace octronic::dream
   {
     LOG_TRACE("StorageManager: {} {}", __FUNCTION__, d.getPath());
     auto dir_itr = std::find_if( mOpenDirectories.begin(), mOpenDirectories.end(),
-                                 [&](const Directory& next_dir)
-    { return next_dir.getPath().compare(d.getPath()) == 0; });
+                                 [&](unique_ptr<Directory>& next_dir)
+    { return next_dir->getPath().compare(d.getPath()) == 0; });
 
     if (dir_itr != mOpenDirectories.end())
     {
-      (*dir_itr).decrementUseCount();
-      if ((*dir_itr).hasNoUsers())
+      (*dir_itr)->decrementUseCount();
+      if ((*dir_itr)->hasNoUsers())
       {
         mOpenDirectories.erase(dir_itr);
         LOG_DEBUG("StorageManager: Closed Directory {}",d.getPath());

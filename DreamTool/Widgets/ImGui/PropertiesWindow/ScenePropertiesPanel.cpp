@@ -28,7 +28,13 @@ namespace octronic::dream::tool
     if (sceneDefOptional)
     {
       auto& sceneDef = static_cast<SceneDefinition&>(sceneDefOptional.value().get());
+      string sceneName = sceneDef.getNameAndUuidString();
+      LOG_TRACE("ScenePropertiesWindow: Viewing Scene {}",sceneName);
+
       auto& pDef = sceneDef.getProjectDefinition();
+      string projName = pDef.getNameAndUuidString();
+      LOG_TRACE("ScenePropertiesWindow: From Project {}",projName);
+
 
       ImGui::SameLine();
 

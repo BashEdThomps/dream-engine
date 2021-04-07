@@ -37,7 +37,7 @@ namespace octronic::dream
   const string Constants::PROJECT_MATERIAL_ASSET_ARRAY = "material_assets";
   const string Constants::PROJECT_MODEL_ASSET_ARRAY = "model_assets";
   const string Constants::PROJECT_PATH_ASSET_ARRAY = "path_assets";
-  const string Constants::PROJECT_PHYSICS_OBJECT_ASSET_ARRAY = "physics_object_assets";
+  const string Constants::PROJECT_PHYSICS_ASSET_ARRAY = "physics_assets";
   const string Constants::PROJECT_SCRIPT_ASSET_ARRAY = "script_assets";
   const string Constants::PROJECT_SHADER_ASSET_ARRAY = "shader_assets";
   const string Constants::PROJECT_TEXTURE_ASSET_ARRAY = "texture_assets";
@@ -54,7 +54,7 @@ namespace octronic::dream
   const string Constants::ASSET_TYPE_AUDIO = "audio";
   const string Constants::ASSET_TYPE_FONT = "font";
   const string Constants::ASSET_TYPE_MODEL = "model";
-  const string Constants::ASSET_TYPE_PHYSICS_OBJECT = "physics_object";
+  const string Constants::ASSET_TYPE_PHYSICS = "physics";
   const string Constants::ASSET_TYPE_SCRIPT = "script";
   const string Constants::ASSET_TYPE_SHADER = "shader";
   const string Constants::ASSET_TYPE_TEXTURE = "texture";
@@ -76,7 +76,7 @@ namespace octronic::dream
   const string Constants::ASSET_TYPE_AUDIO_READABLE = "Audio";
   const string Constants::ASSET_TYPE_FONT_READABLE = "Font";
   const string Constants::ASSET_TYPE_MODEL_READABLE = "Model";
-  const string Constants::ASSET_TYPE_PHYSICS_OBJECT_READABLE = "Physics Object";
+  const string Constants::ASSET_TYPE_PHYSICS_READABLE = "Physics";
   const string Constants::ASSET_TYPE_SCRIPT_READABLE = "Script";
   const string Constants::ASSET_TYPE_SHADER_READABLE = "Shader";
   const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
@@ -301,7 +301,7 @@ namespace octronic::dream
     {AssetType::ASSET_TYPE_ENUM_MATERIAL,{ASSET_FORMAT_DREAM}},
     {AssetType::ASSET_TYPE_ENUM_MODEL,{ASSET_FORMAT_MODEL_ASSIMP}},
     {AssetType::ASSET_TYPE_ENUM_PATH,{ASSET_FORMAT_DREAM}},
-    {AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,{
+    {AssetType::ASSET_TYPE_ENUM_PHYSICS,{
        COLLISION_SHAPE_SPHERE, COLLISION_SHAPE_BOX, COLLISION_SHAPE_CYLINDER,
        COLLISION_SHAPE_CAPSULE, COLLISION_SHAPE_CONE,COLLISION_SHAPE_MULTI_SPHERE,
        COLLISION_SHAPE_CONVEX_HULL, COLLISION_SHAPE_CONVEX_TRIANGLE_MESH,

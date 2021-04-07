@@ -10,6 +10,7 @@ namespace octronic::dream::tool
   GLPreviewWindowComponent::GLPreviewWindowComponent
   (DreamToolContext& project, bool visible)
     : ImGuiWidget(project,visible), WindowComponent(),
+      mFBO(0),
       mTexture(0),
       mDepthBuffer(0),
       mLastWidth(0.f),
@@ -136,7 +137,10 @@ namespace octronic::dream::tool
   void GLPreviewWindowComponent::bindFrameBuffer()
   {
     LOG_TRACE("GLPreviewWindowComponent: {}", __FUNCTION__);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFBO);
+    if (mFBO != 0)
+    {
+    	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFBO);
+    }
     GLCheckError();
   }
 

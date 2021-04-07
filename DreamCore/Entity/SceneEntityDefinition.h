@@ -9,6 +9,7 @@
 using std::reference_wrapper;
 using std::optional;
 using std::vector;
+using std::unique_ptr;
 using glm::vec4;
 
 namespace octronic::dream
@@ -33,7 +34,7 @@ namespace octronic::dream
     SceneEntityDefinition& createChildDefinition();
     SceneEntityDefinition& createChildDefinitionFrom(SceneEntityDefinition&);
     void removeChildDefinition(SceneEntityDefinition&);
-    vector<SceneEntityDefinition>& getChildDefinitionsVector();
+    vector<reference_wrapper<SceneEntityDefinition>> getChildDefinitionsVector() const;
     size_t countChildDefinitions() const;
     SceneEntityDefinition& duplicateDefinition();
     optional<reference_wrapper<SceneEntityDefinition>> getChildDefinitionByUuid(UuidType);
@@ -56,6 +57,6 @@ namespace octronic::dream
   private:
     reference_wrapper<SceneDefinition> mSceneDefinition;
     optional<reference_wrapper<SceneEntityDefinition>> mParentDefinition;
-    vector<SceneEntityDefinition> mChildDefinitions;
+    vector<unique_ptr<SceneEntityDefinition>> mChildDefinitions;
   };
 }

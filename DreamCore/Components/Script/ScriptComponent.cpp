@@ -30,7 +30,7 @@
 #include "Components/Graphics/Shader/ShaderRuntime.h"
 #include "Components/Input/InputComponent.h"
 #include "Components/Physics/PhysicsComponent.h"
-#include "Components/Physics/PhysicsObjectRuntime.h"
+#include "Components/Physics/PhysicsRuntime.h"
 #include "Components/Cache.h"
 #include "Components/Window/WindowComponent.h"
 
@@ -485,33 +485,33 @@ namespace octronic::dream // ===================================================
   }
 
   void
-  ScriptComponent::exposePhysicsObjectRuntime
+  ScriptComponent::exposePhysicsRuntime
   ()
   {
-    debugRegisteringClass("PhysicsObjectRuntime");
+    debugRegisteringClass("PhysicsRuntime");
     sol::state_view stateView(mLuaState);
-    stateView.new_usertype<PhysicsObjectRuntime>(
-          "PhysicsObjectRuntime",
-          "getUuid", &PhysicsObjectRuntime::getUuid,
-          "getMass", &PhysicsObjectRuntime::getMass,
-          "setMass", &PhysicsObjectRuntime::setMass,
-          "getLinearVelocity", &PhysicsObjectRuntime::getLinearVelocity,
-          "setLinearVelocity", &PhysicsObjectRuntime::setLinearVelocity,
-          "setLinearFactor", &PhysicsObjectRuntime::setLinearFactor,
-          "setAngularFactor", &PhysicsObjectRuntime::setAngularFactor,
-          "setAngularVelocity", &PhysicsObjectRuntime::setAngularVelocity,
-          "getRestitution", &PhysicsObjectRuntime::getRestitution,
-          "setRestitution", &PhysicsObjectRuntime::setRestitution,
-          "getFriction", &PhysicsObjectRuntime::getFriction,
-          "setFriction", &PhysicsObjectRuntime::setFriction,
-          "clearForces",&PhysicsObjectRuntime::clearForces,
-          "getCenterOfMassPosition",&PhysicsObjectRuntime::getCenterOfMassPosition,
-          "setCenterOfMassTransformTx",&PhysicsObjectRuntime::setCenterOfMassTransformTx,
-          "setCenterOfMassTransform3f",&PhysicsObjectRuntime::setCenterOfMassTransform3f,
-          "setCenterOfMassTransform3fv",&PhysicsObjectRuntime::setCenterOfMassTransform3fv,
-          "setCenterOfMassTransformMat4",&PhysicsObjectRuntime::setCenterOfMassTransformMat4,
-          "setKinematicObject",&PhysicsObjectRuntime::setKinematic,
-          "setGameModeCharacter",&PhysicsObjectRuntime::setCameraControllableCharacter);
+    stateView.new_usertype<PhysicsRuntime>(
+          "PhysicsRuntime",
+          "getUuid", &PhysicsRuntime::getUuid,
+          "getMass", &PhysicsRuntime::getMass,
+          "setMass", &PhysicsRuntime::setMass,
+          "getLinearVelocity", &PhysicsRuntime::getLinearVelocity,
+          "setLinearVelocity", &PhysicsRuntime::setLinearVelocity,
+          "setLinearFactor", &PhysicsRuntime::setLinearFactor,
+          "setAngularFactor", &PhysicsRuntime::setAngularFactor,
+          "setAngularVelocity", &PhysicsRuntime::setAngularVelocity,
+          "getRestitution", &PhysicsRuntime::getRestitution,
+          "setRestitution", &PhysicsRuntime::setRestitution,
+          "getFriction", &PhysicsRuntime::getFriction,
+          "setFriction", &PhysicsRuntime::setFriction,
+          "clearForces",&PhysicsRuntime::clearForces,
+          "getCenterOfMassPosition",&PhysicsRuntime::getCenterOfMassPosition,
+          "setCenterOfMassTransformTx",&PhysicsRuntime::setCenterOfMassTransformTx,
+          "setCenterOfMassTransform3f",&PhysicsRuntime::setCenterOfMassTransform3f,
+          "setCenterOfMassTransform3fv",&PhysicsRuntime::setCenterOfMassTransform3fv,
+          "setCenterOfMassTransformMat4",&PhysicsRuntime::setCenterOfMassTransformMat4,
+          "setKinematicObject",&PhysicsRuntime::setKinematic,
+          "setGameModeCharacter",&PhysicsRuntime::setCameraControllableCharacter);
   }
 
   void
@@ -535,11 +535,11 @@ namespace octronic::dream // ===================================================
           "getAnimationRuntime",&EntityRuntime::getAnimationRuntime,
           "getAudioRuntime",&EntityRuntime::getAudioRuntime,
           "getModelRuntime",&EntityRuntime::getModelRuntime,
-          "getPhysicsObjectRuntime",&EntityRuntime::getPhysicsObjectRuntime,
+          "getPhysicsRuntime",&EntityRuntime::getPhysicsRuntime,
           "hasPathRuntime",&EntityRuntime::hasPathRuntime,
           "hasAudioRuntime",&EntityRuntime::hasAudioRuntime,
           "hasModelRuntime",&EntityRuntime::hasModelRuntime,
-          "hasPhysicsObjectRuntime",&EntityRuntime::hasPhysicsObjectRuntime,
+          "hasPhysicsRuntime",&EntityRuntime::hasPhysicsRuntime,
           "getDeleted",&EntityRuntime::getDeleted,
           "setDeleted",&EntityRuntime::setDeleted,
           "addEvent",&EntityRuntime::addEvent,
@@ -959,14 +959,6 @@ namespace octronic::dream // ===================================================
   }
 
   void
-  ScriptComponent::exposeComponent()
-  {
-    debugRegisteringClass("Component");
-    sol::state_view stateView(mLuaState);
-    stateView.new_usertype<Component>("Component");
-  }
-
-  void
   ScriptComponent::exposeAssetRuntime()
   {
     debugRegisteringClass("AssetRuntime");
@@ -1009,7 +1001,6 @@ namespace octronic::dream // ===================================================
   {
     // Base Classes
     exposeRuntime();
-    exposeComponent();
     exposeDefinition();
     exposeAssetRuntime();
     exposeSharedAssetRuntime();
@@ -1021,7 +1012,7 @@ namespace octronic::dream // ===================================================
     exposeEntityRuntime();
     exposeModelRuntime();
     exposePathRuntime();
-    exposePhysicsObjectRuntime();
+    exposePhysicsRuntime();
     exposeProjectRuntime();
     exposeSceneRuntime();
     exposeScriptRuntime();
@@ -1056,7 +1047,7 @@ namespace octronic::dream // ===================================================
     auto& scriptCache = getProjectRuntime().getScriptCache();
     for (auto& scriptRuntime : scriptCache.getRuntimeVector())
     {
-      scriptRuntime.pushTasks();
+      scriptRuntime.get().pushTasks();
     }
   }
 

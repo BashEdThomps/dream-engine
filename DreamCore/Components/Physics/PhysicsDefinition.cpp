@@ -9,14 +9,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "PhysicsObjectDefinition.h"
+#include "PhysicsDefinition.h"
 #include "Math/Vector.h"
 
 using std::static_pointer_cast;
 
 namespace octronic::dream
 {
-  PhysicsObjectDefinition::PhysicsObjectDefinition
+  PhysicsDefinition::PhysicsDefinition
   (ProjectDefinition& pd,const json &js)
     : AssetDefinition(pd,js)
   {
@@ -24,14 +24,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setMass
+  PhysicsDefinition::setMass
   (float mass)
   {
     mJson[Constants::ASSET_ATTR_MASS] = mass;
   }
 
   float
-  PhysicsObjectDefinition::getMass
+  PhysicsDefinition::getMass
   ()
   const
   {
@@ -43,14 +43,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setMargin
+  PhysicsDefinition::setMargin
   (float margin)
   {
     mJson[Constants::ASSET_ATTR_MARGIN] = margin;
   }
 
   float
-  PhysicsObjectDefinition::getMargin
+  PhysicsDefinition::getMargin
   ()
   const
   {
@@ -62,14 +62,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setKinematic
+  PhysicsDefinition::setKinematic
   (bool kinematic)
   {
     mJson[Constants::ASSET_ATTR_KINEMATIC] = kinematic;
   }
 
   bool
-  PhysicsObjectDefinition::getKinematic
+  PhysicsDefinition::getKinematic
   ()
   const
   {
@@ -81,14 +81,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setHalfExtents
+  PhysicsDefinition::setHalfExtents
   (const vec3& halfExtent)
   {
     mJson[Constants::ASSET_ATTR_SIZE] = Vector3::toJson(halfExtent);
   }
 
   vec3
-  PhysicsObjectDefinition::getHalfExtents
+  PhysicsDefinition::getHalfExtents
   ()
   const
   {
@@ -100,14 +100,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setNormal
+  PhysicsDefinition::setNormal
   (vec3 n)
   {
     mJson[Constants::ASSET_ATTR_NORMAL] = Vector3::toJson(n);
   }
 
   vec3
-  PhysicsObjectDefinition::getNormal
+  PhysicsDefinition::getNormal
   ()
   const
   {
@@ -119,7 +119,7 @@ namespace octronic::dream
   }
 
   float
-  PhysicsObjectDefinition::getRadius
+  PhysicsDefinition::getRadius
   ()
   const
   {
@@ -131,14 +131,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setRadius
+  PhysicsDefinition::setRadius
   (float rad)
   {
     mJson[Constants::ASSET_ATTR_RADIUS] = rad;
   }
 
   float
-  PhysicsObjectDefinition::getHeight
+  PhysicsDefinition::getHeight
   ()
   const
   {
@@ -149,13 +149,13 @@ namespace octronic::dream
     return mJson[Constants::ASSET_ATTR_HEIGHT];
   }
 
-  void PhysicsObjectDefinition::setHeight(float height)
+  void PhysicsDefinition::setHeight(float height)
   {
     mJson[Constants::ASSET_ATTR_HEIGHT] = height;
   }
 
   float
-  PhysicsObjectDefinition::getConstant
+  PhysicsDefinition::getConstant
   ()
   const
   {
@@ -167,14 +167,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setConstant
+  PhysicsDefinition::setConstant
   (float constant)
   {
     mJson[Constants::ASSET_ATTR_CONSTANT] = constant;
   }
 
   bool
-  PhysicsObjectDefinition::getControllableCharacter
+  PhysicsDefinition::getControllableCharacter
   ()
   const
   {
@@ -186,19 +186,19 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setControllableCharacter
+  PhysicsDefinition::setControllableCharacter
   (bool controllable)
   {
     mJson[Constants::ASSET_ATTR_CONTROLLABLE] = controllable;
   }
 
-  void PhysicsObjectDefinition::setCcdSweptSphereRadius(float rad)
+  void PhysicsDefinition::setCcdSweptSphereRadius(float rad)
   {
     mJson[Constants::ASSET_ATTR_CCD_SPR] = rad;
   }
 
   float
-  PhysicsObjectDefinition::getCcdSweptSphereRadius
+  PhysicsDefinition::getCcdSweptSphereRadius
   ()
   const
   {
@@ -210,7 +210,7 @@ namespace octronic::dream
   }
 
   float
-  PhysicsObjectDefinition::getRestitution
+  PhysicsDefinition::getRestitution
   ()
   const
   {
@@ -222,14 +222,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setRestitution
+  PhysicsDefinition::setRestitution
   (float r)
   {
     mJson[Constants::ASSET_ATTR_RESTITUTION] = r;
   }
 
   float
-  PhysicsObjectDefinition::getFriction
+  PhysicsDefinition::getFriction
   ()
   const
   {
@@ -241,7 +241,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setFriction
+  PhysicsDefinition::setFriction
   (float r)
   {
     mJson[Constants::ASSET_ATTR_FRICTION] = r;
@@ -249,7 +249,7 @@ namespace octronic::dream
 
 
   void
-  PhysicsObjectDefinition::addCompoundChild
+  PhysicsDefinition::addCompoundChild
   (const CompoundChildDefinition& def)
   {
     if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
@@ -260,7 +260,7 @@ namespace octronic::dream
   }
 
   vector<CompoundChildDefinition>
-  PhysicsObjectDefinition::getCompoundChildren
+  PhysicsDefinition::getCompoundChildren
   ()
   {
     vector<CompoundChildDefinition> retval;
@@ -277,7 +277,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::updateCompoundChildTransform
+  PhysicsDefinition::updateCompoundChildTransform
   (const CompoundChildDefinition& def)
   {
     if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
@@ -298,7 +298,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::removeCompoundChild
+  PhysicsDefinition::removeCompoundChild
   (const CompoundChildDefinition& def)
   {
     if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
@@ -318,7 +318,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::makeCompoundChildren
+  PhysicsDefinition::makeCompoundChildren
   ()
   {
     if (mJson.find(Constants::ASSET_ATTR_COMPOUND_CHILDREN) == mJson.end())
@@ -328,7 +328,7 @@ namespace octronic::dream
   }
 
   UuidType
-  PhysicsObjectDefinition::getCollisionModelUuid
+  PhysicsDefinition::getCollisionModelUuid
   ()
   const
   {
@@ -340,14 +340,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setCollisionModelUuid
+  PhysicsDefinition::setCollisionModelUuid
   (UuidType modelUuid)
   {
     mJson[Constants::ASSET_ATTR_COLLISION_MODEL] = modelUuid;
   }
 
   vec3
-  PhysicsObjectDefinition::getLinearFactor
+  PhysicsDefinition::getLinearFactor
   ()
   const
   {
@@ -359,14 +359,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setLinearFactor
+  PhysicsDefinition::setLinearFactor
   (const vec3& lf)
   {
     mJson[Constants::ASSET_ATTR_LINEAR_FENTITY] = Vector3::toJson(lf);
   }
 
   vec3
-  PhysicsObjectDefinition::getAngularFactor
+  PhysicsDefinition::getAngularFactor
   ()
   const
   {
@@ -378,14 +378,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setAngularFactor
+  PhysicsDefinition::setAngularFactor
   (const vec3& af)
   {
     mJson[Constants::ASSET_ATTR_ANGULAR_FENTITY] = Vector3::toJson(af);
   }
 
   vec3
-  PhysicsObjectDefinition::getLinearVelocity
+  PhysicsDefinition::getLinearVelocity
   ()
   const
   {
@@ -397,14 +397,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setLinearVelocity
+  PhysicsDefinition::setLinearVelocity
   (const vec3& lf)
   {
     mJson[Constants::ASSET_ATTR_LINEAR_VELOCITY] = Vector3::toJson(lf);
   }
 
   vec3
-  PhysicsObjectDefinition::getAngularVelocity
+  PhysicsDefinition::getAngularVelocity
   ()
   const
   {
@@ -416,7 +416,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectDefinition::setAngularVelocity
+  PhysicsDefinition::setAngularVelocity
   (const vec3& af)
   {
     mJson[Constants::ASSET_ATTR_ANGULAR_VELOCITY] = Vector3::toJson(af);

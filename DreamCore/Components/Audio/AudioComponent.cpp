@@ -44,7 +44,7 @@ namespace octronic::dream
 			AudioCache& audioCache = pr.getAudioCache();
 			for (auto& audioRuntime : audioCache.getRuntimeVector())
 			{
-			  audioRuntime.pushTasks();
+			  audioRuntime.get().pushTasks();
 			}
     }
   }

@@ -29,11 +29,6 @@ namespace octronic::dream
 
   }
 
-  Component::~Component()
-  {
-
-  }
-
   void
   Component::setProjectRuntime
   (ProjectRuntime& pr)

@@ -152,21 +152,13 @@ namespace octronic::dream
   {
     if (mProjectDirectory)
     {
-      mProjectDefinition = mProjectDirectory.value().readProjectDefinition();
+      auto& pDir = mProjectDirectory.value();
+      mProjectDefinition.emplace(pDir.readProjectDefinition());
 
       if (mProjectDefinition)
       {
-        mProjectRuntime.emplace(mProjectDefinition.value(), mProjectDirectory.value(),
-              getStorageManager(), getWindowComponent(), getAudioComponent());
-
-        if(mProjectRuntime.value().loadFromDefinition())
-        {
-          return true;
-        }
-        else
-        {
-          LOG_ERROR("ProjectContext: LoadFromDirectory Failed");
-        }
+        createProjectRuntime();
+        return true;
       }
       else
       {

@@ -269,8 +269,9 @@ namespace octronic::dream
     glCullFace(GL_BACK);
 
     auto& envTexture = sr.getEnvironmentTexture();
-    for (auto& shader : shaderCache.getRuntimeVector())
+    for (auto shaderWrapper : shaderCache.getRuntimeVector())
     {
+      auto& shader = shaderWrapper.get();
       LOG_DEBUG("GraphicsComponent: Rending shader {}",shader.getNameAndUuidString());
 
       if (shader.countMaterials() == 0)
@@ -432,9 +433,10 @@ namespace octronic::dream
       {
         //shadowPassShader.value().get().setLightSpaceMatrixUniform(lightMat);
 
-        for (auto& nextShader : shaderCache.getRuntimeVector())
+        for (auto shaderWrapper : shaderCache.getRuntimeVector())
         {
-          nextShader.drawShadowPass(shadowPassShader);
+          auto& shader = shaderWrapper.get();
+          shader.drawShadowPass(shadowPassShader);
         }
       }
     }
@@ -491,17 +493,19 @@ namespace octronic::dream
       fontShader.setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);
 
       // Iterate through FontRuntimes
-      for (auto& fontRuntime : fontCache.getRuntimeVector())
+      for (auto& fontRuntimeWrapper : fontCache.getRuntimeVector())
       {
+      	auto& fontRuntime = fontRuntimeWrapper.get();
         // Iterate through FontTextInstances
-        for (auto& entity : fontRuntime.getInstanceVector())
+        for (auto& entityWrapper : fontRuntime.getInstanceVector())
         {
-          fontShader.setModelMatrixUniform(entity.get().getTransform().getMatrix());
+          auto& entity = entityWrapper.get();
+          fontShader.setModelMatrixUniform(entity.getTransform().getMatrix());
           GLCheckError();
-          fontShader.setColorUniform(entity.get().getFontColor());
+          fontShader.setColorUniform(entity.getFontColor());
           fontShader.syncUniforms();
           GLCheckError();
-          fontRuntime.draw(entity.get());
+          fontRuntime.draw(entity);
         }
       }
     }
@@ -581,8 +585,9 @@ namespace octronic::dream
     shader.bindVertexArray(mSpriteQuadVAO);
 
     // Iterate through Textureuntimes
-    for (auto& textureRuntime : textureCache.getRuntimeVector())
+    for (auto& textureRuntimeWrapper : textureCache.getRuntimeVector())
     {
+      auto& textureRuntime = textureRuntimeWrapper.get();
       // None
       if (textureRuntime.getInstanceVector().empty()) continue;
 
@@ -673,35 +678,35 @@ namespace octronic::dream
     MaterialCache& materialCache = pr.getMaterialCache();
     for (auto& material : materialCache.getRuntimeVector())
     {
-      material.pushTasks();
+      material.get().pushTasks();
     }
 
     // Models
     ModelCache& modelCache = pr.getModelCache();
     for (auto& model : modelCache.getRuntimeVector())
     {
-      model.pushTasks();
+      model.get().pushTasks();
     }
 
     // Shaders
     ShaderCache& shaderCache = pr.getShaderCache();
     for (auto& shader : shaderCache.getRuntimeVector())
     {
-      shader.pushTasks();
+      shader.get().pushTasks();
     }
 
     // Textures
     TextureCache& textureCache = pr.getTextureCache();
     for (auto& texture : textureCache.getRuntimeVector())
     {
-      texture.pushTasks();
+      texture.get().pushTasks();
     }
 
     // Fonts
     FontCache& fontCache = pr.getFontCache();
     for (auto& font : fontCache.getRuntimeVector())
     {
-      font.pushTasks();
+      font.get().pushTasks();
     }
 
     // This

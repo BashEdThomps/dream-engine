@@ -33,7 +33,7 @@ namespace octronic::dream::tool
 
       if(ImGui::Button("New Scene"))
       {
-        auto& newScene = projectDefinition.createNewSceneDefinition();
+        auto& newScene = projectDefinition.createSceneDefinition();
         parent.pushPropertyTarget({PropertyType_Scene, newScene});
         return;
       }
@@ -53,7 +53,7 @@ namespace octronic::dream::tool
       vector<string> scenes;
       for(auto& scene : projectDefinition.getSceneDefinitionsVector())
       {
-        scenes.push_back(scene.getName());
+        scenes.push_back(scene.get().getName());
       }
       if(ImGuiWidget::StringCombo("Startup Scene",&startupSceneIndex,scenes,scenes.size()))
       {

@@ -8,6 +8,7 @@
 
 using std::regex;
 using std::cmatch;
+using std::make_unique;
 
 namespace octronic::dream
 {
@@ -23,7 +24,7 @@ namespace octronic::dream
     {
       for (auto& child : mJson[Constants::SCENE_ENTITY_DEFINITION_CHILDREN])
       {
-        mChildDefinitions.emplace_back(mSceneDefinition,*this,child);
+        mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this,child));
       }
     }
   }
@@ -68,7 +69,7 @@ namespace octronic::dream
   SceneEntityDefinition::createChildDefinition
   ()
   {
-    return mChildDefinitions.emplace_back(mSceneDefinition,*this,json::object());
+    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this,json::object()));
   }
 
 
@@ -76,7 +77,7 @@ namespace octronic::dream
   SceneEntityDefinition::createChildDefinitionFrom
   (SceneEntityDefinition& other)
   {
-    return mChildDefinitions.emplace_back(mSceneDefinition,*this, other.toJson());
+    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this, other.toJson()));
   }
 
   void
@@ -85,8 +86,8 @@ namespace octronic::dream
   {
     auto itr = find_if(mChildDefinitions.begin(),
                        mChildDefinitions.end(),
-                       [&](const SceneEntityDefinition& next)
-    { return next.getUuid() == child.getUuid(); });
+                       [&](unique_ptr<SceneEntityDefinition>& next)
+    { return next->getUuid() == child.getUuid(); });
 
     if (itr != mChildDefinitions.end())
     {
@@ -117,11 +118,17 @@ namespace octronic::dream
   }
 
 
-  vector<SceneEntityDefinition>&
+  vector<reference_wrapper<SceneEntityDefinition>>
   SceneEntityDefinition::getChildDefinitionsVector
   ()
+  const
   {
-    return mChildDefinitions;
+    vector<reference_wrapper<SceneEntityDefinition>> ret;
+    for (auto& child : mChildDefinitions)
+    {
+     ret.push_back(*child);
+    }
+    return ret;
   }
 
   size_t
@@ -244,9 +251,9 @@ namespace octronic::dream
 
     for (auto& child : mChildDefinitions)
     {
-     if (child.hasUuid(uuid)) return child;
+     if (child->hasUuid(uuid)) return *child;
 
-     auto child_result = child.getChildDefinitionByUuid(uuid);
+     auto child_result = child->getChildDefinitionByUuid(uuid);
 
      if (child_result) return child_result;
     }

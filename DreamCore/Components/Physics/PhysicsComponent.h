@@ -39,7 +39,7 @@ class btIDebugDraw;
 
 namespace octronic::dream
 {
-    class PhysicsObjectRuntime;
+    class PhysicsRuntime;
     class SceneRuntime;
     class EntityRuntime;
 
@@ -57,8 +57,8 @@ namespace octronic::dream
         void setGravity(const vec3&);
         vec3 getGravity() const;
         bool init() override;
-        void addPhysicsObjectRuntime(PhysicsObjectRuntime&);
-        void removePhysicsObjectRuntime(PhysicsObjectRuntime&);
+        void addPhysicsRuntime(PhysicsRuntime&);
+        void removePhysicsRuntime(PhysicsRuntime&);
         void addRigidBody(btRigidBody*);
         void removeRigidBody(btRigidBody*);
         void checkContactManifolds();

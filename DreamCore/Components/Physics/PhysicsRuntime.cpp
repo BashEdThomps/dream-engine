@@ -15,11 +15,11 @@
 
 #include <iostream>
 
-#include "PhysicsObjectRuntime.h"
+#include "PhysicsRuntime.h"
 
 #include "PhysicsMotionState.h"
 #include "PhysicsComponent.h"
-#include "PhysicsObjectDefinition.h"
+#include "PhysicsDefinition.h"
 #include "PhysicsTasks.h"
 
 #include "Common/Constants.h"
@@ -35,9 +35,9 @@ using std::make_shared;
 
 namespace octronic::dream
 {
-  PhysicsObjectRuntime::PhysicsObjectRuntime
+  PhysicsRuntime::PhysicsRuntime
   (ProjectRuntime& prt,
-   PhysicsObjectDefinition& definition,
+   PhysicsDefinition& definition,
    EntityRuntime& entity)
     : DiscreteAssetRuntime(prt,definition,entity),
       mCollisionShape(nullptr),
@@ -47,11 +47,11 @@ namespace octronic::dream
       mAddObjectTask(nullptr),
       mInPhysicsWorld(false)
   {
-    LOG_TRACE( "PhysicsObjectRuntime: Constructing" );
+    LOG_TRACE( "PhysicsRuntime: Constructing" );
   }
 
   btCollisionShape*
-  PhysicsObjectRuntime::getCollisionShape
+  PhysicsRuntime::getCollisionShape
   ()
   const
   {
@@ -60,15 +60,15 @@ namespace octronic::dream
 
   // This has a leak when reusing Physics Object Shapes
   bool
-  PhysicsObjectRuntime::loadFromDefinition
+  PhysicsRuntime::loadFromDefinition
   ()
   {
-    auto& pod = static_cast<PhysicsObjectDefinition&>(getDefinition());
+    auto& pod = static_cast<PhysicsDefinition&>(getDefinition());
     mCollisionShape = createCollisionShape(pod);
 
     if (!mCollisionShape)
     {
-      LOG_ERROR( "PhysicsObjectRuntime: Unable to create collision shape" );
+      LOG_ERROR( "PhysicsRuntime: Unable to create collision shape" );
       return false;
     }
 
@@ -113,7 +113,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::setCameraControllableCharacter
+  PhysicsRuntime::setCameraControllableCharacter
   ()
   {
     mRigidBody->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
@@ -123,7 +123,7 @@ namespace octronic::dream
 
 
   void
-  PhysicsObjectRuntime::setKinematic
+  PhysicsRuntime::setKinematic
   (bool setKenematic)
   {
     if (setKenematic)
@@ -134,8 +134,8 @@ namespace octronic::dream
   }
 
   btCollisionShape*
-  PhysicsObjectRuntime::createCollisionShape
-  (PhysicsObjectDefinition& pod)
+  PhysicsRuntime::createCollisionShape
+  (PhysicsDefinition& pod)
   {
     string format = pod.getFormat();
     btCollisionShape* collisionShape = nullptr;
@@ -230,7 +230,7 @@ namespace octronic::dream
   }
 
   btCollisionShape*
-  PhysicsObjectRuntime::createTriangleMeshShape
+  PhysicsRuntime::createTriangleMeshShape
   (ModelRuntime& model)
   {
 
@@ -275,7 +275,7 @@ namespace octronic::dream
   }
 
   btRigidBody*
-  PhysicsObjectRuntime::getRigidBody
+  PhysicsRuntime::getRigidBody
   ()
   const
   {
@@ -283,14 +283,14 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::getWorldTransform
+  PhysicsRuntime::getWorldTransform
   (btTransform &transform)
   {
     mMotionState->getWorldTransform(transform);
   }
 
   btCollisionObject*
-  PhysicsObjectRuntime::getCollisionObject
+  PhysicsRuntime::getCollisionObject
   ()
   const
   {
@@ -298,7 +298,7 @@ namespace octronic::dream
   }
 
   vec3
-  PhysicsObjectRuntime::getCenterOfMassPosition
+  PhysicsRuntime::getCenterOfMassPosition
   ()
   const
   {
@@ -306,49 +306,49 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::applyCentralImpulse
+  PhysicsRuntime::applyCentralImpulse
   (const vec3& force)
   {
     mRigidBody->applyCentralImpulse(Vector3::toBullet(force));
   }
 
   void
-  PhysicsObjectRuntime::applyTorqueImpulse
+  PhysicsRuntime::applyTorqueImpulse
   (const vec3& torque)
   {
     mRigidBody->applyTorqueImpulse(Vector3::toBullet(torque));
   }
 
   void
-  PhysicsObjectRuntime::applyForce
+  PhysicsRuntime::applyForce
   (const vec3& force)
   {
     mRigidBody->applyForce(Vector3::toBullet(force),btVector3(0.0f,0.0f,0.0f));
   }
 
   void
-  PhysicsObjectRuntime::applyTorque
+  PhysicsRuntime::applyTorque
   (const vec3& torque)
   {
     mRigidBody->applyTorque(Vector3::toBullet(torque));
   }
 
   void
-  PhysicsObjectRuntime::clearForces
+  PhysicsRuntime::clearForces
   ()
   {
     mRigidBody->clearForces();
   }
 
   void
-  PhysicsObjectRuntime::setCenterOfMassTransformTx
+  PhysicsRuntime::setCenterOfMassTransformTx
   (const Transform& tx)
   {
     mRigidBody->setCenterOfMassTransform(tx.getBtTransform());
   }
 
   void
-  PhysicsObjectRuntime::setCenterOfMassTransformMat4
+  PhysicsRuntime::setCenterOfMassTransformMat4
   (const mat4& tx)
   {
     btTransform transform;
@@ -357,7 +357,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::setCenterOfMassTransform3f
+  PhysicsRuntime::setCenterOfMassTransform3f
   (float x, float y, float z)
   {
     btTransform transform;
@@ -368,31 +368,31 @@ namespace octronic::dream
 
 
   void
-  PhysicsObjectRuntime::setCenterOfMassTransform3fv
+  PhysicsRuntime::setCenterOfMassTransform3fv
   (const vec3& tx)
   {
-    LOG_DEBUG("PhysicsObjectRuntime: Setting Center of mass {},{},{}", tx.x, tx.y, tx.z);
+    LOG_DEBUG("PhysicsRuntime: Setting Center of mass {},{},{}", tx.x, tx.y, tx.z);
     auto mtx = mRigidBody->getCenterOfMassTransform();
     mtx.setOrigin(Vector3::toBullet(tx));
     mRigidBody->setCenterOfMassTransform(mtx);
   }
 
   void
-  PhysicsObjectRuntime::setWorldTransform
+  PhysicsRuntime::setWorldTransform
   (const Transform& tx)
   {
     mRigidBody->setWorldTransform(tx.getBtTransform());
   }
 
   void
-  PhysicsObjectRuntime::setLinearVelocity
+  PhysicsRuntime::setLinearVelocity
   (const vec3& lv)
   {
     mRigidBody->setLinearVelocity(Vector3::toBullet(lv));
   }
 
   vec3
-  PhysicsObjectRuntime::getLinearVelocity
+  PhysicsRuntime::getLinearVelocity
   ()
   const
   {
@@ -400,56 +400,56 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::setLinearFactor
+  PhysicsRuntime::setLinearFactor
   (const vec3& lf)
   {
     mRigidBody->setLinearFactor(Vector3::toBullet(lf));
   }
 
   void
-  PhysicsObjectRuntime::setAngularFactor
+  PhysicsRuntime::setAngularFactor
   (const vec3& v)
   {
     mRigidBody->setAngularFactor(Vector3::toBullet(v));
   }
 
   void
-  PhysicsObjectRuntime::setAngularVelocity
+  PhysicsRuntime::setAngularVelocity
   (const vec3& v)
   {
     mRigidBody->setAngularVelocity(Vector3::toBullet(v));
   }
 
   void
-  PhysicsObjectRuntime::setRestitution
+  PhysicsRuntime::setRestitution
   (float r)
   {
     mRigidBody->setRestitution(r);
   }
 
   float
-  PhysicsObjectRuntime::getFriction
+  PhysicsRuntime::getFriction
   () const
   {
     return mRigidBody->getFriction();
   }
 
   void
-  PhysicsObjectRuntime::setFriction
+  PhysicsRuntime::setFriction
   (float friction)
   {
     mRigidBody->setFriction(friction);
   }
 
   float
-  PhysicsObjectRuntime::getMass
+  PhysicsRuntime::getMass
   () const
   {
     return mRigidBody->getInvMass();
   }
 
   void
-  PhysicsObjectRuntime::setMass
+  PhysicsRuntime::setMass
   (float mass)
   {
     auto& pc = getProjectRuntime().getPhysicsComponent();
@@ -461,7 +461,7 @@ namespace octronic::dream
   }
 
   void
-  PhysicsObjectRuntime::setCcdSweptSphereRadius
+  PhysicsRuntime::setCcdSweptSphereRadius
   (float ccd)
   {
     if (ccd != 0.0f)
@@ -472,7 +472,7 @@ namespace octronic::dream
   }
 
   float
-  PhysicsObjectRuntime::getCcdSweptSphereRadius
+  PhysicsRuntime::getCcdSweptSphereRadius
   ()
   const
   {
@@ -480,7 +480,7 @@ namespace octronic::dream
   }
 
   float
-  PhysicsObjectRuntime::getRestitution
+  PhysicsRuntime::getRestitution
   ()
   const
   {
@@ -488,20 +488,20 @@ namespace octronic::dream
   }
 
   bool
-  PhysicsObjectRuntime::isInPhysicsWorld
+  PhysicsRuntime::isInPhysicsWorld
   ()
   const
   {
     return mInPhysicsWorld;
   }
 
-  void PhysicsObjectRuntime::setInPhysicsWorld(bool inPhysicsWorld)
+  void PhysicsRuntime::setInPhysicsWorld(bool inPhysicsWorld)
   {
     mInPhysicsWorld = inPhysicsWorld;
   }
 
 
-  void PhysicsObjectRuntime::pushTasks()
+  void PhysicsRuntime::pushTasks()
   {
     /*
             if (!pObj->isInPhysicsWorld())

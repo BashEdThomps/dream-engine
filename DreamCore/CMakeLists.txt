@@ -96,8 +96,8 @@ add_library(
   # Components/Physics
   Components/Physics/PhysicsComponent.cpp
   Components/Physics/PhysicsTasks.cpp
-  Components/Physics/PhysicsObjectDefinition.cpp
-  Components/Physics/PhysicsObjectRuntime.cpp
+  Components/Physics/PhysicsDefinition.cpp
+  Components/Physics/PhysicsRuntime.cpp
   Components/Physics/PhysicsMotionState.cpp
   # Components/Script
   Components/Script/ScriptRuntime.cpp

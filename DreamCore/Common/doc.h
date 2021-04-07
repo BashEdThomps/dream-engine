@@ -122,8 +122,8 @@
  *      * \link octronic::dream::PathRuntime \endlink
  *
  * * <b>Physics Object</b>
- *      * \link octronic::dream::PhysicsObjectDefinition \endlink
- *      * \link octronic::dream::PhysicsObjectRuntime \endlink
+ *      * \link octronic::dream::PhysicsDefinition \endlink
+ *      * \link octronic::dream::PhysicsRuntime \endlink
  *
  * * <b>Script</b>
  *      * \link octronic::dream::ScriptDefinition \endlink
@@ -138,6 +138,19 @@
  *      * \link octronic::dream::TextureRuntime \endlink
  *
  * \section Memory Management Policy
+ *
+ * Dream uses vector<unique_ptr<Type>> to store objects generated at runtime. This
+ * is used instead of plain vector<Type>, because resizing the vector invalidates
+ * references to it's contained objects. unique_ptr references remain the same, as
+ * the unique_ptr wrapper may move, but the underlying object will not.
+ *
+ * All types are passed around by Type&, reference_wrapper<Type>, or optional<reference_wrapper<Type>>.
+ * To force object resolution before use (aka null-checking).
+ *
+ * Dream will NEVER return a nullptr. Choosing instead to throw an exception, or
+ * in the case of an optional<reference_wrapper<Type>>, returning a nullopt,
+ * which can be handled by the caller.
+ *
  * SharedAssetRuntimes are owned by their respective Cache Objects.
  * DiscreteAssetRuntimes are owned by their EntityRuntime.
  * ScenesRuntimes are owned by the ProjectRuntime.

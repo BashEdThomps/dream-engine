@@ -10,6 +10,7 @@
 
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 namespace octronic::dream
 {
@@ -34,7 +35,7 @@ namespace octronic::dream
     void closeDirectory(const Directory& d);
 
   protected:
-    vector<File> mOpenFiles;
-    vector<Directory> mOpenDirectories;
+    vector<unique_ptr<File>> mOpenFiles;
+    vector<unique_ptr<Directory>> mOpenDirectories;
   };
 }

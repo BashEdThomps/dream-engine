@@ -8,7 +8,7 @@
 
 // ImGui Widgets
 #include "Widgets/ImGui/ProjectBrowser.h"
-#include "Widgets/ImGui/AssetBrowser.h"
+#include "Widgets/ImGui/DefinitionBrowser.h"
 #include "Widgets/ImGui/PropertiesWindow/PropertiesWindow.h"
 #include "Widgets/ImGui/MenuBar.h"
 #include "Widgets/ImGui/ScriptDebugWindow.h"
@@ -60,7 +60,7 @@ namespace octronic::dream::tool
         DreamToolWindow&          getWindow();
         PropertiesWindow&         getPropertiesWindow();
         ProjectBrowser&           getProjectBrowser();
-        AssetBrowser&             getAssetBrowser();
+        DefinitionBrowser&             getAssetBrowser();
         SceneStateWindow&         getSceneStateWindow();
         ToolPropertiesWindow&     getToolPropertiesWindow();
         MenuBar&                  getMenuBar();
@@ -100,7 +100,7 @@ namespace octronic::dream::tool
         DreamToolWindow mWindow;
         PropertiesWindow mPropertiesWindow;
         ProjectBrowser mProjectBrowser;
-        AssetBrowser mAssetBrowser;
+        DefinitionBrowser mAssetBrowser;
         SceneStateWindow mSceneStateWindow;
         ToolPropertiesWindow mToolPropertiesWindow;
         MenuBar mMenuBar;

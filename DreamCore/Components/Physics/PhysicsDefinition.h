@@ -18,13 +18,13 @@
 
 namespace octronic::dream
 {
-  class PhysicsObjectDefinition : public AssetDefinition
+  class PhysicsDefinition : public AssetDefinition
   {
   public:
-    PhysicsObjectDefinition(ProjectDefinition& pd, const json& js);
+    PhysicsDefinition(ProjectDefinition& pd, const json& js);
 
-    PhysicsObjectDefinition(PhysicsObjectDefinition&&) = default;
-    PhysicsObjectDefinition& operator=(PhysicsObjectDefinition&&) = default;
+    PhysicsDefinition(PhysicsDefinition&&) = default;
+    PhysicsDefinition& operator=(PhysicsDefinition&&) = default;
 
     // Physics
     void  setMass(float mass);

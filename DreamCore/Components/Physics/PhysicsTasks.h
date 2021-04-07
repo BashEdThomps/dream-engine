@@ -5,7 +5,7 @@
 
 namespace octronic::dream
 {
-    class PhysicsObjectRuntime;
+    class PhysicsRuntime;
     class PhysicsComponent;
 
     // PhysicsAddObjectTask ===================================================
@@ -13,12 +13,12 @@ namespace octronic::dream
     class PhysicsAddObjectTask : public Task
     {
     public:
-        PhysicsAddObjectTask(ProjectRuntime& pr, PhysicsObjectRuntime& rt);
+        PhysicsAddObjectTask(ProjectRuntime& pr, PhysicsRuntime& rt);
         void execute();
     protected:
-        PhysicsObjectRuntime& getPoRuntime() const;
+        PhysicsRuntime& getPoRuntime() const;
     private:
-        reference_wrapper<PhysicsObjectRuntime> mRuntime;
+        reference_wrapper<PhysicsRuntime> mRuntime;
     };
 
     // PhysicsUpdateWorldTask ==================================================

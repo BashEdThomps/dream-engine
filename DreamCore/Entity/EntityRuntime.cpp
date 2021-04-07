@@ -23,7 +23,7 @@
 #include "Components/Audio/AudioDefinition.h"
 #include "Components/Graphics/Font/FontDefinition.h"
 #include "Components/Graphics/Model/ModelDefinition.h"
-#include "Components/Physics/PhysicsObjectDefinition.h"
+#include "Components/Physics/PhysicsDefinition.h"
 #include "Components/Script/ScriptDefinition.h"
 #include "Components/Script/ScriptComponent.h"
 #include "TemplateEntityDefinition.h"
@@ -130,15 +130,15 @@ namespace octronic::dream
   }
 
   void
-  EntityRuntime::removePhysicsObjectRuntime
+  EntityRuntime::removePhysicsRuntime
   ()
   {
-    if (mPhysicsObjectRuntime)
+    if (mPhysicsRuntime)
     {
       auto& pr = getSceneRuntime().getProjectRuntime();
       auto& physicsComp = pr.getPhysicsComponent();
-      physicsComp.removePhysicsObjectRuntime(getPhysicsObjectRuntime());
-      mPhysicsObjectRuntime.reset();
+      physicsComp.removePhysicsRuntime(getPhysicsRuntime());
+      mPhysicsRuntime.reset();
     }
   }
 
@@ -180,11 +180,11 @@ namespace octronic::dream
     return mPathRuntime.value();
   }
 
-  PhysicsObjectRuntime&
-  EntityRuntime::getPhysicsObjectRuntime
+  PhysicsRuntime&
+  EntityRuntime::getPhysicsRuntime
   ()
   {
-    return mPhysicsObjectRuntime.value();
+    return mPhysicsRuntime.value();
   }
 
   ScriptRuntime&
@@ -312,9 +312,9 @@ namespace octronic::dream
 
     for (auto& child : mChildRuntimes)
     {
-      if (child.getDeleted())
+      if (child->getDeleted())
       {
-        toDelete.push_back(child.getUuid());
+        toDelete.push_back(child->getUuid());
       }
     }
 
@@ -323,18 +323,18 @@ namespace octronic::dream
       LOG_TRACE("EntityRuntime: Deleting child {}",child);
 
       std::remove_if(mChildRuntimes.begin(), mChildRuntimes.end(),
-                     [=](EntityRuntime& next)
-      { return next.getUuid() == child;} );
+                     [&](unique_ptr<EntityRuntime>& next)
+      { return next->getUuid() == child;} );
     }
     clearProcessedEvents();
   }
 
   bool
-  EntityRuntime::hasPhysicsObjectRuntime
+  EntityRuntime::hasPhysicsRuntime
   ()
   const
   {
-    return mPhysicsObjectRuntime.has_value();
+    return mPhysicsRuntime.has_value();
   }
 
   bool
@@ -384,8 +384,8 @@ namespace octronic::dream
           case AssetType::ASSET_TYPE_ENUM_PATH:
             result &= createPathRuntime(static_cast<PathDefinition&>(def));
             break;
-          case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-            result &= createPhysicsObjectRuntime(static_cast<PhysicsObjectDefinition&>(def));
+          case AssetType::ASSET_TYPE_ENUM_PHYSICS:
+            result &= createPhysicsRuntime(static_cast<PhysicsDefinition&>(def));
             break;
           case AssetType::ASSET_TYPE_ENUM_SCRIPT:
             result &= createScriptRuntime(static_cast<ScriptDefinition&>(def));
@@ -408,13 +408,13 @@ namespace octronic::dream
   // DiscreteAssetRuntimes ===================================================
 
   bool
-  EntityRuntime::createPhysicsObjectRuntime
-  (PhysicsObjectDefinition& definition)
+  EntityRuntime::createPhysicsRuntime
+  (PhysicsDefinition& definition)
   {
-    removePhysicsObjectRuntime();
+    removePhysicsRuntime();
     LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
-    mPhysicsObjectRuntime.emplace(mProjectRuntime,definition,*this);
-    return mPhysicsObjectRuntime.value().init();
+    mPhysicsRuntime.emplace(mProjectRuntime,definition,*this);
+    return mPhysicsRuntime.value().init();
   }
 
   bool
@@ -514,11 +514,9 @@ namespace octronic::dream
   EntityRuntime::getChildRuntimeByUuid
   (UuidType uuid)
   {
-    for (auto it = begin(mChildRuntimes); it != end(mChildRuntimes); it++)
-    {
-      auto& next = (*it);
-      if (next.hasUuid(uuid)) return next;
-    }
+    auto itr = find_if(mChildRuntimes.begin(), mChildRuntimes.end(),
+                       [&](unique_ptr<EntityRuntime>& next){ return next->getUuid() == uuid;});
+    if (itr != mChildRuntimes.end()) return *(*itr);
     throw std::exception();
   }
 
@@ -534,18 +532,21 @@ namespace octronic::dream
 
     for (auto& er : mChildRuntimes)
     {
-      retval.push_back(er);
-      auto fv = er.generateFlatVector();
+      retval.push_back(*er);
+      auto fv = er->generateFlatVector();
       fv.insert(fv.end(), fv.begin(), fv.end());
     }
     return retval;
   }
 
-  vector<EntityRuntime>&
+  vector<reference_wrapper<EntityRuntime>>
   EntityRuntime::getChildRuntimes
   ()
+  const
   {
-    return mChildRuntimes;
+    vector<reference_wrapper<EntityRuntime>> ret;
+    for (auto& child : mChildRuntimes) ret.push_back(*child);
+    return ret;
   }
 
   bool
@@ -554,8 +555,8 @@ namespace octronic::dream
   const
   {
     return std::find_if(mChildRuntimes.begin(), mChildRuntimes.end(),
-                        [&](const EntityRuntime& next)
-    { return next.getUuid() == child.getUuid();}) != mChildRuntimes.end();
+                        [&](const unique_ptr<EntityRuntime>& next)
+    { return next->getUuid() == child.getUuid();}) != mChildRuntimes.end();
   }
 
   void
@@ -626,7 +627,7 @@ namespace octronic::dream
   (EntityRuntime& child)
   {
     std::remove_if(mChildRuntimes.begin(), mChildRuntimes.end(),
-                   [&](const EntityRuntime& next){ return next.getUuid() == child.getUuid(); });
+                   [&](unique_ptr<EntityRuntime>& next){ return next->getUuid() == child.getUuid(); });
   }
 
   EntityRuntime&
@@ -636,19 +637,19 @@ namespace octronic::dream
     auto& sceneDef = sceneEntDef.getSceneDefinition();
     auto& pDef = sceneDef.getProjectDefinition();
     auto templateDef = pDef.getTemplateEntityDefinitionByUuid(sceneEntDef.getTemplateUuid());
-    auto& child = mChildRuntimes.emplace_back(
+    auto& child = mChildRuntimes.emplace_back(make_unique<EntityRuntime>(
           mProjectRuntime,  mSceneRuntime,
-          sceneEntDef, templateDef.value().get());
+          sceneEntDef, templateDef.value().get()));
 
-    child.setParentEntityRuntime(*this);
+    child->setParentEntityRuntime(*this);
 
-    if (!child.loadFromDefinition())
+    if (!child->loadFromDefinition())
     {
       LOG_ERROR("EntityRuntime: Error creating child runtime");
-      removeChildRuntime(child);
+      removeChildRuntime(*child);
       throw std::exception();
     }
-    return child;
+    return *child;
   }
 
 
@@ -838,7 +839,7 @@ namespace octronic::dream
     // Animation
     if (mAnimationRuntime) getAnimationRuntime().pushTasks();
     // Physics
-    if (mPhysicsObjectRuntime) getPhysicsObjectRuntime().pushTasks();
+    if (mPhysicsRuntime) getPhysicsRuntime().pushTasks();
     // Path
     if (mPathRuntime) getPathRuntime().pushTasks();
   }
@@ -856,7 +857,7 @@ namespace octronic::dream
     // Discrete
     if (mAnimationRuntime)     all_loaded &= mAnimationRuntime.value().getLoaded();
     if (mPathRuntime)          all_loaded &= mPathRuntime.value().getLoaded();
-    if (mPhysicsObjectRuntime) all_loaded &= mPhysicsObjectRuntime.value().getLoaded();
+    if (mPhysicsRuntime) all_loaded &= mPhysicsRuntime.value().getLoaded();
     return  all_loaded;
   }
 
@@ -876,8 +877,8 @@ namespace octronic::dream
         return getModelRuntime();
       case ASSET_TYPE_ENUM_PATH:
         return getPathRuntime();
-      case ASSET_TYPE_ENUM_PHYSICS_OBJECT:
-        return getPhysicsObjectRuntime();
+      case ASSET_TYPE_ENUM_PHYSICS:
+        return getPhysicsRuntime();
       case ASSET_TYPE_ENUM_SCRIPT:
         return getScriptRuntime();
       case ASSET_TYPE_ENUM_TEXTURE:

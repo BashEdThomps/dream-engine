@@ -61,8 +61,9 @@ namespace octronic::dream::tool
         {
           int sdTreeID = 0;
 
-          for (auto& sDef : pDef.getSceneDefinitionsVector())
+          for (auto& sDefWrap : pDef.getSceneDefinitionsVector())
           {
+            auto& sDef = sDefWrap.get();
             bool sceneNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)++sdTreeID, node_flags, sDef.getName().c_str(), 0);
 
             if (ImGui::IsItemClicked())

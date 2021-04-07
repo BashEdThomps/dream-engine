@@ -40,8 +40,6 @@ namespace octronic::dream
         Component(const Component&) = delete;
         Component& operator=(const Component&) = delete;
 
-        virtual ~Component();
-
         virtual bool init() = 0;
         virtual void pushTasks() = 0;
         void setProjectRuntime(ProjectRuntime& pr);

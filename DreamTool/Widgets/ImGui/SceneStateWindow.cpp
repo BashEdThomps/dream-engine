@@ -45,8 +45,9 @@ namespace octronic::dream::tool
       {
         auto& pDef = pDefOpt.value();
 
-        for (auto& sceneDef : pDef.getSceneDefinitionsVector())
+        for (auto& sceneDefWrapper : pDef.getSceneDefinitionsVector())
         {
+          auto& sceneDef = sceneDefWrapper.get();
           ImGui::Text("%s",sceneDef.getName().c_str());
           ImGui::NextColumn();
 

@@ -160,7 +160,7 @@ namespace octronic::dream
     ShaderCache   mShaderCache;
     TextureCache  mTextureCache;
     // SceneRuntime
-    vector<SceneRuntime> mSceneRuntimeVector;
+    vector<unique_ptr<SceneRuntime>> mSceneRuntimeVector;
     vector<reference_wrapper<SceneRuntime>> mSceneRuntimesToRemove;
     optional<reference_wrapper<SceneRuntime>> mActiveSceneRuntime;
     // Tasking

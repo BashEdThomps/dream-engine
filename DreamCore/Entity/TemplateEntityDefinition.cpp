@@ -87,13 +87,18 @@ namespace octronic::dream
     throw std::exception();
   }
 
-  unsigned long
+  int
   TemplateEntityDefinition::getSelectedAssetDefinitionIndex
   (AssetType t)
   const
   {
     auto& pd = mProjectDefinition.get();
-    return pd.getAssetDefinitionIndex(pd.getAssetDefinitionByUuid(t, getAssetDefinition(t)).value());
+    auto assetDefOpt = pd.getAssetDefinitionByUuid(t, getAssetDefinition(t));
+    if (assetDefOpt)
+    {
+    	return pd.getAssetDefinitionIndex(assetDefOpt.value().get());
+    }
+    return -1;
   }
 
   void

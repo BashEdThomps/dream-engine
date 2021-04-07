@@ -13,17 +13,17 @@ using std::reference_wrapper;
 
 namespace octronic::dream
 {
-  class PhysicsObjectDefinition;
+  class PhysicsDefinition;
 
   class CompoundChildDefinition
   {
   public:
-    reference_wrapper<PhysicsObjectDefinition> parent;
+    reference_wrapper<PhysicsDefinition> parent;
     Transform transform;
     UuidType uuid;
 
   public:
-    CompoundChildDefinition(PhysicsObjectDefinition& p, const Transform& tx, UuidType id)
+    CompoundChildDefinition(PhysicsDefinition& p, const Transform& tx, UuidType id)
       : parent(p),
         transform(tx),
         uuid(id)

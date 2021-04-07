@@ -107,11 +107,11 @@ namespace octronic::dream
   }
 
   bool
-  AssetDefinition::isTypePhysicsObject
+  AssetDefinition::isTypePhysics
   ()
   const
   {
-    return getType() == Constants::ASSET_TYPE_PHYSICS_OBJECT;
+    return getType() == Constants::ASSET_TYPE_PHYSICS;
   }
 
   bool

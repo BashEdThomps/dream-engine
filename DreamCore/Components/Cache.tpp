@@ -9,6 +9,7 @@
 
 #include <exception>
 
+using std::make_unique;
 
 namespace octronic::dream
 {
@@ -28,7 +29,8 @@ namespace octronic::dream
   (UuidType uuid)
   {
     std::remove_if(mRuntimes.begin(), mRuntimes.end(),
-    	[&](const RuntimeType& nextRuntime) { return nextRuntime.getUuid() == uuid; });
+    	[&](const unique_ptr<RuntimeType>& nextRuntime)
+    { return nextRuntime->getUuid() == uuid; });
     throw std::exception();
   }
 
@@ -54,17 +56,25 @@ namespace octronic::dream
   (DefinitionType& def)
   {
     auto itr = std::find_if(mRuntimes.begin(), mRuntimes.end(),
-    	[&](const RuntimeType& next) { return next.getUuid() == def.getUuid();});
-    if (itr != mRuntimes.end()) return (*itr);
+    	[&](const unique_ptr<RuntimeType>& next)
+    { return next->getUuid() == def.getUuid();});
+
+    if (itr != mRuntimes.end()) return *(*itr);
     return loadRuntime(def);
   }
 
   template <typename DefinitionType, typename RuntimeType>
-  vector<RuntimeType>&
+  vector<reference_wrapper<RuntimeType>>
   Cache<DefinitionType, RuntimeType>::getRuntimeVector
   ()
+  const
   {
-    return mRuntimes;
+    vector<reference_wrapper<RuntimeType>> ret;
+    for (auto& rt : mRuntimes)
+    {
+      ret.push_back(*rt);
+    }
+    return ret;
   }
 
   template <typename DefinitionType, typename RuntimeType>
@@ -81,7 +91,7 @@ namespace octronic::dream
   Cache<DefinitionType, RuntimeType>::loadRuntime
   (DefinitionType& def)
   {
-    RuntimeType& newRuntime = mRuntimes.emplace_back(mProjectRuntime, def);
+    RuntimeType& newRuntime = *mRuntimes.emplace_back(make_unique<RuntimeType>(mProjectRuntime, def));
     if (newRuntime.init())
     {
       LOG_TRACE("Cache: Pushed back new Runtime");

@@ -71,7 +71,7 @@ namespace octronic::dream::tool
           if (pCtx.getProjectDefinition().has_value())
           {
             auto& pDef = pCtx.getProjectDefinition().value();
-            auto& newDef = pDef.createNewAssetDefinition(assetDef.getAssetType());
+            auto& newDef = pDef.createAssetDefinition(assetDef.getAssetType());
             assetDef.duplicateInto(newDef);
             parent.pushPropertyTarget({PropertyType_Asset,newDef});
             return;
@@ -113,7 +113,7 @@ namespace octronic::dream::tool
       case AssetType::ASSET_TYPE_ENUM_MODEL:
         drawModelAssetProperties();
         break;
-      case AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT:
+      case AssetType::ASSET_TYPE_ENUM_PHYSICS:
         drawPhysicsObjectAssetProperties();
         break;
       case AssetType::ASSET_TYPE_ENUM_SCRIPT:
@@ -165,7 +165,7 @@ namespace octronic::dream::tool
   ()
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
-    auto& ctx = parent.getContext();
+    //auto& ctx = parent.getContext();
     auto target = parent.getCurrentPropertyTarget();
 
     if (target.getDefinition().has_value())
@@ -414,87 +414,87 @@ namespace octronic::dream::tool
     if (target.getDefinition())
     {
 
-    auto& def = static_cast<FontDefinition&>(target.getDefinition().value().get());
+      auto& def = static_cast<FontDefinition&>(target.getDefinition().value().get());
 
-    bool selectFile = ImGui::Button("Font File...");
+      bool selectFile = ImGui::Button("Font File...");
 
-    if (selectFile)
-    {
-      nfdchar_t *filePath = NULL;
-      nfdfilteritem_t filters[2] = {{"TrueType", "ttf"}, {"OpenType", "otf"}};
-      nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, ctx.getLastDirectory().c_str());
-
-      if ( result == NFD_OKAY )
+      if (selectFile)
       {
-        LOG_INFO("AssetPropertiesPanel: Success! {}",filePath);
-        LOG_DEBUG("AssetPropertiesPanel: Opening Font File {}",filePath);
-        auto& fm = ctx.getStorageManager();
-        auto& file = fm.openFile(filePath);
-        ctx.setLastDirectory(file.getDirectory());
-        file.readBinary();
-        auto data = file.getBinaryData();
-        if (ctx.getProjectContext().has_value())
+        nfdchar_t *filePath = NULL;
+        nfdfilteritem_t filters[2] = {{"TrueType", "ttf"}, {"OpenType", "otf"}};
+        nfdresult_t result = NFD_OpenDialog(&filePath, filters, 2, ctx.getLastDirectory().c_str());
+
+        if ( result == NFD_OKAY )
         {
-          auto& pCtx = ctx.getProjectContext().value();
-          if (pCtx.getProjectDirectory())
+          LOG_INFO("AssetPropertiesPanel: Success! {}",filePath);
+          LOG_DEBUG("AssetPropertiesPanel: Opening Font File {}",filePath);
+          auto& fm = ctx.getStorageManager();
+          auto& file = fm.openFile(filePath);
+          ctx.setLastDirectory(file.getDirectory());
+          file.readBinary();
+          auto data = file.getBinaryData();
+          if (ctx.getProjectContext().has_value())
+          {
+            auto& pCtx = ctx.getProjectContext().value();
+            if (pCtx.getProjectDirectory())
+            {
+              auto& pDir = pCtx.getProjectDirectory().value();
+              pDir.writeAssetData(def,data);
+              def.setName(file.getNameWithoutExtension());
+              fm.closeFile(file);
+              NFD_FreePath(filePath);
+            }
+          }
+        }
+        else if ( result == NFD_CANCEL )
+        {
+          LOG_DEBUG("AssetPropertiesPanel: User pressed cancel.");
+        }
+        else
+        {
+          LOG_ERROR("AssetPropertiesPanel: Error: %s\n", NFD_GetError() );
+        }
+
+      }
+
+      ImGui::SameLine();
+      if (ctx.getProjectContext().has_value())
+      {
+        auto& pCtx = ctx.getProjectContext().value();
+        if(ImGui::Button("Remove File"))
+        {
+
+          if (pCtx.getProjectDirectory().has_value())
           {
             auto& pDir = pCtx.getProjectDirectory().value();
-            pDir.writeAssetData(def,data);
-            def.setName(file.getNameWithoutExtension());
-            fm.closeFile(file);
-            NFD_FreePath(filePath);
+            pDir.removeAssetDirectory(def);
+          }
+        }
+
+        float fontSize = def.getSize();
+        if (ImGui::SliderFloat("Size",&fontSize,1.f,100.f))
+        {
+          def.setSize(fontSize);
+        }
+
+        // Display the FontAtlas Texture
+        if (pCtx.getProjectRuntime().has_value())
+        {
+          auto& pRunt = pCtx.getProjectRuntime().value();
+          auto& fontCache = pRunt.getFontCache();
+          auto& fontRuntime = fontCache.getRuntime(def);
+          GLuint atlasTexture = fontRuntime.getAtlasTexture();
+          unsigned int atlasWidth = fontRuntime.getAtlasWidth();
+          unsigned int atlasHeight = fontRuntime.getAtlasHeight();
+          if (ImGui::BeginChild("Font Atlas Texture",
+                                ImVec2(atlasWidth,atlasHeight),
+                                false, ImGuiWindowFlags_HorizontalScrollbar))
+          {
+            ImGui::Image((void*)(intptr_t)atlasTexture,ImVec2(atlasWidth,atlasHeight));
+            ImGui::EndChild();
           }
         }
       }
-      else if ( result == NFD_CANCEL )
-      {
-        LOG_DEBUG("AssetPropertiesPanel: User pressed cancel.");
-      }
-      else
-      {
-        LOG_ERROR("AssetPropertiesPanel: Error: %s\n", NFD_GetError() );
-      }
-
-    }
-
-    ImGui::SameLine();
-    if (ctx.getProjectContext().has_value())
-    {
-      auto& pCtx = ctx.getProjectContext().value();
-      if(ImGui::Button("Remove File"))
-      {
-
-        if (pCtx.getProjectDirectory().has_value())
-        {
-          auto& pDir = pCtx.getProjectDirectory().value();
-          pDir.removeAssetDirectory(def);
-        }
-      }
-
-      float fontSize = def.getSize();
-      if (ImGui::SliderFloat("Size",&fontSize,1.f,100.f))
-      {
-        def.setSize(fontSize);
-      }
-
-      // Display the FontAtlas Texture
-      if (pCtx.getProjectRuntime().has_value())
-      {
-        auto& pRunt = pCtx.getProjectRuntime().value();
-        auto& fontCache = pRunt.getFontCache();
-        auto& fontRuntime = fontCache.getRuntime(def);
-        GLuint atlasTexture = fontRuntime.getAtlasTexture();
-        unsigned int atlasWidth = fontRuntime.getAtlasWidth();
-        unsigned int atlasHeight = fontRuntime.getAtlasHeight();
-        if (ImGui::BeginChild("Font Atlas Texture",
-                              ImVec2(atlasWidth,atlasHeight),
-                              false, ImGuiWindowFlags_HorizontalScrollbar))
-        {
-          ImGui::Image((void*)(intptr_t)atlasTexture,ImVec2(atlasWidth,atlasHeight));
-          ImGui::EndChild();
-        }
-      }
-    }
     }
   }
 
@@ -821,19 +821,16 @@ namespace octronic::dream::tool
     auto& ctx = parent.getContext();
     auto& pCtx = ctx.getProjectContext().value();
 
-    bool modified = false;
-
     auto target = parent.getCurrentPropertyTarget();
-    auto& pod = static_cast<PhysicsObjectDefinition&>(target.getDefinition().value().get());
+    auto& pod = static_cast<PhysicsDefinition&>(target.getDefinition().value().get());
 
-    vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT];
+    vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS];
     string poFormatString = pod.getFormat();
     int poFormatIndex = ImGuiWidget::GetStringIndexInVector(poFormatString, poFormats);
 
     if(ImGuiWidget::StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
     {
       pod.setFormat(poFormats.at(poFormatIndex));
-      modified = true;
     }
     ImGui::Separator();
 
@@ -841,14 +838,12 @@ namespace octronic::dream::tool
     if (ImGui::Checkbox("Kinematic",&kinematic))
     {
       pod.setKinematic(kinematic);
-      modified = true;
     }
 
     bool controllable = pod.getControllableCharacter();
     if (ImGui::Checkbox("Controllable Character",&controllable))
     {
       pod.setControllableCharacter(controllable);
-      modified = true;
     }
 
     ImGui::Separator();
@@ -857,35 +852,30 @@ namespace octronic::dream::tool
     if(ImGui::InputFloat("Mass",&mass))
     {
       pod.setMass(mass);
-      modified = true;
     }
 
     float margin = pod.getMargin();
     if(ImGui::InputFloat("Margin",&margin))
     {
       pod.setMargin(margin);
-      modified = true;
     }
 
     float restitution = pod.getRestitution();
     if(ImGui::InputFloat("Restitution",&restitution))
     {
       pod.setRestitution(restitution);
-      modified = true;
     }
 
     float friction = pod.getFriction();
     if(ImGui::InputFloat("Friction",&friction))
     {
       pod.setFriction(friction);
-      modified = true;
     }
 
     float ccdspr = pod.getCcdSweptSphereRadius();
     if (ImGui::InputFloat("CCD Swept Sphere Radius",&ccdspr))
     {
       pod.setCcdSweptSphereRadius(ccdspr);
-      modified = true;
     }
 
     float linearFactor[3] ={
@@ -898,7 +888,6 @@ namespace octronic::dream::tool
     {
       vec3 lf(linearFactor[0],linearFactor[1],linearFactor[2]);
       pod.setLinearFactor(lf);
-      modified = true;
     }
 
     float angularFactor[3] ={
@@ -910,7 +899,6 @@ namespace octronic::dream::tool
     {
       vec3 af(angularFactor[0], angularFactor[1],angularFactor[2]);
       pod.setAngularFactor(af);
-      modified = true;
     }
 
     float linearVelocity[3] ={
@@ -922,7 +910,6 @@ namespace octronic::dream::tool
     {
       vec3 lf(linearVelocity[0],linearVelocity[1],linearVelocity[2]);
       pod.setLinearVelocity(lf);
-      modified = true;
     }
 
     float angularVelocity[3] ={
@@ -934,7 +921,6 @@ namespace octronic::dream::tool
     {
       vec3 af(angularVelocity[0], angularVelocity[1],angularVelocity[2]);
       pod.setAngularVelocity(af);
-      modified = true;
     }
 
 
@@ -951,7 +937,6 @@ namespace octronic::dream::tool
       if(ImGui::InputFloat3("Half-Extents",&halfExtents[0]))
       {
         pod.setHalfExtents(vec3(halfExtents[0], halfExtents[1], halfExtents[2]));
-        modified = true;
       }
     }
     else if (pod.getFormat().compare(Constants::COLLISION_SHAPE_SPHERE) == 0)
@@ -977,7 +962,6 @@ namespace octronic::dream::tool
         {
           auto newlySelected = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetIndex);
           pod.setCollisionModelUuid(newlySelected.value().get().getUuid());
-          modified = true;
         }
       }
     }
@@ -992,7 +976,6 @@ namespace octronic::dream::tool
       if (ImGui::InputFloat3("Plane Normal",&normal[0]))
       {
         pod.setNormal(vec3(normal[0],normal[1],normal[2]));
-        modified = true;
       }
     }
     else if (pod.getFormat().compare(Constants::COLLISION_SHAPE_COMPOUND) == 0)
@@ -1004,7 +987,7 @@ namespace octronic::dream::tool
       {
         auto& pDef = pCtx.getProjectDefinition().value();
 
-        auto shapeNames = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT);
+        auto shapeNames = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS);
         static int shapeNameIndex = -1;
         ImGuiWidget::StringCombo("Shape",&shapeNameIndex,shapeNames,shapeNames.size());
 
@@ -1013,10 +996,9 @@ namespace octronic::dream::tool
         {
           if (shapeNameIndex >= 0)
           {
-            auto childDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS_OBJECT,shapeNameIndex);
+            auto childDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS,shapeNameIndex);
             pod.addCompoundChild({pod,Transform(),childDef.value().get().getUuid()});
           }
-          modified = true;
         }
         ImGui::Separator();
         ImGui::Columns(1);
@@ -1025,9 +1007,9 @@ namespace octronic::dream::tool
 
         auto shapes = pod.getCompoundChildren();
         static UuidType selectedToTransform = 0;
-        for (auto shape : shapes)
+        for (auto& shape : shapes)
         {
-          auto shapeDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_PHYSICS_OBJECT,shape.uuid);
+          auto shapeDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_PHYSICS,shape.uuid);
 
           if (!shapeDef)
           {
@@ -1042,7 +1024,6 @@ namespace octronic::dream::tool
             if(ImGui::Button("Remove Shape"))
             {
               pod.removeCompoundChild(shape);
-              modified = true;
             }
           }
           ImGui::PopID();
@@ -1608,201 +1589,223 @@ namespace octronic::dream::tool
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
-    auto& pCtx = ctx.getProjectContext().value();
-    auto target = parent.getCurrentPropertyTarget();
-    auto& textureDef = static_cast<TextureDefinition&>(target.getDefinition().value().get());
-    auto& pRunt = pCtx.getProjectRuntime().value();
-    auto& pDef = pCtx.getProjectDefinition().value();
-    auto& pDir = pCtx.getProjectDirectory().value();
-
-
-    auto&  txCache = pRunt.getTextureCache();
-    auto& textureRuntime = txCache.getRuntime(textureDef);
-
-    bool selectFile = ImGui::Button("Texture File...");
-
-    if (selectFile)
+    auto& pCtxOpt = ctx.getProjectContext();
+    if (pCtxOpt)
     {
-      nfdchar_t *filePath = NULL;
-      nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,ctx.getLastDirectory().c_str());
-
-      if ( result == NFD_OKAY )
+      auto& pCtx = pCtxOpt.value();
+      auto target = parent.getCurrentPropertyTarget();
+      if (target.getDefinition().has_value())
       {
-        LOG_ERROR("AssetPropertiesPanel: Opening Texture File {}",filePath);
-        auto& fm = pCtx.getStorageManager();
-        auto& file = fm.openFile(filePath);
-        ctx.setLastDirectory(file.getDirectory());
-        file.readBinary();
-        auto data = file.getBinaryData();
-        pDir.writeAssetData(textureDef,data);
-        textureDef.setName(file.getNameWithoutExtension());
-        fm.closeFile(file);
-        NFD_FreePath(filePath);
-      }
-      else if ( result == NFD_CANCEL )
-      {
-        LOG_DEBUG("AssetPropertiesPanel: User pressed cancel.");
-      }
-      else
-      {
-        LOG_ERROR("AssetPropertiesPanel: Error: %s\n", NFD_GetError() );
-      }
-    }
+        auto& textureDef = static_cast<TextureDefinition&>(target.getDefinition().value().get());
+        auto& pRuntOpt = pCtx.getProjectRuntime();
+        auto& pDefOpt = pCtx.getProjectDefinition();
+        auto& pDirOpt = pCtx.getProjectDirectory();
 
-    if(ImGui::Button("Remove File"))
-    {
-      pDir.removeAssetDirectory(textureDef);
-    }
-
-    if (ImGui::Button("Reload Asset"))
-    {
-      textureRuntime.setReloadFlag(true);
-    }
-
-    bool isHdr = textureRuntime.isHDR();
-    ImGui::Text("HDR: %s", isHdr ? "Yes" : "No");
-
-    bool isEnvironment = textureDef.getIsEnvironmentTexture();
-    if (ImGui::Checkbox("Environment",&isEnvironment))
-    {
-      textureDef.setIsEnvironmentTexture(isEnvironment);
-    }
-
-    bool flipVertical = textureDef.getFlipVertical();
-    if (ImGui::Checkbox("Flip Vertical",&flipVertical))
-    {
-      textureDef.setFlipVertical(flipVertical);
-    }
-
-    if (isEnvironment)
-    {
-      vector<string> shaderList = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
-      // EquiToCube
-      {
-        UuidType shaderUuid = textureDef.getEquiToCubeMapShader();
-        auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-        int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
-
-        if (ImGuiWidget::StringCombo("Cube Map Shader", &shaderIndex, shaderList, shaderList.size()))
+        if (pRuntOpt)
         {
-          auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
-          UuidType uuid = selectedShader.getUuid();
-          string name = selectedShader.getName();
-          textureDef.setEquiToCubeMapShader(uuid);
-          LOG_DEBUG("AssetPropertiesPanel: Switched cube map shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
+          auto& pRunt = pRuntOpt.value();
+          auto& txCache = pRunt.getTextureCache();
+          auto& textureRuntime = txCache.getRuntime(textureDef);
+
+          bool selectFile = ImGui::Button("Texture File...");
+
+          if (selectFile)
+          {
+            if (pDirOpt)
+            {
+              auto& pDir = pDirOpt.value();
+
+              nfdchar_t *filePath = NULL;
+              nfdresult_t result = NFD_OpenDialog(&filePath, nullptr, 0,ctx.getLastDirectory().c_str());
+
+              if ( result == NFD_OKAY )
+              {
+                LOG_ERROR("AssetPropertiesPanel: Opening Texture File {}",filePath);
+                auto& fm = pCtx.getStorageManager();
+                auto& file = fm.openFile(filePath);
+                ctx.setLastDirectory(file.getDirectory());
+                file.readBinary();
+                auto data = file.getBinaryData();
+                pDir.writeAssetData(textureDef,data);
+                textureDef.setName(file.getNameWithoutExtension());
+                fm.closeFile(file);
+                NFD_FreePath(filePath);
+              }
+              else if ( result == NFD_CANCEL )
+              {
+                LOG_DEBUG("AssetPropertiesPanel: User pressed cancel.");
+              }
+              else
+              {
+                LOG_ERROR("AssetPropertiesPanel: Error: %s\n", NFD_GetError() );
+              }
+            }
+          }
+
+          if(ImGui::Button("Remove File"))
+          {
+            if (pDirOpt)
+            {
+              auto& pDir = pDirOpt.value();
+              pDir.removeAssetDirectory(textureDef);
+            }
+          }
+
+          if (ImGui::Button("Reload Asset"))
+          {
+            textureRuntime.setReloadFlag(true);
+          }
+
+          bool isHdr = textureRuntime.isHDR();
+          ImGui::Text("HDR: %s", isHdr ? "Yes" : "No");
+
+          bool isEnvironment = textureDef.getIsEnvironmentTexture();
+          if (ImGui::Checkbox("Environment",&isEnvironment))
+          {
+            textureDef.setIsEnvironmentTexture(isEnvironment);
+          }
+
+          bool flipVertical = textureDef.getFlipVertical();
+          if (ImGui::Checkbox("Flip Vertical",&flipVertical))
+          {
+            textureDef.setFlipVertical(flipVertical);
+          }
+
+          if (isEnvironment)
+          {
+            if (pDefOpt)
+            {
+              auto&  pDef = pDefOpt.value();
+              vector<string> shaderList = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
+              // EquiToCube
+              {
+                UuidType shaderUuid = textureDef.getEquiToCubeMapShader();
+                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
+                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+
+                if (ImGuiWidget::StringCombo("Cube Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                  auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
+                  UuidType uuid = selectedShader.getUuid();
+                  string name = selectedShader.getName();
+                  textureDef.setEquiToCubeMapShader(uuid);
+                  LOG_DEBUG("AssetPropertiesPanel: Switched cube map shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
+                }
+              }
+              // Irradiance
+              {
+                UuidType shaderUuid = textureDef.getIrradianceMapShader();
+                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
+                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+
+                if (ImGuiWidget::StringCombo("Irradiance Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                  auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
+                  UuidType uuid = selectedShader.getUuid();
+                  string name = selectedShader.getName();
+                  textureDef.setIrradianceMapShader(uuid);
+                  LOG_DEBUG("AssetPropertiesPanel: Switched irradiance map shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
+                }
+              }
+              // PreFilter
+              {
+                UuidType shaderUuid = textureDef.getPreFilterShader();
+                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
+                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+
+                if (ImGuiWidget::StringCombo("PreFilter Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                  auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
+                  UuidType uuid = selectedShader.getUuid();
+                  string name = selectedShader.getName();
+                  textureDef.setPreFilterShader(uuid);
+                  LOG_DEBUG("AssetPropertiesPanel: Switched PreFilter shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
+                }
+              }
+              // BRDF_LUT
+              {
+                UuidType shaderUuid = textureDef.getBrdfLutShader();
+                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
+                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+
+                if (ImGuiWidget::StringCombo("BRDF LUT Shader", &shaderIndex, shaderList, shaderList.size()))
+                {
+                  auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
+                  UuidType uuid = selectedShader.getUuid();
+                  string name = selectedShader.getName();
+                  textureDef.setBrdfLutShader(uuid);
+                  LOG_DEBUG("AssetPropertiesPanel: Switched BRDF LUT shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
+                }
+              }
+
+              if (textureRuntime.getLoaded())
+              {
+                ImGui::Columns(2);
+
+                ImGui::Text("Cube Map");
+                ImGui::NextColumn();
+                if (textureRuntime.getCubeMapTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getCubeMapTextureID());
+                else                                           ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getCubeMapTextureID());
+                ImGui::NextColumn();
+
+                ImGui::Text("Irradiance");
+                ImGui::NextColumn();
+                if (textureRuntime.getIrradianceTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getIrradianceTextureID());
+                else                                              ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getIrradianceTextureID());
+                ImGui::NextColumn();
+
+                ImGui::Text("PreFilter");
+                ImGui::NextColumn();
+                if (textureRuntime.getPreFilterTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getPreFilterTextureID());
+                else                                             ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getPreFilterTextureID());
+                ImGui::NextColumn();
+
+                ImGui::Text("BRDF LUT");
+                ImGui::NextColumn();
+                if (textureRuntime.getBrdfLutTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getBrdfLutTextureID());
+                else                                           ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getBrdfLutTextureID());
+
+                ImGui::Columns(1);
+
+              }
+            }
+          }
+
+          if (textureRuntime.getLoaded())
+          {
+            GLuint t = textureRuntime.getTextureID();
+            if (t != 0)
+            {
+              void* textureId = (void*)(intptr_t)t;
+              if (textureId != nullptr)
+              {
+                ImGui::Separator();
+                ImGui::Text("Size: %dx%d",textureRuntime.getWidth(),textureRuntime.getHeight());
+                ImGui::Text("Channels: %d",textureRuntime.getChannels());
+                ImGui::Image(textureId, parent.getImageSize());
+              }
+
+              void* brdfLutTextureId = (void*)(intptr_t)textureRuntime.getBrdfLutTextureID();
+              if (brdfLutTextureId != nullptr)
+              {
+                ImGui::Text("BRDF Look up Table");
+                ImGui::Image(brdfLutTextureId,parent.getImageSize());
+              }
+            }
+
+            static vector<string> cubeDebugTypes =
+            {
+              "None", "Environment", "Irradiance", "PreFilter"
+            };
+
+            int debugMode = (int)textureRuntime.getCubeDebugMode();
+
+            if (ImGuiWidget::StringCombo("Cube Debug", &debugMode, cubeDebugTypes, cubeDebugTypes.size()))
+            {
+              textureRuntime.setCubeDebugMode((CubeDebugMode)debugMode);
+            }
+          }
         }
-      }
-      // Irradiance
-      {
-        UuidType shaderUuid = textureDef.getIrradianceMapShader();
-        auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-        int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
-
-        if (ImGuiWidget::StringCombo("Irradiance Map Shader", &shaderIndex, shaderList, shaderList.size()))
-        {
-          auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
-          UuidType uuid = selectedShader.getUuid();
-          string name = selectedShader.getName();
-          textureDef.setIrradianceMapShader(uuid);
-          LOG_DEBUG("AssetPropertiesPanel: Switched irradiance map shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
-        }
-      }
-      // PreFilter
-      {
-        UuidType shaderUuid = textureDef.getPreFilterShader();
-        auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-        int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
-
-        if (ImGuiWidget::StringCombo("PreFilter Shader", &shaderIndex, shaderList, shaderList.size()))
-        {
-          auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
-          UuidType uuid = selectedShader.getUuid();
-          string name = selectedShader.getName();
-          textureDef.setPreFilterShader(uuid);
-          LOG_DEBUG("AssetPropertiesPanel: Switched PreFilter shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
-        }
-      }
-      // BRDF_LUT
-      {
-        UuidType shaderUuid = textureDef.getBrdfLutShader();
-        auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-        int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
-
-        if (ImGuiWidget::StringCombo("BRDF LUT Shader", &shaderIndex, shaderList, shaderList.size()))
-        {
-          auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
-          UuidType uuid = selectedShader.getUuid();
-          string name = selectedShader.getName();
-          textureDef.setBrdfLutShader(uuid);
-          LOG_DEBUG("AssetPropertiesPanel: Switched BRDF LUT shader for texture {} to {} {}",textureDef.getNameAndUuidString(), name, uuid);
-        }
-      }
-
-      if (textureRuntime.getLoaded())
-      {
-        ImGui::Columns(2);
-
-        ImGui::Text("Cube Map");
-        ImGui::NextColumn();
-        if (textureRuntime.getCubeMapTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getCubeMapTextureID());
-        else                                           ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getCubeMapTextureID());
-        ImGui::NextColumn();
-
-        ImGui::Text("Irradiance");
-        ImGui::NextColumn();
-        if (textureRuntime.getIrradianceTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getIrradianceTextureID());
-        else                                              ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getIrradianceTextureID());
-        ImGui::NextColumn();
-
-        ImGui::Text("PreFilter");
-        ImGui::NextColumn();
-        if (textureRuntime.getPreFilterTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getPreFilterTextureID());
-        else                                             ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getPreFilterTextureID());
-        ImGui::NextColumn();
-
-        ImGui::Text("BRDF LUT");
-        ImGui::NextColumn();
-        if (textureRuntime.getBrdfLutTextureID() > 0) ImGui::TextColored({0.,1.f,0.f,1.f},"%d", textureRuntime.getBrdfLutTextureID());
-        else                                           ImGui::TextColored({1.,0.f,0.f,1.f},"%d", textureRuntime.getBrdfLutTextureID());
-
-        ImGui::Columns(1);
-
-
-      }
-    }
-
-    if (textureRuntime.getLoaded())
-    {
-      GLuint t = textureRuntime.getTextureID();
-      if (t != 0)
-      {
-        void* textureId = (void*)(intptr_t)t;
-        if (textureId != nullptr)
-        {
-          ImGui::Separator();
-          ImGui::Text("Size: %dx%d",textureRuntime.getWidth(),textureRuntime.getHeight());
-          ImGui::Text("Channels: %d",textureRuntime.getChannels());
-          ImGui::Image(textureId, parent.getImageSize());
-        }
-
-        void* brdfLutTextureId = (void*)(intptr_t)textureRuntime.getBrdfLutTextureID();
-        if (brdfLutTextureId != nullptr)
-        {
-          ImGui::Text("BRDF Look up Table");
-          ImGui::Image(brdfLutTextureId,parent.getImageSize());
-        }
-      }
-
-      static vector<string> cubeDebugTypes =
-      {
-        "None", "Environment", "Irradiance", "PreFilter"
-      };
-
-      int debugMode = (int)textureRuntime.getCubeDebugMode();
-
-      if (ImGuiWidget::StringCombo("Cube Debug", &debugMode, cubeDebugTypes, cubeDebugTypes.size()))
-      {
-        textureRuntime.setCubeDebugMode((CubeDebugMode)debugMode);
       }
     }
   }

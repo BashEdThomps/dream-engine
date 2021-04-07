@@ -296,7 +296,9 @@ namespace octronic::dream::tool
     closeProject();
 
     LOG_DEBUG("DTContext: Opening project {}",dir);
+
     mLastDirectory = dir;
+
     mProjectContext.emplace(getGlPreviewWindowComponent(), getAudioComponent(), getStorageManager(), dir);
 
     auto& pCtx = mProjectContext.value();
@@ -373,7 +375,7 @@ namespace octronic::dream::tool
     return mProjectBrowser;
   }
 
-  AssetBrowser&
+  DefinitionBrowser&
   DreamToolContext::getAssetBrowser()
   {
     return mAssetBrowser;

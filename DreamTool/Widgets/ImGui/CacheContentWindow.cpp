@@ -42,9 +42,9 @@ namespace octronic::dream::tool
         snprintf(title, 128, formatStr.c_str(), "Audio", audioCache.runtimeCount());
         if (ImGui::CollapsingHeader(title))
         {
-          for (auto& instance : audioCache.getRuntimeVector())
+          for (auto instance : audioCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -55,7 +55,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : fontCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -65,7 +65,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : materialCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -75,7 +75,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : modelCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -85,7 +85,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : scriptCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -95,7 +95,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : shaderCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
 
@@ -105,7 +105,7 @@ namespace octronic::dream::tool
         {
           for (auto& instance : textureCache.getRuntimeVector())
           {
-            ImGui::Text("%s",instance.getNameAndUuidString().c_str());
+            ImGui::Text("%s",instance.get().getNameAndUuidString().c_str());
           }
         }
       }

@@ -26,8 +26,11 @@
 #include "Storage/File.h"
 #include "Storage/Directory.h"
 
+#include <json.hpp>
+
 using std::string;
 using std::vector;
+using nlohmann::json;
 
 namespace octronic::dream
 {
@@ -124,10 +127,10 @@ namespace octronic::dream
     findProjectFileInDirectory
     (bool removeExtension) const;
 
-    ProjectDefinition
+    json
     readProjectDefinition() const;
 
-    ProjectDefinition
+    json
     createProjectDefinition() const;
 
     string getBasePath() const;
