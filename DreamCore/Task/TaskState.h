@@ -22,5 +22,6 @@ namespace octronic::dream
             case TASK_STATE_COMPLETED: return "Completed";
             case TASK_STATE_FAILED:    return "Failed";
         }
+        return "";
     }
 }

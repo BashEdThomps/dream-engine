@@ -41,6 +41,7 @@ else()
 	target_link_libraries(
 		${PROJECT_NAME}
 		DreamCore
+                -lopenal
 	)
 endif()
 

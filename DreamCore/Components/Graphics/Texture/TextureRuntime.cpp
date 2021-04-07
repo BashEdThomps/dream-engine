@@ -227,6 +227,7 @@ namespace octronic::dream
       case CUBE_DEBUG_PREFILTER:
         return mPreFilterCubeMapTexture;
     }
+    return 0;
   }
 
   // Loading =================================================================

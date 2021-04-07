@@ -4,9 +4,9 @@
 #include "JoystickMapping.h"
 
 #include <glm/vec2.hpp>
+#include <functional>
 
 using glm::vec2;
-using std::shared_ptr;
 using std::reference_wrapper;
 
 namespace octronic::dream

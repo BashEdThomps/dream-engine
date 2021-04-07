@@ -26,6 +26,7 @@ elseif(UNIX AND NOT APPLE) # Linux
     DreamOpenAL
     -lpthread
     -ldl
+    glfw
     )
 elseif(APPLE)
   target_link_libraries(

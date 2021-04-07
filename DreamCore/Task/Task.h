@@ -2,6 +2,7 @@
 
 #include "TaskState.h"
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -30,6 +31,7 @@ namespace octronic::dream
     const static int INVALID_TASK_ID;
 
     Task(ProjectRuntime& pr,  const string& taskName);
+    virtual ~Task();
 
     Task(const Task&) = delete;
     Task& operator=(const Task&) = delete;

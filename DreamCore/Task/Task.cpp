@@ -26,6 +26,8 @@ namespace octronic::dream
     mID = taskIDGenerator();
   }
 
+  Task::~Task() {}
+
   int
   Task::getID
   ()

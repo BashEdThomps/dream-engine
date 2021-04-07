@@ -155,6 +155,18 @@ target_link_libraries(
   DreamCore
   -lpthread
   -ldl
+  assimp
+  BulletCollision
+  BulletDynamics
+  freetype
+  glad
+  lua
+  LinearMath
+  ogg
+  spdlog
+  tinyspline
+  vorbis
+  vorbisfile
   )
 ELSEIF(APPLE)
 target_link_libraries(

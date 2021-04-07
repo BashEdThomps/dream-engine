@@ -22,6 +22,6 @@
 #include <OpenAL/alc.h>
 #elif defined(__ANDROID__)
 #elif defined(__linux__)
-#include <al.h>
-#include <alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #endif
