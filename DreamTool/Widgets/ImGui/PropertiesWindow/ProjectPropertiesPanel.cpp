@@ -25,42 +25,41 @@ namespace octronic::dream::tool
 
     if (pCtxOpt)
     {
-      auto target = parent.getCurrentPropertyTarget();
-      auto pDefOpt = target.getDefinition();
-      auto& projectDefinition = static_cast<ProjectDefinition&>(pDefOpt.value().get());
-
-      ImGui::SameLine();
-
-      if(ImGui::Button("New Scene"))
+      if (parent.getCurrentPropertyTarget())
       {
-        auto& newScene = projectDefinition.createSceneDefinition();
-        parent.pushPropertyTarget({PropertyType_Scene, newScene});
-        return;
-      }
+        auto target = parent.getCurrentPropertyTarget().value().get();
+        auto pDefOpt = target.getDefinition();
+        auto& projectDefinition = static_cast<ProjectDefinition&>(pDefOpt.value().get());
 
-      mNameAndUuidPanel.draw();
+        ImGui::SameLine();
 
-      ImGui::Separator();
-      // Startup Scene
-      int startupSceneIndex = -1;
-      auto startupOpt = projectDefinition.getStartupSceneDefinition();
-      if(startupOpt)
-      {
-			  auto& startup = startupOpt.value().get();
-			  startupSceneIndex = projectDefinition.getSceneDefinitionIndex(startup);
-      }
+        if(ImGui::Button("New Scene"))
+        {
+          auto& newScene = projectDefinition.createSceneDefinition();
+          parent.pushPropertyTarget(PropertyType_Scene, newScene);
+          return;
+        }
 
-      vector<string> scenes;
-      for(auto& scene : projectDefinition.getSceneDefinitionsVector())
-      {
-        scenes.push_back(scene.get().getName());
+        mNameAndUuidPanel.draw();
+
+        ImGui::Separator();
+        // Startup Scene
+        int startupSceneIndex = -1;
+        auto startupOpt = projectDefinition.getStartupSceneDefinition();
+        if(startupOpt)
+        {
+          auto& startup = startupOpt.value().get();
+          startupSceneIndex = projectDefinition.getSceneDefinitionIndex(startup);
+        }
+
+        vector<string> scenes = projectDefinition.getSceneDefinitionNamesVector();
+
+        if(ImGuiWidget::StringCombo("Startup Scene",&startupSceneIndex,scenes))
+        {
+          auto& newStartup = projectDefinition.getSceneDefinitionAtIndex(startupSceneIndex);
+          projectDefinition.setStartupSceneUuid(newStartup.getUuid());
+        }
       }
-      if(ImGuiWidget::StringCombo("Startup Scene",&startupSceneIndex,scenes,scenes.size()))
-      {
-        auto& newStartup = projectDefinition.getSceneDefinitionAtIndex(startupSceneIndex);
-        projectDefinition.setStartupSceneUuid(newStartup.getUuid());
-      }
-      ImGui::Separator();
     }
   }
 }

@@ -11,12 +11,9 @@ namespace octronic::dream::tool
 {
   RenderingDebugWindow::RenderingDebugWindow
   (DreamToolContext& state)
-    :ImGuiWidget(state,false)
+    : ImGuiWidget(state,false)
   {
   }
-
-  RenderingDebugWindow::~RenderingDebugWindow (){}
-
 
   void
   RenderingDebugWindow::draw

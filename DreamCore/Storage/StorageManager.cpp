@@ -36,9 +36,9 @@ namespace octronic::dream
       (*file_itr)->incrementUseCount();
       return *(*file_itr);
     }
-    auto& ret = mOpenFiles.emplace_back(make_unique<File>(file_path));
-    ret->incrementUseCount();
-    return *ret;
+    auto& ret = *mOpenFiles.emplace_back(make_unique<File>(file_path));
+    ret.incrementUseCount();
+    return ret;
   }
 
   void
@@ -87,9 +87,9 @@ namespace octronic::dream
       return *(*dir_itr);
     }
 
-    auto& ret = mOpenDirectories.emplace_back(make_unique<Directory>(*this, path));
-    ret->incrementUseCount();
-    return *ret;
+    auto& ret = *mOpenDirectories.emplace_back(make_unique<Directory>(*this, path));
+    ret.incrementUseCount();
+    return ret;
   }
 
   void

@@ -8,27 +8,27 @@ namespace octronic::dream
   {
     if (mJson.find(Constants::UUID) == mJson.end())
     {
-      setUuid(Uuid::generateUuid());
+      setUuid(Uuid::RandomUuid());
     }
   }
 
   float
-  CameraDefinition::getFieldOfView
+  CameraDefinition::getFieldOfViewDegrees
   ()
   const
   {
-    if (mJson.find(Constants::CAMERA_FOV) == mJson.end())
+    if (mJson.find(Constants::CAMERA_FOV_DEGREES) == mJson.end())
     {
       return 90.f;
     }
-    return mJson[Constants::CAMERA_FOV];
+    return mJson[Constants::CAMERA_FOV_DEGREES];
   }
 
   void
-  CameraDefinition::setFieldOfView
+  CameraDefinition::setFieldOfViewDegrees
   (float v)
   {
-    mJson[Constants::CAMERA_FOV] = v;
+    mJson[Constants::CAMERA_FOV_DEGREES] = v;
   }
 
 

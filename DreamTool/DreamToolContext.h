@@ -17,7 +17,6 @@
 #include "Widgets/ImGui/RenderingDebugWindow.h"
 #include "Widgets/ImGui/GamepadStateWindow.h"
 #include "Widgets/ImGui/CacheContentWindow.h"
-#include "Widgets/ImGui/TaskManagerWindow.h"
 #include "Widgets/ImGui/GLPreviewWindowComponent.h"
 
 // Plain GL Widgets
@@ -67,7 +66,6 @@ namespace octronic::dream::tool
         RenderingDebugWindow&     getRenderPipelineWindow();
         GamepadStateWindow&       getGamepadStateWindow();
         CacheContentWindow&       getCacheContentWindow();
-        TaskManagerWindow&        getTaskManagerWindow();
         ScriptDebugWindow&        getScriptDebugWindow();
         GLPreviewWindowComponent& getGlPreviewWindowComponent();
         OpenALAudioComponent&     getAudioComponent();
@@ -78,6 +76,7 @@ namespace octronic::dream::tool
         SelectionHighlighter& getSelectionHighlighter();
         Cursor&               getCursor();
         PathViewer&           getPathViewer();
+        PhysicsDebugDrawer&   getPhysicsDebugDrawer();
 
         // Data Models
         TemplatesModel&               getTemplatesModel();
@@ -107,7 +106,6 @@ namespace octronic::dream::tool
         RenderingDebugWindow mRenderPipelineWindow;
         GamepadStateWindow mGamepadStateWindow;
         CacheContentWindow mCacheContentWindow;
-        TaskManagerWindow mTaskManagerWindow;
         ScriptDebugWindow mScriptDebugWindow;
         GLPreviewWindowComponent mGlPreviewWindowComponent;
 

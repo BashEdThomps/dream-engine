@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Widgets/ImGui/ImGuiPanel.h"
-#include "NameAndUuidPanel.h"
+#include "IdentityPropertiesPanel.h"
 
 namespace octronic::dream::tool
 {
@@ -11,13 +11,12 @@ namespace octronic::dream::tool
     TemplateEntityPropertiesPanel(ImGuiWidget& parent);
     void draw() override;
   protected:
-  	bool drawDeleteEntityButton();
   	void drawTransformProperties();
     void drawTextProperties();
     void drawAnimationTransport();
     void drawAssetSelection();
   private:
-    NameAndUuidPanel mNameAndUuidPanel;
+    IdentityPropertiesPanel mNameAndUuidPanel;
   };
 }
 

@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #pragma once
 
 #include "ShaderUniform.h"
@@ -32,6 +17,7 @@
 using std::vector;
 using std::map;
 using std::shared_ptr;
+using std::unique_ptr;
 using std::string;
 using glm::mat4;
 using glm::vec2;
@@ -88,8 +74,9 @@ namespace octronic::dream
         ShaderRuntime(ShaderRuntime&&) = default;
         ShaderRuntime& operator=(ShaderRuntime&&) = default;
 
+        ~ShaderRuntime();
+
         bool loadFromDefinition() override;
-        bool init() override;
         void deleteUniforms();
 
         bool use();
@@ -121,7 +108,7 @@ namespace octronic::dream
         void syncUniforms();
 
     		bool checkUniformValue(ShaderUniform& uf);
-        vector<ShaderUniform>& getUniformsVector();
+        vector<reference_wrapper<ShaderUniform>> getUniformsVector() const;
 
         // Material ============================================================
         void bindMaterial(MaterialRuntime& material);
@@ -183,7 +170,7 @@ namespace octronic::dream
         bool mFragmentCompilationFailed;
         bool mLinkingFailed;
 
-        vector<ShaderUniform> mUniformVector;
+        vector<unique_ptr<ShaderUniform>> mUniformVector;
         vector<reference_wrapper<MaterialRuntime>> mMaterials;
         vector<mat4> mRuntimeMatricies;
         map<string,GLint> mUniformLocationCache;

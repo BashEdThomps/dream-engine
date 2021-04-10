@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #include "ScriptComponent.h"
 
 #include "ScriptRuntime.h"
@@ -265,7 +253,7 @@ namespace octronic::dream // ===================================================
 
     sol::protected_function onEventFunction = entityTable[LUA_ON_EVENT_FUNCTION];
 
-    for (auto e : entity.getEventQueue())
+    for (auto& e : entity.getEventQueue())
     {
       auto result = onEventFunction(entity,e);
       if (!result.valid())
@@ -415,10 +403,10 @@ namespace octronic::dream // ===================================================
   ScriptComponent::exposeCamera
   ()
   {
-    debugRegisteringClass("Camera");
+    debugRegisteringClass("CameraRuntime");
     sol::state_view stateView(mLuaState);
     stateView.new_usertype<CameraRuntime>(
-          "Camera",
+          "CameraRuntime",
           "setTransform",&CameraRuntime::setTransform,
           "getTransform",&CameraRuntime::getTransform);
 
@@ -860,7 +848,7 @@ namespace octronic::dream // ===================================================
     stateView.new_usertype<SceneRuntime>(
           "SceneRuntime",
           sol::base_classes, sol::bases<Runtime>(),
-          "getCamera",&SceneRuntime::getCameraRuntime,
+          "getCameraRuntime",&SceneRuntime::getCameraRuntime,
           "getProjectRuntime", &SceneRuntime::getProjectRuntime,
           "getEntityRuntimeByUuid",&SceneRuntime::getEntityRuntimeByUuid);
   }

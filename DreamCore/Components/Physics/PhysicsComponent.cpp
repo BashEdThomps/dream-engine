@@ -1,19 +1,5 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "PhysicsComponent.h"
+
 #include "PhysicsRuntime.h"
 #include "PhysicsTasks.h"
 #include "Common/Logger.h"
@@ -35,7 +21,14 @@ namespace octronic::dream
 {
   PhysicsComponent::PhysicsComponent
   (ProjectRuntime& pr)
-    : Component(pr)
+    : Component(pr),
+      mDynamicsWorld(nullptr),
+      mBroadphase(nullptr),
+      mCollisionConfiguration(nullptr),
+      mDispatcher(nullptr),
+      mSolver(nullptr),
+      mDebugDrawer(nullptr)
+
   {
   }
 
@@ -97,6 +90,7 @@ namespace octronic::dream
       if (time_delta > 0.0)
       {
         mDynamicsWorld->stepSimulation(time_delta);
+        if (mDebugDrawer) mDynamicsWorld->debugDrawWorld();
         checkContactManifolds();
       }
     }
@@ -275,15 +269,21 @@ namespace octronic::dream
   PhysicsComponent::setDebugDrawer
   (btIDebugDraw* dd)
   {
-    if (auto drawer = dd)
-    {
-      mDynamicsWorld->setDebugDrawer(drawer);
-    }
+    mDebugDrawer = dd;
+    mDynamicsWorld->setDebugDrawer(dd);
   }
 
   void PhysicsComponent::pushTasks()
   {
     auto& taskQueue = getProjectRuntime().getTaskQueue();
     taskQueue.pushTask(mUpdateWorldTask);
+  }
+
+  bool
+  PhysicsComponent::hasDebugDrawer
+  ()
+  const
+  {
+    return mDebugDrawer != nullptr;
   }
 }

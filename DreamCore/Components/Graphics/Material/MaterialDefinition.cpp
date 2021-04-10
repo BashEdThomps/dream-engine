@@ -1,21 +1,3 @@
-/*
- * MaterialDefinition.cpp
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #include "MaterialDefinition.h"
 
 #include "Common/Logger.h"
@@ -39,7 +21,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_SHADER].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_SHADER) == mJson.end())
     {
       return Uuid::INVALID;
     }
@@ -60,7 +42,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_ALBEDO].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_ALBEDO) == mJson.end())
     {
       return Uuid::INVALID;
     }
@@ -81,7 +63,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_NORMAL].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_NORMAL) == mJson.end())
     {
       return Uuid::INVALID;
     }
@@ -102,7 +84,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_METALLIC].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_METALLIC) == mJson.end())
     {
       return Uuid::INVALID;
     }
@@ -123,7 +105,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_ROUGHNESS].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_ROUGHNESS) == mJson.end())
     {
       return Uuid::INVALID;
     }
@@ -144,7 +126,7 @@ namespace octronic::dream
   ()
   const
   {
-    if(!mJson[Constants::ASSET_ATTR_MATERIAL_AO].is_number())
+    if(mJson.find(Constants::ASSET_ATTR_MATERIAL_AO) == mJson.end())
     {
       return Uuid::INVALID;
     }

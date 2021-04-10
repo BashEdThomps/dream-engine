@@ -6,13 +6,8 @@ namespace octronic::dream::tool
 {
   ToolPropertiesWindow::ToolPropertiesWindow
   (DreamToolContext& p)
-    : ImGuiWidget(p,true)
+    : ImGuiWidget(p,false)
   {
-  }
-
-  ToolPropertiesWindow::~ToolPropertiesWindow()
-  {
-
   }
 
   void ToolPropertiesWindow::drawSelectionSettings()
@@ -183,7 +178,7 @@ namespace octronic::dream::tool
 
     vector<string> orientations = {"XY","XZ","YZ"};
     int orientationIndex = grid.getAxisPair();
-    if (StringCombo("Orientation",&orientationIndex,orientations,orientations.size()))
+    if (StringCombo("Orientation",&orientationIndex,orientations))
     {
       Grid::AxisPair ap = static_cast<Grid::AxisPair>(orientationIndex);
       auto& cursor = ctx.getCursor();

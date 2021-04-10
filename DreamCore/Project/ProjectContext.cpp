@@ -1,20 +1,3 @@
-/*
- * Project
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include "ProjectContext.h"
 
 #include "ProjectRuntime.h"
@@ -103,14 +86,19 @@ namespace octronic::dream
         auto& pDef = mProjectDefinition.value();
         auto& pRunt = mProjectRuntime.value();
 
-        auto startupSceneDef = pDef.getStartupSceneDefinition();
-        if (startupSceneDef)
+        auto startupSceneDefOpt = pDef.getStartupSceneDefinition();
+        if (startupSceneDefOpt)
         {
-          auto& startupSceneRuntime = pRunt.getSceneRuntimeByUuid(startupSceneDef.value().get().getUuid());
+          auto& startupSceneDef = startupSceneDefOpt.value().get();
+          auto startupSceneRuntimeOpt = pRunt.getSceneRuntimeByUuid(startupSceneDef.getUuid());
 
-          if (startupSceneRuntime.hasState(SCENE_STATE_LOADED))
+          if (startupSceneRuntimeOpt)
           {
-            pRunt.setActiveSceneRuntime(startupSceneRuntime.getUuid());
+            auto& startupSceneRuntime = startupSceneRuntimeOpt.value().get();
+            if (startupSceneRuntime.hasState(SCENE_STATE_LOADED))
+            {
+              pRunt.setActiveSceneRuntime(startupSceneRuntime.getUuid());
+            }
           }
         }
       }

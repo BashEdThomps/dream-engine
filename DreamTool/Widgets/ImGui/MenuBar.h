@@ -20,7 +20,6 @@ namespace octronic::dream::tool
     {
     public:
         MenuBar(DreamToolContext&);
-        ~MenuBar() override;
         void draw() override;
 
         float getMessagePadding() const;

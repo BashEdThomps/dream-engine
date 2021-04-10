@@ -1,16 +1,4 @@
-﻿/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
-#include "ProjectRuntime.h"
+﻿#include "ProjectRuntime.h"
 
 #include "ProjectDefinition.h"
 #include "ProjectDirectory.h"
@@ -35,6 +23,7 @@
 using std::make_shared;
 using std::make_unique;
 using std::static_pointer_cast;
+using std::nullopt;
 
 namespace octronic::dream
 {
@@ -219,29 +208,6 @@ namespace octronic::dream
 
   // Running =================================================================
 
-  void
-  ProjectRuntime::collectGarbage
-  ()
-  {
-    LOG_DEBUG("\n"
-        "=======================================================================\n"
-        "CollectGarbage Called @ {}\n"
-        "=======================================================================",
-              mTime.getAbsoluteTime());
-
-    mDestructionTaskQueue.executeQueue();
-    auto& gfxDestQueue = mGraphicsComponent.getDestructionTaskQueue();
-    gfxDestQueue.executeQueue();
-
-    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
-    for (auto& sceneRuntime : mSceneRuntimesToRemove)
-    {
-      sceneRuntime.get().collectGarbage();
-      removeSceneRuntime(sceneRuntime);
-    }
-    mSceneRuntimesToRemove.clear();
-  }
-
   void ProjectRuntime::pushComponentTasks()
   {
     // Maintain this order
@@ -298,9 +264,19 @@ namespace octronic::dream
         case SceneState::SCENE_STATE_TO_DESTROY:
         {
           rt.destroyRuntime();
-          if (mActiveSceneRuntime.value().get() == rt)
+          if (mActiveSceneRuntime)
           {
-            mActiveSceneRuntime.reset();
+            auto& asr =  mActiveSceneRuntime.value().get();
+            if (asr == rt)
+            {
+              auto& inputComp = getInputComponent();
+              auto& destructionQueue = getDestructionTaskQueue();
+              destructionQueue.pushTask(inputComp.getRemoveScriptTask());
+              auto& inputScript = asr.getInputScript();
+              inputScript.setLoaded(false);
+              inputScript.setLoadError(false);
+              mActiveSceneRuntime.reset();
+            }
           }
           break;
         }
@@ -318,7 +294,18 @@ namespace octronic::dream
     mTaskQueue.executeQueue();
     auto& gfxQueue = mGraphicsComponent.getTaskQueue();
     gfxQueue.executeQueue();
-    collectGarbage();
+
+    mDestructionTaskQueue.executeQueue();
+    auto& gfxDestQueue = mGraphicsComponent.getDestructionTaskQueue();
+    gfxDestQueue.executeQueue();
+
+    LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
+    for (auto& sceneRuntime : mSceneRuntimesToRemove)
+    {
+      sceneRuntime.get().collectGarbage();
+      removeSceneRuntime(sceneRuntime);
+    }
+    mSceneRuntimesToRemove.clear();
 
     LOG_TRACE("\n\n=========================[ Update Complete ]=========================\n\n");
   }
@@ -549,9 +536,10 @@ namespace octronic::dream
     return mActiveSceneRuntime;
   }
 
-  SceneRuntime&
+  optional<reference_wrapper<SceneRuntime>>
   ProjectRuntime::getSceneRuntimeByUuid
   (UuidType uuid)
+  const
   {
     LOG_TRACE("ProjectRuntime: {}",__FUNCTION__);
     for (auto& sr : mSceneRuntimeVector)
@@ -561,7 +549,7 @@ namespace octronic::dream
         return *sr;
       }
     }
-    throw std::exception();
+    return std::nullopt;
   }
 
   void
@@ -592,9 +580,11 @@ namespace octronic::dream
   ProjectRuntime::removeSceneRuntime
   (const SceneRuntime& rt)
   {
-    std::remove_if(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(),
-		[&](unique_ptr<SceneRuntime>& next)
-		{ return next->getUuid() == rt.getUuid();});
+    auto itr = find_if(mSceneRuntimeVector.begin(), mSceneRuntimeVector.end(),
+                       [&](unique_ptr<SceneRuntime>& next)
+    { return next->getUuid() == rt.getUuid();});
+
+    if (itr!=mSceneRuntimeVector.end()) mSceneRuntimeVector.erase(itr);
   }
 
   ProjectDirectory&

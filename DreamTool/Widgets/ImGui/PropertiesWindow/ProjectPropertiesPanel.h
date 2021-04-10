@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Widgets/ImGui/ImGuiPanel.h"
-#include "NameAndUuidPanel.h"
+#include "IdentityPropertiesPanel.h"
 
 namespace octronic::dream::tool
 {
@@ -11,7 +11,7 @@ namespace octronic::dream::tool
     ProjectPropertiesPanel(ImGuiWidget& parent);
     void draw() override;
   private:
-    NameAndUuidPanel mNameAndUuidPanel;
+    IdentityPropertiesPanel mNameAndUuidPanel;
   };
 }
 

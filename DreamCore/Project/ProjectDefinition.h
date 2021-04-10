@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #pragma once
 
 #include "Base/Definition.h"
@@ -57,8 +45,9 @@ namespace octronic::dream
     vector<string> getAssetNamesVector(AssetType);
     vector<reference_wrapper<AssetDefinition>> getAssetDefinitionsVector(AssetType);
     int getAssetDefinitionIndex(AssetDefinition&);
+    void removeAssetDefinitionByUuid(AssetType, UuidType);
     void removeAssetDefinition(AssetDefinition& assetDef);
-    void deleteAllAssetDefinitions();
+    void removeAllAssetDefinitions();
 
     // Scenes ==============================================================
 
@@ -69,22 +58,25 @@ namespace octronic::dream
     optional<reference_wrapper<SceneDefinition>> getSceneDefinitionByName(const string& name);
     vector<reference_wrapper<SceneDefinition>> getSceneDefinitionsVector() const;
     SceneDefinition& getSceneDefinitionAtIndex(int index);
+    vector<string> getSceneDefinitionNamesVector() const;
     int getSceneDefinitionIndex(SceneDefinition&) const;
     size_t countScenesDefinitions() const;
     void setStartupSceneUuid(UuidType sceneUuid);
     void removeSceneDefinition(SceneDefinition& sceneDef);
-    void deleteAllSceneDefinitions();
+    void removeAllSceneDefinitions();
 
     // Template Entity Management ==========================================
 
     TemplateEntityDefinition& createTemplateEntityDefinition();
     optional<reference_wrapper<TemplateEntityDefinition>> getTemplateEntityDefinitionByUuid(UuidType uuid);
-    vector<string> getTemplateEntityNamesVector();
+    vector<string> getTemplateEntityDefinitionNamesVector();
     void removeTemplateEntityDefinitionByUuid(UuidType);
     void removeTemplateEntityDefinition(TemplateEntityDefinition&);
-    vector<reference_wrapper<TemplateEntityDefinition>> getTemplateEntitiesVector() const;
+    vector<reference_wrapper<TemplateEntityDefinition>> getTemplateEntityDefinitionsVector() const;
+    int getTemplateEntityDefinitionIndex(TemplateEntityDefinition& def);
+    TemplateEntityDefinition& getTemplateEntityDefinitionAtIndex(int index);
 
-    json toJson() override;
+    json getJson() override;
 
   private:
     void loadAllSceneDefinitions();

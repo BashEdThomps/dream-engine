@@ -7,7 +7,7 @@ namespace octronic::dream::tool
 {
   LightViewer::LightViewer
   (DreamToolContext& p)
-    : GLWidget(p,false)
+    : GLWidget(p)
   {
 
   }

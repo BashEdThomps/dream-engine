@@ -17,7 +17,6 @@ namespace octronic::dream
     DeferredLoadRuntime(DeferredLoadRuntime&&) = default;
     DeferredLoadRuntime& operator=(DeferredLoadRuntime&&) = default;
 
-    virtual bool init();
     shared_ptr<RuntimeLoadFromDefinitionTask> getLoadFromDefinitionTask() const;
     bool getLoaded() const;
     void setLoaded(bool);

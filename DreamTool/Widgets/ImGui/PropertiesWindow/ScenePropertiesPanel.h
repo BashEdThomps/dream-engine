@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Widgets/ImGui/ImGuiPanel.h"
-#include "NameAndUuidPanel.h"
+#include "IdentityPropertiesPanel.h"
 #include "TransformPropertiesPanel.h"
 
 namespace octronic::dream::tool
@@ -14,7 +14,7 @@ namespace octronic::dream::tool
   private:
     bool drawDeleteSceneButton();
   private:
-    NameAndUuidPanel mNameAndUuidPanel;
+    IdentityPropertiesPanel mNameAndUuidPanel;
     TransformPropertiesPanel mCameraTransformPanel;
   };
 }

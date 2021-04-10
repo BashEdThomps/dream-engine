@@ -1,16 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
-
 #pragma once
 
 #include <string>
@@ -39,14 +26,11 @@ namespace octronic::dream
 
     // Misc ====================================================================
     const static string DIRECTORY_PATH_SEP;
-    const static string PATH_DELIMETER;
     // Project =================================================================
     const static string PROJECT_DEFAULT_NAME;
     const static int    PROJECT_UUID_LENGTH;
     const static string PROJECT_FILE_EXTENSION;
     const static string PROJECT_PATH_SEP;
-    const static string PROJECT_UUID;
-    const static string PROJECT_NAME;
     const static string PROJECT_TEMPLATE_ENTITIES_ARRAY;
     const static string PROJECT_SCENE_ARRAY;
     const static string PROJECT_ANIMATION_ASSET_ARRAY;
@@ -63,8 +47,8 @@ namespace octronic::dream
     // Asset ===================================================================
     const static string UUID;
     const static string NAME;
-    const static string ASSET_ATTR_GROUP;
-    const static string ASSET_ATTR_GROUP_DEFAULT;
+    const static string GROUP;
+    const static string DEFAULT_GROUP;
     // Types ===================================================================
     const static string ASSET_TYPE;
     const static string ASSET_TYPE_ANIMATION;
@@ -120,7 +104,7 @@ namespace octronic::dream
     const static string SCENE_ENVIRONMENT_TEXTURE;
     const static string SCENE_ENVIRONMENT_SHADER;
     // Camera ==================================================================
-    const static string CAMERA_FOV;
+    const static string CAMERA_FOV_DEGREES;
     const static string CAMERA_MESH_CULL_DISTANCE;
     const static string CAMERA_MIN_DRAW_DISTANCE;
     const static string CAMERA_MAX_DRAW_DISTANCE;
@@ -250,14 +234,6 @@ namespace octronic::dream
     const static string SCRIPT_INPUT_FUNCTION;
     const static string SCRIPT_EVENT_FUNCTION;
     const static string SCRIPT_DESTROY_FUNCTION;
-    // Audio ===================================================================
-    const static string ASSET_ATTR_SPECTRUM_ANALYSER;
-    const static string ASSET_ATTR_AUDIO_EVENT_MARKERS;
-    const static string ASSET_ATTR_AUDIO_EM_INDEX;
-    const static string ASSET_ATTR_AUDIO_EM_S_INDEX;
-    const static string ASSET_ATTR_AUDIO_EM_NAME;
-    const static string ASSET_ATTR_AUDIO_EM_REPEAT;
-    const static string ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD;
     // Animation/Keyframe ======================================================
     const static string KEYFRAME_ID;
     const static string KEYFRAME_TIME;

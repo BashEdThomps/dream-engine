@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #include "Constants.h"
 
 
@@ -21,14 +9,10 @@ namespace octronic::dream
 #else
   const string Constants::DIRECTORY_PATH_SEP = "/";
 #endif
-  const string Constants::PATH_DELIMETER = "::";
 
   // Project ==================================================================
   const string Constants::PROJECT_DEFAULT_NAME = "Untitled Project";
   const string Constants::PROJECT_FILE_EXTENSION = ".json";
-  const string Constants::PROJECT_PATH_SEP = "/";
-  const string Constants::PROJECT_UUID = "uuid";
-  const string Constants::PROJECT_NAME = "name";
   const string Constants::PROJECT_TEMPLATE_ENTITIES_ARRAY = "template_entities";
   const string Constants::PROJECT_SCENE_ARRAY = "scenes";
   const string Constants::PROJECT_AUDIO_ASSET_ARRAY = "audio_assets";
@@ -46,6 +30,8 @@ namespace octronic::dream
   // Asset ====================================================================
   const string Constants::UUID = "uuid";
   const string Constants::NAME = "name";
+  const string Constants::GROUP = "group";
+  const string Constants::DEFAULT_GROUP = "None";
 
   // Types
   const string Constants::ASSET_TYPE = "type";
@@ -82,8 +68,7 @@ namespace octronic::dream
   const string Constants::ASSET_DEFINITION_DEFAULT_NAME = "New Asset Definition";
   const string Constants::ASSET_TYPE_TEXTURE_READABLE = "Texture";
   const string Constants::ASSET_TYPE_MATERIAL_READABLE = "Material";
-  const string Constants::ASSET_ATTR_GROUP = "group";
-  const string Constants::ASSET_ATTR_GROUP_DEFAULT = "None";
+
 
   const string Constants::ASSET_FORMAT_SCRIPT_LUA_READABLE = "Lua";
   const string Constants::ASSET_FORMAT_MODEL_ASSIMP_READABLE = "Assimp Model";
@@ -107,7 +92,7 @@ namespace octronic::dream
   const string Constants::SCENE_ENVIRONMENT_SHADER = "environment_shader";
 
   // Camera ==================================================================
-  const string Constants::CAMERA_FOV = "fov";
+  const string Constants::CAMERA_FOV_DEGREES = "fov_degrees";
   const string Constants::CAMERA_MESH_CULL_DISTANCE = "mesh_cull_distance";
   const string Constants::CAMERA_MIN_DRAW_DISTANCE = "min_draw";
   const string Constants::CAMERA_MAX_DRAW_DISTANCE = "max_draw";
@@ -274,13 +259,6 @@ namespace octronic::dream
   const string Constants::ASSET_ATTR_TEXTURE_FLIP_VERTICAL = "flip_vertical";
 
   // Audio ===================================================================
-  const string Constants::ASSET_ATTR_SPECTRUM_ANALYSER = "spectrum_analyser";
-  const string Constants::ASSET_ATTR_AUDIO_EVENT_MARKERS = "event_markers";
-  const string Constants::ASSET_ATTR_AUDIO_EM_INDEX = "index";
-  const string Constants::ASSET_ATTR_AUDIO_EM_S_INDEX = "sample_index";
-  const string Constants::ASSET_ATTR_AUDIO_EM_NAME = "name";
-  const string Constants::ASSET_ATTR_AUDIO_EM_REPEAT = "repeat";
-  const string Constants::ASSET_ATTR_AUDIO_EM_REPEAT_PERIOD = "repeat_period";
 
   // Animation / Keyframe ====================================================
   const string Constants::KEYFRAME_ID = "kf_id";

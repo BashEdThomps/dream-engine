@@ -27,9 +27,9 @@ namespace octronic::dream
     FontRuntime(ProjectRuntime& e, FontDefinition& def);
     FontRuntime(FontRuntime&&) = default;
     FontRuntime& operator=(FontRuntime&&) = default;
+    ~FontRuntime();
 
     bool loadFromDefinition() override;
-    bool init() override;
     bool loadIntoGL();
     void pushTasks() override;
     void pushDestructionTask();

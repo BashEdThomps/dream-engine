@@ -1,15 +1,4 @@
-﻿/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-#include "EntityRuntime.h"
+﻿#include "EntityRuntime.h"
 
 #include "Common/Uuid.h"
 #include "Components/Time.h"
@@ -43,7 +32,7 @@ namespace octronic::dream
   (ProjectRuntime& projRunt,
    SceneRuntime& sceneRunt,
    SceneEntityDefinition& sceneEntDef,
-   TemplateEntityDefinition& templDef)
+   optional<reference_wrapper<TemplateEntityDefinition>> templDef)
     : Runtime(sceneEntDef),
       mProjectRuntime(projRunt),
       mSceneRuntime(sceneRunt),
@@ -322,10 +311,13 @@ namespace octronic::dream
     {
       LOG_TRACE("EntityRuntime: Deleting child {}",child);
 
-      std::remove_if(mChildRuntimes.begin(), mChildRuntimes.end(),
+      auto itr = find_if(mChildRuntimes.begin(), mChildRuntimes.end(),
                      [&](unique_ptr<EntityRuntime>& next)
       { return next->getUuid() == child;} );
+    	if (itr != mChildRuntimes.end()) mChildRuntimes.erase(itr);
     }
+
+
     clearProcessedEvents();
   }
 
@@ -414,7 +406,7 @@ namespace octronic::dream
     removePhysicsRuntime();
     LOG_TRACE( "EntityRuntime: Creating Physics Object Asset Runtime." );
     mPhysicsRuntime.emplace(mProjectRuntime,definition,*this);
-    return mPhysicsRuntime.value().init();
+    return mPhysicsRuntime.has_value();
   }
 
   bool
@@ -424,7 +416,7 @@ namespace octronic::dream
     LOG_TRACE( "EntityRuntime: Creating Animation asset Runtime." );
     removeAnimationRuntime();
     mAnimationRuntime.emplace(mProjectRuntime,definition,*this);
-    return mAnimationRuntime.value().init();
+    return mAnimationRuntime.has_value();
   }
 
   bool
@@ -434,7 +426,7 @@ namespace octronic::dream
     LOG_TRACE( "EntityRuntime: Creating Path asset Runtime." );
     removePathRuntime();
     mPathRuntime.emplace(getProjectRuntime(),definition,*this);
-    return mPathRuntime.value().init();
+    return mPathRuntime.has_value();
   }
 
   // SharedAssetRuntimes =====================================================
@@ -581,8 +573,10 @@ namespace octronic::dream
     return mSceneRuntime.get();
   }
 
-  TemplateEntityDefinition&
-  EntityRuntime::getTemplateEntityDefinition()
+  optional<reference_wrapper<TemplateEntityDefinition>>
+  EntityRuntime::getTemplateEntityDefinition
+  ()
+  const
   {
     return mTemplateEntityDefinition;
   }
@@ -626,8 +620,9 @@ namespace octronic::dream
   EntityRuntime::removeChildRuntime
   (EntityRuntime& child)
   {
-    std::remove_if(mChildRuntimes.begin(), mChildRuntimes.end(),
+    auto itr = find_if(mChildRuntimes.begin(), mChildRuntimes.end(),
                    [&](unique_ptr<EntityRuntime>& next){ return next->getUuid() == child.getUuid(); });
+    if (itr != mChildRuntimes.end()) mChildRuntimes.erase(itr);
   }
 
   EntityRuntime&
@@ -636,10 +631,11 @@ namespace octronic::dream
   {
     auto& sceneDef = sceneEntDef.getSceneDefinition();
     auto& pDef = sceneDef.getProjectDefinition();
-    auto templateDef = pDef.getTemplateEntityDefinitionByUuid(sceneEntDef.getTemplateUuid());
+    auto templateDefOpt = pDef.getTemplateEntityDefinitionByUuid(sceneEntDef.getTemplateUuid());
+
     auto& child = mChildRuntimes.emplace_back(make_unique<EntityRuntime>(
-          mProjectRuntime,  mSceneRuntime,
-          sceneEntDef, templateDef.value().get()));
+                                                mProjectRuntime,  mSceneRuntime,
+                                                sceneEntDef, templateDefOpt.value().get()));
 
     child->setParentEntityRuntime(*this);
 
@@ -658,13 +654,19 @@ namespace octronic::dream
   ()
   {
     auto& sceneEntityDef = static_cast<SceneEntityDefinition&>(getDefinition());
-    auto& templateDef = mTemplateEntityDefinition.get();
 
-    LOG_TRACE("EntityRuntime: Using SceneEntity Definition {} with Template {}", sceneEntityDef.getNameAndUuidString(), templateDef.getNameAndUuidString());
-    setName(templateDef.getName());
+    LOG_TRACE("EntityRuntime: Using SceneEntity Definition {}", sceneEntityDef.getNameAndUuidString());
+    setName(sceneEntityDef.getName());
     setUuid(sceneEntityDef.getUuid());
     setTransform(sceneEntityDef.getTransform());
-    createAssetRuntimes(templateDef.getAssetDefinitionsMap());
+
+    if (mTemplateEntityDefinition)
+    {
+      auto& templateDef = mTemplateEntityDefinition.value().get();
+    	LOG_TRACE("EntityRuntime: Using Template {}", templateDef.getNameAndUuidString());
+      createAssetRuntimes(templateDef.getAssetDefinitionsMap());
+    }
+
     for (auto& entityDef : sceneEntityDef.getChildDefinitionsVector())
     {
       createChildRuntime(entityDef);

@@ -49,10 +49,13 @@ namespace octronic::dream
       mQuadVAO(0),
       mQuadVBO(0)
   {
-
+    // Init Tasks
+    mLoadIntoGLTask = make_shared<TextureLoadIntoGLTask>(getProjectRuntime(), *this);
+    mRenderCubeMapTask = make_shared<TextureSetupEnvironmentTask>(getProjectRuntime(), *this);
+    mRemoveFromGLTask = make_shared<TextureRemoveFromGLTask>(getProjectRuntime());
   }
 
-  void TextureRuntime::pushDestructionTask
+  TextureRuntime::~TextureRuntime
   ()
   {
     auto& gc = getProjectRuntime().getGraphicsComponent();
@@ -60,17 +63,7 @@ namespace octronic::dream
     gfxDq.pushTask(mRemoveFromGLTask);
   }
 
-  bool
-  TextureRuntime::init
-  ()
-  {
-    if (!DeferredLoadRuntime::init()) return false;
-    // Init Tasks
-    mLoadIntoGLTask = make_shared<TextureLoadIntoGLTask>(getProjectRuntime(), *this);
-    mRenderCubeMapTask = make_shared<TextureSetupEnvironmentTask>(getProjectRuntime(), *this);
-    mRemoveFromGLTask = make_shared<TextureRemoveFromGLTask>(getProjectRuntime());
-    return true;
-  }
+
 
   // Accessors ===============================================================
 
@@ -401,11 +394,19 @@ namespace octronic::dream
     GLCheckError();
 
     // Set Parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    if(mIsEnvironmentTexture)
+    {
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    }
+    else
+    {
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 
     glBindTexture(GL_TEXTURE_2D, 0);
     GLCheckError();

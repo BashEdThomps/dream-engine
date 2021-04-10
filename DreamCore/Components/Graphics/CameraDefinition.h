@@ -12,8 +12,8 @@ namespace octronic::dream
     CameraDefinition(CameraDefinition&&) = default;
     CameraDefinition& operator=(CameraDefinition&&) = default;
 
-    void setFieldOfView(float fov);
-    float getFieldOfView() const;
+    void setFieldOfViewDegrees(float fov);
+    float getFieldOfViewDegrees() const;
 
     Transform getFreeTransform() const;
     void setFreeTransform(const Transform& t);

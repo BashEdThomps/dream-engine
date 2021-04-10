@@ -35,6 +35,8 @@ namespace octronic::dream
     SceneEntityDefinition& createChildDefinitionFrom(SceneEntityDefinition&);
     void removeChildDefinition(SceneEntityDefinition&);
     vector<reference_wrapper<SceneEntityDefinition>> getChildDefinitionsVector() const;
+    vector<reference_wrapper<SceneEntityDefinition>> getAllDescendants() const;
+
     size_t countChildDefinitions() const;
     SceneEntityDefinition& duplicateDefinition();
     optional<reference_wrapper<SceneEntityDefinition>> getChildDefinitionByUuid(UuidType);
@@ -53,6 +55,8 @@ namespace octronic::dream
 
     void setFontScale(float s);
     float getFontScale() const;
+
+    json getJson() override;
 
   private:
     reference_wrapper<SceneDefinition> mSceneDefinition;

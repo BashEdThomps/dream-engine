@@ -9,7 +9,12 @@ namespace octronic::dream::tool
     {
     public:
         DreamToolWidget(DreamToolContext& ctx, bool visible = true);
-        virtual ~DreamToolWidget();
+
+        DreamToolWidget(DreamToolWidget&) = delete;
+        DreamToolWidget& operator=(DreamToolWidget&) = delete;
+
+        DreamToolWidget(DreamToolWidget&&) = default;
+        DreamToolWidget& operator=(DreamToolWidget&&) = default;
 
         virtual void draw() = 0;
 
@@ -17,9 +22,9 @@ namespace octronic::dream::tool
         void setVisible(bool);
 
         DreamToolContext& getContext() const;
+
     protected:
         bool mVisible;
-
     private:
         reference_wrapper<DreamToolContext> mContext;
     };

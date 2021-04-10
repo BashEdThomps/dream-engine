@@ -19,14 +19,14 @@ namespace octronic::dream
   void RuntimeLoadFromDefinitionTask::execute()
   {
     LOG_TRACE("RuntimeLoadFromDefTask: Executing for Runtime: {}", getRuntime().getNameAndUuidString());
-    if (getRuntime().loadFromDefinition())
-    {
-      setState(TASK_STATE_COMPLETED);
-    }
-    else
-    {
-      setState(TASK_STATE_DEFERRED);
-    }
+      if (getRuntime().loadFromDefinition())
+      {
+        setState(TASK_STATE_COMPLETED);
+      }
+      else
+      {
+        setState(TASK_STATE_DEFERRED);
+      }
   }
 
   string
@@ -45,6 +45,6 @@ namespace octronic::dream
   ()
   const
   {
-  	return mRuntime.get();
+    return mRuntime.get();
   }
 }

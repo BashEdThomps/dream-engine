@@ -11,14 +11,10 @@ using std::stringstream;
 
 namespace octronic::dream::tool
 {
-  DefinitionBrowser::DefinitionBrowser(DreamToolContext& project)
-    : ImGuiWidget(project)
+  DefinitionBrowser::DefinitionBrowser
+  (DreamToolContext& project)
+    : ImGuiWidget(project,true)
   {}
-
-  DefinitionBrowser::~DefinitionBrowser
-  ()
-  {
-  }
 
   void
   DefinitionBrowser::draw
@@ -42,33 +38,25 @@ namespace octronic::dream::tool
 
       // Template Entities =====================================================
       {
-        string name = "Entity";
-        auto templateEntities = projDef.getTemplateEntitiesVector();
+        string name = "Template Entities";
+        auto templateEntities = projDef.getTemplateEntityDefinitionsVector();
         stringstream nameCount;
         nameCount << name << " (" <<  templateEntities.size() << ")";
-        ImGui::PushID("TemplateEntities");
+        ImGui::PushID(name.c_str());
 
-        ImGui::SetNextTreeNodeOpen(mCurrentOpenHeader.compare(name) == 0);
-        bool headerOpen = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
+        ImGui::SetNextTreeNodeOpen(mOpenHeaders[name]);
+        bool nodeResult = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
+        mOpenHeaders[name] = nodeResult;
 
-        // Context Menu
-        if (ImGui::BeginPopupContextItem())
+        if (mOpenHeaders[name])
         {
-          char buf[buf_sz];
-          snprintf(buf,buf_sz,"New %s",name.c_str());
-          bool newClicked = ImGui::MenuItem(buf);
-          if (newClicked)
+          if (ImGui::Button("+"))
           {
             auto& newDef = projDef.createTemplateEntityDefinition();
-            getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_TemplateEntity,newDef});
+            getContext().getPropertiesWindow().pushPropertyTarget(PropertyType_TemplateEntity,newDef);
           }
-          ImGui::EndPopup();
-        }
 
-        if (headerOpen)
-        {
           // Group Nodes
-          mCurrentOpenHeader = name;
           int assetDefTreeId = 0;
           // Asset Nodes
           for (auto& templateEntityWrap : templateEntities)
@@ -84,6 +72,7 @@ namespace octronic::dream::tool
               bool deleteClicked = ImGui::MenuItem(buf);
               if (deleteClicked)
               {
+                projDef.removeTemplateEntityDefinitionByUuid(templateEntity.getUuid());
               }
               ImGui::EndPopup();
             }
@@ -93,7 +82,7 @@ namespace octronic::dream::tool
               if (ImGui::IsItemClicked())
               {
                 LOG_DEBUG("AssetBrowser: Template Entity Definition Clicked {}", templateEntity.getName());
-                getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_TemplateEntity, templateEntity});
+                getContext().getPropertiesWindow().pushPropertyTarget(PropertyType_TemplateEntity, templateEntity);
               }
               ImGui::TreePop();
             }
@@ -101,7 +90,6 @@ namespace octronic::dream::tool
         }
         ImGui::PopID();
       }
-
 
       ImGui::Separator();
 
@@ -117,27 +105,19 @@ namespace octronic::dream::tool
         stringstream nameCount;
         nameCount <<  name << " (" <<  assets.size() << ")";
         ImGui::PushID(name.c_str());
-        ImGui::SetNextTreeNodeOpen(mCurrentOpenHeader.compare(name) == 0);
-        bool headerOpen = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
+        ImGui::SetNextTreeNodeOpen(mOpenHeaders[name]);
+        bool nodeResult = ImGui::CollapsingHeader(nameCount.str().c_str(),node_flags);
+        mOpenHeaders[name] = nodeResult;
 
-        // Context Menu
-        if (ImGui::BeginPopupContextItem())
+        if (mOpenHeaders[name])
         {
-          char buf[buf_sz];
-          snprintf(buf,buf_sz,"New %s",name.c_str());
-          bool newClicked = ImGui::MenuItem(buf);
-          if (newClicked)
+          if (ImGui::Button("+"))
           {
             auto& newDef = projDef.createAssetDefinition(type);
-            getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_Asset,newDef});
+            getContext().getPropertiesWindow().pushPropertyTarget(PropertyType_Asset,newDef);
           }
-          ImGui::EndPopup();
-        }
 
-        if (headerOpen)
-        {
           // Group Nodes
-          mCurrentOpenHeader = name;
           int assetDefTreeId = 0;
           // Asset Nodes
           for (auto& assetWrap : assets)
@@ -154,6 +134,7 @@ namespace octronic::dream::tool
               bool deleteClicked = ImGui::MenuItem(buf);
               if (deleteClicked)
               {
+                projDef.removeAssetDefinitionByUuid(asset.getAssetType(), asset.getUuid());
               }
               ImGui::EndPopup();
             }
@@ -163,7 +144,7 @@ namespace octronic::dream::tool
               if (ImGui::IsItemClicked())
               {
                 LOG_DEBUG("AssetBrowser: Asset Definition Clicked {}", asset.getName());
-                getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_Asset, asset});
+                getContext().getPropertiesWindow().pushPropertyTarget(PropertyType_Asset, asset);
               }
               ImGui::TreePop();
             }

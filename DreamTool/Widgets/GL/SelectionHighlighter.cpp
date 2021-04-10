@@ -11,7 +11,7 @@ namespace octronic::dream::tool
 
   SelectionHighlighter::SelectionHighlighter
   (DreamToolContext& project)
-    : GLWidget (project,false),
+    : GLWidget (project),
       mOffset(0.1f),
       mSelectionColour(0.0,1.0f,0.40f,0.5f),
       mOutlineColor(0.f,0.f,0.f,1.f),

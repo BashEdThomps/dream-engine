@@ -29,9 +29,8 @@ namespace octronic::dream
   (UuidType uuid)
   {
     std::remove_if(mRuntimes.begin(), mRuntimes.end(),
-    	[&](const unique_ptr<RuntimeType>& nextRuntime)
+                   [&](const unique_ptr<RuntimeType>& nextRuntime)
     { return nextRuntime->getUuid() == uuid; });
-    throw std::exception();
   }
 
   template <typename DefinitionType, typename RuntimeType> void
@@ -39,7 +38,6 @@ namespace octronic::dream
   (DefinitionType& def)
   {
     removeRuntimeByUuid(def.getUuid());
-    return;
   }
 
   template <typename DefinitionType, typename RuntimeType>
@@ -56,7 +54,7 @@ namespace octronic::dream
   (DefinitionType& def)
   {
     auto itr = std::find_if(mRuntimes.begin(), mRuntimes.end(),
-    	[&](const unique_ptr<RuntimeType>& next)
+                            [&](const unique_ptr<RuntimeType>& next)
     { return next->getUuid() == def.getUuid();});
 
     if (itr != mRuntimes.end()) return *(*itr);
@@ -92,16 +90,8 @@ namespace octronic::dream
   (DefinitionType& def)
   {
     RuntimeType& newRuntime = *mRuntimes.emplace_back(make_unique<RuntimeType>(mProjectRuntime, def));
-    if (newRuntime.init())
-    {
-      LOG_TRACE("Cache: Pushed back new Runtime");
-      return newRuntime;
-    }
-    else
-    {
-      removeRuntime(def);
-    	throw std::exception();
-    }
+    LOG_TRACE("Cache: Pushed back new Runtime");
+    return newRuntime;
   }
 
   template<typename DefinitionType, typename RuntimeType>

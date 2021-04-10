@@ -1,21 +1,3 @@
-/*
- * PathDefinition.h
- *
- * Created: 11 2017 by Ashley
- *
- * Copyright 2017 Octronic. All rights reserved.
- *
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #pragma once
 
 #include "Components/AssetDefinition.h"
@@ -24,36 +6,36 @@
 
 namespace octronic::dream
 {
-    class PathDefinition : public AssetDefinition
-    {
-    public:
-        PathDefinition(ProjectDefinition&, const json&);
+  class PathDefinition : public AssetDefinition
+  {
+  public:
+    PathDefinition(ProjectDefinition&, const json&);
 
-        PathDefinition(PathDefinition&&) = default;
-        PathDefinition& operator=(PathDefinition&&) = default;
+    PathDefinition(PathDefinition&&) = default;
+    PathDefinition& operator=(PathDefinition&&) = default;
 
 
-        void setWrap(bool wrap);
-        bool getWrap() const;
+    void setWrap(bool wrap);
+    bool getWrap() const;
 
-        float getVelocity() const;
-        void setVelocity(float v);
+    float getVelocity() const;
+    void setVelocity(float v);
 
-        PathControlPoint addControlPoint();
-        void deleteControlPoint(const PathControlPoint& cp);
-        void updateControlPoint(const PathControlPoint& cp);
-        vector<PathControlPoint> getControlPoints() const;
+    PathControlPoint addControlPoint();
+    void deleteControlPoint(const PathControlPoint& cp);
+    void updateControlPoint(const PathControlPoint& cp);
+    vector<PathControlPoint> getControlPoints() const;
 
-        string getSplineType() const;
-        void setSplineType(const string& type);
-        tsBSplineType getSplineTypeEnum() const;
+    string getSplineType() const;
+    void setSplineType(const string& type);
+    tsBSplineType getSplineTypeEnum() const;
 
-        void setStepScalar(double scaler);
-        double getStepScalar() const;
+    void setStepScalar(double scaler);
+    double getStepScalar() const;
 
-        PathControlPoint unwrapControlPoint(const json&) const;
-        json wrapControlPoint(const PathControlPoint& cp) const;
-    protected:
-        int nextID();
-    };
+    PathControlPoint unwrapControlPoint(const json&) const;
+    json wrapControlPoint(const PathControlPoint& cp) const;
+  protected:
+    int nextID();
+  };
 }

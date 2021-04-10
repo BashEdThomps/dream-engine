@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "GraphicsComponent.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -211,11 +196,11 @@ namespace octronic::dream
   GraphicsComponent::renderEnvironment
   (SceneRuntime& sr)
   {
-    auto& envShader = sr.getEnvironmentShader();
-    if (!envShader.getLoaded()) return;
+    auto envShaderOpt = sr.getEnvironmentShader();
+    if (!envShaderOpt || !envShaderOpt.value().get().getLoaded()) return;
 
-    auto& envTexture = sr.getEnvironmentTexture();
-    if (!envTexture.getLoaded()) return;
+    auto envTextureOpt = sr.getEnvironmentTexture();
+    if (!envTextureOpt || !envTextureOpt.value().get().getLoaded()) return;
 
     auto& wc = mProjectRuntime.value().get().getWindowComponent();
     wc.bindFrameBuffer();
@@ -228,12 +213,14 @@ namespace octronic::dream
     glDisable(GL_CULL_FACE);
 
     auto& camera = sr.getCameraRuntime();
+    auto& envShader = envShaderOpt.value().get();
     envShader.use();
     envShader.setViewMatrixUniform(camera.getViewMatrix());
     envShader.setProjectionMatrixUniform(camera.getProjectionMatrix());
 
     GLuint envTextureId = 0;
 
+    auto& envTexture = envTextureOpt.value().get();
     if (envTexture.getCubeDebugMode() == CUBE_DEBUG_NONE)
     {
       envTextureId = envTexture.getCubeMapTextureID();
@@ -268,44 +255,49 @@ namespace octronic::dream
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    auto& envTexture = sr.getEnvironmentTexture();
-    for (auto shaderWrapper : shaderCache.getRuntimeVector())
+    auto envTextureOpt = sr.getEnvironmentTexture();
+    if (envTextureOpt)
     {
-      auto& shader = shaderWrapper.get();
-      LOG_DEBUG("GraphicsComponent: Rending shader {}",shader.getNameAndUuidString());
+      auto& envTexture = envTextureOpt.value().get();
 
-      if (shader.countMaterials() == 0)
+      for (auto shaderWrapper : shaderCache.getRuntimeVector())
       {
-        LOG_DEBUG("GraphicsComponent: Shader {} has no materials",shader.getNameAndUuidString());
-        continue;
-      }
+        auto& shader = shaderWrapper.get();
+        LOG_DEBUG("GraphicsComponent: Rending shader {}",shader.getNameAndUuidString());
 
-      if(shader.use())
-      {
-        LOG_INFO("GraphicsComponent: Shader {} all good, rendering geometry pass",shader.getNameAndUuidString());
-        shader.setViewMatrixUniform(camera.getViewMatrix());
-        shader.setProjectionMatrixUniform(camera.getProjectionMatrix());
-        shader.setCameraPositionUniform(camera.getTransform().getTranslation());
-
-        shader.setIrradianceTextureUniform(envTexture.getIrradianceTextureID());
-        shader.setPreFilterTextureUniform(envTexture.getPreFilterTextureID());
-        shader.setBrdfLutTextureUniform(envTexture.getBrdfLutTextureID());
-        shader.setLightPositionsUniform(&mLightPositions[0], 4);
-        shader.setLightColorsUniform(&mLightColors[0], 4);
-
-        for (auto& materialWrap : shader.getMaterialsVector())
+        if (shader.countMaterials() == 0)
         {
-          auto& material = materialWrap.get();
-          if (material.getUsedByVector().size() == 0) continue;
+          LOG_DEBUG("GraphicsComponent: Shader {} has no materials",shader.getNameAndUuidString());
+          continue;
+        }
 
-          shader.bindMaterial(material);
-          for (auto& modelMeshWrap : material.getUsedByVector())
+        if(shader.use())
+        {
+          LOG_INFO("GraphicsComponent: Shader {} all good, rendering geometry pass",shader.getNameAndUuidString());
+          shader.setViewMatrixUniform(camera.getViewMatrix());
+          shader.setProjectionMatrixUniform(camera.getProjectionMatrix());
+          shader.setCameraPositionUniform(camera.getTransform().getTranslation());
+
+          shader.setIrradianceTextureUniform(envTexture.getIrradianceTextureID());
+          shader.setPreFilterTextureUniform(envTexture.getPreFilterTextureID());
+          shader.setBrdfLutTextureUniform(envTexture.getBrdfLutTextureID());
+          shader.setLightPositionsUniform(&mLightPositions[0], 4);
+          shader.setLightColorsUniform(&mLightColors[0], 4);
+
+          for (auto& materialWrap : shader.getMaterialsVector())
           {
-            auto& modelMesh = modelMeshWrap.get();
+            auto& material = materialWrap.get();
+            if (material.getUsedByVector().size() == 0) continue;
 
-            if (modelMesh.getLoaded())
+            shader.bindMaterial(material);
+            for (auto& modelMeshWrap : material.getUsedByVector())
             {
-              modelMesh.drawModelRuntimes(camera,shader);
+              auto& modelMesh = modelMeshWrap.get();
+
+              if (modelMesh.getLoaded())
+              {
+                modelMesh.drawModelRuntimes(camera,shader);
+              }
             }
           }
         }
@@ -389,10 +381,10 @@ namespace octronic::dream
   {
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
 
-    auto& shadowPassShader = sr.getShadowPassShader();
-    if (!shadowPassShader.getLoaded()) return;
+    auto shadowPassShaderOpt = sr.getShadowPassShader();
+    if (!shadowPassShaderOpt || !shadowPassShaderOpt.value().get().getLoaded()) return;
 
-    auto& shaderCache = mProjectRuntime.value().get().getShaderCache();
+    auto& shaderCache = getProjectRuntime().getShaderCache();
     LOG_DEBUG("==> Running Shadow Render Pass");
 
     glBindFramebuffer(GL_FRAMEBUFFER, mShadowPassFB);
@@ -429,6 +421,7 @@ namespace octronic::dream
       glDisable(GL_CULL_FACE);
       GLCheckError();
 
+      auto &shadowPassShader = shadowPassShaderOpt.value().get();
       if(shadowPassShader.use())
       {
         //shadowPassShader.value().get().setLightSpaceMatrixUniform(lightMat);
@@ -467,8 +460,8 @@ namespace octronic::dream
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
     LOG_DEBUG("==> Running Font Pass");
 
-    auto& fontShader = sceneRuntime.getFontShader();
-    if (fontShader.getLoaded())
+    auto fontShaderOpt = sceneRuntime.getFontShader();
+    if (!fontShaderOpt || fontShaderOpt.value().get().getLoaded())
     {
       LOG_ERROR("GraphicsComponent: Font shader not found");
       return;
@@ -487,6 +480,8 @@ namespace octronic::dream
 
       if (fontCache.runtimeCount() == 0) return;
 
+      auto& fontShader = fontShaderOpt.value().get();
+
       // Activate the Font Shader
       fontShader.use();
 
@@ -495,7 +490,7 @@ namespace octronic::dream
       // Iterate through FontRuntimes
       for (auto& fontRuntimeWrapper : fontCache.getRuntimeVector())
       {
-      	auto& fontRuntime = fontRuntimeWrapper.get();
+        auto& fontRuntime = fontRuntimeWrapper.get();
         // Iterate through FontTextInstances
         for (auto& entityWrapper : fontRuntime.getInstanceVector())
         {
@@ -563,8 +558,8 @@ namespace octronic::dream
     LOG_TRACE("GraphicsComponent: {}",__FUNCTION__);
     LOG_DEBUG("==> Running Sprite Pass");
 
-    auto& shader = sceneRuntime.getSpriteShader();
-    if (!shader.getLoaded()) return;
+    auto shaderOpt = sceneRuntime.getSpriteShader();
+    if (!shaderOpt || !shaderOpt.value().get().getLoaded()) return;
 
     auto& pr = mProjectRuntime.value().get();
     auto& windowComp = pr.getWindowComponent();
@@ -579,6 +574,7 @@ namespace octronic::dream
     auto& textureCache = pr.getTextureCache();
     if (textureCache.runtimeCount() == 0) return;
 
+    auto& shader = shaderOpt.value().get();
     // Activate the Shader
     shader.use();
     shader.setProjectionMatrixUniform(mScreenSpaceProjectionMatrix);

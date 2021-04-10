@@ -9,7 +9,6 @@ namespace octronic::dream::tool
     {
     public:
         RenderingDebugWindow(DreamToolContext& state);
-        ~RenderingDebugWindow() override;
 
         void draw() override;
         static ImVec2 UV1, UV2;

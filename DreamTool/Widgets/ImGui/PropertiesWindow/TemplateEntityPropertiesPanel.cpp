@@ -18,8 +18,16 @@ namespace octronic::dream::tool
   ()
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
     auto entDefOpt = target.getDefinition();
+
+    auto& dtCtx = parent.getContext();
+    auto& pCtx = dtCtx.getProjectContext().value();
+    auto& pDef = pCtx.getProjectDefinition().value();
 
     // Valid Definition
     if (!entDefOpt)
@@ -29,16 +37,20 @@ namespace octronic::dream::tool
 
     auto& entDef = static_cast<TemplateEntityDefinition&>(entDefOpt.value().get());
 
-    ImGui::SameLine();
-    if (drawDeleteEntityButton()) return;
+    if (ImGui::Button("Delete"))
+    {
+      dtCtx.getProjectBrowser().removeNodeSelection(entDef);
+      parent.removeFromHistory(entDef);
+      pDef.removeTemplateEntityDefinition(entDef);
+      return;
+    }
 
     ImGui::SameLine();
 
-    ImGui::SameLine();
     if (ImGui::Button("Duplicate"))
     {
       auto& dupe = entDef.duplicateDefinition();
-      parent.pushPropertyTarget({PropertyType_TemplateEntity, dupe});
+      parent.pushPropertyTarget(PropertyType_TemplateEntity, dupe);
     }
 
     mNameAndUuidPanel.draw();
@@ -46,26 +58,6 @@ namespace octronic::dream::tool
     ImGui::Separator();
 
     drawAssetSelection();
-  }
-
-  bool
-  TemplateEntityPropertiesPanel::drawDeleteEntityButton
-  ()
-  {
-    auto& parent = static_cast<PropertiesWindow&>(getParent());
-    auto& dtCtx = parent.getContext();
-    auto& pCtx = dtCtx.getProjectContext().value();
-    auto& pDef = pCtx.getProjectDefinition().value();
-    auto target = parent.getCurrentPropertyTarget();
-    auto& entDef = static_cast<TemplateEntityDefinition&>(target.getDefinition().value().get());
-
-    if (ImGui::Button("Delete"))
-    {
-      pDef.removeTemplateEntityDefinition(entDef);
-      parent.removeFromHistory(entDef);
-      return true;
-    }
-    return false;
   }
 
   void
@@ -76,7 +68,10 @@ namespace octronic::dream::tool
     auto& dtCtx = parent.getContext();
     auto& pCtx = dtCtx.getProjectContext().value();
     auto& pDef = pCtx.getProjectDefinition().value();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
 
     if (target.getType() != PropertyType_TemplateEntity) return;
 
@@ -101,13 +96,13 @@ namespace octronic::dream::tool
         {
           if (selectedAnimationAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION,selectedAnimationAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Animation",&selectedAnimationAsset,animationAssets,animationAssets.size()))
+        if(ImGuiWidget::StringCombo("Animation",&selectedAnimationAsset,animationAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_ANIMATION, selectedAnimationAsset);
         }
@@ -125,13 +120,13 @@ namespace octronic::dream::tool
         if(ImGui::Button(">##Audio"))
         {
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_AUDIO,selectedAudioAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Audio",&selectedAudioAsset,audioAssets,audioAssets.size()))
+        if(ImGuiWidget::StringCombo("Audio",&selectedAudioAsset,audioAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_AUDIO, selectedAudioAsset);
         }
@@ -150,13 +145,13 @@ namespace octronic::dream::tool
         {
           if (selectedFontAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_FONT,selectedFontAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Font",&selectedFontAsset,fontAssets,fontAssets.size()))
+        if(ImGuiWidget::StringCombo("Font",&selectedFontAsset,fontAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_FONT, selectedFontAsset);
         }
@@ -177,13 +172,13 @@ namespace octronic::dream::tool
         {
           if (selectedModelAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL,selectedModelAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Model",&selectedModelAsset,modelAssets,modelAssets.size()))
+        if(ImGuiWidget::StringCombo("Model",&selectedModelAsset,modelAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAsset);
         }
@@ -203,13 +198,13 @@ namespace octronic::dream::tool
         {
           if (selectedPathAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PATH,selectedPathAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset, asset});
+          parent.pushPropertyTarget(PropertyType_Asset, asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Path",&selectedPathAsset,pathAssets,pathAssets.size()))
+        if(ImGuiWidget::StringCombo("Path",&selectedPathAsset,pathAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_PATH, selectedPathAsset);
         }
@@ -229,13 +224,13 @@ namespace octronic::dream::tool
         {
           if (selectedPhysicsObjectAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS,selectedPhysicsObjectAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset, asset});
+          parent.pushPropertyTarget(PropertyType_Asset, asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets,poAssets.size()))
+        if(ImGuiWidget::StringCombo("Physics Object",&selectedPhysicsObjectAsset,poAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_PHYSICS,selectedPhysicsObjectAsset);
         }
@@ -255,13 +250,13 @@ namespace octronic::dream::tool
         {
           if (selectedScriptAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT,selectedScriptAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Script",&selectedScriptAsset,scriptAssets,scriptAssets.size()))
+        if(ImGuiWidget::StringCombo("Script",&selectedScriptAsset,scriptAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_SCRIPT, selectedScriptAsset);
         }
@@ -283,13 +278,13 @@ namespace octronic::dream::tool
         {
           if (selectedTextureAsset < 0) return;
           auto& asset = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE,selectedTextureAsset).value().get();
-          parent.pushPropertyTarget({PropertyType_Asset,asset});
+          parent.pushPropertyTarget(PropertyType_Asset,asset);
           return;
         }
 
         ImGui::SameLine();
 
-        if(ImGuiWidget::StringCombo("Sprite",&selectedTextureAsset,textureAssets,textureAssets.size()))
+        if(ImGuiWidget::StringCombo("Sprite",&selectedTextureAsset,textureAssets))
         {
           entDef.setSelectedAssetDefinitionIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, selectedTextureAsset);
         }

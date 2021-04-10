@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #include "SceneRuntime.h"
 
 #include "SceneDefinition.h"
@@ -41,7 +29,7 @@
 #include <iostream>
 #include <exception>
 
-using std::exception;
+using std::nullopt;
 
 namespace octronic::dream
 {
@@ -63,21 +51,7 @@ namespace octronic::dream
   ()
   {
     LOG_DEBUG("SceneRuntime: Destroying runtime {}",getNameAndUuidString());
-
-    auto activeSrOpt = getProjectRuntime().getActiveSceneRuntime();
-
-    if (activeSrOpt)
-    {
-      auto& activeSr = activeSrOpt.value().get();
-
-      if (activeSr == *this)
-      {
-        auto& inputComp = getProjectRuntime().getInputComponent();
-        auto& destructionQueue = getProjectRuntime().getDestructionTaskQueue();
-        destructionQueue.pushTask(inputComp.getRemoveScriptTask());
-      }
-      mState = SceneState::SCENE_STATE_DESTROYED;
-    }
+    mState = SceneState::SCENE_STATE_DESTROYED;
   }
 
   SceneState
@@ -126,20 +100,22 @@ namespace octronic::dream
     mClearColor = clearColour;
   }
 
-  EntityRuntime&
+  optional<reference_wrapper<EntityRuntime>>
   SceneRuntime::getEntityRuntimeByUuid
   (UuidType uuid)
+  const
   {
     for (auto& er : mFlatVector)
     {
       if (er.get().hasUuid(uuid)) return er;
     }
-    throw std::exception();
+    return std::nullopt;
   }
 
-  EntityRuntime&
+  optional<reference_wrapper<EntityRuntime>>
   SceneRuntime::getEntityRuntimeByName
   (const string& name)
+  const
   {
     for (auto& er : mFlatVector)
     {
@@ -167,7 +143,7 @@ namespace octronic::dream
     }
   }
 
-  EntityRuntime&
+  optional<reference_wrapper<EntityRuntime>>
   SceneRuntime::getRootEntityRuntime
   ()
   {
@@ -207,7 +183,7 @@ namespace octronic::dream
     auto shadowPassDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, shadowPassShaderUuid);
     if (shadowPassDef)
     {
-    	mShadowPassShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shadowPassDef.value().get()));
+      mShadowPassShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(shadowPassDef.value().get()));
     }
 
     if (!mShadowPassShader)
@@ -220,7 +196,7 @@ namespace octronic::dream
     auto fontShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, fontShaderUuid);
     if (fontShaderDef)
     {
-    	mFontShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(fontShaderDef.value().get()));
+      mFontShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(fontShaderDef.value().get()));
     }
 
     if (!mFontShader)
@@ -233,7 +209,7 @@ namespace octronic::dream
     auto spriteShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, spriteShaderUuid);
     if (spriteShaderDef)
     {
-    	mSpriteShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(spriteShaderDef.value().get()));
+      mSpriteShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(spriteShaderDef.value().get()));
     }
 
     if (!mSpriteShader)
@@ -246,7 +222,7 @@ namespace octronic::dream
     auto envShaderDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER, environmentShaderUuid);
     if (envShaderDef)
     {
-    	mEnvironmentShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(envShaderDef.value().get()));
+      mEnvironmentShader = shaderCache.getRuntime(static_cast<ShaderDefinition&>(envShaderDef.value().get()));
     }
 
     if (!mSpriteShader)
@@ -260,7 +236,7 @@ namespace octronic::dream
     auto envTexDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE, environmentTextureUuid);
     if (envTexDef)
     {
-    	mEnvironmentTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(envTexDef.value().get()));
+      mEnvironmentTexture = textureCache.getRuntime(static_cast<TextureDefinition&>(envTexDef.value().get()));
     }
 
     if (!mEnvironmentTexture)
@@ -275,7 +251,7 @@ namespace octronic::dream
     auto scriptDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SCRIPT,inputScriptUuid);
     if (scriptDef)
     {
-    	mInputScript = scriptCache.getRuntime(static_cast<ScriptDefinition&>(scriptDef.value().get()));
+      mInputScript = scriptCache.getRuntime(static_cast<ScriptDefinition&>(scriptDef.value().get()));
     }
 
     if (!mInputScript)
@@ -288,23 +264,14 @@ namespace octronic::dream
     pc.setGravity(sceneDefinition.getGravity());
 
     // Create Root EntityRuntime
-    try
-    {
-    	auto& entityDef = sceneDefinition.getRootSceneEntityDefinition();
-    	auto templateDef = pDef.getTemplateEntityDefinitionByUuid(entityDef.value().getTemplateUuid());
-      mRootEntityRuntime.emplace(getProjectRuntime(), *this, entityDef.value(), templateDef.value().get());
+    auto& entityDef = sceneDefinition.getRootSceneEntityDefinition();
+    auto templateDefOpt = pDef.getTemplateEntityDefinitionByUuid(entityDef.value().getTemplateUuid());
+    mRootEntityRuntime.emplace(getProjectRuntime(), *this, entityDef.value(), templateDefOpt);
 
-      if (!mRootEntityRuntime.value().loadFromDefinition())
-      {
-        LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
-        return false;
-      }
-    }
-    catch (exception& ex)
+    if (!mRootEntityRuntime.value().loadFromDefinition())
     {
-      LOG_ERROR("SceneRuntime: Error while loading, no root entity definition found");
-      setState(SCENE_STATE_TO_DESTROY);
-    	return false;
+      LOG_ERROR("SceneRuntime: Error using scene object runtime definition");
+      return false;
     }
 
     // Setup Camera
@@ -352,11 +319,12 @@ namespace octronic::dream
     return mCameraRuntime;
   }
 
-  ShaderRuntime&
+  optional<reference_wrapper<ShaderRuntime>>
   SceneRuntime::getShadowPassShader
   ()
+  const
   {
-    return mShadowPassShader.value();
+    return mShadowPassShader;
   }
 
   void
@@ -366,11 +334,12 @@ namespace octronic::dream
     mShadowPassShader = shadowPassShader;
   }
 
-  ShaderRuntime&
+  optional<reference_wrapper<ShaderRuntime>>
   SceneRuntime::getFontShader
   ()
+  const
   {
-    return mFontShader.value();
+    return mFontShader;
   }
 
   void
@@ -380,9 +349,10 @@ namespace octronic::dream
     mFontShader = fontShader;
   }
 
-  ShaderRuntime&
+  optional<reference_wrapper<ShaderRuntime>>
   SceneRuntime::getSpriteShader
   ()
+  const
   {
     return mSpriteShader.value();
   }
@@ -402,7 +372,9 @@ namespace octronic::dream
     return mSceneCurrentTime;
   }
 
-  void SceneRuntime::setSceneCurrentTime(unsigned long sceneCurrentTime)
+  void
+  SceneRuntime::setSceneCurrentTime
+  (unsigned long sceneCurrentTime)
   {
     mSceneCurrentTime = sceneCurrentTime;
   }
@@ -483,11 +455,12 @@ namespace octronic::dream
     return mState == state;
   }
 
-  TextureRuntime&
+  optional<reference_wrapper<TextureRuntime>>
   SceneRuntime::getEnvironmentTexture
   ()
+  const
   {
-    return mEnvironmentTexture.value();
+    return mEnvironmentTexture;
   }
 
   void
@@ -497,11 +470,12 @@ namespace octronic::dream
     mEnvironmentTexture = tr;
   }
 
-  ShaderRuntime&
+  optional<reference_wrapper<ShaderRuntime>>
   SceneRuntime::getEnvironmentShader
   ()
+  const
   {
-    return mEnvironmentShader.value();
+    return mEnvironmentShader;
   }
 
   void

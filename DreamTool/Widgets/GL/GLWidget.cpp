@@ -11,8 +11,8 @@ using octronic::dream::SceneRuntime;
 namespace octronic::dream::tool
 {
   GLWidget::GLWidget
-  (DreamToolContext& project, bool visible)
-    : DreamToolWidget (project, visible),
+  (DreamToolContext& project)
+    : DreamToolWidget (project,false),
       mLineWidth(1.f),
       mShaderProgram(0),
       mModelUniform(-1),

@@ -12,6 +12,9 @@
 #include "ProjectPropertiesPanel.h"
 #include "AssetPropertiesPanel.h"
 
+#include <memory>
+
+using std::unique_ptr;
 using octronic::dream::Definition;
 using octronic::dream::Runtime;
 using octronic::dream::PathDefinition;
@@ -32,11 +35,12 @@ namespace octronic::dream::tool
         PropertiesWindow(DreamToolContext&);
 
         void draw() override;
-        void pushPropertyTarget(PropertyTarget);
+        void pushPropertyTarget(PropertyType type, optional<reference_wrapper<Definition>> def);
         void popPropertyTarget();
-        PropertyTarget getCurrentPropertyTarget() const;
+        optional<reference_wrapper<PropertyTarget>> getCurrentPropertyTarget();
         void clearPropertyTargets();
         void removeFromHistory(Definition& def);
+        void removeFromHistoryWithChildren(SceneEntityDefinition& def);
 
         ImVec2 getImageSize() const;
 
@@ -50,7 +54,7 @@ namespace octronic::dream::tool
         SceneEntityPropertiesPanel mSceneEntityPropertiesPanel;
         TemplateEntityPropertiesPanel mTemplateEntityPropertiesPanel;
         AssetPropertiesPanel mAssetPropertiesPanel;
-        vector<PropertyTarget> mHistory;
+        vector<unique_ptr<PropertyTarget>> mHistory;
         ImVec2 mImageSize;
     };
 }

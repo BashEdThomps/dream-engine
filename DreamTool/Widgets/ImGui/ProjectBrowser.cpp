@@ -19,13 +19,8 @@ namespace octronic::dream::tool
 {
   ProjectBrowser::ProjectBrowser
   (DreamToolContext& project)
-    : ImGuiWidget(project)
+    : ImGuiWidget(project,true)
   {}
-
-  ProjectBrowser::~ProjectBrowser
-  ()
-  {
-  }
 
   void
   ProjectBrowser::draw
@@ -54,7 +49,7 @@ namespace octronic::dream::tool
         if (ImGui::IsItemClicked())
         {
           LOG_TRACE("ProjectBrowser: Project clicked {}", pDef.getName());
-          propsWindow.pushPropertyTarget({PropertyType_Project, pDef});
+          propsWindow.pushPropertyTarget(PropertyType_Project, pDef);
         }
 
         if (projectNodeOpen)
@@ -69,7 +64,7 @@ namespace octronic::dream::tool
             if (ImGui::IsItemClicked())
             {
               LOG_TRACE("ProjectBrowser: Scene Clicked {}", sDef.getName());
-              propsWindow.pushPropertyTarget({PropertyType_Scene, sDef});
+              propsWindow.pushPropertyTarget(PropertyType_Scene, sDef);
             }
 
             if (sceneNodeOpen)
@@ -208,7 +203,7 @@ namespace octronic::dream::tool
 
       //getContext().getSelectionHighlighter().setSelectedEntity(sceneEntityDef);
       LOG_TRACE("ProjectBrowser: Entity Clicked {}",sceneEntityDef.getName());
-      getContext().getPropertiesWindow().pushPropertyTarget({PropertyType_SceneEntity, sceneEntityDef});
+      getContext().getPropertiesWindow().pushPropertyTarget(PropertyType_SceneEntity, sceneEntityDef);
     }
 
     // Drag Source
@@ -258,5 +253,16 @@ namespace octronic::dream::tool
       ImGui::TreePop();
     }
     ImGui::PopID();
+  }
+
+
+  void
+  ProjectBrowser::removeNodeSelection
+  (Definition& def)
+  {
+    auto itr = find_if(mSelectedNodes.begin(), mSelectedNodes.end(),
+        [&](reference_wrapper<Definition>& next) {
+        return next.get().getUuid() == def.getUuid(); });
+    if (itr != mSelectedNodes.end()) mSelectedNodes.erase(itr);
   }
 }

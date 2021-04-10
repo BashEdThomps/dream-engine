@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "ModelRuntime.h"
 
 #include "ModelDefinition.h"
@@ -66,9 +51,7 @@ namespace octronic::dream
       {
         auto importer = Importer();
         auto binData = modelFile.getBinaryData();
-        importer.ReadFileFromMemory(&binData[0], binData.size(),
-            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-
+        importer.ReadFileFromMemory(&binData[0], binData.size(), aiProcess_Triangulate | aiProcess_FlipUVs);
         sm.closeFile(modelFile);
 
         const aiScene* scene = importer.GetScene();
@@ -95,7 +78,7 @@ namespace octronic::dream
       LOG_ERROR("ModelRuntime: Error reading model file");
       sm.closeFile(modelFile);
     }
-    throw std::exception();
+    return false;
   }
 
   void
@@ -107,8 +90,7 @@ namespace octronic::dream
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-      auto aMesh = processMesh(mesh, scene);
-      mMeshes.push_back(aMesh);
+      processMesh(mesh, scene);
     }
     // Then do the same for each of its children
     for(GLuint i = 0; i < node->mNumChildren; i++)
@@ -137,7 +119,7 @@ namespace octronic::dream
       }
       else
       {
-        vertex.Position = glm::vec3(0.0f);
+        vertex.Position = vec3(0.0f);
       }
 
       if (mesh->mNormals)
@@ -148,29 +130,7 @@ namespace octronic::dream
       }
       else
       {
-        vertex.Normal = glm::vec3(0.0f);
-      }
-
-      if (mesh->mTangents)
-      {
-        vertex.Tangent.x = mesh->mTangents[i].x;
-        vertex.Tangent.y = mesh->mTangents[i].y;
-        vertex.Tangent.z = mesh->mTangents[i].z;
-      }
-      else
-      {
-        vertex.Tangent = glm::vec3(0.0f);
-      }
-
-      if (mesh->mBitangents)
-      {
-        vertex.Bitangent.x = mesh->mBitangents[i].x;
-        vertex.Bitangent.y = mesh->mBitangents[i].y;
-        vertex.Bitangent.z = mesh->mBitangents[i].z;
-      }
-      else
-      {
-        vertex.Bitangent = glm::vec3(0.0f);
+        vertex.Normal = vec3(0.0f);
       }
 
       if(mesh->mTextureCoords[0])
@@ -180,7 +140,7 @@ namespace octronic::dream
       }
       else
       {
-        vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+        vertex.TexCoords = vec2(0.0f, 0.0f);
       }
 
       vertices.push_back(vertex);
@@ -206,7 +166,7 @@ namespace octronic::dream
 
   }
 
-  ModelMesh
+  void
   ModelRuntime::processMesh
   (aiMesh* mesh, const aiScene* scene)
   {
@@ -226,23 +186,22 @@ namespace octronic::dream
     auto materialUuid = modelDef.getDreamMaterialForModelMaterial(materialName);
 
     auto& pDef = static_cast<ProjectDefinition&>(getProjectRuntime().getDefinition());
-    auto matDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,materialUuid);
-    if (matDef)
+    auto matDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,materialUuid);
+
+    optional<reference_wrapper<MaterialRuntime>> mtlRuntime = std::nullopt;
+
+    if (matDefOpt)
     {
-      auto& dreamMaterial = materialCache.getRuntime(static_cast<MaterialDefinition&>(matDef.value().get()));
-
-      LOG_DEBUG( "ModelRuntime: Using Material {}" , dreamMaterial.getName());
-      BoundingBox bb = generateBoundingBox(mesh);
-      mBoundingBox.integrate(bb);
-
-      ModelMesh aMesh(*this, string(mesh->mName.C_Str()),
-                      vertices, indices, dreamMaterial, bb);
-      aMesh.initTasks();
-      dreamMaterial.addMesh(aMesh);
-      dreamMaterial.debug();
-    	return aMesh;
+      auto& matDef = static_cast<MaterialDefinition&>(matDefOpt.value().get());
+      LOG_DEBUG( "ModelRuntime: Using Material {}" , matDef.getName());
+      mtlRuntime.emplace(materialCache.getRuntime(matDef));
     }
-    throw std::exception();
+
+    BoundingBox bb = generateBoundingBox(mesh);
+    mBoundingBox.integrate(bb);
+
+    auto& aMesh = mMeshes.emplace_back(make_unique<ModelMesh>(*this, string(mesh->mName.C_Str()), vertices, indices, mtlRuntime, bb));
+    aMesh->initTasks();
   }
 
   BoundingBox
@@ -268,11 +227,17 @@ namespace octronic::dream
     return mMaterialNames;
   }
 
-  vector<ModelMesh>&
+  vector<reference_wrapper<ModelMesh>>
   ModelRuntime::getMeshes
   ()
+  const
   {
-    return  mMeshes;
+    vector<reference_wrapper<ModelMesh>> ret;
+    for (auto& mesh : mMeshes)
+    {
+      ret.push_back(*mesh);
+    }
+    return  ret;
   }
 
   BoundingBox
@@ -324,11 +289,11 @@ namespace octronic::dream
     mGlobalInverseTransform = globalInverseTransform;
   }
 
-  glm::mat4 ModelRuntime::aiMatrix4x4ToGlm
+  mat4 ModelRuntime::aiMatrix4x4ToGlm
   (const aiMatrix4x4& from)
   const
   {
-    glm::mat4 to;
+    mat4 to;
     to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
     to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
     to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
@@ -360,7 +325,7 @@ namespace octronic::dream
     {
       for (auto& mesh : mMeshes)
       {
-        mesh.pushTasks();
+        mesh->pushTasks();
       }
     }
   }

@@ -9,12 +9,6 @@ namespace octronic::dream::tool
   {
   }
 
-  CacheContentWindow::~CacheContentWindow
-  ()
-  {
-
-  }
-
   void
   CacheContentWindow::draw
   ()

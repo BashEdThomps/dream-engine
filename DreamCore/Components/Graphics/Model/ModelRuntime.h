@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #pragma once
 
 #include "ModelMesh.h"
@@ -38,6 +23,9 @@ struct aiNode;
 struct aiMesh;
 using Assimp::Importer;
 using std::shared_ptr;
+using glm::vec2;
+using glm::vec3;
+using glm::mat4;
 
 namespace octronic::dream
 {
@@ -59,7 +47,7 @@ namespace octronic::dream
         void setBoundingBox(const BoundingBox& bb);
 
         vector<string> getMaterialNames() const;
-        vector<ModelMesh>& getMeshes();
+        vector<reference_wrapper<ModelMesh>> getMeshes() const;
 
         mat4 getGlobalInverseTransform() const;
         void setGlobalInverseTransform(const mat4& globalInverseTransform);
@@ -70,7 +58,7 @@ namespace octronic::dream
         BoundingBox generateBoundingBox(aiMesh* mesh) const;
         void loadModel(string);
         void processNode(aiNode*, const aiScene*);
-        ModelMesh processMesh(aiMesh*, const aiScene*);
+        void processMesh(aiMesh*, const aiScene*);
         vector<Vertex> processVertexData(aiMesh* mesh);
         vector<GLuint> processIndexData(aiMesh* mesh);
         mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from) const;
@@ -78,7 +66,7 @@ namespace octronic::dream
     private:
         BoundingBox mBoundingBox;
         mat4 mGlobalInverseTransform;
-        vector<ModelMesh> mMeshes;
+        vector<unique_ptr<ModelMesh>> mMeshes;
         vector<string> mMaterialNames;
     };
 }

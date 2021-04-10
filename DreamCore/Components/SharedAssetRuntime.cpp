@@ -44,17 +44,19 @@ namespace octronic::dream
   SharedAssetRuntime::removeInstanceByUuid
   (UuidType uuid)
   {
-    std::remove_if(mInstances.begin(), mInstances.end(),
+    auto itr = find_if(mInstances.begin(), mInstances.end(),
                    [&](reference_wrapper<EntityRuntime>& runtime)
     {
         return runtime.get().getUuid() == uuid;
     });
 
+    if (itr != mInstances.end()) mInstances.erase(itr);
   }
 
-  vector<reference_wrapper<EntityRuntime>>&
+  vector<reference_wrapper<EntityRuntime>>
   SharedAssetRuntime::getInstanceVector
   ()
+  const
   {
     return mInstances;
   }

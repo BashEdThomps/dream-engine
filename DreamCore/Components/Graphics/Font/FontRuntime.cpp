@@ -35,10 +35,11 @@ namespace octronic::dream
   {
     LOG_TRACE("FontRuntime: {}", __FUNCTION__);
     memset(&mCharacterInfo, 0, sizeof(FontCharacterInfo)*CHAR_INFO_SZ);
+    mFontLoadIntoGLTask   = make_shared<FontLoadIntoGLTask>(getProjectRuntime(), *this);
+    mFontRemoveFromGLTask = make_shared<FontRemoveFromGLTask>(getProjectRuntime());
   }
 
-  void
-  FontRuntime::pushDestructionTask
+  FontRuntime::~FontRuntime
   ()
   {
     LOG_TRACE("FontRuntime: {}", __FUNCTION__);
@@ -49,16 +50,6 @@ namespace octronic::dream
     auto& gfxComp = getProjectRuntime().getGraphicsComponent();
     auto& gfxDestructionQueue = gfxComp.getDestructionTaskQueue();
     gfxDestructionQueue.pushTask(mFontRemoveFromGLTask);
-  }
-
-  bool
-  FontRuntime::init
-  ()
-  {
-    if (!DeferredLoadRuntime::init()) return false;
-    mFontLoadIntoGLTask   = make_shared<FontLoadIntoGLTask>(getProjectRuntime(), *this);
-    mFontRemoveFromGLTask = make_shared<FontRemoveFromGLTask>(getProjectRuntime());
-    return true;
   }
 
   bool

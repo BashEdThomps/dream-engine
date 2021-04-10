@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #pragma once
 
 #include "SceneState.h"
@@ -62,9 +50,9 @@ namespace octronic::dream
 
     void createSceneTasks();
 
-    EntityRuntime& getRootEntityRuntime();
-    EntityRuntime& getEntityRuntimeByName(const string& name);
-    EntityRuntime& getEntityRuntimeByUuid(UuidType uuid);
+    optional<reference_wrapper<EntityRuntime>> getRootEntityRuntime();
+    optional<reference_wrapper<EntityRuntime>> getEntityRuntimeByName(const string& name) const;
+    optional<reference_wrapper<EntityRuntime>> getEntityRuntimeByUuid(UuidType uuid) const;
 
     int countEntityRuntimes() const;
     int countChildrenOfEntityRuntime(const EntityRuntime&) const;
@@ -72,19 +60,20 @@ namespace octronic::dream
     void showScenegraph() const;
     void collectGarbage();
 
-    ShaderRuntime& getShadowPassShader();
+    optional<reference_wrapper<ShaderRuntime>> getShadowPassShader() const;
     void setShadowPassShader(ShaderRuntime& shadowPassShader);
 
-    ShaderRuntime& getFontShader();
+
+    optional<reference_wrapper<ShaderRuntime>> getFontShader() const;
     void setFontShader(ShaderRuntime& shader);
 
-    ShaderRuntime& getSpriteShader();
+    optional<reference_wrapper<ShaderRuntime>> getSpriteShader() const;
     void setSpriteShader(ShaderRuntime& shader);
 
-    TextureRuntime& getEnvironmentTexture();
+    optional<reference_wrapper<TextureRuntime>> getEnvironmentTexture() const;
     void setEnvironmentTexture(TextureRuntime&);
 
-    ShaderRuntime& getEnvironmentShader();
+    optional<reference_wrapper<ShaderRuntime>> getEnvironmentShader() const;
     void setEnvironmentShader(ShaderRuntime&);
 
     vector<reference_wrapper<AssetRuntime>>  getAssetRuntimes(AssetType) const;

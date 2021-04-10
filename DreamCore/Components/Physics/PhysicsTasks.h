@@ -16,7 +16,7 @@ namespace octronic::dream
         PhysicsAddObjectTask(ProjectRuntime& pr, PhysicsRuntime& rt);
         void execute();
     protected:
-        PhysicsRuntime& getPoRuntime() const;
+        PhysicsRuntime& getPhysicsRuntime() const;
     private:
         reference_wrapper<PhysicsRuntime> mRuntime;
     };

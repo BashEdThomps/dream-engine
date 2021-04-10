@@ -4,10 +4,10 @@
 
 namespace octronic::dream::tool
 {
-  class NameAndUuidPanel : public ImGuiPanel
+  class IdentityPropertiesPanel : public ImGuiPanel
   {
   public:
-    NameAndUuidPanel(ImGuiWidget& parent);
+    IdentityPropertiesPanel(ImGuiWidget& parent);
     void draw() override;
   };
 }

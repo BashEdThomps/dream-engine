@@ -37,12 +37,11 @@ add_executable (
 	Widgets/ImGui/ToolPropertiesWindow.cpp
 	Widgets/ImGui/RenderingDebugWindow.cpp
 	Widgets/ImGui/CacheContentWindow.cpp
-	Widgets/ImGui/TaskManagerWindow.cpp
 
   Widgets/ImGui/PropertiesWindow/ProjectPropertiesPanel.cpp
 	Widgets/ImGui/PropertiesWindow/PropertiesWindow.cpp
 	Widgets/ImGui/PropertiesWindow/PropertyTarget.cpp
-	Widgets/ImGui/PropertiesWindow/NameAndUuidPanel.cpp
+	Widgets/ImGui/PropertiesWindow/IdentityPropertiesPanel.cpp
 	Widgets/ImGui/PropertiesWindow/ScenePropertiesPanel.cpp
   Widgets/ImGui/PropertiesWindow/AssetPropertiesPanel.cpp
   Widgets/ImGui/PropertiesWindow/TemplateEntityPropertiesPanel.cpp

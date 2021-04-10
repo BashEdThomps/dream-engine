@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "OggLoader.h"
 
 #include <Common/Logger.h>
@@ -35,7 +20,7 @@ size_t octronic_dream_oggloader_read
 {
   // copy the next elementCount bytes from dataSource into buffer
   assert(elementSize == 1);
-  File* f = *(File**)dataSource;
+  File* f = static_cast<File*>(dataSource);
   size_t capped_count = 0;
   if(seekIndex+elementCount > f->getBinaryData().size())
   {
@@ -107,7 +92,8 @@ namespace octronic::dream
 
     // Try opening the given file
     OggVorbis_File oggFile;
-    int error = ov_open_callbacks(&file, &oggFile, nullptr, 0, callbacks);
+    File* f = &file;
+    int error = ov_open_callbacks(f, &oggFile, nullptr, 0, callbacks);
     if (error < 0)
     {
       LOG_ERROR("OggLoader: Error opening {} for decoding, ov_open failed\n\t{}", absPath, getOggErrorString(error));
@@ -181,4 +167,4 @@ namespace octronic::dream
         return "Unknown Error";
     }
   }
-} // End of Dream
+}

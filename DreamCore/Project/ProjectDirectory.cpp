@@ -212,7 +212,7 @@ namespace octronic::dream
   (ProjectDefinition& pDef)
   const
   {
-    auto jsDef = pDef.toJson();
+    auto jsDef = pDef.getJson();
     auto jsonStr = jsDef.dump(1);
     auto path = getProjectFilePath(pDef);
     auto& sm = mStorageManager.get();
@@ -415,7 +415,7 @@ namespace octronic::dream
 
     json js;
     js[Constants::NAME] = Constants::PROJECT_DEFAULT_NAME;
-    js[Constants::UUID] = Uuid::generateUuid();
+    js[Constants::UUID] = Uuid::RandomUuid();
     js[Constants::PROJECT_STARTUP_SCENE] = Uuid::INVALID;
     js[Constants::PROJECT_ANIMATION_ASSET_ARRAY] = json::array();
     js[Constants::PROJECT_AUDIO_ASSET_ARRAY] = json::array();

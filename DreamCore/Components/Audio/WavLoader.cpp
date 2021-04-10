@@ -1,18 +1,3 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include "WavLoader.h"
 
 #include "Common/Logger.h"
@@ -78,12 +63,16 @@ namespace octronic::dream
     // Read the data
 
     // OOB check
-    assert(bytesRead + mWavHeader.Subchunk2Size <= wavFile.getBinaryData().size());
+    if(bytesRead + mWavHeader.Subchunk2Size != wavFile.getBinaryData().size())
+    {
+      LOG_ERROR("WavLoader: Failed bounds check");
+     return false;
+    }
 
-    auto wvBegin = wavFile.getBinaryData().begin() + bytesRead;
+    auto& wvData = wavFile.getBinaryData();
+    auto wvBegin = wvData.begin() + bytesRead;
     mAudioBuffer.insert(mAudioBuffer.begin(), wvBegin, wvBegin + mWavHeader.Subchunk2Size);
     LOG_DEBUG("WavLoader: Read subchunk2 from index [{}], size {} bytes", bytesRead, mWavHeader.Subchunk2Size);
-    bytesRead = mWavHeader.Subchunk2Size;
 
     mSampleRate = mWavHeader.SamplesPerSecond;
 
@@ -100,7 +89,7 @@ namespace octronic::dream
     else
     {
       LOG_DEBUG("WavLoader: Error in number of channels");
-      assert(false);
+      return false;
     }
 
     LOG_DEBUG("WavLoader: Read {} bytes", mAudioBuffer.size());

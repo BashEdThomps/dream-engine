@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "AssetDefinition.h"
 
 #include "Common/Constants.h"
@@ -84,101 +69,18 @@ namespace octronic::dream
   }
 
   bool
-  AssetDefinition::isTypeAnimation
-  ()
+  AssetDefinition::hasType
+  (AssetType type)
   const
   {
-    return getType() == Constants::ASSET_TYPE_ANIMATION;
+    return getType() == AssetTypeHelper::GetAssetTypeStringFromTypeEnum(type);
   }
 
 
-  bool AssetDefinition::isTypeMaterial()
+  bool AssetDefinition::hasType(string type)
   const
   {
-    return getType() == Constants::ASSET_TYPE_MATERIAL;
-  }
-
-  bool
-  AssetDefinition::isTypeFont
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_FONT;
-  }
-
-  bool
-  AssetDefinition::isTypePhysics
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_PHYSICS;
-  }
-
-  bool
-  AssetDefinition::isTypeTexture
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_TEXTURE;
-  }
-
-  bool
-  AssetDefinition::isTypePath
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_PATH;
-  }
-
-  bool
-  AssetDefinition::isTypeAudio
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_AUDIO;
-  }
-
-  bool
-  AssetDefinition::isTypeModel
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_MODEL;
-  }
-
-  bool
-  AssetDefinition::isTypeScript
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_SCRIPT;
-  }
-
-  bool
-  AssetDefinition::isTypeShader
-  ()
-  const
-  {
-    return getType() == Constants::ASSET_TYPE_SHADER;
-  }
-
-  string
-  AssetDefinition::getGroup
-  ()
-  const
-  {
-    if (mJson.find(Constants::ASSET_ATTR_GROUP) == mJson.end())
-    {
-      return Constants::ASSET_ATTR_GROUP_DEFAULT;
-    }
-    return mJson[Constants::ASSET_ATTR_GROUP];
-  }
-
-  void
-  AssetDefinition::setGroup
-  (const string& group)
-  {
-    mJson[Constants::ASSET_ATTR_GROUP] = group;
+    return getType().compare(type) == 0;
   }
 
   ProjectDefinition&
@@ -194,7 +96,7 @@ namespace octronic::dream
   (AssetDefinition& newDef)
   {
     newDef.mJson = mJson;
-    newDef.setUuid(Uuid::generateUuid());
+    newDef.setUuid(Uuid::RandomUuid());
     string name = newDef.getName();
     regex numRegex("(\\d+)$");
     cmatch match;

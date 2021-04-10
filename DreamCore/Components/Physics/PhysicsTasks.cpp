@@ -25,11 +25,14 @@ namespace octronic::dream
     auto& pComp = getProjectRuntime().getPhysicsComponent();
     LOG_TRACE("PhysicsAddObjectTask: Executing {}",getID());
     pComp.addPhysicsRuntime(mRuntime);
-    getPoRuntime().setInPhysicsWorld(true);
+    getPhysicsRuntime().setInPhysicsWorld(true);
     setState(TaskState::TASK_STATE_COMPLETED);
   }
 
-  PhysicsRuntime& PhysicsAddObjectTask::getPoRuntime() const
+  PhysicsRuntime&
+  PhysicsAddObjectTask::getPhysicsRuntime
+  ()
+  const
   {
     return mRuntime.get();
   }

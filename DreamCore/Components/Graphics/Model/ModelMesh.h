@@ -1,19 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
 #pragma once
 
 #include "ModelBone.h"
@@ -69,7 +53,7 @@ namespace octronic::dream
   public:
     ModelMesh(ModelRuntime& parent, const string &name,
               const vector<Vertex>& vertexArray, const vector<GLuint>& indexArray,
-              MaterialRuntime& material, const BoundingBox& bb);
+              optional<reference_wrapper<MaterialRuntime>> material, const BoundingBox& bb);
 
     ~ModelMesh();
 
@@ -113,6 +97,7 @@ namespace octronic::dream
 
   private:
     void renderDebugSphere(ShaderRuntime& shader);
+    void clearMaterialBindings();
   private:
     reference_wrapper<ModelRuntime> mParent;
     optional<reference_wrapper<MaterialRuntime>> mMaterial;

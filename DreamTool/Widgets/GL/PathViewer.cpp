@@ -1,15 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
-
 #include "PathViewer.h"
 
 #include <DreamCore.h>
@@ -26,8 +14,8 @@ using glm::vec3;
 namespace octronic::dream::tool
 {
     PathViewer::PathViewer
-    (DreamToolContext& state, bool visible)
-        : GLWidget(state, visible),
+    (DreamToolContext& state)
+        : GLWidget(state),
           mSelectedColour(0.0f, 1.0f, 0.0f,1.f),
           mUnselectedColour(0.75f, 0.75f, 0.0f,1.f),
           mCurveColour(1.0f, 0.0f, 1.0f,1.f),
@@ -38,13 +26,6 @@ namespace octronic::dream::tool
           mUStep(0.05)
     {
         LOG_TRACE("PathViewer: Constructing Object");
-    }
-
-    PathViewer::~PathViewer
-    ()
-    {
-        LOG_DEBUG("PathViewer: Destructing Object");
-        clearRuntime();
     }
 
     void

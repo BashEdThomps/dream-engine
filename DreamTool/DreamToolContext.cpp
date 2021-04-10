@@ -19,7 +19,6 @@ namespace octronic::dream::tool
       mRenderPipelineWindow(*this),
       mGamepadStateWindow(*this),
       mCacheContentWindow(*this),
-      mTaskManagerWindow(*this),
       mScriptDebugWindow(*this),
       mGlPreviewWindowComponent(*this),
       // GL
@@ -74,7 +73,6 @@ namespace octronic::dream::tool
     mWindow.addImGuiWidget(mRenderPipelineWindow);
     mWindow.addImGuiWidget(mGamepadStateWindow);
     mWindow.addImGuiWidget(mCacheContentWindow);
-    mWindow.addImGuiWidget(mTaskManagerWindow);
     mGlPreviewWindowComponent.init();
     mWindow.addImGuiWidget(mGlPreviewWindowComponent);
 
@@ -132,9 +130,14 @@ namespace octronic::dream::tool
           projectRuntime.step();
           mWindow.drawGLWidgets();
           mGlPreviewWindowComponent.updateWindow();
+
+          auto& physicsComp = projectRuntime.getPhysicsComponent();
+          if (!physicsComp.hasDebugDrawer())
+          {
+            physicsComp.setDebugDrawer(&mPhysicsDebugDrawer);
+          }
         }
       }
-
 
       // Draw ImGui
       mWindow.bindDefaultFrameBuffer();
@@ -430,13 +433,6 @@ namespace octronic::dream::tool
     return mCacheContentWindow;
   }
 
-  TaskManagerWindow&
-  DreamToolContext::getTaskManagerWindow
-  ()
-  {
-    return mTaskManagerWindow;
-  }
-
   GLPreviewWindowComponent&
   DreamToolContext::getGlPreviewWindowComponent
   ()
@@ -598,5 +594,12 @@ namespace octronic::dream::tool
   ()
   {
     return mAudioComponent;
+  }
+
+  PhysicsDebugDrawer&
+  DreamToolContext::getPhysicsDebugDrawer
+  ()
+  {
+  	return mPhysicsDebugDrawer;
   }
 }

@@ -24,7 +24,11 @@ namespace octronic::dream::tool
     auto& dtCtx = parent.getContext();
     auto& pCtx = dtCtx.getProjectContext().value();
     auto& pDef = pCtx.getProjectDefinition().value();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
     auto entityDefOpt = target.getDefinition();
 
 
@@ -40,9 +44,18 @@ namespace octronic::dream::tool
     // Not the root
     if (entityDef.hasParentDefinition())
     {
-      ImGui::SameLine();
-      if (drawDeleteEntityButton())
+      if (ImGui::Button("Delete"))
       {
+        auto& parentDef = entityDef.getParentDefinition();
+
+        dtCtx.getProjectBrowser().removeNodeSelection(entityDef);
+        dtCtx.getSelectionHighlighter().clearSelection();
+        parent.removeFromHistoryWithChildren(entityDef);
+
+        if (parentDef.has_value())
+        {
+          parentDef.value().get().removeChildDefinition(entityDef);
+        }
         return;
       }
     }
@@ -51,28 +64,25 @@ namespace octronic::dream::tool
 
     if (ImGui::Button("Add Child"))
     {
-      auto cursor = dtCtx.getCursor();
+      auto& cursor = dtCtx.getCursor();
       auto& newChildDef = entityDef.createChildDefinition();
       newChildDef.setTransform(cursor.getTransform());
-      parent.pushPropertyTarget({PropertyType_SceneEntity,newChildDef});
+      parent.pushPropertyTarget(PropertyType_SceneEntity,newChildDef);
     }
+
+    ImGui::SameLine();
 
     // Not root
     if (entityDef.hasParentDefinition())
     {
-      ImGui::SameLine();
       if (ImGui::Button("Duplicate"))
       {
         auto& dupe = entityDef.duplicateDefinition();
-        parent.pushPropertyTarget({PropertyType_SceneEntity, dupe});
+        parent.pushPropertyTarget(PropertyType_SceneEntity, dupe);
       }
     }
 
     mNameAndUuidPanel.draw();
-
-    ImGui::Separator();
-
-    ImGui::SameLine();
 
     if (ImGui::Button("Use as Camera"))
     {
@@ -81,49 +91,56 @@ namespace octronic::dream::tool
       camDef.setUseEntity(true);
     }
 
+    ImGui::Separator();
+
+    if (ImGui::Button("-"))
+    {
+      entityDef.setTemplateUuid(Uuid::INVALID);
+    }
+
+    ImGui::SameLine();
+
     auto templateDefOpt = pDef.getTemplateEntityDefinitionByUuid(entityDef.getTemplateUuid());
 
+    int templateDefIndex = -1;
     if (templateDefOpt)
     {
       auto& templateDef = templateDefOpt.value().get();
-
-      if (templateDef.getAssetDefinition(AssetType::ASSET_TYPE_ENUM_FONT) != Uuid::INVALID)
-      {
-        ImGui::Separator();
-        drawTextProperties();
-      }
-
-      if (templateDef.getAssetDefinition(ASSET_TYPE_ENUM_ANIMATION) != Uuid::INVALID)
-      {
-      }
+      templateDefIndex = pDef.getTemplateEntityDefinitionIndex(templateDef);
     }
 
-    mTransformPropertiesPanel.draw();
-
-  }
-
-  bool
-  SceneEntityPropertiesPanel::drawDeleteEntityButton
-  ()
-  {
-    auto& parent = static_cast<PropertiesWindow&>(getParent());
-    auto& dtCtx = parent.getContext();
-    auto target = parent.getCurrentPropertyTarget();
-    auto& entityDef = static_cast<SceneEntityDefinition&>(target.getDefinition().value().get());
-
-    if (ImGui::Button("Delete"))
+    vector<string> templateEntityDefNames = pDef.getTemplateEntityDefinitionNamesVector();
+    if (ImGuiWidget::StringCombo("Entity Template", &templateDefIndex, templateEntityDefNames))
     {
-      auto& parentDef = entityDef.getParentDefinition();
-      if (parentDef.has_value())
-      {
-      	parentDef.value().get().removeChildDefinition(entityDef);
-      }
-
-      dtCtx.getSelectionHighlighter().clearSelection();
-      parent.removeFromHistory(entityDef);
-      return true;
+      auto& selected = pDef.getTemplateEntityDefinitionAtIndex(templateDefIndex);
+      entityDef.setTemplateUuid(selected.getUuid());
     }
-    return false;
+
+    auto tx = entityDef.getTransform();
+    mTransformPropertiesPanel.setTransform(tx);
+    mTransformPropertiesPanel.draw();
+    entityDef.setTransform(tx);
+
+    if (ImGui::Button("Apply to Runtime"))
+    {
+      if (pCtx.getProjectRuntime().has_value())
+      {
+        auto& pRunt = pCtx.getProjectRuntime().value();
+        if (pRunt.getSceneRuntimeByUuid(sceneDef.getUuid()))
+        {
+          auto& sRunt = pRunt.getSceneRuntimeByUuid(sceneDef.getUuid()).value().get();
+          if (sRunt.getEntityRuntimeByUuid(entityDef.getUuid()))
+          {
+            auto entityRuntOpt =  sRunt.getEntityRuntimeByUuid(entityDef.getUuid());
+            if (entityRuntOpt)
+            {
+              auto& entityRunt = entityRuntOpt.value().get();
+                  entityRunt.setTransform(tx);
+            }
+          }
+        }
+      }
+    }
   }
 
   void
@@ -131,11 +148,17 @@ namespace octronic::dream::tool
   ()
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
-    auto& dtCtx = parent.getContext();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
     auto& entityDef = static_cast<SceneEntityDefinition&>(target.getDefinition().value().get());
 
+    ImGui::Separator();
+
     ImGui::Text("Text Properties");
+
     char fontTextBuffer[128] = {0};
 
     string fontText = entityDef.getFontText();

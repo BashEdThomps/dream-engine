@@ -7,8 +7,7 @@ namespace octronic::dream::tool
     class GamepadStateWindow : public ImGuiWidget
     {
     public:
-        GamepadStateWindow(DreamToolContext&, bool visible = false);
-        ~GamepadStateWindow() override;
+        GamepadStateWindow(DreamToolContext&);
         void draw() override;
     };
 }

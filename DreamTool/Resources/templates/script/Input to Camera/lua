@@ -1,0 +1,48 @@
+-- Input to Camera Script Template
+
+speed = 3.0
+scroll_scalar = 0.01
+
+function onInput(input_component, scene_runtime)
+    -- Get Mouse Input
+
+    mouse_state = input_component:getMouseState()
+
+    if mouse_state == nil then 
+        print("Mouse state is nil")
+        return
+    end
+
+    -- Get Mouse Position
+
+    x = mouse_state:getScrollX()
+    y = mouse_state:getScrollY()
+
+    -- Update Camera
+
+    cam = scene_runtime:getCamera()
+
+    if cam == nil then
+        print("Cam is nil")
+        return
+    end
+
+    cam_tx = cam:getTransform()
+    
+    key_state = input_component:getKeyboardState()
+
+    if key_state:isKeyPressed(KeyboardMapping.KEY_LEFT_SHIFT) then
+        cam_t = cam_tx:getTranslation()
+        cam_t.z = cam_t.z - (y * scroll_scalar)
+        cam_t.x = cam_t.x - (x * scroll_scalar)
+        print(cam_t.z)
+        cam_tx:setTranslation(cam_t)
+    else
+        yaw = cam_tx:getYaw()
+        pitch = cam_tx:getPitch()
+        cam_tx:setYaw(yaw + (x * scroll_scalar))
+        cam_tx:setPitch(pitch + (y * scroll_scalar))
+    end
+
+    cam:setTransform(cam_tx)
+end

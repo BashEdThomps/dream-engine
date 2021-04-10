@@ -24,6 +24,11 @@ namespace octronic::dream::tool
 
   void TransformPropertiesPanel::draw()
   {
+
+    ImGui::Separator();
+
+    ImGui::Text("Transform");
+
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
 
@@ -56,7 +61,7 @@ namespace octronic::dream::tool
         tx.setRoll(glm::radians(roll));
       }
 
-      if (ImGui::Button("Move to Cursor"))
+      if (ImGui::Button("To Cursor"))
       {
         auto& cursor = ctx.getCursor();
         vec3 cursorPos = cursor.getTransform().getTranslation();
@@ -65,13 +70,13 @@ namespace octronic::dream::tool
 
       ImGui::SameLine();
 
-      if(ImGui::Button("Set as Initial"))
+      if(ImGui::Button("Capture"))
       {
       }
 
       ImGui::SameLine();
 
-      if(ImGui::Button("Restore to Initial"))
+      if(ImGui::Button("Restore"))
       {
       }
     }

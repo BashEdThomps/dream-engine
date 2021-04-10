@@ -27,7 +27,7 @@ namespace octronic::dream
         void addInstance(EntityRuntime& er);
         void removeInstance(EntityRuntime& er);
         void removeInstanceByUuid(UuidType spriteUuid);
-        vector<reference_wrapper<EntityRuntime>>& getInstanceVector();
+        vector<reference_wrapper<EntityRuntime>> getInstanceVector() const;
 
         bool getReloadFlag() const;
         void setReloadFlag(bool reloadFlag);

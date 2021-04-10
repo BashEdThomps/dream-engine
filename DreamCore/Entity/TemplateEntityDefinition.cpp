@@ -1,14 +1,3 @@
-/*
- * This file may be distributed under the terms of GNU Public License version
- * 3 (GPL v3) as defined by the Free Software Foundation (FSF). A copy of the
- * license should have been included with this file, or the project in which
- * this file belongs to. You may also find the details of GPL v3 at:
- * http://www.gnu.org/licenses/gpl-3.0.txt
- *
- * If you have any questions regarding the use of this file, feel free to
- * contact the author of this file, or the owner of the project in which
- * this file belongs to.
- */
 #include "TemplateEntityDefinition.h"
 
 #include "Common/Constants.h"
@@ -47,7 +36,7 @@ namespace octronic::dream
   }
 
   json
-  TemplateEntityDefinition::toJson
+  TemplateEntityDefinition::getJson
   ()
   {
     return mJson;
@@ -59,7 +48,7 @@ namespace octronic::dream
   {
     auto& newEntityDef = mProjectDefinition.get().createTemplateEntityDefinition();
     newEntityDef.setJson(mJson);
-    newEntityDef.setUuid(Uuid::generateUuid());
+    newEntityDef.setUuid(Uuid::RandomUuid());
     string name = newEntityDef.getName();
     regex numRegex("(\\d+)$");
     cmatch match;
@@ -117,8 +106,7 @@ namespace octronic::dream
   {
     auto typeStr = AssetTypeHelper::GetAssetTypeStringFromTypeEnum(type);
 
-    if (mJson.find(Constants::TEMPLATE_ENTITY_ASSET_INSTANCES) == mJson.end() ||
-        mJson[Constants::TEMPLATE_ENTITY_ASSET_INSTANCES].is_array())
+    if (mJson.find(Constants::TEMPLATE_ENTITY_ASSET_INSTANCES) == mJson.end())
     {
       mJson[Constants::TEMPLATE_ENTITY_ASSET_INSTANCES] = json::object();
     }
@@ -152,7 +140,8 @@ namespace octronic::dream
       return Uuid::INVALID;
     }
 
-    if (!mJson[Constants::TEMPLATE_ENTITY_ASSET_INSTANCES][typeStr].is_number())
+    if (mJson[Constants::TEMPLATE_ENTITY_ASSET_INSTANCES].find(typeStr) ==
+        mJson[Constants::TEMPLATE_ENTITY_ASSET_INSTANCES].end())
     {
       return Uuid::INVALID;
     }

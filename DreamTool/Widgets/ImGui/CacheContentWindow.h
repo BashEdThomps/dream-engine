@@ -8,7 +8,6 @@ namespace octronic::dream::tool
   {
   public:
     CacheContentWindow(DreamToolContext& proj);
-    ~CacheContentWindow() override;
     void draw() override;
   };
 }

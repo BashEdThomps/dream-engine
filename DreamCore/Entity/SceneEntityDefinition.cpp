@@ -69,7 +69,11 @@ namespace octronic::dream
   SceneEntityDefinition::createChildDefinition
   ()
   {
-    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this,json::object()));
+    json js;
+    js[Constants::UUID] = Uuid::RandomUuid();
+    js[Constants::NAME] = Constants::SCENE_ENTITY_DEFINITION_DEFAULT_NAME;
+    js[Constants::SCENE_ENTITY_DEFINITION_CHILDREN] = json::array();
+    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this,js));
   }
 
 
@@ -77,7 +81,7 @@ namespace octronic::dream
   SceneEntityDefinition::createChildDefinitionFrom
   (SceneEntityDefinition& other)
   {
-    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this, other.toJson()));
+    return *mChildDefinitions.emplace_back(make_unique<SceneEntityDefinition>(mSceneDefinition,*this, other.getJson()));
   }
 
   void
@@ -117,6 +121,20 @@ namespace octronic::dream
     return mParentDefinition;
   }
 
+  vector<reference_wrapper<SceneEntityDefinition>>
+  SceneEntityDefinition::getAllDescendants
+  ()
+  const
+  {
+    vector<reference_wrapper<SceneEntityDefinition>> ret;
+    for (auto& child : mChildDefinitions)
+    {
+      ret.push_back(*child);
+      auto childDescendants = child->getAllDescendants();
+      ret.insert(ret.end(),childDescendants.begin(),childDescendants.end());
+    }
+    return ret;
+  }
 
   vector<reference_wrapper<SceneEntityDefinition>>
   SceneEntityDefinition::getChildDefinitionsVector
@@ -126,7 +144,7 @@ namespace octronic::dream
     vector<reference_wrapper<SceneEntityDefinition>> ret;
     for (auto& child : mChildDefinitions)
     {
-     ret.push_back(*child);
+      ret.push_back(*child);
     }
     return ret;
   }
@@ -157,7 +175,7 @@ namespace octronic::dream
       auto& newEntityDef = parent.createChildDefinition();
 
       newEntityDef.setJson(mJson);
-      newEntityDef.setUuid(Uuid::generateUuid());
+      newEntityDef.setUuid(Uuid::RandomUuid());
 
       string name = newEntityDef.getName();
       regex numRegex("(\\d+)$");
@@ -251,13 +269,25 @@ namespace octronic::dream
 
     for (auto& child : mChildDefinitions)
     {
-     if (child->hasUuid(uuid)) return *child;
+      if (child->hasUuid(uuid)) return *child;
 
-     auto child_result = child->getChildDefinitionByUuid(uuid);
+      auto child_result = child->getChildDefinitionByUuid(uuid);
 
-     if (child_result) return child_result;
+      if (child_result) return child_result;
     }
     return std::nullopt;
+  }
+
+  json
+  SceneEntityDefinition::getJson
+  ()
+  {
+    mJson[Constants::SCENE_ENTITY_DEFINITION_CHILDREN] = json::array();
+    for (auto& child : mChildDefinitions)
+    {
+      mJson[Constants::SCENE_ENTITY_DEFINITION_CHILDREN].push_back(child->getJson());
+    }
+    return mJson;
   }
 }
 

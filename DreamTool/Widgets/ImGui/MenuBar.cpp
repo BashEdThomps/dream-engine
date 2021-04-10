@@ -15,8 +15,8 @@
 
 namespace octronic::dream::tool
 {
-  MenuBar::MenuBar(DreamToolContext& def)
-    : ImGuiWidget(def),
+  MenuBar::MenuBar(DreamToolContext& ctx)
+    : ImGuiWidget(ctx,true),
       mOpenProjectFailed(false),
       mNewProjectFailed(false),
       mSaveProjectFailed(false),
@@ -27,11 +27,6 @@ namespace octronic::dream::tool
   {
   }
 
-  MenuBar::~MenuBar
-  ()
-  {
-
-  }
   void
   MenuBar::draw
   ()
@@ -257,7 +252,7 @@ namespace octronic::dream::tool
     {
       LOG_INFO("MenuBar: Success! {}",selected_file_path);
       mOpenProjectFailed = !getContext().openProject(selected_file_path);
-    	NFD_FreePath(selected_file_path);
+      NFD_FreePath(selected_file_path);
     }
     else if (result == NFD_CANCEL)
     {
@@ -417,9 +412,9 @@ namespace octronic::dream::tool
         getContext().getGlPreviewWindowComponent().setVisible(showGlPreviewWindow);
       }
 
-    	ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
+      ImGui::DragFloat("Text Scaling", &(ImGui::GetCurrentContext()->Font->Scale),0.1f,1.0f,10.0f);
 
-    	ImGui::EndMenu();
+      ImGui::EndMenu();
 
     }
   }
@@ -604,7 +599,7 @@ namespace octronic::dream::tool
 
           // Load Scene Combo
           int sceneToLoadIndex = -1;
-          if (StringCombo("Load Scene", &sceneToLoadIndex, sceneDefNames, sceneDefNames.size()))
+          if (StringCombo("Load Scene", &sceneToLoadIndex, sceneDefNames))
           {
             if (pDefOpt && pRuntOpt)
             {
@@ -615,15 +610,8 @@ namespace octronic::dream::tool
               if (!pRunt.hasSceneRuntime(selectedSceneDef.getUuid()))
               {
                 auto& newSceneRT = pRunt.createSceneRuntime(selectedSceneDef);
-                if (newSceneRT.init())
-                {
-                  newSceneRT.setState(SceneState::SCENE_STATE_TO_LOAD);
-                  setMessageString("Added Scene Runtime: "+newSceneRT.getName());
-                }
-                else
-                {
-                  setMessageString("Scene Init Failed: "+newSceneRT.getName());
-                }
+                newSceneRT.setState(SceneState::SCENE_STATE_TO_LOAD);
+                setMessageString("Added Scene Runtime: "+newSceneRT.getName());
               }
             }
           }
@@ -641,7 +629,7 @@ namespace octronic::dream::tool
 
             // Activate Scene Combo
             int sceneActiveIndex = -1;
-            if (StringCombo("Activate Scene", &sceneActiveIndex, runtimeNames, runtimeNames.size()))
+            if (StringCombo("Activate Scene", &sceneActiveIndex, runtimeNames))
             {
               auto& rt = pRunt.getSceneRuntimeVector().at(sceneActiveIndex).get();
               if (rt.hasState(SCENE_STATE_LOADED))
@@ -654,7 +642,7 @@ namespace octronic::dream::tool
 
             // Destroy Scene Combo
             int sceneToDestroyIndex = -1;
-            if (StringCombo("Destroy Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames, runtimeNames.size()))
+            if (StringCombo("Destroy Scene \"To Destroy\"", &sceneToDestroyIndex, runtimeNames))
             {
               getContext().getPropertiesWindow().clearPropertyTargets();
               auto& rt = pRunt.getSceneRuntimeVector().at(sceneToDestroyIndex).get();
@@ -662,7 +650,6 @@ namespace octronic::dream::tool
               setMessageString("Destroying Scene: "+rt.getName());
               getContext().getSelectionHighlighter().clearSelection();
             }
-
             ImGui::EndMenu();
           }
         }
@@ -701,10 +688,10 @@ namespace octronic::dream::tool
           getContext().getCacheContentWindow().setVisible(showCacheContents);
         }
 
-        bool showTaskManager = getContext().getTaskManagerWindow().getVisible();
-        if (ImGui::Checkbox("Task Manager",&showTaskManager))
+        bool showPhysicsDebug = getContext().getPhysicsDebugDrawer().getVisible();
+        if (ImGui::Checkbox("Physics Debug",&showPhysicsDebug))
         {
-          getContext().getTaskManagerWindow().setVisible(showTaskManager);
+          getContext().getPhysicsDebugDrawer().setVisible(showPhysicsDebug);
         }
       }
 #ifdef ENABLE_LOGGING

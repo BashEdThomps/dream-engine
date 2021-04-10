@@ -8,34 +8,37 @@ namespace octronic::dream::tool
   {
   }
 
-  ImGuiWidget::~ImGuiWidget() {}
-
   bool
   ImGuiWidget::StringCombo
-  (const char* label, int* current_item,
-   const vector<string>& items, int height_in_items)
+  (const char* label, int* current_item, const vector<string>& items)
   {
-    return ImGui::Combo
-        (label, current_item,
-         [](void* data, int idx, const char** out_text)
-    { auto _data = ((const vector<string>*)data);
-      *out_text = (*_data)[idx].c_str();
-      return true; },
-    (void*)&items, items.size(), height_in_items);
+    int height_in_items = -1;
+    return ImGui::Combo(
+          label, current_item,
+          [](void* data, int idx, const char** out_text)
+					{
+					  auto _data = ((const vector<string>*)data);
+					  *out_text = (*_data)[idx].c_str();
+					  return true;
+					},
+					(void*)&items,
+					items.size(),
+					height_in_items
+    );
   }
 
   int
   ImGuiWidget::GetStringIndexInVector
   (const string& str, const vector<string>& vec)
   {
-    size_t sz = vec.size();
-    for (int i=0; i<sz; i++)
+    auto itr = find(vec.begin(), vec.end(), str);
+    if (itr != vec.end())
     {
-      if (vec.at(i).compare(str) == 0)
-      {
-        return i;
-      }
+      return std::distance(vec.begin(),itr);
     }
-    return -1;
+    else
+    {
+      return -1;
+    }
   }
 }

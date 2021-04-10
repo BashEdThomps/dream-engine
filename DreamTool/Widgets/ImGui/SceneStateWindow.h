@@ -9,7 +9,6 @@ namespace octronic::dream::tool
     {
     public:
         SceneStateWindow(DreamToolContext&);
-        ~SceneStateWindow() override;
 
         void draw() override;
     };

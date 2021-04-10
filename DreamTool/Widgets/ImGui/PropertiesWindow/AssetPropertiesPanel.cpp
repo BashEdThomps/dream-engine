@@ -26,7 +26,12 @@ namespace octronic::dream::tool
     auto& pathViewer = ctx.getPathViewer();
     pathViewer.setVisible(false);
 
-    auto target = parent.getCurrentPropertyTarget();
+    if (!parent.getCurrentPropertyTarget().has_value())
+    {
+      return;
+    }
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
     auto assetDefOpt = target.getDefinition();
 
     if (!assetDefOpt.has_value())
@@ -42,15 +47,18 @@ namespace octronic::dream::tool
       if (ctx.getProjectContext().has_value())
       {
         auto& pCtx = ctx.getProjectContext().value();
+
         if (pCtx.getProjectDirectory().has_value())
         {
           auto& pDir = pCtx.getProjectDirectory().value();
+
           pDir.removeAssetDirectory(assetDef);
+
           if (pCtx.getProjectDefinition().has_value())
           {
-            auto& pDef = pCtx.getProjectDefinition().value();
-            pDef.removeAssetDefinition(assetDef);
             parent.removeFromHistory(assetDef);
+            auto& pDef = pCtx.getProjectDefinition().value();
+            pDef.removeAssetDefinitionByUuid(assetDef.getAssetType(),assetDef.getUuid());
             return;
           }
         }
@@ -73,7 +81,7 @@ namespace octronic::dream::tool
             auto& pDef = pCtx.getProjectDefinition().value();
             auto& newDef = pDef.createAssetDefinition(assetDef.getAssetType());
             assetDef.duplicateInto(newDef);
-            parent.pushPropertyTarget({PropertyType_Asset,newDef});
+            parent.pushPropertyTarget(PropertyType_Asset,newDef);
             return;
           }
         }
@@ -81,16 +89,6 @@ namespace octronic::dream::tool
     }
 
     mNameAndUuidPanel.draw();
-
-    ImGui::Separator();
-
-    char groupStr[128] = {0};
-    strncpy(&groupStr[0], assetDef.getGroup().c_str(), assetDef.getGroup().size());
-
-    if (ImGui::InputText("Group", &groupStr[0],128))
-    {
-      assetDef.setGroup(groupStr);
-    }
 
     ImGui::Separator();
 
@@ -142,16 +140,21 @@ namespace octronic::dream::tool
         {
           if (pRunt.getActiveSceneRuntime().has_value())
           {
-            auto& activeScene = pRunt.getActiveSceneRuntime().value().get();
-            ImGui::Separator();
-            ImGui::Columns(1);
-            if(ImGui::CollapsingHeader("Active Runtimes"))
+            auto activeSceneOpt = pRunt.getActiveSceneRuntime();
+
+            if (activeSceneOpt)
             {
-              auto runtimes = activeScene.getEntitiesWithRuntimeOf(assetDef);
-              for (auto& rtWrap : runtimes)
+              auto& activeScene = activeSceneOpt.value().get();
+              ImGui::Separator();
+              ImGui::Columns(1);
+              if(ImGui::CollapsingHeader("Active Runtimes"))
               {
-                auto& runtime = rtWrap.get();
-                ImGui::Text("%s",runtime.getNameAndUuidString().c_str());
+                auto runtimes = activeScene.getEntitiesWithRuntimeOf(assetDef);
+                for (auto& rtWrap : runtimes)
+                {
+                  auto& runtime = rtWrap.get();
+                  ImGui::Text("%s",runtime.getNameAndUuidString().c_str());
+                }
               }
             }
           }
@@ -166,7 +169,12 @@ namespace octronic::dream::tool
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     //auto& ctx = parent.getContext();
-    auto target = parent.getCurrentPropertyTarget();
+    if (!parent.getCurrentPropertyTarget().has_value())
+    {
+     return;
+    }
+
+    auto& target = parent.getCurrentPropertyTarget().value().get();
 
     if (target.getDefinition().has_value())
     {
@@ -257,7 +265,7 @@ namespace octronic::dream::tool
         // Easing
         vector<string> easingTypes = AnimationEasing::EasingNames;
         int currentEasingType = kf.getEasingType();
-        if (ImGuiWidget::StringCombo("##EasingType", &currentEasingType, easingTypes,easingTypes.size()))
+        if (ImGuiWidget::StringCombo("##EasingType", &currentEasingType, easingTypes))
         {
           kf.setEasingType(static_cast<AnimationEasing::EasingType>(currentEasingType));
           animDef.updateKeyframe(kf);
@@ -281,7 +289,9 @@ namespace octronic::dream::tool
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
-    auto target = parent.getCurrentPropertyTarget();
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
 
     if (target.getDefinition().has_value())
     {
@@ -409,7 +419,9 @@ namespace octronic::dream::tool
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
 
-    auto target = parent.getCurrentPropertyTarget();
+    if(!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto& target = parent.getCurrentPropertyTarget().value().get();
 
     if (target.getDefinition())
     {
@@ -505,56 +517,63 @@ namespace octronic::dream::tool
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
+
     if (ctx.getProjectContext().has_value())
     {
       auto& pCtx = ctx.getProjectContext().value();
+
       if (pCtx.getProjectDefinition().has_value())
       {
         auto& pDef = pCtx.getProjectDefinition().value();
-        auto target = parent.getCurrentPropertyTarget();
+
+        if (!parent.getCurrentPropertyTarget()) return;
+
+        auto target = parent.getCurrentPropertyTarget().value().get();
+
         auto& materialDef = static_cast<MaterialDefinition&>(target.getDefinition().value().get());
+
+        vector<string> shaderList = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
+
+        auto shaderAssetDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,materialDef.getShaderUuid());
+
+        int shaderIndex = -1;
+        if (shaderAssetDefOpt.has_value())
+        {
+          auto& shaderAsset = shaderAssetDefOpt.value().get();
+          shaderIndex = pDef.getAssetDefinitionIndex(shaderAsset);
+        }
+
+        if(ImGuiWidget::StringCombo("Shader", &shaderIndex, shaderList))
+        {
+          auto newShaderOpt = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderIndex);
+          if (newShaderOpt.has_value())
+          {
+            materialDef.setShaderUuid(newShaderOpt.value().get().getUuid());
+          }
+        }
+
+        UuidType albedoUuid = materialDef.getAlbedoTextureUuid();
+        UuidType normalUuid = materialDef.getNormalTextureUuid();
+        UuidType metallicUuid = materialDef.getMetallicTextureUuid();
+        UuidType roughnessUuid = materialDef.getRoughnessTextureUuid();
+        UuidType aoUuid = materialDef.getAoTextureUuid();
+
+        void* albedoTxId = nullptr;
+        void* normalTxId = nullptr;
+        void* metallicTxId = nullptr;
+        void* roughnessTxId = nullptr;
+        void* aoTxId = nullptr;
+
+        // Get texture preview images
+
         if (pCtx.getProjectRuntime().has_value())
         {
           auto& pRunt = pCtx.getProjectRuntime().value();
-
-          int shaderIndex = 0;
-          vector<string> shaderList;
-          auto shaderAssetDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,materialDef.getShaderUuid());
-          if (shaderAssetDefOpt.has_value())
-          {
-            auto& shaderAsset = shaderAssetDefOpt.value().get();
-            shaderIndex = pDef.getAssetDefinitionIndex(shaderAsset);
-            shaderList = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_SHADER);
-
-            if(ImGuiWidget::StringCombo("Shader", &shaderIndex, shaderList, shaderList.size()))
-            {
-              auto newShaderOpt = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER,shaderIndex);
-              if (newShaderOpt.has_value())
-              {
-                materialDef.setShaderUuid(newShaderOpt.value().get().getUuid());
-              }
-            }
-          }
-
-          ImGui::Separator();
-
           auto& txCache = pRunt.getTextureCache();
-
-          UuidType albedoUuid = materialDef.getAlbedoTextureUuid();
-          UuidType normalUuid = materialDef.getNormalTextureUuid();
-          UuidType metallicUuid = materialDef.getMetallicTextureUuid();
-          UuidType roughnessUuid = materialDef.getRoughnessTextureUuid();
-          UuidType aoUuid = materialDef.getAoTextureUuid();
-
-          void* albedoTxId = nullptr;
-          void* normalTxId = nullptr;
-          void* metallicTxId = nullptr;
-          void* roughnessTxId = nullptr;
-          void* aoTxId = nullptr;
 
           // Albedo
           auto albedoDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE,albedoUuid);
-          if (albedoDefOpt.has_value())
+          if (albedoDefOpt)
           {
             auto& txDef = static_cast<TextureDefinition&>(albedoDefOpt.value().get());
             auto& txRuntime = txCache.getRuntime(txDef);
@@ -563,28 +582,20 @@ namespace octronic::dream::tool
 
           // Normal
           auto normalDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE,normalUuid);
-          if (normalDefOpt.has_value())
+          if (normalDefOpt)
           {
             auto& txDef = static_cast<TextureDefinition&>(normalDefOpt.value().get());
-            try
-            {
-              auto& txRuntime = txCache.getRuntime(txDef);
-              normalTxId = (void*)(intptr_t)txRuntime.getTextureID();
-            }
-            catch (exception ex)  {}
+            auto& txRuntime = txCache.getRuntime(txDef);
+            normalTxId = (void*)(intptr_t)txRuntime.getTextureID();
           }
 
           // Metallic
           auto metallicDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE,metallicUuid);
-          if (metallicDef.has_value())
+          if (metallicDef)
           {
             auto& txDef = static_cast<TextureDefinition&>(metallicDef.value().get());
-            try
-            {
-              auto& txRuntime = txCache.getRuntime(txDef);
-              metallicTxId = (void*)(intptr_t)txRuntime.getTextureID();
-            }
-            catch (exception ex) {}
+            auto& txRuntime = txCache.getRuntime(txDef);
+            metallicTxId = (void*)(intptr_t)txRuntime.getTextureID();
           }
 
           // Roughness
@@ -592,122 +603,117 @@ namespace octronic::dream::tool
           if (roughnessDef)
           {
             auto& txDef = static_cast<TextureDefinition&>(roughnessDef.value().get());
-            try
-            {
-              auto& txRuntime = txCache.getRuntime(txDef);
-              roughnessTxId = (void*)(intptr_t)txRuntime.getTextureID();
-            }
-            catch (exception ex) {}
+            auto& txRuntime = txCache.getRuntime(txDef);
+            roughnessTxId = (void*)(intptr_t)txRuntime.getTextureID();
           }
 
           // AO
           auto aoDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_TEXTURE,aoUuid);
-          if (aoDef.has_value())
+          if (aoDef)
           {
             auto& txDef = static_cast<TextureDefinition&>(aoDef.value().get());
-            try
-            {
-              auto& txRuntime = txCache.getRuntime(txDef);
-              aoTxId = (void*)(intptr_t)txRuntime.getTextureID();
-            }
-            catch (exception ex) {}
+            auto& txRuntime = txCache.getRuntime(txDef);
+            aoTxId = (void*)(intptr_t)txRuntime.getTextureID();
           }
-
-          vector<string> textures;
-          int albedoIndex, normalIndex, metallicIndex, roughnessIndex, aoIndex;
-
-          textures = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
-
-          albedoIndex = pDef.getAssetDefinitionIndex(
-                pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,albedoUuid).value());
-
-          normalIndex = pDef.getAssetDefinitionIndex(
-                pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,normalUuid).value());
-
-          metallicIndex = pDef.getAssetDefinitionIndex(
-                pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,metallicUuid).value());
-
-          roughnessIndex = pDef.getAssetDefinitionIndex(
-                pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,roughnessUuid).value());
-
-          aoIndex = pDef.getAssetDefinitionIndex(
-                pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,aoUuid).value());
-
-          // Albedo ==============================================================
-
-          if(ImGuiWidget::StringCombo("Albedo",&albedoIndex,textures,textures.size()))
-          {
-            auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, albedoIndex);
-
-            if (txDef)
-            {
-              UuidType uuid = txDef.value().get().getUuid();
-              materialDef.setAlbedoTextureUuid(uuid);
-            }
-          }
-
-          ImGui::Image(albedoTxId, parent.getImageSize());
-          ImGui::Separator();
-
-          // Normal ==============================================================
-
-          if(ImGuiWidget::StringCombo("Normal",&normalIndex,textures,textures.size()))
-          {
-            auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, normalIndex);
-            if (txDef)
-            {
-              UuidType uuid = txDef.value().get().getUuid();
-              materialDef.setNormalTextureUuid(uuid);
-            }
-          }
-          ImGui::Image(normalTxId, parent.getImageSize());
-          ImGui::Separator();
-
-          // Metallic ============================================================
-
-          if(ImGuiWidget::StringCombo("Metallic",&metallicIndex,textures,textures.size()))
-          {
-            auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, metallicIndex);
-            if (txDef)
-            {
-              UuidType uuid = txDef.value().get().getUuid();
-              materialDef.setMetallicTextureUuid(uuid);
-            }
-          }
-
-          ImGui::Image(metallicTxId, parent.getImageSize());
-          ImGui::Separator();
-
-          // Roughness ===========================================================
-
-          if(ImGuiWidget::StringCombo("Roughness",&roughnessIndex,textures,textures.size()))
-          {
-            auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, roughnessIndex);
-            if (txDef)
-            {
-              UuidType uuid = txDef.value().get().getUuid();
-              materialDef.setRoughnessTextureUuid(uuid);
-            }
-          }
-          ImGui::Image(roughnessTxId, parent.getImageSize());
-
-          ImGui::Separator();
-
-          // Ao ==================================================================
-
-          if(ImGuiWidget::StringCombo("AO",&aoIndex,textures,textures.size()))
-          {
-            auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, aoIndex);
-            if (txDef)
-            {
-              UuidType uuid = txDef.value().get().getUuid();
-              materialDef.setAoTextureUuid(uuid);
-            }
-          }
-          ImGui::Image(aoTxId, parent.getImageSize());
-
-          ImGui::Columns(1);
         }
+
+        vector<string> textures;
+        int albedoIndex = -1;
+        int normalIndex = -1;
+        int metallicIndex = -1;
+        int roughnessIndex = -1;
+        int aoIndex = -1;;
+
+        textures = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_TEXTURE);
+
+        auto albedoOpt = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,albedoUuid);
+        if (albedoOpt) albedoIndex = pDef.getAssetDefinitionIndex(albedoOpt.value().get());
+
+        auto normalOpt = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,normalUuid);
+        if (normalOpt) normalIndex = pDef.getAssetDefinitionIndex(normalOpt.value().get());
+
+        auto metallicOpt = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,metallicUuid);
+        if (metallicOpt) metallicIndex = pDef.getAssetDefinitionIndex(metallicOpt.value().get());
+
+        auto roughnessOpt = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,roughnessUuid);
+        if (roughnessOpt) roughnessIndex = pDef.getAssetDefinitionIndex(roughnessOpt.value().get());
+
+        auto aoOpt = pDef.getAssetDefinitionByUuid(AssetType::ASSET_TYPE_ENUM_TEXTURE,aoUuid);
+        if (aoOpt) aoIndex = pDef.getAssetDefinitionIndex(aoOpt.value().get());
+
+        // Albedo ==============================================================
+
+        if(ImGuiWidget::StringCombo("Albedo",&albedoIndex,textures))
+        {
+          auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, albedoIndex);
+
+          if (txDef)
+          {
+            UuidType uuid = txDef.value().get().getUuid();
+            materialDef.setAlbedoTextureUuid(uuid);
+          }
+        }
+
+        if (albedoTxId) ImGui::Image(albedoTxId, parent.getImageSize());
+        ImGui::Separator();
+
+        // Normal ==============================================================
+
+        if(ImGuiWidget::StringCombo("Normal",&normalIndex,textures))
+        {
+          auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, normalIndex);
+          if (txDef)
+          {
+            UuidType uuid = txDef.value().get().getUuid();
+            materialDef.setNormalTextureUuid(uuid);
+          }
+        }
+        if(normalTxId) ImGui::Image(normalTxId, parent.getImageSize());
+        ImGui::Separator();
+
+        // Metallic ============================================================
+
+        if(ImGuiWidget::StringCombo("Metallic",&metallicIndex,textures))
+        {
+          auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, metallicIndex);
+          if (txDef)
+          {
+            UuidType uuid = txDef.value().get().getUuid();
+            materialDef.setMetallicTextureUuid(uuid);
+          }
+        }
+
+        if (metallicTxId) ImGui::Image(metallicTxId, parent.getImageSize());
+        ImGui::Separator();
+
+        // Roughness ===========================================================
+
+        if(ImGuiWidget::StringCombo("Roughness",&roughnessIndex,textures))
+        {
+          auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, roughnessIndex);
+          if (txDef)
+          {
+            UuidType uuid = txDef.value().get().getUuid();
+            materialDef.setRoughnessTextureUuid(uuid);
+          }
+        }
+        if (roughnessTxId) ImGui::Image(roughnessTxId, parent.getImageSize());
+
+        ImGui::Separator();
+
+        // Ao ==================================================================
+
+        if(ImGuiWidget::StringCombo("AO",&aoIndex,textures))
+        {
+          auto txDef = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_TEXTURE, aoIndex);
+          if (txDef)
+          {
+            UuidType uuid = txDef.value().get().getUuid();
+            materialDef.setAoTextureUuid(uuid);
+          }
+        }
+
+        if (aoTxId) ImGui::Image(aoTxId, parent.getImageSize());
       }
     }
   }
@@ -720,7 +726,13 @@ namespace octronic::dream::tool
     auto& ctx = parent.getContext();
     auto& pCtx = ctx.getProjectContext().value();
     auto& pDir = pCtx.getProjectDirectory().value();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
+    if (!target.getDefinition().has_value()) return;
+
     auto& def = static_cast<ModelDefinition&>(target.getDefinition().value().get());
 
     bool selectFile = ImGui::Button("Model File...");
@@ -797,15 +809,26 @@ namespace octronic::dream::tool
         ImGui::NextColumn();
         ImGui::PushItemWidth(-1);
         UuidType currentMaterialUuid = def.getDreamMaterialForModelMaterial(modelMaterial);
-        auto& currentMaterialDef = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,currentMaterialUuid).value().get();
-        int currentMaterialIndex = pDef.getAssetDefinitionIndex(currentMaterialDef);
+        auto currentMaterialOpt =  pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_MATERIAL,currentMaterialUuid);
+        int currentMaterialIndex = -1;
+
+        if (currentMaterialOpt)
+        {
+          auto& currentMaterialDef = currentMaterialOpt.value().get();
+          currentMaterialIndex = pDef.getAssetDefinitionIndex(currentMaterialDef);
+        }
+
         string itemName = "##Material:" + modelMaterial;
 
-        if(ImGuiWidget::StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames,materialAssetNames.size()))
+        if(ImGuiWidget::StringCombo(itemName.c_str(),&currentMaterialIndex,materialAssetNames))
         {
-          auto& changedMaterial = pDef.getAssetDefinitionAtIndex(ASSET_TYPE_ENUM_MATERIAL,currentMaterialIndex).value().get();
-          def.addModelMaterial(modelMaterial,changedMaterial.getUuid());
-          LOG_ERROR("AssetPropertiesPanel: Changed {} material {} to map to {}",def.getName(), modelMaterial, changedMaterial.getNameAndUuidString() );
+          auto changedMaterialOpt = pDef.getAssetDefinitionAtIndex(ASSET_TYPE_ENUM_MATERIAL,currentMaterialIndex);
+          if (changedMaterialOpt)
+          {
+            auto& changedMaterial = changedMaterialOpt.value().get();
+            def.addModelMaterial(modelMaterial,changedMaterial.getUuid());
+            LOG_ERROR("AssetPropertiesPanel: Changed {} material {} to map to {}",def.getName(), modelMaterial, changedMaterial.getNameAndUuidString() );
+          }
         }
         ImGui::PopItemWidth();
         ImGui::NextColumn();
@@ -821,14 +844,19 @@ namespace octronic::dream::tool
     auto& ctx = parent.getContext();
     auto& pCtx = ctx.getProjectContext().value();
 
-    auto target = parent.getCurrentPropertyTarget();
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
+    if(!target.getDefinition().has_value()) return;
+
     auto& pod = static_cast<PhysicsDefinition&>(target.getDefinition().value().get());
 
     vector<string> poFormats = Constants::DREAM_ASSET_FORMATS_MAP[AssetType::ASSET_TYPE_ENUM_PHYSICS];
     string poFormatString = pod.getFormat();
     int poFormatIndex = ImGuiWidget::GetStringIndexInVector(poFormatString, poFormats);
 
-    if(ImGuiWidget::StringCombo("Format",&poFormatIndex, poFormats,poFormats.size()))
+    if(ImGuiWidget::StringCombo("Format",&poFormatIndex, poFormats))
     {
       pod.setFormat(poFormats.at(poFormatIndex));
     }
@@ -958,7 +986,7 @@ namespace octronic::dream::tool
         int selectedModelAssetIndex = pDef.getAssetDefinitionIndex(selectedModelAssetDef);
         vector<string> modelAssets =  pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_MODEL);
 
-        if(ImGuiWidget::StringCombo("Model",&selectedModelAssetIndex,modelAssets,modelAssets.size()))
+        if(ImGuiWidget::StringCombo("Model",&selectedModelAssetIndex,modelAssets))
         {
           auto newlySelected = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_MODEL, selectedModelAssetIndex);
           pod.setCollisionModelUuid(newlySelected.value().get().getUuid());
@@ -989,7 +1017,7 @@ namespace octronic::dream::tool
 
         auto shapeNames = pDef.getAssetNamesVector(AssetType::ASSET_TYPE_ENUM_PHYSICS);
         static int shapeNameIndex = -1;
-        ImGuiWidget::StringCombo("Shape",&shapeNameIndex,shapeNames,shapeNames.size());
+        ImGuiWidget::StringCombo("Shape",&shapeNameIndex,shapeNames);
 
         ImGui::NextColumn();
         if(ImGui::Button("Add Compound Child"))
@@ -1039,8 +1067,15 @@ namespace octronic::dream::tool
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
     auto& pCtx = ctx.getProjectContext().value();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
+    if (!target.getDefinition().has_value()) return;
+
     auto& scriptDef = static_cast<ScriptDefinition&>(target.getDefinition().value().get());
+
     auto& pRunt = pCtx.getProjectRuntime().value();
     auto& scriptCache = pRunt.getScriptCache();
 
@@ -1050,7 +1085,7 @@ namespace octronic::dream::tool
 
     static int currentTemplateIndex = -1;
 
-    if (ImGuiWidget::StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
+    if (ImGuiWidget::StringCombo("Template",&currentTemplateIndex,templates))
     {
       ImGui::OpenPopup("Load Script From Template?");
     }
@@ -1167,7 +1202,13 @@ namespace octronic::dream::tool
     auto& pCtx = ctx.getProjectContext().value();
     auto& pRunt = pCtx.getProjectRuntime().value();
     auto& pDir = pCtx.getProjectDirectory().value();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if(!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
+    if (!target.getDefinition().has_value()) return;
+
     auto& shaderDef = static_cast<ShaderDefinition&>(target.getDefinition().value().get());
     auto& shaderCache = pRunt.getShaderCache();
     auto& shaderRuntime = shaderCache.getRuntime(shaderDef);
@@ -1176,7 +1217,7 @@ namespace octronic::dream::tool
 
     vector<string> templates = ctx.getTemplatesModel().getTemplateNames(AssetType::ASSET_TYPE_ENUM_SHADER);
     static int currentTemplateIndex = -1;
-    if(ImGuiWidget::StringCombo("Template",&currentTemplateIndex,templates,templates.size()))
+    if(ImGuiWidget::StringCombo("Template",&currentTemplateIndex,templates))
     {
       ImGui::OpenPopup("Load Shader From Template?");
     }
@@ -1419,7 +1460,7 @@ namespace octronic::dream::tool
 
     if (shaderRuntime.getLoaded())
     {
-      auto& uniforms = shaderRuntime.getUniformsVector();
+      auto uniforms = shaderRuntime.getUniformsVector();
 
       ImGui::Columns(4);
 
@@ -1432,8 +1473,9 @@ namespace octronic::dream::tool
       ImGui::Text("Status");
       ImGui::NextColumn();
 
-      for (auto& uniform : uniforms)
+      for (auto uniformWrap : uniforms)
       {
+        auto& uniform = uniformWrap.get();
         ImGui::Separator();
         ImGui::Text("%d",uniform.getLocation());
         ImGui::NextColumn();
@@ -1464,7 +1506,13 @@ namespace octronic::dream::tool
   {
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
-    auto target = parent.getCurrentPropertyTarget();
+
+    if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+    auto target = parent.getCurrentPropertyTarget().value().get();
+
+    if (!target.getDefinition().has_value()) return;
+
     auto& pathDef = static_cast<PathDefinition&>(target.getDefinition().value().get());
 
     ctx.getPathViewer().setPathDefinition(pathDef);
@@ -1479,7 +1527,7 @@ namespace octronic::dream::tool
     }
 
     int splineTypeIndex = ImGuiWidget::GetStringIndexInVector(pathDef.getSplineType(),Constants::DREAM_PATH_SPLINE_TYPES);
-    if (ImGuiWidget::StringCombo("Spline Type",&splineTypeIndex, Constants::DREAM_PATH_SPLINE_TYPES,Constants::DREAM_PATH_SPLINE_TYPES.size()))
+    if (ImGuiWidget::StringCombo("Spline Type",&splineTypeIndex, Constants::DREAM_PATH_SPLINE_TYPES))
     {
       pathDef.setSplineType(Constants::DREAM_PATH_SPLINE_TYPES.at(splineTypeIndex));
       needsRegen = true;
@@ -1590,10 +1638,15 @@ namespace octronic::dream::tool
     auto& parent = static_cast<PropertiesWindow&>(getParent());
     auto& ctx = parent.getContext();
     auto& pCtxOpt = ctx.getProjectContext();
+
     if (pCtxOpt)
     {
       auto& pCtx = pCtxOpt.value();
-      auto target = parent.getCurrentPropertyTarget();
+
+      if (!parent.getCurrentPropertyTarget().has_value()) return;
+
+      auto target = parent.getCurrentPropertyTarget().value().get();
+
       if (target.getDefinition().has_value())
       {
         auto& textureDef = static_cast<TextureDefinition&>(target.getDefinition().value().get());
@@ -1607,9 +1660,7 @@ namespace octronic::dream::tool
           auto& txCache = pRunt.getTextureCache();
           auto& textureRuntime = txCache.getRuntime(textureDef);
 
-          bool selectFile = ImGui::Button("Texture File...");
-
-          if (selectFile)
+          if (ImGui::Button("Texture File..."))
           {
             if (pDirOpt)
             {
@@ -1680,10 +1731,17 @@ namespace octronic::dream::tool
               // EquiToCube
               {
                 UuidType shaderUuid = textureDef.getEquiToCubeMapShader();
-                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
 
-                if (ImGuiWidget::StringCombo("Cube Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                auto shaderDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid);
+                int shaderIndex = -1;
+
+                if (shaderDefOpt)
+                {
+                  auto& shaderDef = static_cast<ShaderDefinition&>(shaderDefOpt.value().get());
+                  shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+                }
+
+                if (ImGuiWidget::StringCombo("Cube Map Shader", &shaderIndex, shaderList))
                 {
                   auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
                   UuidType uuid = selectedShader.getUuid();
@@ -1695,10 +1753,17 @@ namespace octronic::dream::tool
               // Irradiance
               {
                 UuidType shaderUuid = textureDef.getIrradianceMapShader();
-                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
 
-                if (ImGuiWidget::StringCombo("Irradiance Map Shader", &shaderIndex, shaderList, shaderList.size()))
+                auto shaderDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid);
+                int shaderIndex = -1;
+
+                if (shaderDefOpt)
+                {
+                  auto& shaderDef = static_cast<ShaderDefinition&>(shaderDefOpt.value().get());
+                  shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+                }
+
+                if (ImGuiWidget::StringCombo("Irradiance Map Shader", &shaderIndex, shaderList))
                 {
                   auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
                   UuidType uuid = selectedShader.getUuid();
@@ -1710,10 +1775,17 @@ namespace octronic::dream::tool
               // PreFilter
               {
                 UuidType shaderUuid = textureDef.getPreFilterShader();
-                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
 
-                if (ImGuiWidget::StringCombo("PreFilter Shader", &shaderIndex, shaderList, shaderList.size()))
+                auto shaderDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid);
+                int shaderIndex = -1;
+
+                if (shaderDefOpt)
+                {
+                  auto& shaderDef = static_cast<ShaderDefinition&>(shaderDefOpt.value().get());
+                  shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+                }
+
+                if (ImGuiWidget::StringCombo("PreFilter Shader", &shaderIndex, shaderList))
                 {
                   auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
                   UuidType uuid = selectedShader.getUuid();
@@ -1725,10 +1797,17 @@ namespace octronic::dream::tool
               // BRDF_LUT
               {
                 UuidType shaderUuid = textureDef.getBrdfLutShader();
-                auto& shaderDef = static_cast<ShaderDefinition&>(pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid).value().get());
-                int shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
 
-                if (ImGuiWidget::StringCombo("BRDF LUT Shader", &shaderIndex, shaderList, shaderList.size()))
+                auto shaderDefOpt = pDef.getAssetDefinitionByUuid(ASSET_TYPE_ENUM_SHADER,shaderUuid);
+                int shaderIndex = -1;
+
+                if (shaderDefOpt)
+                {
+                  auto& shaderDef = static_cast<ShaderDefinition&>(shaderDefOpt.value().get());
+                  shaderIndex = pDef.getAssetDefinitionIndex(shaderDef);
+                }
+
+                if (ImGuiWidget::StringCombo("BRDF LUT Shader", &shaderIndex, shaderList))
                 {
                   auto& selectedShader = pDef.getAssetDefinitionAtIndex(AssetType::ASSET_TYPE_ENUM_SHADER, shaderIndex).value().get();
                   UuidType uuid = selectedShader.getUuid();
@@ -1800,7 +1879,7 @@ namespace octronic::dream::tool
 
             int debugMode = (int)textureRuntime.getCubeDebugMode();
 
-            if (ImGuiWidget::StringCombo("Cube Debug", &debugMode, cubeDebugTypes, cubeDebugTypes.size()))
+            if (ImGuiWidget::StringCombo("Cube Debug", &debugMode, cubeDebugTypes))
             {
               textureRuntime.setCubeDebugMode((CubeDebugMode)debugMode);
             }

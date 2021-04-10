@@ -3,7 +3,7 @@
 #include "Widgets/ImGui/ImGuiPanel.h"
 
 #include "TransformPropertiesPanel.h"
-#include "NameAndUuidPanel.h"
+#include "IdentityPropertiesPanel.h"
 
 namespace octronic::dream::tool
 {
@@ -13,11 +13,9 @@ namespace octronic::dream::tool
     SceneEntityPropertiesPanel(ImGuiWidget& parent);
     void draw() override;
   protected:
-  	bool drawDeleteEntityButton();
-  	void drawTransformProperties();
     void drawTextProperties();
   private:
-    NameAndUuidPanel mNameAndUuidPanel;
+    IdentityPropertiesPanel mNameAndUuidPanel;
     TransformPropertiesPanel mTransformPropertiesPanel;
   };
 }

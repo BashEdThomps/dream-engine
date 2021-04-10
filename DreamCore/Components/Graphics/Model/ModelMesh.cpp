@@ -1,19 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
 #include "ModelMesh.h"
 
 #include "ModelRuntime.h"
@@ -34,7 +18,7 @@ namespace octronic::dream
    const string& name,
    const vector<Vertex>& vertices,
    const vector<GLuint>& indices,
-   MaterialRuntime& material,
+   optional<reference_wrapper<MaterialRuntime>> material,
    const BoundingBox& bb)
     : mParent(parent),
       mMaterial(material),
@@ -50,6 +34,12 @@ namespace octronic::dream
       mLoaded(false)
   {
     LOG_TRACE("ModelMesh: Constructing Mesh for {}", getParent().getName());
+    if (mMaterial)
+    {
+      auto& material = mMaterial.value().get();
+      material.addMesh(*this);
+      material.debug();
+    }
   }
 
   void
@@ -65,10 +55,7 @@ namespace octronic::dream
   {
     LOG_TRACE("ModelMesh: Destroying Mesh for {}",getParent().getNameAndUuidString());
 
-    if (mMaterial)
-    {
-      mMaterial.value().get().removeMesh(*this);
-    }
+    clearMaterialBindings();
 
     mFreeMeshTask->setBuffers(mVAO,mVBO,mIBO);
 
@@ -76,6 +63,21 @@ namespace octronic::dream
     auto& gfxComp = pr.getGraphicsComponent();
     auto& gfxDestQueue = gfxComp.getDestructionTaskQueue();
     gfxDestQueue.pushTask(mFreeMeshTask);
+  }
+
+  void
+  ModelMesh::clearMaterialBindings
+  ()
+  {
+  	auto& model = getParent();
+    auto& pRunt = model.getProjectRuntime();
+    auto& materialCache = pRunt.getMaterialCache();
+
+    for (auto mtlWrap : materialCache.getRuntimeVector())
+    {
+     auto& mtl = mtlWrap.get();
+     mtl.removeMesh(*this);
+    }
   }
 
   string
@@ -137,7 +139,7 @@ namespace octronic::dream
   {
     // TODO - Move this to grpahics component
     mRuntimesInFrustum.clear();
-    auto& runtimes = getParent().getInstanceVector();
+    auto runtimes = getParent().getInstanceVector();
 
     for (auto entityWrap : runtimes)
     {
@@ -191,7 +193,7 @@ namespace octronic::dream
   ModelMesh::drawShadowPassRuntimes
   (ShaderRuntime& shader, bool inFrustumOnly)
   {
-    auto& runtimes = getParent().getInstanceVector();
+    auto runtimes = getParent().getInstanceVector();
 
     if (runtimes.empty())
     {
@@ -320,14 +322,6 @@ namespace octronic::dream
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
                           static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, TexCoords));
-    // Vertex Tangents
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
-                          static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Tangent));
-    // Vertex Bitangents
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
-                          static_cast<GLint>(sizeof(Vertex)),(GLvoid*)offsetof(Vertex, Bitangent));
 
     glBindVertexArray(0);
 
@@ -356,10 +350,10 @@ namespace octronic::dream
       glGenBuffers(1, &vbo);
       glGenBuffers(1, &ebo);
 
-      std::vector<glm::vec3> positions;
-      std::vector<glm::vec2> uv;
-      std::vector<glm::vec3> normals;
-      std::vector<unsigned int> indices;
+      vector<glm::vec3> positions;
+      vector<glm::vec2> uv;
+      vector<glm::vec3> normals;
+      vector<unsigned int> indices;
 
       const unsigned int X_SEGMENTS = 64;
       const unsigned int Y_SEGMENTS = 64;

@@ -1,18 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include <iostream>
 
 #include "PhysicsRuntime.h"
@@ -48,6 +33,7 @@ namespace octronic::dream
       mInPhysicsWorld(false)
   {
     LOG_TRACE( "PhysicsRuntime: Constructing" );
+    mAddObjectTask = make_shared<PhysicsAddObjectTask>(getProjectRuntime(),*this);
   }
 
   btCollisionShape*
@@ -109,6 +95,8 @@ namespace octronic::dream
     setCcdSweptSphereRadius(pod.getCcdSweptSphereRadius());
 
     mLoaded = (mRigidBody != nullptr);
+
+
     return mLoaded;
   }
 
@@ -242,8 +230,10 @@ namespace octronic::dream
     }
 
     btTriangleMesh* triMesh = new btTriangleMesh();
-    for (auto& mesh : meshes)
+    for (auto& meshWrap : meshes)
     {
+      auto& mesh = meshWrap.get();
+
       auto idx = mesh.getIndices();
       auto verts = mesh.getVertices();
 
@@ -503,19 +493,14 @@ namespace octronic::dream
 
   void PhysicsRuntime::pushTasks()
   {
-    /*
-            if (!pObj->isInPhysicsWorld())
-      {
-        PhysicsAddObjectTask* ut = pObj->getAddObjectTask();
-        if (ut->readyToPush())
-        {
-          if(physicsWorldUpdateTask->getState() != TaskState::TASK_STATE_COMPLETED)
-          {
-            ut->dependsOn(physicsWorldUpdateTask);
-          }
-          taskManager->pushTask(ut);
-        }
-      }
-      */
+    auto& taskQueue = getProjectRuntime().getTaskQueue();
+    if (mLoadFromDefinitionTask->hasState(TASK_STATE_QUEUED))
+    {
+      taskQueue.pushTask(mLoadFromDefinitionTask);
+    }
+    else if (mLoadFromDefinitionTask->hasState(TASK_STATE_COMPLETED) && !isInPhysicsWorld())
+    {
+      taskQueue.pushTask(mAddObjectTask);
+    }
   }
 }

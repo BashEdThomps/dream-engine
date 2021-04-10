@@ -7,15 +7,9 @@
 namespace octronic::dream::tool
 {
   GamepadStateWindow::GamepadStateWindow
-  (DreamToolContext& state, bool visible)
-    : ImGuiWidget (state,visible)
+  (DreamToolContext& state)
+    : ImGuiWidget (state,false)
   {
-  }
-
-  GamepadStateWindow::~GamepadStateWindow
-  ()
-  {
-
   }
 
   void

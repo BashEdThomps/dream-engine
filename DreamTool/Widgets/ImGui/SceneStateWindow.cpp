@@ -15,11 +15,6 @@ namespace octronic::dream::tool
   {
   }
 
-  SceneStateWindow::~SceneStateWindow()
-  {
-
-  }
-
   void SceneStateWindow::draw()
   {
     auto& pCtxOpt = getContext().getProjectContext();
@@ -58,10 +53,10 @@ namespace octronic::dream::tool
             string state;
             unsigned long time = 0;
 
-            try
+            auto sRuntOpt = pRunt.getSceneRuntimeByUuid(sceneDef.getUuid());
+            if (sRuntOpt)
             {
-              auto& srt = pRunt.getSceneRuntimeByUuid(sceneDef.getUuid());
-
+              auto& srt = sRuntOpt.value().get();
               switch (srt.getState())
               {
                 case SceneState::SCENE_STATE_TO_LOAD:
@@ -81,10 +76,6 @@ namespace octronic::dream::tool
                   break;
               }
               time = srt.getSceneCurrentTime();
-            }
-            catch(exception& ex)
-            {
-              state = "Not Loaded";
             }
 
             ImGui::Text("%s",state.c_str());

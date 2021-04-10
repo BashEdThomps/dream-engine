@@ -44,7 +44,7 @@ namespace octronic::dream
   }
 
   json
-  Definition::toJson
+  Definition::getJson
   ()
   {
     return mJson;
@@ -105,5 +105,21 @@ namespace octronic::dream
     stringstream ss;
     ss << "[" << getName() << " : " << getUuid() << "]";
     return ss.str();
+  }
+
+  void
+  Definition::setGroup
+  (const string& group)
+  {
+    mJson[Constants::GROUP] = group;
+  }
+
+  string Definition::getGroup() const
+  {
+    if (mJson.find(Constants::GROUP) == mJson.end())
+    {
+      return Constants::DEFAULT_GROUP;
+    }
+    return mJson[Constants::GROUP];
   }
 }

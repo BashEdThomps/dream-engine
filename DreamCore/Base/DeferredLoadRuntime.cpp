@@ -15,14 +15,7 @@ namespace octronic::dream
       mProjectRuntime(projectRuntime)
   {
 
-  }
-
-  bool
-  DeferredLoadRuntime::init
-  ()
-  {
     mLoadFromDefinitionTask = make_shared<RuntimeLoadFromDefinitionTask>(getProjectRuntime(), *this);
-    return true;
   }
 
   shared_ptr<RuntimeLoadFromDefinitionTask>

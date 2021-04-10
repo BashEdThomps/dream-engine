@@ -1,19 +1,3 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
 #include "ShaderRuntime.h"
 
 #include "ShaderDefinition.h"
@@ -72,19 +56,13 @@ namespace octronic::dream
   {
     LOG_TRACE( "ShaderRuntime: Constructing Object" );
     mRuntimeMatricies.reserve(MAX_RUNTIMES);
-  }
-
-  bool ShaderRuntime::init()
-  {
-    if(!DeferredLoadRuntime::init()) return false;
     mCompileFragmentTask = make_shared<ShaderCompileFragmentTask>(getProjectRuntime(), *this);
     mCompileVertexTask = make_shared<ShaderCompileVertexTask>(getProjectRuntime(), *this);
     mLinkTask = make_shared<ShaderLinkTask>(getProjectRuntime(), *this);
     mFreeTask = make_shared<ShaderFreeTask>(getProjectRuntime());
-    return true;
   }
 
-  void ShaderRuntime::pushDestructionTask
+  ShaderRuntime::~ShaderRuntime
   ()
   {
     LOG_TRACE( "ShaderRuntime: Destroying Object" );
@@ -223,7 +201,7 @@ namespace octronic::dream
     if (!success)
     {
       glGetShaderInfoLog(getVertexShader(), ERROR_BUF_SZ, nullptr, infoLog);
-      LOG_CRITICAL( "ShaderCompileVertexTask:\n"
+      LOG_CRITICAL( "ShaderRuntime:\n"
                        "\tVERTEX SHADER COMPILATION FAILED\n"
                        "\tShaderRuntime: {}\n"
                        "\t{}",
@@ -269,7 +247,7 @@ namespace octronic::dream
       if (!success)
       {
         glGetProgramInfoLog(getShaderProgram(), ERROR_BUF_SZ, nullptr, infoLog);
-        LOG_CRITICAL("ShaderLinkTask: SHADER PROGRAM LINKING FAILED\n {}" , infoLog );
+        LOG_CRITICAL("ShaderLinkTask: {} SHADER PROGRAM LINKING FAILED\n {}" , getNameAndUuidString(), infoLog );
         glDeleteProgram(getShaderProgram());
         setShaderProgram(0);
         mLinkingFailed = true;
@@ -401,10 +379,10 @@ namespace octronic::dream
   {
     for (auto& uniform : mUniformVector)
     {
-      if (uniform.getName() == name)
+      if (uniform->getName() == name)
       {
-        LOG_INFO("ShaderRuntime: Updating uniform {}", uniform.getName());
-        uniform.setData(data);
+        LOG_INFO("ShaderRuntime: Updating uniform {}", uniform->getName());
+        uniform->setData(data);
         return;
       }
     }
@@ -416,8 +394,8 @@ namespace octronic::dream
       LOG_ERROR("ShaderRuntime: Uniform {} not found in shader {}", name, getNameAndUuidString());
     }
 
-    auto& newUniform = mUniformVector.emplace_back(type,name,count,data);
-    newUniform.setLocation(location);
+    auto& newUniform = mUniformVector.emplace_back(make_unique<ShaderUniform>(type,name,count,data));
+    newUniform->setLocation(location);
   }
 
   void
@@ -430,129 +408,129 @@ namespace octronic::dream
     // Sync user uniforms
     for (auto& uniform : mUniformVector)
     {
-      if (!uniform.getNeedsUpdate())
+      if (!uniform->getNeedsUpdate())
       {
-        LOG_TRACE("ShaderRuntime: Uniform {} does not need update",uniform.getName());
+        LOG_TRACE("ShaderRuntime: Uniform {} does not need update",uniform->getName());
         continue;
       }
-      LOG_TRACE("ShaderRuntime: Uniform {} needs update",uniform.getName());
+      LOG_TRACE("ShaderRuntime: Uniform {} needs update",uniform->getName());
 
-      if (uniform.getCount() == 0)
+      if (uniform->getCount() == 0)
       {
         continue;
       }
       LOG_TRACE("ShaderRuntime: Sync Uinform {} -> prog: {}, name: {}, loc: {}, count: {}",
                 getUuid(),
-                prog, uniform.getName(),
-                uniform.getLocation(),
-                uniform.getCount());
+                prog, uniform->getName(),
+                uniform->getLocation(),
+                uniform->getCount());
 
-      auto location = uniform.getLocation();
+      auto location = uniform->getLocation();
       if (location == UNIFORM_NOT_FOUND)
       {
         LOG_INFO("ShaderRuntime: Unable to find uniform location '{}' in {}",
-                 uniform.getName(), getNameAndUuidString());
+                 uniform->getName(), getNameAndUuidString());
         continue;
       }
 
-      assert(uniform.getData() != nullptr);
+      assert(uniform->getData() != nullptr);
 
-      switch (uniform.getType())
+      switch (uniform->getType())
       {
         // int =====================================================
         case UNIFORM_TYPE_INT1:
         {
-          GLint d = *(GLint*)uniform.getData();
+          GLint d = *(GLint*)uniform->getData();
           glUniform1i(location,d);
           GLCheckError();
           break;
         }
         case UNIFORM_TYPE_INT2:
-          glUniform2iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+          glUniform2iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_INT3:
-          glUniform3iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+          glUniform3iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_INT4:
-          glUniform4iv(location,uniform.getCount(),static_cast<GLint*>(uniform.getData()));
+          glUniform4iv(location,uniform->getCount(),static_cast<GLint*>(uniform->getData()));
           GLCheckError();
           break;
           // uint ====================================================
         case UNIFORM_TYPE_UINT1:
-          glUniform1ui(location,*static_cast<GLuint*>(uniform.getData()));
+          glUniform1ui(location,*static_cast<GLuint*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_UINT2:
-          glUniform2uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+          glUniform2uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_UINT3:
-          glUniform3uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+          glUniform3uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_UINT4:
-          glUniform4uiv(location,uniform.getCount(),static_cast<GLuint*>(uniform.getData()));
+          glUniform4uiv(location,uniform->getCount(),static_cast<GLuint*>(uniform->getData()));
           GLCheckError();
           break;
           // float ===================================================
         case UNIFORM_TYPE_FLOAT1:
-          glUniform1f(location,*static_cast<GLfloat*>(uniform.getData()));
+          glUniform1f(location,*static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_FLOAT2:
-          glUniform2fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+          glUniform2fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_FLOAT3:
-          glUniform3fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+          glUniform3fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_FLOAT4:
-          glUniform4fv(location,uniform.getCount(),static_cast<GLfloat*>(uniform.getData()));
+          glUniform4fv(location,uniform->getCount(),static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
           // Matrix ==================================================
         case UNIFORM_TYPE_MATRIX2:
-          glUniformMatrix2fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX3:
-          glUniformMatrix3fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX4:
-          glUniformMatrix4fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX2X3:
-          glUniformMatrix2x3fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix2x3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX3X2:
-          glUniformMatrix3x2fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix3x2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX2X4:
-          glUniformMatrix2x4fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix2x4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX4X2:
-          glUniformMatrix4x2fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix4x2fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX3X4:
-          glUniformMatrix3x4fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix3x4fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
         case UNIFORM_TYPE_MATRIX4X3:
-          glUniformMatrix4x3fv(location, uniform.getCount(), GL_FALSE, static_cast<GLfloat*>(uniform.getData()));
+          glUniformMatrix4x3fv(location, uniform->getCount(), GL_FALSE, static_cast<GLfloat*>(uniform->getData()));
           GLCheckError();
           break;
 
       }
-      uniform.setNeedsUpdate(false);
+      uniform->setNeedsUpdate(false);
     }
   }
 
@@ -916,68 +894,88 @@ namespace octronic::dream
   ShaderRuntime::bindMaterial
   (MaterialRuntime& material)
   {
-    TextureRuntime& albedo = material.getAlbedoTexture().value();
-    if (albedo.getLoaded())
+    auto albedoOpt = material.getAlbedoTexture();
+    if (albedoOpt)
     {
-      GLuint id = albedo.getTextureID();
-      if (CurrentTextures[GL_TEXTURE0] != id)
+      TextureRuntime& albedo = albedoOpt.value().get();
+      if (albedo.getLoaded())
       {
-        LOG_INFO("ShaderRuntime: Found Albedo Texture, binding {}",id);
-        GLuint albedoIndex = 0;
-        addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ALBEDO, 1, &albedoIndex);
-        setTexture(GL_TEXTURE0, GL_TEXTURE_2D, id);
+        GLuint id = albedo.getTextureID();
+        if (CurrentTextures[GL_TEXTURE0] != id)
+        {
+          LOG_INFO("ShaderRuntime: Found Albedo Texture, binding {}",id);
+          GLuint albedoIndex = 0;
+          addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ALBEDO, 1, &albedoIndex);
+          setTexture(GL_TEXTURE0, GL_TEXTURE_2D, id);
+        }
       }
     }
 
-    TextureRuntime& normal = material.getNormalTexture().value();
-    if (normal.getLoaded())
+    auto normalOpt = material.getNormalTexture();
+    if (normalOpt)
     {
-      GLuint id  =  normal.getTextureID();
-      if (CurrentTextures[GL_TEXTURE1] != id)
+      TextureRuntime& normal = normalOpt.value();
+      if (normal.getLoaded())
       {
-        LOG_INFO("ShaderRuntime: Found Normal Texture, binding {}",id);
-        GLuint normalIndex = 1;
-        addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_NORMAL, 1, &normalIndex);
-        setTexture(GL_TEXTURE1, GL_TEXTURE_2D, id);
+        GLuint id  =  normal.getTextureID();
+        if (CurrentTextures[GL_TEXTURE1] != id)
+        {
+          LOG_INFO("ShaderRuntime: Found Normal Texture, binding {}",id);
+          GLuint normalIndex = 1;
+          addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_NORMAL, 1, &normalIndex);
+          setTexture(GL_TEXTURE1, GL_TEXTURE_2D, id);
+        }
       }
     }
 
-    TextureRuntime& metallic = material.getMetallicTexture().value();
-    if (metallic.getLoaded())
+    auto metallicOpt = material.getMetallicTexture();
+    if (metallicOpt)
     {
-      GLuint id = metallic.getTextureID();
-      if (CurrentTextures[GL_TEXTURE2] != id)
+      TextureRuntime& metallic = metallicOpt.value().get();
+      if (metallic.getLoaded())
       {
-        LOG_INFO("ShaderRuntime: Found Metallic Texture, binding {}",id);
-        GLuint metallicIndex = 2;
-        addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_METALLIC, 1, &metallicIndex);
-        setTexture(GL_TEXTURE2, GL_TEXTURE_2D, id);
+        GLuint id = metallic.getTextureID();
+        if (CurrentTextures[GL_TEXTURE2] != id)
+        {
+          LOG_INFO("ShaderRuntime: Found Metallic Texture, binding {}",id);
+          GLuint metallicIndex = 2;
+          addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_METALLIC, 1, &metallicIndex);
+          setTexture(GL_TEXTURE2, GL_TEXTURE_2D, id);
+        }
       }
     }
 
-    TextureRuntime& roughness = material.getRoughnessTexture().value();
-    if (roughness.getLoaded())
+    auto roughnessOpt = material.getRoughnessTexture();
+    if (roughnessOpt)
     {
-      GLuint id = roughness.getTextureID();
-      if (CurrentTextures[GL_TEXTURE3] != id)
+      TextureRuntime& roughness = roughnessOpt.value();
+      if (roughness.getLoaded())
       {
-        LOG_INFO("ShaderRuntime: Found Roughness Texture, binding {}",id);
-        GLuint roughnessIndex = 3;
-        addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ROUGHNESS, 1, &roughnessIndex);
-        setTexture(GL_TEXTURE3, GL_TEXTURE_2D, id);
+        GLuint id = roughness.getTextureID();
+        if (CurrentTextures[GL_TEXTURE3] != id)
+        {
+          LOG_INFO("ShaderRuntime: Found Roughness Texture, binding {}",id);
+          GLuint roughnessIndex = 3;
+          addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_ROUGHNESS, 1, &roughnessIndex);
+          setTexture(GL_TEXTURE3, GL_TEXTURE_2D, id);
+        }
       }
     }
 
-    TextureRuntime& ao = material.getAoTexture().value();
-    if (ao.getLoaded())
+    auto aoOpt = material.getAoTexture();
+    if (aoOpt)
     {
-      GLuint id = ao.getTextureID();
-      if (CurrentTextures[GL_TEXTURE4] != id)
+      TextureRuntime& ao = aoOpt.value().get();
+      if (ao.getLoaded())
       {
-        LOG_INFO("ShaderRuntime: Found AO Texture, binding {}",id);
-        GLuint aoIndex = 4;
-        addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_AO, 1, &aoIndex);
-        setTexture(GL_TEXTURE4, GL_TEXTURE_2D, id);
+        GLuint id = ao.getTextureID();
+        if (CurrentTextures[GL_TEXTURE4] != id)
+        {
+          LOG_INFO("ShaderRuntime: Found AO Texture, binding {}",id);
+          GLuint aoIndex = 4;
+          addUniform(UNIFORM_TYPE_INT1, UNIFORM_MATERIAL_AO, 1, &aoIndex);
+          setTexture(GL_TEXTURE4, GL_TEXTURE_2D, id);
+        }
       }
     }
   }
@@ -1137,11 +1135,17 @@ namespace octronic::dream
     mShaderProgram = sp;
   }
 
-  vector<ShaderUniform>&
+  vector<reference_wrapper<ShaderUniform>>
   ShaderRuntime::getUniformsVector
   ()
+  const
   {
-    return mUniformVector;
+    vector<reference_wrapper<ShaderUniform>> ret;
+    for (auto& uf : mUniformVector)
+    {
+      ret.push_back(*uf);
+    }
+    return ret;
   }
 
   bool

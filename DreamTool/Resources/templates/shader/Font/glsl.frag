@@ -5,13 +5,13 @@
 */
 #version 330 core
 
-in vec2 texturePos;
+in vec2 TexturePosition;
 out vec4 FragColor;
 
 uniform sampler2D uTexture;
-uniform vec4 uColor;
+uniform vec4      uColor;
 
 void main(void) 
 {
-  FragColor =vec4(1, 1, 1, texture(uTexture, texturePos).r) * uColor;
+  FragColor = vec4(1, 1, 1, texture(uTexture, TexturePosition).r) * uColor;
 }
